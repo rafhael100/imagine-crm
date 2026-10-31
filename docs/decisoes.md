@@ -155,3 +155,5 @@
 - **Videoconferências na agenda (aprovado):** integração com Google Meet, Microsoft Teams e Zoom para gerar links conforme autorização, enviar convites, atualizar reagendamentos, cancelar eventos/notificar participantes, registrar links e histórico, proteger credenciais; sujeito às capacidades de cada plataforma.
 
 - **Agendamentos recorrentes (aprovado):** periodicidade diária/semanal/quinzenal/mensal; fim por data ou quantidade; conflitos validados por ocorrência; edição/cancelamento individual ou de toda série; lembretes por ocorrência, sincronização Google/Outlook e histórico de alterações/exceções.
+
+- **Lista de espera para agendamentos (aprovado):** interesse e preferências de dias/horários/profissionais; identificação de vagas liberadas, avisos por WhatsApp/e-mail, prazo configurável, prioridade por ordem de entrada com exceções autorizadas, confirmação somente após aceite e prevenção de dupla reserva; histórico de ofertas/aceites/recusas.
