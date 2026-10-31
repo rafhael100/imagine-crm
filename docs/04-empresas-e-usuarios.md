@@ -91,3 +91,13 @@
 - Ordenar a apresentação dos campos nos formulários.
 - Proteger campos essenciais do sistema, como identificadores internos e vínculos, contra remoção ou alteração de regras fundamentais.
 - Aplicar as validações no backend também para operações via importação e integrações, não apenas na interface.
+
+## Limites de campos personalizados por plano — APROVADO
+| Plano | Limite em cada módulo (leads, contatos, oportunidades) |
+|---|---:|
+| Essencial | 10 |
+| Profissional | 25 |
+| Empresarial | 50 |
+
+- Cada módulo tem limite independente, por empresa.
+- No downgrade, preservar campos existentes, mesmo acima do limite novo, mas bloquear criação de novos campos enquanto o limite estiver excedido.
