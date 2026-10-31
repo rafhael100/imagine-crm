@@ -750,3 +750,12 @@
 - Agendamentos mensais ilimitados nos planos Essencial, Profissional e Empresarial, sem cobrança adicional por quantidade de reservas.
 - Manter verificações de disponibilidade, conflitos, permissões e capacidade em cada agendamento.
 - Aplicar proteção técnica contra abuso e excesso de requisições, sem converter controles de segurança em limite comercial.
+
+## Confirmação automática de agendamentos — APROVADO
+- Permitir confirmação pelo cliente através de link individual seguro enviado por e-mail ou WhatsApp oficial integrado, observando políticas do canal.
+- Antecedência de envio configurável por empresa/serviço, incluindo opções como 24h ou 48h, sem fixar um padrão obrigatório.
+- Reenviar lembrete configurável quando o cliente não responder, com prevenção de disparos repetitivos.
+- Manter estado de confirmação pendente, confirmado ou não confirmado, separado do estado operacional do agendamento (realizado, cancelado, falta etc.).
+- Alertar equipe autorizada sobre ausência de resposta, respeitando escopos de acesso.
+- Cancelamento automático por falta de confirmação desativado por padrão; ausência de resposta não libera a vaga. Eventual regra explícita de cancelamento configurada pela empresa deverá observar prazos, notificações, auditoria e prevenção de conflitos.
+- Registrar envios, tentativas, respostas, canal e horários no histórico, com isolamento por empresa.
