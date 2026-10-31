@@ -16,3 +16,5 @@
 ## Observações
 - Este conjunto é um marco documental inicial; não significa que todos os capítulos estão fechados.
 - Não aprovar automaticamente exemplos, descontos ilustrativos nem arquitetura apenas sugerida.
+
+11. Detalhar campos personalizados: obrigatoriedade, opções, validações, limites por plano, edição de tipo e regras de exclusão/arquivamento.
