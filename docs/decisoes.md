@@ -139,3 +139,5 @@
 - **Biblioteca de modelos de chatbot (aprovado):** fluxos prontos para atendimento inicial, captação, qualificação, orçamento, suporte, fora do expediente e satisfação; cópia e personalização por empresa sem alterar originais; administração Imagine atualiza biblioteca central sem sobrescrever cópias dos clientes.
 
 - **Importação/exportação de fluxos de chatbot (aprovado):** JSON com validação de estrutura/compatibilidade, duplicação sem alterar original, remapeamento de equipes/campos/etiquetas, exclusão de segredos e dados de clientes, importação como rascunho, histórico e permissões por empresa; limites do plano aplicados aos fluxos ativos.
+
+- **Integração do chatbot com agendamentos (aprovado):** solicitação por serviço/assunto, consulta de horários na agenda conectada, criação com data/horário/responsável, confirmação WhatsApp, reagendamento/cancelamento conforme regras da empresa, lembretes, vínculo a lead/contato e prevenção de duplicidade; respeitar políticas da Meta.
