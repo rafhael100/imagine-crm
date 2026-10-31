@@ -219,3 +219,5 @@
 - **Agendamentos com aprovação prévia (aprovado):** empresa define serviços sujeitos à aprovação; solicitação pendente com bloqueio temporário do horário e prazo configurável; gestor/funcionário autorizado aprova ou recusa, com confirmação/notificação ou liberação, expiração de pendências e histórico de decisão, responsável e justificativa.
 
 - **Fila de aprovação de agendamentos (aprovado):** painel central de solicitações com dados e filtros por serviço/unidade/responsável/status, aprovação individual ou em lote com validação por reserva, recusa justificada, alertas e destaque de vencimentos, expiração automática com liberação do horário e histórico de decisões.
+
+- **Aprovação de agendamentos por múltiplas etapas (rejeitada):** não implementar fluxo sequencial de múltiplos aprovadores; manter aprovação simples por funcionário ou gestor autorizado e fila de aprovação já aprovadas.
