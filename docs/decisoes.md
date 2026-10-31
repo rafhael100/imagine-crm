@@ -245,3 +245,5 @@
 - **Agendamentos duplicados por cliente (aprovado):** detectar sobreposição de reservas do mesmo cliente, alertar e bloquear pelo portal/chatbot, permitir exceção apenas por funcionário autorizado com justificativa sem violar recursos, registrar tentativas/exceções e validar no backend.
 
 - **Status de atendimento (aprovado):** Agendado, Aguardando confirmação, Confirmado, Aguardando atendimento, Em atendimento, Concluído, Não compareceu e Cancelado; transições automáticas quando cabíveis ou manuais por funcionário autorizado, com histórico. Chegada registrada por funcionário, sem check-in digital do cliente.
+
+- **Histórico de atendimentos por cliente (aprovado):** no cadastro do contato, consolidar agendamentos passados/futuros, status, serviço, profissional e unidade; filtros por período/serviço/profissional/status, observações internas restritas e atualização automática a partir da agenda existente.
