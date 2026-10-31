@@ -425,3 +425,13 @@
 - Permitir pesquisa CSAT após cada atendimento concluído, observando regras de envio da Meta.
 - Relatórios devem medir quantidades de conversas resolvidas e reabertas.
 - Respeitar permissões e isolamento por empresa.
+
+## Chatbot de atendimento automático no WhatsApp — APROVADO
+- Criar fluxos visuais de atendimento por regras e menus, sem programação e sem dependência inicial de inteligência artificial.
+- Suportar saudação automática, menu de assuntos/departamentos, perguntas para coletar nome, interesse e informações básicas, etapas e condições configuráveis.
+- Encaminhar a conversa para vendedor ou equipe conforme escolhas e regras de distribuição.
+- Respeitar horário de expediente e disponibilidade dos atendentes.
+- Registrar respostas e escolhas no histórico do CRM.
+- Permitir intervenção humana e tomada da conversa a qualquer momento por atendente autorizado.
+- Prevenir loops e cumprir políticas, janelas e restrições da API oficial do WhatsApp Business da Meta.
+- Integração com IA poderá ser oferecida posteriormente como recurso opcional, sem fazer parte da obrigatoriedade do chatbot inicial.
