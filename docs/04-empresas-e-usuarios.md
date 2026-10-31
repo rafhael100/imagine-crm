@@ -685,3 +685,11 @@
 - Restringir configuração de serviços, horários, recursos e acesso a relatórios conforme perfil.
 - Registrar em auditoria alterações importantes, com responsável, data/hora e detalhes pertinentes.
 - Aplicar verificações no backend e integrações, respeitando escopos de funcionário/equipe/unidade e isolamento entre empresas.
+
+## Auditoria e histórico da agenda — APROVADO
+- Registrar criação de agendamento com responsável, data/hora e canal de origem.
+- Registrar alterações com valores anteriores e novos; reagendamentos com data/hora anteriores e novos; cancelamentos com responsável e motivo.
+- Registrar transferências com unidade e/ou profissional anterior e novo, confirmações com origem e horário, check-in e faltas com responsável.
+- Identificar alterações originadas por integrações Google Calendar ou Microsoft Outlook.
+- Histórico de auditoria protegido contra edição e exclusão por usuários da empresa, com acesso conforme permissões.
+- Reter registros por 12 meses durante a assinatura ativa, observadas obrigações legais de retenção e políticas de proteção de dados; aplicar isolamento por empresa.
