@@ -344,3 +344,12 @@
 - Vincular ao lead o evento de intenção de contato e registrar cliques no botão para métricas, sem tratar clique como confirmação de envio ou recebimento de mensagem.
 - Permitir automações relacionadas, como criar tarefa ou notificar vendedor.
 - Evitar expor dados pessoais desnecessários em parâmetros da URL; respeitar permissões e isolamento por empresa.
+
+## Integração oficial com WhatsApp Business API — APROVADO
+- Integração opcional com API oficial do WhatsApp Business, condicionada à habilitação da empresa e às políticas da Meta.
+- Vincular número empresarial; disponibilizar caixa de entrada no CRM para receber e responder conversas.
+- Atribuir conversas a vendedores/equipes; associar mensagens ao histórico de leads/contatos.
+- Suportar automações para tarefas e notificações a partir de mensagens.
+- Permitir templates aprovados pela Meta, respeitando janelas de atendimento e regras aplicáveis.
+- Aplicar permissões, auditoria, privacidade/consentimento pertinente e isolamento por empresa.
+- Custos cobrados pela Meta separados da assinatura do CRM; modelo de repasse/faturamento ainda a definir.
