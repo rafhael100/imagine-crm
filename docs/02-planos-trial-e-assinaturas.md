@@ -90,3 +90,13 @@ Permitir unidades adicionais com cobrança extra sem mudança de plano (preço a
 - Quota compartilhada entre todos os funcionários da empresa, contabilizada pelo tamanho efetivamente armazenado após otimização e incluindo versões adicionais quando existentes.
 - Ao atingir a quota, impedir novos uploads, mantendo acesso autorizado aos arquivos existentes; respeitar também o limite global de 5 MB por arquivo.
 - Definir posteriormente tratamento de downgrade quando o armazenamento existente ultrapassar a quota do novo plano e eventuais pacotes extras de armazenamento.
+
+## Direção comercial de lançamento — APROVADA (preços ainda em validação)
+- Adotar modelo híbrido de **mensalidade fixa por empresa, com usuários incluídos por plano**, em vez de cobrar por usuário desde o primeiro acesso.
+- Manter os planos Essencial, Profissional e Empresarial; referências comerciais **não definitivas**: R$ 69/mês com 2 usuários, R$ 149/mês com 5 usuários e R$ 299/mês com 10 usuários, sujeitas a validação de mercado e aprovação posterior.
+- Direção aprovada: contatos ilimitados nos planos pagos sujeitos a política de uso justo, sem cobrança por contato individual; permitir contratação paga de usuários adicionais, sem teto rígido; agentes de IA e WhatsApp como opcionais, com custos próprios claramente identificados.
+- Manter teste gratuito de 14 dias sem cartão e sem plano gratuito permanente no lançamento inicial.
+- Estratégia inicial de aquisição: foco em pequenas empresas que recebem leads e precisam organizar vendas; testar parcerias com agências e consultores, aquisição via produto e marketing segmentado; validar preços e disposição a pagar com potenciais clientes antes do lançamento.
+- Acompanhar ativação, conversão trial-pago, MRR, CAC, churn, retenção e margem para ajustar estratégia de crescimento.
+- **Revisão pendente:** quotas técnicas de armazenamento de 1/5/10 GB anteriormente aprovadas permanecem registradas; definir política comercial e operacional de uso justo, sem prometer armazenamento absolutamente ilimitado.
+- Não tratar métricas-alvo, comissões de parceiros ou preços ilustrativos como valores aprovados.
