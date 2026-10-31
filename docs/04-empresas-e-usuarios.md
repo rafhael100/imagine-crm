@@ -981,3 +981,11 @@
 - Selecionar nova data e horário conforme disponibilidade, revalidando profissional, sala, equipamentos, unidade, intervalos, capacidade e conflitos, com proteção contra edições simultâneas.
 - Notificar cliente e profissional sobre a nova data/horário pelos canais habilitados; sincronizar calendários conectados e registrar eventuais falhas de integração.
 - Aplicar regras de permissões, isolamento por empresa e auditoria. Liberar o horário anterior somente quando o novo agendamento estiver validado e salvo com sucesso, de modo atômico.
+
+## Motivos de cancelamento personalizáveis por empresa — APROVADO
+- Cada empresa terá catálogo próprio de motivos de cancelamento de agendamentos, com sugestões iniciais: desistência, imprevisto, indisponibilidade, duplicidade e outros.
+- Administradores da empresa com permissão específica podem criar e editar os motivos disponíveis, respeitando isolamento entre empresas.
+- A seleção de um motivo é obrigatória ao cancelar um agendamento; permitir observação complementar opcional.
+- Preservar no histórico do agendamento o motivo efetivamente registrado no momento do cancelamento, mesmo após alterações no catálogo; não reescrever registros históricos.
+- Permitir relatórios de quantidade de cancelamentos agrupados por motivo, com filtros e permissões já definidos para a agenda.
+- Registrar alterações do catálogo em auditoria, com responsável, data/hora e valores anteriores/novos.
