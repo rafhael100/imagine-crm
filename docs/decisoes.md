@@ -295,3 +295,5 @@
 - **Armazenamento privado de arquivos S3 (aprovado):** documentos, propostas, imagens e anexos em serviço privado compatível com S3, separados por empresa, autorização no Laravel, downloads temporários, compartilhamento externo específico e revogável, quotas por plano, retenção/auditoria e backup/recuperação; fornecedor e limites exatos pendentes.
 
 - **Segurança dos uploads (aprovado):** validação automática de tipo real/extensão/tamanho/integridade e compactados, ClamAV em fila assíncrona, quarentena privada S3 até aprovação, bloqueio em falhas do antivírus, rejeição de executáveis/conteúdo perigoso, sem execução no servidor e auditoria de resultados; limites exatos pendentes.
+
+- **Limite de upload (aprovado):** máximo de **5 MB por arquivo**, em todos os formatos permitidos e planos, inclusive integrações; rejeitar maiores que o limite, mantendo validação antivírus e quotas totais de armazenamento separadas. Proposta anterior de 10/25/50 MB não aprovada.
