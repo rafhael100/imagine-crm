@@ -273,3 +273,5 @@
 - **Bloqueio de horários em lote (aprovado):** selecionar múltiplos dias/períodos por profissional/equipe/unidade/recurso, informar motivo, pré-visualizar reservas afetadas, aplicar bloqueios sem cancelar reservas automaticamente, manter histórico e permitir reversão autorizada.
 
 - **Feriados automáticos na agenda (aprovado):** carregar feriados nacionais, estaduais e municipais por localização de cada unidade, atualizar anualmente, permitir que empresa decida atendimento/bloqueio e exceções por data/unidade, manter histórico; feriado identificado não bloqueia automaticamente sem configuração.
+
+- **Horários especiais de funcionamento (aprovado):** abertura antecipada, fechamento tardio ou expediente reduzido em uma ou várias datas, por unidade; exceção prevalece sobre horário regular, respeita disponibilidade dos profissionais/recursos, alerta sobre reservas conflitantes sem cancelamento automático e mantém histórico de alterações.
