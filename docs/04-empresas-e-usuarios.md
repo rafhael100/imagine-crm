@@ -1028,3 +1028,10 @@
 - Antes de confirmar, verificar agendamentos existentes em todos os períodos e apresentar resumo dos horários e reservas potencialmente afetados; não cancelar nem alterar reservas confirmadas automaticamente.
 - Aplicar os bloqueios confirmados à disponibilidade da agenda principal, página pública, portal, chatbot e integrações pertinentes, com validação no backend para impedir novas reservas incompatíveis.
 - Registrar autor, data/hora, motivo e intervalos afetados; permitir reversão por usuários autorizados com histórico, respeitando permissões e isolamento por empresa.
+
+## Feriados automáticos na agenda — APROVADO
+- Carregar e manter atualizado anualmente calendário de feriados nacionais, estaduais e municipais conforme país, estado e município cadastrados para cada unidade, com fonte confiável e possibilidade de correção administrativa.
+- Identificar feriados por unidade; a mera identificação do feriado não implica bloqueio automático: empresa configura se há atendimento, podendo definir exceções e funcionamento especial em datas específicas.
+- Aplicar bloqueios e exceções de funcionamento à disponibilidade da agenda principal, página pública, portal e chatbot, considerando jornada de profissionais e recursos.
+- Ao alterar regra de feriado, verificar impacto sobre reservas existentes, sem cancelar atendimentos confirmados automaticamente.
+- Registrar alterações manuais e exceções com responsável, data/hora e valores anteriores/novos; respeitar permissões e isolamento por empresa.
