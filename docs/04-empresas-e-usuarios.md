@@ -216,3 +216,11 @@
 - Na reabertura, selecionar etapa de retorno no funil.
 - Recalcular valores ponderados e probabilidade conforme etapa selecionada, respeitando regras de ajuste manual autorizado.
 - Relatórios devem preservar histórico de ganhos/perdas sem contagem duplicada.
+
+## Metas comerciais — APROVADO
+- Metas de vendas individuais por vendedor, coletivas por equipe comercial e gerais por empresa.
+- Períodos: mensal, trimestral e anual.
+- Indicadores: valor vendido, quantidade de vendas e oportunidades ganhas.
+- Acompanhar meta definida, resultado alcançado, percentual de atingimento e evolução.
+- Gestores autorizados configuram metas; vendedores visualizam apenas as metas autorizadas.
+- Apuração baseada em oportunidades efetivamente ganhas, sem duplicar vendas em caso de reabertura.
