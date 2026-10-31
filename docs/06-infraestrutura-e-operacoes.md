@@ -25,3 +25,12 @@
 
 ## Pendente
 - Provedores, custo/SLAs, arquitetura HA, periodicidade exata de testes, mecanismos concretos de PITR, alertas e procedimentos de runbook.
+
+## Armazenamento privado de arquivos compatível com S3 — APROVADO
+- Armazenar documentos, propostas, imagens e anexos em serviço de armazenamento de objetos privado compatível com S3, em vez de depender do disco local do servidor Laravel.
+- Organizar objetos por empresa (`tenant_id`) e identificadores não previsíveis; não considerar prefixos de objetos como substitutos de autorização.
+- Exigir autenticação e verificação de tenant e permissões na aplicação antes de liberar upload, visualização ou download; objetos privados por padrão.
+- Disponibilizar downloads por URLs assinadas com validade curta; compartilhamentos externos devem ter escopo específico, validade configurada e revogação efetiva (por controle na aplicação, quando necessário).
+- Aplicar quotas de armazenamento por plano e monitorar consumo por empresa; valores de limites dos planos permanecem pendentes, salvo limites de trial já definidos.
+- Respeitar políticas de retenção, exclusão, auditoria e privacidade, incluindo remoção segura de objetos e referências conforme regras aprovadas.
+- Prever proteção e recuperação dos arquivos com versionamento/backup e procedimentos de restauração testáveis; escolher fornecedor e parâmetros técnicos detalhados posteriormente.
