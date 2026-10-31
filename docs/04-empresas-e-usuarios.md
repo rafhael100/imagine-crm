@@ -270,3 +270,10 @@
 - Limite de automações **ativas simultaneamente por empresa**: Essencial **5**, Profissional **20**, Empresarial **50**.
 - Automações em rascunho não consomem esse limite e não há limite de quantidade de rascunhos definido nesta decisão.
 - Em downgrade, preservar configurações e históricos, pausar automações excedentes e permitir que administrador escolha quais permanecerão ativas dentro do novo limite.
+
+## Automações por tempo e inatividade — APROVADO
+- Permitir gatilhos de inatividade configuráveis em horas ou dias para leads, oportunidades e propostas sem resposta.
+- Lead sem contato: criar tarefa de acompanhamento; oportunidade parada: notificar vendedor ou gestor; proposta sem resposta: criar lembrete.
+- Uma nova interação reinicia a contagem de inatividade.
+- Evitar disparos duplicados ou notificações repetidas para a mesma ocorrência.
+- Respeitar isolamento por empresa, permissões, regras de segurança e limite de automações ativas do plano.
