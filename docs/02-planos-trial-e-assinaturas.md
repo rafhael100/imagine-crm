@@ -54,3 +54,8 @@ As duas cotas de agentes são independentes.
 - NFS-e automática via provedor fiscal, vinculada à fatura; monitorar falhas. Provedor e detalhes tributários pendentes.
 - Estornos totais e parciais exigem permissão financeira, justificativa e auditoria, não cancelam automaticamente a assinatura.
 - Créditos financeiros para cobranças futuras, por empresa, com motivo e auditoria; sem expiração automática enquanto ativa; no cancelamento manter saldo durante retenção, tratamento final sujeito a contrato/lei.
+
+## Limites de automações por plano — APROVADO
+- Limite de automações **ativas simultaneamente por empresa**: Essencial **5**, Profissional **20**, Empresarial **50**.
+- Automações em rascunho não consomem esse limite e não há limite de quantidade de rascunhos definido nesta decisão.
+- Em downgrade, preservar configurações e históricos, pausar automações excedentes e permitir que administrador escolha quais permanecerão ativas dentro do novo limite.
