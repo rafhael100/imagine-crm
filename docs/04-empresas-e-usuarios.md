@@ -974,3 +974,10 @@
 - Acionar a lista de espera para oferecer vaga liberada conforme ordem cronológica FIFO e prazo de resposta configurável, sem confirmar automaticamente antes do aceite.
 - Atualizar calendários externos conectados e demais visualizações da agenda, registrando falhas de sincronização para tratamento.
 - Preservar o agendamento com status Cancelado no histórico do cliente e nos relatórios; registrar autor, data/hora, motivo e alterações na auditoria, respeitando permissões e isolamento por empresa.
+
+## Reagendamento de atendimentos pela equipe — APROVADO
+- Funcionários com permissão específica podem alterar data e/ou horário de um agendamento existente, mantendo o mesmo identificador e histórico, sem cancelar e criar outra reserva.
+- Exigir justificativa do reagendamento e registrar data/hora anterior e nova, responsável, motivo e momento da alteração.
+- Selecionar nova data e horário conforme disponibilidade, revalidando profissional, sala, equipamentos, unidade, intervalos, capacidade e conflitos, com proteção contra edições simultâneas.
+- Notificar cliente e profissional sobre a nova data/horário pelos canais habilitados; sincronizar calendários conectados e registrar eventuais falhas de integração.
+- Aplicar regras de permissões, isolamento por empresa e auditoria. Liberar o horário anterior somente quando o novo agendamento estiver validado e salvo com sucesso, de modo atômico.
