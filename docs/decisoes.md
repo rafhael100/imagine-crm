@@ -93,3 +93,5 @@
 - **Duplicidade e mesclagem de leads (aprovado):** detectar por telefone, e-mail e identificadores em cadastro/importação/integrações; alertar, consultar, ignorar/atualizar conforme permissão; mesclar com registro principal e revisão de conflitos, preservando históricos, origens e auditoria.
 
 - **Formulários públicos de captação (aprovado):** criação sem código com campos padrão/personalizados; link público ou incorporação; rastreio de formulário/campanha; distribuição, antispam, limites, consentimento LGPD registrado, integração com scoring/duplicidade/automações e métricas de visualizações, envios e conversão; isolamento por empresa.
+
+- **Personalização visual dos formulários (aprovado):** logotipo, cores, ordenação/obrigatoriedade de campos, mensagem de sucesso, redirecionamento pós-envio, responsividade, pré-visualização e atualização sem mudar link; configurações isoladas por empresa.
