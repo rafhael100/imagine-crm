@@ -305,3 +305,9 @@
 - Faixas padrão iniciais: **Frio = 0 a 39 pontos**, **Morno = 40 a 69 pontos**, **Quente = 70 a 100 pontos**.
 - Cada empresa pode personalizar os limites das três faixas, sem sobreposição e cobrindo a escala 0–100.
 - A classificação do lead deve ser recalculada automaticamente quando sua pontuação mudar.
+
+## Histórico e gráfico de evolução do Lead Scoring — APROVADO
+- Registrar cada alteração de pontuação do lead, com valor anterior, novo valor, regra/motivo, data e horário e origem do evento ou automação.
+- Disponibilizar histórico no cadastro do lead, separado da auditoria técnica.
+- Exibir gráfico da evolução da pontuação ao longo do tempo.
+- Respeitar permissões de visualização do lead e isolamento por empresa.
