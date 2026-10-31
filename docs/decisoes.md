@@ -265,3 +265,5 @@
 - **Encerramento adicional de atendimentos (rejeitado):** não criar alertas ou fila específica de atendimentos ainda abertos após o horário previsto; manter status e procedimentos normais, sem conclusão automática pelo horário.
 
 - **Agendamento rápido pela equipe (aprovado):** formulário simplificado diretamente no calendário para funcionários autorizados; pesquisar/cadastrar cliente, selecionar serviço/profissional/data/horário/unidade, criar reserva e notificar cliente, com todas as validações da agenda principal e sem reservas paralelas.
+
+- **Duplicação manual de agendamentos pela equipe (aprovado):** funcionário autorizado cria nova reserva reaproveitando cliente/serviço/profissional/unidade, escolhe nova data/horário, revisa resumo, valida disponibilidade/conflitos, notifica cliente e mantém registros independentes; não é recorrência automática.
