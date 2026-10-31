@@ -1,7 +1,7 @@
 # Pendências de especificação — 31/10/2026
 
 ## Prioritárias
-1. Aprovar exportações CSV/XLSX: permissões, escopo, auditoria, processamento em segundo plano e links seguros.
+1. Detalhar exportações CSV/XLSX já aprovadas: política de expiração dos links, limites de volume, formato dos campos e retenção dos arquivos temporários.
 2. Definir preços dos planos Essencial, Profissional e Empresarial, assentos incluídos, cotas e matriz de recursos.
 3. Ratificar estratégia multi-tenant: `tenant_id`, PostgreSQL RLS, isolamento no backend/testes.
 4. Desenhar CRM operacional: leads, contatos, empresas, oportunidades, pipelines, etapas, atividades, tarefas e automações.
