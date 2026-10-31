@@ -233,3 +233,5 @@
 - **Intervalos entre atendimentos (aprovado):** configuração em minutos por serviço de preparação antes e limpeza/descanso depois; bloquear tempo de profissionais/salas/recursos, diferenciar visualmente, impedir conflitos em todos os canais e permitir exceções auditadas apenas a usuários autorizados.
 
 - **Duração personalizada dos atendimentos (aprovado):** funcionário autorizado ajusta duração de reserva individual sem mudar duração padrão do serviço, com justificativa, recálculo de horários/intervalos e disponibilidade de profissional/sala, notificação ao cliente quando mudar início/fim, histórico antes/depois e bloqueio de conflitos.
+
+- **Serviços com duração variável escolhida pelo cliente (rejeitado):** não oferecer escolha de múltiplas durações na reserva; manter duração padrão por serviço e ajuste excepcional individual somente por funcionário autorizado, com justificativa e validação de disponibilidade.
