@@ -337,3 +337,10 @@
 - Layout responsivo para celulares e computadores, com pré-visualização antes da publicação.
 - Atualizações de formulário publicado devem preservar o mesmo link público ou código de incorporação.
 - Manter isolamento por empresa e respeitar permissões de edição/publicação.
+
+## Integração de formulários com WhatsApp — APROVADO
+- Após o envio do formulário, permitir exibir botão para iniciar conversa via link oficial do WhatsApp, sem exigir inicialmente a API do WhatsApp Business.
+- Mensagem inicial personalizável com referência ao cadastro; número de destino configurável por empresa ou formulário.
+- Vincular ao lead o evento de intenção de contato e registrar cliques no botão para métricas, sem tratar clique como confirmação de envio ou recebimento de mensagem.
+- Permitir automações relacionadas, como criar tarefa ou notificar vendedor.
+- Evitar expor dados pessoais desnecessários em parâmetros da URL; respeitar permissões e isolamento por empresa.
