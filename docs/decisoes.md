@@ -95,3 +95,5 @@
 - **Formulários públicos de captação (aprovado):** criação sem código com campos padrão/personalizados; link público ou incorporação; rastreio de formulário/campanha; distribuição, antispam, limites, consentimento LGPD registrado, integração com scoring/duplicidade/automações e métricas de visualizações, envios e conversão; isolamento por empresa.
 
 - **Personalização visual dos formulários (aprovado):** logotipo, cores, ordenação/obrigatoriedade de campos, mensagem de sucesso, redirecionamento pós-envio, responsividade, pré-visualização e atualização sem mudar link; configurações isoladas por empresa.
+
+- **Formulários com WhatsApp (aprovado):** botão após envio via link oficial sem API obrigatória, mensagem e número configuráveis, intenção de contato vinculada ao lead, métrica de cliques, tarefas/notificações e privacidade na URL; clique não confirma mensagem enviada.
