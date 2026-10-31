@@ -659,3 +659,12 @@
 - Upgrade amplia quantidade de unidades incluídas no novo plano.
 - Em downgrade, preservar unidades e suas configurações, mas tornar inativas as unidades excedentes até regularização, sem apagar histórico ou agendamentos anteriores.
 - As unidades adicionais contratadas compõem a capacidade disponível, respeitando faturamento e permissões da empresa.
+
+## Transferência de agendamentos entre unidades — APROVADO
+- Usuários autorizados podem transferir agendamentos entre unidades da mesma empresa contratante.
+- Antes de confirmar, validar disponibilidade do profissional, sala, equipamentos e horário na unidade de destino, bem como regras do serviço.
+- Exigir confirmação explícita de usuário com permissão para a transferência.
+- Notificar cliente sobre alteração de unidade/endereço e de horário, quando aplicável, pelos canais configurados e permitidos.
+- Registrar no histórico unidade de origem, unidade de destino, responsável pela transferência, data e alterações realizadas.
+- Impedir conflitos e duplicidades, efetuando liberação da reserva anterior e confirmação da nova de maneira consistente.
+- Disponibilizar identificação e filtros de agendamentos transferidos em relatórios, respeitando permissões por unidade e isolamento por empresa.
