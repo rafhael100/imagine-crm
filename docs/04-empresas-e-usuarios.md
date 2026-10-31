@@ -224,3 +224,9 @@
 - Acompanhar meta definida, resultado alcançado, percentual de atingimento e evolução.
 - Gestores autorizados configuram metas; vendedores visualizam apenas as metas autorizadas.
 - Apuração baseada em oportunidades efetivamente ganhas, sem duplicar vendas em caso de reabertura.
+
+## Dashboard comercial — APROVADO
+- Painel por empresa com indicadores atualizados automaticamente, respeitando isolamento de dados e permissões de visualização.
+- Indicadores: leads totais/novos/convertidos; oportunidades abertas/ganhas/perdidas; quantidade e valor por etapa do funil; previsão de vendas total e ponderada; taxas de conversão entre etapas; metas, resultados e percentual atingido; tarefas pendentes/vencidas/concluídas; desempenho por vendedor e equipe; principais motivos de perda.
+- Exibir gráficos e indicadores resumidos.
+- Filtros por período, funil, vendedor e equipe, conforme autorização.
