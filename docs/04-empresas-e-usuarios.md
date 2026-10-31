@@ -567,3 +567,12 @@
 - Relatórios de comparecimento, cancelamentos e faltas por serviço e profissional.
 - Permitir automações de tarefas e notificações baseadas nos status, respeitando permissões, privacidade e políticas dos canais.
 - Integrar com agenda interna, chatbot e página pública, com isolamento entre empresas.
+
+## Integração com videoconferências — APROVADO
+- Integrar a agenda do CRM com Google Meet, Microsoft Teams e Zoom, mediante conexão e autorização das respectivas contas.
+- Gerar links de reuniões online ao criar agendamentos, quando a plataforma conectada permitir.
+- Enviar convites com link, data, horário e informações pertinentes aos participantes.
+- Ao reagendar, atualizar eventos e convites; ao cancelar, cancelar evento remoto quando suportado e notificar participantes.
+- Registrar link da reunião e histórico de alterações no CRM, respeitando visibilidade e permissões.
+- Proteger credenciais/tokens de integração e aplicar isolamento entre empresas.
+- Disponibilidade de recursos condicionada às APIs, permissões e políticas de cada plataforma; tratar e notificar falhas de integração.
