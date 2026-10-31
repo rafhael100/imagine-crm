@@ -710,3 +710,12 @@
 - Alertar gestores autorizados sobre avaliações baixas conforme limiar configurável.
 - Oferecer relatórios de notas médias por serviço, profissional e unidade, respeitando permissões e privacidade.
 - Esta pesquisa é independente da pesquisa CSAT das conversas de atendimento no WhatsApp já aprovada.
+
+## Formulários prévios aos atendimentos — APROVADO
+- Cada empresa pode criar formulários específicos por serviço para coletar informações antes do atendimento.
+- Campos suportados: texto, seleção, data, número e anexos, com obrigatoriedade configurável e validação no backend.
+- Enviar link individual seguro por e-mail ou WhatsApp integrado; definir prazo-limite de resposta por formulário/serviço.
+- Vincular respostas ao agendamento e ao contato correspondente no CRM.
+- Notificar responsável autorizado após conclusão do formulário.
+- Restringir visualização e acesso às respostas por permissões e isolamento por empresa, protegendo dados pessoais e anexos.
+- Registrar envio e preenchimento com data/hora no histórico; interface responsiva.
