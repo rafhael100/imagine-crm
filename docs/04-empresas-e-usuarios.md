@@ -300,3 +300,8 @@
 - Permitir uso da pontuação em automações de atribuição de responsável, criação de tarefas e notificações.
 - Respeitar isolamento por empresa e permissões aplicáveis.
 - Limiares de classificação e pesos exatos ainda não foram definidos.
+
+## Faixas de classificação do Lead Scoring — APROVADO
+- Faixas padrão iniciais: **Frio = 0 a 39 pontos**, **Morno = 40 a 69 pontos**, **Quente = 70 a 100 pontos**.
+- Cada empresa pode personalizar os limites das três faixas, sem sobreposição e cobrindo a escala 0–100.
+- A classificação do lead deve ser recalculada automaticamente quando sua pontuação mudar.
