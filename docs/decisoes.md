@@ -231,3 +231,5 @@
 - **Antecedência e janela de agendamentos (aprovado):** mínimos e máximos configuráveis por serviço, respeitando expediente/jornada; clientes visualizam somente horários elegíveis no portal/página pública/chatbot; exceções por funcionários autorizados com histórico; sem valores fixos de 2 horas ou 90 dias.
 
 - **Intervalos entre atendimentos (aprovado):** configuração em minutos por serviço de preparação antes e limpeza/descanso depois; bloquear tempo de profissionais/salas/recursos, diferenciar visualmente, impedir conflitos em todos os canais e permitir exceções auditadas apenas a usuários autorizados.
+
+- **Duração personalizada dos atendimentos (aprovado):** funcionário autorizado ajusta duração de reserva individual sem mudar duração padrão do serviço, com justificativa, recálculo de horários/intervalos e disponibilidade de profissional/sala, notificação ao cliente quando mudar início/fim, histórico antes/depois e bloqueio de conflitos.
