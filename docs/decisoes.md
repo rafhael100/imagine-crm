@@ -215,3 +215,5 @@
 - **Agendamentos prioritários e encaixes (aprovado):** marcação normal/prioritário, encaixes excepcionais com permissão especial, justificativa e alertas de sobreposição; não deslocar reservas confirmadas nem exceder capacidade física, enviar confirmação, auditar e incluir em relatórios.
 
 - **Agendamentos com aprovação prévia (aprovado):** configuração por serviço, solicitação pendente sem confirmação imediata, aprovação/recusa por funcionário ou gestor autorizado, prazo configurável, retenção temporária do horário, confirmação ou liberação após decisão, expiração da retenção e histórico auditável.
+
+- **Agendamentos com aprovação prévia (aprovado):** empresa define serviços sujeitos à aprovação; solicitação pendente com bloqueio temporário do horário e prazo configurável; gestor/funcionário autorizado aprova ou recusa, com confirmação/notificação ou liberação, expiração de pendências e histórico de decisão, responsável e justificativa.
