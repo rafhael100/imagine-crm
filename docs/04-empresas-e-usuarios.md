@@ -668,3 +668,12 @@
 - Registrar no histórico unidade de origem, unidade de destino, responsável pela transferência, data e alterações realizadas.
 - Impedir conflitos e duplicidades, efetuando liberação da reserva anterior e confirmação da nova de maneira consistente.
 - Disponibilizar identificação e filtros de agendamentos transferidos em relatórios, respeitando permissões por unidade e isolamento por empresa.
+
+## Bloqueios e indisponibilidades da agenda — APROVADO
+- Funcionários autorizados podem bloquear a própria agenda para férias, almoço, consultas e compromissos; gestores autorizados gerenciam bloqueios das equipes.
+- Permitir bloqueios por unidade (feriados, manutenção, fechamento) e por recurso (salas, equipamentos).
+- Bloqueios podem ser únicos ou recorrentes e devem registrar motivo/justificativa.
+- Antes de aplicar bloqueios que atinjam agendamentos existentes, alertar sobre conflitos para tratamento por usuário autorizado, sem cancelar automaticamente reservas já confirmadas.
+- Registrar criação, alteração e remoção de bloqueios no histórico, com autor e data.
+- Aplicar indisponibilidades à agenda interna, página pública, chatbot e cálculo de disponibilidade das integrações de calendário, impedindo novas reservas conflitantes.
+- Respeitar permissões por funcionário/equipe/unidade e isolamento entre empresas.
