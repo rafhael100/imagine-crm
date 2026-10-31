@@ -235,3 +235,5 @@
 - **Duração personalizada dos atendimentos (aprovado):** funcionário autorizado ajusta duração de reserva individual sem mudar duração padrão do serviço, com justificativa, recálculo de horários/intervalos e disponibilidade de profissional/sala, notificação ao cliente quando mudar início/fim, histórico antes/depois e bloqueio de conflitos.
 
 - **Serviços com duração variável escolhida pelo cliente (rejeitado):** não oferecer escolha de múltiplas durações na reserva; manter duração padrão por serviço e ajuste excepcional individual somente por funcionário autorizado, com justificativa e validação de disponibilidade.
+
+- **Confirmação digital de chegada pelo cliente (rejeitada):** não implementar check-in autônomo pelo portal. Manter check-in/check-out por funcionário autorizado e indicadores de comparecimento; esta decisão substitui a previsão anterior de check-in pelo próprio cliente.
