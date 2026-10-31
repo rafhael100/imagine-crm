@@ -283,3 +283,5 @@
 - **Confirmação manual de agendamentos pela equipe (aprovado):** funcionário autorizado marca Confirmado quando cliente confirma por telefone, presencialmente, WhatsApp ou outro canal; registra origem, responsável e data/hora, preserva histórico e evita novos pedidos automáticos de confirmação, usando o mesmo fluxo da confirmação por link.
 
 - **Envio manual de lembretes de agendamento (aprovado):** botão na agenda para funcionário autorizado enviar lembrete por e-mail ou WhatsApp integrado, usando modelo configurado e prévia, prevenção de duplicidades em curto intervalo, histórico de responsável/data/canal e respeito às regras da Meta.
+
+- **Preferências de notificações da agenda (aprovado):** funcionário escolhe tipos e canais (notificação interna/e-mail) para novos agendamentos, cancelamentos, reagendamentos, trocas de profissional e confirmações; avisos operacionais essenciais não podem ser desativados; manter histórico de envios e permissões.
