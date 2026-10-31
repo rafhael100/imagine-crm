@@ -285,3 +285,5 @@
 - **Envio manual de lembretes de agendamento (aprovado):** botão na agenda para funcionário autorizado enviar lembrete por e-mail ou WhatsApp integrado, usando modelo configurado e prévia, prevenção de duplicidades em curto intervalo, histórico de responsável/data/canal e respeito às regras da Meta.
 
 - **Preferências de notificações da agenda (aprovado):** funcionário escolhe tipos e canais (notificação interna/e-mail) para novos agendamentos, cancelamentos, reagendamentos, trocas de profissional e confirmações; avisos operacionais essenciais não podem ser desativados; manter histórico de envios e permissões.
+
+- **Painel de agenda do dia (aprovado):** visão operacional diária para recepção/gestores com lista cronológica, totais/confirmados/aguardando/cancelados, filtros por profissional e unidade, ações rápidas de confirmar/reagendar/cancelar, atualização automática e permissões, usando registros da agenda principal.
