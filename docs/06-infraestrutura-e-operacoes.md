@@ -34,3 +34,12 @@
 - Aplicar quotas de armazenamento por plano e monitorar consumo por empresa; valores de limites dos planos permanecem pendentes, salvo limites de trial já definidos.
 - Respeitar políticas de retenção, exclusão, auditoria e privacidade, incluindo remoção segura de objetos e referências conforme regras aprovadas.
 - Prever proteção e recuperação dos arquivos com versionamento/backup e procedimentos de restauração testáveis; escolher fornecedor e parâmetros técnicos detalhados posteriormente.
+
+## Validação automática de segurança dos arquivos enviados — APROVADO
+- Aplicar verificação de segurança a documentos, imagens, anexos e arquivos recebidos por integrações, antes de disponibilizar download, visualização ou compartilhamento.
+- Arquitetura: Laravel, armazenamento S3 privado com área de quarentena, ClamAV para análise antivírus e filas assíncronas para processamento.
+- Validar tamanho máximo por tipo, extensões e tipos permitidos, assinatura/formato real (não confiar em nome ou MIME fornecido pelo cliente), integridade básica e arquivos compactados; rejeitar executáveis e conteúdo perigoso.
+- Não permitir execução dos arquivos enviados no servidor; armazenar com nomes internos não previsíveis e permissões mínimas.
+- Enquanto pendente, arquivo fica indisponível. Somente liberar após verificações bem-sucedidas; se antivírus/serviço de verificação falhar ou estiver indisponível, manter bloqueado (fail closed) e prever retentativas e acompanhamento operacional.
+- Registrar empresa, usuário ou integração de origem, data/hora, resultado da análise, motivo de rejeição e eventos relevantes; respeitar privacidade e retenção.
+- Informar ao usuário status de processamento/aprovação/rejeição; não prometer detecção absoluta de ameaças. Limites exatos de tamanho e lista final de formatos permanecem para definição posterior.
