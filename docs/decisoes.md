@@ -189,3 +189,5 @@
 - **Formulários prévios aos atendimentos (aprovado):** perguntas por serviço, campos de texto/seleção/data/número/anexo obrigatórios ou opcionais, envio por link seguro via e-mail/WhatsApp, prazo configurável, respostas ligadas a agendamento/contato, aviso ao responsável, acesso por permissões e histórico de envio/preenchimento.
 
 - **Documentos e anexos dos agendamentos (aprovado):** clientes enviam via portal/formulário e funcionários autorizados internamente; PDF/imagens/documentos comuns, prévia compatível, vínculo a agendamento/contato, validações de segurança, permissões de acesso/exclusão, consumo de armazenamento do plano e histórico de envio/substituição/exclusão.
+
+- **Lista de presença e controle de comparecimento (aprovado):** check-in manual autorizado ou pelo cliente no portal com validação, check-out, presença individual em grupos, registro de atrasos e ausências, histórico de horários/responsáveis e relatórios de comparecimento; integrado aos estados da agenda sem duplicações.
