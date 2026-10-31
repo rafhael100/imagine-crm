@@ -362,3 +362,11 @@
 - Preservar histórico de mensagens e transferências.
 - Gestores podem supervisionar atendimentos para os quais tenham permissão.
 - Prevenir respostas simultâneas conflitantes; aplicar permissões e isolamento de dados entre empresas.
+
+## Distribuição automática de conversas do WhatsApp — APROVADO
+- Cada empresa poderá configurar distribuição de novas conversas por rodízio entre atendentes, menor quantidade de conversas abertas ou equipe/departamento/assunto.
+- Considerar horário de atendimento e disponibilidade, excluindo atendentes ausentes ou inativos.
+- No retorno do cliente, priorizar o último responsável quando disponível.
+- Manter conversas em fila de espera quando não houver atendente disponível.
+- Registrar atribuições e transferências no histórico da conversa.
+- Respeitar permissões por equipe e isolamento de dados entre empresas.
