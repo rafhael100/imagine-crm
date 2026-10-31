@@ -186,3 +186,11 @@
 - Registrar aprovação ou rejeição com responsável, data e justificativa.
 - Empresa pode desativar a exigência do fluxo de aprovação.
 - Regras devem ser aplicadas no backend, inclusive em envios por integrações e automações.
+
+## Compartilhamento e acompanhamento de propostas — APROVADO
+- Gerar link seguro exclusivo para visualização de cada proposta, vinculado à versão correta.
+- Validade do link configurável por empresa e possibilidade de exigir código de verificação para acesso.
+- Registrar visualizações e permitir notificar o vendedor quando a proposta for aberta.
+- Permitir revogar/desativar o link a qualquer momento.
+- A visualização **não** equivale à aceitação da proposta.
+- Verificações de acesso e segurança devem ocorrer no backend.
