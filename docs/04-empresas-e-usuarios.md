@@ -794,3 +794,12 @@
 - Configurar por serviço se são aceitos agendamentos para terceiros; manter opção desativada onde não permitida.
 - Vincular titular e atendido no CRM com relações e autorizações apropriadas, sem presumir automaticamente poderes de representação para qualquer terceiro.
 - Aplicar controles de privacidade, verificação de autorização e regras da LGPD, com especial cuidado para crianças e adolescentes, acesso mínimo necessário e isolamento por empresa.
+
+## Agendamento de múltiplos serviços — APROVADO
+- Permitir ao cliente selecionar dois ou mais serviços em uma única solicitação de reserva.
+- Organizar serviços em sequência, calcular duração total com intervalos/buffers e permitir profissionais diferentes em cada etapa.
+- Validar em conjunto a disponibilidade de profissionais, salas, recursos e horários para todos os serviços antes de confirmar.
+- Confirmar o conjunto de forma consistente e atômica, evitando reservas parciais e duplicadas caso qualquer etapa apresente conflito.
+- Enviar ao cliente resumo único da reserva com todos os serviços, horários e profissionais pertinentes.
+- Permitir reagendar ou cancelar serviço individual ou o conjunto, conforme regras de cada serviço, atualizando disponibilidade e notificações.
+- Manter registro e histórico individual de cada atendimento, vinculados a uma reserva composta e ao contato, respeitando permissões e isolamento por empresa.
