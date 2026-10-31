@@ -127,3 +127,5 @@
 - **Gatilhos do chatbot WhatsApp (aprovado):** primeira mensagem, palavra-chave, fora do expediente, origem/campanha/formulário, conversa reaberta e ação manual; prioridade configurável entre gatilhos e bloqueio de reinício do bot durante atendimento humano ativo.
 
 - **Erros e inatividade do chatbot WhatsApp (aprovado):** repetir pergunta após resposta inválida, transferir após tentativas excedidas, lembrete por ausência, pausa/encerramento por inatividade, retomada ou reinício no retorno, registro e notificação de falhas, prevenção de repetição/loops e histórico; observar regras da Meta.
+
+- **Métricas e relatórios do chatbot WhatsApp (aprovado):** conversas iniciadas, conclusão, transferência humana, abandono, etapas críticas, duração média, erros e conversão em leads/oportunidades; filtros por período/fluxo/número/equipe e exportação autorizada.
