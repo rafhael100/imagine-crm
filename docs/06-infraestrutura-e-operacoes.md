@@ -43,3 +43,9 @@
 - Enquanto pendente, arquivo fica indisponível. Somente liberar após verificações bem-sucedidas; se antivírus/serviço de verificação falhar ou estiver indisponível, manter bloqueado (fail closed) e prever retentativas e acompanhamento operacional.
 - Registrar empresa, usuário ou integração de origem, data/hora, resultado da análise, motivo de rejeição e eventos relevantes; respeitar privacidade e retenção.
 - Informar ao usuário status de processamento/aprovação/rejeição; não prometer detecção absoluta de ameaças. Limites exatos de tamanho e lista final de formatos permanecem para definição posterior.
+
+## Limite máximo de tamanho por arquivo — APROVADO
+- Limite global máximo de **5 MB por arquivo** para todos os tipos de upload permitidos (imagens, PDFs, documentos de escritório, ZIP e outros formatos autorizados), em todos os planos.
+- Aplicar o limite na interface, na API e na validação de backend, inclusive integrações, sem confiar apenas na validação do navegador; rejeitar arquivos acima de 5 MB antes de processar antivírus sempre que possível.
+- O limite é por arquivo e não substitui a quota total de armazenamento da empresa; as validações de segurança e a quarentena anteriormente aprovadas continuam obrigatórias.
+- Não adotar os limites anteriormente propostos de 10/25/50 MB por categoria.
