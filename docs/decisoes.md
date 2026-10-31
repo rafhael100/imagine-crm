@@ -221,3 +221,5 @@
 - **Fila de aprovação de agendamentos (aprovado):** painel central de solicitações com dados e filtros por serviço/unidade/responsável/status, aprovação individual ou em lote com validação por reserva, recusa justificada, alertas e destaque de vencimentos, expiração automática com liberação do horário e histórico de decisões.
 
 - **Aprovação de agendamentos por múltiplas etapas (rejeitada):** não implementar fluxo sequencial de múltiplos aprovadores; manter aprovação simples por funcionário ou gestor autorizado e fila de aprovação já aprovadas.
+
+- **Notificações internas da agenda (aprovado):** central de avisos no CRM para novos agendamentos, cancelamentos, reagendamentos, aprovações pendentes e vagas da lista de espera; marcar como lida, preferências individuais, controle de permissões e prevenção de duplicidades.
