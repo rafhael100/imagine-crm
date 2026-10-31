@@ -297,3 +297,5 @@
 - **Segurança dos uploads (aprovado):** validação automática de tipo real/extensão/tamanho/integridade e compactados, ClamAV em fila assíncrona, quarentena privada S3 até aprovação, bloqueio em falhas do antivírus, rejeição de executáveis/conteúdo perigoso, sem execução no servidor e auditoria de resultados; limites exatos pendentes.
 
 - **Limite de upload (aprovado):** máximo de **5 MB por arquivo**, em todos os formatos permitidos e planos, inclusive integrações; rejeitar maiores que o limite, mantendo validação antivírus e quotas totais de armazenamento separadas. Proposta anterior de 10/25/50 MB não aprovada.
+
+- **Otimização automática de imagens (aprovada com ajuste):** otimizar fotos, produtos, documentos digitalizados, comprovantes, assinaturas e imagens com texto, sem prejudicar nitidez, legibilidade ou fidelidade; fotos comuns até ~1920 px e qualidade inicial 80–85%, WebP quando vantajoso; documentos com compressão conservadora/sem perda quando necessário; preservar original se redução segura impossível e não invalidar PDFs assinados; evitar versões duplicadas e cobrar quota pelo tamanho armazenado. Upload máximo permanece 5 MB.
