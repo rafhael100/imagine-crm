@@ -989,3 +989,10 @@
 - Preservar no histórico do agendamento o motivo efetivamente registrado no momento do cancelamento, mesmo após alterações no catálogo; não reescrever registros históricos.
 - Permitir relatórios de quantidade de cancelamentos agrupados por motivo, com filtros e permissões já definidos para a agenda.
 - Registrar alterações do catálogo em auditoria, com responsável, data/hora e valores anteriores/novos.
+
+## Motivos de ausência (no-show) dos clientes — APROVADO
+- Oferecer catálogo inicial de motivos de falta: esquecimento, imprevisto, problema de transporte, sem justificativa e outros, personalizável por empresa por usuários autorizados.
+- Permitir marcar o status **Não compareceu** sem conhecer o motivo; o registro da falta não depende de justificativa do cliente.
+- Permitir complementar ou corrigir posteriormente o motivo por funcionário autorizado, preservando valor anterior, novo valor, autor e data/hora no histórico/auditoria.
+- Registrar motivo e responsável pela classificação da ausência, respeitando privacidade e isolamento entre empresas.
+- Incluir análises de faltas por motivo, serviço e profissional nos relatórios da agenda, observando filtros e permissões.
