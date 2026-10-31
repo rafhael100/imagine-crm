@@ -169,3 +169,5 @@
 - **Fusos horários na agenda (aprovado):** fuso principal da empresa, fuso individual opcional por funcionário e exibição no fuso identificado/selecionado do cliente; instantes padronizados em UTC, fuso explícito nas confirmações, conversão Google/Outlook, horário de verão e relatórios no fuso escolhido; prevenção de conflitos.
 
 - **Relatórios e indicadores da agenda (aprovado):** total de agendamentos, comparecimento, cancelamentos, faltas, ocupação de profissionais/salas, serviços mais procurados, origem (chatbot/página pública/funcionários), horários de maior demanda; filtros período/serviço/profissional/equipe/unidade e exportação CSV/XLSX/PDF com permissões.
+
+- **Múltiplas unidades de atendimento (aprovado):** cadastro de filiais/locais com endereço e contato, expediente/feriados próprios, profissionais em uma ou mais unidades, serviços e recursos por unidade, seleção de unidade nos agendamentos, permissões por unidade e relatórios comparativos; unidades compartilham assinatura da mesma empresa.
