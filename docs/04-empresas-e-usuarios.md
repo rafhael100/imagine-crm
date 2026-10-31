@@ -604,3 +604,13 @@
 - Permitir bloqueios temporários por manutenção ou indisponibilidade.
 - Oferecer visualização de calendário por sala ou equipamento.
 - Registrar histórico de reservas, alterações e bloqueios, respeitando permissões e isolamento por empresa.
+
+## Agendamentos em grupo — APROVADO
+- Serviços e sessões podem ser individuais ou coletivos, com capacidade máxima configurável de participantes.
+- Uma mesma sessão pode receber inscrições de vários clientes até a capacidade definida; mostrar quantidade de vagas restantes.
+- Ao esgotar vagas, permitir lista de espera integrada às regras já aprovadas.
+- Registrar confirmação e presença individualmente por participante.
+- Cancelamento individual libera somente a vaga do participante, sem cancelar a sessão dos demais.
+- Manter histórico de inscrições, confirmações, alterações e cancelamentos e relatórios de ocupação, presença e cancelamentos.
+- Validar conflitos de salas, equipamentos e profissionais no nível da sessão, sem tratar múltiplos participantes da mesma sessão como reservas conflitantes.
+- Aplicar à agenda interna, chatbot e página pública, respeitando permissões e isolamento por empresa.
