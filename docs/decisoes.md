@@ -203,3 +203,5 @@
 - **Reagendamento de clientes (aprovado):** pelo portal ou funcionário autorizado, antecedência mínima por serviço, limite opcional de alterações (padrão ilimitado), autorização após prazo, validação de profissional/sala/horário, notificação, histórico e sincronização com agenda, chatbot e calendários externos.
 
 - **Clientes recorrentes (aprovado):** identificação segura, reutilização de cadastro, sugestões de preferências, reservas simplificadas, histórico protegido e prevenção de contatos duplicados.
+
+- **Agendamentos para dependentes e terceiros (aprovado):** titular responsável pode reservar para pessoa vinculada, com dados necessários, escolha do atendido, histórico separado, notificações ao responsável autorizado, habilitação por serviço, vínculo no CRM e proteção de dados/representação conforme LGPD.
