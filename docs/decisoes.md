@@ -177,3 +177,5 @@
 - **Transferência de agendamentos entre unidades (aprovado):** mover reservas entre unidades da mesma empresa com validação de profissional/sala/horário, confirmação por usuário autorizado, aviso ao cliente de endereço/horário, histórico de origem/destino/responsável, bloqueio de conflitos e identificação em relatórios.
 
 - **Bloqueios e indisponibilidades da agenda (aprovado):** bloqueios individuais, por unidade e por recurso, únicos ou recorrentes, com motivo; funcionário gerencia sua agenda e gestor as equipes conforme permissões; alertar conflitos com agendamentos existentes antes de aplicar, registrar histórico e impedir novas reservas nos horários bloqueados em todos os canais.
+
+- **Permissões específicas da agenda (aprovado):** visualização própria/equipe/unidade/empresa, criar/editar/cancelar próprios ou de terceiros, transferir entre profissionais/unidades, gerenciar bloqueios, configurar serviços/horários/recursos, consultar relatórios por perfil e auditar alterações; verificações no backend e isolamento entre empresas.
