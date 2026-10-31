@@ -435,3 +435,12 @@
 - Permitir intervenção humana e tomada da conversa a qualquer momento por atendente autorizado.
 - Prevenir loops e cumprir políticas, janelas e restrições da API oficial do WhatsApp Business da Meta.
 - Integração com IA poderá ser oferecida posteriormente como recurso opcional, sem fazer parte da obrigatoriedade do chatbot inicial.
+
+## Transferência do chatbot para atendimento humano — APROVADO
+- Disponibilizar ao cliente opção de falar com atendente humano.
+- Transferir após tentativas configuradas de compreensão sem resposta válida ou imediatamente em assuntos prioritários para equipe especializada.
+- Entregar ao atendente o contexto/resumo das respostas e informações coletadas pelo chatbot.
+- Pausar respostas automáticas do bot após a transferência para evitar conflito com atendimento humano; permitir retorno ao chatbot por atendente autorizado.
+- Quando não houver atendente disponível, manter conversa em fila de espera.
+- Registrar motivo, data/hora e responsável pela transferência no histórico da conversa.
+- Respeitar distribuição, disponibilidade, permissões, SLA, isolamento por empresa e políticas da Meta.
