@@ -289,3 +289,5 @@
 - **Painel de agenda do dia (aprovado):** visão operacional diária para recepção/gestores com lista cronológica, totais/confirmados/aguardando/cancelados, filtros por profissional e unidade, ações rápidas de confirmar/reagendar/cancelar, atualização automática e permissões, usando registros da agenda principal.
 
 - **Agenda individual do profissional (aprovado):** tela Minha agenda com atendimentos atribuídos em ordem cronológica, cliente e serviço conforme permissões, horário/duração/status, navegação entre datas, detalhes e atualização de status autorizada, sincronizada com agenda geral sem duplicação de dados.
+
+- **Isolamento multiempresa PostgreSQL RLS (aprovado):** `tenant_id` em dados por empresa, RLS no banco e validação no Laravel; usuário multiempresa só acessa vínculos autorizados; relatórios/exportações também isolados; acesso administrativo excepcional auditado; testes automatizados contra vazamentos entre empresas.
