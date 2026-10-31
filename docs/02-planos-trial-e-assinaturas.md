@@ -1,0 +1,55 @@
+# 02 — Planos, trial e assinaturas
+
+## Planos aprovados em conceito
+- Três faixas: **Essencial, Profissional e Empresarial**.
+- É possível comprar usuários adicionais, sem limite máximo fixo estabelecido.
+- Preços finais, usuários incluídos, cotas e matriz definitiva de recursos **pendentes**.
+- Alterações de preço publicado aplicam-se a novos contratos; contratos vigentes respeitam condições contratadas e comunicação válida.
+- Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
+- Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
+
+## Teste gratuito — APROVADO
+- **14 dias**, sem cartão.
+- **CNPJ obrigatório**, um único teste por CNPJ.
+- OTP obrigatório para e-mail e telefone; telefone validado por SMS ou API oficial WhatsApp, à escolha do usuário.
+- Sem extensão manual ou automática.
+- Ao expirar: bloqueio de acesso operacional e preservação de dados por mais **60 dias**, após os quais exclusão elegível sujeita a obrigações legais.
+- Abuso ou fraude: administrador autorizado pode encerrar antecipadamente com justificativa e auditoria; não concede segundo teste.
+
+### Limites no trial
+| Recurso | Limite |
+|---|---:|
+| Usuários | 2 |
+| Leads | 20 |
+| Pipelines | 2 |
+| Automações ativas | 2 |
+| Armazenamento | 20 MB |
+| Importação CSV | Permitida |
+| API pública | Desativada |
+| Agente IA Prospector | 10 análises |
+| Agente IA Comercial | 10 solicitações |
+
+As duas cotas de agentes são independentes.
+
+## Mudanças de plano
+- Upgrade self-service: diferença proporcional ao restante do ciclo; mantém vencimento/renovação original; recursos liberados após confirmação do pagamento.
+- Downgrade: vale no próximo ciclo; antes da mudança é necessário tratar recursos que excedam os limites do destino.
+- Cancelamento self-service: desativa renovação automática; mantém acesso até o fim do período pago.
+- Após fim de assinatura paga: **120 dias** de retenção; recontratação dentro do prazo pode restaurar dados via autoatendimento, com recursos acima do plano bloqueados/restritos, sem apagar dados.
+
+## Inadimplência
+- **7 dias corridos** após vencimento: tolerância com acesso e avisos.
+- Após o sétimo dia: suspensão automática.
+- Após **30 dias de atraso**: cancelamento automático e início da retenção de 120 dias.
+- Enquanto suspensa por inadimplência e ainda não cancelada, área limitada de cobrança e reativação após confirmação de pagamento.
+- Suspensão administrativa independente não é revertida automaticamente pelo pagamento.
+
+## Cobrança
+- Recorrência preferencial por cartão de crédito e **Pix Automático**.
+- Também permitir Pix avulso e boleto.
+- Troca self-service do método de pagamento para próximos ciclos, sem alterar data de renovação.
+- Falha de cobrança: registrar/notificar, oferecer método alternativo e tentativas permitidas; evitar débito duplicado.
+- Portal financeiro do cliente: faturas, situações, histórico, recibos, próxima cobrança e composição de valores.
+- NFS-e automática via provedor fiscal, vinculada à fatura; monitorar falhas. Provedor e detalhes tributários pendentes.
+- Estornos totais e parciais exigem permissão financeira, justificativa e auditoria, não cancelam automaticamente a assinatura.
+- Créditos financeiros para cobranças futuras, por empresa, com motivo e auditoria; sem expiração automática enquanto ativa; no cancelamento manter saldo durante retenção, tratamento final sujeito a contrato/lei.
