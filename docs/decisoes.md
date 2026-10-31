@@ -309,3 +309,6 @@
 - **MVP Web responsivo (aprovado):** lançamento inicial do CRM Imagine em aplicação Web responsiva para desktop, tablet e celular; sem aplicativos nativos Android/iOS na primeira versão, sujeitos a avaliação futura conforme demanda e retorno.
 
 - **Diretriz de diferenciação do MVP (solicitada pelo responsável):** IA e automações devem ser prioridades desde a primeira versão comercial, não apenas funcionalidades futuras. Escopo mínimo de cada agente, automações e integrações ainda depende de definição e aprovação.
+
+- **MVP com IA (aprovado):** incluir IA Prospector, IA Comercial e automações comerciais essenciais no lançamento.
+- **WhatsApp como diferencial de lançamento (requisito do responsável):** integrar WhatsApp com automações e envio automático de mensagens pelos agentes de IA e pelas regras do CRM; detalhamento de canais, autonomia, consentimento e preços ainda pendente.
