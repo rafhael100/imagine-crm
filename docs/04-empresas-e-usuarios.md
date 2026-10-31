@@ -864,3 +864,12 @@
 - Disponibilizar central de notificações com estados de leitura e ação de marcar como lida.
 - Permitir preferências por usuário para tipos de avisos recebidos, sem comprometer alertas operacionais obrigatórios que venham a ser definidos.
 - Evitar notificações duplicadas, proteger informações conforme permissões por funcionário, equipe e unidade e garantir isolamento entre empresas.
+
+## Agenda compartilhada da equipe — APROVADO
+- Oferecer calendário compartilhado com visualização diária, semanal e mensal, mostrando agendas de profissionais lado a lado.
+- Permitir filtros por profissional, equipe, serviço e unidade, dentro do escopo autorizado.
+- Exibir disponibilidade livre/ocupada e diferenciar profissionais e tipos de atendimento por cores.
+- Ocultar detalhes de compromissos privados, especialmente eventos externos sincronizados, exibindo apenas ocupação a quem não tem acesso.
+- Permitir edição somente de agendamentos sobre os quais o usuário possua permissão específica.
+- Refletir alterações para os usuários autorizados e utilizar os mesmos registros da agenda principal, sem criar agenda paralela ou reservas duplicadas.
+- Respeitar isolamento entre empresas e permissões por funcionário, equipe e unidade.
