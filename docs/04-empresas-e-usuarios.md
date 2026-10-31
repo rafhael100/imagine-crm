@@ -194,3 +194,12 @@
 - Permitir revogar/desativar o link a qualquer momento.
 - A visualização **não** equivale à aceitação da proposta.
 - Verificações de acesso e segurança devem ocorrer no backend.
+
+## Aceitação e recusa de propostas comerciais — APROVADO
+- Ao aceitar proposta, registrar data, responsável e versão aceita.
+- Ao recusar, registrar o motivo da recusa.
+- Propostas expiradas não podem receber novo aceite até que sua validade seja renovada.
+- Alterações/revisões de proposta exigem nova aceitação da versão revisada.
+- Aceitação e recusa atualizam automaticamente o histórico da oportunidade vinculada.
+- Configuração por empresa: aceitar proposta pode marcar oportunidade como **Ganha** automaticamente ou exigir confirmação do vendedor.
+- Aceite é confirmação comercial no CRM e **não equivale a assinatura eletrônica formal**.
