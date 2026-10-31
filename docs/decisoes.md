@@ -181,3 +181,5 @@
 - **Permissões específicas da agenda (aprovado):** visualização própria/equipe/unidade/empresa, criar/editar/cancelar próprios ou de terceiros, transferir entre profissionais/unidades, gerenciar bloqueios, configurar serviços/horários/recursos, consultar relatórios por perfil e auditar alterações; verificações no backend e isolamento entre empresas.
 
 - **Auditoria e histórico da agenda (aprovado):** criação (autor/data/canal), alterações (antes/depois), reagendamento, cancelamento com motivo, transferências, confirmações, check-in/faltas e origem de mudanças Google/Outlook; registros protegidos contra edição/exclusão, retenção de 12 meses durante assinatura ativa, ressalvadas obrigações legais.
+
+- **Portal do cliente para agendamentos (aprovado):** página responsiva com identidade da empresa e link seguro por e-mail/WhatsApp, sem senha própria; consultar próximos agendamentos e histórico, confirmar presença, reagendar/cancelar conforme regras, acessar links de Meet/Teams/Zoom e visualizar exclusivamente os próprios agendamentos.
