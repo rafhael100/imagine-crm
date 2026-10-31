@@ -370,3 +370,10 @@
 - Manter conversas em fila de espera quando não houver atendente disponível.
 - Registrar atribuições e transferências no histórico da conversa.
 - Respeitar permissões por equipe e isolamento de dados entre empresas.
+
+## Horários de atendimento e mensagens automáticas do WhatsApp — APROVADO
+- Cada empresa configura dias e horários de atendimento por dia da semana, incluindo feriados, horários especiais e dias sem expediente.
+- Permitir mensagens automáticas de saudação, ausência fora do expediente e aviso de fila de espera, personalizadas por número ou equipe.
+- Quando não houver atendimento disponível, manter a conversa na fila e retomar a distribuição no próximo expediente.
+- Prevenir respostas repetitivas e observar políticas, templates e janelas de envio da API oficial do WhatsApp Business da Meta.
+- Aplicar permissões e isolamento por empresa.
