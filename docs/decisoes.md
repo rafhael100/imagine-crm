@@ -187,3 +187,5 @@
 - **Pesquisa de satisfação após agendamentos (aprovado):** envio automático após atendimento realizado por e-mail/WhatsApp integrado, nota de 1 a 5, comentário opcional, mensagem e prazo configuráveis, vínculo a serviço/profissional/unidade, alertas de notas baixas, relatórios por dimensão e permissões; independente da CSAT do WhatsApp.
 
 - **Formulários prévios aos atendimentos (aprovado):** perguntas por serviço, campos de texto/seleção/data/número/anexo obrigatórios ou opcionais, envio por link seguro via e-mail/WhatsApp, prazo configurável, respostas ligadas a agendamento/contato, aviso ao responsável, acesso por permissões e histórico de envio/preenchimento.
+
+- **Documentos e anexos dos agendamentos (aprovado):** clientes enviam via portal/formulário e funcionários autorizados internamente; PDF/imagens/documentos comuns, prévia compatível, vínculo a agendamento/contato, validações de segurança, permissões de acesso/exclusão, consumo de armazenamento do plano e histórico de envio/substituição/exclusão.
