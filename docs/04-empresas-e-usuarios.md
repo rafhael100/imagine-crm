@@ -614,3 +614,8 @@
 - Manter histórico de inscrições, confirmações, alterações e cancelamentos e relatórios de ocupação, presença e cancelamentos.
 - Validar conflitos de salas, equipamentos e profissionais no nível da sessão, sem tratar múltiplos participantes da mesma sessão como reservas conflitantes.
 - Aplicar à agenda interna, chatbot e página pública, respeitando permissões e isolamento por empresa.
+
+## Pagamentos vinculados a agendamentos — REJEITADO
+- Decisão explícita do usuário: não incluir cobrança, sinal, checkout, Pix ou cartão para pagamento de serviços/agendamentos dos clientes das empresas no módulo de agenda.
+- Manter agendamentos, confirmações, reagendamentos, cancelamentos e presença sem processamento de pagamento pelo CRM.
+- Esta decisão não altera o faturamento e cobrança das assinaturas do SaaS CRM Imagine.
