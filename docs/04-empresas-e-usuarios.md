@@ -444,3 +444,9 @@
 - Quando não houver atendente disponível, manter conversa em fila de espera.
 - Registrar motivo, data/hora e responsável pela transferência no histórico da conversa.
 - Respeitar distribuição, disponibilidade, permissões, SLA, isolamento por empresa e políticas da Meta.
+
+## Editor visual de fluxos do chatbot WhatsApp — APROVADO
+- Cada empresa poderá montar fluxos de atendimento por editor visual sem programação, conectando blocos de ações e decisões.
+- Blocos aprovados: mensagem (texto/saudação), pergunta (coletar resposta), menu (opções), condição (ramificação por resposta), espera (prazo configurável), ação no CRM (criar lead, atualizar campo ou adicionar etiqueta), transferência (vendedor/equipe) e encerramento do fluxo.
+- Suportar rascunhos, testes antes da publicação e versionamento para evitar alterações inesperadas em fluxos ativos.
+- Aplicar permissões de edição/publicação, isolamento por empresa e regras de envio da Meta.
