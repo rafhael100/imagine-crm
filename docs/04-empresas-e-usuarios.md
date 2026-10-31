@@ -1086,3 +1086,10 @@
 - Oferecer ações rápidas para confirmar, reagendar ou cancelar agendamentos, exclusivamente conforme permissões do usuário e regras de justificativa, disponibilidade e histórico já aprovadas.
 - Refletir automaticamente alterações de status, horário e responsável, inclusive mudanças feitas por outros funcionários e canais, com proteção contra conflitos simultâneos.
 - Restringir resultados e indicadores aos agendamentos que o funcionário pode visualizar, respeitando isolamento entre empresas, equipes, unidades e privacidade.
+
+## Agenda individual do profissional — APROVADO
+- Disponibilizar tela simplificada **Minha agenda**, com os agendamentos atribuídos ao profissional autenticado, sem exigir acesso ao calendário completo da empresa.
+- Apresentar lista cronológica por dia, permitindo navegação para datas anteriores e futuras; mostrar cliente (somente informações autorizadas), serviço, horário, duração e status atual.
+- Permitir abrir detalhes e atualizar status apenas se o profissional tiver a permissão correspondente, respeitando transições e histórico de status já aprovados.
+- Refletir automaticamente alterações de horário, status, cancelamento e atribuição de profissional, mantendo consistência com agenda geral e painel operacional.
+- Reutilizar registros existentes de agendamento, sem duplicar dados; aplicar isolamento por empresa e visibilidade do próprio profissional, inclusive em caso de múltiplos vínculos.
