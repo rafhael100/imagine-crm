@@ -619,3 +619,11 @@
 - Decisão explícita do usuário: não incluir cobrança, sinal, checkout, Pix ou cartão para pagamento de serviços/agendamentos dos clientes das empresas no módulo de agenda.
 - Manter agendamentos, confirmações, reagendamentos, cancelamentos e presença sem processamento de pagamento pelo CRM.
 - Esta decisão não altera o faturamento e cobrança das assinaturas do SaaS CRM Imagine.
+
+## Personalização das notificações de agendamento — APROVADO
+- Permitir a cada empresa configurar mensagens automáticas de confirmação após agendar, lembretes com antecedência configurável (por exemplo, 24h ou 2h), reagendamento e cancelamento.
+- Disponibilizar variáveis de personalização como nome do cliente, serviço, data, horário e profissional responsável.
+- Suportar envio por e-mail e, quando a integração estiver ativa, WhatsApp Business API oficial.
+- Permitir ativar/desativar cada tipo de notificação e configurar os prazos de lembrete.
+- Registrar histórico de envios, tentativas e falhas, com acesso conforme permissões e isolamento entre empresas.
+- Respeitar as janelas de atendimento, consentimentos aplicáveis, templates aprovados e políticas de mensagens da Meta; prevenir duplicidade de envios.
