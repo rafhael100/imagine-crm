@@ -465,3 +465,10 @@
 - Falha técnica: registrar erro e notificar responsável autorizado.
 - Prevenir mensagens repetidas, reentradas e loops infinitos; registrar tentativas, pausas e encerramentos no histórico.
 - Respeitar isolamento por empresa, permissões e regras de transferência ao atendimento humano.
+
+## Métricas e relatórios do chatbot WhatsApp — APROVADO
+- Painel por empresa com total de conversas iniciadas pelo bot, percentual de fluxos concluídos, quantidade e percentual de transferências para atendimento humano, abandono e identificação de etapas críticas de desistência.
+- Exibir duração média dos fluxos, respostas inválidas, falhas técnicas e conversão em leads/oportunidades gerados pelo chatbot.
+- Filtros por período, fluxo, número de WhatsApp e equipe.
+- Exportar relatórios conforme permissões e regras de exportação já definidas.
+- Respeitar isolamento entre empresas e visibilidade autorizada de dados comerciais.
