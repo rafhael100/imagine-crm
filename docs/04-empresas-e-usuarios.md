@@ -548,3 +548,11 @@
 - Oferecer link seguro para reagendar/cancelar conforme regras da empresa.
 - Criar ou vincular automaticamente lead/contato, com detecção de duplicados e histórico.
 - Aplicar proteção contra spam, reservas duplicadas e conflitos, validando disponibilidade na confirmação.
+
+## Configuração de serviços e regras de agendamento — APROVADO
+- Cada empresa pode cadastrar serviços com nome e descrição, duração do atendimento e intervalo entre atendimentos.
+- Configurar antecedência mínima e máxima para novas reservas, capacidade de participantes e profissionais habilitados para cada serviço.
+- Definir modalidade presencial, online ou telefone e prazo mínimo para cancelamento.
+- Configurar visibilidade pública ou somente interna por serviço.
+- Aplicar as mesmas regras à agenda interna, página pública e chatbot WhatsApp, conforme permissões e validação de disponibilidade/conflitos.
+- Respeitar isolamento entre empresas, histórico e permissões de configuração.
