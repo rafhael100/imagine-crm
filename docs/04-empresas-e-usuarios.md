@@ -910,3 +910,10 @@
 ## Revisão — check-in pelo cliente REJEITADO
 - Decisão posterior substitui a previsão anterior de check-in pelo próprio cliente no portal: não implementar confirmação digital autônoma de chegada.
 - O registro de check-in e check-out permanece disponível somente para funcionários autorizados, mantendo presença individual em grupos, atrasos, faltas, histórico e relatórios.
+
+## Observações internas dos agendamentos — APROVADO
+- Permitir anotações operacionais internas vinculadas a cada agendamento, consultáveis diretamente em seus detalhes.
+- Identificar autor, data e hora de cada registro; manter histórico de alterações nas observações.
+- Restringir visualização e edição aos funcionários com permissões adequadas, respeitando empresa, equipe e unidade.
+- Nunca exibir observações internas ao cliente em portal, página pública, chatbot, mensagens de confirmação ou documentos compartilhados.
+- Manter observações separadas das mensagens e documentos enviados pelo cliente, com controles de acesso e auditoria.
