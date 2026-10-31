@@ -265,3 +265,8 @@
 - Respeitar permissões, regras de negócio, isolamento por empresa e limites do plano.
 - Permitir ativar, pausar e desativar automações.
 - Proteger contra loops e execuções duplicadas.
+
+## Limites de automações por plano — APROVADO
+- Limite de automações **ativas simultaneamente por empresa**: Essencial **5**, Profissional **20**, Empresarial **50**.
+- Automações em rascunho não consomem esse limite e não há limite de quantidade de rascunhos definido nesta decisão.
+- Em downgrade, preservar configurações e históricos, pausar automações excedentes e permitir que administrador escolha quais permanecerão ativas dentro do novo limite.
