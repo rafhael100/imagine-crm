@@ -652,3 +652,10 @@
 - Na página pública, chatbot e agenda interna, permitir selecionar unidade antes de consultar horários e realizar agendamento, quando houver mais de uma opção.
 - Relatórios devem permitir filtros e comparação de desempenho entre unidades, respeitando autorizações e isolamento entre empresas contratantes.
 - Validar conflitos de profissionais e recursos compartilhados entre unidades para impedir reservas simultâneas incompatíveis.
+
+## Limites de unidades de atendimento por plano — APROVADO
+- Limites de unidades incluídas por empresa contratante: Essencial 1, Profissional 3, Empresarial 10.
+- Permitir contratação de unidades adicionais mediante cobrança extra, sem exigir upgrade de plano; preço unitário ainda pendente de definição.
+- Upgrade amplia quantidade de unidades incluídas no novo plano.
+- Em downgrade, preservar unidades e suas configurações, mas tornar inativas as unidades excedentes até regularização, sem apagar histórico ou agendamentos anteriores.
+- As unidades adicionais contratadas compõem a capacidade disponível, respeitando faturamento e permissões da empresa.
