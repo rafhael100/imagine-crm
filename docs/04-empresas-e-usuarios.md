@@ -838,3 +838,12 @@
 - Ao aprovar, confirmar o agendamento e notificar o cliente; ao recusar, comunicar o cliente e liberar o horário.
 - Ao expirar o prazo sem aprovação, encerrar a retenção temporária do horário e registrar expiração, evitando bloqueios indefinidos; eventual decisão posterior exige nova validação de disponibilidade.
 - Registrar decisão, responsável, justificativa, horários e notificações no histórico, respeitando permissões e isolamento por empresa.
+
+## Agendamentos com aprovação prévia — APROVADO
+- Permitir configurar por serviço a exigência de aprovação de funcionário ou gestor autorizado antes de confirmar o agendamento.
+- Solicitação inicial permanece com status 'aguardando aprovação', sem confirmação definitiva ao cliente; após análise, registrar 'aprovado' ou 'recusado'.
+- Definir prazo máximo configurável para análise e responsável autorizado por aprovar/recusar.
+- Enquanto pendente, manter bloqueio temporário da disponibilidade do horário, evitando reservas conflitantes, com expiração automática e liberação se o prazo terminar sem aprovação.
+- Na aprovação, confirmar o agendamento de maneira consistente e notificar o cliente; na recusa, informar o cliente e liberar o horário.
+- Registrar no histórico/auditoria decisão, responsável, justificativa, horários e notificações; respeitar permissões por serviço/unidade e isolamento por empresa.
+- Evitar bloqueios indefinidos e impedir dupla confirmação do mesmo horário.
