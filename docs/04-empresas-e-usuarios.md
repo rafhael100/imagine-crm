@@ -50,5 +50,12 @@
 - Retenção padrão **12 meses enquanto a empresa estiver ativa**, observando retenção/exclusão legal.
 - Separada da auditoria da Administração Geral (padrão 5 anos).
 
-## Em discussão — NÃO APROVADO
-- Exportação CSV/XLSX com permissão específica, respeitando visibilidade, registros de auditoria, processamento assíncrono e links temporários. Proposta apresentada, ainda sem aprovação.
+## Exportação de dados — APROVADO
+- Exportação de **leads, contatos, empresas cadastradas, oportunidades e atividades** em **CSV e Excel (XLSX)**.
+- Apenas funcionários com permissão específica podem exportar.
+- Exportação respeita a visibilidade autorizada: próprios registros, registros da equipe ou todos os registros da empresa.
+- Permitir exportar registros filtrados ou todos os registros autorizados.
+- Registrar em auditoria o usuário, a data/hora e o tipo de exportação.
+- Grandes volumes são processados em segundo plano, com link temporário e download protegido.
+- **Não incluir senhas, tokens nem outras credenciais** nos arquivos.
+- Observar requisitos aplicáveis de proteção e portabilidade de dados (LGPD).
