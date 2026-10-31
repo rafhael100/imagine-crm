@@ -529,3 +529,12 @@
 - Enviar notificações internas e lembretes aos participantes, respeitando regras e políticas do canal utilizado.
 - Registrar histórico de alterações e cancelamentos.
 - Agenda independente das tarefas comerciais, mas ambas podem aparecer em visualização de calendário; respeitar permissões e isolamento entre empresas.
+
+## Integração da agenda com Google Calendar e Microsoft Outlook — APROVADO
+- Funcionários podem conectar sua conta Google Calendar ou Microsoft 365/Outlook à agenda interna do CRM, mediante autorização adequada.
+- Sincronização bidirecional dos compromissos pertinentes entre CRM e calendário conectado, com tratamento de atualizações e cancelamentos.
+- Considerar eventos externos ocupados no cálculo de disponibilidade e prevenção de conflitos, inclusive para agendamentos originados no chatbot.
+- Preservar privacidade: compromissos pessoais externos devem ser mostrados aos demais apenas como “Ocupado”, sem título, participantes ou detalhes.
+- Permitir ao funcionário revogar/desconectar a integração.
+- Detectar e notificar falhas de sincronização, evitando apresentar como garantida uma disponibilidade que não tenha sido validada.
+- Respeitar permissões individuais, isolamento por empresa e proteção de credenciais de integração.
