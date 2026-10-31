@@ -173,3 +173,5 @@
 - **Múltiplas unidades de atendimento (aprovado):** cadastro de filiais/locais com endereço e contato, expediente/feriados próprios, profissionais em uma ou mais unidades, serviços e recursos por unidade, seleção de unidade nos agendamentos, permissões por unidade e relatórios comparativos; unidades compartilham assinatura da mesma empresa.
 
 - **Limites de unidades por plano (aprovado):** Essencial 1, Profissional 3, Empresarial 10 unidades incluídas por empresa; contratação de unidades adicionais com preço extra a definir, sem exigir troca de plano; upgrade amplia limite e downgrade inativa excedentes sem apagar configurações, histórico ou agendamentos anteriores.
+
+- **Transferência de agendamentos entre unidades (aprovado):** mover reservas entre unidades da mesma empresa com validação de profissional/sala/horário, confirmação por usuário autorizado, aviso ao cliente de endereço/horário, histórico de origem/destino/responsável, bloqueio de conflitos e identificação em relatórios.
