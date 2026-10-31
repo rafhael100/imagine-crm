@@ -177,3 +177,12 @@
 - Status: **Rascunho, Enviada, Aceita, Recusada e Expirada**.
 - Compartilhar por e-mail ou link seguro, respeitando permissões de acesso.
 - Na primeira etapa, registrar aceitação no CRM sem integração de assinatura eletrônica.
+
+## Aprovação de propostas comerciais — APROVADO
+- Fluxo de aprovação **opcional e configurável por empresa**.
+- Propostas dentro da política comercial podem ser enviadas diretamente por usuários autorizados.
+- Descontos acima do limite permitido e alterações de preço fora da política exigem aprovação de gestor autorizado.
+- Propostas pendentes de aprovação não podem ser enviadas.
+- Registrar aprovação ou rejeição com responsável, data e justificativa.
+- Empresa pode desativar a exigência do fluxo de aprovação.
+- Regras devem ser aplicadas no backend, inclusive em envios por integrações e automações.
