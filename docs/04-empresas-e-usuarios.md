@@ -472,3 +472,10 @@
 - Filtros por período, fluxo, número de WhatsApp e equipe.
 - Exportar relatórios conforme permissões e regras de exportação já definidas.
 - Respeitar isolamento entre empresas e visibilidade autorizada de dados comerciais.
+
+## Limites de fluxos ativos do chatbot por plano — APROVADO
+- Essencial: 3 fluxos ativos; Profissional: 10; Empresarial: 30, por empresa.
+- Rascunhos não consomem limite; fluxos publicados e ativos contam.
+- Upgrade disponibiliza a capacidade adicional conforme plano.
+- Downgrade preserva configurações e fluxos, mas pausa os excedentes; administrador da empresa escolhe quais permanecem ativos.
+- Limite de fluxos do chatbot é independente do limite de automações comerciais.
