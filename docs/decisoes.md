@@ -163,3 +163,5 @@
 - **Agendamentos em grupo (aprovado):** sessões individuais ou coletivas, capacidade/vagas restantes, múltiplas inscrições por sessão, lista de espera ao esgotar, confirmação e presença individuais, cancelamento liberando apenas a vaga, histórico e relatórios de ocupação/presença/cancelamentos; conflitos de profissionais e recursos validados por sessão.
 
 - **Pagamentos por agendamento (rejeitado):** não implementar cobrança antecipada, sinal ou checkout de Pix/cartão para reservas de serviços das empresas. Agenda continua sem processamento de pagamentos; cobrança das assinaturas do CRM permanece independente.
+
+- **Personalização de notificações de agendamento (aprovado):** confirmação, lembretes com antecedência configurável, reagendamento e cancelamento; variáveis nome/serviço/data/horário/profissional; canais e-mail e WhatsApp integrado, ativação individual por tipo e histórico de envios/falhas; respeitar políticas da Meta.
