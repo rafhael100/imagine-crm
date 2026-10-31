@@ -145,3 +145,10 @@
 - Registrar todas as mudanças de etapa no histórico comercial.
 - Permissões específicas para visualização e alteração dos funis e oportunidades.
 - Estados finais **Ganha** e **Perdida**, com motivos de perda configuráveis por empresa.
+
+## Regras de movimentação de oportunidades no funil — APROVADO
+- Cada empresa pode configurar, opcionalmente por funil, campos obrigatórios por etapa e permissões para movimentação de oportunidades.
+- Impedir movimentações quando requisitos obrigatórios não forem atendidos.
+- Permitir retorno a etapas anteriores, registrando a movimentação no histórico.
+- Exigir confirmação ao marcar oportunidade como **Ganha** ou **Perdida**; ao marcar **Perdida**, exigir motivo da perda.
+- Aplicar regras e validações no backend, inclusive em movimentações por integrações e automações.
