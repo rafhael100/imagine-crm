@@ -922,3 +922,10 @@
 - A lista de espera deve seguir estritamente a ordem cronológica de inscrição (FIFO), sem mecanismo de prioridade ou antecipação manual por funcionários.
 - Esta decisão substitui qualquer previsão anterior de exceções de prioridade autorizadas na fila.
 - Permanecem notificação de vaga, prazo de resposta configurável, passagem ao próximo elegível após expiração e confirmação somente após aceite, com prevenção de dupla reserva.
+
+## Controle de agendamentos duplicados por cliente — APROVADO
+- Identificar cliente pelo registro vinculado e comparar data, início e término de reservas ativas para detectar sobreposição de horários, inclusive em serviços/profissionais/unidades diferentes dentro da mesma empresa.
+- Alertar quando já existir agendamento do mesmo cliente no período.
+- Bloquear novas reservas sobrepostas pelo portal do cliente e chatbot; aplicar validação no backend para impedir concorrência e duplicações.
+- Permitir exceção apenas por funcionário com permissão específica e justificativa obrigatória, desde que não viole disponibilidade física de profissionais, salas e recursos.
+- Registrar tentativas bloqueadas e exceções concedidas com usuário, data/hora e justificativa; respeitar isolamento entre empresas e privacidade.
