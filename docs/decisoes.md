@@ -179,3 +179,5 @@
 - **Bloqueios e indisponibilidades da agenda (aprovado):** bloqueios individuais, por unidade e por recurso, únicos ou recorrentes, com motivo; funcionário gerencia sua agenda e gestor as equipes conforme permissões; alertar conflitos com agendamentos existentes antes de aplicar, registrar histórico e impedir novas reservas nos horários bloqueados em todos os canais.
 
 - **Permissões específicas da agenda (aprovado):** visualização própria/equipe/unidade/empresa, criar/editar/cancelar próprios ou de terceiros, transferir entre profissionais/unidades, gerenciar bloqueios, configurar serviços/horários/recursos, consultar relatórios por perfil e auditar alterações; verificações no backend e isolamento entre empresas.
+
+- **Auditoria e histórico da agenda (aprovado):** criação (autor/data/canal), alterações (antes/depois), reagendamento, cancelamento com motivo, transferências, confirmações, check-in/faltas e origem de mudanças Google/Outlook; registros protegidos contra edição/exclusão, retenção de 12 meses durante assinatura ativa, ressalvadas obrigações legais.
