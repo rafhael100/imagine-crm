@@ -820,3 +820,13 @@
 - Solicitar aceite do cliente quando exigido pela configuração do serviço, antes de concluir a substituição que dependa desse aceite.
 - Registrar profissional anterior, substituto, responsável pela alteração e data/hora no histórico e auditoria.
 - Atualizar calendários conectados, convites e demais integrações relacionadas, monitorando falhas de sincronização.
+
+## Agendamentos prioritários e encaixes — APROVADO
+- Classificar agendamentos como normais ou prioritários, com identificação nos painéis e relatórios.
+- Permitir encaixes excepcionais fora dos horários normalmente disponíveis apenas por usuários com permissão específica.
+- Exigir justificativa para encaixes e apresentar alerta explícito de possíveis sobreposições antes da confirmação.
+- Preservar reservas existentes: encaixe não cancela, desloca ou compromete automaticamente agendamentos confirmados.
+- Respeitar obrigatoriamente limites físicos e simultâneos de salas, equipamentos e demais recursos, sem criar reserva impossível de atender.
+- Enviar confirmação ao cliente pelos canais habilitados.
+- Registrar responsável, motivo, data/hora, natureza excepcional e alterações no histórico/auditoria.
+- Disponibilizar filtros e indicadores de encaixes e atendimentos prioritários em relatórios, conforme permissões e isolamento por empresa.
