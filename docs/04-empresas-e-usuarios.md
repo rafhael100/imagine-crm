@@ -114,3 +114,10 @@
 - Cada evento deve identificar usuário responsável, data e horário, com detalhes relevantes do evento (incluindo valores anterior/novo quando apropriado).
 - A visualização respeita permissões de acesso aos registros.
 - O histórico operacional é **distinto da auditoria técnica** de segurança e rastreabilidade.
+
+## Anotações e comentários internos — APROVADO
+- Usuários autorizados podem criar anotações internas em leads, contatos e oportunidades, com texto, menções a colegas (@usuário) e anexos.
+- Visualização limitada a funcionários com acesso ao respectivo registro, conforme permissões.
+- Menções podem gerar notificações internas.
+- Edições e exclusões de anotações são registradas no histórico.
+- Anotações são exibidas na linha do tempo comercial e **não são enviadas automaticamente aos clientes**.
