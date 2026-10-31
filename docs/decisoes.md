@@ -145,3 +145,5 @@
 - **Agenda integrada do CRM (aprovado):** calendário diário/semanal/mensal; criar/editar/reagendar/cancelar; responsáveis/equipes, disponibilidade, folgas/bloqueios, participantes leads/contatos/convidados, prevenção de conflitos, agenda compartilhada com chatbot, notificações e histórico; independente de tarefas, com visualização conjunta no calendário.
 
 - **Integração da agenda com Google Calendar e Outlook/Microsoft 365 (aprovado):** conexão individual, sincronização bidirecional, eventos externos bloqueiam disponibilidade, privacidade de eventos pessoais como “Ocupado”, prevenção de conflitos, desconexão e alertas de falha; respeitar permissões e isolamento entre empresas.
+
+- **Página pública de agendamentos (aprovado):** link exclusivo por empresa, identidade visual personalizada, seleção de serviço/profissional, disponibilidade integrada ao CRM/Google/Outlook, formulário configurável, confirmação por e-mail/WhatsApp, link seguro para reagendar/cancelar, vínculo automático a lead/contato e prevenção de spam e duplicidades.
