@@ -125,3 +125,5 @@
 - **Editor visual do chatbot WhatsApp (aprovado):** blocos de mensagem, pergunta, menu, condição, espera, ação no CRM, transferência e encerramento; rascunhos, testes antes da publicação e versionamento de fluxos.
 
 - **Gatilhos do chatbot WhatsApp (aprovado):** primeira mensagem, palavra-chave, fora do expediente, origem/campanha/formulário, conversa reaberta e ação manual; prioridade configurável entre gatilhos e bloqueio de reinício do bot durante atendimento humano ativo.
+
+- **Erros e inatividade do chatbot WhatsApp (aprovado):** repetir pergunta após resposta inválida, transferir após tentativas excedidas, lembrete por ausência, pausa/encerramento por inatividade, retomada ou reinício no retorno, registro e notificação de falhas, prevenção de repetição/loops e histórico; observar regras da Meta.
