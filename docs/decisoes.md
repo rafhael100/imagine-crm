@@ -197,3 +197,5 @@
 - **Agendamentos ilimitados (aprovado):** planos Essencial, Profissional e Empresarial sem limite comercial de reservas mensais, sujeitos a proteção técnica contra abuso.
 
 - **Confirmação automática de agendamentos (aprovado):** confirmação por link seguro via e-mail/WhatsApp integrado, antecedência e reenvio configuráveis, estados pendente/confirmado/não confirmado, alertas à equipe e histórico de envios/respostas; ausência de resposta não cancela reserva por padrão, salvo regra específica configurada.
+
+- **Cancelamento por falta de confirmação (aprovado):** manter reservas ativas por padrão; cancelamento automático opcional e desligado inicialmente, ativado expressamente por administrador autorizado, com antecedência configurável, aviso prévio, exceções por serviço/cliente, liberação apenas após cancelamento, integração com lista de espera e histórico de motivo/regra/horário.
