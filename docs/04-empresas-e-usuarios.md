@@ -254,3 +254,14 @@
 - Permitir pausar, editar ou cancelar agendamentos.
 - Registrar histórico de execuções, entregas e falhas.
 - Respeitar limites e permissões da empresa, sem compartilhamento com destinatários não autorizados.
+
+## Automações comerciais — APROVADO
+- Cada empresa pode configurar automações sem programação, baseadas em eventos e condições.
+- Gatilhos iniciais: novo lead, mudança de etapa, tarefa vencida, proposta aceita ou recusada.
+- Condições: responsável, etapa, valor e campos personalizados.
+- Ações: criar tarefa, atribuir responsável, enviar notificação ou atualizar campo.
+- Execução imediata ou após prazo configurado, processada em segundo plano.
+- Histórico de execuções, resultados e erros.
+- Respeitar permissões, regras de negócio, isolamento por empresa e limites do plano.
+- Permitir ativar, pausar e desativar automações.
+- Proteger contra loops e execuções duplicadas.
