@@ -282,3 +282,13 @@
 - Cada empresa pode configurar modalidades de atribuição de novos leads: rodízio (round-robin), menor carga de leads ativos, equipe ou origem/campanha, responsável fixo e distribuição manual por gestor.
 - Distribuição automática considera apenas vendedores ativos e habilitados a receber leads.
 - Atribuições respeitam permissões, isolamento por empresa e são registradas no histórico comercial.
+
+## Redistribuição automática de leads sem atendimento — APROVADO
+- Recurso opcional e configurável por empresa.
+- Prazo de primeiro atendimento configurável em minutos ou horas; notificar o vendedor responsável por lead ainda não atendido.
+- Ao exceder o prazo, permitir redistribuição automática a outro vendedor ativo e habilitado, também em caso de indisponibilidade do responsável.
+- Limite de tentativas de redistribuição configurável, evitando ciclos infinitos.
+- Registrar responsáveis anteriores, datas e motivos no histórico comercial.
+- Permitir exceções para bloquear a redistribuição de leads estratégicos.
+- Não redistribuir leads que já receberam atendimento válido.
+- Respeitar permissões e regras de distribuição previamente definidas.
