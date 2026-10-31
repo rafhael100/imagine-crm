@@ -175,3 +175,5 @@
 - **Limites de unidades por plano (aprovado):** Essencial 1, Profissional 3, Empresarial 10 unidades incluídas por empresa; contratação de unidades adicionais com preço extra a definir, sem exigir troca de plano; upgrade amplia limite e downgrade inativa excedentes sem apagar configurações, histórico ou agendamentos anteriores.
 
 - **Transferência de agendamentos entre unidades (aprovado):** mover reservas entre unidades da mesma empresa com validação de profissional/sala/horário, confirmação por usuário autorizado, aviso ao cliente de endereço/horário, histórico de origem/destino/responsável, bloqueio de conflitos e identificação em relatórios.
+
+- **Bloqueios e indisponibilidades da agenda (aprovado):** bloqueios individuais, por unidade e por recurso, únicos ou recorrentes, com motivo; funcionário gerencia sua agenda e gestor as equipes conforme permissões; alertar conflitos com agendamentos existentes antes de aplicar, registrar histórico e impedir novas reservas nos horários bloqueados em todos os canais.
