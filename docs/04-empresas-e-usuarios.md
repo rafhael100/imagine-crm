@@ -1043,3 +1043,8 @@
 - Antes de aplicar uma redução de expediente ou mudança de horário, identificar reservas existentes potencialmente conflitantes e apresentar aviso/resumo; não cancelar ou reagendar reservas confirmadas automaticamente.
 - Atualizar disponibilidade da agenda interna, portal, página pública e chatbot, mantendo validação no backend.
 - Restringir criação, alteração e remoção de horários especiais a usuários autorizados, com histórico de autor, data/hora, valores anteriores/novos e unidade afetada.
+
+## Limite de agendamentos futuros por cliente — REJEITADO
+- Não implementar limite numérico de agendamentos futuros por cliente, seja global ou específico por serviço.
+- Clientes podem manter múltiplas reservas futuras, desde que sejam respeitadas disponibilidade, capacidade, horários, regras de agendamento e prevenção de reservas sobrepostas do mesmo cliente.
+- Não criar exceções administrativas para ultrapassar limite quantitativo inexistente.
