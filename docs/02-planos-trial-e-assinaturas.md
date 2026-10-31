@@ -77,3 +77,8 @@ Rascunhos não contam; upgrade amplia capacidade. No downgrade, configurações 
 | Empresarial | 10 |
 
 Permitir unidades adicionais com cobrança extra sem mudança de plano (preço a definir). Upgrade amplia capacidade; downgrade preserva unidades e históricos, mas inativa as excedentes até regularização, sem excluir agendamentos passados.
+
+## Agendamentos ilimitados por plano — APROVADO
+- Essencial, Profissional e Empresarial incluem agendamentos mensais ilimitados, sem cobrança adicional por volume de reservas.
+- Diferenciação dos planos permanece em funcionalidades, usuários, unidades, automações, armazenamento e demais limites específicos.
+- Aplicar medidas técnicas proporcionais contra abuso e excesso de requisições em todos os planos, sem estabelecer teto comercial de agendamentos.
