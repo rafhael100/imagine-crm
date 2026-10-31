@@ -488,3 +488,11 @@
 - Permitir reverter para uma versão anterior, preservando o histórico de versões e execuções.
 - Desativar um fluxo impede novos inícios, preservando histórico das conversas.
 - Publicação e reversão restritas a usuários autorizados, com isolamento por empresa.
+
+## Testes e simulação dos fluxos do chatbot — APROVADO
+- Disponibilizar simulador de conversas no editor visual, sem enviar mensagens reais pelo WhatsApp.
+- Testar menus, perguntas, condições e caminhos do fluxo com variáveis e dados fictícios de clientes.
+- Validar estrutura, incluindo blocos desconectados ou inválidos, e identificar a etapa exata das falhas.
+- Simular ações no CRM sem criar leads, alterar registros reais ou executar automações externas.
+- Bloquear publicação de versões que apresentem erros críticos de validação.
+- Registrar histórico e resultado dos testes realizados, respeitando permissões e isolamento por empresa.
