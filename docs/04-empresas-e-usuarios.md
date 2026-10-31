@@ -519,3 +519,13 @@
 - Enviar lembretes antes do atendimento, respeitando janelas, templates e políticas de mensagens da Meta.
 - Impedir reservas duplicadas e conflitos de horário, validando disponibilidade novamente na confirmação.
 - Preservar histórico de agendamentos, alterações, confirmações e cancelamentos, com isolamento entre empresas e permissões adequadas.
+
+## Agenda integrada do CRM Imagine — APROVADO
+- Disponibilizar agenda interna por empresa com visualizações diária, semanal e mensal.
+- Permitir criar, editar, reagendar e cancelar agendamentos, vinculando funcionários, equipes, leads, contatos e convidados conforme permissões.
+- Configurar disponibilidade por responsável, horários de atendimento, folgas e bloqueios.
+- Validar conflitos e impedir agendamentos simultâneos incompatíveis, inclusive quando originados pelo chatbot do WhatsApp.
+- Compartilhar a mesma disponibilidade e os mesmos agendamentos entre chatbot e interface do CRM.
+- Enviar notificações internas e lembretes aos participantes, respeitando regras e políticas do canal utilizado.
+- Registrar histórico de alterações e cancelamentos.
+- Agenda independente das tarefas comerciais, mas ambas podem aparecer em visualização de calendário; respeitar permissões e isolamento entre empresas.
