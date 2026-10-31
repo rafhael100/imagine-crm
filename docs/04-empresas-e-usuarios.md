@@ -728,3 +728,12 @@
 - Permissões granulares para visualizar, enviar, substituir e excluir anexos; não disponibilizar arquivos a usuários não autorizados.
 - Contabilizar armazenamento nos limites do plano contratado.
 - Registrar envio, substituição e exclusão no histórico, com responsável e data/hora; aplicar proteção de dados pessoais e LGPD.
+
+## Lista de presença e controle de comparecimento — APROVADO
+- Permitir check-in manual por funcionário autorizado e check-in pelo próprio cliente via portal seguro, mediante validação do agendamento e identidade/escopo do acesso.
+- Permitir check-out para registrar término do atendimento, com data e horário.
+- Para sessões coletivas, registrar presença individual de cada participante, vinculada à mesma sessão, sem duplicar o agendamento coletivo.
+- Registrar atrasos pela comparação entre horário previsto e horário efetivo de chegada; identificar ausências conforme regras de encerramento/no-show já aprovadas.
+- Manter histórico de horários, responsáveis e alterações de presença, respeitando permissões e isolamento por empresa.
+- Disponibilizar relatórios de presença, atrasos e faltas por período, serviço, profissional e unidade, conforme permissões.
+- Integrar com os estados de confirmação e no-show existentes, evitando registros conflitantes ou duplicados.
