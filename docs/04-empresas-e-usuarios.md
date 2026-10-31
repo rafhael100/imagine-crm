@@ -1001,3 +1001,11 @@
 - Não implementar fluxo específico de identificação/alerta de agendamentos cujo horário previsto passou e ainda estejam abertos, nem painel próprio de pendências de encerramento.
 - Não encerrar automaticamente atendimentos pelo simples término do horário previsto.
 - Preservar status operacionais e os procedimentos normais de atualização manual/autorizada já aprovados, incluindo Concluído e Não compareceu.
+
+## Agendamento rápido pela equipe — APROVADO
+- Disponibilizar formulário simplificado diretamente no calendário para recepcionistas e funcionários com permissão de criação de agendamentos.
+- Permitir pesquisar e selecionar contato existente ou cadastrar novo cliente, com prevenção de duplicidades e respeito às permissões.
+- Selecionar serviço, profissional disponível, data/horário e unidade quando houver mais de uma.
+- Ao confirmar, criar reserva na agenda principal e enviar notificação ao cliente pelos canais habilitados.
+- Aplicar integralmente no backend as regras existentes de jornadas, antecedência, intervalos, salas/recursos, capacidade, conflito de horários, duplicidade por cliente, permissões e isolamento entre empresas.
+- Evitar agenda paralela; preservar histórico/auditoria e atualização da agenda compartilhada.
