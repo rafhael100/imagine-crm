@@ -203,3 +203,9 @@
 - Aceitação e recusa atualizam automaticamente o histórico da oportunidade vinculada.
 - Configuração por empresa: aceitar proposta pode marcar oportunidade como **Ganha** automaticamente ou exigir confirmação do vendedor.
 - Aceite é confirmação comercial no CRM e **não equivale a assinatura eletrônica formal**.
+
+## Motivos de perda de oportunidades — APROVADO
+- Lista inicial por empresa: **Preço, Concorrência, Sem orçamento, Sem interesse, Prazo, Sem retorno e Outro**.
+- Cada empresa pode personalizar seus motivos de perda.
+- Ao marcar oportunidade como **Perdida**, selecionar um motivo é obrigatório; observação complementar é opcional.
+- Utilizar motivos de perda em relatórios comerciais para análise das causas das perdas.
