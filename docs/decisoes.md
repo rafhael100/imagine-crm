@@ -269,3 +269,5 @@
 - **Duplicação manual de agendamentos pela equipe (aprovado):** funcionário autorizado cria nova reserva reaproveitando cliente/serviço/profissional/unidade, escolhe nova data/horário, revisa resumo, valida disponibilidade/conflitos, notifica cliente e mantém registros independentes; não é recorrência automática.
 
 - **Agendamentos favoritos (rejeitado):** não criar atalhos pessoais de combinações serviço/profissional/unidade; manter agendamento rápido e duplicação manual existentes.
+
+- **Bloqueio de horários em lote (aprovado):** selecionar múltiplos dias/períodos por profissional/equipe/unidade/recurso, informar motivo, pré-visualizar reservas afetadas, aplicar bloqueios sem cancelar reservas automaticamente, manter histórico e permitir reversão autorizada.
