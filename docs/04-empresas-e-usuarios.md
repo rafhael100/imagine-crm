@@ -1009,3 +1009,11 @@
 - Ao confirmar, criar reserva na agenda principal e enviar notificação ao cliente pelos canais habilitados.
 - Aplicar integralmente no backend as regras existentes de jornadas, antecedência, intervalos, salas/recursos, capacidade, conflito de horários, duplicidade por cliente, permissões e isolamento entre empresas.
 - Evitar agenda paralela; preservar histórico/auditoria e atualização da agenda compartilhada.
+
+## Duplicação manual de agendamentos pela equipe — APROVADO
+- Permitir que funcionários com permissão específica criem um novo agendamento a partir de um existente, reaproveitando cliente, serviço, profissional e unidade.
+- Exigir seleção de nova data e horário e apresentar resumo para confirmação individual antes de salvar; não gerar recorrência automática.
+- Revalidar disponibilidade do profissional, salas, equipamentos, intervalos, capacidade e conflitos, incluindo sobreposição de reservas do mesmo cliente e demais regras vigentes.
+- Após confirmação e criação bem-sucedida, notificar o cliente pelos canais habilitados.
+- Manter agendamento original e novo agendamento como registros independentes, com identificadores e históricos próprios; registrar origem da duplicação para rastreabilidade sem confundir as reservas.
+- Respeitar permissões, isolamento por empresa e auditoria; não copiar automaticamente observações internas ou documentos sensíveis sem decisão específica.
