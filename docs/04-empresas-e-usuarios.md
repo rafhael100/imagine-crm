@@ -1070,3 +1070,11 @@
 - Prevenir disparos duplicados em curto intervalo e permitir feedback de envio/falha sem afirmar entrega sem confirmação do provedor.
 - Registrar funcionário responsável, data/hora, canal, agendamento e resultado do disparo no histórico, sem expor dados sensíveis indevidamente.
 - Complementar, sem substituir, lembretes automáticos já aprovados; respeitar permissões e isolamento por empresa.
+
+## Preferências de notificações da agenda por funcionário — APROVADO
+- Cada funcionário pode configurar individualmente os avisos de agenda que deseja receber por notificações internas do CRM e/ou e-mail, para eventos opcionais.
+- Eventos configuráveis: novo agendamento atribuído, cancelamento, reagendamento (data/horário), troca de profissional responsável e confirmação do cliente.
+- Avisos operacionais classificados como essenciais pela empresa/sistema não podem ser desativados pelo funcionário; diferenciar claramente avisos obrigatórios e opcionais.
+- Respeitar permissões, escopo por empresa/unidade/equipe e privacidade: mensagens não devem expor dados de reservas às quais o destinatário não tenha acesso.
+- Registrar histórico de tentativas, envios e resultados das notificações, evitando duplicações e respeitando preferências e falhas de entrega.
+- Integrar à central de notificações internas já aprovada, sem criar sistema paralelo.
