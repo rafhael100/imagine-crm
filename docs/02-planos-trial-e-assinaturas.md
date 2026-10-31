@@ -59,3 +59,12 @@ As duas cotas de agentes são independentes.
 - Limite de automações **ativas simultaneamente por empresa**: Essencial **5**, Profissional **20**, Empresarial **50**.
 - Automações em rascunho não consomem esse limite e não há limite de quantidade de rascunhos definido nesta decisão.
 - Em downgrade, preservar configurações e históricos, pausar automações excedentes e permitir que administrador escolha quais permanecerão ativas dentro do novo limite.
+
+## Limites de fluxos ativos do chatbot WhatsApp — APROVADO
+| Plano | Fluxos ativos por empresa |
+|---|---:|
+| Essencial | 3 |
+| Profissional | 10 |
+| Empresarial | 30 |
+
+Rascunhos não contam; upgrade amplia capacidade. No downgrade, configurações são preservadas e os fluxos excedentes pausados; administrador seleciona quais ficam ativos. Limite independente de automações comerciais.
