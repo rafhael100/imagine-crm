@@ -3,7 +3,8 @@
 ## Planos aprovados em conceito
 - Três faixas: **Essencial, Profissional e Empresarial**.
 - É possível comprar usuários adicionais, sem limite máximo fixo estabelecido.
-- Preços finais, usuários incluídos, cotas e matriz definitiva de recursos **pendentes**.
+- Preços finais, usuários incluídos, demais cotas e matriz definitiva de recursos **pendentes**.
+- **Campos personalizados por módulo aprovados:** Essencial 10, Profissional 25 e Empresarial 50 (cada um dos módulos leads, contatos e oportunidades). No downgrade, preservar os existentes e bloquear novos enquanto acima do limite.
 - Alterações de preço publicado aplicam-se a novos contratos; contratos vigentes respeitam condições contratadas e comunicação válida.
 - Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
 - Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
