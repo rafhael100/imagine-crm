@@ -137,3 +137,5 @@
 - **Simulador de fluxos do chatbot (aprovado):** testes de conversas e ramificações sem mensagens reais, dados fictícios, validação de blocos e diagnóstico por etapa, simulação sem alterar CRM, bloqueio de publicação com erros críticos e histórico de testes.
 
 - **Biblioteca de modelos de chatbot (aprovado):** fluxos prontos para atendimento inicial, captação, qualificação, orçamento, suporte, fora do expediente e satisfação; cópia e personalização por empresa sem alterar originais; administração Imagine atualiza biblioteca central sem sobrescrever cópias dos clientes.
+
+- **Importação/exportação de fluxos de chatbot (aprovado):** JSON com validação de estrutura/compatibilidade, duplicação sem alterar original, remapeamento de equipes/campos/etiquetas, exclusão de segredos e dados de clientes, importação como rascunho, histórico e permissões por empresa; limites do plano aplicados aos fluxos ativos.
