@@ -152,3 +152,11 @@
 - Permitir retorno a etapas anteriores, registrando a movimentação no histórico.
 - Exigir confirmação ao marcar oportunidade como **Ganha** ou **Perdida**; ao marcar **Perdida**, exigir motivo da perda.
 - Aplicar regras e validações no backend, inclusive em movimentações por integrações e automações.
+
+## Probabilidade de fechamento e previsão ponderada — APROVADO
+- Cada etapa de cada funil pode ter probabilidade estimada de fechamento configurada pela empresa.
+- Permitir ajuste manual da probabilidade por oportunidade somente a usuários autorizados.
+- Oportunidades **Ganhas** têm probabilidade de 100%; **Perdidas**, de 0%.
+- Calcular valor ponderado = valor da oportunidade × probabilidade de fechamento / 100.
+- Utilizar valores ponderados em relatórios e previsões comerciais.
+- Percentuais apresentados como exemplos na discussão não são valores padrão aprovados.
