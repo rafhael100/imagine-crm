@@ -906,3 +906,7 @@
 - Validar conflitos e impedir alterações que provoquem sobreposição com outras reservas ou excedam capacidade física.
 - Notificar o cliente quando houver mudança no horário de início ou término, pelos canais habilitados.
 - Propagar alterações às visualizações da agenda e integrações de calendário pertinentes, respeitando permissões e isolamento por empresa.
+
+## Revisão — check-in pelo cliente REJEITADO
+- Decisão posterior substitui a previsão anterior de check-in pelo próprio cliente no portal: não implementar confirmação digital autônoma de chegada.
+- O registro de check-in e check-out permanece disponível somente para funcionários autorizados, mantendo presença individual em grupos, atrasos, faltas, histórico e relatórios.
