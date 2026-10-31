@@ -856,3 +856,11 @@
 - Alertar responsáveis sobre pendências e destacar solicitações próximas do vencimento.
 - Expirar automaticamente solicitações vencidas e liberar horários temporariamente bloqueados, sem criar reservas duplicadas.
 - Registrar decisões, autor, justificativa, data/hora e alterações no histórico/auditoria; garantir isolamento entre empresas.
+
+## Notificações internas da agenda — APROVADO
+- Centralizar no CRM notificações internas para profissionais e gestores autorizados.
+- Notificar o responsável por novos agendamentos, cancelamentos e reagendamentos, incluindo alterações de data ou horário.
+- Alertar responsáveis por solicitações de agendamento pendentes de aprovação e por vagas liberadas na lista de espera quando pertinente.
+- Disponibilizar central de notificações com estados de leitura e ação de marcar como lida.
+- Permitir preferências por usuário para tipos de avisos recebidos, sem comprometer alertas operacionais obrigatórios que venham a ser definidos.
+- Evitar notificações duplicadas, proteger informações conforme permissões por funcionário, equipe e unidade e garantir isolamento entre empresas.
