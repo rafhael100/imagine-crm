@@ -168,3 +168,12 @@
 - Valor total calculado automaticamente; valor dos itens pode alimentar o valor da oportunidade e a previsão ponderada.
 - Registrar alterações de itens e valores no histórico comercial.
 - Controle de estoque fora do escopo inicial.
+
+## Propostas comerciais — APROVADO
+- Gerar propostas comerciais diretamente de oportunidades, usando modelos personalizados por empresa.
+- Incluir dados do cliente, produtos, serviços, valores e descontos.
+- Gerar PDF para download e atribuir numeração única por empresa.
+- Permitir data de validade e preservar histórico de versões/revisões.
+- Status: **Rascunho, Enviada, Aceita, Recusada e Expirada**.
+- Compartilhar por e-mail ou link seguro, respeitando permissões de acesso.
+- Na primeira etapa, registrar aceitação no CRM sem integração de assinatura eletrônica.
