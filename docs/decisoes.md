@@ -241,3 +241,5 @@
 - **Observações internas dos agendamentos (aprovado):** anotações operacionais vinculadas à reserva, autor/data/hora, histórico de edição, consulta nos detalhes, acesso somente a funcionários autorizados e invisibilidade ao cliente; separadas das mensagens e documentos do cliente.
 
 - **Prioridade na lista de espera (rejeitada):** manter ordem cronológica FIFO, sem antecipação manual ou categorias de prioridade. Esta decisão revoga exceções de prioridade previstas anteriormente; manter prazo de resposta, notificações e confirmação após aceite.
+
+- **Agendamentos duplicados por cliente (aprovado):** detectar sobreposição de reservas do mesmo cliente, alertar e bloquear pelo portal/chatbot, permitir exceção apenas por funcionário autorizado com justificativa sem violar recursos, registrar tentativas/exceções e validar no backend.
