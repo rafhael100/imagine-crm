@@ -830,3 +830,11 @@
 - Enviar confirmação ao cliente pelos canais habilitados.
 - Registrar responsável, motivo, data/hora, natureza excepcional e alterações no histórico/auditoria.
 - Disponibilizar filtros e indicadores de encaixes e atendimentos prioritários em relatórios, conforme permissões e isolamento por empresa.
+
+## Agendamentos com aprovação prévia — APROVADO
+- Permitir configurar por serviço se uma solicitação de agendamento precisa de aprovação de funcionário ou gestor autorizado.
+- Solicitação inicial não equivale a reserva confirmada; utilizar estados de aprovação aguardando, aprovado ou recusado, distintos dos estados de comparecimento.
+- Configurar prazo máximo de análise; reservar temporariamente a capacidade/horário durante esse prazo, impedindo conflito com outras solicitações e reservas.
+- Ao aprovar, confirmar o agendamento e notificar o cliente; ao recusar, comunicar o cliente e liberar o horário.
+- Ao expirar o prazo sem aprovação, encerrar a retenção temporária do horário e registrar expiração, evitando bloqueios indefinidos; eventual decisão posterior exige nova validação de disponibilidade.
+- Registrar decisão, responsável, justificativa, horários e notificações no histórico, respeitando permissões e isolamento por empresa.
