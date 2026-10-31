@@ -949,3 +949,13 @@
 - Permitir abrir diretamente o detalhe de cada agendamento encontrado.
 - Aplicar no backend permissões por empresa, equipe, unidade e registro, mostrando somente agendamentos autorizados, sem expor dados pessoais em resultados indevidos.
 - Otimizar a pesquisa para volumes elevados, com indexação/paginação conforme arquitetura; utilizar registros existentes da agenda, sem duplicação de dados.
+
+## Gerenciamento individual de participantes em agendamentos de grupo — APROVADO
+- Manter um único agendamento/sessão de grupo com lista de participantes vinculados individualmente aos respectivos contatos.
+- Permitir incluir participantes enquanto houver capacidade, com validação concorrente de vagas e sem ultrapassar limite da sessão.
+- Permitir cancelamento/remoção individual de participação sem cancelar a sessão ou afetar outros participantes.
+- Registrar confirmação, presença, falta e check-in por participante por funcionário autorizado, conforme rejeição do check-in digital autônomo do cliente.
+- Enviar confirmações, lembretes e avisos individuais pelos canais habilitados, respeitando consentimentos e regras de mensagens.
+- Recalcular vagas disponíveis quando participantes ingressarem, saírem ou cancelarem, integrando com lista de espera já aprovada.
+- Preservar histórico de inclusão, cancelamento e alterações com autor/data/hora, respeitando permissões e isolamento por empresa.
+- No portal, cada cliente vê somente seus próprios dados de participação, sem expor dados dos demais.
