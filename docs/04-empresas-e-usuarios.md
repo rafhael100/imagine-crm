@@ -292,3 +292,11 @@
 - Permitir exceções para bloquear a redistribuição de leads estratégicos.
 - Não redistribuir leads que já receberam atendimento válido.
 - Respeitar permissões e regras de distribuição previamente definidas.
+
+## Lead Scoring — Qualificação e pontuação de leads — APROVADO
+- Pontuação de leads na escala de 0 a 100, calculada inicialmente por regras configuráveis por empresa, sem exigir inteligência artificial.
+- Critérios: origem (campanha ou canal), perfil (segmento, região e porte da empresa), engajamento (respostas e interações) e redução de pontos por inatividade.
+- Classificação dos leads como frio, morno ou quente, com critérios personalizados por empresa.
+- Permitir uso da pontuação em automações de atribuição de responsável, criação de tarefas e notificações.
+- Respeitar isolamento por empresa e permissões aplicáveis.
+- Limiares de classificação e pesos exatos ainda não foram definidos.
