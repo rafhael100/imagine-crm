@@ -129,3 +129,5 @@
 - **Erros e inatividade do chatbot WhatsApp (aprovado):** repetir pergunta após resposta inválida, transferir após tentativas excedidas, lembrete por ausência, pausa/encerramento por inatividade, retomada ou reinício no retorno, registro e notificação de falhas, prevenção de repetição/loops e histórico; observar regras da Meta.
 
 - **Métricas e relatórios do chatbot WhatsApp (aprovado):** conversas iniciadas, conclusão, transferência humana, abandono, etapas críticas, duração média, erros e conversão em leads/oportunidades; filtros por período/fluxo/número/equipe e exportação autorizada.
+
+- **Limites de fluxos ativos do chatbot WhatsApp (aprovado):** Essencial 3, Profissional 10, Empresarial 30 por empresa; rascunhos não contam, upgrade amplia limite e downgrade preserva fluxos mas pausa excedentes até escolha do administrador; independente do limite de automações comerciais.
