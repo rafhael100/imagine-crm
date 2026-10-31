@@ -768,3 +768,12 @@
 - Liberar a vaga somente depois de o cancelamento ser efetivado de forma consistente, sem criar conflitos ou reservas duplicadas.
 - Integrar vagas liberadas à lista de espera aprovada, observando suas regras de oferta e confirmação.
 - Registrar no histórico motivo, regra aplicada, responsável pela configuração, data/hora de execução e notificações relevantes; respeitar permissões e isolamento por empresa.
+
+## Regras para reagendamento de clientes — APROVADO
+- Permitir reagendamento pelo portal seguro do cliente ou por funcionário autorizado, respeitando escopo de permissões.
+- Antecedência mínima configurável por serviço; após o prazo, exigir autorização de funcionário com permissão apropriada.
+- Quantidade de reagendamentos por atendimento configurável, com padrão sem limite de quantidade, sujeito às demais regras de disponibilidade e antecedência.
+- Antes de confirmar, validar disponibilidade do profissional, sala, recursos e horário de destino, impedindo conflitos ou reservas duplicadas.
+- Notificar cliente após alteração pelos canais habilitados e registrar histórico completo de datas e horários anteriores e novos, autor/canal e data da mudança.
+- Sincronizar alterações com agenda interna, chatbot e integrações externas conectadas (Google Calendar, Microsoft Outlook), observando erros e políticas de sincronização.
+- Respeitar isolamento por empresa e regras específicas de serviço/unidade.
