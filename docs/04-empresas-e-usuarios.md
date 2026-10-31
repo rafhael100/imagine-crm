@@ -511,3 +511,11 @@
 - Toda importação inicia como rascunho, exigindo validação e publicação autorizada para entrar em operação.
 - Registrar histórico de importações e exportações com usuário e data, respeitando permissões e isolamento entre empresas.
 - Aplicar limites de fluxos ativos do plano somente na ativação/publicação, conforme regras aprovadas.
+
+## Integração do chatbot WhatsApp com agendamentos — APROVADO
+- Chatbot permite ao cliente solicitar agendamento informando serviço ou assunto e consultar horários disponíveis em agenda conectada.
+- Registrar agendamento com data, horário e responsável, vinculando-o ao lead ou contato do CRM.
+- Enviar confirmação pelo WhatsApp e permitir reagendamento ou cancelamento conforme regras configuradas pela empresa.
+- Enviar lembretes antes do atendimento, respeitando janelas, templates e políticas de mensagens da Meta.
+- Impedir reservas duplicadas e conflitos de horário, validando disponibilidade novamente na confirmação.
+- Preservar histórico de agendamentos, alterações, confirmações e cancelamentos, com isolamento entre empresas e permissões adequadas.
