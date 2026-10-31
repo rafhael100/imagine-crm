@@ -701,3 +701,12 @@
 - Disponibilizar links de reuniões online Google Meet, Microsoft Teams ou Zoom quando vinculados ao agendamento e autorizados.
 - Proteger o acesso com links individuais de escopo restrito, expiração e possibilidade de revogação; não expor agendamentos de outros clientes ou empresas.
 - Registrar ações do portal no histórico e respeitar políticas de privacidade e segurança.
+
+## Pesquisa de satisfação após agendamentos — APROVADO
+- Enviar pesquisa automaticamente após atendimento marcado como realizado, com prazo de envio configurável pela empresa.
+- Envio por e-mail ou WhatsApp quando integrado, observando consentimentos e políticas da Meta.
+- Coletar nota de 1 a 5 e comentário opcional; permitir personalização da mensagem.
+- Vincular avaliação ao agendamento, serviço, profissional e unidade, respeitando escopo de acesso.
+- Alertar gestores autorizados sobre avaliações baixas conforme limiar configurável.
+- Oferecer relatórios de notas médias por serviço, profissional e unidade, respeitando permissões e privacidade.
+- Esta pesquisa é independente da pesquisa CSAT das conversas de atendimento no WhatsApp já aprovada.
