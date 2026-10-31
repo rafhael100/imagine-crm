@@ -1048,3 +1048,10 @@
 - Não implementar limite numérico de agendamentos futuros por cliente, seja global ou específico por serviço.
 - Clientes podem manter múltiplas reservas futuras, desde que sejam respeitadas disponibilidade, capacidade, horários, regras de agendamento e prevenção de reservas sobrepostas do mesmo cliente.
 - Não criar exceções administrativas para ultrapassar limite quantitativo inexistente.
+
+## Cadastro rápido de clientes diretamente na agenda — APROVADO
+- No formulário de agendamento rápido, permitir que funcionário com permissão de criar contatos cadastre um cliente sem sair do calendário.
+- Disponibilizar campos básicos de nome, telefone e e-mail, respeitando obrigatoriedade, validações e campos adicionais configurados pela empresa.
+- Antes de criar, verificar duplicidade com contatos existentes por identificadores aplicáveis; permitir selecionar contato já cadastrado, conforme regras de duplicidade e permissões do CRM.
+- Salvar novo contato na base única de contatos do CRM e vinculá-lo ao agendamento, mantendo o funcionário no fluxo de reserva.
+- Registrar criação do contato, responsável, data/hora e vínculo ao agendamento no histórico/auditoria, respeitando isolamento por empresa e permissões.
