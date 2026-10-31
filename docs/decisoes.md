@@ -213,3 +213,5 @@
 - **Substituição de profissional em agendamento existente (aprovado):** trocar responsável sem recriar reserva, validar habilitação/disponibilidade, preservar horário quando possível, exigir permissão, avisar cliente e solicitar aceite quando serviço exigir, registrar antes/depois/responsável, evitar conflitos e atualizar integrações.
 
 - **Agendamentos prioritários e encaixes (aprovado):** marcação normal/prioritário, encaixes excepcionais com permissão especial, justificativa e alertas de sobreposição; não deslocar reservas confirmadas nem exceder capacidade física, enviar confirmação, auditar e incluir em relatórios.
+
+- **Agendamentos com aprovação prévia (aprovado):** configuração por serviço, solicitação pendente sem confirmação imediata, aprovação/recusa por funcionário ou gestor autorizado, prazo configurável, retenção temporária do horário, confirmação ou liberação após decisão, expiração da retenção e histórico auditável.
