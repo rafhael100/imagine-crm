@@ -267,3 +267,5 @@
 - **Agendamento rápido pela equipe (aprovado):** formulário simplificado diretamente no calendário para funcionários autorizados; pesquisar/cadastrar cliente, selecionar serviço/profissional/data/horário/unidade, criar reserva e notificar cliente, com todas as validações da agenda principal e sem reservas paralelas.
 
 - **Duplicação manual de agendamentos pela equipe (aprovado):** funcionário autorizado cria nova reserva reaproveitando cliente/serviço/profissional/unidade, escolhe nova data/horário, revisa resumo, valida disponibilidade/conflitos, notifica cliente e mantém registros independentes; não é recorrência automática.
+
+- **Agendamentos favoritos (rejeitado):** não criar atalhos pessoais de combinações serviço/profissional/unidade; manter agendamento rápido e duplicação manual existentes.
