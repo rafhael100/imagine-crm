@@ -1078,3 +1078,11 @@
 - Respeitar permissões, escopo por empresa/unidade/equipe e privacidade: mensagens não devem expor dados de reservas às quais o destinatário não tenha acesso.
 - Registrar histórico de tentativas, envios e resultados das notificações, evitando duplicações e respeitando preferências e falhas de entrega.
 - Integrar à central de notificações internas já aprovada, sem criar sistema paralelo.
+
+## Painel de agenda do dia — APROVADO
+- Disponibilizar painel operacional de visão diária para recepcionistas e gestores, utilizando os mesmos agendamentos da agenda principal, sem base ou calendário paralelo.
+- Exibir os agendamentos do dia e indicadores de total, confirmados, aguardando e cancelados, com definições consistentes com os status operacionais aprovados.
+- Listar próximos atendimentos em ordem cronológica e permitir filtros por profissional responsável e unidade.
+- Oferecer ações rápidas para confirmar, reagendar ou cancelar agendamentos, exclusivamente conforme permissões do usuário e regras de justificativa, disponibilidade e histórico já aprovadas.
+- Refletir automaticamente alterações de status, horário e responsável, inclusive mudanças feitas por outros funcionários e canais, com proteção contra conflitos simultâneos.
+- Restringir resultados e indicadores aos agendamentos que o funcionário pode visualizar, respeitando isolamento entre empresas, equipes, unidades e privacidade.
