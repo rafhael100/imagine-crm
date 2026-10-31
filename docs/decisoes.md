@@ -149,3 +149,5 @@
 - **Página pública de agendamentos (aprovado):** link exclusivo por empresa, identidade visual personalizada, seleção de serviço/profissional, disponibilidade integrada ao CRM/Google/Outlook, formulário configurável, confirmação por e-mail/WhatsApp, link seguro para reagendar/cancelar, vínculo automático a lead/contato e prevenção de spam e duplicidades.
 
 - **Configuração de serviços e agendamentos (aprovado):** nome/descrição, duração, intervalo, antecedência mínima/máxima, capacidade, profissionais habilitados, modalidade presencial/online/telefone, prazo de cancelamento e visibilidade pública/interna; regras compartilhadas entre agenda CRM, página pública e chatbot, respeitando permissões.
+
+- **Confirmação de presença e faltas (aprovado):** confirmação antecipada via WhatsApp/link seguro; status agendado/confirmado/realizado/não compareceu/cancelado; check-in por funcionário; registro automático ou manual de falta; reagendamento, histórico, relatórios por serviço/profissional e automações por status, integrados à agenda, chatbot e página pública.
