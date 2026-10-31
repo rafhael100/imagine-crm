@@ -159,3 +159,5 @@
 - **Lista de espera para agendamentos (aprovado):** interesse e preferências de dias/horários/profissionais; identificação de vagas liberadas, avisos por WhatsApp/e-mail, prazo configurável, prioridade por ordem de entrada com exceções autorizadas, confirmação somente após aceite e prevenção de dupla reserva; histórico de ofertas/aceites/recusas.
 
 - **Gerenciamento de salas e recursos (aprovado):** cadastro de salas/equipamentos/recursos, capacidade, disponibilidade e bloqueios, vínculo com serviços, reserva simultânea de profissional e recurso, prevenção de dupla reserva, bloqueios de manutenção, calendário por recurso e histórico; integrado à agenda, chatbot e página pública.
+
+- **Agendamentos em grupo (aprovado):** sessões individuais ou coletivas, capacidade/vagas restantes, múltiplas inscrições por sessão, lista de espera ao esgotar, confirmação e presença individuais, cancelamento liberando apenas a vaga, histórico e relatórios de ocupação/presença/cancelamentos; conflitos de profissionais e recursos validados por sessão.
