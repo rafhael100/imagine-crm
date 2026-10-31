@@ -123,3 +123,5 @@
 - **Transferência chatbot → humano (aprovado):** solicitação do cliente, falhas de compreensão ou assunto prioritário; resumo do contexto ao atendente, pausa do bot, retorno autorizado, fila quando indisponível e registro de motivo/horário/responsável, seguindo distribuição e SLA.
 
 - **Editor visual do chatbot WhatsApp (aprovado):** blocos de mensagem, pergunta, menu, condição, espera, ação no CRM, transferência e encerramento; rascunhos, testes antes da publicação e versionamento de fluxos.
+
+- **Gatilhos do chatbot WhatsApp (aprovado):** primeira mensagem, palavra-chave, fora do expediente, origem/campanha/formulário, conversa reaberta e ação manual; prioridade configurável entre gatilhos e bloqueio de reinício do bot durante atendimento humano ativo.
