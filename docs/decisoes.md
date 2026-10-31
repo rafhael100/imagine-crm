@@ -195,3 +195,5 @@
 - **Painel de capacidade e ocupação da agenda (aprovado):** percentuais de disponibilidade/reservas, carga por profissional, utilização de salas e recursos, alertas de capacidade, comparativos diários/semanais/mensais e por unidade, filtros por serviço/profissional/sala/período; cálculo automático com agendamentos e bloqueios, respeitando permissões.
 
 - **Agendamentos ilimitados (aprovado):** planos Essencial, Profissional e Empresarial sem limite comercial de reservas mensais, sujeitos a proteção técnica contra abuso.
+
+- **Confirmação automática de agendamentos (aprovado):** confirmação por link seguro via e-mail/WhatsApp integrado, antecedência e reenvio configuráveis, estados pendente/confirmado/não confirmado, alertas à equipe e histórico de envios/respostas; ausência de resposta não cancela reserva por padrão, salvo regra específica configurada.
