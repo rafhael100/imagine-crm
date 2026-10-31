@@ -416,3 +416,12 @@
 - Disponibilizar busca/filtros por tipo de arquivo e data.
 - Validar formatos, tamanho, segurança dos arquivos e permissões de acesso, respeitando restrições vigentes da API da Meta.
 - Contabilizar armazenamento dos anexos na franquia do plano contratado, com isolamento por empresa.
+
+## Encerramento e reabertura de conversas do WhatsApp — APROVADO
+- Atendente autorizado pode encerrar uma conversa, marcando-a como resolvida e selecionando motivo de encerramento configurável por empresa.
+- Nova mensagem do cliente reabre automaticamente a conversa; priorizar o último atendente responsável, se disponível, respeitando regras de distribuição.
+- Preservar integralmente mensagens, histórico de atendimentos, transferências e encerramentos anteriores.
+- Na reabertura, iniciar nova contagem de SLA de resposta conforme horário e regras configurados.
+- Permitir pesquisa CSAT após cada atendimento concluído, observando regras de envio da Meta.
+- Relatórios devem medir quantidades de conversas resolvidas e reabertas.
+- Respeitar permissões e isolamento por empresa.
