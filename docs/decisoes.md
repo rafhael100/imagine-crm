@@ -30,5 +30,6 @@
 | Segurança cliente | MFA obrigatório para admins da empresa; opcional ou exigível aos demais |
 | Auditoria comercial | Imutável por admin cliente, retenção padrão 12 meses |
 | Exportação comercial | CSV/XLSX, permissão específica, escopo de visibilidade, auditoria, grandes volumes assíncronos, link seguro temporário, sem credenciais |
+| Importação comercial | CSV/XLSX, mapeamento, prévia, detecção de duplicados, ignorar/atualizar, relatório, processamento assíncrono, limites e auditoria |
 
 **Atenção:** os arquivos detalhados prevalecem sobre resumos desta tabela. Uma proposta em discussão não equivale a aprovação.
