@@ -538,3 +538,13 @@
 - Permitir ao funcionário revogar/desconectar a integração.
 - Detectar e notificar falhas de sincronização, evitando apresentar como garantida uma disponibilidade que não tenha sido validada.
 - Respeitar permissões individuais, isolamento por empresa e proteção de credenciais de integração.
+
+## Página pública de agendamentos — APROVADO
+- Cada empresa poderá publicar link exclusivo de agendamento, sem exigir login no CRM ou interação com chatbot.
+- Personalização com logotipo, cores e informações da empresa; escolha do serviço e, quando permitido, do profissional responsável.
+- Exibir somente horários disponíveis conforme agenda interna e compromissos sincronizados com Google Calendar/Outlook.
+- Coletar nome, telefone, e-mail e campos adicionais configuráveis, respeitando LGPD e permissões.
+- Confirmar agendamento por e-mail ou WhatsApp conforme integração disponível e políticas da Meta.
+- Oferecer link seguro para reagendar/cancelar conforme regras da empresa.
+- Criar ou vincular automaticamente lead/contato, com detecção de duplicados e histórico.
+- Aplicar proteção contra spam, reservas duplicadas e conflitos, validando disponibilidade na confirmação.
