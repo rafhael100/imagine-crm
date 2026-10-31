@@ -209,3 +209,5 @@
 - **Agendamento de múltiplos serviços (aprovado):** reserva conjunta de serviços em sequência, com duração e intervalos, profissionais distintos, validação integrada de recursos/horários e confirmação sem reservas parciais; resumo único, alterações individuais ou em conjunto e histórico vinculado por atendimento.
 
 - **Agendamentos com profissionais alternativos (aprovado):** permitir escolha nominal ou 'Qualquer profissional disponível'; sugerir alternativas habilitadas com horários livres, respeitar serviço/unidade e conflitos, equilibrar distribuição, identificar profissional e exigir confirmação do cliente antes da reserva.
+
+- **Substituição de profissional em agendamento existente (aprovado):** trocar responsável sem recriar reserva, validar habilitação/disponibilidade, preservar horário quando possível, exigir permissão, avisar cliente e solicitar aceite quando serviço exigir, registrar antes/depois/responsável, evitar conflitos e atualizar integrações.
