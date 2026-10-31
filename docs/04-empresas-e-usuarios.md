@@ -719,3 +719,12 @@
 - Notificar responsável autorizado após conclusão do formulário.
 - Restringir visualização e acesso às respostas por permissões e isolamento por empresa, protegendo dados pessoais e anexos.
 - Registrar envio e preenchimento com data/hora no histórico; interface responsiva.
+
+## Documentos e anexos dos agendamentos — APROVADO
+- Permitir envio de arquivos pelos clientes no portal do cliente ou formulário prévio e por funcionários internos autorizados.
+- Suportar PDF, imagens e formatos comuns de documentos, com prévia apenas quando tecnicamente compatível.
+- Vincular arquivos ao agendamento e ao contato correspondente, com isolamento por empresa.
+- Validar tamanho, tipo real de arquivo e conteúdo, com proteção contra arquivos maliciosos; downloads com controle de acesso.
+- Permissões granulares para visualizar, enviar, substituir e excluir anexos; não disponibilizar arquivos a usuários não autorizados.
+- Contabilizar armazenamento nos limites do plano contratado.
+- Registrar envio, substituição e exclusão no histórico, com responsável e data/hora; aplicar proteção de dados pessoais e LGPD.
