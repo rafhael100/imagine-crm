@@ -237,3 +237,10 @@
 - Exportação nos formatos CSV, Excel (XLSX) e PDF.
 - Respeitar permissões de cada usuário e isolamento por empresa.
 - Valores de vendas referem-se a dados comerciais registrados no CRM, sem implicar integração contábil ou fiscal.
+
+## Relatórios personalizados — APROVADO
+- Cada empresa pode criar e salvar relatórios personalizados a partir dos módulos e campos disponíveis, inclusive campos personalizados.
+- Permitir seleção e reordenação de colunas, combinação de filtros, agrupamentos por vendedor, equipe, período ou etapa, e agregações de contagem, soma e média.
+- Salvar configurações para reutilização e compartilhar relatórios de modo privado ou com usuários autorizados.
+- Exportar relatórios em CSV, XLSX e PDF.
+- Respeitar isolamento por empresa, permissões de visualização de registros e campos e permissões de exportação; não expor dados não autorizados.
