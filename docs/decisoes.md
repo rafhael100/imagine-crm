@@ -133,3 +133,5 @@
 - **Limites de fluxos ativos do chatbot WhatsApp (aprovado):** Essencial 3, Profissional 10, Empresarial 30 por empresa; rascunhos não contam, upgrade amplia limite e downgrade preserva fluxos mas pausa excedentes até escolha do administrador; independente do limite de automações comerciais.
 
 - **Versionamento e publicação do chatbot (aprovado):** rascunho independente da versão publicada, validação antes de publicar, conversas em andamento fixadas à versão inicial, novas conversas na última versão, histórico de autor/data/alterações, reversão autorizada e desativação sem apagar histórico.
+
+- **Simulador de fluxos do chatbot (aprovado):** testes de conversas e ramificações sem mensagens reais, dados fictícios, validação de blocos e diagnóstico por etapa, simulação sem alterar CRM, bloqueio de publicação com erros críticos e histórico de testes.
