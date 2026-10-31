@@ -330,3 +330,10 @@
 - Integrar captação com identificação de duplicidades, Lead Scoring e automações comerciais.
 - Disponibilizar métricas de visualizações, envios e taxa de conversão.
 - Isolamento de formulários, submissões e leads por empresa, respeitando permissões.
+
+## Personalização visual dos formulários de captação — APROVADO
+- Cada empresa pode personalizar seus formulários sem programação, incluindo logotipo, cores de botões/textos/elementos e ordem dos campos.
+- Permitir configurar campos obrigatórios, mensagem de sucesso e redirecionamento para URL após envio.
+- Layout responsivo para celulares e computadores, com pré-visualização antes da publicação.
+- Atualizações de formulário publicado devem preservar o mesmo link público ou código de incorporação.
+- Manter isolamento por empresa e respeitar permissões de edição/publicação.
