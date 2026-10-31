@@ -401,3 +401,11 @@
 - Pré-visualização e possibilidade de personalização antes do envio; registrar mensagem efetivamente enviada no histórico da conversa.
 - Distinguir respostas livres dentro da janela permitida de atendimento dos templates oficiais sujeitos a aprovação e políticas da Meta.
 - Aplicar permissões e isolamento por empresa.
+
+## Etiquetas e categorização de conversas do WhatsApp — APROVADO
+- Cada empresa poderá criar etiquetas personalizadas com nome e cor para categorizar conversas do WhatsApp.
+- Uma conversa poderá ter múltiplas etiquetas, aplicadas manualmente ou por regras de automação.
+- Permitir filtrar conversas por etiqueta e gerar relatórios de quantidade e distribuição por categoria.
+- Controlar por permissão quem pode criar, editar ou excluir etiquetas.
+- Registrar no histórico das conversas a aplicação, remoção e alterações de etiquetas.
+- Garantir isolamento das etiquetas e conversas entre empresas.
