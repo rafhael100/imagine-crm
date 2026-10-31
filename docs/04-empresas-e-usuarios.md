@@ -595,3 +595,12 @@
 - Confirmar a reserva apenas após aceite dentro do prazo, revalidando disponibilidade de forma transacional para impedir dupla confirmação.
 - Registrar ofertas, aceites, recusas e expiração no histórico.
 - Integrar com agenda interna, página pública e chatbot WhatsApp, respeitando permissões e isolamento entre empresas.
+
+## Gerenciamento de salas e recursos da agenda — APROVADO
+- Cadastrar salas, equipamentos e outros recursos físicos por empresa.
+- Definir capacidade de pessoas por sala, horários de disponibilidade e bloqueios de uso.
+- Associar recursos aos serviços e reservar simultaneamente profissional e recurso quando necessário.
+- Validar disponibilidade conjunta e impedir dupla reserva do mesmo recurso, inclusive via chatbot, página pública e agenda interna.
+- Permitir bloqueios temporários por manutenção ou indisponibilidade.
+- Oferecer visualização de calendário por sala ou equipamento.
+- Registrar histórico de reservas, alterações e bloqueios, respeitando permissões e isolamento por empresa.
