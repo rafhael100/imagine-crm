@@ -311,3 +311,12 @@
 - Disponibilizar histórico no cadastro do lead, separado da auditoria técnica.
 - Exibir gráfico da evolução da pontuação ao longo do tempo.
 - Respeitar permissões de visualização do lead e isolamento por empresa.
+
+## Identificação e mesclagem de leads duplicados — APROVADO
+- Identificar possíveis duplicidades por telefone, e-mail e outros identificadores no cadastro manual, importação e integrações.
+- Alertar e permitir consultar o registro existente no cadastro manual.
+- Na importação, permitir ignorar ou atualizar duplicados de acordo com permissões.
+- Nas integrações, evitar criar repetidamente o mesmo lead.
+- Permitir mesclagem mediante autorização, com escolha do registro principal e prévia dos conflitos de dados antes da consolidação.
+- Preservar atividades, histórico de responsáveis e origens dos registros, sem perda de informações comerciais.
+- Respeitar isolamento entre empresas, permissões e auditoria da mesclagem.
