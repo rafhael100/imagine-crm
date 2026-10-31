@@ -759,3 +759,12 @@
 - Alertar equipe autorizada sobre ausência de resposta, respeitando escopos de acesso.
 - Cancelamento automático por falta de confirmação desativado por padrão; ausência de resposta não libera a vaga. Eventual regra explícita de cancelamento configurada pela empresa deverá observar prazos, notificações, auditoria e prevenção de conflitos.
 - Registrar envios, tentativas, respostas, canal e horários no histórico, com isolamento por empresa.
+
+## Política de cancelamento por falta de confirmação — APROVADO
+- Comportamento padrão: agendamentos sem confirmação permanecem ativos e a vaga não é liberada.
+- Cancelamento automático por falta de confirmação é opcional, inicialmente desativado, e só pode ser habilitado expressamente por administrador autorizado da empresa.
+- A empresa pode configurar a antecedência mínima para efetivar cancelamentos e deve avisar o cliente antes do cancelamento, conforme canais habilitados e políticas aplicáveis.
+- Permitir exceções para serviços e clientes específicos protegidos da regra.
+- Liberar a vaga somente depois de o cancelamento ser efetivado de forma consistente, sem criar conflitos ou reservas duplicadas.
+- Integrar vagas liberadas à lista de espera aprovada, observando suas regras de oferta e confirmação.
+- Registrar no histórico motivo, regra aplicada, responsável pela configuração, data/hora de execução e notificações relevantes; respeitar permissões e isolamento por empresa.
