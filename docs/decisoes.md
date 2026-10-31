@@ -229,3 +229,5 @@
 - **Horários individuais por profissional (aprovado):** jornada semanal por dia, intervalos e folgas, exceções por data, horários por unidade e serviço, edição autorizada, disponibilidade recalculada com bloqueios/feriados e histórico de alterações.
 
 - **Antecedência e janela de agendamentos (aprovado):** mínimos e máximos configuráveis por serviço, respeitando expediente/jornada; clientes visualizam somente horários elegíveis no portal/página pública/chatbot; exceções por funcionários autorizados com histórico; sem valores fixos de 2 horas ou 90 dias.
+
+- **Intervalos entre atendimentos (aprovado):** configuração em minutos por serviço de preparação antes e limpeza/descanso depois; bloquear tempo de profissionais/salas/recursos, diferenciar visualmente, impedir conflitos em todos os canais e permitir exceções auditadas apenas a usuários autorizados.
