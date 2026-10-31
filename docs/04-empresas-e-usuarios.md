@@ -377,3 +377,11 @@
 - Quando não houver atendimento disponível, manter a conversa na fila e retomar a distribuição no próximo expediente.
 - Prevenir respostas repetitivas e observar políticas, templates e janelas de envio da API oficial do WhatsApp Business da Meta.
 - Aplicar permissões e isolamento por empresa.
+
+## SLA de atendimento pelo WhatsApp — APROVADO
+- Cada empresa pode configurar prazo máximo para primeira resposta e prazo específico para respostas subsequentes após nova mensagem do cliente.
+- Contagem do SLA considera somente horários de atendimento configurados, com exceções/pausas parametrizáveis.
+- Alertar vendedor antes do vencimento e escalar ao gestor quando o prazo for excedido.
+- Painel deve identificar conversas dentro/fora do SLA; relatórios de tempo médio de resposta e percentual de cumprimento.
+- Integrar à caixa de entrada compartilhada e respeitar permissões, equipes e isolamento por empresa.
+- Prazos padrão, antecedência dos alertas e condições exatas de pausa ainda a definir.
