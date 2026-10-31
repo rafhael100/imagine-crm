@@ -130,3 +130,9 @@
 - Visualização em lista e calendário.
 - Registrar criação, alterações e conclusão na linha do tempo comercial.
 - Respeitar isolamento por empresa e permissões de acesso.
+
+## Registro de atividades comerciais — APROVADO
+- Registrar atividades realizadas sem exigir tarefa prévia, vinculadas a leads, contatos ou oportunidades.
+- Tipos: ligação, WhatsApp, e-mail, reunião, visita e outro (atividade personalizada).
+- Cada atividade pode conter data, horário, responsável, descrição e resultado.
+- Exibir na linha do tempo comercial, respeitando permissões e isolamento por empresa.
