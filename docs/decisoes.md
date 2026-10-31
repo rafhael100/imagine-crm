@@ -237,3 +237,5 @@
 - **Serviços com duração variável escolhida pelo cliente (rejeitado):** não oferecer escolha de múltiplas durações na reserva; manter duração padrão por serviço e ajuste excepcional individual somente por funcionário autorizado, com justificativa e validação de disponibilidade.
 
 - **Confirmação digital de chegada pelo cliente (rejeitada):** não implementar check-in autônomo pelo portal. Manter check-in/check-out por funcionário autorizado e indicadores de comparecimento; esta decisão substitui a previsão anterior de check-in pelo próprio cliente.
+
+- **Observações internas dos agendamentos (aprovado):** anotações operacionais vinculadas à reserva, autor/data/hora, histórico de edição, consulta nos detalhes, acesso somente a funcionários autorizados e invisibilidade ao cliente; separadas das mensagens e documentos do cliente.
