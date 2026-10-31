@@ -257,3 +257,5 @@
 - **Cancelamento de agendamentos pela equipe (aprovado):** somente funcionários autorizados; motivo obrigatório e observação opcional; notificar cliente/profissional, liberar horários e recursos, acionar lista de espera FIFO, sincronizar calendários e preservar registro cancelado com histórico de responsável/data/motivo.
 
 - **Reagendamento pela equipe (aprovado):** funcionário autorizado altera data/horário de reserva existente com motivo obrigatório, valida novamente profissional/sala/recursos e conflitos, notifica cliente, sincroniza calendários e preserva identificador e histórico com antes/depois e responsável.
+
+- **Motivos de cancelamento personalizáveis por empresa (aprovado):** catálogo inicial de desistência/imprevisto/indisponibilidade/duplicidade/outros; criação/edição por administradores autorizados, motivo obrigatório no cancelamento, observação opcional, relatórios por motivo e preservação dos motivos históricos.
