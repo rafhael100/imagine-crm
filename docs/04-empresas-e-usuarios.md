@@ -69,3 +69,9 @@
 - Gerar relatório com registros importados e erros.
 - Processar arquivos grandes em segundo plano.
 - Respeitar limites do plano contratado e registrar auditoria da operação.
+
+## Campos personalizados — APROVADO
+- Cada empresa pode criar campos personalizados para **leads, contatos e oportunidades**, isolados por empresa.
+- Tipos aprovados: **texto, número, moeda, data, seleção única, múltipla seleção e verdadeiro/falso**.
+- Campos podem ser utilizados em formulários, filtros, relatórios, importações e exportações, respeitando permissões.
+- Detalhes como obrigatoriedade, alteração de tipo, limites por plano, validações e arquivamento/exclusão permanecem pendentes.
