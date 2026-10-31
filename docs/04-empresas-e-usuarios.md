@@ -873,3 +873,12 @@
 - Permitir edição somente de agendamentos sobre os quais o usuário possua permissão específica.
 - Refletir alterações para os usuários autorizados e utilizar os mesmos registros da agenda principal, sem criar agenda paralela ou reservas duplicadas.
 - Respeitar isolamento entre empresas e permissões por funcionário, equipe e unidade.
+
+## Configuração de horários individuais por profissional — APROVADO
+- Permitir jornada semanal própria por profissional, com horários distintos por dia, intervalos de almoço/pausas e dias de folga.
+- Suportar exceções de horários em datas específicas e jornadas diferentes conforme unidade.
+- Permitir definir janelas de atendimento específicas por serviço para profissionais habilitados.
+- Funcionário ou gestor pode alterar jornadas somente conforme permissões de acesso.
+- Recalcular automaticamente disponibilidade na agenda interna, página pública, portal e chatbot, considerando também feriados, bloqueios, recursos e horários da unidade.
+- Alertar sobre conflitos com reservas existentes antes de aplicar alterações, sem cancelar automaticamente agendamentos confirmados.
+- Registrar histórico de alterações, responsável, data/hora e valores anteriores/novos, com isolamento por empresa.
