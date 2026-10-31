@@ -737,3 +737,11 @@
 - Manter histórico de horários, responsáveis e alterações de presença, respeitando permissões e isolamento por empresa.
 - Disponibilizar relatórios de presença, atrasos e faltas por período, serviço, profissional e unidade, conforme permissões.
 - Integrar com os estados de confirmação e no-show existentes, evitando registros conflitantes ou duplicados.
+
+## Painel de capacidade e ocupação da agenda — APROVADO
+- Exibir percentual de horários disponíveis e reservados, calculado a partir da capacidade agendável e dos horários efetivamente reservados, considerando expediente e bloqueios.
+- Mostrar carga de atendimentos por profissional, taxa de utilização de salas e disponibilidade de equipamentos/recursos compartilhados.
+- Alertar sobre horários e recursos próximos do limite de capacidade, sem permitir sobreposição de reservas.
+- Oferecer comparativos por dia, semana, mês e unidade, com filtros de serviço, profissional, sala e período.
+- Calcular automaticamente os indicadores com base em agendamentos, horários e bloqueios já cadastrados, sem lançamentos manuais adicionais.
+- Restringir acesso ao painel e seus dados conforme permissões por funcionário, equipe, unidade e empresa; garantir isolamento entre empresas.
