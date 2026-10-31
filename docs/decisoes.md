@@ -141,3 +141,5 @@
 - **Importação/exportação de fluxos de chatbot (aprovado):** JSON com validação de estrutura/compatibilidade, duplicação sem alterar original, remapeamento de equipes/campos/etiquetas, exclusão de segredos e dados de clientes, importação como rascunho, histórico e permissões por empresa; limites do plano aplicados aos fluxos ativos.
 
 - **Integração do chatbot com agendamentos (aprovado):** solicitação por serviço/assunto, consulta de horários na agenda conectada, criação com data/horário/responsável, confirmação WhatsApp, reagendamento/cancelamento conforme regras da empresa, lembretes, vínculo a lead/contato e prevenção de duplicidade; respeitar políticas da Meta.
+
+- **Agenda integrada do CRM (aprovado):** calendário diário/semanal/mensal; criar/editar/reagendar/cancelar; responsáveis/equipes, disponibilidade, folgas/bloqueios, participantes leads/contatos/convidados, prevenção de conflitos, agenda compartilhada com chatbot, notificações e histórico; independente de tarefas, com visualização conjunta no calendário.
