@@ -966,3 +966,11 @@
 - Quando detectar conflito, informar o usuário, exibir os dados atuais e solicitar revisão antes de tentar salvar novamente; não mesclar silenciosamente alterações incompatíveis.
 - Revalidar disponibilidade de profissionais, salas, recursos, intervalos e capacidade no momento da gravação, usando operações atômicas para evitar reservas duplicadas.
 - Atualizar a agenda dos usuários autorizados após mudanças e registrar autor, data/hora e campos alterados no histórico/auditoria, respeitando isolamento por empresa e permissões.
+
+## Cancelamento de agendamentos pela equipe — APROVADO
+- Somente funcionários com permissão específica podem cancelar agendamentos de clientes.
+- Exigir seleção de motivo de cancelamento, com campo complementar de observação opcional.
+- Após cancelamento confirmado, notificar cliente e profissional pelos canais habilitados e liberar horário, sala e recursos correspondentes, respeitando consistência transacional.
+- Acionar a lista de espera para oferecer vaga liberada conforme ordem cronológica FIFO e prazo de resposta configurável, sem confirmar automaticamente antes do aceite.
+- Atualizar calendários externos conectados e demais visualizações da agenda, registrando falhas de sincronização para tratamento.
+- Preservar o agendamento com status Cancelado no histórico do cliente e nos relatórios; registrar autor, data/hora, motivo e alterações na auditoria, respeitando permissões e isolamento por empresa.
