@@ -627,3 +627,12 @@
 - Permitir ativar/desativar cada tipo de notificação e configurar os prazos de lembrete.
 - Registrar histórico de envios, tentativas e falhas, com acesso conforme permissões e isolamento entre empresas.
 - Respeitar as janelas de atendimento, consentimentos aplicáveis, templates aprovados e políticas de mensagens da Meta; prevenir duplicidade de envios.
+
+## Suporte a fusos horários na agenda — APROVADO
+- Configurar fuso horário principal por empresa e, opcionalmente, fuso individual por funcionário.
+- Exibir horários ao cliente conforme fuso identificado ou explicitamente selecionado, com indicação clara do fuso em páginas públicas, confirmações e lembretes.
+- Armazenar instantes de agendamento de forma padronizada em UTC, preservando identificação de fuso IANA e horário local relevante para recorrências.
+- Converter corretamente datas/horários nas integrações Google Calendar e Microsoft Outlook e nos relatórios conforme fuso selecionado.
+- Considerar regras oficiais de horário de verão e transições de fuso, tratando horários locais inexistentes ou ambíguos.
+- Validar conflitos de disponibilidade entre participantes, salas e recursos independentemente do fuso de exibição.
+- Respeitar permissões e isolamento entre empresas.
