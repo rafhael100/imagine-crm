@@ -959,3 +959,10 @@
 - Recalcular vagas disponíveis quando participantes ingressarem, saírem ou cancelarem, integrando com lista de espera já aprovada.
 - Preservar histórico de inclusão, cancelamento e alterações com autor/data/hora, respeitando permissões e isolamento por empresa.
 - No portal, cada cliente vê somente seus próprios dados de participação, sem expor dados dos demais.
+
+## Controle de conflitos de edição simultânea na agenda — APROVADO
+- Detectar alterações concorrentes sobre o mesmo agendamento, inclusive entre funcionários, portal, chatbot e API.
+- Empregar controle de versão ou equivalente no backend para impedir que uma atualização baseada em dados antigos sobrescreva alterações mais recentes.
+- Quando detectar conflito, informar o usuário, exibir os dados atuais e solicitar revisão antes de tentar salvar novamente; não mesclar silenciosamente alterações incompatíveis.
+- Revalidar disponibilidade de profissionais, salas, recursos, intervalos e capacidade no momento da gravação, usando operações atômicas para evitar reservas duplicadas.
+- Atualizar a agenda dos usuários autorizados após mudanças e registrar autor, data/hora e campos alterados no histórico/auditoria, respeitando isolamento por empresa e permissões.
