@@ -201,3 +201,5 @@
 - **Cancelamento por falta de confirmação (aprovado):** manter reservas ativas por padrão; cancelamento automático opcional e desligado inicialmente, ativado expressamente por administrador autorizado, com antecedência configurável, aviso prévio, exceções por serviço/cliente, liberação apenas após cancelamento, integração com lista de espera e histórico de motivo/regra/horário.
 
 - **Reagendamento de clientes (aprovado):** pelo portal ou funcionário autorizado, antecedência mínima por serviço, limite opcional de alterações (padrão ilimitado), autorização após prazo, validação de profissional/sala/horário, notificação, histórico e sincronização com agenda, chatbot e calendários externos.
+
+- **Clientes recorrentes (aprovado):** identificação segura, reutilização de cadastro, sugestões de preferências, reservas simplificadas, histórico protegido e prevenção de contatos duplicados.
