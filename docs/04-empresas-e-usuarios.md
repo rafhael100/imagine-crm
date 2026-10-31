@@ -929,3 +929,9 @@
 - Bloquear novas reservas sobrepostas pelo portal do cliente e chatbot; aplicar validação no backend para impedir concorrência e duplicações.
 - Permitir exceção apenas por funcionário com permissão específica e justificativa obrigatória, desde que não viole disponibilidade física de profissionais, salas e recursos.
 - Registrar tentativas bloqueadas e exceções concedidas com usuário, data/hora e justificativa; respeitar isolamento entre empresas e privacidade.
+
+## Status operacionais de atendimento — APROVADO
+- Padronizar os status de agendamento: **Agendado** (reserva criada), **Aguardando confirmação** (cliente ainda não confirmou), **Confirmado** (cliente confirmou presença), **Aguardando atendimento** (funcionário registrou a chegada), **Em atendimento** (atendimento iniciado), **Concluído** (finalizado), **Não compareceu** (falta) e **Cancelado** (reserva cancelada).
+- Atualizar status automaticamente quando houver evento correspondente, ou manualmente por funcionário autorizado, com validação de transições e histórico de responsável, data/hora e status anterior/novo.
+- O status 'Aguardando atendimento' depende de registro por funcionário autorizado; **não** oferecer check-in digital autônomo pelo cliente, conforme rejeição anterior.
+- Integrar status a notificações, relatórios, controle de presença e auditoria, respeitando permissões e isolamento entre empresas.
