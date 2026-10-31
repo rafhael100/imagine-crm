@@ -223,3 +223,5 @@
 - **Aprovação de agendamentos por múltiplas etapas (rejeitada):** não implementar fluxo sequencial de múltiplos aprovadores; manter aprovação simples por funcionário ou gestor autorizado e fila de aprovação já aprovadas.
 
 - **Notificações internas da agenda (aprovado):** central de avisos no CRM para novos agendamentos, cancelamentos, reagendamentos, aprovações pendentes e vagas da lista de espera; marcar como lida, preferências individuais, controle de permissões e prevenção de duplicidades.
+
+- **Agenda compartilhada da equipe (aprovado):** calendário diário/semanal/mensal com agendas lado a lado, filtros por profissional/equipe/serviço/unidade, disponibilidade e cores, privacidade dos compromissos, edição autorizada e atualização sobre os mesmos registros da agenda principal.
