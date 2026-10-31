@@ -136,3 +136,12 @@
 - Tipos: ligação, WhatsApp, e-mail, reunião, visita e outro (atividade personalizada).
 - Cada atividade pode conter data, horário, responsável, descrição e resultado.
 - Exibir na linha do tempo comercial, respeitando permissões e isolamento por empresa.
+
+## Funis de vendas (Kanban) — APROVADO
+- Cada empresa pode criar e administrar múltiplos funis de vendas, isolados por tenant.
+- Etapas personalizadas: criar, renomear e reordenar.
+- Visualização Kanban com movimentação de oportunidades entre etapas.
+- Oportunidades podem ter vendedor responsável, valor e previsão de fechamento.
+- Registrar todas as mudanças de etapa no histórico comercial.
+- Permissões específicas para visualização e alteração dos funis e oportunidades.
+- Estados finais **Ganha** e **Perdida**, com motivos de perda configuráveis por empresa.
