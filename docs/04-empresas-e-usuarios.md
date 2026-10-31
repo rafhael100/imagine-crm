@@ -811,3 +811,12 @@
 - Identificar claramente o profissional que realizará o atendimento antes de concluir a reserva.
 - Exigir confirmação do cliente sobre a alternativa antes de efetivar o agendamento, inclusive nos fluxos de portal, página pública e chatbot.
 - Respeitar permissões por unidade e empresa e manter histórico de escolha/atribuição quando aplicável.
+
+## Substituição de profissionais em agendamentos existentes — APROVADO
+- Permitir a usuário autorizado substituir o profissional de agendamento existente sem cancelar e recriar a reserva, preservando vínculo com cliente, serviço e histórico.
+- Validar habilitação do profissional substituto para serviço/unidade e disponibilidade real, considerando horário, bloqueios, salas e recursos; impedir conflitos e sobreposições.
+- Preservar horário original sempre que possível; caso seja necessário alterar o horário, aplicar as regras de reagendamento pertinentes.
+- Exigir permissão específica para substituição e notificar o cliente sobre a mudança.
+- Solicitar aceite do cliente quando exigido pela configuração do serviço, antes de concluir a substituição que dependa desse aceite.
+- Registrar profissional anterior, substituto, responsável pela alteração e data/hora no histórico e auditoria.
+- Atualizar calendários conectados, convites e demais integrações relacionadas, monitorando falhas de sincronização.
