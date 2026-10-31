@@ -745,3 +745,8 @@
 - Oferecer comparativos por dia, semana, mês e unidade, com filtros de serviço, profissional, sala e período.
 - Calcular automaticamente os indicadores com base em agendamentos, horários e bloqueios já cadastrados, sem lançamentos manuais adicionais.
 - Restringir acesso ao painel e seus dados conforme permissões por funcionário, equipe, unidade e empresa; garantir isolamento entre empresas.
+
+## Agendamentos ilimitados em todos os planos — APROVADO
+- Agendamentos mensais ilimitados nos planos Essencial, Profissional e Empresarial, sem cobrança adicional por quantidade de reservas.
+- Manter verificações de disponibilidade, conflitos, permissões e capacidade em cada agendamento.
+- Aplicar proteção técnica contra abuso e excesso de requisições, sem converter controles de segurança em limite comercial.
