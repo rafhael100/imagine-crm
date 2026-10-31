@@ -693,3 +693,11 @@
 - Identificar alterações originadas por integrações Google Calendar ou Microsoft Outlook.
 - Histórico de auditoria protegido contra edição e exclusão por usuários da empresa, com acesso conforme permissões.
 - Reter registros por 12 meses durante a assinatura ativa, observadas obrigações legais de retenção e políticas de proteção de dados; aplicar isolamento por empresa.
+
+## Portal do cliente para agendamentos — APROVADO
+- Disponibilizar portal responsivo, com identidade visual da empresa, acessível por link seguro enviado por e-mail ou WhatsApp, sem exigir senha específica do cliente.
+- Permitir consultar próximos agendamentos e histórico de atendimentos anteriores do próprio cliente.
+- Permitir confirmar presença, reagendar e cancelar atendimentos dentro dos prazos e regras configurados para cada serviço, validando disponibilidade e conflitos.
+- Disponibilizar links de reuniões online Google Meet, Microsoft Teams ou Zoom quando vinculados ao agendamento e autorizados.
+- Proteger o acesso com links individuais de escopo restrito, expiração e possibilidade de revogação; não expor agendamentos de outros clientes ou empresas.
+- Registrar ações do portal no histórico e respeitar políticas de privacidade e segurança.
