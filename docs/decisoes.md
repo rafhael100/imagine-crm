@@ -277,3 +277,5 @@
 - **Horários especiais de funcionamento (aprovado):** abertura antecipada, fechamento tardio ou expediente reduzido em uma ou várias datas, por unidade; exceção prevalece sobre horário regular, respeita disponibilidade dos profissionais/recursos, alerta sobre reservas conflitantes sem cancelamento automático e mantém histórico de alterações.
 
 - **Limite de agendamentos futuros por cliente (rejeitado):** sem limite quantitativo global ou por serviço; manter apenas regras existentes de disponibilidade, capacidade e prevenção de sobreposição.
+
+- **Cadastro rápido de clientes diretamente na agenda (aprovado):** funcionário autorizado cadastra contato com nome/telefone/e-mail e campos configuráveis sem sair do calendário; valida duplicidade, reutiliza base única de contatos, vincula à reserva e registra responsável/data/hora.
