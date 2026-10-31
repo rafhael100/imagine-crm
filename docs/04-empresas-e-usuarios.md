@@ -576,3 +576,12 @@
 - Registrar link da reunião e histórico de alterações no CRM, respeitando visibilidade e permissões.
 - Proteger credenciais/tokens de integração e aplicar isolamento entre empresas.
 - Disponibilidade de recursos condicionada às APIs, permissões e políticas de cada plataforma; tratar e notificar falhas de integração.
+
+## Agendamentos recorrentes — APROVADO
+- Permitir agendamentos recorrentes com periodicidade diária, semanal, quinzenal ou mensal.
+- Configurar encerramento por data final ou quantidade de ocorrências.
+- Verificar disponibilidade e conflitos individualmente para cada ocorrência antes da confirmação, incluindo bloqueios e calendários conectados.
+- Permitir editar ou cancelar uma ocorrência isolada ou a série inteira, preservando exceções e histórico.
+- Gerar notificações e lembretes por ocorrência, respeitando canais e políticas aplicáveis.
+- Sincronizar séries e alterações com Google Calendar e Microsoft Outlook quando suportado pelas integrações.
+- Registrar alterações, cancelamentos e exceções no histórico; respeitar permissões, regras do serviço e isolamento entre empresas.
