@@ -785,3 +785,12 @@
 - Solicitar apenas informações novas ou desatualizadas em formulários prévios, sem dispensar campos necessários ao serviço ou consentimentos aplicáveis.
 - Vincular novo agendamento ao contato existente no CRM e aplicar o mesmo comportamento em portal, página pública e chatbot quando houver identificação segura.
 - Respeitar permissões, isolamento por empresa e proteção de dados pessoais; identificação apenas por telefone/e-mail não concede acesso a informações privadas sem verificação adicional.
+
+## Agendamentos para dependentes e terceiros — APROVADO
+- Permitir que o titular/responsável faça reservas para dependentes, familiares ou terceiros sob sua responsabilidade, conforme regras do serviço.
+- Cadastrar o atendido como pessoa vinculada ao titular, coletando apenas os dados necessários ao atendimento.
+- Permitir selecionar a pessoa que receberá o serviço ao agendar, mantendo histórico de atendimentos individualizado por atendido, sem misturar históricos.
+- Enviar notificações ao responsável autorizado, conforme vínculo e permissões, evitando exposição indevida de dados pessoais.
+- Configurar por serviço se são aceitos agendamentos para terceiros; manter opção desativada onde não permitida.
+- Vincular titular e atendido no CRM com relações e autorizações apropriadas, sem presumir automaticamente poderes de representação para qualquer terceiro.
+- Aplicar controles de privacidade, verificação de autorização e regras da LGPD, com especial cuidado para crianças e adolescentes, acesso mínimo necessário e isolamento por empresa.
