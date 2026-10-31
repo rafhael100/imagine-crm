@@ -160,3 +160,11 @@
 - Calcular valor ponderado = valor da oportunidade × probabilidade de fechamento / 100.
 - Utilizar valores ponderados em relatórios e previsões comerciais.
 - Percentuais apresentados como exemplos na discussão não são valores padrão aprovados.
+
+## Catálogo de produtos e serviços nas oportunidades — APROVADO
+- Cada empresa mantém catálogo próprio de produtos e serviços, com nome, código, descrição, preço e status.
+- Cada oportunidade pode conter múltiplos itens, com quantidade e preço unitário.
+- Descontos por item ou no total sujeitos a permissões.
+- Valor total calculado automaticamente; valor dos itens pode alimentar o valor da oportunidade e a previsão ponderada.
+- Registrar alterações de itens e valores no histórico comercial.
+- Controle de estoque fora do escopo inicial.
