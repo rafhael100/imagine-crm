@@ -207,3 +207,5 @@
 - **Agendamentos para dependentes e terceiros (aprovado):** titular responsável pode reservar para pessoa vinculada, com dados necessários, escolha do atendido, histórico separado, notificações ao responsável autorizado, habilitação por serviço, vínculo no CRM e proteção de dados/representação conforme LGPD.
 
 - **Agendamento de múltiplos serviços (aprovado):** reserva conjunta de serviços em sequência, com duração e intervalos, profissionais distintos, validação integrada de recursos/horários e confirmação sem reservas parciais; resumo único, alterações individuais ou em conjunto e histórico vinculado por atendimento.
+
+- **Agendamentos com profissionais alternativos (aprovado):** permitir escolha nominal ou 'Qualquer profissional disponível'; sugerir alternativas habilitadas com horários livres, respeitar serviço/unidade e conflitos, equilibrar distribuição, identificar profissional e exigir confirmação do cliente antes da reserva.
