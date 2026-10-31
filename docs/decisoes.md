@@ -307,3 +307,5 @@
 - **Fase de MVP comercial (aprovada):** próxima etapa será definir e priorizar a primeira versão vendável do CRM Imagine, visando conquistar os primeiros clientes pagantes e validar valor de mercado; divisão exata de funcionalidades entre MVP e versões futuras ainda depende de aprovação.
 
 - **MVP Web responsivo (aprovado):** lançamento inicial do CRM Imagine em aplicação Web responsiva para desktop, tablet e celular; sem aplicativos nativos Android/iOS na primeira versão, sujeitos a avaliação futura conforme demanda e retorno.
+
+- **Diretriz de diferenciação do MVP (solicitada pelo responsável):** IA e automações devem ser prioridades desde a primeira versão comercial, não apenas funcionalidades futuras. Escopo mínimo de cada agente, automações e integrações ainda depende de definição e aprovação.
