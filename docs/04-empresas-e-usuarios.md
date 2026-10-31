@@ -75,3 +75,10 @@
 - Tipos aprovados: **texto, número, moeda, data, seleção única, múltipla seleção e verdadeiro/falso**.
 - Campos podem ser utilizados em formulários, filtros, relatórios, importações e exportações, respeitando permissões.
 - Detalhes como obrigatoriedade, alteração de tipo, limites por plano, validações e arquivamento/exclusão permanecem pendentes.
+
+## Proteção e exclusão de campos personalizados — APROVADO
+- Permitir **desativar ou arquivar** campos personalizados, preservando os dados existentes.
+- Bloquear exclusão definitiva de campos que contenham dados até que estes sejam tratados adequadamente.
+- Exclusão definitiva requer permissão específica e confirmação.
+- Registrar alterações e exclusões em auditoria.
+- Antes de excluir, identificar e alertar sobre dependências em filtros, relatórios e automações, evitando quebra silenciosa de funcionalidades.
