@@ -585,3 +585,13 @@
 - Gerar notificações e lembretes por ocorrência, respeitando canais e políticas aplicáveis.
 - Sincronizar séries e alterações com Google Calendar e Microsoft Outlook quando suportado pelas integrações.
 - Registrar alterações, cancelamentos e exceções no histórico; respeitar permissões, regras do serviço e isolamento entre empresas.
+
+## Lista de espera para agendamentos — APROVADO
+- Permitir registrar interesse de clientes em serviços sem horários disponíveis, com preferências de dias, horários e profissionais.
+- Detectar cancelamentos e novas vagas compatíveis com as preferências e regras do serviço.
+- Notificar clientes por WhatsApp ou e-mail, observando integrações disponíveis e políticas da Meta.
+- Configurar prazo de resposta para cada oferta de vaga.
+- Priorizar por ordem de entrada, admitindo exceções por usuários autorizados com registro de justificativa e histórico.
+- Confirmar a reserva apenas após aceite dentro do prazo, revalidando disponibilidade de forma transacional para impedir dupla confirmação.
+- Registrar ofertas, aceites, recusas e expiração no histórico.
+- Integrar com agenda interna, página pública e chatbot WhatsApp, respeitando permissões e isolamento entre empresas.
