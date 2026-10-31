@@ -165,3 +165,5 @@
 - **Pagamentos por agendamento (rejeitado):** não implementar cobrança antecipada, sinal ou checkout de Pix/cartão para reservas de serviços das empresas. Agenda continua sem processamento de pagamentos; cobrança das assinaturas do CRM permanece independente.
 
 - **Personalização de notificações de agendamento (aprovado):** confirmação, lembretes com antecedência configurável, reagendamento e cancelamento; variáveis nome/serviço/data/horário/profissional; canais e-mail e WhatsApp integrado, ativação individual por tipo e histórico de envios/falhas; respeitar políticas da Meta.
+
+- **Fusos horários na agenda (aprovado):** fuso principal da empresa, fuso individual opcional por funcionário e exibição no fuso identificado/selecionado do cliente; instantes padronizados em UTC, fuso explícito nas confirmações, conversão Google/Outlook, horário de verão e relatórios no fuso escolhido; prevenção de conflitos.
