@@ -49,3 +49,12 @@
 - Aplicar o limite na interface, na API e na validação de backend, inclusive integrações, sem confiar apenas na validação do navegador; rejeitar arquivos acima de 5 MB antes de processar antivírus sempre que possível.
 - O limite é por arquivo e não substitui a quota total de armazenamento da empresa; as validações de segurança e a quarentena anteriormente aprovadas continuam obrigatórias.
 - Não adotar os limites anteriormente propostos de 10/25/50 MB por categoria.
+
+## Otimização automática de imagens e documentos visuais — APROVADO COM AJUSTE
+- Otimizar automaticamente todas as imagens recebidas, inclusive fotografias, imagens de produtos, documentos digitalizados, comprovantes, assinaturas e imagens com texto, priorizando redução de armazenamento sem prejudicar nitidez, legibilidade, fidelidade ou integridade do conteúdo.
+- Limite de entrada permanece **5 MB por arquivo**. Para fotografias comuns, redimensionar proporcionalmente até cerca de 1920 pixels na maior dimensão, usando qualidade inicial de 80% a 85% e preferindo WebP quando gerar economia real; parâmetros podem ser ajustados conforme o resultado.
+- Para comprovantes, documentos digitalizados, assinaturas e imagens com texto pequeno, usar compressão conservadora, técnicas sem perda quando necessárias e evitar redimensionamento que comprometa informações, traços, números ou transparência.
+- Salvar somente a versão definitiva otimizada quando ela preservar a qualidade exigida; se não for possível reduzir sem risco de degradação relevante, manter o arquivo original. Evitar armazenar simultaneamente original e versão otimizada de fotografias comuns sem necessidade.
+- Para PDFs assinados digitalmente ou arquivos cuja integridade binária seja necessária, não modificar conteúdo de modo a invalidar assinatura, prova ou integridade; não aplicar conversões automáticas destrutivas a documentos de escritório.
+- Otimizar após validação de segurança e antes de disponibilização definitiva, com tratamento seguro em filas; contabilizar quota pelo tamanho efetivamente armazenado, incluindo quaisquer versões adicionais que venham a ser necessárias.
+- Os valores de economia são variáveis e não garantidos; a preservação de qualidade prevalece sobre metas de compressão.
