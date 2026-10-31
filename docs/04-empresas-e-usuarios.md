@@ -320,3 +320,13 @@
 - Permitir mesclagem mediante autorização, com escolha do registro principal e prévia dos conflitos de dados antes da consolidação.
 - Preservar atividades, histórico de responsáveis e origens dos registros, sem perda de informações comerciais.
 - Respeitar isolamento entre empresas, permissões e auditoria da mesclagem.
+
+## Formulários públicos de captação de leads — APROVADO
+- Cada empresa poderá criar formulários personalizados sem programação para sites, landing pages e campanhas.
+- Suportar campos padrão (nome, telefone, e-mail) e campos personalizados da empresa.
+- Publicação por link público ou incorporação no site.
+- Registrar origem do lead (formulário e campanha), permitindo distribuição automática a vendedor/equipe.
+- Proteção antispam e limites de envio; consentimento LGPD configurável com registro da autorização.
+- Integrar captação com identificação de duplicidades, Lead Scoring e automações comerciais.
+- Disponibilizar métricas de visualizações, envios e taxa de conversão.
+- Isolamento de formulários, submissões e leads por empresa, respeitando permissões.
