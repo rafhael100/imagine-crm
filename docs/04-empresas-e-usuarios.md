@@ -496,3 +496,9 @@
 - Simular ações no CRM sem criar leads, alterar registros reais ou executar automações externas.
 - Bloquear publicação de versões que apresentem erros críticos de validação.
 - Registrar histórico e resultado dos testes realizados, respeitando permissões e isolamento por empresa.
+
+## Biblioteca de modelos prontos de chatbot WhatsApp — APROVADO
+- Disponibilizar modelos iniciais de fluxos: atendimento inicial (saudação/encaminhamento), captação de leads, qualificação comercial, solicitação de orçamento, suporte, fora do expediente e pesquisa de satisfação.
+- Cada empresa poderá copiar um modelo da biblioteca central e personalizar sua cópia no editor visual, sem alterar o modelo original.
+- A administração do CRM Imagine poderá atualizar os modelos da biblioteca central sem sobrescrever fluxos já copiados ou personalizados pelos clientes.
+- Respeitar isolamento por empresa, permissões e regras de publicação/versionamento e testes já aprovadas.
