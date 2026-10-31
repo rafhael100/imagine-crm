@@ -847,3 +847,12 @@
 - Na aprovação, confirmar o agendamento de maneira consistente e notificar o cliente; na recusa, informar o cliente e liberar o horário.
 - Registrar no histórico/auditoria decisão, responsável, justificativa, horários e notificações; respeitar permissões por serviço/unidade e isolamento por empresa.
 - Evitar bloqueios indefinidos e impedir dupla confirmação do mesmo horário.
+
+## Fila de aprovação de agendamentos — APROVADO
+- Disponibilizar painel centralizado de solicitações de agendamento que dependem de aprovação prévia, com cliente, serviço, unidade, horário, prazo e responsável.
+- Filtrar solicitações por serviço, unidade, responsável e status, respeitando escopos de permissão.
+- Permitir aprovação individual e em lote por usuário autorizado, validando cada solicitação de forma independente quanto a prazo, disponibilidade, conflitos e permissões; não aprovar solicitações expiradas.
+- Exigir justificativa para recusa, notificar cliente conforme canais habilitados e liberar a reserva temporária.
+- Alertar responsáveis sobre pendências e destacar solicitações próximas do vencimento.
+- Expirar automaticamente solicitações vencidas e liberar horários temporariamente bloqueados, sem criar reservas duplicadas.
+- Registrar decisões, autor, justificativa, data/hora e alterações no histórico/auditoria; garantir isolamento entre empresas.
