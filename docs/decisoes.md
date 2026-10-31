@@ -135,3 +135,5 @@
 - **Versionamento e publicação do chatbot (aprovado):** rascunho independente da versão publicada, validação antes de publicar, conversas em andamento fixadas à versão inicial, novas conversas na última versão, histórico de autor/data/alterações, reversão autorizada e desativação sem apagar histórico.
 
 - **Simulador de fluxos do chatbot (aprovado):** testes de conversas e ramificações sem mensagens reais, dados fictícios, validação de blocos e diagnóstico por etapa, simulação sem alterar CRM, bloqueio de publicação com erros críticos e histórico de testes.
+
+- **Biblioteca de modelos de chatbot (aprovado):** fluxos prontos para atendimento inicial, captação, qualificação, orçamento, suporte, fora do expediente e satisfação; cópia e personalização por empresa sem alterar originais; administração Imagine atualiza biblioteca central sem sobrescrever cópias dos clientes.
