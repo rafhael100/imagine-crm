@@ -230,3 +230,10 @@
 - Indicadores: leads totais/novos/convertidos; oportunidades abertas/ganhas/perdidas; quantidade e valor por etapa do funil; previsão de vendas total e ponderada; taxas de conversão entre etapas; metas, resultados e percentual atingido; tarefas pendentes/vencidas/concluídas; desempenho por vendedor e equipe; principais motivos de perda.
 - Exibir gráficos e indicadores resumidos.
 - Filtros por período, funil, vendedor e equipe, conforme autorização.
+
+## Relatórios comerciais — APROVADO
+- Relatórios iniciais: vendas por período, conversão de leads, desempenho por vendedor, desempenho por equipe, funil de vendas, motivos de perda, atividades comerciais, metas e previsão de vendas (valores previstos e ponderados).
+- Filtros por período, funil, vendedor e equipe.
+- Exportação nos formatos CSV, Excel (XLSX) e PDF.
+- Respeitar permissões de cada usuário e isolamento por empresa.
+- Valores de vendas referem-se a dados comerciais registrados no CRM, sem implicar integração contábil ou fiscal.
