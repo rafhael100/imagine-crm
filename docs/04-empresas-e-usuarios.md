@@ -1035,3 +1035,11 @@
 - Aplicar bloqueios e exceções de funcionamento à disponibilidade da agenda principal, página pública, portal e chatbot, considerando jornada de profissionais e recursos.
 - Ao alterar regra de feriado, verificar impacto sobre reservas existentes, sem cancelar atendimentos confirmados automaticamente.
 - Registrar alterações manuais e exceções com responsável, data/hora e valores anteriores/novos; respeitar permissões e isolamento por empresa.
+
+## Horários especiais de funcionamento por unidade — APROVADO
+- Permitir configurar expedientes excepcionais em datas específicas ou múltiplos dias, incluindo abertura antecipada, fechamento tardio e expediente reduzido.
+- Cada unidade terá configuração independente de horário especial, respeitando seu fuso horário, feriados e calendário.
+- Horários especiais prevalecem sobre expediente regular nas datas definidas, sem dispensar a validação da jornada e disponibilidade individual dos profissionais, salas, equipamentos e demais recursos.
+- Antes de aplicar uma redução de expediente ou mudança de horário, identificar reservas existentes potencialmente conflitantes e apresentar aviso/resumo; não cancelar ou reagendar reservas confirmadas automaticamente.
+- Atualizar disponibilidade da agenda interna, portal, página pública e chatbot, mantendo validação no backend.
+- Restringir criação, alteração e remoção de horários especiais a usuários autorizados, com histórico de autor, data/hora, valores anteriores/novos e unidade afetada.
