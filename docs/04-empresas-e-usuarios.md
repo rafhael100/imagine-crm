@@ -456,3 +456,12 @@
 - Permitir definir prioridade entre gatilhos quando múltiplas condições coincidirem, selecionando o fluxo apropriado.
 - Não reiniciar ou disparar chatbot durante atendimento humano ativo.
 - Considerar histórico da conversa, permissões, isolamento por empresa e políticas da API oficial da Meta.
+
+## Tratamento de erros e inatividade do chatbot WhatsApp — APROVADO
+- Respostas inválidas: informar o erro e repetir a pergunta; após número configurável de tentativas, encaminhar para atendimento humano.
+- Ausência de resposta: enviar lembrete após prazo configurável, respeitando as janelas e políticas de mensagens da Meta.
+- Inatividade prolongada: pausar ou encerrar o fluxo conforme configuração por empresa.
+- Retorno do cliente: retomar o fluxo do ponto anterior ou reiniciar, conforme configuração.
+- Falha técnica: registrar erro e notificar responsável autorizado.
+- Prevenir mensagens repetidas, reentradas e loops infinitos; registrar tentativas, pausas e encerramentos no histórico.
+- Respeitar isolamento por empresa, permissões e regras de transferência ao atendimento humano.
