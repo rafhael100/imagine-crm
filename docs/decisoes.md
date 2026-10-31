@@ -101,3 +101,5 @@
 - **WhatsApp Business API oficial (aprovado):** integração opcional por empresa com número habilitado, caixa de entrada e respostas no CRM, atribuição a equipes/vendedores, histórico vinculado a leads/contatos, automações, templates aprovados, regras da Meta, permissões/auditoria/privacidade e custos da Meta separados da assinatura.
 
 - **Caixa de entrada compartilhada do WhatsApp (aprovado):** múltiplos atendentes por número, responsável por conversa, transferências entre vendedores/equipes, status aguardando/em atendimento/resolvida, notas internas, histórico, supervisão autorizada e prevenção de respostas conflitantes.
+
+- **Distribuição automática das conversas do WhatsApp (aprovado):** rodízio, menor carga, equipe/assunto, horário e disponibilidade; priorizar último responsável em retornos, fila quando ninguém estiver disponível, histórico de atribuições/transferências e permissões.
