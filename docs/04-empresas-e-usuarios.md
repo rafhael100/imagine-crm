@@ -409,3 +409,10 @@
 - Controlar por permissão quem pode criar, editar ou excluir etiquetas.
 - Registrar no histórico das conversas a aplicação, remoção e alterações de etiquetas.
 - Garantir isolamento das etiquetas e conversas entre empresas.
+
+## Anexos e arquivos nas conversas do WhatsApp — APROVADO
+- Permitir enviar, receber e visualizar imagens, documentos (incluindo PDF) e vídeos compatíveis com a API oficial do WhatsApp Business; receber e reproduzir mensagens de áudio/voz.
+- Associar anexos ao histórico da conversa e ao contato ou lead relacionado.
+- Disponibilizar busca/filtros por tipo de arquivo e data.
+- Validar formatos, tamanho, segurança dos arquivos e permissões de acesso, respeitando restrições vigentes da API da Meta.
+- Contabilizar armazenamento dos anexos na franquia do plano contratado, com isolamento por empresa.
