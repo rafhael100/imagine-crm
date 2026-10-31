@@ -890,3 +890,11 @@
 - Permitir que funcionários com permissão específica criem reservas fora da janela de antecedência, mantendo validações de conflitos e capacidade.
 - Registrar exceções, responsável, justificativa quando aplicável e data/hora no histórico/auditoria.
 - Garantir isolamento por empresa e consistência das regras entre canais.
+
+## Intervalos entre atendimentos — APROVADO
+- Configurar por serviço, em minutos, intervalos de preparação anteriores e de limpeza, organização ou descanso posteriores ao atendimento.
+- Bloquear na disponibilidade os períodos necessários de profissionais, salas e recursos envolvidos, considerando a ocupação real de cada recurso.
+- Diferenciar visualmente no calendário o tempo do atendimento e os intervalos associados.
+- Aplicar a validação de conflitos na agenda interna, portal, página pública, chatbot e integrações, impedindo reservas que invadam intervalos obrigatórios.
+- Permitir exceções somente por usuários autorizados, registrando responsável, alteração e data/hora, sem violar capacidade física ou reservas confirmadas.
+- Calcular os intervalos automaticamente, respeitando regras de serviço, unidade e isolamento por empresa.
