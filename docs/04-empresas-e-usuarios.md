@@ -556,3 +556,14 @@
 - Configurar visibilidade pública ou somente interna por serviço.
 - Aplicar as mesmas regras à agenda interna, página pública e chatbot WhatsApp, conforme permissões e validação de disponibilidade/conflitos.
 - Respeitar isolamento entre empresas, histórico e permissões de configuração.
+
+## Confirmação de presença e controle de faltas — APROVADO
+- Permitir confirmação antecipada pelo WhatsApp ou link seguro.
+- Status de agendamento: agendado, confirmado, realizado, não compareceu e cancelado.
+- Funcionário autorizado registra check-in/chegada do cliente.
+- Registrar falta automaticamente conforme regras de prazo ou manualmente por usuário autorizado, evitando marcar ausência antes de encerrada a janela de atendimento.
+- Oferecer reagendamento após falta, consultando disponibilidade e regras do serviço.
+- Manter histórico de confirmações, presenças, faltas e mudanças de status.
+- Relatórios de comparecimento, cancelamentos e faltas por serviço e profissional.
+- Permitir automações de tarefas e notificações baseadas nos status, respeitando permissões, privacidade e políticas dos canais.
+- Integrar com agenda interna, chatbot e página pública, com isolamento entre empresas.
