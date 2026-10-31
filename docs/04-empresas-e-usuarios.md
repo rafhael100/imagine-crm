@@ -209,3 +209,10 @@
 - Cada empresa pode personalizar seus motivos de perda.
 - Ao marcar oportunidade como **Perdida**, selecionar um motivo é obrigatório; observação complementar é opcional.
 - Utilizar motivos de perda em relatórios comerciais para análise das causas das perdas.
+
+## Reabertura de oportunidades ganhas ou perdidas — APROVADO
+- Usuários autorizados podem reabrir oportunidades com status **Ganha** ou **Perdida**, com justificativa obrigatória.
+- Preservar encerramento anterior e histórico integral da negociação.
+- Na reabertura, selecionar etapa de retorno no funil.
+- Recalcular valores ponderados e probabilidade conforme etapa selecionada, respeitando regras de ajuste manual autorizado.
+- Relatórios devem preservar histórico de ganhos/perdas sem contagem duplicada.
