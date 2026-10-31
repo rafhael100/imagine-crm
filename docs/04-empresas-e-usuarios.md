@@ -996,3 +996,8 @@
 - Permitir complementar ou corrigir posteriormente o motivo por funcionário autorizado, preservando valor anterior, novo valor, autor e data/hora no histórico/auditoria.
 - Registrar motivo e responsável pela classificação da ausência, respeitando privacidade e isolamento entre empresas.
 - Incluir análises de faltas por motivo, serviço e profissional nos relatórios da agenda, observando filtros e permissões.
+
+## Regras adicionais de encerramento de atendimentos — REJEITADAS
+- Não implementar fluxo específico de identificação/alerta de agendamentos cujo horário previsto passou e ainda estejam abertos, nem painel próprio de pendências de encerramento.
+- Não encerrar automaticamente atendimentos pelo simples término do horário previsto.
+- Preservar status operacionais e os procedimentos normais de atualização manual/autorizada já aprovados, incluindo Concluído e Não compareceu.
