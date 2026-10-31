@@ -59,3 +59,13 @@
 - Grandes volumes são processados em segundo plano, com link temporário e download protegido.
 - **Não incluir senhas, tokens nem outras credenciais** nos arquivos.
 - Observar requisitos aplicáveis de proteção e portabilidade de dados (LGPD).
+
+## Importação de leads e contatos — APROVADO
+- Importar arquivos **CSV e Excel (XLSX)**.
+- Mapear colunas de origem para campos do CRM.
+- Exibir pré-visualização antes de confirmar a importação.
+- Identificar possíveis duplicidades por **e-mail, telefone ou identificador**.
+- Permitir ignorar duplicados ou atualizar registros existentes, respeitando permissões.
+- Gerar relatório com registros importados e erros.
+- Processar arquivos grandes em segundo plano.
+- Respeitar limites do plano contratado e registrar auditoria da operação.
