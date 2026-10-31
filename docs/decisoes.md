@@ -243,3 +243,5 @@
 - **Prioridade na lista de espera (rejeitada):** manter ordem cronológica FIFO, sem antecipação manual ou categorias de prioridade. Esta decisão revoga exceções de prioridade previstas anteriormente; manter prazo de resposta, notificações e confirmação após aceite.
 
 - **Agendamentos duplicados por cliente (aprovado):** detectar sobreposição de reservas do mesmo cliente, alertar e bloquear pelo portal/chatbot, permitir exceção apenas por funcionário autorizado com justificativa sem violar recursos, registrar tentativas/exceções e validar no backend.
+
+- **Status de atendimento (aprovado):** Agendado, Aguardando confirmação, Confirmado, Aguardando atendimento, Em atendimento, Concluído, Não compareceu e Cancelado; transições automáticas quando cabíveis ou manuais por funcionário autorizado, com histórico. Chegada registrada por funcionário, sem check-in digital do cliente.
