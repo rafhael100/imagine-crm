@@ -17,4 +17,4 @@
 - Este conjunto é um marco documental inicial; não significa que todos os capítulos estão fechados.
 - Não aprovar automaticamente exemplos, descontos ilustrativos nem arquitetura apenas sugerida.
 
-11. Detalhar campos personalizados: obrigatoriedade, opções, validações, limites por plano, edição de tipo e procedimentos de tratamento dos dados antes da exclusão definitiva (política básica de proteção já aprovada).
+11. Detalhar campos personalizados: limites por plano, edição de tipo, validações específicas por tipo, impacto da obrigatoriedade sobre registros antigos e procedimentos de tratamento dos dados antes da exclusão definitiva (regras gerais de configuração e proteção já aprovadas).
