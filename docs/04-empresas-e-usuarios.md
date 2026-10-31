@@ -82,3 +82,12 @@
 - Exclusão definitiva requer permissão específica e confirmação.
 - Registrar alterações e exclusões em auditoria.
 - Antes de excluir, identificar e alertar sobre dependências em filtros, relatórios e automações, evitando quebra silenciosa de funcionalidades.
+
+## Configuração e validação de campos personalizados — APROVADO
+- Configurar **obrigatoriedade** de preenchimento na criação e edição de registros.
+- Definir **valor padrão** opcional.
+- Aplicar **validações compatíveis com o tipo** (por exemplo, limites numéricos e datas válidas).
+- Configurar opções dos campos de seleção.
+- Ordenar a apresentação dos campos nos formulários.
+- Proteger campos essenciais do sistema, como identificadores internos e vínculos, contra remoção ou alteração de regras fundamentais.
+- Aplicar as validações no backend também para operações via importação e integrações, não apenas na interface.
