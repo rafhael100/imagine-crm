@@ -107,3 +107,10 @@
 - Campos **com dados** admitem somente conversões compatíveis, mediante validação e pré-visualização.
 - Conversões incompatíveis são bloqueadas para evitar perda de dados.
 - Todas as alterações devem ser auditadas.
+
+## Linha do tempo de atividades comerciais — APROVADO
+- Leads, contatos e oportunidades possuem linha do tempo operacional para acompanhamento comercial.
+- Registrar criação do cadastro, alterações de campos, mudanças de responsável, movimentações de etapa do funil, tarefas e interações comerciais.
+- Cada evento deve identificar usuário responsável, data e horário, com detalhes relevantes do evento (incluindo valores anterior/novo quando apropriado).
+- A visualização respeita permissões de acesso aos registros.
+- O histórico operacional é **distinto da auditoria técnica** de segurança e rastreabilidade.
