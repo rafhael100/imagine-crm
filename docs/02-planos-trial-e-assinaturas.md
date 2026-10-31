@@ -68,3 +68,12 @@ As duas cotas de agentes são independentes.
 | Empresarial | 30 |
 
 Rascunhos não contam; upgrade amplia capacidade. No downgrade, configurações são preservadas e os fluxos excedentes pausados; administrador seleciona quais ficam ativos. Limite independente de automações comerciais.
+
+## Limites de unidades de atendimento por plano — APROVADO
+| Plano | Unidades incluídas por empresa |
+|---|---:|
+| Essencial | 1 |
+| Profissional | 3 |
+| Empresarial | 10 |
+
+Permitir unidades adicionais com cobrança extra sem mudança de plano (preço a definir). Upgrade amplia capacidade; downgrade preserva unidades e históricos, mas inativa as excedentes até regularização, sem excluir agendamentos passados.
