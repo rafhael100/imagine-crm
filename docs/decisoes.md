@@ -261,3 +261,5 @@
 - **Motivos de cancelamento personalizáveis por empresa (aprovado):** catálogo inicial de desistência/imprevisto/indisponibilidade/duplicidade/outros; criação/edição por administradores autorizados, motivo obrigatório no cancelamento, observação opcional, relatórios por motivo e preservação dos motivos históricos.
 
 - **Motivos de ausência/no-show (aprovado):** catálogo inicial esquecimento/imprevisto/transporte/sem justificativa/outros, personalizável por empresa; falta pode ser registrada sem motivo conhecido, complementado depois por funcionário autorizado com histórico; relatórios por motivo/serviço/profissional.
+
+- **Encerramento adicional de atendimentos (rejeitado):** não criar alertas ou fila específica de atendimentos ainda abertos após o horário previsto; manter status e procedimentos normais, sem conclusão automática pelo horário.
