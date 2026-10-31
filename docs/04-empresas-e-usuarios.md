@@ -898,3 +898,11 @@
 - Aplicar a validação de conflitos na agenda interna, portal, página pública, chatbot e integrações, impedindo reservas que invadam intervalos obrigatórios.
 - Permitir exceções somente por usuários autorizados, registrando responsável, alteração e data/hora, sem violar capacidade física ou reservas confirmadas.
 - Calcular os intervalos automaticamente, respeitando regras de serviço, unidade e isolamento por empresa.
+
+## Duração personalizada dos atendimentos — APROVADO
+- Cada serviço mantém duração padrão no cadastro, mas funcionário com permissão específica pode ajustar a duração de um agendamento individual sem modificar a configuração geral.
+- Exigir justificativa para cada ajuste e registrar duração anterior, nova duração, responsável e data/hora no histórico e auditoria.
+- Recalcular início/fim, intervalos anteriores e posteriores e disponibilidade dos profissionais, salas e recursos envolvidos.
+- Validar conflitos e impedir alterações que provoquem sobreposição com outras reservas ou excedam capacidade física.
+- Notificar o cliente quando houver mudança no horário de início ou término, pelos canais habilitados.
+- Propagar alterações às visualizações da agenda e integrações de calendário pertinentes, respeitando permissões e isolamento por empresa.
