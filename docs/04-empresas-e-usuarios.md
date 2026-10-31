@@ -917,3 +917,8 @@
 - Restringir visualização e edição aos funcionários com permissões adequadas, respeitando empresa, equipe e unidade.
 - Nunca exibir observações internas ao cliente em portal, página pública, chatbot, mensagens de confirmação ou documentos compartilhados.
 - Manter observações separadas das mensagens e documentos enviados pelo cliente, com controles de acesso e auditoria.
+
+## Revisão — prioridade na lista de espera REJEITADA
+- A lista de espera deve seguir estritamente a ordem cronológica de inscrição (FIFO), sem mecanismo de prioridade ou antecipação manual por funcionários.
+- Esta decisão substitui qualquer previsão anterior de exceções de prioridade autorizadas na fila.
+- Permanecem notificação de vaga, prazo de resposta configurável, passagem ao próximo elegível após expiração e confirmação somente após aceite, com prevenção de dupla reserva.
