@@ -82,3 +82,11 @@ Permitir unidades adicionais com cobrança extra sem mudança de plano (preço a
 - Essencial, Profissional e Empresarial incluem agendamentos mensais ilimitados, sem cobrança adicional por volume de reservas.
 - Diferenciação dos planos permanece em funcionalidades, usuários, unidades, automações, armazenamento e demais limites específicos.
 - Aplicar medidas técnicas proporcionais contra abuso e excesso de requisições em todos os planos, sem estabelecer teto comercial de agendamentos.
+
+## Quotas totais de armazenamento por plano — APROVADO
+- Plano **Essencial: 1 GB** de armazenamento total por empresa.
+- Plano **Profissional: 5 GB** de armazenamento total por empresa.
+- Plano **Empresarial: 10 GB** de armazenamento total por empresa (ajuste explícito da proposta inicial de 20 GB).
+- Quota compartilhada entre todos os funcionários da empresa, contabilizada pelo tamanho efetivamente armazenado após otimização e incluindo versões adicionais quando existentes.
+- Ao atingir a quota, impedir novos uploads, mantendo acesso autorizado aos arquivos existentes; respeitar também o limite global de 5 MB por arquivo.
+- Definir posteriormente tratamento de downgrade quando o armazenamento existente ultrapassar a quota do novo plano e eventuais pacotes extras de armazenamento.
