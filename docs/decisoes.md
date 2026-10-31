@@ -263,3 +263,5 @@
 - **Motivos de ausência/no-show (aprovado):** catálogo inicial esquecimento/imprevisto/transporte/sem justificativa/outros, personalizável por empresa; falta pode ser registrada sem motivo conhecido, complementado depois por funcionário autorizado com histórico; relatórios por motivo/serviço/profissional.
 
 - **Encerramento adicional de atendimentos (rejeitado):** não criar alertas ou fila específica de atendimentos ainda abertos após o horário previsto; manter status e procedimentos normais, sem conclusão automática pelo horário.
+
+- **Agendamento rápido pela equipe (aprovado):** formulário simplificado diretamente no calendário para funcionários autorizados; pesquisar/cadastrar cliente, selecionar serviço/profissional/data/horário/unidade, criar reserva e notificar cliente, com todas as validações da agenda principal e sem reservas paralelas.
