@@ -109,3 +109,5 @@
 - **SLA de atendimento pelo WhatsApp (aprovado):** prazos configuráveis para primeira resposta e respostas seguintes; contagem apenas no expediente, alertas prévios e escalonamento ao gestor, painel de cumprimento, relatórios de tempo médio/taxa de cumprimento e pausas configuráveis.
 
 - **CSAT WhatsApp (aprovado):** pesquisa opcional por empresa após atendimento, nota de 1 a 5 e comentário facultativo; envio manual ou automático conforme regras da Meta, histórico por conversa/atendente, médias por vendedor/equipe e alertas de notas baixas com limiar configurável.
+
+- **Respostas rápidas e biblioteca WhatsApp (aprovado):** mensagens prontas com atalhos e variáveis (cliente, empresa, vendedor), biblioteca compartilhada por equipe/empresa, gestão autorizada, pré-visualização, registro no histórico e distinção entre respostas livres e templates oficiais da Meta.
