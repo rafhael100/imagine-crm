@@ -1021,3 +1021,10 @@
 ## Agendamentos favoritos — REJEITADO
 - Não oferecer favoritos pessoais com combinações salvas de serviço, profissional e unidade no formulário de agendamento rápido.
 - Permanecem aprovados o formulário de agendamento rápido e a duplicação manual de reservas, sem atalhos pessoais adicionais.
+
+## Bloqueio de horários em lote — APROVADO
+- Gestores e demais funcionários com permissão específica podem selecionar múltiplos dias ou intervalos para bloquear em uma única operação.
+- Permitir definir abrangência por profissional, equipe, unidade ou recurso (sala/equipamento), com motivo/justificativa registrado.
+- Antes de confirmar, verificar agendamentos existentes em todos os períodos e apresentar resumo dos horários e reservas potencialmente afetados; não cancelar nem alterar reservas confirmadas automaticamente.
+- Aplicar os bloqueios confirmados à disponibilidade da agenda principal, página pública, portal, chatbot e integrações pertinentes, com validação no backend para impedir novas reservas incompatíveis.
+- Registrar autor, data/hora, motivo e intervalos afetados; permitir reversão por usuários autorizados com histórico, respeitando permissões e isolamento por empresa.
