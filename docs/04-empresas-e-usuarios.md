@@ -353,3 +353,12 @@
 - Permitir templates aprovados pela Meta, respeitando janelas de atendimento e regras aplicáveis.
 - Aplicar permissões, auditoria, privacidade/consentimento pertinente e isolamento por empresa.
 - Custos cobrados pela Meta separados da assinatura do CRM; modelo de repasse/faturamento ainda a definir.
+
+## Caixa de entrada compartilhada do WhatsApp — APROVADO
+- Permitir atendimento simultâneo de vários vendedores pelo mesmo número empresarial integrado à API oficial do WhatsApp Business.
+- Cada conversa possui vendedor responsável, com possibilidade de transferência para outro vendedor ou equipe.
+- Status da conversa: aguardando, em atendimento e resolvida.
+- Notas internas visíveis apenas a colaboradores autorizados, nunca enviadas ao cliente.
+- Preservar histórico de mensagens e transferências.
+- Gestores podem supervisionar atendimentos para os quais tenham permissão.
+- Prevenir respostas simultâneas conflitantes; aplicar permissões e isolamento de dados entre empresas.
