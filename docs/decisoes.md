@@ -147,3 +147,5 @@
 - **Integração da agenda com Google Calendar e Outlook/Microsoft 365 (aprovado):** conexão individual, sincronização bidirecional, eventos externos bloqueiam disponibilidade, privacidade de eventos pessoais como “Ocupado”, prevenção de conflitos, desconexão e alertas de falha; respeitar permissões e isolamento entre empresas.
 
 - **Página pública de agendamentos (aprovado):** link exclusivo por empresa, identidade visual personalizada, seleção de serviço/profissional, disponibilidade integrada ao CRM/Google/Outlook, formulário configurável, confirmação por e-mail/WhatsApp, link seguro para reagendar/cancelar, vínculo automático a lead/contato e prevenção de spam e duplicidades.
+
+- **Configuração de serviços e agendamentos (aprovado):** nome/descrição, duração, intervalo, antecedência mínima/máxima, capacidade, profissionais habilitados, modalidade presencial/online/telefone, prazo de cancelamento e visibilidade pública/interna; regras compartilhadas entre agenda CRM, página pública e chatbot, respeitando permissões.
