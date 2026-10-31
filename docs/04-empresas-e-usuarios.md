@@ -502,3 +502,12 @@
 - Cada empresa poderá copiar um modelo da biblioteca central e personalizar sua cópia no editor visual, sem alterar o modelo original.
 - A administração do CRM Imagine poderá atualizar os modelos da biblioteca central sem sobrescrever fluxos já copiados ou personalizados pelos clientes.
 - Respeitar isolamento por empresa, permissões e regras de publicação/versionamento e testes já aprovadas.
+
+## Importação e exportação de fluxos do chatbot WhatsApp — APROVADO
+- Exportar a configuração de fluxos em arquivos JSON, sem incluir senhas, tokens, segredos ou dados pessoais dos clientes.
+- Importar arquivos JSON no editor visual, com validação de estrutura, blocos, compatibilidade e dependências.
+- Permitir duplicar um fluxo sem alterar o original.
+- Ao importar, solicitar o mapeamento ou reassociação de equipes, campos personalizados e etiquetas que não correspondam aos da empresa de destino.
+- Toda importação inicia como rascunho, exigindo validação e publicação autorizada para entrar em operação.
+- Registrar histórico de importações e exportações com usuário e data, respeitando permissões e isolamento entre empresas.
+- Aplicar limites de fluxos ativos do plano somente na ativação/publicação, conforme regras aprovadas.
