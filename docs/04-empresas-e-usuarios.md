@@ -479,3 +479,12 @@
 - Upgrade disponibiliza a capacidade adicional conforme plano.
 - Downgrade preserva configurações e fluxos, mas pausa os excedentes; administrador da empresa escolhe quais permanecem ativos.
 - Limite de fluxos do chatbot é independente do limite de automações comerciais.
+
+## Versionamento e publicação dos fluxos do chatbot — APROVADO
+- Permitir editar rascunhos sem afetar a versão publicada de cada fluxo.
+- Validar o fluxo antes de publicar e ativar uma nova versão.
+- Conversas já iniciadas continuam na versão com a qual começaram; novas conversas usam a versão publicada mais recente.
+- Manter histórico de versões com autor, data e alterações.
+- Permitir reverter para uma versão anterior, preservando o histórico de versões e execuções.
+- Desativar um fluxo impede novos inícios, preservando histórico das conversas.
+- Publicação e reversão restritas a usuários autorizados, com isolamento por empresa.
