@@ -677,3 +677,11 @@
 - Registrar criação, alteração e remoção de bloqueios no histórico, com autor e data.
 - Aplicar indisponibilidades à agenda interna, página pública, chatbot e cálculo de disponibilidade das integrações de calendário, impedindo novas reservas conflitantes.
 - Respeitar permissões por funcionário/equipe/unidade e isolamento entre empresas.
+
+## Permissões específicas da agenda — APROVADO
+- Permissões granulares para visualizar agenda própria, de equipe, de unidade ou de toda a empresa, conforme perfil autorizado.
+- Separar permissões para criar, editar e cancelar agendamentos próprios ou de terceiros.
+- Controlar transferência de agendamentos entre profissionais ou unidades e gerenciamento de bloqueios/indisponibilidades.
+- Restringir configuração de serviços, horários, recursos e acesso a relatórios conforme perfil.
+- Registrar em auditoria alterações importantes, com responsável, data/hora e detalhes pertinentes.
+- Aplicar verificações no backend e integrações, respeitando escopos de funcionário/equipe/unidade e isolamento entre empresas.
