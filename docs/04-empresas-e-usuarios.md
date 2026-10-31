@@ -1055,3 +1055,10 @@
 - Antes de criar, verificar duplicidade com contatos existentes por identificadores aplicáveis; permitir selecionar contato já cadastrado, conforme regras de duplicidade e permissões do CRM.
 - Salvar novo contato na base única de contatos do CRM e vinculá-lo ao agendamento, mantendo o funcionário no fluxo de reserva.
 - Registrar criação do contato, responsável, data/hora e vínculo ao agendamento no histórico/auditoria, respeitando isolamento por empresa e permissões.
+
+## Confirmação manual de agendamentos pela equipe — APROVADO
+- Funcionários com permissão específica podem registrar confirmação recebida do cliente por telefone, presencialmente, WhatsApp ou outro canal, alterando o status do agendamento para **Confirmado**.
+- Registrar canal/origem, funcionário responsável e data/hora da confirmação, preservando o histórico e a auditoria.
+- Integrar a confirmação manual ao mesmo status e fluxo da confirmação por link, sem criar confirmações duplicadas.
+- Após a confirmação, interromper pedidos automáticos de confirmação ainda pendentes, sem impedir lembretes normais de atendimento que não solicitem nova confirmação.
+- Validar permissões, status atual e isolamento entre empresas antes de alterar o agendamento.
