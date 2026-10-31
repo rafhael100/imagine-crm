@@ -119,3 +119,5 @@
 - **Encerramento/reabertura WhatsApp (aprovado):** resolução por atendente autorizado com motivo configurável; nova mensagem reabre e prioriza último responsável disponível, preserva histórico, reinicia SLA, permite CSAT por atendimento e relatórios de resoluções/reaberturas.
 
 - **Chatbot WhatsApp sem código (aprovado):** fluxos visuais baseados em regras e menus com saudação, opções, perguntas, condições, encaminhamento para equipe/vendedor, expediente, registro de respostas, intervenção humana e proteção contra loops; IA apenas como recurso opcional futuro, sujeito às regras da Meta.
+
+- **Transferência chatbot → humano (aprovado):** solicitação do cliente, falhas de compreensão ou assunto prioritário; resumo do contexto ao atendente, pausa do bot, retorno autorizado, fila quando indisponível e registro de motivo/horário/responsável, seguindo distribuição e SLA.
