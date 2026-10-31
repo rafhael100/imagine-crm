@@ -935,3 +935,10 @@
 - Atualizar status automaticamente quando houver evento correspondente, ou manualmente por funcionário autorizado, com validação de transições e histórico de responsável, data/hora e status anterior/novo.
 - O status 'Aguardando atendimento' depende de registro por funcionário autorizado; **não** oferecer check-in digital autônomo pelo cliente, conforme rejeição anterior.
 - Integrar status a notificações, relatórios, controle de presença e auditoria, respeitando permissões e isolamento entre empresas.
+
+## Histórico de atendimentos por cliente — APROVADO
+- Exibir no cadastro de cada contato/cliente do CRM uma visão consolidada dos agendamentos passados e futuros vinculados ao mesmo cliente.
+- Apresentar status operacionais, incluindo concluídos, cancelados, não comparecimentos e demais situações; serviço, profissional responsável, unidade e data/hora.
+- Permitir filtrar histórico por período, serviço, profissional e status.
+- Disponibilizar observações internas associadas somente a funcionários com autorização específica, nunca no portal público do cliente.
+- Atualizar o histórico automaticamente a partir dos registros da agenda principal, sem duplicar agendamentos; respeitar permissões por empresa, equipe e unidade e o isolamento entre empresas.
