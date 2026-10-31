@@ -255,3 +255,5 @@
 - **Conflitos de edição simultânea na agenda (aprovado):** detectar alterações concorrentes, avisar e mostrar versão atual, impedir sobrescrita de dados desatualizados, revalidar disponibilidade ao salvar, registrar alterações e aplicar proteção a funcionários, portal, chatbot e API.
 
 - **Cancelamento de agendamentos pela equipe (aprovado):** somente funcionários autorizados; motivo obrigatório e observação opcional; notificar cliente/profissional, liberar horários e recursos, acionar lista de espera FIFO, sincronizar calendários e preservar registro cancelado com histórico de responsável/data/motivo.
+
+- **Reagendamento pela equipe (aprovado):** funcionário autorizado altera data/horário de reserva existente com motivo obrigatório, valida novamente profissional/sala/recursos e conflitos, notifica cliente, sincroniza calendários e preserva identificador e histórico com antes/depois e responsável.
