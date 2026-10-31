@@ -385,3 +385,11 @@
 - Painel deve identificar conversas dentro/fora do SLA; relatórios de tempo médio de resposta e percentual de cumprimento.
 - Integrar à caixa de entrada compartilhada e respeitar permissões, equipes e isolamento por empresa.
 - Prazos padrão, antecedência dos alertas e condições exatas de pausa ainda a definir.
+
+## Avaliação de satisfação do atendimento WhatsApp (CSAT) — APROVADO
+- Recurso opcional por empresa, para solicitar avaliação após a conclusão da conversa pelo WhatsApp.
+- Escala de 1 a 5 e comentário opcional do cliente.
+- Envio automático ou manual conforme configuração da empresa e regras da API oficial da Meta.
+- Vincular avaliação à conversa e ao atendente responsável.
+- Relatórios com médias de satisfação por vendedor e equipe; alertar gestor sobre avaliações baixas, com limiar configurável.
+- Respeitar consentimento aplicável, privacidade, permissões, isolamento por empresa e regras de envio do WhatsApp.
