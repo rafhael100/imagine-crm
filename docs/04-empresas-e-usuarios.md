@@ -450,3 +450,9 @@
 - Blocos aprovados: mensagem (texto/saudação), pergunta (coletar resposta), menu (opções), condição (ramificação por resposta), espera (prazo configurável), ação no CRM (criar lead, atualizar campo ou adicionar etiqueta), transferência (vendedor/equipe) e encerramento do fluxo.
 - Suportar rascunhos, testes antes da publicação e versionamento para evitar alterações inesperadas em fluxos ativos.
 - Aplicar permissões de edição/publicação, isolamento por empresa e regras de envio da Meta.
+
+## Gatilhos de início dos fluxos do chatbot WhatsApp — APROVADO
+- Gatilhos configuráveis por empresa: primeira mensagem do cliente; palavra-chave; fora do expediente; origem do lead (campanha/formulário); conversa reaberta; e início manual por atendente autorizado.
+- Permitir definir prioridade entre gatilhos quando múltiplas condições coincidirem, selecionando o fluxo apropriado.
+- Não reiniciar ou disparar chatbot durante atendimento humano ativo.
+- Considerar histórico da conversa, permissões, isolamento por empresa e políticas da API oficial da Meta.
