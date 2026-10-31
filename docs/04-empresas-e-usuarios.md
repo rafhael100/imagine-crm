@@ -643,3 +643,12 @@
 - Filtros por período, serviço, profissional, equipe e unidade, quando aplicável.
 - Exportação autorizada em CSV, XLSX e PDF.
 - Respeitar isolamento de dados por empresa, permissões dos usuários e regras de fuso horário da agenda.
+
+## Múltiplas unidades de atendimento — APROVADO
+- Uma empresa contratante pode cadastrar múltiplas unidades/filiais de atendimento, com nome, endereço e contato próprios, compartilhando a mesma assinatura do CRM.
+- Cada unidade pode configurar expediente, feriados e disponibilidade próprios.
+- Funcionários podem estar vinculados a uma ou mais unidades, com permissões e visibilidade de dados por unidade.
+- Configurar serviços oferecidos em cada unidade, bem como salas, equipamentos e demais recursos físicos com disponibilidade específica.
+- Na página pública, chatbot e agenda interna, permitir selecionar unidade antes de consultar horários e realizar agendamento, quando houver mais de uma opção.
+- Relatórios devem permitir filtros e comparação de desempenho entre unidades, respeitando autorizações e isolamento entre empresas contratantes.
+- Validar conflitos de profissionais e recursos compartilhados entre unidades para impedir reservas simultâneas incompatíveis.
