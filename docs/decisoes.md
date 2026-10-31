@@ -279,3 +279,5 @@
 - **Limite de agendamentos futuros por cliente (rejeitado):** sem limite quantitativo global ou por serviço; manter apenas regras existentes de disponibilidade, capacidade e prevenção de sobreposição.
 
 - **Cadastro rápido de clientes diretamente na agenda (aprovado):** funcionário autorizado cadastra contato com nome/telefone/e-mail e campos configuráveis sem sair do calendário; valida duplicidade, reutiliza base única de contatos, vincula à reserva e registra responsável/data/hora.
+
+- **Confirmação manual de agendamentos pela equipe (aprovado):** funcionário autorizado marca Confirmado quando cliente confirma por telefone, presencialmente, WhatsApp ou outro canal; registra origem, responsável e data/hora, preserva histórico e evita novos pedidos automáticos de confirmação, usando o mesmo fluxo da confirmação por link.
