@@ -247,3 +247,5 @@
 - **Status de atendimento (aprovado):** Agendado, Aguardando confirmação, Confirmado, Aguardando atendimento, Em atendimento, Concluído, Não compareceu e Cancelado; transições automáticas quando cabíveis ou manuais por funcionário autorizado, com histórico. Chegada registrada por funcionário, sem check-in digital do cliente.
 
 - **Histórico de atendimentos por cliente (aprovado):** no cadastro do contato, consolidar agendamentos passados/futuros, status, serviço, profissional e unidade; filtros por período/serviço/profissional/status, observações internas restritas e atualização automática a partir da agenda existente.
+
+- **Pesquisa de clientes na agenda (aprovado):** localizar por nome, telefone ou e-mail; retornar agendamentos passados/futuros com filtros por período/status/serviço/unidade, acesso direto ao detalhe, respeito às permissões e desempenho adequado em grandes volumes.
