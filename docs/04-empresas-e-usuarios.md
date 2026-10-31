@@ -244,3 +244,13 @@
 - Salvar configurações para reutilização e compartilhar relatórios de modo privado ou com usuários autorizados.
 - Exportar relatórios em CSV, XLSX e PDF.
 - Respeitar isolamento por empresa, permissões de visualização de registros e campos e permissões de exportação; não expor dados não autorizados.
+
+## Agendamento e envio automático de relatórios — APROVADO
+- Permitir agendamento de relatórios com frequência diária, semanal ou mensal.
+- Destinatários limitados a usuários autorizados da própria empresa.
+- Formatos de geração: PDF, XLSX e CSV, usando filtros e configurações salvos do relatório.
+- Enviar por e-mail link seguro para download, em vez de expor dados diretamente.
+- Validar permissões e isolamento por empresa no momento da geração e entrega.
+- Permitir pausar, editar ou cancelar agendamentos.
+- Registrar histórico de execuções, entregas e falhas.
+- Respeitar limites e permissões da empresa, sem compartilhamento com destinatários não autorizados.
