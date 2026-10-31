@@ -1017,3 +1017,7 @@
 - Após confirmação e criação bem-sucedida, notificar o cliente pelos canais habilitados.
 - Manter agendamento original e novo agendamento como registros independentes, com identificadores e históricos próprios; registrar origem da duplicação para rastreabilidade sem confundir as reservas.
 - Respeitar permissões, isolamento por empresa e auditoria; não copiar automaticamente observações internas ou documentos sensíveis sem decisão específica.
+
+## Agendamentos favoritos — REJEITADO
+- Não oferecer favoritos pessoais com combinações salvas de serviço, profissional e unidade no formulário de agendamento rápido.
+- Permanecem aprovados o formulário de agendamento rápido e a duplicação manual de reservas, sem atalhos pessoais adicionais.
