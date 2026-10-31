@@ -636,3 +636,10 @@
 - Considerar regras oficiais de horário de verão e transições de fuso, tratando horários locais inexistentes ou ambíguos.
 - Validar conflitos de disponibilidade entre participantes, salas e recursos independentemente do fuso de exibição.
 - Respeitar permissões e isolamento entre empresas.
+
+## Relatórios e indicadores da agenda — APROVADO
+- Painel com total de agendamentos por período, quantidade e taxa de comparecimento, cancelamentos e faltas.
+- Indicadores de ocupação e utilização de profissionais e salas, serviços mais agendados, origem dos agendamentos (chatbot, página pública ou funcionários) e dias/horários de maior procura.
+- Filtros por período, serviço, profissional, equipe e unidade, quando aplicável.
+- Exportação autorizada em CSV, XLSX e PDF.
+- Respeitar isolamento de dados por empresa, permissões dos usuários e regras de fuso horário da agenda.
