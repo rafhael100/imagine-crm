@@ -107,3 +107,5 @@
 - **Horários e mensagens automáticas do WhatsApp (aprovado):** expediente semanal, feriados e horários especiais; saudações, ausência e aviso de fila personalizáveis por número/equipe; retomar distribuição no próximo expediente; prevenir repetição e respeitar políticas da Meta.
 
 - **SLA de atendimento pelo WhatsApp (aprovado):** prazos configuráveis para primeira resposta e respostas seguintes; contagem apenas no expediente, alertas prévios e escalonamento ao gestor, painel de cumprimento, relatórios de tempo médio/taxa de cumprimento e pausas configuráveis.
+
+- **CSAT WhatsApp (aprovado):** pesquisa opcional por empresa após atendimento, nota de 1 a 5 e comentário facultativo; envio manual ou automático conforme regras da Meta, histórico por conversa/atendente, médias por vendedor/equipe e alertas de notas baixas com limiar configurável.
