@@ -287,3 +287,5 @@
 - **Preferências de notificações da agenda (aprovado):** funcionário escolhe tipos e canais (notificação interna/e-mail) para novos agendamentos, cancelamentos, reagendamentos, trocas de profissional e confirmações; avisos operacionais essenciais não podem ser desativados; manter histórico de envios e permissões.
 
 - **Painel de agenda do dia (aprovado):** visão operacional diária para recepção/gestores com lista cronológica, totais/confirmados/aguardando/cancelados, filtros por profissional e unidade, ações rápidas de confirmar/reagendar/cancelar, atualização automática e permissões, usando registros da agenda principal.
+
+- **Agenda individual do profissional (aprovado):** tela Minha agenda com atendimentos atribuídos em ordem cronológica, cliente e serviço conforme permissões, horário/duração/status, navegação entre datas, detalhes e atualização de status autorizada, sincronizada com agenda geral sem duplicação de dados.
