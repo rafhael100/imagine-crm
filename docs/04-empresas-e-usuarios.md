@@ -1062,3 +1062,11 @@
 - Integrar a confirmação manual ao mesmo status e fluxo da confirmação por link, sem criar confirmações duplicadas.
 - Após a confirmação, interromper pedidos automáticos de confirmação ainda pendentes, sem impedir lembretes normais de atendimento que não solicitem nova confirmação.
 - Validar permissões, status atual e isolamento entre empresas antes de alterar o agendamento.
+
+## Envio manual de lembretes de agendamento — APROVADO
+- Funcionários com permissão específica podem acionar envio manual de lembrete diretamente nos detalhes do agendamento.
+- Permitir canais e-mail e WhatsApp oficial integrado quando habilitados, respeitando consentimentos, janela de atendimento, templates aprovados e demais regras da Meta.
+- Usar modelo de mensagem configurado pela empresa, apresentando prévia antes da confirmação de envio.
+- Prevenir disparos duplicados em curto intervalo e permitir feedback de envio/falha sem afirmar entrega sem confirmação do provedor.
+- Registrar funcionário responsável, data/hora, canal, agendamento e resultado do disparo no histórico, sem expor dados sensíveis indevidamente.
+- Complementar, sem substituir, lembretes automáticos já aprovados; respeitar permissões e isolamento por empresa.
