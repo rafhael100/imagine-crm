@@ -121,3 +121,12 @@
 - Menções podem gerar notificações internas.
 - Edições e exclusões de anotações são registradas no histórico.
 - Anotações são exibidas na linha do tempo comercial e **não são enviadas automaticamente aos clientes**.
+
+## Tarefas e lembretes comerciais — APROVADO
+- Tarefas vinculadas a leads, contatos e oportunidades, com título, descrição, responsável, prioridade e prazo.
+- Status: pendente, em andamento, concluída ou cancelada.
+- Lembretes e notificações de vencimento.
+- Tarefas recorrentes, com periodicidade configurável (detalhes de regras ainda a especificar).
+- Visualização em lista e calendário.
+- Registrar criação, alterações e conclusão na linha do tempo comercial.
+- Respeitar isolamento por empresa e permissões de acesso.
