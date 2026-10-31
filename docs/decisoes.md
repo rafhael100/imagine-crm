@@ -253,3 +253,5 @@
 - **Participantes individuais em agendamentos de grupo (aprovado):** sessão única com lista de participantes, inclusão até capacidade, cancelamento e presença individuais, notificações individuais, histórico de mudanças, vagas atualizadas automaticamente e privacidade entre clientes; check-in registrado por funcionário autorizado.
 
 - **Conflitos de edição simultânea na agenda (aprovado):** detectar alterações concorrentes, avisar e mostrar versão atual, impedir sobrescrita de dados desatualizados, revalidar disponibilidade ao salvar, registrar alterações e aplicar proteção a funcionários, portal, chatbot e API.
+
+- **Cancelamento de agendamentos pela equipe (aprovado):** somente funcionários autorizados; motivo obrigatório e observação opcional; notificar cliente/profissional, liberar horários e recursos, acionar lista de espera FIFO, sincronizar calendários e preservar registro cancelado com histórico de responsável/data/motivo.
