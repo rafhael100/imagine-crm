@@ -277,3 +277,8 @@
 - Uma nova interação reinicia a contagem de inatividade.
 - Evitar disparos duplicados ou notificações repetidas para a mesma ocorrência.
 - Respeitar isolamento por empresa, permissões, regras de segurança e limite de automações ativas do plano.
+
+## Distribuição automática de leads — APROVADO
+- Cada empresa pode configurar modalidades de atribuição de novos leads: rodízio (round-robin), menor carga de leads ativos, equipe ou origem/campanha, responsável fixo e distribuição manual por gestor.
+- Distribuição automática considera apenas vendedores ativos e habilitados a receber leads.
+- Atribuições respeitam permissões, isolamento por empresa e são registradas no histórico comercial.
