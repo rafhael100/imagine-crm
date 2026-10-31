@@ -42,3 +42,10 @@
 - Ajustar a proposta de escopo do MVP para contemplar automações comerciais e agentes de IA em uma primeira versão enxuta, a ser detalhada e aprovada; manter arquitetura extensível para evolução.
 - Proposta em discussão (ainda não aprovada em detalhes): automações essenciais (distribuição de leads, tarefas e alertas), IA Prospector (priorização e análise de leads) e IA Comercial (sugestões de abordagem, resumos e próximos passos), com revisão humana antes de enviar mensagens.
 - Manter a monetização dos agentes como serviços opcionais e limites/custos controlados conforme decisões anteriores; definir escopo exato, integrações e disponibilidade no lançamento antes de fechar roadmap.
+
+## MVP — WhatsApp integrado com automações e agentes de IA (diretriz solicitada)
+- O responsável **aprovou incluir os dois agentes de IA (Prospector e Comercial) e automações comerciais essenciais no MVP**.
+- Explicitou como requisito estratégico adicional do lançamento a integração do **WhatsApp com envio automático de mensagens disparado por automações e por agentes de IA**, além de atendimento integrado. Não tratar WhatsApp como recurso meramente posterior.
+- Proposta de implementação para validação: WhatsApp Business Platform oficial; caixa de entrada e histórico vinculados a contatos/leads; recebimento e envio; gatilhos de automação; respostas/qualificação com IA; transferência para atendente; templates e variáveis; auditoria, consentimento e opt-out.
+- Aplicar regras da Meta, incluindo janela de atendimento e templates aprovados quando exigidos; limites, prevenção de spam, controle de custos, permissões e possibilidade de pausar agentes e disparos.
+- O escopo detalhado do MVP WhatsApp, graus de autonomia dos agentes e modelo de cobrança da integração ainda exigem decisões específicas; editor avançado de chatbot pode ser fase posterior sem impedir automações básicas de mensagens.
