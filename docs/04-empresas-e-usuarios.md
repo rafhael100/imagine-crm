@@ -882,3 +882,11 @@
 - Recalcular automaticamente disponibilidade na agenda interna, página pública, portal e chatbot, considerando também feriados, bloqueios, recursos e horários da unidade.
 - Alertar sobre conflitos com reservas existentes antes de aplicar alterações, sem cancelar automaticamente agendamentos confirmados.
 - Registrar histórico de alterações, responsável, data/hora e valores anteriores/novos, com isolamento por empresa.
+
+## Antecedência e janela de agendamentos — APROVADO
+- Configurar por empresa e serviço antecedência mínima entre a solicitação e o atendimento, bem como antecedência máxima para reservas futuras; valores exemplificativos (2 horas, 90 dias) não são padrões fixos.
+- Respeitar horários de funcionamento da unidade, jornada do profissional, bloqueios, capacidade e disponibilidade real.
+- Exibir aos clientes somente horários elegíveis no portal, página pública e chatbot, aplicando as mesmas regras no backend.
+- Permitir que funcionários com permissão específica criem reservas fora da janela de antecedência, mantendo validações de conflitos e capacidade.
+- Registrar exceções, responsável, justificativa quando aplicável e data/hora no histórico/auditoria.
+- Garantir isolamento por empresa e consistência das regras entre canais.
