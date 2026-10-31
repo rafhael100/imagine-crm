@@ -305,3 +305,5 @@
 - **Direção comercial do CRM Imagine (aprovada):** mensalidade fixa por empresa com usuários incluídos; três planos Essencial/Profissional/Empresarial; contatos ilimitados nos planos pagos sujeitos a uso justo; usuários extras e serviços de IA/WhatsApp como adicionais; trial de 14 dias sem cartão e sem freemium permanente inicial; aquisição por parceiros, produto e campanhas segmentadas. Preços R$ 69/149/299 e usuários incluídos 2/5/10 são **hipóteses para validação, não preços aprovados**. Quotas técnicas de armazenamento 1/5/10 GB aguardam revisão comercial explícita.
 
 - **Fase de MVP comercial (aprovada):** próxima etapa será definir e priorizar a primeira versão vendável do CRM Imagine, visando conquistar os primeiros clientes pagantes e validar valor de mercado; divisão exata de funcionalidades entre MVP e versões futuras ainda depende de aprovação.
+
+- **MVP Web responsivo (aprovado):** lançamento inicial do CRM Imagine em aplicação Web responsiva para desktop, tablet e celular; sem aplicativos nativos Android/iOS na primeira versão, sujeitos a avaliação futura conforme demanda e retorno.
