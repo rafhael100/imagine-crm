@@ -167,3 +167,5 @@
 - **Personalização de notificações de agendamento (aprovado):** confirmação, lembretes com antecedência configurável, reagendamento e cancelamento; variáveis nome/serviço/data/horário/profissional; canais e-mail e WhatsApp integrado, ativação individual por tipo e histórico de envios/falhas; respeitar políticas da Meta.
 
 - **Fusos horários na agenda (aprovado):** fuso principal da empresa, fuso individual opcional por funcionário e exibição no fuso identificado/selecionado do cliente; instantes padronizados em UTC, fuso explícito nas confirmações, conversão Google/Outlook, horário de verão e relatórios no fuso escolhido; prevenção de conflitos.
+
+- **Relatórios e indicadores da agenda (aprovado):** total de agendamentos, comparecimento, cancelamentos, faltas, ocupação de profissionais/salas, serviços mais procurados, origem (chatbot/página pública/funcionários), horários de maior demanda; filtros período/serviço/profissional/equipe/unidade e exportação CSV/XLSX/PDF com permissões.
