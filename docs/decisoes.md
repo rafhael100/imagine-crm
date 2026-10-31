@@ -153,3 +153,5 @@
 - **Confirmação de presença e faltas (aprovado):** confirmação antecipada via WhatsApp/link seguro; status agendado/confirmado/realizado/não compareceu/cancelado; check-in por funcionário; registro automático ou manual de falta; reagendamento, histórico, relatórios por serviço/profissional e automações por status, integrados à agenda, chatbot e página pública.
 
 - **Videoconferências na agenda (aprovado):** integração com Google Meet, Microsoft Teams e Zoom para gerar links conforme autorização, enviar convites, atualizar reagendamentos, cancelar eventos/notificar participantes, registrar links e histórico, proteger credenciais; sujeito às capacidades de cada plataforma.
+
+- **Agendamentos recorrentes (aprovado):** periodicidade diária/semanal/quinzenal/mensal; fim por data ou quantidade; conflitos validados por ocorrência; edição/cancelamento individual ou de toda série; lembretes por ocorrência, sincronização Google/Outlook e histórico de alterações/exceções.
