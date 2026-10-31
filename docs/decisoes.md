@@ -271,3 +271,5 @@
 - **Agendamentos favoritos (rejeitado):** não criar atalhos pessoais de combinações serviço/profissional/unidade; manter agendamento rápido e duplicação manual existentes.
 
 - **Bloqueio de horários em lote (aprovado):** selecionar múltiplos dias/períodos por profissional/equipe/unidade/recurso, informar motivo, pré-visualizar reservas afetadas, aplicar bloqueios sem cancelar reservas automaticamente, manter histórico e permitir reversão autorizada.
+
+- **Feriados automáticos na agenda (aprovado):** carregar feriados nacionais, estaduais e municipais por localização de cada unidade, atualizar anualmente, permitir que empresa decida atendimento/bloqueio e exceções por data/unidade, manter histórico; feriado identificado não bloqueia automaticamente sem configuração.
