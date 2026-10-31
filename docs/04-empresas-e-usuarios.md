@@ -101,3 +101,9 @@
 
 - Cada módulo tem limite independente, por empresa.
 - No downgrade, preservar campos existentes, mesmo acima do limite novo, mas bloquear criação de novos campos enquanto o limite estiver excedido.
+
+## Alteração do tipo de campos personalizados — APROVADO
+- Campos **sem dados** podem ter o tipo alterado por usuário com permissão específica.
+- Campos **com dados** admitem somente conversões compatíveis, mediante validação e pré-visualização.
+- Conversões incompatíveis são bloqueadas para evitar perda de dados.
+- Todas as alterações devem ser auditadas.
