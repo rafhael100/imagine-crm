@@ -803,3 +803,11 @@
 - Enviar ao cliente resumo único da reserva com todos os serviços, horários e profissionais pertinentes.
 - Permitir reagendar ou cancelar serviço individual ou o conjunto, conforme regras de cada serviço, atualizando disponibilidade e notificações.
 - Manter registro e histórico individual de cada atendimento, vinculados a uma reserva composta e ao contato, respeitando permissões e isolamento por empresa.
+
+## Agendamentos com profissionais alternativos — APROVADO
+- Cliente pode escolher profissional específico; se indisponível, sistema sugere profissionais alternativos habilitados para o serviço e unidade.
+- Exibir horários realmente livres dos profissionais alternativos, validando duração, bloqueios, recursos e demais conflitos.
+- Disponibilizar opção 'Qualquer profissional disponível' com distribuição equilibrada entre profissionais elegíveis, respeitando regras e disponibilidade da empresa.
+- Identificar claramente o profissional que realizará o atendimento antes de concluir a reserva.
+- Exigir confirmação do cliente sobre a alternativa antes de efetivar o agendamento, inclusive nos fluxos de portal, página pública e chatbot.
+- Respeitar permissões por unidade e empresa e manter histórico de escolha/atribuição quando aplicável.
