@@ -183,3 +183,5 @@
 - **Auditoria e histórico da agenda (aprovado):** criação (autor/data/canal), alterações (antes/depois), reagendamento, cancelamento com motivo, transferências, confirmações, check-in/faltas e origem de mudanças Google/Outlook; registros protegidos contra edição/exclusão, retenção de 12 meses durante assinatura ativa, ressalvadas obrigações legais.
 
 - **Portal do cliente para agendamentos (aprovado):** página responsiva com identidade da empresa e link seguro por e-mail/WhatsApp, sem senha própria; consultar próximos agendamentos e histórico, confirmar presença, reagendar/cancelar conforme regras, acessar links de Meet/Teams/Zoom e visualizar exclusivamente os próprios agendamentos.
+
+- **Pesquisa de satisfação após agendamentos (aprovado):** envio automático após atendimento realizado por e-mail/WhatsApp integrado, nota de 1 a 5, comentário opcional, mensagem e prazo configuráveis, vínculo a serviço/profissional/unidade, alertas de notas baixas, relatórios por dimensão e permissões; independente da CSAT do WhatsApp.
