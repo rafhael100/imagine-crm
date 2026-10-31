@@ -942,3 +942,10 @@
 - Permitir filtrar histórico por período, serviço, profissional e status.
 - Disponibilizar observações internas associadas somente a funcionários com autorização específica, nunca no portal público do cliente.
 - Atualizar o histórico automaticamente a partir dos registros da agenda principal, sem duplicar agendamentos; respeitar permissões por empresa, equipe e unidade e o isolamento entre empresas.
+
+## Pesquisa de clientes diretamente na agenda — APROVADO
+- Disponibilizar pesquisa rápida na interface da agenda por nome, telefone ou e-mail do cliente, sem necessidade de abrir seu cadastro.
+- Exibir agendamentos anteriores e futuros associados ao contato, com filtros combináveis por período, status, serviço e unidade.
+- Permitir abrir diretamente o detalhe de cada agendamento encontrado.
+- Aplicar no backend permissões por empresa, equipe, unidade e registro, mostrando somente agendamentos autorizados, sem expor dados pessoais em resultados indevidos.
+- Otimizar a pesquisa para volumes elevados, com indexação/paginação conforme arquitetura; utilizar registros existentes da agenda, sem duplicação de dados.
