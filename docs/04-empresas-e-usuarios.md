@@ -393,3 +393,11 @@
 - Vincular avaliação à conversa e ao atendente responsável.
 - Relatórios com médias de satisfação por vendedor e equipe; alertar gestor sobre avaliações baixas, com limiar configurável.
 - Respeitar consentimento aplicável, privacidade, permissões, isolamento por empresa e regras de envio do WhatsApp.
+
+## Respostas rápidas e biblioteca de mensagens do WhatsApp — APROVADO
+- Disponibilizar respostas rápidas reutilizáveis durante conversas na caixa de entrada compartilhada.
+- Permitir atalhos de inserção (ex.: `/precos`) e variáveis personalizáveis como nome do cliente, empresa e vendedor.
+- Biblioteca de modelos compartilhados por equipe ou empresa; criação/edição de modelos compartilhados restrita a usuários autorizados.
+- Pré-visualização e possibilidade de personalização antes do envio; registrar mensagem efetivamente enviada no histórico da conversa.
+- Distinguir respostas livres dentro da janela permitida de atendimento dos templates oficiais sujeitos a aprovação e políticas da Meta.
+- Aplicar permissões e isolamento por empresa.
