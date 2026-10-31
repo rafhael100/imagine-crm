@@ -211,3 +211,5 @@
 - **Agendamentos com profissionais alternativos (aprovado):** permitir escolha nominal ou 'Qualquer profissional disponível'; sugerir alternativas habilitadas com horários livres, respeitar serviço/unidade e conflitos, equilibrar distribuição, identificar profissional e exigir confirmação do cliente antes da reserva.
 
 - **Substituição de profissional em agendamento existente (aprovado):** trocar responsável sem recriar reserva, validar habilitação/disponibilidade, preservar horário quando possível, exigir permissão, avisar cliente e solicitar aceite quando serviço exigir, registrar antes/depois/responsável, evitar conflitos e atualizar integrações.
+
+- **Agendamentos prioritários e encaixes (aprovado):** marcação normal/prioritário, encaixes excepcionais com permissão especial, justificativa e alertas de sobreposição; não deslocar reservas confirmadas nem exceder capacidade física, enviar confirmação, auditar e incluir em relatórios.
