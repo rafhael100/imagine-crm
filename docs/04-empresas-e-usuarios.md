@@ -777,3 +777,11 @@
 - Notificar cliente após alteração pelos canais habilitados e registrar histórico completo de datas e horários anteriores e novos, autor/canal e data da mudança.
 - Sincronizar alterações com agenda interna, chatbot e integrações externas conectadas (Google Calendar, Microsoft Outlook), observando erros e políticas de sincronização.
 - Respeitar isolamento por empresa e regras específicas de serviço/unidade.
+
+## Agendamentos para clientes recorrentes — APROVADO
+- Reconhecer contatos já cadastrados por telefone ou e-mail, com verificação de identidade antes de revelar dados pessoais ou histórico.
+- Reutilizar informações cadastrais existentes em novas reservas, evitando exigir preenchimento repetitivo e prevenindo contatos duplicados.
+- Permitir ao cliente autenticado consultar seus atendimentos anteriores e sugerir serviço, profissional e unidade habituais, sem impor essas escolhas.
+- Solicitar apenas informações novas ou desatualizadas em formulários prévios, sem dispensar campos necessários ao serviço ou consentimentos aplicáveis.
+- Vincular novo agendamento ao contato existente no CRM e aplicar o mesmo comportamento em portal, página pública e chatbot quando houver identificação segura.
+- Respeitar permissões, isolamento por empresa e proteção de dados pessoais; identificação apenas por telefone/e-mail não concede acesso a informações privadas sem verificação adicional.
