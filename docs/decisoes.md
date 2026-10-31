@@ -113,3 +113,5 @@
 - **Respostas rápidas e biblioteca WhatsApp (aprovado):** mensagens prontas com atalhos e variáveis (cliente, empresa, vendedor), biblioteca compartilhada por equipe/empresa, gestão autorizada, pré-visualização, registro no histórico e distinção entre respostas livres e templates oficiais da Meta.
 
 - **Etiquetas de conversas WhatsApp (aprovado):** categorias e cores personalizadas por empresa, múltiplas etiquetas por conversa, aplicação manual/automática, filtros e relatórios por etiqueta, gestão sujeita a permissões e registro das alterações no histórico.
+
+- **Anexos WhatsApp (aprovado):** imagens, documentos, áudios e vídeos compatíveis; associação ao histórico de conversa/contato, busca por tipo/data, validação de formatos/tamanhos/acesso e consumo do armazenamento do plano, observando limites da API oficial.
