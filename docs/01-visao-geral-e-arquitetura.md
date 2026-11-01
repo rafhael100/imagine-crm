@@ -90,4 +90,13 @@
 - Na **Central de Atendimento**, manter **conversas distintas para cada número oficial/linha**, sem misturar seus remetentes, estados, responsáveis, filas, permissões ou janelas de atendimento; a visão consolidada da ficha não funde conversas operacionais.
 - Um funcionário autorizado pode consultar histórico em outros números da mesma empresa, enquanto funcionário sem permissão não deve visualizar conteúdo restrito; o isolamento entre empresas (tenant) é absoluto.
 - Registrar os identificadores estáveis do contato, do número empresarial de WhatsApp, da conversa e de cada mensagem, preservando rastreabilidade e auditoria.
-- **Ainda não definido:** regras automáticas e manuais para identificar/vincular cadastros da mesma pessoa quando houver telefones diferentes ou homônimos; evitar junções incorretas de dados. Transferência entre linhas deverá ser especificada em decisão própria.
+- **Aprovado:** reconhecimento automático quando o mesmo número de telefone/WhatsApp já estiver associado inequivocamente a um contato da mesma empresa; para números distintos, oferecer apenas sugestões, exigindo vinculação humana autorizada. Transferência entre linhas deverá ser especificada em decisão própria.
+
+## Identificação de clientes por WhatsApp — APROVADA
+- No recebimento de mensagens, normalizar e comparar o identificador/telefone do WhatsApp com os números vinculados aos contatos **dentro do mesmo tenant**.
+- Havendo correspondência **inequívoca** com um único contato, associar automaticamente a conversa ao cadastro existente e preservar o histórico consolidado entre diferentes números oficiais de atendimento da empresa.
+- Se um número de origem estiver associado a vários contatos ou houver outro conflito de identificação, **não realizar associação arriscada**; sinalizar para conferência por funcionário autorizado.
+- Para um contato que utiliza **número de telefone diferente**, o CRM poderá sugerir correspondências com base em dados disponíveis, mas **não poderá vincular ou mesclar automaticamente** cadastros, conversas ou históricos; exigir decisão explícita de funcionário com permissão.
+- Registrar em auditoria vínculo, desvinculação, responsável, data e motivação, mantendo rastreabilidade e permitindo correção segura de associação equivocada sem apagar registros.
+- Garantir isolamento entre empresas e respeito às permissões de visualização; não expor informações restritas em sugestões de correspondência.
+- Detalhes para especificação técnica: normalização internacional de telefones, identificação do remetente retornada pela API oficial, gestão de telefones compartilhados/reutilizados e revisão de associação de contatos.
