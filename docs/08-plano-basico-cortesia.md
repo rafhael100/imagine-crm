@@ -32,10 +32,10 @@
 | **Agenda e Agendamentos** | **IN-007 e IN-008 APROVADAS:** apenas uso interno/manual para **1 profissional com agenda própria por organização**. Usuário autorizado cria, edita, remarca, conclui ou cancela compromissos vinculados a leads/contatos; **IN-009 aprova até 10 serviços ativos**; **IN-012: agendamentos manuais sem teto comercial mensal, com uso justo**; horários flexíveis aprovados em IN-011 | **Autoagendamento público no site/página CRM reservado aos planos pagos**; profissionais adicionais e integrações avançadas conforme matriz |
 | **Notificações e lembretes da agenda** | **IN-013 APROVADA: somente internos no CRM; não consomem vagas de automações comerciais** | E-mail automático ao cliente e WhatsApp Business API ficam para planos pagos ou adicionais elegíveis |
 | **Unidades e recursos avançados de agenda** | **PENDENTES**, não automaticamente incluídos por IN-004 | Vários profissionais/unidades/salas, fila de espera, grupos e outras capacidades devem ser avaliados |
-| Uploads/armazenamento | **Quota mínima específica a definir**; não herdar automaticamente a quota Essencial de 1 GB | Uploads avançados e capacidade nos pagos |
+| Dados estruturados vs. arquivos | **IN-029 APROVADA:** dados estruturados de leads, contatos e históricos **não consomem franquia comercial fixa de arquivos**; registros seguem sem teto comercial rígido (IN-024) | **Inclusão de anexos, sua franquia, tamanho, uploads temporários e retenção pendentes**; não herdar automaticamente quota Essencial de 1 GB |
 | Suporte | Ajuda e suporte contratual do produto sob regras a definir | Diferenciação de SLA sem privar de correções e suporte essencial |
 
-**Nota importante:** **1 usuário** já foi **aprovado** em IN-020 (perfil Administrador da Empresa/MFA obrigatório em IN-021 e permissões de Empresa e Segurança em IN-022). A proposta de **1 funil** ainda não foi aprovada; **IN-024 aprovou a ausência de teto comercial rígido de quantidade de leads e contatos** captados no site ou cadastrados manualmente. Capacidade/armazenamento, relatórios e regras de retenção seguem pendentes; **quantidade de contatos/leads não terá teto comercial rígido (IN-024)**. A captação de leads deve ter fila durável; nunca descartar silenciosamente dados após dizer ao visitante que foram recebidos.
+**Nota importante:** **1 usuário** já foi **aprovado** em IN-020 (perfil Administrador da Empresa/MFA obrigatório em IN-021 e permissões de Empresa e Segurança em IN-022). A proposta de **1 funil** ainda não foi aprovada; **IN-024 aprovou a ausência de teto comercial rígido de quantidade de leads e contatos** captados no site ou cadastrados manualmente. **IN-029 aprovou separar armazenamento estruturado da franquia comercial de arquivos;** inclusão/limites de anexos, capacidade técnica, relatórios e retenção seguem pendentes; **quantidade de contatos/leads não terá teto comercial rígido (IN-024)**. A captação de leads deve ter fila durável; nunca descartar silenciosamente dados após dizer ao visitante que foram recebidos.
 
 ### Observações IN-004, IN-005 e IN-006 sobre agenda, biblioteca e automações
 
@@ -52,6 +52,10 @@
 ### IN-022 — Administração da Empresa e Segurança (APROVADA)
 
 O único Administrador da Empresa do Básico pode consultar/atualizar dados comuns da empresa, solicitar alteração de **CNPJ somente com validação específica**, alterar senha/e-mail/configurações de MFA com **verificação de identidade**, consultar sessões e encerrar sessões em outros dispositivos, consultar o plano e suas quotas e contratar upgrade com aceite financeiro expresso. **MFA segue obrigatório**. Não pode criar 2º usuário, acessar outras empresas ou funções de superadministrador Imagine. Detalhar verificação de CNPJ, recuperação e fluxos de risco antes da implementação.
+
+### IN-029 — Dados estruturados não consomem franquia comercial fixa de arquivos (APROVADA)
+
+**Aprovação 2026-11-01:** no Básico Cortesia, os **dados estruturados de leads, contatos e seus históricos** ficam **fora de qualquer franquia comercial fixa destinada a arquivos/anexos**, mantendo **sem teto comercial rígido o número de registros** (IN-024). Não bloquear captura legítima de formulário ao esgotar hipotética franquia de anexos. Não significa capacidade técnica infinita: aplicação de uso justo, segurança, escalabilidade e proteção dos leads confirmados permanece obrigatória. **PENDENTES e separados:** se o Básico inclui anexos/documentos, seus tipos e limites/franquia; arquivos temporários de importação/exportação e descarte; retenção, backup e recuperação de registros. Quotas dos planos CRM pagos não se aplicam por inferência ao Básico. [Matriz IN-029](13-matriz-permissoes-basico-cortesia.md).
 
 ### IN-028 — Mesclagem manual completa e controlada de Leads e Contatos (APROVADA)
 
@@ -116,8 +120,8 @@ Ao tentar utilizar recurso não incluído ou ultrapassar quota, mostrar **plano 
 
 ## 6. Decisões necessárias antes da implementação
 
-1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente detalhes técnicos da mesclagem IN-028, limites técnicos de importação/exportação, armazenamento/retencão, 1 funil, formulário por site e regras técnicas de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
-2. Definir quota armazenamento e limites de uso justo, sem bloquear captação legítima silenciosamente.
+1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente detalhes técnicos de mesclagem IN-028, limites técnicos de importação/exportação, anexos/arquivos e retenção após IN-029, 1 funil, formulário por site e regras técnicas de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
+2. Definir **inclusão e franquia de anexos e arquivos temporários** (dados estruturados já excluídos da franquia comercial fixa por IN-029) e limites técnicos de uso justo, sem bloquear captação legítima.
 3. Estabelecer recursos mínimos do Essencial pago para justificar upgrade e preservar diferenciação.
 4. Estabelecer quando benefício termina se site for inadimplente/cancelado, e como preservar leads em retenção e exportação.
 5. Formalizar telas de ativação, upgrade e acesso por empresa, além de preços finais dos planos pagos.
