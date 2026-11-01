@@ -1,7 +1,7 @@
 # 09 — CRM Básico Cortesia: Agenda, Agendamentos e revisão de automações
 
 > 2026-11-01 — **IN-004 APROVADA: incluir módulos Agenda e Agendamentos no Básico Cortesia** de contratantes elegíveis de Onepage ou Landing Page.
-> **Escopo fino, quotas, integração com calendários e quais automações comerciais liberar: EM ANÁLISE, NÃO APROVADOS.**
+> **IN-005 APROVADA em 2026-11-01:** modelos prontos, até **3 automações comerciais ativas simultaneamente por empresa** no Básico Cortesia. Catálogo exato e detalhes da agenda ainda sob avaliação.
 > Referência: `docs/04-empresas-e-usuarios.md` (especificação completa, funcionalidade geral CRM aprovada) e `docs/02-planos-trial-e-assinaturas.md` (planos pagos).
 
 ## 1. Decisão IN-004 aprovada
@@ -72,7 +72,7 @@
 | Essencial | 5 | 3 |
 | Profissional | 20 | 10 |
 | Empresarial | 50 | 30 |
-| Básico Cortesia | **A definir** | **A definir; não presume inclusão** |
+| Básico Cortesia | **Até 3, somente de modelos prontos (IN-005)** | **Não incluído por IN-005; eventual liberação exige decisão própria** |
 
 Rascunhos de automações não consomem quota; no downgrade, preservar configurações e pausar excedentes, sem apagar histórico. O **trial público de 14 dias tem 2 automações**, mas isso não define o benefício do Básico e não constitui precedente automático.
 
@@ -80,7 +80,7 @@ Rascunhos de automações não consomem quota; no downgrade, preservar configura
 
 Propor **agenda interna funcional + agendamento manual + página pública simples de agendamento ligada ao Onepage**, sujeita a decisão específica. Funcionalidades iniciais sugeridas: configurar um serviço e sua duração, expediente/folgas/bloqueios, disponibilidade, agendar/reagendar/cancelar, vincular ao contato/lead, evitar conflitos, histórico e link de autoagendamento; integrações externas avançadas e multiequipe ficariam nos planos pagos. **Um serviço e um profissional são apenas exemplos, não limites aprovados.**
 
-Para automações, propor começar com **até 3 automações comerciais ativas por empresa**, de uma biblioteca de modelos limitados e sem editor visual totalmente livre no benefício, por exemplo:
+**IN-005 APROVADA:** permitir **até 3 automações comerciais ativas por empresa**, escolhidas de biblioteca de **modelos prontos**. **O número de modelos disponíveis e os parâmetros exatos estão sob proposta**, sem aprovação nesta etapa. Sugestões iniciais:
 
 1. Novo lead no formulário Imagine → notificação dentro do CRM e tarefa inicial de contato.
 2. Lead sem interação por período configurado → lembrete de acompanhamento.
@@ -90,15 +90,66 @@ Os lembretes/avisos operacionais indispensáveis à agenda podem ser considerado
 
 **Por que não liberar tudo de imediato?** O Básico cortesia deve entregar valor imediato sem sacrificar diferenciação dos planos pagos. Distribuição/redistribuição por equipes, construtor genérico de regras, scoring configurável/avançado, integrações oficiais de WhatsApp, agendamentos em grupo, sincronização múltipla de calendários, automações por proposta e relatórios programados podem justificar o Essencial/Profissional/Empresarial.
 
-**Ainda não aprovados:** número de 3 automações, modelos disponíveis, agenda pública, cota de agendamentos, sincronização Google/Outlook, lembretes, e-mail/WhatsApp, usuários, número de serviços/profissionais, e quais ações são consideradas automações de sistema.
+**Já aprovado:** até 3 automações comerciais ativas de modelos prontos (IN-005). **Ainda não aprovados:** catálogo exato de modelos, parâmetros/editabilidade permitidos, agenda pública, cotas de agendamentos, sincronização Google/Outlook, lembretes externos e-mail/WhatsApp, usuários, número de serviços/profissionais e o tratamento de notificações operacionais de sistema.
+
+## 4A. Decisão IN-005 — Modelos prontos e 3 automações ativas (APROVADA)
+
+- **Beneficiário:** organização/empresa elegível ao CRM Básico cortesia do Onepage ou futura Landing Page Imagine, não cada usuário nem cada formulário.
+- **Mecanismo:** escolher e ativar automações a partir de **modelos homologados** de uma biblioteca controlada. O Básico não recebe automaticamente o editor genérico de gatilhos, expressões, condições arbitrárias, webhooks ou executores de código.
+- **Limite:** no máximo **3 automações comerciais em estado `active` simultaneamente por empresa**; um modelo ativo corresponde a uma automação configurada, ainda que a mesma automação execute em muitos leads. Rascunhos/pausadas não consomem slots ativos, consistente com o tratamento de rascunhos no CRM geral.
+- **Histórico e segurança:** toda execução registra gatilho, tenant, versão do template, ID do registro, horário, resultado/erro; idempotência por evento+automação, proteção contra loops, permissões, rate limit e orçamento operacional. Uma automação que atinja seus limites operacionais deverá suspender ações futuras e alertar o gestor, sem descartar lead ou apagar registros.
+- **Upgrade:** ao migrar ao Essencial/Profissional/Empresarial, os modelos e históricos continuam; o conjunto de recursos/cotas passa a obedecer o plano pago efetivo. Retorno ao Básico após término do pago preserva configurações e pausa automações excedentes até seleção autorizada.
+- **Não aprovado nesta decisão:** tipos exatos de modelo, valor padrão de prazo, número de disparos permitidos, limite de execuções/dia, parâmetros editáveis, e-mails/WhatsApp, custos de provedores, regras de aviso e quantidade de usuários do benefício.
+- **Avisos operacionais da agenda** (mudança de horário, conflito, histórico e notificações dentro do sistema) são distintos de uma automação comercial que o cliente escolhe ativar. O que fica fora da quota das 3 ainda deve ser explicitado ao finalizar os requisitos de agenda.
+
+## 4B. Catálogo inicial detalhado de modelos (PROPOSTO PARA APROVAÇÃO)
+
+| ID | Nome comercial sugerido | Gatilho | Condições e ações | Parâmetros que o usuário poderia ajustar | Contagem |
+| --- | --- | --- | --- | --- | --- |
+| T01 | Novo lead: não deixar sem resposta | Novo lead validado via formulário/site e salvo no CRM | Criar tarefa de primeiro contato e mostrar notificação interna ao administrador | Prioridade da tarefa, prazo em minutos/horas, origem de formulário (opcional) | 1 ativa |
+| T02 | Lead aguardando contato | Lead sem interação comercial válida após prazo | Alertar no CRM e/ou criar tarefa de acompanhamento se não existir outra pendente equivalente | Atraso configurável (horas/dias) e habilitar notificação interna | 1 ativa |
+| T03 | Oportunidade parada no funil | Oportunidade aberta sem mudança de etapa/interação por período | Alerta interno e/ou tarefa de retorno | Dias de inatividade, etapas selecionadas | 1 ativa |
+| T04 | Compromisso próximo | Agendamento futuro válido, ainda não cancelado | Notificar internamente a empresa; comunicação ao cliente por e-mail dependeria de aprovação técnica/comercial | Antecedência e canal habilitado | **Decidir se regra de sistema ou automação comercial** |
+| T05 | Atendimento realizado: próximo passo | Agendamento marcado como realizado | Criar tarefa opcional de acompanhamento comercial vinculada ao lead/contato | Atraso da tarefa e serviço selecionado | 1 ativa, se aprovada no catálogo |
+
+**Os cinco exemplos não estão aprovados.** A aprovação do IN-005 permite escolher de modelos prontos **até três ativos ao mesmo tempo**; não limita a biblioteca a apenas três templates. Um template não pode enviar mensagens automáticas a visitantes por WhatsApp oficial sem produto/canal habilitado, aceite e política de custos. Nenhum modelo de rotina agenda deve emitir cobrança de agendamento, recurso rejeitado para o CRM.
+
+### Regras de execução recomendadas (não aprovadas individualmente)
+
+1. Cada instância tem `tenant_id`, `template_id`, `template_version`, `config`, `status`, `last_run`; ativação transacional confere 3 slots sem condições de corrida.
+2. Evento de origem inclui ID único, versão e dados mínimos; fila/outbox com retry/backoff e trilha de execuções.
+3. Tarefa/alerta duplicado em replay é proibido por chave idempotente. Nova interação encerra/atualiza o relógio de inatividade.
+4. Suspender, editar parâmetros e reativar requer permissão administrativa da empresa. Modelo removido de catálogo não deve parar silenciosamente instâncias existentes.
+5. Critérios de uso justo contra abuso de formulários e automações não devem bloquear o recebimento de contatos legítimos sem mensagem de erro apropriada.
+6. Contagem e quota de uso da API externa, quando habilitada, são regras diferentes do número de 3 automações ativas.
+
+## 4C. Agenda Básico Cortesia — desenho recomendado (AINDA PENDENTE)
+
+**Núcleo já autorizado por IN-004:** uma agenda para registrar, visualizar, criar, reagendar e cancelar compromissos com lead/contato; calendário dia/semana/mês; prevenção de conflitos, bloqueios de horários, estados de reserva e trilha auditada. A política exata dos limites ainda não está aprovada.
+
+**Aprovação necessária 1 — onde o cliente agenda:**
+- **A. Apenas CRM interno:** o empresário cadastra os agendamentos manualmente; o visitante do Onepage pode apenas pedir contato via formulário/WhatsApp.
+- **B. CRM interno + link/página pública de autoagendamento (recomendado):** botões no Onepage/Landing Page levam à página segura de reserva do CRM, com serviços/horários disponíveis. O visitante confirma o horário sem login CRM; o agendamento gera/vincula lead/contato e é exibido na agenda. Esse recurso precisa estar incluído especificamente no Básico.
+- **C. Opção B + calendário externo Google/Outlook:** acrescenta OAuth e sincronização de bloqueios, edição, timezone e falhas; sugere-se deixar para planos pagos inicialmente ou aprovar em decisão adicional.
+
+**Aprovação necessária 2 — capacidade comercial:** número de usuários/profissionais com agenda, unidades, serviços cadastráveis, agendamentos mensais e capacidade por horário. Sugestão técnica inicial: **1 usuário, 1 profissional, 1 unidade e até 2 serviços; agendamentos mensais sem teto rígido sujeito a uso justo**. São exemplos, não decisão aprovada; não copiar os agendamentos ilimitados já aprovados para planos pagos.
+
+**Aprovação necessária 3 — recursos operacionais essenciais:** horários de expediente, duração e intervalos, antecedência mínima/máxima, bloqueios, antifraude contra reservas em massa, link seguro para cancelar/reagendar, estados confirmado/realizado/cancelado/não compareceu, notificações internas, timezone/horário de verão, logs de alteração. Não exigir API oficial de WhatsApp para publicar uma página de reservas.
+
+**Aprovação necessária 4 — comunicações:** aviso interno de novo agendamento e alterações no CRM; confirmações para visitante por e-mail transacional se autorizadas/configuradas; WhatsApp por **link do visitante** pode ser oferecido sem API, mas não equivale a mensagem automática. Mensagens de WhatsApp Business API oficial permanecem serviço opcional sujeito a condições comerciais e políticas da Meta.
+
+**Não incluir automaticamente:** integração Google/Outlook, geração de links Meet/Teams/Zoom, agenda de equipe, várias salas/profissionais/unidades, grupos, recorrências, lista de espera, relatórios avançados, formulários prévios personalizados, pagamentos de atendimentos, agentes de IA para gerir reservas ou fluxos de chatbot WhatsApp. Todas são decisões próprias, não consequência automática de IN-004.
+
+**Ciclo de reserva de autoagendamento sugerido:** visitante seleciona serviço → vê agenda publicada e horários disponíveis → informa nome/telefone/e-mail com aviso de privacidade → servidor valida novamente horário em transação e cria/vincula lead/contato + reserva → retorna confirmação real e link de gestão com token restrito/expirável → empresário visualiza agenda e pode acompanhar o lead → alterações seguem disponibilidade e permissões. Conflitos, fusos, notificações e disponibilidade devem respeitar o mesmo motor de regras da agenda interna.
+
 
 ## 5. Próximas decisões em sequência
 
-1. Definir se o Básico concede **somente automações de sistema para leads/agendamentos**, um catálogo restrito de automações comerciais ou o editor completo (com quota).
-2. Definir quantidade de automações ativas e regras de modelos/downgrade, se forem liberadas.
+1. **IN-005 definida:** modelos prontos, até 3 ativas por empresa; ainda aprovar quais modelos e personalizações disponibilizar.
+2. Definir regras de edição, pausa/reativação, exclusão e downgrade dos modelos; não permitir editor universal no Básico sem revisão.
 3. Definir extensão da agenda Básico: **interna somente** ou **página pública de agendamento incorporada ao site**, com eventuais limites (serviços, profissionais, reservas).
 4. Definir notificações: dentro do CRM, e-mail transacional, WhatsApp API; custos externos e titular do canal.
 5. Definir política de retenção, armazenamento e uso justo do Básico e recursos que exigem upgrade.
 6. Testar captação de lead → agenda → lembrete/ação → upgrade e retorno, sem perda de registros nem cobrança indevida.
 
-**Situação:** IN-004 aprovada no nível dos módulos Agenda e Agendamentos. Catálogo/matriz de automações Básico em revisão, sem aprovação da configuração sugerida. Nenhuma programação autorizada.
+**Situação:** IN-004 aprovou Agenda e Agendamentos; **IN-005 aprovou biblioteca de modelos prontos e até três automações comerciais ativas por empresa no Básico**. Catálogo específico, parâmetros e funcionalidades detalhadas da agenda permanecem em análise. Nenhuma programação autorizada.
