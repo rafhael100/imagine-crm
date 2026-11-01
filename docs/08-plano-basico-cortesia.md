@@ -35,7 +35,7 @@
 | Uploads/armazenamento | **Quota mínima específica a definir**; não herdar automaticamente a quota Essencial de 1 GB | Uploads avançados e capacidade nos pagos |
 | Suporte | Ajuda e suporte contratual do produto sob regras a definir | Diferenciação de SLA sem privar de correções e suporte essencial |
 
-**Nota importante:** as quantidades **1 usuário**, **1 funil**, e a ausência de limite rígido de **envio de leads** são recomendações concretas para debate, não aprovações do usuário. Quotas efetivas de armazenamento, contatos, relatórios e retenção continuam pendentes. A captação de leads deve ter fila durável; nunca descartar silenciosamente dados após dizer ao visitante que foram recebidos.
+**Nota importante:** **1 usuário** já foi **aprovado** em IN-020 (perfil Administrador da Empresa/MFA obrigatório em IN-021 e permissões de Empresa e Segurança em IN-022). A proposta de **1 funil** e a ausência de limite comercial rígido de recebimento de leads **não foram aprovadas** como quotas comerciais do Básico. Quotas efetivas de armazenamento, contatos, relatórios e retenção continuam pendentes. A captação de leads deve ter fila durável; nunca descartar silenciosamente dados após dizer ao visitante que foram recebidos.
 
 ### Observações IN-004, IN-005 e IN-006 sobre agenda, biblioteca e automações
 
@@ -48,6 +48,12 @@
 ### IN-021 — Perfil Administrador da Empresa para o usuário único (APROVADA)
 
 **Aprovada em 2026-11-01:** a vaga única do Básico (IN-020) terá o perfil **Administrador da Empresa**, com acesso administrativo aos módulos e às operações **de fato incluídos** no plano, sob **MFA obrigatório**, RBAC e auditoria. Não é superadministrador da plataforma, não pode contornar recursos pagos nem criar outro login. Ações detalhadas dos módulos (empresa/segurança, leads/contatos, oportunidades, agenda, automações, relatórios, financeiro) seguem pendentes para validação, sem presumir que itens propostos da matriz já foram incluídos no Básico. [Especificação IN-021](11-agenda-manual-basico-cortesia.md).
+
+### IN-022 — Administração da Empresa e Segurança (APROVADA)
+
+O único Administrador da Empresa do Básico pode consultar/atualizar dados comuns da empresa, solicitar alteração de **CNPJ somente com validação específica**, alterar senha/e-mail/configurações de MFA com **verificação de identidade**, consultar sessões e encerrar sessões em outros dispositivos, consultar o plano e suas quotas e contratar upgrade com aceite financeiro expresso. **MFA segue obrigatório**. Não pode criar 2º usuário, acessar outras empresas ou funções de superadministrador Imagine. Detalhar verificação de CNPJ, recuperação e fluxos de risco antes da implementação.
+
+**Próximo módulo — Leads e Contatos:** lista, cadastro, edição manual, origem do formulário, busca, notas, duplicidades e arquivamento estão em **PROPOSTA** na [matriz de permissões por módulo](13-matriz-permissoes-basico-cortesia.md). O usuário ainda não aprovou a inclusão completa dessas ações no Básico. Quotas de leads/contatos, exportação/importação, histórico, retenção e proteção LGPD requerem decisão própria.
 
 ### IN-013 — Avisos internos da agenda incluídos no Básico (APROVADA)
 
@@ -86,7 +92,7 @@ Ao tentar utilizar recurso não incluído ou ultrapassar quota, mostrar **plano 
 
 ## 6. Decisões necessárias antes da implementação
 
-1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente perfil/permissões do usuário único já aprovado em IN-020, 1 funil, formulário por site e regras de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
+1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente permissões de Leads e Contatos propostas após IN-022, 1 funil, formulário por site e regras de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
 2. Definir quota armazenamento e limites de uso justo, sem bloquear captação legítima silenciosamente.
 3. Estabelecer recursos mínimos do Essencial pago para justificar upgrade e preservar diferenciação.
 4. Estabelecer quando benefício termina se site for inadimplente/cancelado, e como preservar leads em retenção e exportação.
