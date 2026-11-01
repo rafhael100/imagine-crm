@@ -2,6 +2,10 @@
 
 > **Decisão IN-002 aprovada (2026-11-01).** Planejamento funcional e contratual; nenhuma integração está implementada. O documento é uma extensão dos planos e regras do CRM Imagine, sincronizada com o projeto `rafhael100/imagine-portal`.
 
+### IN-027 — Exclusão definitiva controlada de leads e contatos dentro do CRM (APROVADA)
+
+O Administrador da Empresa do CRM Básico poderá **excluir definitivamente cadastros elegíveis, com confirmação explícita**. Cadastros ligados a agendamentos, oportunidades, históricos ou obrigações legais exigem **procedimento protegido**, com preservação da integridade dos vínculos, LGPD e auditoria; sem eliminação automática em cascata. O **Portal Imagine não ganha permissão de exclusão dos registros de CRM** somente por operar o Onepage ou a integração dos formulários, e não deve confundir encerramento do site com instrução de apagar a base CRM. **Mesclagem de duplicados, critérios de elegibilidade, anonimização e retenção continuam a definir.** [Matriz IN-027](13-matriz-permissoes-basico-cortesia.md).
+
 ### IN-026 — Exportação CSV/XLSX de leads e contatos pelo cliente CRM (APROVADA)
 
 O Administrador da Empresa pode **exportar os leads e contatos de sua organização em CSV e XLSX**, incluindo todos os registros autorizados ou só os filtrados, com isolamento tenant, auditoria, autenticação e downloads protegidos. O Portal Imagine continua operando apenas a integração técnica/contractual do site: **não deve expor nem baixar em nome próprio a base de clientes do contratante** apenas por manter o site. **Ainda pendentes:** tamanho de lotes, expiração dos links, arquivos temporários e escopo exato dos campos exportáveis. Os direitos LGPD não exigem compra de upgrade. [Matriz IN-026](13-matriz-permissoes-basico-cortesia.md).
