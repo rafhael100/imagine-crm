@@ -79,6 +79,10 @@
 
 **Justificativa para não impor um teto baixo de reservas manuais sem análise:** o cliente já precisa registrar manualmente cada atendimento e há apenas um profissional; o custo incremental por evento é pequeno, mas ainda existem riscos de abuso e limites de infraestrutura. Quotas técnicas, antifraude e retenção independem do número de registros permitido comercialmente.
 
+### Regra IN-010 — Comunicação do bloqueio no contexto da agenda
+
+**Aprovado:** ao tentar ativar **11º serviço**, **2º profissional agendável** ou página pública de autoagendamento no Básico, exibir mensagem clara indicando a condição do plano e permitir comparação/upgrade **se** um plano pago oferecer a capacidade. Para serviços, permitir inativar outro serviço antes de recomendar nova assinatura. No limite mensal de reservas, se tal limite for aprovado futuramente, usar contagem real e apresentar explicação; não inventar quota agora. O CRM deve distinguir restrição contratual de erro técnico e de falta de permissão do operador. Nunca processar upgrade ou cobrança sem aceite e pagamento autorizado. [Regra geral IN-010](12-limites-e-upgrade-contextual.md).
+
 ## 7. Diferenciação e upgrade
 
 - O diferencial pago principal é **autoagendamento público e online**, além de maior equipe/recursos e integrações conforme sua matriz.
