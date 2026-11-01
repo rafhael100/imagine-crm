@@ -322,3 +322,5 @@
 - **WhatsApp com múltiplos números por empresa (aprovado):** contratar integração com 1 número incluído e cobrar por números adicionais (valores pendentes); números podem ter equipes, filas, automações e agentes específicos; central única com permissões e identificação clara do número de cada conversa/mensagem; custos variáveis Meta/BSP a definir separadamente.
 
 - **Histórico único do cliente entre números WhatsApp (aprovado):** cadastro único no CRM por empresa/tenant com linha do tempo integrada, mas conversas operacionais individualizadas por número oficial, com origem/autoria explícitas e respeito a permissões por equipe e usuário; regras de identificação e vinculação de cadastros ainda pendentes.
+
+- **Identificação de clientes entre linhas WhatsApp (aprovado):** vincular automaticamente mensagens ao contato quando houver correspondência inequívoca pelo mesmo telefone na mesma empresa; para números diferentes, apenas sugerir correspondências e exigir confirmação manual por funcionário autorizado. Ambiguidades não são resolvidas automaticamente; manter auditoria e mecanismo de correção.
