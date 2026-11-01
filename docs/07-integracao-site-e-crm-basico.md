@@ -2,6 +2,10 @@
 
 > **Decisão IN-002 aprovada (2026-11-01).** Planejamento funcional e contratual; nenhuma integração está implementada. O documento é uma extensão dos planos e regras do CRM Imagine, sincronizada com o projeto `rafhael100/imagine-portal`.
 
+### IN-025 — Importação básica de leads e contatos por CSV e XLSX no CRM (APROVADA)
+
+O Administrador da Empresa no Básico pode **importar CSV e XLSX de leads/contatos**, dentro do **CRM autenticado**, com mapeamento de campos, prévia, validação e alerta de possíveis duplicidades; **sem mesclagem automática ou alterações silenciosas**. O upload manual autorizado não equivale a API pública, ingestão por robôs ou importação feita pelo Portal Imagine em nome do cliente. As importações respeitam isolamento do tenant, validações, registros de execução e direitos IN-024 (sem teto comercial de quantidade), mantendo **pendentes os limites técnicos por arquivo/lote e o tratamento de duplicidades**. A captação dos formulários do site continua **fluxo independente**; não criar agendamento a partir da importação. [Matriz IN-025](13-matriz-permissoes-basico-cortesia.md).
+
 ### IN-024 — Sem teto comercial de leads e contatos na cortesia (APROVADA)
 
 **IN-024 aprovada em 2026-11-01:** não existe limite comercial rígido de **quantidade de leads/contatos captados pelos formulários Imagine ou cadastrados manualmente** no Básico; proteger com uso justo, antispam e controles técnicos documentados, nunca quota mensal/total oculta. Capturas já confirmadas devem permanecer duravelmente enfileiradas/registradas e entregues ao CRM, sem descarte silencioso; falha real deve ser tratada como tal. **Não incluídos por essa decisão:** API pública de ingestão, importação em massa, armazenamento irrestrito ou política de retenção. O Portal respeita a separação de direitos; não inventar contagem de leads para bloquear formulário/forçar upgrade. [Matriz IN-024](13-matriz-permissoes-basico-cortesia.md).
