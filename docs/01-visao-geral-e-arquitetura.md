@@ -135,4 +135,13 @@
 - Se o cliente não clicar no link, o setor de destino não aceitar ou houver indisponibilidade/falha técnica, manter transferência pendente (ou marcar falha conforme tratamento futuro) e **sinalizar ao responsável de origem**, sem perder o histórico ou o cliente.
 - Registrar solicitação, status, origem, destino, timestamps, responsáveis e eventos de aceite/conclusão/falha com trilha de auditoria, evitando confirmações artificiais ou duplicadas.
 - Evitar disparos automáticos contraditórios durante a transição, observando as regras já aprovadas de posse humano/IA, pausa de automações externas e políticas da Meta.
-- **A detalhar em decisões futuras:** tempo de espera/alertas, tentativas, encaminhamento ao gestor, critérios de aceite e tratamento de transferência cancelada ou recusada.
+- **Aprovado posteriormente:** prazo configurável e alerta automático por transferência pendente. **A detalhar:** tentativas, eventual encaminhamento ao gestor, critérios de aceite e tratamento de transferência cancelada ou recusada.
+
+## Alertas automáticos para transferências pendentes entre números WhatsApp — APROVADO
+- Cada empresa pode configurar um **prazo máximo de espera por aceite/início efetivo do atendimento de destino**, com **10 minutos como valor inicial sugerido**, ajustável conforme suas operações.
+- Uma transferência ainda não concluída ao fim desse prazo deve **gerar alerta interno automático ao responsável da conversa de origem** e **sinalização clara de pendência na Central de Atendimento**.
+- A origem **mantém a responsabilidade pelo cliente** após o alerta; expiração do prazo não representa aceite, transferência concluída ou autorização para encerrar atendimento.
+- Usuários com permissão poderão **cancelar ou redirecionar** uma transferência pendente, mantendo íntegros o histórico original e a trilha de auditoria.
+- Registrar configuração aplicável, início da transferência, prazo, disparo do alerta, destinatários, intervenções humanas, mudanças de status e conclusão efetiva.
+- Evitar alertas indevidos quando o destino já tiver assumido o atendimento; executar checagem do estado antes do alerta, com proteção contra envios repetidos da mesma ocorrência.
+- A configuração operacional detalhada (horário útil, alertas reincidentes, escalonamento para gestores e limites de prazo) permanece para decisão posterior.
