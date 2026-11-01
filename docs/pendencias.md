@@ -31,6 +31,13 @@
 - **Pendência de fechamento:** contar modelos homologados e simular uso/custos, definir quais ficam em cada plano, distinguir automações comerciais de operações obrigatórias da agenda/sistema, e só então submeter novas quotas numéricas para aprovação.
 - Referência: [10-biblioteca-automacoes-e-criterios-de-planos.md](10-biblioteca-automacoes-e-criterios-de-planos.md).
 
+## Notificações e lembretes internos de agenda — IN-013 (01/11/2026)
+
+- **APROVADO:** somente avisos e lembretes internos no CRM Básico; não consomem quota das automações comerciais.
+- **APROVADO:** e-mails automáticos ao cliente e mensagens pela API oficial do WhatsApp são recursos de planos pagos ou adicionais elegíveis, com autorização e contratos/custos próprios; **não incluídos no Básico**.
+- **PENDENTE:** antecedência dos lembretes, repetição, preferências, eventos obrigatórios, apresentação na interface, push e detalhes de envio/custos nos planos pagos.
+- Referência: [11-agenda-manual-basico-cortesia.md](11-agenda-manual-basico-cortesia.md).
+
 ## Avisos por plano e upgrade contextual — IN-010 (01/11/2026)
 
 - **Aprovado:** ao tentar recurso fora do plano ou atingir quota, explicar motivo e oferecer upgrade pertinente (ou adicional elegível), preservando opção de liberar capacidade dentro do plano; sem ativação, cobrança ou mudança de plano sem consentimento e autorização.
