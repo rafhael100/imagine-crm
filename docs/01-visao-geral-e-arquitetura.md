@@ -294,5 +294,15 @@
 - Se todos os funcionários elegíveis de uma equipe recusarem a mesma conversa no ciclo inicial, o CRM **não deve encerrar a tentativa de distribuição simplesmente por todas as recusas**: selecionar automaticamente o funcionário **com menor número de atendimentos humanos ativos** entre os elegíveis/disponíveis e dentro das capacidades individual e coletiva.
 - Persistir a posição e horário FIFO originais do cliente, histórico de recusas e escolha do funcionário; registrar e sinalizar a exceção ao supervisor para acompanhamento operacional.
 - A direção solicitada é **atribuição automática ao menos sobrecarregado**. Para não contrariar silenciosamente a regra já aprovada de **aceite humano obrigatório**, tratar inicialmente essa escolha como **reserva/reoferta automática aguardando aceite**, não como atendimento efetivamente assumido.
-- **Decisão explícita pendente:** a seleção após todas as recusas deve excepcionalmente tornar-se atribuição definitiva SEM novo aceite, ou permanecer dependente de aceite? Se a escolha puder ser novamente recusada, especificar limitação de tentativas/escalonamento para evitar loop infinito.
+- **Resolvido em decisão posterior:** após todas as recusas, atribuição definitiva automática sem novo aceite ao disponível de menor carga, com alerta ao supervisor e respeito aos limites.
 - Nunca exceder capacidades, atribuir a funcionários offline/ausentes/ocupados ou mascarar uma conversa sem responsável como atendimento já iniciado; respeitar horário, segurança e auditoria.
+
+## Atribuição definitiva automática após recusa de todos os elegíveis — APROVADO
+- Quando **todos os atendentes elegíveis de um ciclo de distribuição recusarem a conversa**, o CRM deverá selecionar automaticamente, entre os funcionários **atualmente disponíveis, autorizados, em expediente e com capacidade livre**, aquele com **menor número de atendimentos humanos ativos**.
+- Nessa situação excepcional, a conversa será **atribuída definitivamente ao funcionário selecionado sem exigir novo aceite**; trata-se de exceção expressamente aprovada à regra geral de aceite obrigatório para distribuições normais.
+- Notificar imediatamente o **funcionário escolhido e o supervisor/responsável da equipe**, destacando que se trata de atribuição automática após recusas.
+- O sistema deve registrar a atribuição como **realizada pelo mecanismo automático**, sem falsamente registrar um clique de aceite do funcionário. Preservar o histórico de recusas, os critérios de escolha, a origem, o responsável e o horário.
+- Atribuição deve respeitar **ambos os limites de conversas simultâneas (individual e equipe)**, regras de equipe/número, permissões, tenant, status Disponível, conexão efetiva e jornada de atendimento; não ultrapassar capacidades nem selecionar usuários Offline, Ausente ou Ocupado.
+- Se nenhum atendente cumprir esses requisitos, **preservar a conversa na fila FIFO original e alertar o supervisor**, sem encerrar o atendimento, sem forçar atribuição indevida e sem reativar a IA em atendimentos que aguardam humano.
+- Revalidar elegibilidade e contagem de capacidade atomicamente no instante da atribuição para evitar concorrência; não executar ciclos infinitos de recusa/reoferta.
+- **A detalhar:** como tratar empates entre funcionários com a mesma menor carga e o SLA de primeira resposta após a atribuição excepcional.
