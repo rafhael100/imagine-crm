@@ -10,7 +10,7 @@
 ## 1. Decisões e estado
 
 1. **IN-003 aprovada:** Básico Cortesia de contratantes de Onepage/Landing Page é mais enxuto que o Essencial pago.
-2. **IN-004 aprovada:** Básico inclui Agenda e Agendamentos; a extensão pública e limites continuam pendentes.
+2. **IN-004 e IN-007 aprovadas:** Básico inclui Agenda e Agendamentos **somente manuais e internos**; páginas/links públicos de autoagendamento ficam reservados aos planos pagos. Limites operacionais do modo manual continuam pendentes.
 3. **IN-005 aprovada como configuração de planejamento atual:** biblioteca de modelos prontos, até **3 automações comerciais ativas por organização** no Básico. O usuário determinou **revisar essa quantidade e as dos demais planos após documentação integral do catálogo**. Não tratar três como teto comercial final imutável; não reduzir ou aumentar automaticamente sem posterior aprovação.
 4. **IN-006 — diretriz registrada:** manter uma **biblioteca central com modelos classificados por disponibilidade e capacidade**, valorizando o Básico, mas reservando alguns modelos de maior poder/complexidade aos planos pagos. O catálogo inteiro e a alocação exata ainda estão em desenvolvimento.
 5. **Referências anteriores que permanecem documentadas até revisão:** Essencial **5**, Profissional **20**, Empresarial **50** automações comerciais ativas simultaneamente; trial **2**. A revisão conjunta pode propor novos limites, mas não altera decisões anteriores sem aprovação explícita.
@@ -99,6 +99,6 @@ Cada template deve especificar:
 
 ## 7. Próxima tarefa sugerida
 
-Seguir a documentação módulo a módulo, começando pela **Agenda Básico Cortesia e sua eventual página pública de agendamentos** — escopo e limites ainda pendentes. Alimentar este catálogo conforme novas regras forem aprovadas. A revisão dos números por plano é uma **etapa final**, não uma pergunta a repetir agora.
+Seguir a documentação módulo a módulo, começando pela **Agenda Básico Cortesia exclusivamente interna/manual (IN-007)** e seus limites operacionais ainda pendentes. A capacidade de **agendar publicamente pelo site** pertence aos planos pagos e pode ser documentada como diferencial pago. Alimentar este catálogo conforme novas regras forem aprovadas. A revisão dos números por plano é uma **etapa final**, não uma pergunta a repetir agora.
 
 **Status:** estratégia da biblioteca progressiva e segmentação entre Basic e planos pagos registrada como diretriz; quotas atuais apenas referências para planejamento até revisão; catálogo inicial explicitamente preliminar. **Nenhuma alteração de código, produção, cobrança ou limites em ambiente real.**
