@@ -21,3 +21,12 @@
 - Se o atendimento estiver sob posse de humano, **não reativar o agente automaticamente** ao fim do expediente; somente o humano autorizado pode devolver a conversa à IA.
 - Não usar a disponibilidade 24/7 para contornar políticas oficiais de envio do WhatsApp, regras de consentimento/opt-out, segurança, cotas, limites de custo ou controles de suspensão do agente.
 - Configurações mais granulares por agente/número, mensagens de ausência e escalonamentos específicos permanecem a detalhar.
+
+## Transparência e solicitação de atendimento humano no WhatsApp — APROVADO
+- Cada agente de IA deve **identificar-se claramente como assistente virtual/inteligência artificial no início do atendimento**, sem fingir ser pessoa ou funcionário humano.
+- Permitir configuração por empresa de **nome e mensagem de saudação**, preservando sempre a identificação inequívoca de que se trata de atendimento automatizado.
+- Informar e oferecer ao cliente a possibilidade de **solicitar atendimento por um humano**, aceitando pedidos em linguagem natural durante a interação.
+- Ao receber solicitação de humano, encaminhar para **equipe/fila permitida** com contexto necessário, histórico e rastreabilidade, respeitando permissões e regras de posse e transferência já aprovadas.
+- Fora do expediente humano, informar os horários aplicáveis, registrar a solicitação e **não prometer atendimento humano imediato**; a confirmação de aceite depende do efetivo início ou aceite pelo destino.
+- Seguir as políticas aplicáveis à plataforma WhatsApp, consentimento e privacidade, inclusive regras de envio e templates aprovados quando exigidos.
+- **Pendente:** decidir se a IA deve parar de responder imediatamente após solicitação de humano ou se pode continuar ajudando até o atendente assumir.
