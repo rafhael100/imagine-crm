@@ -15,6 +15,10 @@
 - Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
 - Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
 
+## IN-032 — Visibilidade e alertas da franquia de arquivos/anexos (APROVADA)
+
+**Aprovada em 2026-11-01:** para **Básico Cortesia, Essencial, Profissional e Empresarial**, mostrar ao usuário autenticado **armazenamento utilizado e disponível**, com **avisos internos no CRM em 80% e 95% de uso**. **A 100% bloquear somente novos uploads de anexos** e também rejeitar, antes da confirmação, tentativas que ultrapassariam o saldo disponível; **preservar acesso aos arquivos existentes e não bloquear leads, contatos, oportunidades, agendamentos, observações, históricos ou outros dados estruturados**. A quota comercial mede somente arquivos/anexos (IN-031): Básico 1 GB, Essencial 5 GB, Profissional 20 GB, Empresarial 50 GB. Proibido apagar arquivos já aceitos por falta de espaço; segurança e isolamento por organização mantidos. Notificação é interna, sem e-mail/WhatsApp/push não aprovados nem compra automática (IN-010); armazenamento adicional, regras de repetição dos avisos, detalhes de UX, temporários e retenção serão definidos separadamente. **A retenção de 90 dias da central da agenda não é automaticamente aplicada aos avisos de armazenamento.** [Matriz IN-032](13-matriz-permissoes-basico-cortesia.md).
+
 ## IN-031 — Franquias de arquivos/anexos e exclusão dos dados estruturados nos quatro planos (APROVADA)
 
 **Aprovada em 2026-11-01, após revisão do cenário Amplo e confirmação expressa:** franquias de arquivos/anexos por **empresa/organização**: **Básico Cortesia 1 GB; Essencial 5 GB; Profissional 20 GB; Empresarial 50 GB**. As capacidades substituem as franquias anteriores dos pagos (1 GB, 5 GB e 10 GB). **Somente arquivos/anexos efetivamente armazenados consomem franquia; dados estruturados (leads, contatos, observações textuais, agendamentos, oportunidades e históricos) não contam em nenhum dos quatro planos**. A separação de IN-029, originalmente explícita para o Básico, agora vale também para todos os pagos.
@@ -160,7 +164,7 @@ Permitir unidades adicionais com cobrança extra sem mudança de plano (preço a
 - **Empresarial: 50 GB** de arquivos/anexos por empresa (substitui 10 GB anteriores).
 - **Dados estruturados não consomem essa franquia em nenhum plano**; somente arquivos/anexos efetivamente armazenados são contabilizados.
 - Quota compartilhada entre todos os funcionários da empresa, contabilizada pelo tamanho efetivamente armazenado após otimização e incluindo versões adicionais quando existentes.
-- Ao atingir a quota, impedir novos uploads, mantendo acesso autorizado aos arquivos existentes; respeitar também o limite global de 5 MB por arquivo.
+- **IN-032 aprovada:** exibir utilização e saldo, avisos internos ao atingir **80% e 95%**; **100% bloqueia apenas novos uploads de anexos** (também impedir upload que extrapolaria o saldo), mantendo acesso a arquivos existentes e sem bloquear dados estruturados; limite por arquivo **5 MB** permanece.
 - Definir posteriormente tratamento de downgrade quando o armazenamento existente ultrapassar a quota do novo plano e eventuais pacotes extras de armazenamento.
 
 ## Direção comercial de lançamento — APROVADA (preços ainda em validação)
@@ -170,5 +174,5 @@ Permitir unidades adicionais com cobrança extra sem mudança de plano (preço a
 - Manter teste gratuito de 14 dias sem cartão e sem plano gratuito público permanente no lançamento inicial, **ressalvada a cortesia condicionada à contratação de site Imagine aprovada em IN-002**.
 - Estratégia inicial de aquisição: foco em pequenas empresas que recebem leads e precisam organizar vendas; testar parcerias com agências e consultores, aquisição via produto e marketing segmentado; validar preços e disposição a pagar com potenciais clientes antes do lançamento.
 - Acompanhar ativação, conversão trial-pago, MRR, CAC, churn, retenção e margem para ajustar estratégia de crescimento.
-- **IN-031 APROVADA:** franquias 1/5/20/50 GB apenas para arquivos/anexos nos quatro planos; dados estruturados excluídos do cálculo. Continuam pendentes política comercial de capacidade adicional, avisos, temporários, backups e retenção, sem prometer armazenamento absolutamente ilimitado.
+- **IN-031 APROVADA:** franquias 1/5/20/50 GB apenas para arquivos/anexos nos quatro planos; dados estruturados excluídos do cálculo. Continuam pendentes política comercial de capacidade adicional, detalhes técnicos/UX de avisos IN-032, temporários, backups e retenção, sem prometer armazenamento absolutamente ilimitado.
 - Não tratar métricas-alvo, comissões de parceiros ou preços ilustrativos como valores aprovados.
