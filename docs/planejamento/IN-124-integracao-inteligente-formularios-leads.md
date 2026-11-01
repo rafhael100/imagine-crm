@@ -41,3 +41,10 @@ Capturar, entregar, rastrear e recuperar automaticamente envios dos formulários
 **Aprovado:** funcionalidades e políticas funcionais descritas.  
 **Pendente:** parâmetros técnicos e fluxos detalhados acima.  
 **Programação:** não iniciada.
+
+## Esclarecimento arquitetural levantado em 01/11/2026 (aguardando aprovação específica)
+
+- O responsável confirmou que **os sites e landing pages Imagine não terão banco de dados próprio**. Por isso a fila de reenvio não deve depender de armazenamento no site hospedado.
+- **Proposta, ainda não homologada:** formulários enviam via HTTPS a uma **API central de ingestão da Imagine**, que valida e **persiste com durabilidade** o envio e seu identificador; processadores assíncronos entregam o conteúdo à conta CRM vinculada, com retentativas e auditoria. Tecnologias candidatas: Laravel com fila baseada em PostgreSQL, dentro da infraestrutura central segregada da hospedagem dos sites (ou serviço independente do CRM).
+- Se a API central estiver indisponível **antes de persistir**, o formulário não deve exibir confirmação de envio: deve mostrar erro e orientar nova tentativa. Não é possível recuperar com certeza um formulário que não foi recebido por nenhum serviço disponível.
+- Definir na decisão futura onde hospedar gateway, banco e processadores, separação do CRM e do n8n, disponibilidade, retenção, capacidade, backups, notificações e custos. Não considerar arquitetura final aprovada até confirmação do responsável.
