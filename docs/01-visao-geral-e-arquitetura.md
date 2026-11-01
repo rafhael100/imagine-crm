@@ -74,3 +74,12 @@
 - A retomada de atendimento automatizado exige devolução explícita à IA; na retomada, **não descarregar automaticamente uma fila de mensagens acumuladas**. Reavaliar gatilho, atualidade, consentimento, janela de atendimento da Meta, templates, duplicidade, horários, custos e posse da conversa antes de cada envio.
 - Validar posse e permissões no momento efetivo do disparo para impedir corrida entre troca de responsável e processamento de filas.
 - Manter histórico de mensagens suspensas, descartadas, reavaliadas e enviadas para rastreabilidade.
+
+## WhatsApp — múltiplos números por empresa (APROVADO)
+- Permitir **vários números oficiais de WhatsApp** vinculados à mesma empresa/tenant, sem exigir contas separadas do CRM Imagine.
+- Modelo comercial da integração: **um número incluído na contratação do adicional WhatsApp**; números excedentes contratados como adicionais pagos, com preços definidos posteriormente. Esta inclusão não significa que a plataforma assuma os custos variáveis cobrados pela Meta/BSP; detalhar repasse e cobrança antes do lançamento.
+- Prever **equipes, filas de atendimento, automações e agentes de IA configuráveis por número**, respeitando permissões de acesso e isolamento entre empresas.
+- Fornecer **Central de Atendimento unificada** com filtro por número e visibilidade conforme autorização do usuário.
+- Cada conversa e cada envio/recebimento devem identificar o **número oficial de origem/destino** correto; mensagens de saída usam a identidade do canal associado à conversa, sujeitas a regras da Meta.
+- Prever no modelo de dados identificadores estáveis de cada linha/canal conectado, suas credenciais, configurações, estados, eventos e trilhas de auditoria; segredos armazenados com proteção adequada.
+- Pendente de decisão: exibição do mesmo contato em múltiplos números, relação entre históricos e mecanismo de transferência de conversa entre linhas sem confundir remetentes.
