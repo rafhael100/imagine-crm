@@ -164,3 +164,10 @@
 - Atendimento 24/7 significa capacidade de responder a contatos recebidos fora do expediente, **não permissão irrestrita para iniciar disparos**: cumprir consentimento, opt-out, janela de atendimento e templates aprovados quando requeridos, além dos limites da API Meta e das restrições próprias de cada empresa.
 - A indisponibilidade da integração/API, bloqueio de custos, pausa administrativa ou falhas operacionais devem ser tratadas sem prometer atendimento contínuo infalível; rastrear estado e avisar responsáveis conforme políticas existentes.
 - **A definir posteriormente:** tratamento detalhado de feriados e férias por equipe, escalonamento fora de expediente e configuração granular por agente/número.
+
+## Central de Atendimento — Transparência dos agentes de IA (APROVADO)
+- No início do atendimento automatizado no WhatsApp, identificar explicitamente o agente como assistente virtual, podendo personalizar nome e mensagem de abertura por empresa.
+- Cliente pode solicitar atendimento humano a qualquer momento; o CRM deve encaminhar o pedido, preservar histórico e registrar o fluxo até aceite efetivo, respeitando horários do setor.
+- Se fora do expediente, informar horário de atendimento humano e não prometer resposta imediata.
+- Não confundir solicitação de transferência com aceite/conclusão da transferência; aplicam-se as regras anteriores de posse de conversa e responsabilidade.
+- Pendente: comportamento da IA enquanto o pedido de atendimento humano aguarda aceite.
