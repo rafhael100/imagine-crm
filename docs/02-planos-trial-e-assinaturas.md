@@ -15,6 +15,10 @@
 - Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
 - Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
 
+## IN-028 — Mesclagem manual de duplicados no CRM Básico (APROVADA)
+
+**Aprovada em 2026-11-01:** o único Administrador da Empresa poderá **mesclar manualmente leads/contatos duplicados**, escolher o registro principal, comparar cadastros, revisar divergências **campo a campo** e confirmar expressamente o resultado. Devem ser preservados **agendamentos, oportunidades, origens dos leads, observações, histórico e auditoria**, em isolamento multiempresa, sem mesclagem automática. Não exigir plano pago para o recurso; não confundir com exclusão controlada (IN-027). Critérios de reversão, consentimentos divergentes, tratamento do registro secundário e limites técnicos ainda serão detalhados. [Matriz IN-028](13-matriz-permissoes-basico-cortesia.md).
+
 ## IN-027 — Exclusão definitiva controlada de leads e contatos no Básico (APROVADA)
 
 **Aprovada em 2026-11-01:** o Administrador da Empresa do CRM Básico Cortesia pode **excluir definitivamente leads/contatos elegíveis após confirmação explícita**. Cadastros com vínculos a agendamentos, oportunidades, histórico relevante ou obrigações legais de preservação exigem **fluxo protegido**, respeitando LGPD, integridade e trilhas de auditoria; não realizar exclusão indiscriminada em cascata nem apagar provas legalmente necessárias. Arquivamento já aprovado (IN-023) é operação distinta. **Mesclagem manual de duplicados, eliminação em massa, regras técnicas de elegibilidade, desvinculação, anonimização e recuperação não foram aprovadas por esta decisão.** [Matriz IN-027](13-matriz-permissoes-basico-cortesia.md).
