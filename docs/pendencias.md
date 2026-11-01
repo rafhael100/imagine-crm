@@ -17,12 +17,19 @@
 
 - **Aprovado:** comprador de Onepage/futura Landing Page recebe benefício gratuito de CRM Básico e paga somente o site no Portal Imagine; upgrade CRM é contratado e cobrado no próprio CRM, criando segunda mensalidade.
 - **IN-003 aprovada:** Básico cortesia será uma versão enxuta, exclusiva para site/landing page, diferente do Essencial.
-- **IN-004 aprovada:** liberar Agenda e Agendamentos no Básico. **Ainda definir** agenda pública/incorporada ao site, limites e recursos de calendário, confirmações e notificações, número de usuários/profissionais, quotas de reservas. **IN-005 APROVADA:** até 3 automações comerciais ativas por organização, escolhidas de modelos prontos. **Pendente:** catálogo concreto (sugestões T01–T05), parâmetros, avisos de agenda e regras de limite/custo; não aplicar por analogia cotas dos planos pagos. Documento: [09-revisao-agenda-e-automacoes-basico.md](09-revisao-agenda-e-automacoes-basico.md). **Ainda aprovar** matriz recomendada de recursos/quotas (1 usuário, 1 funil, formulários por site, sem agentes/automações etc.), após avaliar escala, custo, uso justo e retenção. Ver [08-plano-basico-cortesia.md](08-plano-basico-cortesia.md).
+- **IN-004 aprovada:** liberar Agenda e Agendamentos no Básico. **Ainda definir** agenda pública/incorporada ao site, limites e recursos de calendário, confirmações e notificações, número de usuários/profissionais, quotas de reservas. **IN-005 APROVADA:** até 3 automações comerciais ativas por organização, escolhidas de modelos prontos. **Pendente:** catálogo concreto (sugestões T01–T05), parâmetros, avisos de agenda e regras de limite/custo; não aplicar por analogia cotas dos planos pagos. Documento: [09-revisao-agenda-e-automacoes-basico.md](09-revisao-agenda-e-automacoes-basico.md). **Ainda aprovar** matriz recomendada de recursos/quotas (1 usuário, 1 funil, formulários por site, sem agentes de IA; modelos de automação comercial permitidos conforme IN-005/IN-006), após avaliar escala, custo, uso justo e retenção. Ver [08-plano-basico-cortesia.md](08-plano-basico-cortesia.md).
 - Definir vigência do benefício e regras de inadimplência, cancelamento, estorno e recontratação do site.
 - Definir fallback do plano pago CRM para o Básico, limites excedentes e retenção.
 - Definir catálogo e valor da Landing Page e marcos para concessão do benefício.
 - Definir API autenticada, vínculos tenant/pedido, fila idempotente de lead forms, privacidade e testes de integração.
 - Documento: [07-integracao-site-e-crm-basico.md](07-integracao-site-e-crm-basico.md).
+
+## Biblioteca de Automações — IN-006 (01/11/2026)
+
+- **Diretriz:** biblioteca central de modelos prontos, organizada por módulos e critérios de elegibilidade; modelos simples úteis ao Básico e **modelos mais avançados para planos pagos**. Classificações individuais ainda são propostas; confirmar a interpretação na matriz comercial final.
+- **Ordem aprovada do trabalho:** documentar todos os modelos/categorias e seus custos/dependências **antes** de rever a quantidade simultânea por plano. **Não mudar agora** os limites anteriores: Básico Cortesia 3; Essencial 5; Profissional 20; Empresarial 50.
+- **Pendência de fechamento:** contar modelos homologados e simular uso/custos, definir quais ficam em cada plano, distinguir automações comerciais de operações obrigatórias da agenda/sistema, e só então submeter novas quotas numéricas para aprovação.
+- Referência: [10-biblioteca-automacoes-e-criterios-de-planos.md](10-biblioteca-automacoes-e-criterios-de-planos.md).
 
 ## Observações
 - Este conjunto é um marco documental inicial; não significa que todos os capítulos estão fechados.
