@@ -34,6 +34,12 @@ No Básico: **somente modelos prontos habilitados para esse benefício**, sem ed
 
 Chatbots WhatsApp, envios oficiais pela API WhatsApp, agentes de IA Prospector/Comercial, conexões de calendários Google/Outlook, notificações externas e relatórios programados dependem de serviços, autorizações e custos específicos. Não entrar automaticamente na quota de automações comerciais nem serem considerados incluídos pelo mero acesso à biblioteca. Os fluxos do chatbot têm limite próprio previamente documentado.
 
+### Regra IN-013 — Lembretes internos da agenda NÃO são automações comerciais
+
+No Básico Cortesia, **avisos e lembretes internos do calendário** (registro, remarcação, cancelamento, compromisso próximo e conflitos) são **operações de sistema**, portanto **não ocupam uma das vagas de automações comerciais ativas**. O modelo preliminar chamado “Compromisso próximo” (T04) deve ser reclassificado como aviso operacional interno gratuito; modelos distintos que criem tarefas de vendas após atendimento continuam sujeitos à biblioteca e ao limite de ativas quando habilitados.
+
+**E-mails automáticos ao cliente e WhatsApp oficial** são reservados para planos pagos ou adicionais elegíveis, sob condições próprias de contratação, canal, consumo e consentimento; slots comerciais livres não dão acesso a esses canais. Ver [Agenda Básico — IN-013](11-agenda-manual-basico-cortesia.md).
+
 ## 3. Inventário inicial de candidatos da biblioteca (NÃO É CATÁLOGO FINAL APROVADO)
 
 As funcionalidades subjacentes já têm decisões no Capítulo 04, mas **cada combinação concreta como template e sua elegibilidade por plano são propostas**, até validação editorial/comercial final.
