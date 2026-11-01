@@ -51,6 +51,7 @@
 | IN-005 | Biblioteca de modelos prontos com até 3 automações comerciais ativas por empresa no Básico | Aprovada como baseline atual |
 | IN-006 | Primeiro documentar a biblioteca completa e segmentá-la por disponibilidade; deixar modelos mais avançados aos planos pagos; **revisar quantidades de automações dos quatro planos ao final da documentação** | Diretriz registrada; alocação por modelo e novas quotas pendentes |
 | IN-007 | **Básico Cortesia** terá agenda e agendamentos **somente manuais no CRM**, feitos por usuário autorizado. **Autoagendamento público/automático pelo Onepage, Landing Page ou página pública do CRM** reservado aos **planos pagos** | Aprovada em 01/11/2026; limites do modo manual pendentes |
+| IN-008 | O CRM Básico Cortesia inclui agenda manual para **1 profissional agendável por organização**, independente da quantidade de sites contratados; este limite não determina automaticamente a quantidade de contas de usuário | Aprovada em 01/11/2026; serviços, horários e reservas manuais pendentes |
 
 **Esclarecimento:** IN-007 não revoga a aprovação da página pública de agendamentos no CRM geral, mas define que essa função só poderá ser disponibilizada aos planos pagos; o Básico permanece manual. O formulário comum do Onepage captura o lead e não gera automaticamente uma reserva.
 
