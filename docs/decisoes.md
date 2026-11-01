@@ -472,3 +472,28 @@ Ver [biblioteca de automações e critérios por plano](10-biblioteca-automacoes
 - **Quando todos recusam, escolher automaticamente o menos carregado (diretriz do responsável):** em vez de apenas suspender tentativas e exigir redistribuição manual, selecionar automaticamente o funcionário elegível com menos atendimentos em andamento, preservando FIFO e auditando recusas. **Resolvido em decisão posterior:** atribuição excepcional definitiva sem novo aceite; registrar explicitamente como atribuição automática, sem simular aceite manual. Evitar loops e respeitar capacidade/disponibilidade.
 
 - **Exceção ao aceite humano após recusas de toda a equipe (aprovada):** se todos os atendentes elegíveis recusarem a conversa, distribuir **definitivamente e sem novo aceite** ao funcionário disponível, autorizado, conectado, em expediente, com capacidade e **menor quantidade de atendimentos humanos ativos**. Notificar funcionário e supervisor, preservar FIFO e registrar auditoria deixando claro que a atribuição foi automática (não aceite manual). Se ninguém estiver elegível, manter fila e alertar supervisor, sem exceder limites ou forçar indisponíveis. Desempates e SLA de primeira resposta ainda pendentes.
+
+
+## Fechamento da revisão consolidada — IN-039 a IN-090 (01/11/2026)
+
+**Escopo revisado:** 52 decisões, de IN-039 a IN-090, conferidas quanto a presença/numeração e coerência funcional. **Resultado:** sem lacunas de numeração, duplicidades ou conflito funcional impeditivo identificado nesta revisão; as regras mais recentes esclarecem hipóteses e pendências de decisões anteriores. **Bloco de decisões funcionais encerrado**, sem significar que a especificação técnica, fornecedores, dimensionamento e testes já tenham sido concluídos.
+
+| Faixa | Assunto consolidado | Garantia essencial |
+| --- | --- | --- |
+| IN-039–041 | Acesso a anexos e logs | Usuário autenticado e autorizado, isolamento por organização; sem links públicos compartilháveis; somente registros técnicos de segurança para downloads/visualizações. |
+| IN-042–054 | Exclusão, backups, replicação e contingência | Exclusão funcional controlada, backups de 30 dias com tombstones, replicação assíncrona com RPO-alvo de 15 min, contingência autenticada e somente leitura ativada por técnicos; retorno ao principal com validação e aprovação. |
+| IN-055–069 | Uploads e antimalware | Uploads recuperáveis por até 6h, reserva atômica de capacidade, até cinco uploads simultâneos por empresa, fila FIFO, checagem de tamanho/formato e antimalware obrigatório antes da confirmação; falha sistêmica de antivírus impede novos uploads. |
+| IN-070–083 | Bloqueio por ameaça e rastreabilidade de IA | Bloqueio proporcional de fontes/derivados/caches/trechos, proveniência comprovada e tratamento seguro de legados; reconstrução por IA somente para segurança obrigatória, sem créditos comerciais, com filas, recuperação controlada e supervisão técnica quando necessário. |
+| IN-084–090 | Severidade, resposta humana e calendário | Severidade baseada em risco, expediente segunda a sexta 09h–18h Brasília exceto feriados aplicáveis; incidentes críticos com proteção/alerta automático 24/7, triagem humana no próximo expediente; metas auditáveis e recalculadas sem apagar atraso ou histórico. |
+
+**Esclarecimentos de precedência e condições:**
+
+1. **IN-080 complementa e restringe IN-079:** solicitações autorizadas podem sinalizar necessidades de **segurança**, mas **não autorizam reconstruções opcionais por IA**, cobrança por créditos ou enriquecimento comercial dos resumos. Custos de controles obrigatórios são internos à Imagine.
+2. **IN-086 e IN-087 condicionam IN-085:** não existe plantão humano 24/7 aprovado como operacional no momento; a meta crítica humana de 30 minutos **não está vigente** até implantação e validação do plantão. O monitoramento, a contenção e os alertas críticos automáticos continuam previstos 24/7.
+3. **IN-088 e IN-089 completam o calendário pendente nas IN-085/087:** segunda a sexta, 09h–18h, `America/Sao_Paulo`, com feriados aplicáveis e exceções versionadas; é necessário cadastrar/validar datas reais antes da operação.
+4. **IN-090 complementa IN-089:** mudar a severidade altera a prioridade imediatamente e produz uma nova meta a partir da reclassificação, sem reescrever prazos, atrasos ou medição de primeira resposta já concluída.
+5. **IN-042/043 e IN-070–078 coexistem:** restrição de segurança não significa exclusão; arquivo legitimamente excluído não pode ser restaurado por backup ou desbloqueio. A recuperação de conteúdo derivado somente ocorre com fonte e autorização verificadas.
+
+**Pendências remanescentes de especificação/implantação (não são novas decisões funcionais deste bloco):** dimensionamento, fornecedores e custos de infraestrutura/antimalware; testes e métricas concretas de RPO/retentativas/filas; definição de papéis técnicos e manutenção do calendário de feriados; orçamento interno de segurança, critérios de evidência e observabilidade; implantação futura de plantão se for escolhida; políticas de retenção técnica dos logs compatíveis com requisitos legais. **IN-038 (preços de pacotes extras de armazenamento) permanece decisão comercial separada e não aprovada**, fora deste fechamento.
+
+**Encerramento:** prosseguir para outro assunto do planejamento do CRM Imagine. **Não iniciar programação** até aprovação do planejamento global; alterações documentais permanecem nas branches de planejamento, não em `main`.
