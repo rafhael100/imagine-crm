@@ -15,6 +15,10 @@
 - Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
 - Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
 
+## IN-024 — Leads e contatos sem teto comercial de quantidade (APROVADA)
+
+**Aprovada em 2026-11-01:** o CRM Básico Cortesia **não terá teto comercial rígido de quantidade para leads e contatos**, tanto os captados por formulário Imagine como os cadastrados manualmente. Manter **uso justo e proteções antiabuso**, sem limite oculto mensal/total nem bloqueio comercial por quantidade. Não perder leads aceitos e não usar quantidade legítima como motivo para upgrade. **Armazenamento e retenção serão definidos separadamente**; importação em massa, API pública, exportação e exclusão definitiva não são liberadas por essa decisão. A quota do trial de 20 leads não se aplica ao Básico. [Matriz IN-024](13-matriz-permissoes-basico-cortesia.md).
+
 ## IN-023 — Leads e Contatos básicos (APROVADA)
 
 **Aprovada em 2026-11-01:** no CRM Básico Cortesia, o único administrador pode **visualizar, cadastrar/editar manualmente, pesquisar/filtrar, registrar observações e histórico manual e arquivar leads/contatos preservando o histórico**. Detectar duplicidade gera **alerta sem mesclagem automática**. O recebimento de leads dos formulários Imagine permanece autorizado pela integração IN-001. **Não houve aprovação de limites quantitativos de leads/contatos, importação em massa, exportação comercial, exclusão definitiva ou mesclagem**; avaliar uso justo, armazenamento, retenção e direitos de privacidade separadamente. Não aplicar ao Básico a quota de 20 leads do trial. [Matriz de permissões IN-023](13-matriz-permissoes-basico-cortesia.md).
