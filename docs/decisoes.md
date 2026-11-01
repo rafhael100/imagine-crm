@@ -318,3 +318,5 @@
 - **Transferência humano ↔ IA no WhatsApp (aprovada):** quando humano assume conversa, agente de IA pausa respostas naquela conversa; só retoma após devolução humana explícita. Preservar histórico, contexto e trilha de auditoria; bloquear mensagens da IA pendentes após mudança de posse.
 
 - **Pausa de automações WhatsApp no atendimento humano (aprovada):** quando humano assume, suspender todos os envios automáticos ao cliente na conversa, inclusive follow-ups e lembretes; automações internas continuam. Ao devolver à IA, reavaliar cada disparo, sem envio em massa automático das mensagens acumuladas.
+
+- **WhatsApp com múltiplos números por empresa (aprovado):** contratar integração com 1 número incluído e cobrar por números adicionais (valores pendentes); números podem ter equipes, filas, automações e agentes específicos; central única com permissões e identificação clara do número de cada conversa/mensagem; custos variáveis Meta/BSP a definir separadamente.
