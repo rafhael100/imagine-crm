@@ -2,6 +2,10 @@
 
 > **Decisão IN-002 aprovada (2026-11-01).** Planejamento funcional e contratual; nenhuma integração está implementada. O documento é uma extensão dos planos e regras do CRM Imagine, sincronizada com o projeto `rafhael100/imagine-portal`.
 
+### IN-013 — Canais de aviso da agenda vinculados à cortesia
+
+A agenda do CRM Básico Cortesia oferece somente **notificações e lembretes internos no próprio CRM**. Esses avisos operacionais **não ocupam vagas de automações comerciais**. O Portal Imagine não deverá enviar e-mails automáticos de agendamento aos visitantes nem acionar API oficial WhatsApp como benefício do site: canais externos para agenda requerem plano CRM pago ou adicional elegível e respectivas autorizações. [Agenda manual — IN-013](11-agenda-manual-basico-cortesia.md).
+
 ## 1. Diretriz comercial aprovada
 
 - Cliente que contrata **Site Onepage** (ou futura **Landing Page**) Imagine recebe **acesso gratuito ao pacote Básico do CRM Imagine**, condicionado ao vínculo do contrato do site. O CRM **não emite assinatura ou cobrança do Básico** ao beneficiário.
