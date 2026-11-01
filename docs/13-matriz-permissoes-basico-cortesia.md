@@ -82,11 +82,11 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 1. **Uso justo e controles técnicos contra abuso** são permitidos e necessários (por exemplo, proteção antispam, limites técnicos proporcionais de requisições, validação de origem e tamanho do payload, integridade do tenant, idempotência, antifraude e monitoração), com parâmetros técnicos a especificar. **Não apresentar controle técnico como cota comercial oculta** nem sugerir upgrade quando o bloqueio decorre de segurança ou infraestrutura (IN-010).
 2. **Não recusar nem descartar silenciosamente leads já confirmados como recebidos.** O ponto de confirmação exige persistência durável, fila/outbox ou compromisso equivalente de processamento. Em indisponibilidade transitória, manter pendência/reprocessamento com alertas e idempotência. Para envios não aceitos por motivo legítimo (spam, risco, formato), informar resultado real, sem falsa confirmação.
 3. **Nenhuma quota numérica mensal ou total oculta** de leads e contatos no Básico; não reutilizar o limite do trial nem quotas de planos pagos. Número de registros por si só não enseja cobrança ou convite de upgrade.
-4. A decisão **não concede** importação em massa, API pública para cadastro, bots, rotinas de bulk, armazenamento irrestrito de arquivos/anexos ou recursos comerciais premium; cada capacidade depende de seu próprio escopo e aprovação.
+4. **IN-024, isoladamente, não autorizou importação em massa**. A **IN-025 aprovou posteriormente importação básica por arquivos CSV/XLSX**; API pública de cadastro, bots, rotinas automáticas de bulk, armazenamento irrestrito e outros recursos premium continuam sem autorização específica.
 5. **Armazenamento e retenção de dados, tamanho de anexos, política de backup e descarte** continuam **PENDENTES**, com respeito à LGPD, à integridade das informações já aceitas e sem criar indiretamente um teto comercial de registros incompatível com IN-024.
 6. O cadastro manual legítimo e os formulários homologados devem continuar funcionando conforme permissões e uso justo; empresas não devem ter que contratar plano pago simplesmente por terem mais contatos.
 
-**Situação:** IN-024 **APROVADA**; limites técnicos específicos, parâmetros de armazenamento e política de retenção **NÃO APROVADOS**. Próxima etapa: discutir **importação em massa CSV/XLSX** sem presumir que IN-024 autoriza importação, exportação ou exclusão.
+**Situação:** IN-024 **APROVADA** (quantidade sem teto comercial); IN-025 **APROVADA POSTERIORMENTE** (importação básica CSV/XLSX). Limites técnicos da importação, parâmetros de armazenamento e política de retenção **NÃO APROVADOS**. Exportação e exclusão serão debatidas separadamente.
 
 ### Importação básica de Leads e Contatos — IN-025 APROVADA em 2026-11-01
 
@@ -106,7 +106,7 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 
 **Próximo assunto:** exportação de leads e contatos do Básico, incluindo formatos, filtros/escopo, autorização, limites operacionais e direito à portabilidade independente de upgrade.
 
-### Próximas decisões — NÃO aprovadas por IN-023
+### Situação consolidada dos complementos às IN-023, IN-024 e IN-025
 
 - **IN-024 APROVADA:** sem teto comercial rígido de quantidade de leads e contatos, tanto os recebidos via site como os cadastrados manualmente, sujeitos a uso justo e controles técnicos. **Pendentes:** parâmetros operacionais de proteção antiabuso, capacidade física de armazenamento e retenção, que não podem impor uma quota comercial disfarçada.
 - **IN-025 APROVADA:** importação básica via CSV e XLSX, com mapeamento, prévia, validação e alerta de possíveis duplicidades, sem mesclagem automática. **Pendentes:** limites técnicos por arquivo/lote, regras de correspondência de campos, tratamento de linhas inválidas, política de duplicidades (ignorar/atualizar/decidir individualmente), concorrência e relatório final.
