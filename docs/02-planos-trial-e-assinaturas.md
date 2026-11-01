@@ -15,6 +15,10 @@
 - Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
 - Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
 
+## IN-026 — Exportação CSV/XLSX completa ou filtrada de leads e contatos (APROVADA)
+
+**Aprovada em 2026-11-01:** no CRM Básico Cortesia, o Administrador da Empresa pode exportar **todos os leads/contatos autorizados da própria organização ou apenas os registros filtrados**, em **CSV e XLSX**, com revalidação de acesso, proteção dos downloads, auditoria e controles técnicos proporcionais. Os dados não precisam ser transferidos para o Portal Imagine e a exportação não altera a assinatura do site. **Não** conceder relatórios avançados, API pública, exportação de outros módulos ou dados de outros tenants. Definir expiração dos downloads, campos, lotes e prazo dos arquivos temporários sem bloquear direitos de acesso e portabilidade ou criar quota oculta contrária à IN-024. [Matriz IN-026](13-matriz-permissoes-basico-cortesia.md).
+
 ## IN-025 — Importação básica CSV/XLSX no CRM Básico (APROVADA)
 
 **Aprovada em 2026-11-01:** o único Administrador da Empresa pode importar **leads e contatos em arquivos CSV e XLSX**, com mapeamento de colunas, prévia dos registros, validação e alerta de duplicidades, **sem mesclagem automática**. Respeitar permissões multiempresa, integridade, auditoria e escolha explícita de efetivar importação. **Limites técnicos por arquivo/lote, manejo de erros e duplicidades seguem pendentes**, sem introduzir quota comercial total de leads/contatos vedada por IN-024. A autorização não estende ao Básico API pública, automações externas, exportação comercial, exclusão definitiva ou toda a importação avançada do CRM geral. [Matriz IN-025](13-matriz-permissoes-basico-cortesia.md).
