@@ -59,3 +59,11 @@
 - Permitir que humanos visualizem todas as interações autorizadas, respondam, assumam conversas e transfiram atendimento entre humano e IA sem perder contexto.
 - **Recomendação pendente de aprovação específica:** ao humano assumir uma conversa, pausar respostas automáticas do agente naquela conversa até devolução explícita para IA, evitando conflitos.
 - Detalhes ainda pendentes: regras de distribuição e filas, modelo de números por empresa, níveis de acesso, custos e configuração de templates.
+
+## Regra de posse da conversa WhatsApp — APROVADA
+- Ao atendente humano **assumir** uma conversa, pausar imediatamente as respostas automáticas do agente de IA **somente naquela conversa**; demais conversas continuam normalmente.
+- Enquanto a conversa estiver sob responsabilidade humana, o agente não pode enviar novas mensagens automáticas nela.
+- A IA só poderá voltar a responder quando um humano autorizado **devolver explicitamente** a conversa à IA, preservando o histórico e o contexto atualizado.
+- Registrar em auditoria quem assumiu/devolveu, data, hora e mudanças de responsabilidade.
+- Implementação deve validar a posse da conversa imediatamente antes do envio, inclusive para mensagens já enfileiradas, impedindo disparos indevidos após a transferência; preservar logs e permitir tratamento seguro de mensagens em processamento.
+- Definir posteriormente se e como automações não conversacionais ou lembretes programados são pausados durante atendimento humano; não confundir com autorização para a IA enviar mensagens.
