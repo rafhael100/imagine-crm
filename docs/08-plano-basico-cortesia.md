@@ -19,7 +19,7 @@
 | Empresas | **1 organização vinculada por contrato elegível**, com múltiplos sites da mesma empresa podendo apontar para ela | Usuário multiempresa continua possível por outros vínculos |
 | Formulários de lead | **Formulário por site/landing page contratado**, gerado pelo publicador Imagine; sem construtor livre de formulários no Básico | Form builder e formulários avulsos nos planos pagos |
 | Leads recebidos | **Sem teto comercial rígido de recebimento no formulário**, com política antifraude/uso justo; cotas de retenção/armazenamento a definir | Evitar que a cortesia cause perda de oportunidades ao atingir cota |
-| Lead / contato | Lista, cadastro, busca e detalhes; identificação do site/formulário/UTM | Funcionalidades avançadas nos planos pagos |
+| Lead / contato | **IN-023 APROVADA:** visualizar, cadastrar/editar manualmente, buscar/filtrar, registrar observações, alertar duplicidades **sem mesclagem automática** e arquivar com histórico preservado | Importação/exportação comerciais, mesclagem/exclusão definitiva e limites numéricos ainda a definir |
 | Funil | **1 funil** de oportunidades, com etapas padrão configuradas e movimentação manual | Múltiplos funis, automações e personalização avançada nos pagos |
 | Atividades | Notas e lembretes manuais básicos nos registros, se aprovados | Tarefas avançadas, equipes e automações nos pagos |
 | Dashboard | Total de leads, novos leads e situação simples do funil | Relatórios avançados, metas e forecast nos planos pagos |
@@ -53,7 +53,11 @@
 
 O único Administrador da Empresa do Básico pode consultar/atualizar dados comuns da empresa, solicitar alteração de **CNPJ somente com validação específica**, alterar senha/e-mail/configurações de MFA com **verificação de identidade**, consultar sessões e encerrar sessões em outros dispositivos, consultar o plano e suas quotas e contratar upgrade com aceite financeiro expresso. **MFA segue obrigatório**. Não pode criar 2º usuário, acessar outras empresas ou funções de superadministrador Imagine. Detalhar verificação de CNPJ, recuperação e fluxos de risco antes da implementação.
 
-**Próximo módulo — Leads e Contatos:** lista, cadastro, edição manual, origem do formulário, busca, notas, duplicidades e arquivamento estão em **PROPOSTA** na [matriz de permissões por módulo](13-matriz-permissoes-basico-cortesia.md). O usuário ainda não aprovou a inclusão completa dessas ações no Básico. Quotas de leads/contatos, exportação/importação, histórico, retenção e proteção LGPD requerem decisão própria.
+### IN-023 — Leads e Contatos: operações manuais do Básico (APROVADA)
+
+O Administrador da Empresa pode **visualizar registros, cadastrar e editar leads/contatos manualmente, pesquisar por nome/telefone/e-mail/origem/situação, registrar observações e histórico de atendimento, receber alerta de possíveis duplicidades (sem mesclagem automática) e arquivar preservando dados, vínculos e histórico**. O formulário Imagine continua alimentando leads na organização correta (IN-001). **Não aprovado:** quota numérica de leads/contatos, importação em massa, exportações comerciais, mesclagem, exclusão definitiva, regras de retenção e campos personalizados premium. Direitos LGPD devem ser atendidos sem exigir upgrade indevido. [Matriz por módulo — IN-023](13-matriz-permissoes-basico-cortesia.md).
+
+
 
 ### IN-013 — Avisos internos da agenda incluídos no Básico (APROVADA)
 
@@ -92,7 +96,7 @@ Ao tentar utilizar recurso não incluído ou ultrapassar quota, mostrar **plano 
 
 ## 6. Decisões necessárias antes da implementação
 
-1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente permissões de Leads e Contatos propostas após IN-022, 1 funil, formulário por site e regras de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
+1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente limites de Leads e Contatos após IN-023, importação/exportação, exclusão, 1 funil, formulário por site e regras de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
 2. Definir quota armazenamento e limites de uso justo, sem bloquear captação legítima silenciosamente.
 3. Estabelecer recursos mínimos do Essencial pago para justificar upgrade e preservar diferenciação.
 4. Estabelecer quando benefício termina se site for inadimplente/cancelado, e como preservar leads em retenção e exportação.
