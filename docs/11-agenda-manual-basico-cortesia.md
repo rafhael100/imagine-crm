@@ -1,6 +1,6 @@
 # 11 — CRM Básico Cortesia: Agenda Manual (um profissional), serviços e regras operacionais
 
-> **IN-008, IN-009 e IN-011 APROVADAS em 2026-11-01:** o CRM Básico Cortesia permite **1 profissional com agenda própria, até 10 serviços ativos e horários flexíveis com exceção manual fora de expediente mediante aviso e confirmação explícita, sem conflitos**. A agenda permanece **exclusivamente manual e interna** (IN-007).  
+> **IN-008, IN-009, IN-011 e IN-012 APROVADAS em 2026-11-01:** o CRM Básico Cortesia permite **1 profissional com agenda própria, até 10 serviços ativos, expediente flexível e agendamentos manuais sem teto comercial mensal**, sujeitos a uso justo e controles técnicos contra abuso. A agenda permanece **exclusivamente manual e interna** (IN-007).  
 > **Somente as decisões identificadas como APROVADAS têm esse status.** Regras complementares, número de reservas mensais e características não detalhadas permanecem PROPOSTOS. Não implementar, criar cobranças ou publicar a funcionalidade.
 
 ## 1. Decisões já aprovadas e limites de interpretação
@@ -8,7 +8,8 @@
 - **IN-004:** o Básico Cortesia, benefício de clientes elegíveis ao Onepage/Landing Page Imagine, inclui o módulo Agenda e Agendamentos.
 - **IN-007:** a agenda é **manual** no Básico: usuário autenticado e autorizado registra e administra agendamentos; visitantes não acessam página pública para reservar, nem botão, embed, chatbot ou API pública para autoagendamento. A página pública e a capacidade de reservar pelo site ficam exclusivas dos planos CRM pagos.
 - **IN-008:** somente **1 profissional com agenda própria**, por organização CRM beneficiária do Básico, independentemente de quantos contratos de Onepage/Landing Page estejam vinculados à mesma empresa. Não confundir **profissional agendável** com **usuário habilitado a entrar no CRM**: a quota de usuários administrativos ainda está pendente. Se houver apenas um usuário no plano, esse usuário pode ser o profissional, mas isso deve ser configurado e validado.
-- **IN-011:** aprovada a configuração semanal flexível (inclusive dias sem expediente, sábados e domingos), múltiplos períodos por dia, pausas/intervalos, bloqueios manuais de folgas, férias e feriados, duração própria de cada serviço, preservação dos compromissos nas mudanças de expediente, e **agendamento manual excepcional fora do expediente** com aviso e confirmação explícita de usuário autorizado, **sem ignorar conflitos**. A decisão não concede página pública de autoagendamento e não aprova limite mensal.
+- **IN-011:** aprovada a configuração semanal flexível (inclusive dias sem expediente, sábados e domingos), múltiplos períodos por dia, pausas/intervalos, bloqueios manuais de folgas, férias e feriados, duração própria de cada serviço, preservação dos compromissos nas mudanças de expediente, e **agendamento manual excepcional fora do expediente** com aviso e confirmação explícita de usuário autorizado, **sem ignorar conflitos**. Não concede página pública de autoagendamento.
+- **IN-012:** aprovada **ausência de teto comercial rígido para a quantidade mensal de agendamentos manuais** da única agenda do Básico, com **uso justo e controles técnicos contra abuso**. Não estabelecer limiar mensal oculto nem bloquear utilização humana legítima por atingir quantidade de reservas; quota de reservas públicas segue indisponível no Básico (IN-007).
 - **IN-009:** o profissional da empresa beneficiária pode manter **até 10 serviços ativos simultaneamente**, somando todos os tipos de atendimento cadastrados para essa agenda. Serviços inativos/arquivados **não ocupam vaga ativa**, mas seus históricos/agendamentos associados devem ser preservados. Não multiplicar a quota por site ou formulário. Ao tentar ativar o 11º serviço, bloquear a operação com explicação e opção de inativar outro serviço ou contratar plano elegível.
 - As automações comerciais do Básico permanecem em modelos prontos, até **3 ativas simultaneamente por empresa como baseline atual** (IN-005), com revisão final numérica planejada (IN-006). Essas automações não autorizam agendamento público.
 - Nos planos pagos Essencial, Profissional e Empresarial, a agenda e a página pública já constam do produto geral e **os agendamentos mensais foram aprovados como ilimitados**. Isso não estabelece automaticamente quota mensal para o Básico.
@@ -96,7 +97,7 @@
 | Profissionais com agenda própria | **1 — IN-008 APROVADO** | 1 |
 | Usuários CRM | 1 ou mais; o profissional pode ser o único usuário ou um registro distinto | **1 usuário** (a aprovar separadamente) |
 | Serviços ativos | **IN-009 APROVADO: 10** | 10 simultaneamente ativos; demais inativos não consomem quota |
-| Agendamentos manuais por mês | 30 / 100 / **sem limite rígido com uso justo** | Sem teto rígido comercial (a confirmar) |
+| Agendamentos manuais por mês | **IN-012 APROVADA: sem teto comercial rígido, com uso justo** | Quantidade mensal não é motivo isolado para exigir upgrade |
 | Unidades/localidades | 1 / mais | **1 unidade lógica** sem várias agendas; a aprovar |
 | Agendamentos simultâneos | Um por horário do único profissional, salvo encaixes autorizados | 1 sem sobreposição |
 | Calendário | Dia/semana/mês, local e interno | Incluído no núcleo |
@@ -142,20 +143,39 @@ As regras de expediente flexível, múltiplos períodos, pausas, duração por s
 **Pendente:** política exata para bloqueios específicos e possíveis exceções, justificativa obrigatória ou opcional, agendamento retroativo, integrações externas e a quantidade mensal de reservas; **não interpretar aprovação de horários como aprovação de agendamentos ilimitados**.
 
 
-### 9.2 Quantidade mensal de agendamentos manuais (PENDENTE)
+### 9.2 Quantidade mensal de agendamentos manuais — IN-012 APROVADA
 
-**Recomendação:** não impor teto comercial rígido de **agendamentos manuais** por mês no Básico, sujeito a política clara de uso justo e limites técnicos contra abuso (tamanho de payload, requisições, retenção, rate-limit). Razões: só há **um profissional** e **não existe autoagendamento público**; controlar por volume de compromissos pode atrapalhar um pequeno prestador legítimo. Isso **não significa** acesso irrestrito a APIs públicas, importações em massa, robôs ou integrações de agendamento. Os planos pagos já têm agendamentos mensais ilimitados aprovados.
+**Regra aprovada:** o profissional com agenda manual no Básico Cortesia **não terá quota comercial mensal numérica de agendamentos**. A empresa poderá registrar o volume de atendimentos necessário, com **uso justo e controles técnicos contra abuso**, sem um bloqueio comercial escondido em 30, 100, 300 ou outra quantidade fixa.
 
-Outras opções a avaliar antes de aprovar: teto de 100 agendamentos novos/mês ou de 300 agendamentos novos/mês, sempre com regra explícita de contagem, mês/fuso, estornos/cancelamentos, não comparecimentos, dados históricos e migração.
+**Alcance preciso:**
+- Vale somente para **agendamentos criados ou administrados manualmente por usuário autenticado/autorizado no CRM** da empresa beneficiária, vinculados ao único profissional (IN-008) e a até dez serviços ativos (IN-009).
+- **Não libera** agendamento pelo visitante, página pública, formulário de reserva, bot, API pública de criação, importação automatizada ou criação em massa não homologada; essas capacidades seguem seus próprios direitos.
+- Aplicar proteção contra scripts, automações maliciosas e tráfego abusivo (rate limit, limites de payload, autenticação, logs, detecção de anomalias e eventuais limites por janela curta), com valores técnicos e regras de revisão ainda a documentar.
+- **Não converter controle técnico de segurança em teto comercial mensal não comunicado.** Se houver restrição por atividade suspeita, informar motivo honesto e fluxo de suporte, sem apresentar upgrade como solução enganosa (IN-010).
+- Reservas aceitas, históricos, alterações de horário e contatos vinculados devem permanecer íntegros. Bloqueio de um evento suspeito não pode apagar os demais nem invalidar reserva já confirmada.
+- Os planos CRM pagos Essencial, Profissional e Empresarial já possuem agendamentos mensais ilimitados aprovados. A ausência de teto comercial no Básico não estende a esse benefício a capacidade de autoagendamento público.
 
-**Critério sugerido para uso justo:** taxa e frequência humana compatíveis com lançamento manual; limites técnicos documentados contra abuso, sem interromper trabalho legítimo ou apagar agendamentos aceitos silenciosamente. Se a política bloquear algo, mostrar ao usuário o motivo e fluxo de suporte/upgrade.
+**Não decidido por IN-012:** canais de confirmação/lembrete, prazo e antecedência, quotas de envio externo, armazenamento e retenção, múltiplos profissionais, usuários licenciados, agendamento recorrente e regras para operações em massa.
+
+### 9.2A Agenda: notificações e lembretes — próxima revisão, NÃO APROVADOS para o Básico
+
+O CRM geral já tem **central de notificações internas**, preferências e avisos de alteração de agendamento, confirmações/lembretes ao cliente por canais habilitados e registros de envio. **Ainda não está definido quais desses recursos serão incluídos especificamente no Básico Cortesia.**
+
+**Proposta A — avisos operacionais internos de sistema (recomendada):** registro, cancelamento, reagendamento, alterações de disponibilidade e compromissos próximos aparecem no painel/central de notificações; os avisos necessários à operação não consomem as três automações comerciais ativas do IN-005. Definir antecedência de lembrete e possibilidade de ajustes sem spam ou avisos duplicados.
+
+**Proposta B — mensagens externas transacionais por e-mail:** notificações/confirmacões de agenda para clientes, exigindo canal verificado, política de privacidade/consentimento, proteção de dados, entrega e custos; pode ser incluída ou oferecida somente em planos pagos conforme aprovação.
+
+**Proposta C — WhatsApp oficial:** envio automático exige integração WhatsApp Business API, templates/categorias válidas, consentimento, custos e direitos apropriados. Um botão de WhatsApp ou link simples não equivale a envio automático. Não habilitar automaticamente no Básico.
+
+**Separação obrigatória para a futura decisão:** notificação operacional gerada pelo próprio módulo agenda ≠ **modelo configurável de automação comercial**, que conta uma vaga ativa quando o cliente o habilitar. Não permitir que alertas essenciais deixem de funcionar por a empresa ter usado três modelos comerciais.
+
 
 ### 9.3 Decisões seguintes
 
 1. **IN-009 e IN-011 já aprovaram** até 10 serviços ativos e a agenda flexível, incluindo bloqueios e exceção manual fora do expediente com confirmação e sem conflitos. Consolidar apenas detalhes técnicos/UX ainda abertos.
-2. Aprovar **agendamentos manuais sem teto comercial rígido**, ou escolher limite mensal explícito.
-3. Definir se notificações internas comuns de agenda fazem parte do sistema sem consumir as vagas de automação comercial.
+2. **IN-012 aprovada:** agendamentos manuais sem teto comercial mensal; especificar apenas métricas técnicas e controles proporcionais de uso justo, sem quota escondida.
+3. **Próxima decisão:** definir quais notificações internas da agenda são operações de sistema sem consumir as vagas de automação comercial; avaliar envio externo por e-mail e WhatsApp em etapa separada.
 4. Revisar campos de serviço, permissões e limite de usuários do Básico; funcionalidades externas (WhatsApp Business API, Outlook/Google Calendar etc.) não são autorizadas pela IN-009.
 
 
-**Situação:** IN-008 aprova **1 profissional com agenda**; IN-009 aprova **até 10 serviços ativos**; **IN-011 aprova horários flexíveis e exceções manuais fora do expediente com aviso/confirmação sem conflitos**. **A quantidade mensal de agendamentos manuais permanece pendente de aprovação**. Somente documentação de planejamento, sem implementação.
+**Situação:** IN-008 aprova **1 profissional com agenda**; IN-009 aprova **até 10 serviços ativos**; IN-011 aprova horários flexíveis e exceções manuais fora do expediente sem conflitos; **IN-012 aprova agendamentos manuais sem teto comercial mensal, com uso justo e controles técnicos contra abuso**. **Notificações, lembretes e integrações externas permanecem pendentes**. Somente documentação de planejamento, sem implementação.
