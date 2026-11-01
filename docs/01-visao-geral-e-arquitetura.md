@@ -326,3 +326,12 @@
 - O painel deve oferecer visibilidade clara do volume de conversas e dos gargalos operacionais, especialmente filas e violações do SLA de primeira resposta.
 - **Proposta a detalhar:** indicadores adicionais de volumes de IA e transferências, definição técnica de cada métrica, séries temporais, atualização em tempo real, exportação e relatórios customizados; não presumir esses itens como escopo obrigatório já fechado.
 - **Pendente:** fórmulas e regras de cálculo por janela de expediente, período-base para contagem de atendimentos, regras de atribuição quando conversas trocam de equipe e critérios de acesso dos gestores.
+
+## MVP — Indicadores clicáveis com navegação para atendimentos relacionados — APROVADO
+- Os indicadores do **painel gerencial da Central WhatsApp** deverão ser interativos: ao selecionar um KPI, o usuário autorizado abre a **lista de conversas/atendimentos que compõem aquele indicador** (drill-down).
+- Exemplos: conversas aguardando, atendimentos com SLA de primeira resposta violado, volume de atendimentos por funcionário/equipe, conversas utilizadas no cálculo do tempo médio de resposta.
+- **Preservar filtros contextuais** de período, equipe e funcionário ao navegar do painel para a lista, além do critério específico do indicador selecionado.
+- A lista resultante deve identificar, conforme permissão, cliente, conversa, equipe, responsável e situação/tempo relevante, com acesso ao histórico correspondente pelo fluxo normal de atendimento.
+- **Aplicar as permissões no servidor a cada consulta e abertura de conversa**, respeitando tenant, equipe, número de WhatsApp e escopo do funcionário; métricas agregadas e links não podem revelar conversas ou dados que o usuário não está autorizado a acessar.
+- Evitar divergências de definição entre o número do indicador e os itens detalhados: usar critérios de filtro e apuração coerentes e explicar diferenças causadas por atualizações concorrentes ou janelas temporais.
+- A aprovação contempla **navegação interativa e filtros preservados**; ações operacionais diretamente na lista (assumir, transferir, responder, encerrar) dependem de definição específica.
