@@ -2,6 +2,10 @@
 
 > **Decisão IN-002 aprovada (2026-11-01).** Planejamento funcional e contratual; nenhuma integração está implementada. O documento é uma extensão dos planos e regras do CRM Imagine, sincronizada com o projeto `rafhael100/imagine-portal`.
 
+### IN-029 — Dados estruturados fora da franquia comercial fixa de arquivos (APROVADA)
+
+**IN-029 aprovada em 2026-11-01:** no CRM Básico Cortesia, dados cadastrais/textuais de leads, contatos e seus históricos **não consomem a franquia comercial fixa destinada a anexos/arquivos**; a quantidade de leads e contatos continua sem teto comercial rígido (IN-024). O formulário Imagine pode receber leads legítimos mesmo quando a futura franquia de anexos estiver esgotada; não descartar capturas confirmadas. **Não presumir** que anexos nos contatos ou uploads permanentes foram incluídos, nem quotas/tamanhos. Arquivos temporários de importação/exportação e retenção serão especificados separadamente. A integração do Portal não obtém novo acesso a arquivos dos clientes. [Matriz IN-029](13-matriz-permissoes-basico-cortesia.md).
+
 ### IN-028 — Mesclagem manual completa e controlada no CRM Básico (APROVADA)
 
 O Administrador da Empresa poderá **mesclar manualmente leads e contatos duplicados**, com **escolha do registro principal, revisão dos conflitos campo a campo e confirmação explícita**, sem perda de vínculos com agendamentos/oportunidades, origens do site, observações, históricos ou auditoria. **Mesclagem automática não é permitida**, inclusive no recebimento de formulários ou na importação CSV/XLSX. O **Portal Imagine não poderá iniciar mesclagem em nome do cliente** apenas por manter o site ou a integração; o fluxo deve ser autenticado, autorizado e restrito à empresa no CRM. Detalhes de referência histórica e tratamento de consentimentos estão pendentes. [Matriz IN-028](13-matriz-permissoes-basico-cortesia.md).
