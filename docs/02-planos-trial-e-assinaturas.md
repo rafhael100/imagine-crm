@@ -15,13 +15,19 @@
 - Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
 - Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
 
+## IN-031 — Franquias de arquivos/anexos e exclusão dos dados estruturados nos quatro planos (APROVADA)
+
+**Aprovada em 2026-11-01, após revisão do cenário Amplo e confirmação expressa:** franquias de arquivos/anexos por **empresa/organização**: **Básico Cortesia 1 GB; Essencial 5 GB; Profissional 20 GB; Empresarial 50 GB**. As capacidades substituem as franquias anteriores dos pagos (1 GB, 5 GB e 10 GB). **Somente arquivos/anexos efetivamente armazenados consomem franquia; dados estruturados (leads, contatos, observações textuais, agendamentos, oportunidades e históricos) não contam em nenhum dos quatro planos**. A separação de IN-029, originalmente explícita para o Básico, agora vale também para todos os pagos.
+
+A franquia é compartilhada por todos os usuários da empresa, contabilizando armazenamento efetivo após otimização e versões retidas. **Mantém-se o limite global pré-aprovado de 5 MB por arquivo** (IN-030 não o alterou). Sem limite comercial oculto de número de leads/contatos no Básico (IN-024). Ao esgotar a franquia, aplicar a regra geral de não aceitar **novos uploads de anexos**, preservando arquivos existentes e sem impedir novas captações legítimas de leads; avisos e experiência detalhada serão definidos em decisão própria. Não efetuar upgrade/contratação automática. **PENDENTES:** pacotes extras, limites de versões, processos/temporários de importação/exportação, backups, retenção e recuperação. [Matriz IN-031](13-matriz-permissoes-basico-cortesia.md).
+
 ## IN-030 — Mesmo tipo de anexos no Básico e planos pagos (APROVADA)
 
-**Aprovada em 2026-11-01:** o CRM Básico Cortesia permite **anexar a leads e contatos os mesmos tipos de imagens, PDFs e documentos usuais permitidos no CRM Essencial, Profissional e Empresarial**. A lista de extensões/MIME e verificações de segurança será única para todos os planos, com autenticação, permissões, isolamento entre organizações, antivírus e histórico. **Não restringir formatos do Básico por razões comerciais.** Permanece o **limite global já aprovado de 5 MB por arquivo** para todos os planos e formatos. **A capacidade total de arquivos/anexos será revista em conjunto para os quatro planos**: Básico ainda sem franquia aprovada; quotas pagas anteriores **Essencial 1 GB, Profissional 5 GB, Empresarial 10 GB** permanecem registradas **até decisão expressa de revisão**. Dados estruturados do Básico seguem fora dessa franquia (IN-029). A IN-030 não altera retenção, uploads temporários, quotas nem recursos premium. [Matriz IN-030](13-matriz-permissoes-basico-cortesia.md).
+**Aprovada em 2026-11-01:** o CRM Básico Cortesia permite **anexar a leads e contatos os mesmos tipos de imagens, PDFs e documentos usuais permitidos no CRM Essencial, Profissional e Empresarial**. A lista de extensões/MIME e verificações de segurança será única para todos os planos, com autenticação, permissões, isolamento entre organizações, antivírus e histórico. **Não restringir formatos do Básico por razões comerciais.** Permanece o **limite global já aprovado de 5 MB por arquivo** para todos os planos e formatos. **IN-031 aprovou posteriormente a revisão conjunta:** **Básico 1 GB; Essencial 5 GB; Profissional 20 GB; Empresarial 50 GB** exclusivamente para arquivos/anexos; dados estruturados fora da franquia em todos os planos. Os valores pagos anteriores ficam substituídos. Dados estruturados do Básico seguem fora dessa franquia (IN-029). A IN-030 não altera retenção, uploads temporários, quotas nem recursos premium. [Matriz IN-030](13-matriz-permissoes-basico-cortesia.md).
 
 ## IN-029 — Dados estruturados do Básico separados da franquia de arquivos (APROVADA)
 
-**Aprovada em 2026-11-01:** no CRM Básico Cortesia, **dados estruturados de leads, contatos e seus históricos não consomem uma franquia comercial fixa de armazenamento de arquivos/anexos**. A quantidade de registros continua **sem teto comercial rígido** (IN-024). **Ainda não decidido:** inclusão de anexos no Básico, franquia/capacidade e tamanho de documentos, políticas para uploads temporários de importação e exportação (IN-025/IN-026), retenção, backups e recuperação. Proteções técnicas e uso justo permanecem aplicáveis sem criar quota comercial disfarçada ou perder leads aceitos. Quotas pagas de **1 GB Essencial, 5 GB Profissional e 10 GB Empresarial** já aprovadas **não foram alteradas nem atribuídas ao Básico** por IN-029. [Matriz IN-029](13-matriz-permissoes-basico-cortesia.md).
+**Aprovada em 2026-11-01:** no CRM Básico Cortesia, **dados estruturados de leads, contatos e seus históricos não consomem uma franquia comercial fixa de armazenamento de arquivos/anexos**. A quantidade de registros continua **sem teto comercial rígido** (IN-024). **IN-030 aprovou posteriormente anexos com os mesmos tipos dos planos pagos; IN-031 aprovou franquias 1/5/20/50 GB para arquivos/anexos, excluindo dados estruturados da franquia em todos os planos**. Permanecem pendentes uploads temporários de importação/exportação (IN-025/IN-026), retenção, backups e recuperação. Proteções técnicas e uso justo permanecem aplicáveis sem criar quota comercial disfarçada ou perder leads aceitos. A IN-029 por si só não alterou quotas; **IN-031 substituiu posteriormente as quotas pagas anteriores por Essencial 5 GB, Profissional 20 GB e Empresarial 50 GB, além de Básico 1 GB**. [Matriz IN-029](13-matriz-permissoes-basico-cortesia.md).
 
 ## IN-028 — Mesclagem manual de duplicados no CRM Básico (APROVADA)
 
@@ -147,10 +153,12 @@ Permitir unidades adicionais com cobrança extra sem mudança de plano (preço a
 - Diferenciação dos planos permanece em funcionalidades, usuários, unidades, automações, armazenamento e demais limites específicos.
 - Aplicar medidas técnicas proporcionais contra abuso e excesso de requisições em todos os planos, sem estabelecer teto comercial de agendamentos.
 
-## Quotas totais de armazenamento por plano — APROVADO
-- Plano **Essencial: 1 GB** de armazenamento total por empresa.
-- Plano **Profissional: 5 GB** de armazenamento total por empresa.
-- Plano **Empresarial: 10 GB** de armazenamento total por empresa (ajuste explícito da proposta inicial de 20 GB).
+## Quotas de arquivos/anexos por plano — IN-031 APROVADA (substitui valores anteriores)
+- **Básico Cortesia: 1 GB** de arquivos/anexos por empresa.
+- **Essencial: 5 GB** de arquivos/anexos por empresa (substitui 1 GB anterior).
+- **Profissional: 20 GB** de arquivos/anexos por empresa (substitui 5 GB anteriores).
+- **Empresarial: 50 GB** de arquivos/anexos por empresa (substitui 10 GB anteriores).
+- **Dados estruturados não consomem essa franquia em nenhum plano**; somente arquivos/anexos efetivamente armazenados são contabilizados.
 - Quota compartilhada entre todos os funcionários da empresa, contabilizada pelo tamanho efetivamente armazenado após otimização e incluindo versões adicionais quando existentes.
 - Ao atingir a quota, impedir novos uploads, mantendo acesso autorizado aos arquivos existentes; respeitar também o limite global de 5 MB por arquivo.
 - Definir posteriormente tratamento de downgrade quando o armazenamento existente ultrapassar a quota do novo plano e eventuais pacotes extras de armazenamento.
@@ -162,5 +170,5 @@ Permitir unidades adicionais com cobrança extra sem mudança de plano (preço a
 - Manter teste gratuito de 14 dias sem cartão e sem plano gratuito público permanente no lançamento inicial, **ressalvada a cortesia condicionada à contratação de site Imagine aprovada em IN-002**.
 - Estratégia inicial de aquisição: foco em pequenas empresas que recebem leads e precisam organizar vendas; testar parcerias com agências e consultores, aquisição via produto e marketing segmentado; validar preços e disposição a pagar com potenciais clientes antes do lançamento.
 - Acompanhar ativação, conversão trial-pago, MRR, CAC, churn, retenção e margem para ajustar estratégia de crescimento.
-- **Revisão pendente:** quotas técnicas de armazenamento de 1/5/10 GB anteriormente aprovadas permanecem registradas; definir política comercial e operacional de uso justo, sem prometer armazenamento absolutamente ilimitado.
+- **IN-031 APROVADA:** franquias 1/5/20/50 GB apenas para arquivos/anexos nos quatro planos; dados estruturados excluídos do cálculo. Continuam pendentes política comercial de capacidade adicional, avisos, temporários, backups e retenção, sem prometer armazenamento absolutamente ilimitado.
 - Não tratar métricas-alvo, comissões de parceiros ou preços ilustrativos como valores aprovados.
