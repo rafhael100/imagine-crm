@@ -55,3 +55,11 @@
 - Simples solicitação/visualização de sugestão sem aplicação não constitui mensagem assistida; requisições de geração continuam sujeitas a cotas, custos e controles técnicos do agente.
 - Respeitar pausas de IA autônoma em conversas sob posse humana: essas pausas não impedem a **assistência sob demanda ao funcionário**, mas o copiloto não deve assumir o canal nem disparar autonomamente mensagens.
 - **Pendências:** aprovação de modelos de prompt, UX, limites de contexto, seleção de conhecimento empresarial e medição do uso após edições substanciais.
+
+## Copiloto — Resumo inteligente do atendimento WhatsApp (MVP APROVADO)
+- Funcionário autorizado poderá usar **"Resumir atendimento"** diretamente na conversa.
+- IA Comercial sintetiza o histórico acessível e os dados relevantes autorizados, com categorias: motivo, interesse comercial, informações coletadas, dúvidas/objeções, situação atual e próximos passos sugeridos.
+- Não criar fatos ausentes do histórico; diferenciar fatos, inferências e recomendações, preservando a possibilidade de leitura da conversa original.
+- Resumo é **interno e não enviado automaticamente** ao cliente; pode ser gerado novamente quando novas mensagens forem recebidas, marcando atualização e contexto utilizado.
+- Respeitar acesso por tenant/equipe/número, confidencialidade, limites e cotas de consumo da IA, monitoramento e auditoria.
+- **Pendências:** armazenamento e compartilhamento interno dos resumos, geração proativa, configurações de duração/contexto e revisão humana.
