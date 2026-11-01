@@ -1,6 +1,6 @@
 # 08 — CRM Básico cortesia: escopo e limites
 
-> **IN-003 — DIRETRIZ APROVADA em 2026-11-01:** será uma versão **mais enxuta que o Essencial**, exclusiva para contratantes elegíveis de Onepage ou Landing Page Imagine.  
+> **IN-003 e IN-004 — DIRETRIZES APROVADAS em 2026-11-01:** CRM Básico cortesia será mais enxuto que o Essencial, exclusivo para contratantes elegíveis de Onepage/Landing Page Imagine, **mas incluirá Agenda e Agendamentos**.  
 > **MATRIZ DE RECURSOS ABAIXO É PROPOSTA, AINDA NÃO APROVADA.** O CRM continua em planejamento, sem implementação.
 
 ## 1. Posicionamento comercial aprovado
@@ -25,15 +25,20 @@
 | Dashboard | Total de leads, novos leads e situação simples do funil | Relatórios avançados, metas e forecast nos planos pagos |
 | Exportação | **Exportação básica CSV dos dados autorizados**, sem relatórios avançados | LGPD/portabilidade devem ser preservadas; XLSX, PDF, filtros avançados nos pagos |
 | Campos personalizados | **0 campos personalizados no benefício inicial**, salvo exigências técnicas do formulário padrão | Essencial atualmente prevê até 10 por módulo |
-| Automações comerciais | **Não incluídas** | Essencial/planos pagos conforme limites aprovados |
+| Automações comerciais | **EM REVISÃO: usuário avalia liberar também automações.** Proposta inicial: biblioteca de 3 modelos e até 3 ativas, **não aprovada** | Essencial/Profissional/Empresarial têm 5/20/50 automações ativas |
 | Agentes IA Prospector/Comercial | **Não incluídos** | Opcionais pagos; não cobrar uso de IA sem aceite |
 | WhatsApp Business API, chatbot e caixa de entrada | **Não incluídos**; botão WhatsApp do site continua disponível | Integração oficial nos planos pagos ou adicional |
 | API pública/integrações externas | **Não incluídas**; apenas integração interna Imagine → CRM autenticada | APIs externas conforme política dos planos pagos |
-| Agendamentos, agenda, unidades e integrações de calendário | **Não incluídos** | Recursos de planos pagos |
+| **Agenda e Agendamentos** | **INCLUÍDOS por IN-004**: núcleo de agenda e agendamentos. Escopo de página pública, quotas e regras detalhadas ainda pendentes | Recursos avançados, integrações Google/Outlook/Meet/Zoom e multiequipe ainda a definir |
+| **Unidades e recursos avançados de agenda** | **PENDENTES**, não automaticamente incluídos por IN-004 | Vários profissionais/unidades/salas, fila de espera, grupos e outras capacidades devem ser avaliados |
 | Uploads/armazenamento | **Quota mínima específica a definir**; não herdar automaticamente a quota Essencial de 1 GB | Uploads avançados e capacidade nos pagos |
 | Suporte | Ajuda e suporte contratual do produto sob regras a definir | Diferenciação de SLA sem privar de correções e suporte essencial |
 
 **Nota importante:** as quantidades **1 usuário**, **1 funil**, e a ausência de limite rígido de **envio de leads** são recomendações concretas para debate, não aprovações do usuário. Quotas efetivas de armazenamento, contatos, relatórios e retenção continuam pendentes. A captação de leads deve ter fila durável; nunca descartar silenciosamente dados após dizer ao visitante que foram recebidos.
+
+### Observação IN-004 sobre o módulo de agenda
+
+**Aprovado:** permitir Agenda e Agendamentos no CRM Básico cortesia; **não está aprovada** a concessão de todas as funcionalidades avançadas do módulo geral. Limites de agendamentos ilimitados do Essencial/Profissional/Empresarial não se estendem automaticamente ao Básico. Revisão completa das automações e opções de liberação em [09 — Agenda e automações do Básico](09-revisao-agenda-e-automacoes-basico.md).
 
 ## 3. Aplicação dos direitos por produto
 
@@ -64,11 +69,11 @@
 
 ## 6. Decisões necessárias antes da implementação
 
-1. Aprovar a **matriz concreta** acima ou editar limites/funcionalidades (especialmente 1 usuário, 1 funil, formulário por site e regras de leads).
+1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente 1 usuário, 1 funil, formulário por site e regras de leads). **Agenda e Agendamentos já estão incluídos por IN-004; detalhes e quotas pendentes.**
 2. Definir quota armazenamento e limites de uso justo, sem bloquear captação legítima silenciosamente.
 3. Estabelecer recursos mínimos do Essencial pago para justificar upgrade e preservar diferenciação.
 4. Estabelecer quando benefício termina se site for inadimplente/cancelado, e como preservar leads em retenção e exportação.
 5. Formalizar telas de ativação, upgrade e acesso por empresa, além de preços finais dos planos pagos.
 6. Concluir testes de idempotência, autorização multi-tenant, cobranças independentes e fluxo de formulário integrado.
 
-**Estado:** IN-001 (captação integrada), IN-002 (benefício gratuito + upgrade cobrado no CRM) e **IN-003 (versão enxuta exclusiva)** aprovadas como **diretrizes**. Matriz/limites deste documento estão **propostos**, não aprovados. Não iniciar programação.
+**Estado:** IN-001 (captação integrada), IN-002 (benefício gratuito + upgrade cobrado no CRM), IN-003 (versão enxuta exclusiva) e **IN-004 (Agenda e Agendamentos incluídos)** aprovadas como **diretrizes**. Matriz/limites deste documento estão **propostos**, não aprovados. Não iniciar programação.
