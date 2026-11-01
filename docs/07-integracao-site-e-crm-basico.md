@@ -9,7 +9,7 @@
 - Cliente que desejar um **plano mais avançado** faz upgrade e contrata diretamente pelo **CRM Imagine**. Nessa hipótese existem **duas mensalidades**: site no Portal Imagine e plano pago do CRM no CRM Imagine. Não deslocar, abater ou cancelar automaticamente a assinatura do site.
 - A adesão ao plano pago deve ser confirmada expressamente no CRM. Não converter automaticamente o benefício em assinatura paga nem cobrar um plano de CRM sem aceite.
 - É **benefício condicionado à contratação**, não plano gratuito aberto ao público nem extensão do **trial de 14 dias**. Mantém-se o conceito aprovado dos planos **Essencial, Profissional e Empresarial** e a regra de ausência de plano gratuito público no lançamento, com a **exceção específica** de beneficiários do site.
-- O nome “Básico” usado para o benefício **não altera nem renomeia** o plano Essencial; a relação entre o Básico cortesia e os planos pagos e a matriz de recursos ainda precisam ser aprovadas. Não presumir preços ilustrativos como aprovados.
+- **IN-003 aprovada em 2026-11-01:** o CRM Básico cortesia será uma **versão mais enxuta que o Essencial**, exclusiva a contratantes elegíveis de Onepage ou Landing Page. **Não é o Essencial gratuito**, nem renomeia os planos pagos. A matriz sugerida de funcionalidades e cotas, ainda não aprovada, consta em [08 — Plano Básico cortesia](08-plano-basico-cortesia.md).
 
 ## 2. Integração comercial dos dois sistemas
 
