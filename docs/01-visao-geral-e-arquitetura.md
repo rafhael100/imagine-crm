@@ -241,7 +241,7 @@
 - Registrar no histórico hora de entrada na fila, distribuição e efetiva tomada de posse pelo humano; diferenciar essas três etapas.
 - Transferências de setor podem criar entrada em outra fila com seu próprio registro e horário; regras específicas para preservar posição em reenvio de mensagens e em tentativas de distribuição serão detalhadas posteriormente.
 - A ausência de atendente elegível mantém a solicitação na fila, sem encerramento automático ou retomada indevida da IA; a fila respeita políticas de privacidade e tenant.
-- **Resolvido posteriormente:** novas mensagens preservam a posição. **Ainda pendente:** cancelamento/desistência da fila, mensagens de estimativa de espera e regra de pré-atribuição sem aceite.
+- **Resolvido posteriormente:** novas mensagens preservam a posição. **Resolvido posteriormente:** cancelamento/desistência voluntária. **Ainda pendente:** mensagens de estimativa de espera e regra de pré-atribuição sem aceite.
 
 ## Posição na fila não muda com novas mensagens do cliente — APROVADO
 - Para solicitações aguardando atendimento humano em uma mesma fila FIFO, o momento de entrada inicial determina a posição na fila.
@@ -249,4 +249,12 @@
 - Registrar todas as mensagens no histórico unificado e atualizar indicadores de **não lidas/novas mensagens** para funcionários autorizados, mantendo a ordem e os demais dados de atribuição inalterados.
 - A interface deve permitir consultar a conversa atualizada sem causar reposicionamento automático na fila; envio reiterado de mensagens não concede prioridade.
 - Evitar entradas duplicadas e condições de corrida em eventos recebidos repetidos ou fora de ordem pela integração WhatsApp.
-- **Pendente:** regras para saída voluntária da fila e reentrada, especialmente se o cliente voltar a solicitar humano após ter cancelado a espera.
+- **Resolvido posteriormente:** desistência voluntária libera posição; novo pedido humano entra no fim da fila com novo horário.
+
+## Desistência voluntária e reentrada na fila humana FIFO — APROVADO
+- Quando um cliente **desistir voluntariamente de aguardar atendimento humano**, remover sua solicitação pendente da fila, liberando a posição e registrando o evento; não apagar histórico, mensagens nem eventos anteriores.
+- Quando o cliente optar por retomar atendimento com IA, aplicar a regra já aprovada: permitir apenas **se nenhum funcionário tiver assumido efetivamente** a conversa; se já há posse humana, somente devolução explícita de funcionário autorizado poderá reativar IA.
+- Se, após a desistência, o cliente **solicitar novamente atendimento humano**, criar nova entrada válida no **fim da fila FIFO da equipe/setor pertinente**, com novo horário de entrada; não restaurar posição nem horário anteriores.
+- Distinguir saída voluntária de perda de conexão, ausência de resposta e falha de sistema. Essas situações não significam desistência automática.
+- Registrar, em trilha auditável, horário, meio da desistência, motivo identificado quando disponível, cancelamento da espera e nova solicitação de atendimento.
+- Evitar duplicidade de solicitações abertas para a mesma conversa/fila, revalidação de estados concorrentes e alteração indevida de posições de outros clientes.
