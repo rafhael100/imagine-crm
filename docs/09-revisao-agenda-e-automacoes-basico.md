@@ -56,7 +56,7 @@
 - Confirmações, lembretes, reagendamentos e cancelamentos, com histórico de tentativas.
 - Notificações internas; e-mail externo/WhatsApp apenas conforme serviços autorizados e custos/canais disponíveis.
 - Uma página pública de autoagendamento, Google/Outlook, videoconferência, grupo, lista de espera e outras extensões foram aprovadas no **CRM geral**, não especificamente para o Básico.
-- O envio automático de confirmações/lembretes operacionais do módulo agenda é distinto de permitir ao cliente configurar **automações comerciais genéricas**; definir se usa quotas separadas, a fim de não bloquear lembretes essenciais por exceder limite de fluxos.
+- **IN-013 APROVADA:** avisos e lembretes **internos no CRM** são operações do módulo agenda e **não consomem quota de automações comerciais** no Básico. E-mail automático ao cliente e WhatsApp oficial ficam para planos pagos ou adicionais elegíveis, sujeitos a condições de canal/cobrança.
 
 ### 2.7 Relatórios agendados
 
@@ -93,7 +93,7 @@ Os lembretes/avisos operacionais indispensáveis à agenda podem ser considerado
 
 **Por que não liberar tudo de imediato?** O Básico cortesia deve entregar valor imediato sem sacrificar diferenciação dos planos pagos. Distribuição/redistribuição por equipes, construtor genérico de regras, scoring configurável/avançado, integrações oficiais de WhatsApp, agendamentos em grupo, sincronização múltipla de calendários, automações por proposta e relatórios programados podem justificar o Essencial/Profissional/Empresarial.
 
-**Já aprovado:** até 3 automações comerciais ativas de modelos prontos (IN-005) e **IN-007: agendamento manual/interno no Básico, público/automático só em planos pagos**. **Ainda não aprovados:** catálogo exato de modelos, parâmetros/editabilidade, política técnica de uso justo de agendamentos manuais (IN-012), Google/Outlook, lembretes externos e-mail/WhatsApp, usuários, número de serviços/profissionais e o tratamento de notificações operacionais de sistema.
+**IN-013 aprovado:** avisos e lembretes de agenda somente internos no CRM Básico, sem consumir vagas de automações; e-mails automáticos ao cliente/WhatsApp Business API restritos a planos pagos ou adicionais elegíveis. **Já aprovado:** até 3 automações comerciais ativas de modelos prontos (IN-005) e **IN-007: agendamento manual/interno no Básico, público/automático só em planos pagos**. **Ainda não aprovados:** catálogo exato de modelos, parâmetros/editabilidade, política técnica de uso justo de agendamentos manuais (IN-012), Google/Outlook, lembretes externos e-mail/WhatsApp, usuários, número de serviços/profissionais e o tratamento de notificações operacionais de sistema.
 
 ## 4A. Decisão IN-005 — Modelos prontos e 3 automações ativas (APROVADA)
 
@@ -112,7 +112,7 @@ Os lembretes/avisos operacionais indispensáveis à agenda podem ser considerado
 | T01 | Novo lead: não deixar sem resposta | Novo lead validado via formulário/site e salvo no CRM | Criar tarefa de primeiro contato e mostrar notificação interna ao administrador | Prioridade da tarefa, prazo em minutos/horas, origem de formulário (opcional) | 1 ativa |
 | T02 | Lead aguardando contato | Lead sem interação comercial válida após prazo | Alertar no CRM e/ou criar tarefa de acompanhamento se não existir outra pendente equivalente | Atraso configurável (horas/dias) e habilitar notificação interna | 1 ativa |
 | T03 | Oportunidade parada no funil | Oportunidade aberta sem mudança de etapa/interação por período | Alerta interno e/ou tarefa de retorno | Dias de inatividade, etapas selecionadas | 1 ativa |
-| T04 | Compromisso próximo | Agendamento futuro válido, ainda não cancelado | Notificar internamente a empresa; comunicação ao cliente por e-mail dependeria de aprovação técnica/comercial | Antecedência e canal habilitado | **Decidir se regra de sistema ou automação comercial** |
+| T04 | Compromisso próximo | Proximidade de agendamento → aviso interno no CRM | **IN-013: operação do sistema aprovada no Básico**; antecedência configurável ainda pendente | Não consome slot de automação comercial | **Não conta como automação ativa** |
 | T05 | Atendimento realizado: próximo passo | Agendamento marcado como realizado | Criar tarefa opcional de acompanhamento comercial vinculada ao lead/contato | Atraso da tarefa e serviço selecionado | 1 ativa, se aprovada no catálogo |
 
 **Os cinco exemplos não estão aprovados.** A aprovação do IN-005 permite escolher de modelos prontos **até três ativos ao mesmo tempo**; não limita a biblioteca a apenas três templates. Um template não pode enviar mensagens automáticas a visitantes por WhatsApp oficial sem produto/canal habilitado, aceite e política de custos. Nenhum modelo de rotina agenda deve emitir cobrança de agendamento, recurso rejeitado para o CRM.
