@@ -306,3 +306,13 @@
 - Se nenhum atendente cumprir esses requisitos, **preservar a conversa na fila FIFO original e alertar o supervisor**, sem encerrar o atendimento, sem forçar atribuição indevida e sem reativar a IA em atendimentos que aguardam humano.
 - Revalidar elegibilidade e contagem de capacidade atomicamente no instante da atribuição para evitar concorrência; não executar ciclos infinitos de recusa/reoferta.
 - **A detalhar:** como tratar empates entre funcionários com a mesma menor carga e o SLA de primeira resposta após a atribuição excepcional.
+
+## SLA de primeira resposta humana no WhatsApp — APROVADO
+- Cada empresa poderá configurar **prazo máximo para a primeira resposta humana** após um funcionário **assumir efetivamente** uma conversa. Referência inicial sugerida: **5 minutos**, ajustável por empresa.
+- Nas distribuições normais com aceite obrigatório, o cronômetro começa no **aceite efetivo**; na atribuição definitiva automática excepcional após todas as recusas, começa na **atribuição efetiva**. Uma reserva/pre-atribuição ainda não aceita não inicia esse SLA.
+- Contabilizar a resposta real enviada pelo **funcionário responsável** na conversa WhatsApp como primeira resposta humana; não confundir com respostas de IA, mensagens automáticas, notificações internas, entrega pela Meta ou simplesmente visualização da conversa.
+- Se o prazo vencer sem resposta humana, emitir **alerta interno ao atendente responsável e ao supervisor** e registrar a violação do SLA, sem redistribuir ou encerrar automaticamente a conversa.
+- Medir o SLA em **minutos úteis conforme o expediente da equipe responsável**, suspendendo contagem fora do expediente e retomando no próximo período aplicável; operações 24/7 mantêm contagem contínua. Usar relógios/timestamps confiáveis e tratar fuso horário de forma consistente.
+- Registrar horários de início, primeira resposta, duração útil, cumprimento/violação, alertas e responsáveis, respeitando permissões e auditoria; isso permitirá indicadores gerenciais posteriores.
+- Implementação deve revalidar estado da conversa antes do alerta, evitando alerta duplicado se o funcionário já respondeu, e tratar mudança de responsável sem perda do histórico.
+- **A detalhar:** política de recalcular SLA se a conversa mudar de funcionário antes da primeira resposta, escalonamento recorrente e critérios exatos de mensagens de saída em casos de falha ou atraso de envio.
