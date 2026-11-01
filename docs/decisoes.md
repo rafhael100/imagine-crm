@@ -320,3 +320,5 @@
 - **Pausa de automações WhatsApp no atendimento humano (aprovada):** quando humano assume, suspender todos os envios automáticos ao cliente na conversa, inclusive follow-ups e lembretes; automações internas continuam. Ao devolver à IA, reavaliar cada disparo, sem envio em massa automático das mensagens acumuladas.
 
 - **WhatsApp com múltiplos números por empresa (aprovado):** contratar integração com 1 número incluído e cobrar por números adicionais (valores pendentes); números podem ter equipes, filas, automações e agentes específicos; central única com permissões e identificação clara do número de cada conversa/mensagem; custos variáveis Meta/BSP a definir separadamente.
+
+- **Histórico único do cliente entre números WhatsApp (aprovado):** cadastro único no CRM por empresa/tenant com linha do tempo integrada, mas conversas operacionais individualizadas por número oficial, com origem/autoria explícitas e respeito a permissões por equipe e usuário; regras de identificação e vinculação de cadastros ainda pendentes.
