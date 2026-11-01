@@ -64,7 +64,10 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 | Criar leads/contatos por API pública, bots ou integrações externas | **NÃO concedido por IN-025** | Importação autorizada somente pelo fluxo de arquivo e permissões; APIs externas exigem autorização distinta |
 | Exportar leads e contatos em **CSV ou XLSX** | **IN-026 APROVADA** | Exportar **todos os registros autorizados da organização ou somente os filtrados**, com controle de acesso, proteção do arquivo, auditoria e limites técnicos proporcionais; não concede exportação de relatórios avançados |
 | Quantidade de leads/contatos | **IN-024 APROVADA: sem teto comercial rígido** | Vale para leads captados dos sites e leads/contatos cadastrados manualmente, sujeitos a uso justo e controles técnicos contra abuso; sem quota numérica oculta |
-| Quotas de armazenamento e retenção de leads/contatos | **PENDENTES** | Definir sem contrariar a proteção dos leads já aceitos e os direitos de privacidade |
+| Armazenamento dos dados estruturados (leads, contatos e históricos) | **IN-029 APROVADA: não consomem franquia comercial fixa de arquivos** | Independente da quantidade legítima de registros sem teto rígido (IN-024); manter infraestrutura, uso justo, segurança, capacidade operacional e LGPD |
+| Inclusão e limites dos anexos/documentos no Básico | **PENDENTE** | Definir se anexos são permitidos, quais tipos, franquia e tamanho; não presumir inclusão por IN-029 |
+| Armazenamento temporário de importações/exportações | **PENDENTE** | Políticas próprias de tamanho, processamento, expiração, descarte e proteção de uploads/downloads |
+| Retenção e recuperação de leads/contatos e histórico | **PENDENTE** | Definir ciclo de vida e direitos legais sem confundir com a retenção de 90 dias de avisos internos da agenda |
 
 ### Critérios de aceite para o escopo aprovado
 
@@ -84,7 +87,7 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 2. **Não recusar nem descartar silenciosamente leads já confirmados como recebidos.** O ponto de confirmação exige persistência durável, fila/outbox ou compromisso equivalente de processamento. Em indisponibilidade transitória, manter pendência/reprocessamento com alertas e idempotência. Para envios não aceitos por motivo legítimo (spam, risco, formato), informar resultado real, sem falsa confirmação.
 3. **Nenhuma quota numérica mensal ou total oculta** de leads e contatos no Básico; não reutilizar o limite do trial nem quotas de planos pagos. Número de registros por si só não enseja cobrança ou convite de upgrade.
 4. **IN-024, isoladamente, não autorizou importação em massa**. A **IN-025 aprovou posteriormente importação básica por arquivos CSV/XLSX**; API pública de cadastro, bots, rotinas automáticas de bulk, armazenamento irrestrito e outros recursos premium continuam sem autorização específica.
-5. **Armazenamento e retenção de dados, tamanho de anexos, política de backup e descarte** continuam **PENDENTES**, com respeito à LGPD, à integridade das informações já aceitas e sem criar indiretamente um teto comercial de registros incompatível com IN-024.
+5. **IN-029 aprovou posteriormente separar dados estruturados de franquia fixa de arquivos**. Inclusão/franquia de anexos, uploads temporários, retenção, backup e descarte continuam **PENDENTES**, com respeito à LGPD e sem criar indiretamente teto comercial de registros incompatível com IN-024.
 6. O cadastro manual legítimo e os formulários homologados devem continuar funcionando conforme permissões e uso justo; empresas não devem ter que contratar plano pago simplesmente por terem mais contatos.
 
 **Situação:** IN-024 (quantidade sem teto), IN-025 (importação básica CSV/XLSX) e IN-026 (exportação básica CSV/XLSX, completa ou filtrada, com segurança e auditoria) **APROVADAS**. Parâmetros técnicos de importação/exportação, armazenamento e retenção permanecem **PENDENTES**. Exclusão/mesclagem serão debatidas separadamente.
@@ -159,18 +162,35 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 
 **PENDÊNCIAS de detalhamento antes da implementação:** tratamento de conflitos entre consentimentos e canais, contatos vinculados a organizações/identificadores incompatíveis, regra para combinações lead-contato, concorrência e transação, notificações e referência ao cadastro secundário, preview e confirmação visual, histórico imutável da operação, possibilidade e prazo de desfazer/reverter (não aprovada), política de inativação dos duplicados, restauração e retenção/anonimização. Nenhuma mesclagem deve ocultar evidências ou excluir vínculos sem autorização própria.
 
-**Próxima etapa:** definir capacidade e política de armazenamento do CRM Básico, distinguindo registros estruturados ilimitados comercialmente (IN-024) de anexos/arquivos e arquivos temporários; depois retenção e recuperação.
+**IN-029 aprovada posteriormente:** dados estruturados de leads, contatos e históricos do Básico não consomem franquia comercial fixa de arquivos. Anexos e arquivos temporários ainda serão definidos separadamente; retenção e recuperação também permanecem pendentes.
 
-### Situação consolidada dos complementos às IN-023 a IN-028
+### Separação de armazenamento de dados estruturados e arquivos — IN-029 APROVADA em 2026-11-01
 
-- **IN-024 APROVADA:** sem teto comercial rígido de quantidade de leads e contatos, tanto os recebidos via site como os cadastrados manualmente, sujeitos a uso justo e controles técnicos. **Pendentes:** parâmetros operacionais de proteção antiabuso, capacidade física de armazenamento e retenção, que não podem impor uma quota comercial disfarçada.
+**Regra aprovada:** no **CRM Básico Cortesia**, os **dados estruturados de leads, contatos e seus históricos** (como nomes, telefones, e-mails, dados cadastrais, observações textuais e histórico de operações) **não consomem uma franquia comercial fixa de armazenamento de arquivos/anexos**. Isso mantém a decisão **IN-024: sem teto comercial rígido de quantidade de leads e contatos** recebidos dos formulários Imagine ou cadastrados manualmente. A franquia de arquivos, se vier a existir, será contabilizada e definida separadamente.
+
+**Distinções obrigatórias:**
+1. **Dados estruturados:** registros normais de leads/contatos, histórico e informações textuais, sob controle de acesso, uso justo, medidas técnicas contra abuso, disponibilidade e segurança. Não mostrar “espaço de anexos esgotado” como motivo para impedir cadastro/recepção legítima de um lead.
+2. **Anexos e documentos permanentes:** **ainda não foi aprovado se o Básico incluirá upload/armazenamento de imagens, PDFs e documentos vinculados aos contatos, nem franquia, limites por arquivo ou pacotes adicionais**. Não presumir inclusão nem gratuidade ilimitada por IN-029. Outras decisões de módulos pagos permanecem intactas.
+3. **Arquivos temporários:** uploads de **importação CSV/XLSX** (IN-025), prévias de processamento, downloads/arquivos de **exportação CSV/XLSX** (IN-026) e outros artefatos técnicos devem seguir regras **próprias a definir** para tamanho, segurança, retenção transitória, expiração, limpeza e auditoria. A aprovação dessas operações não concede depósito permanente de arquivos.
+4. **Sem ilimitado técnico:** a inexistência de franquia comercial fixa para dados estruturados **não significa recursos computacionais ou armazenamento físico infinitos**. Manter proteções antispam, limites técnicos proporcionais e escalabilidade, **sem quota comercial oculta por número de contatos** e sem descartar silenciosamente leads já confirmados como recebidos.
+5. **Integridade e privacidade:** políticas de retenção, backup, restauração, descarte, LGPD e obrigações legais dos registros estruturados **ainda serão definidas**. Preservar vínculos de agenda, oportunidades, origens e trilhas de auditoria conforme regras próprias, inclusive quando houver arquivamento (IN-023), mesclagem (IN-028) ou exclusão controlada (IN-027).
+6. **Assinaturas pagas independentes:** as quotas de armazenamento aprovadas para planos CRM **Essencial (1 GB), Profissional (5 GB) e Empresarial (10 GB)** são decisões do catálogo pago, **não quotas automaticamente aplicáveis ao Básico Cortesia**. A IN-029 não as revoga nem redefine.
+7. **Separação financeira/operacional:** não criar cobrança, upgrade compulsório ou bloqueio de leads legítimos devido ao uso dos dados estruturados; a futura franquia de arquivos deverá ter condições claras e não alterar os contratos do Onepage sem autorização.
+
+**Ainda PENDENTES:** se anexos serão incluídos no Básico; tipos e quantidade/tamanho/volume de anexos e suas franquias; exibição de uso e comportamento ao esgotar espaço de arquivos; arquivos transitórios e duração; política de retenção e recuperação de leads/contatos; volume técnico de processamento e operações sem perda de leads aceitos. Não extrapolar a retenção de **90 dias das notificações internas da agenda** (IN-018) para dados de contato ou históricos comerciais.
+
+**Próxima decisão:** inclusão funcional de anexos/documentos em leads e contatos no Básico. Caso aprovados, definir a franquia de arquivos em etapa específica, separada dos dados estruturados.
+
+### Situação consolidada dos complementos às IN-023 a IN-029
+
+- **IN-024 APROVADA:** sem teto comercial rígido de quantidade de leads e contatos, tanto os recebidos via site como os cadastrados manualmente, sujeitos a uso justo e controles técnicos. **IN-029 aprovada posteriormente:** dados estruturados não contam na franquia comercial fixa de arquivos; parâmetros técnicos de proteção, capacidade operacional e retenção permanecem pendentes, sem quota comercial disfarçada.
 - **IN-025 APROVADA:** importação básica via CSV e XLSX, com mapeamento, prévia, validação e alerta de possíveis duplicidades, sem mesclagem automática. **Pendentes:** limites técnicos por arquivo/lote, regras de correspondência de campos, tratamento de linhas inválidas, política de duplicidades (ignorar/atualizar/decidir individualmente), concorrência e relatório final.
 - **IN-026 APROVADA:** exportação de leads/contatos em CSV e XLSX, **todos os registros autorizados ou somente os filtrados**, protegida e auditada, com limites técnicos a detalhar. **Pendente:** campos exportáveis sensíveis, duração/link de download e arquivos temporários, tarefas assíncronas, proteção em caso de volumes grandes e política de requisições LGPD (sem paywall para direitos legais).
 - **IN-027 APROVADA — exclusão definitiva controlada:** somente registros elegíveis com confirmação expressa; registros com vínculos ou obrigações de preservação exigem fluxo protegido, respeitando LGPD e auditoria. **PENDENTES:** critérios técnicos de elegibilidade, tratamento dos vínculos, política de retenção/anônimização e recuperação. **Mesclagem manual aprovada posteriormente na IN-028**, sem mesclagem automática.
 - **Retenção e restauração de arquivados**: duração do histórico, interfaces, auditoria e regras de dados pessoais.
 - Detalhes opcionais de campos e filtros, cadastro manual de interações e registro de situação comercial, sem conceder funcionalidades premium por inferência.
 
-**Próxima decisão a submeter ao responsável:** política de **armazenamento dos dados do CRM Básico** (especialmente distinção entre registros estruturados, anexos/arquivos e uploads temporários), depois retenção/recuperação e detalhes técnicos. **Nenhuma programação autorizada até aprovação do planejamento.**
+**Próxima decisão a submeter ao responsável:** inclusão de **anexos** no CRM Básico Cortesia e, em seguida, capacidade/limites dos anexos, armazenamento temporário de uploads, retenção e recuperação. **Nenhuma programação autorizada até aprovação do planejamento.**
 
 ## Módulos seguintes ainda pendentes
 
