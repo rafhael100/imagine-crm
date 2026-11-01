@@ -268,4 +268,15 @@
 - Se nenhum outro funcionário estiver disponível ou com capacidade, manter solicitação pendente na fila, sem encerramento automático nem retomada indevida da IA.
 - A distribuição e aceite devem validar, de forma transacional/atômica, estado da conversa, disponibilidade, reservas de capacidade, permissões, tenant e expiração para impedir **aceites atrasados, atribuições simultâneas ou reservas duplicadas**.
 - Registrar horários de distribuição, reserva, aceite, expiração e redistribuição e seus responsáveis no log auditável.
-- **A definir posteriormente:** como proceder em recusas explícitas, regras de repetição para o mesmo atendente, tratamento de múltiplas tentativas sem aceite e limites de redistribuições.
+- **Resolvido posteriormente:** recusa explícita libera reserva e gera redistribuição imediata sem reoferecer ao mesmo atendente no ciclo. **Ainda pendentes:** motivo da recusa, tratamento de múltiplas tentativas e limites de redistribuições.
+
+## Recusa explícita de atendimento distribuído — APROVADO
+- Enquanto uma conversa estiver em estado **reservada/aguardando aceite**, o funcionário designado poderá clicar em **Recusar atendimento**, sem precisar aguardar o término do prazo configurado de aceite (valor inicial sugerido já aprovado: 2 minutos).
+- Uma recusa válida **encerra imediatamente a reserva**, liberando de maneira atômica a capacidade temporariamente ocupada no limite individual e no limite coletivo da equipe.
+- O CRM tentará **redistribuir imediatamente** a conversa a outro funcionário elegível, disponível e com capacidade, respeitando a distribuição e as regras de acesso previamente aprovadas.
+- **Preservar o horário e a prioridade FIFO originais** do cliente; recusar não significa cancelar o pedido de atendimento humano nem reenfileirar no final.
+- Durante a mesma tentativa/ciclo de distribuição, **não oferecer imediatamente a mesma conversa ao funcionário que a recusou**, para evitar um ciclo repetitivo; tratar o conjunto de elegíveis e de recusas sem loop infinito.
+- Sem outro funcionário elegível, manter a solicitação na fila de espera, com histórico preservado e IA pausada nos casos previstos.
+- Registrar de forma auditável qual funcionário recusou, quando, o vínculo da conversa e eventual destinatário seguinte; recusa não equivale a atendimento aceito.
+- Validar o estado/reserva da conversa no momento da recusa para evitar disputa com aceite, expiração de prazo e redistribuição simultânea.
+- **Pendente de decisão:** se a recusa exigirá motivo obrigatório, motivo opcional ou nenhum motivo, e como proceder após sucessivas recusas de todos os membros da equipe.
