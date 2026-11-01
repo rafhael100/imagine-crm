@@ -154,3 +154,13 @@
 - Executar o cálculo segundo **fuso horário configurado da operação/equipe**, guardando timestamps em UTC para evitar erros em transições de horário de verão; considerar dias de funcionamento e exceções configuradas.
 - Mesmo fora do expediente, **manter atendimento de origem responsável** pela transferência pendente até o início efetivo ou aceite do destino; não concluir automaticamente nem perder a solicitação.
 - Registrar alterações de horários e regras de SLA em auditoria; decidir posteriormente aplicação retroativa dessas mudanças a transferências já pendentes e configuração de feriados/ausências nesta central.
+
+## Atendimento por IA 24/7 independente do expediente humano — APROVADO
+- A empresa poderá **habilitar ou desabilitar por configuração** o atendimento automatizado dos agentes de IA **24 horas por dia, 7 dias por semana**, mesmo quando equipes humanas não estiverem em expediente.
+- Quando habilitados e disponíveis, os agentes poderão receber e responder mensagens dos clientes, qualificar leads, consultar dados autorizados do CRM, registrar atividades e executar automações permitidas, respeitando limites de custo, segurança e regras da WhatsApp Business Platform.
+- A IA poderá preparar transferências/encaminhamentos para equipes humanas fora do expediente, informando com clareza o horário de funcionamento do destino **sem prometer resposta humana imediata**.
+- Aplicar as regras já aprovadas de transferência pendente: prazo de aceite contado no expediente da equipe de destino, e responsabilidade mantida na origem até efetivo início ou aceite do atendimento no destino.
+- **A IA não deve reassumir automaticamente uma conversa já assumida por humano**, mesmo fora do expediente; exige devolução explícita e autorizada à IA. Suspensões de mensagens automáticas durante posse humana continuam válidas.
+- Atendimento 24/7 significa capacidade de responder a contatos recebidos fora do expediente, **não permissão irrestrita para iniciar disparos**: cumprir consentimento, opt-out, janela de atendimento e templates aprovados quando requeridos, além dos limites da API Meta e das restrições próprias de cada empresa.
+- A indisponibilidade da integração/API, bloqueio de custos, pausa administrativa ou falhas operacionais devem ser tratadas sem prometer atendimento contínuo infalível; rastrear estado e avisar responsáveis conforme políticas existentes.
+- **A definir posteriormente:** tratamento detalhado de feriados e férias por equipe, escalonamento fora de expediente e configuração granular por agente/número.
