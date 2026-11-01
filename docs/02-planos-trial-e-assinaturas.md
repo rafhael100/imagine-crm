@@ -15,6 +15,10 @@
 - Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
 - Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
 
+## IN-029 — Dados estruturados do Básico separados da franquia de arquivos (APROVADA)
+
+**Aprovada em 2026-11-01:** no CRM Básico Cortesia, **dados estruturados de leads, contatos e seus históricos não consomem uma franquia comercial fixa de armazenamento de arquivos/anexos**. A quantidade de registros continua **sem teto comercial rígido** (IN-024). **Ainda não decidido:** inclusão de anexos no Básico, franquia/capacidade e tamanho de documentos, políticas para uploads temporários de importação e exportação (IN-025/IN-026), retenção, backups e recuperação. Proteções técnicas e uso justo permanecem aplicáveis sem criar quota comercial disfarçada ou perder leads aceitos. Quotas pagas de **1 GB Essencial, 5 GB Profissional e 10 GB Empresarial** já aprovadas **não foram alteradas nem atribuídas ao Básico** por IN-029. [Matriz IN-029](13-matriz-permissoes-basico-cortesia.md).
+
 ## IN-028 — Mesclagem manual de duplicados no CRM Básico (APROVADA)
 
 **Aprovada em 2026-11-01:** o único Administrador da Empresa poderá **mesclar manualmente leads/contatos duplicados**, escolher o registro principal, comparar cadastros, revisar divergências **campo a campo** e confirmar expressamente o resultado. Devem ser preservados **agendamentos, oportunidades, origens dos leads, observações, histórico e auditoria**, em isolamento multiempresa, sem mesclagem automática. Não exigir plano pago para o recurso; não confundir com exclusão controlada (IN-027). Critérios de reversão, consentimentos divergentes, tratamento do registro secundário e limites técnicos ainda serão detalhados. [Matriz IN-028](13-matriz-permissoes-basico-cortesia.md).
