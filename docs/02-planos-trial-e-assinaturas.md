@@ -15,6 +15,10 @@
 - Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
 - Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
 
+## IN-025 — Importação básica CSV/XLSX no CRM Básico (APROVADA)
+
+**Aprovada em 2026-11-01:** o único Administrador da Empresa pode importar **leads e contatos em arquivos CSV e XLSX**, com mapeamento de colunas, prévia dos registros, validação e alerta de duplicidades, **sem mesclagem automática**. Respeitar permissões multiempresa, integridade, auditoria e escolha explícita de efetivar importação. **Limites técnicos por arquivo/lote, manejo de erros e duplicidades seguem pendentes**, sem introduzir quota comercial total de leads/contatos vedada por IN-024. A autorização não estende ao Básico API pública, automações externas, exportação comercial, exclusão definitiva ou toda a importação avançada do CRM geral. [Matriz IN-025](13-matriz-permissoes-basico-cortesia.md).
+
 ## IN-024 — Leads e contatos sem teto comercial de quantidade (APROVADA)
 
 **Aprovada em 2026-11-01:** o CRM Básico Cortesia **não terá teto comercial rígido de quantidade para leads e contatos**, tanto os captados por formulário Imagine como os cadastrados manualmente. Manter **uso justo e proteções antiabuso**, sem limite oculto mensal/total nem bloqueio comercial por quantidade. Não perder leads aceitos e não usar quantidade legítima como motivo para upgrade. **Armazenamento e retenção serão definidos separadamente**; importação em massa, API pública, exportação e exclusão definitiva não são liberadas por essa decisão. A quota do trial de 20 leads não se aplica ao Básico. [Matriz IN-024](13-matriz-permissoes-basico-cortesia.md).
