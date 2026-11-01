@@ -40,6 +40,23 @@
 
 **Atenção:** os arquivos detalhados prevalecem sobre resumos desta tabela. Uma proposta em discussão não equivale a aprovação.
 
+## Integração de sites e biblioteca de automações — atualização 01/11/2026
+
+| ID | Diretriz / decisão | Status |
+| --- | --- | --- |
+| IN-001 | Formulários Onepage/Landing Page serão integrados ao CRM Imagine | Aprovada como direção |
+| IN-002 | CRM Básico gratuito vinculado ao site, upgrade CRM pago diretamente no CRM; contratos/mensalidades separados | Aprovada |
+| IN-003 | CRM Básico Cortesia é versão enxuta exclusiva, não equivalente ao Essencial | Aprovada |
+| IN-004 | CRM Básico incluirá Agenda e Agendamentos; extensão pública e limites a definir | Aprovada a inclusão do módulo |
+| IN-005 | Biblioteca de modelos prontos com até 3 automações comerciais ativas por empresa no Básico | Aprovada como baseline atual |
+| IN-006 | Primeiro documentar a biblioteca completa e segmentá-la por disponibilidade; deixar modelos mais avançados aos planos pagos; **revisar quantidades de automações dos quatro planos ao final da documentação** | Diretriz registrada; alocação por modelo e novas quotas pendentes |
+
+**Importante:** IN-006 não revoga números já aprovados em decisões anteriores: Essencial 5, Profissional 20, Empresarial 50, Básico Cortesia 3. São referências atuais até uma alteração expressamente aprovada. O catálogo e seus níveis definitivos ainda não foram aprovados. Os cinco templates da análise inicial são **propostas**; não confundir funcionamento de sistema/agenda ou chatbot WhatsApp com slot de automação comercial.
+
+Ver [biblioteca de automações e critérios por plano](10-biblioteca-automacoes-e-criterios-de-planos.md).
+
+
+
 - **Anotações internas (aprovado):** texto, menções @usuário, anexos, visibilidade conforme permissões, notificações internas, histórico de edição/exclusão e sem envio automático aos clientes.
 
 - **Tarefas e lembretes comerciais (aprovado):** vinculados a leads, contatos e oportunidades; título, descrição, responsável, prioridade, prazo, quatro status, lembretes, recorrência, lista/calendário e eventos na linha do tempo, conforme permissões.
