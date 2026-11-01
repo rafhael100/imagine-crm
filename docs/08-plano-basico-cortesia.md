@@ -25,7 +25,7 @@
 | Dashboard | Total de leads, novos leads e situação simples do funil | Relatórios avançados, metas e forecast nos planos pagos |
 | Exportação | **Exportação básica CSV dos dados autorizados**, sem relatórios avançados | LGPD/portabilidade devem ser preservadas; XLSX, PDF, filtros avançados nos pagos |
 | Campos personalizados | **0 campos personalizados no benefício inicial**, salvo exigências técnicas do formulário padrão | Essencial atualmente prevê até 10 por módulo |
-| Automações comerciais | **EM REVISÃO: usuário avalia liberar também automações.** Proposta inicial: biblioteca de 3 modelos e até 3 ativas, **não aprovada** | Essencial/Profissional/Empresarial têm 5/20/50 automações ativas |
+| Automações comerciais | **IN-005 APROVADA: até 3 automações ativas por empresa, escolhidas entre modelos prontos**; catálogo exato, parâmetros e regras de execução ainda propostos | Essencial/Profissional/Empresarial têm 5/20/50 automações ativas; editor completo não liberado pelo IN-005 |
 | Agentes IA Prospector/Comercial | **Não incluídos** | Opcionais pagos; não cobrar uso de IA sem aceite |
 | WhatsApp Business API, chatbot e caixa de entrada | **Não incluídos**; botão WhatsApp do site continua disponível | Integração oficial nos planos pagos ou adicional |
 | API pública/integrações externas | **Não incluídas**; apenas integração interna Imagine → CRM autenticada | APIs externas conforme política dos planos pagos |
@@ -36,9 +36,9 @@
 
 **Nota importante:** as quantidades **1 usuário**, **1 funil**, e a ausência de limite rígido de **envio de leads** são recomendações concretas para debate, não aprovações do usuário. Quotas efetivas de armazenamento, contatos, relatórios e retenção continuam pendentes. A captação de leads deve ter fila durável; nunca descartar silenciosamente dados após dizer ao visitante que foram recebidos.
 
-### Observação IN-004 sobre o módulo de agenda
+### Observações IN-004 e IN-005 sobre agenda e automações
 
-**Aprovado:** permitir Agenda e Agendamentos no CRM Básico cortesia; **não está aprovada** a concessão de todas as funcionalidades avançadas do módulo geral. Limites de agendamentos ilimitados do Essencial/Profissional/Empresarial não se estendem automaticamente ao Básico. Revisão completa das automações e opções de liberação em [09 — Agenda e automações do Básico](09-revisao-agenda-e-automacoes-basico.md).
+**Aprovado:** permitir Agenda e Agendamentos no CRM Básico cortesia; **não está aprovada** a concessão de todas as funcionalidades avançadas do módulo geral. Limites de agendamentos ilimitados do Essencial/Profissional/Empresarial não se estendem automaticamente ao Básico. **IN-005:** somente modelos prontos, até 3 ativos por empresa; rascunhos/pausados não consomem vagas. O catálogo exato permanece em revisão. Detalhamento dos modelos e da agenda em [09 — Agenda e automações do Básico](09-revisao-agenda-e-automacoes-basico.md).
 
 ## 3. Aplicação dos direitos por produto
 
@@ -76,4 +76,4 @@
 5. Formalizar telas de ativação, upgrade e acesso por empresa, além de preços finais dos planos pagos.
 6. Concluir testes de idempotência, autorização multi-tenant, cobranças independentes e fluxo de formulário integrado.
 
-**Estado:** IN-001 (captação integrada), IN-002 (benefício gratuito + upgrade cobrado no CRM), IN-003 (versão enxuta exclusiva) e **IN-004 (Agenda e Agendamentos incluídos)** aprovadas como **diretrizes**. Matriz/limites deste documento estão **propostos**, não aprovados. Não iniciar programação.
+**Estado:** IN-001 (captação integrada), IN-002 (benefício gratuito + upgrade cobrado no CRM), IN-003 (versão enxuta exclusiva), IN-004 (Agenda e Agendamentos incluídos) e **IN-005 (modelos prontos, até 3 automações ativas por empresa)** aprovadas como **diretrizes**. Matriz/limites deste documento estão **propostos**, não aprovados. Não iniciar programação.
