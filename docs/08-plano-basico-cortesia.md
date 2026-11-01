@@ -15,7 +15,7 @@
 
 | Módulo / capacidade | Básico cortesia — recomendação | Motivo / futuro upgrade |
 | --- | --- | --- |
-| Usuários incluídos | **IN-020 APROVADA: até 1 usuário autenticado por organização**; perfil e permissões ainda a definir | Equipes e assentos adicionais nos planos pagos ou adicional elegível |
+| Usuários incluídos | **IN-020/IN-021 APROVADAS: 1 usuário autenticado com perfil Administrador da Empresa, MFA obrigatório**; administra somente os recursos incluídos no Básico | Equipes e assentos extras nos planos pagos/adicional elegível; sem superadmin SaaS |
 | Empresas | **1 organização vinculada por contrato elegível**, com múltiplos sites da mesma empresa podendo apontar para ela | Usuário multiempresa continua possível por outros vínculos |
 | Formulários de lead | **Formulário por site/landing page contratado**, gerado pelo publicador Imagine; sem construtor livre de formulários no Básico | Form builder e formulários avulsos nos planos pagos |
 | Leads recebidos | **Sem teto comercial rígido de recebimento no formulário**, com política antifraude/uso justo; cotas de retenção/armazenamento a definir | Evitar que a cortesia cause perda de oportunidades ao atingir cota |
@@ -43,7 +43,11 @@
 
 ### IN-020 — 1 usuário autenticado por empresa, distinto do profissional de agenda (APROVADA)
 
-**Aprovado em 2026-11-01:** o **CRM Básico Cortesia inclui até 1 usuário autenticado com acesso por empresa/organização**, independente da quota de 1 profissional com agenda própria (IN-008). Cadastrar outro profissional ou contratar outro Onepage não concede uma segunda conta de acesso. O usuário único poderá coincidir ou não com o profissional agendável, segundo os **perfis e permissões ainda a definir**. Uma tentativa de adicionar o 2º usuário deverá indicar o limite **1/1**, oferecer upgrade ou adicional efetivamente elegível, e não cobrar sem aceite (IN-010). O login é individual, não compartilhado entre colaboradores. Regras de substituição do ocupante da vaga, convites, perfil administrativo e políticas de multiempresa ainda pendentes. [Especificação da agenda e usuários](11-agenda-manual-basico-cortesia.md).
+**Aprovado em 2026-11-01:** o **CRM Básico Cortesia inclui até 1 usuário autenticado com acesso por empresa/organização**, independente da quota de 1 profissional com agenda própria (IN-008). Cadastrar outro profissional ou contratar outro Onepage não concede uma segunda conta de acesso. O usuário único poderá coincidir ou não com o profissional agendável, segundo os **perfis e permissões ainda a definir**. Uma tentativa de adicionar o 2º usuário deverá indicar o limite **1/1**, oferecer upgrade ou adicional efetivamente elegível, e não cobrar sem aceite (IN-010). O login é individual, não compartilhado entre colaboradores. **IN-021 aprova o perfil único Administrador da Empresa, com MFA obrigatório**, sem acesso de superadministrador da plataforma e sem ampliar funcionalidades do Básico. Regras de substituição, convites e matriz de permissões específicas por módulo ainda pendentes. [Especificação da agenda e usuários](11-agenda-manual-basico-cortesia.md).
+
+### IN-021 — Perfil Administrador da Empresa para o usuário único (APROVADA)
+
+**Aprovada em 2026-11-01:** a vaga única do Básico (IN-020) terá o perfil **Administrador da Empresa**, com acesso administrativo aos módulos e às operações **de fato incluídos** no plano, sob **MFA obrigatório**, RBAC e auditoria. Não é superadministrador da plataforma, não pode contornar recursos pagos nem criar outro login. Ações detalhadas dos módulos (empresa/segurança, leads/contatos, oportunidades, agenda, automações, relatórios, financeiro) seguem pendentes para validação, sem presumir que itens propostos da matriz já foram incluídos no Básico. [Especificação IN-021](11-agenda-manual-basico-cortesia.md).
 
 ### IN-013 — Avisos internos da agenda incluídos no Básico (APROVADA)
 
