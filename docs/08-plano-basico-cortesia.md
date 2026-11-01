@@ -19,11 +19,11 @@
 | Empresas | **1 organização vinculada por contrato elegível**, com múltiplos sites da mesma empresa podendo apontar para ela | Usuário multiempresa continua possível por outros vínculos |
 | Formulários de lead | **Formulário por site/landing page contratado**, gerado pelo publicador Imagine; sem construtor livre de formulários no Básico | Form builder e formulários avulsos nos planos pagos |
 | Leads recebidos e contatos cadastrados | **IN-024 APROVADA: sem teto comercial rígido de quantidade**, tanto dos formulários dos sites quanto dos cadastros manuais; uso justo/antiabuso | Armazenamento e retenção pendentes; não descartar leads aceitos ou impor quota oculta |
-| Lead / contato | **IN-023/IN-025 APROVADAS:** visualizar, cadastrar/editar manualmente, buscar/filtrar, registrar observações, alertar duplicidades **sem mesclagem automática**, arquivar com histórico preservado e **importar CSV/XLSX com mapeamento, prévia e validação** | Exportação comercial, mesclagem/exclusão definitiva, armazenamento/retencão e limites técnicos por arquivo ainda a definir |
+| Lead / contato | **IN-023/IN-025 APROVADAS:** visualizar, cadastrar/editar manualmente, buscar/filtrar, registrar observações, alertar duplicidades **sem mesclagem automática**, arquivar com histórico preservado e **importar CSV/XLSX com mapeamento, prévia e validação** | **Exportação de leads/contatos aprovada IN-026**; mesclagem/exclusão definitiva, armazenamento/retencão e parâmetros técnicos por arquivo ainda a definir |
 | Funil | **1 funil** de oportunidades, com etapas padrão configuradas e movimentação manual | Múltiplos funis, automações e personalização avançada nos pagos |
 | Atividades | Notas e lembretes manuais básicos nos registros, se aprovados | Tarefas avançadas, equipes e automações nos pagos |
 | Dashboard | Total de leads, novos leads e situação simples do funil | Relatórios avançados, metas e forecast nos planos pagos |
-| Exportação | **Exportação básica CSV dos dados autorizados**, sem relatórios avançados | LGPD/portabilidade devem ser preservadas; XLSX, PDF, filtros avançados nos pagos |
+| Exportação | **IN-026 APROVADA:** exportar leads e contatos da empresa em **CSV ou XLSX**, todos os registros autorizados ou somente os filtrados, com proteção, auditoria e controle técnico | Relatórios avançados e exportação de outros módulos não concedidos; parâmetros técnicos pendentes |
 | Campos personalizados | **0 campos personalizados no benefício inicial**, salvo exigências técnicas do formulário padrão | Essencial atualmente prevê até 10 por módulo |
 | Automações comerciais | **IN-005 APROVADA: até 3 automações ativas por empresa, escolhidas entre modelos prontos**; catálogo exato, parâmetros e regras de execução ainda propostos | Essencial/Profissional/Empresarial têm 5/20/50 automações ativas; editor completo não liberado pelo IN-005 |
 | Agentes IA Prospector/Comercial | **Não incluídos** | Opcionais pagos; não cobrar uso de IA sem aceite |
@@ -52,6 +52,10 @@
 ### IN-022 — Administração da Empresa e Segurança (APROVADA)
 
 O único Administrador da Empresa do Básico pode consultar/atualizar dados comuns da empresa, solicitar alteração de **CNPJ somente com validação específica**, alterar senha/e-mail/configurações de MFA com **verificação de identidade**, consultar sessões e encerrar sessões em outros dispositivos, consultar o plano e suas quotas e contratar upgrade com aceite financeiro expresso. **MFA segue obrigatório**. Não pode criar 2º usuário, acessar outras empresas ou funções de superadministrador Imagine. Detalhar verificação de CNPJ, recuperação e fluxos de risco antes da implementação.
+
+### IN-026 — Exportação de Leads e Contatos em CSV e XLSX (APROVADA)
+
+O Administrador da Empresa do Básico poderá **exportar todos os leads e contatos autorizados** da própria organização ou **apenas os registros filtrados**, nos formatos **CSV e XLSX**, com arquivos protegidos, validação de permissões, auditoria e controles técnicos proporcionais. Filtrar não autoriza dados alheios nem campos indisponíveis; não concede relatórios avançados ou exportações de outros módulos. **Pendentes:** expiração do arquivo, volume por tarefa, filtros/campos sensíveis, entrega segura, retenção temporária e UX. Portabilidade legal não fica condicionada a upgrade. [Detalhamento IN-026](13-matriz-permissoes-basico-cortesia.md).
 
 ### IN-025 — Importação básica de leads e contatos por CSV e XLSX (APROVADA)
 
@@ -104,7 +108,7 @@ Ao tentar utilizar recurso não incluído ou ultrapassar quota, mostrar **plano 
 
 ## 6. Decisões necessárias antes da implementação
 
-1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente limites técnicos de importação IN-025, armazenamento/retencão, exportação, exclusão, 1 funil, formulário por site e regras técnicas de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
+1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente limites técnicos de importação/exportação IN-025/IN-026, armazenamento/retencão, exclusão, 1 funil, formulário por site e regras técnicas de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
 2. Definir quota armazenamento e limites de uso justo, sem bloquear captação legítima silenciosamente.
 3. Estabelecer recursos mínimos do Essencial pago para justificar upgrade e preservar diferenciação.
 4. Estabelecer quando benefício termina se site for inadimplente/cancelado, e como preservar leads em retenção e exportação.
