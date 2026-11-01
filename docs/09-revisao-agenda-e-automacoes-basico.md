@@ -2,6 +2,7 @@
 
 > 2026-11-01 — **IN-004 APROVADA: incluir módulos Agenda e Agendamentos no Básico Cortesia** de contratantes elegíveis de Onepage ou Landing Page.
 > **IN-005 APROVADA em 2026-11-01:** modelos prontos, até **3 automações comerciais ativas simultaneamente por empresa** no Básico Cortesia. Catálogo exato e detalhes da agenda ainda sob avaliação.
+> **IN-006 — diretriz de catálogo:** inventariar toda a biblioteca antes de revisar as quotas de todos os planos; modelos avançados deverão ser elegíveis somente a planos pagos. As **3 ativas** do IN-005 são referência atual, sujeita a **nova aprovação** na revisão final.
 > Referência: `docs/04-empresas-e-usuarios.md` (especificação completa, funcionalidade geral CRM aprovada) e `docs/02-planos-trial-e-assinaturas.md` (planos pagos).
 
 ## 1. Decisão IN-004 aprovada
@@ -143,6 +144,12 @@ Os lembretes/avisos operacionais indispensáveis à agenda podem ser considerado
 **Ciclo de reserva de autoagendamento sugerido:** visitante seleciona serviço → vê agenda publicada e horários disponíveis → informa nome/telefone/e-mail com aviso de privacidade → servidor valida novamente horário em transação e cria/vincula lead/contato + reserva → retorna confirmação real e link de gestão com token restrito/expirável → empresário visualiza agenda e pode acompanhar o lead → alterações seguem disponibilidade e permissões. Conflitos, fusos, notificações e disponibilidade devem respeitar o mesmo motor de regras da agenda interna.
 
 
+### Decisão posterior IN-006 — biblioteca central e revisão de quotas no fim do planejamento
+
+Construir primeiro o inventário completo, documentar modelos, dependências, custos e elegibilidade por plano. A biblioteca terá modelos comuns e modelos avançados propostos para planos pagos; não liberar todo o catálogo por padrão ao Básico. **Não discutir nem mudar agora a quantidade de slots** (Básico 3, Essencial 5, Profissional 20, Empresarial 50), pois o responsável pediu revisão conjunta somente após fechar a documentação da biblioteca. As quantidades anteriores continuam registradas e não foram revogadas automaticamente.
+
+**Documento principal:** [10 — Biblioteca de Automações e critérios de planos](10-biblioteca-automacoes-e-criterios-de-planos.md).
+
 ## 5. Próximas decisões em sequência
 
 1. **IN-005 definida:** modelos prontos, até 3 ativas por empresa; ainda aprovar quais modelos e personalizações disponibilizar.
@@ -152,4 +159,4 @@ Os lembretes/avisos operacionais indispensáveis à agenda podem ser considerado
 5. Definir política de retenção, armazenamento e uso justo do Básico e recursos que exigem upgrade.
 6. Testar captação de lead → agenda → lembrete/ação → upgrade e retorno, sem perda de registros nem cobrança indevida.
 
-**Situação:** IN-004 aprovou Agenda e Agendamentos; **IN-005 aprovou biblioteca de modelos prontos e até três automações comerciais ativas por empresa no Básico**. Catálogo específico, parâmetros e funcionalidades detalhadas da agenda permanecem em análise. Nenhuma programação autorizada.
+**Situação:** IN-004 aprovou Agenda e Agendamentos; **IN-005 aprovou biblioteca de modelos prontos e até três automações comerciais ativas por empresa no Básico**; **IN-006 orienta diferenciar a biblioteca por plano e revisar todas as quotas apenas ao fim da especificação**. Catálogo específico, parâmetros e funcionalidades detalhadas da agenda permanecem em análise. Nenhuma programação autorizada.
