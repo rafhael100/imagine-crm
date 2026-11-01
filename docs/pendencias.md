@@ -36,7 +36,8 @@
 - **IN-023 APROVADA:** o Administrador da Empresa pode visualizar lista/detalhes, cadastrar/editar manualmente, pesquisar/filtrar, adicionar observações/histórico manual, receber alertas de possíveis duplicidades **sem mesclagem automática** e arquivar leads/contatos **preservando histórico e vínculos**.
 - **IN-001 já aprovada:** integração de captação dos formulários Onepage/Landing Page para leads na organização correta; não descartar envio confirmado por erro/quota não aprovada.
 - **IN-024 APROVADA:** leads/contatos sem teto comercial rígido de quantidade — tanto captados pelo site quanto cadastrados manualmente — sujeitos a uso justo/antiabuso. Não inventar quota oculta nem perder leads já aceitos; a quota de 20 leads do trial não se aplica.
-- **PENDENTE:** parâmetros técnicos de uso justo, armazenamento e retenção, importação em massa, exportação (respeitar direitos LGPD), exclusão definitiva/mesclagem, restauração e detalhes de UX. A IN-024 não concede API pública nem importação irrestrita.
+- **IN-025 APROVADA:** importação básica de leads e contatos por **CSV e XLSX**, com mapeamento, prévia, validação e alertas de duplicidade, **sem mesclagem automática**. O upload é manual e autorizado pelo Administrador da Empresa, sem API pública ou integração de importação automatizada.
+- **PENDENTE:** limites técnicos por arquivo/lote e processamento, tratamento de linhas com erro/duplicadas, relatório do resultado e arquivos temporários, parâmetros de uso justo, armazenamento e retenção de leads/contatos, **exportação** (respeitar direitos LGPD), exclusão definitiva/mesclagem e restauração. O total de registros continua sem teto comercial rígido (IN-024).
 - [Matriz detalhada IN-023](13-matriz-permissoes-basico-cortesia.md).
 
 ## Quota de usuários da empresa no CRM Básico — IN-020 (01/11/2026)
@@ -45,7 +46,7 @@
 - Excesso de usuários: informar limite **1/1**, sugerir upgrade ou adicional de assento que realmente resolva, sem cobrança automática (IN-010), sem compartilhar identidade ou criar login por serviço/site.
 - **IN-021 APROVADA:** único usuário Básico usa perfil **Administrador da Empresa**, com **MFA obrigatório**, direitos administrativos somente sobre módulos incluídos no plano, sem superadmin SaaS; preservar auditoria, RBAC e isolamento entre empresas.
 - **IN-022 APROVADA:** consultar/atualizar cadastro comum da empresa; CNPJ somente com validação específica; senha/e-mail/MFA sob verificação de identidade, com MFA obrigatório; consultar/encerrar sessões; consultar plano/limites e contratar upgrade após aceite expresso; sem 2º usuário, outros tenants ou superadmin.
-- **PENDENTE:** fluxo exato de validação de CNPJ e mudança de identidade, titularidade e troca/recuperação da conta, convites e participação em várias empresas. **Leads e Contatos: operações básicas aprovadas em IN-023 e quantidade sem teto comercial rígido aprovada em IN-024.** Permanecem pendentes importação, exportação, exclusão/mesclagem, armazenamento, retenção e fluxos de proteção LGPD. [Matriz de permissões](13-matriz-permissoes-basico-cortesia.md).
+- **PENDENTE:** fluxo exato de validação de CNPJ e mudança de identidade, titularidade e troca/recuperação da conta, convites e participação em várias empresas. **Leads e Contatos: operações básicas IN-023, quantidade sem teto comercial rígido IN-024 e importação básica CSV/XLSX IN-025 APROVADAS.** Permanecem pendentes parâmetros técnicos da importação, exportação, exclusão/mesclagem, armazenamento, retenção e fluxos de proteção LGPD. [Matriz de permissões](13-matriz-permissoes-basico-cortesia.md).
 - Documento principal: [11-agenda-manual-basico-cortesia.md](11-agenda-manual-basico-cortesia.md).
 
 ## Notificações e lembretes internos de agenda — IN-013 (01/11/2026)
