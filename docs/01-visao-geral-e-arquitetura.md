@@ -374,3 +374,14 @@
 - Uma conversa em que somente funcionários falam com o cliente **não passa automaticamente a "Misto"** pelo simples fato de uma mensagem humana ter sido assistida por IA. A classificação IA/Humano/Misto de participações diretas anteriormente aprovada continua separada desta marcação de assistência.
 - Preservar histórico unificado, permissões, tenant e relatórios sem duplicar mensagens, oportunidades, vendas, valores ou taxas de conversão. A marcação de assistência não equivale à IA conversar diretamente com o cliente.
 - **A detalhar:** como detectar/registrar uso após edição substancial, métricas de adoção da assistência e interface de geração/revisão/aplicação de sugestões. A autorização de envio automático permanece restrita aos fluxos de IA autônoma anteriormente aprovados e não deverá ser confundida com mensagem assistida enviada por humano.
+
+## MVP — Copiloto IA Comercial dentro da conversa WhatsApp — APROVADO
+- Integrar à Central de Atendimento WhatsApp um controle **"Sugerir resposta com IA"** acessível ao funcionário autorizado durante conversa humana.
+- A IA Comercial gera sugestão contextualizada usando histórico da conversa e dados do contato, lead e oportunidade **somente dentro do escopo autorizado ao usuário e agente**, evitando exposição de dados de outras equipes/empresas.
+- Apresentar texto sugerido em campo **editável**: funcionário poderá revisar, adaptar, aplicar ou descartar a sugestão antes de enviar.
+- **O copiloto não envia a sugestão automaticamente**. O envio efetivo pelo número oficial WhatsApp exige ação explícita do funcionário, após validação de posse, permissões, política Meta, janela de atendimento e templates aprovados quando exigidos.
+- Se o funcionário efetivamente utilizar uma sugestão na mensagem enviada, identificá-la como **"Assistida por IA"**, mantendo funcionário como autor do envio e associando o agente que auxiliou; visualização/geração sem uso não conta como mensagem assistida.
+- Não transformar uma conversa humana automaticamente em "Misto" apenas porque houve assistência de IA; manter distinção de atendimento autônomo de agente e copiloto.
+- Deve ser funcional no MVP Web responsivo, inclusive na experiência por navegador móvel; tratar erros e indisponibilidade da IA sem bloquear envio humano manual.
+- Proteger dados sensíveis, registrar consumo e custo da IA sob as cotas aprovadas, e respeitar regras de acesso a contexto e auditoria.
+- **Pendências:** design final do editor, escopo das informações contextuais utilizadas, indicação visual das mudanças manuais, limites de consumo específicos por utilização e detalhamento da experiência móvel.
