@@ -13,3 +13,11 @@
 
 ## Pendências
 - Preço de cada agente, cota mensal por plano, custo dos pacotes, modelos e prompts, privacidade/retenção de mensagens e integrações específicas.
+
+## Atendimento WhatsApp por IA fora do expediente — APROVADO
+- O CRM Imagine oferecerá opção **configurável por empresa** para manter os agentes de IA respondendo aos clientes **24h/7d**, independentemente dos horários de funcionários e setores.
+- O agente poderá qualificar leads, responder dúvidas, consultar contexto autorizado, atualizar CRM e preparar encaminhamentos de acordo com as permissões e regras da empresa.
+- Fora do expediente do destino humano, comunicar os horários aplicáveis, manter transferência pendente/assistida na origem e contar SLA de aceite somente durante o expediente do destino.
+- Se o atendimento estiver sob posse de humano, **não reativar o agente automaticamente** ao fim do expediente; somente o humano autorizado pode devolver a conversa à IA.
+- Não usar a disponibilidade 24/7 para contornar políticas oficiais de envio do WhatsApp, regras de consentimento/opt-out, segurança, cotas, limites de custo ou controles de suspensão do agente.
+- Configurações mais granulares por agente/número, mensagens de ausência e escalonamentos específicos permanecem a detalhar.
