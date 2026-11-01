@@ -35,7 +35,7 @@
 | Uploads/armazenamento | **Quota mínima específica a definir**; não herdar automaticamente a quota Essencial de 1 GB | Uploads avançados e capacidade nos pagos |
 | Suporte | Ajuda e suporte contratual do produto sob regras a definir | Diferenciação de SLA sem privar de correções e suporte essencial |
 
-**Nota importante:** **1 usuário** já foi **aprovado** em IN-020 (perfil Administrador da Empresa/MFA obrigatório em IN-021 e permissões de Empresa e Segurança em IN-022). A proposta de **1 funil** ainda não foi aprovada; **IN-024 aprovou a ausência de teto comercial rígido de quantidade de leads e contatos** captados no site ou cadastrados manualmente. Quotas efetivas de armazenamento, contatos, relatórios e retenção continuam pendentes. A captação de leads deve ter fila durável; nunca descartar silenciosamente dados após dizer ao visitante que foram recebidos.
+**Nota importante:** **1 usuário** já foi **aprovado** em IN-020 (perfil Administrador da Empresa/MFA obrigatório em IN-021 e permissões de Empresa e Segurança em IN-022). A proposta de **1 funil** ainda não foi aprovada; **IN-024 aprovou a ausência de teto comercial rígido de quantidade de leads e contatos** captados no site ou cadastrados manualmente. Capacidade/armazenamento, relatórios e regras de retenção seguem pendentes; **quantidade de contatos/leads não terá teto comercial rígido (IN-024)**. A captação de leads deve ter fila durável; nunca descartar silenciosamente dados após dizer ao visitante que foram recebidos.
 
 ### Observações IN-004, IN-005 e IN-006 sobre agenda, biblioteca e automações
 
@@ -100,7 +100,7 @@ Ao tentar utilizar recurso não incluído ou ultrapassar quota, mostrar **plano 
 
 ## 6. Decisões necessárias antes da implementação
 
-1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente limites de Leads e Contatos após IN-023, importação/exportação, exclusão, 1 funil, formulário por site e regras de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
+1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente armazenamento/retencão após IN-024, importação/exportação, exclusão, 1 funil, formulário por site e regras técnicas de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
 2. Definir quota armazenamento e limites de uso justo, sem bloquear captação legítima silenciosamente.
 3. Estabelecer recursos mínimos do Essencial pago para justificar upgrade e preservar diferenciação.
 4. Estabelecer quando benefício termina se site for inadimplente/cancelado, e como preservar leads em retenção e exportação.
