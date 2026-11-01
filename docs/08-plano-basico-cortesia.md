@@ -15,7 +15,7 @@
 
 | Módulo / capacidade | Básico cortesia — recomendação | Motivo / futuro upgrade |
 | --- | --- | --- |
-| Usuários incluídos | **1 usuário administrador da empresa** | Equipes e assentos adicionais nos planos pagos |
+| Usuários incluídos | **IN-020 APROVADA: até 1 usuário autenticado por organização**; perfil e permissões ainda a definir | Equipes e assentos adicionais nos planos pagos ou adicional elegível |
 | Empresas | **1 organização vinculada por contrato elegível**, com múltiplos sites da mesma empresa podendo apontar para ela | Usuário multiempresa continua possível por outros vínculos |
 | Formulários de lead | **Formulário por site/landing page contratado**, gerado pelo publicador Imagine; sem construtor livre de formulários no Básico | Form builder e formulários avulsos nos planos pagos |
 | Leads recebidos | **Sem teto comercial rígido de recebimento no formulário**, com política antifraude/uso justo; cotas de retenção/armazenamento a definir | Evitar que a cortesia cause perda de oportunidades ao atingir cota |
@@ -40,6 +40,10 @@
 ### Observações IN-004, IN-005 e IN-006 sobre agenda, biblioteca e automações
 
 **Aprovado (IN-004/IN-007):** Agenda e Agendamentos somente **manuais e internos** no CRM Básico cortesia. **Proibido ao Básico:** página pública de autoagendamento, botão de reserva automática no Onepage/Landing Page, reserva criada por visitante sem atuação interna. **Planos pagos:** podem habilitar reserva pública conforme contrato e verificação de direitos do CRM. **IN-008: máximo de 1 profissional agendável por empresa no Básico, sem confundir esta quota com assentos de acesso CRM**. **IN-009 aprova até 10 serviços ativos simultaneamente por empresa Básico**; inativos não consomem vaga e histórico deve ser preservado. **IN-011 aprova expediente semanal flexível, vários períodos diários, pausas, bloqueios e exceção manual fora do expediente com aviso/confirmacão expressa de usuário autorizado e sem sobreposição de horários.** **IN-012 APROVADA:** reservas manuais não possuem teto comercial numérico por mês, com uso justo e controles técnicos contra abuso; essa concessão não libera autoagendamento público, robôs ou importação em massa. [Detalhes da agenda manual](11-agenda-manual-basico-cortesia.md). **Demais funcionalidades avançadas** não são concedidas automaticamente. Limites de agendamentos ilimitados do Essencial/Profissional/Empresarial não se estendem automaticamente ao Básico. **IN-005:** somente modelos prontos, até 3 ativos por empresa; rascunhos/pausados não consomem vagas. **IN-006:** primeiro documentar toda a biblioteca, prevendo modelos simples no Básico e modelos avançados exclusivos de planos pagos; rever as quantidades por plano só ao final. Os limites atuais (3/5/20/50) continuam como referência até nova aprovação. O catálogo exato permanece em revisão. [Biblioteca central](10-biblioteca-automacoes-e-criterios-de-planos.md). Detalhamento dos modelos e da agenda em [09 — Agenda e automações do Básico](09-revisao-agenda-e-automacoes-basico.md).
+
+### IN-020 — 1 usuário autenticado por empresa, distinto do profissional de agenda (APROVADA)
+
+**Aprovado em 2026-11-01:** o **CRM Básico Cortesia inclui até 1 usuário autenticado com acesso por empresa/organização**, independente da quota de 1 profissional com agenda própria (IN-008). Cadastrar outro profissional ou contratar outro Onepage não concede uma segunda conta de acesso. O usuário único poderá coincidir ou não com o profissional agendável, segundo os **perfis e permissões ainda a definir**. Uma tentativa de adicionar o 2º usuário deverá indicar o limite **1/1**, oferecer upgrade ou adicional efetivamente elegível, e não cobrar sem aceite (IN-010). O login é individual, não compartilhado entre colaboradores. Regras de substituição do ocupante da vaga, convites, perfil administrativo e políticas de multiempresa ainda pendentes. [Especificação da agenda e usuários](11-agenda-manual-basico-cortesia.md).
 
 ### IN-013 — Avisos internos da agenda incluídos no Básico (APROVADA)
 
@@ -78,7 +82,7 @@ Ao tentar utilizar recurso não incluído ou ultrapassar quota, mostrar **plano 
 
 ## 6. Decisões necessárias antes da implementação
 
-1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente 1 usuário, 1 funil, formulário por site e regras de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
+1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente perfil/permissões do usuário único já aprovado em IN-020, 1 funil, formulário por site e regras de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
 2. Definir quota armazenamento e limites de uso justo, sem bloquear captação legítima silenciosamente.
 3. Estabelecer recursos mínimos do Essencial pago para justificar upgrade e preservar diferenciação.
 4. Estabelecer quando benefício termina se site for inadimplente/cancelado, e como preservar leads em retenção e exportação.
