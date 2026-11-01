@@ -67,3 +67,10 @@
 - Registrar em auditoria quem assumiu/devolveu, data, hora e mudanças de responsabilidade.
 - Implementação deve validar a posse da conversa imediatamente antes do envio, inclusive para mensagens já enfileiradas, impedindo disparos indevidos após a transferência; preservar logs e permitir tratamento seguro de mensagens em processamento.
 - Definir posteriormente se e como automações não conversacionais ou lembretes programados são pausados durante atendimento humano; não confundir com autorização para a IA enviar mensagens.
+
+## Pausa de automações de mensagens durante atendimento humano — APROVADA
+- Quando um atendente humano assumir a conversa WhatsApp, suspender **todos os envios automáticos voltados ao cliente naquela conversa**, tanto disparos de agentes de IA quanto de automações (follow-ups, lembretes e mensagens programadas).
+- Automações **internas** que não enviem mensagens ao cliente podem continuar, respeitando permissões, regras e auditoria (tarefas, alertas internos, atualizações de CRM).
+- A retomada de atendimento automatizado exige devolução explícita à IA; na retomada, **não descarregar automaticamente uma fila de mensagens acumuladas**. Reavaliar gatilho, atualidade, consentimento, janela de atendimento da Meta, templates, duplicidade, horários, custos e posse da conversa antes de cada envio.
+- Validar posse e permissões no momento efetivo do disparo para impedir corrida entre troca de responsável e processamento de filas.
+- Manter histórico de mensagens suspensas, descartadas, reavaliadas e enviadas para rastreabilidade.
