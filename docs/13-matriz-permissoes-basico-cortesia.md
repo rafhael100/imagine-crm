@@ -42,26 +42,46 @@
 - Detalhar substituição/transferência do administrador único, convites pendentes e recuperação quando a única conta ficar inacessível.
 - Aprovar UX específica de contratação e das telas de plano/limites, seguindo regras financeiras já aprovadas.
 
-## Módulo 2 — Leads e Contatos — PROPOSTA PARA REVISÃO (AINDA NÃO APROVADA como matriz Básico)
+## Módulo 2 — Leads e Contatos — IN-023 APROVADA em 2026-11-01
 
-A integração de **formulários do Onepage/Landing Page com o CRM** já foi aprovada em **IN-001**. A entrada pública é de **leads**, e não cria automaticamente um agendamento (IN-007). Formulários aceitos **não podem ser descartados silenciosamente** por quota não aprovada ou erro transitório. A matriz seguinte especifica permissões e inclusão **a deliberar**, não concede funcionalidades novas ao Básico.
+**Decisão aprovada:** o **Administrador da Empresa**, único usuário autenticado do CRM Básico Cortesia (IN-020/IN-021), pode **visualizar, cadastrar, editar, pesquisar, registrar observações de atendimento, identificar possíveis duplicidades sem mesclagem automática e arquivar leads/contatos com preservação do histórico**. O uso é restrito à empresa autenticada e aos recursos efetivamente incluídos no benefício, sem herdar a matriz integral dos planos pagos.
 
-| Funcionalidade | Proposta de inclusão no Básico | Limite de escopo / decisão futura |
+A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já havia sido aprovada em IN-001**, pela integração segura servidor-servidor. Um formulário gera um lead, **não uma reserva automática** (IN-007); não registrar sucesso de recebimento se o envio não foi persistido em fila/serviço durável, nem descartar silenciosamente leads já aceitos.
+
+| Ação do Administrador no Básico | IN-023 — estado | Regras e limitações |
 | --- | --- | --- |
-| Receber leads dos formulários de sites Imagine vinculados à mesma organização | **Incluir** | Integração interna autenticada, origem identificada, validação antispam e fila durável; número de formulários por site ainda a definir |
-| Consultar lista e detalhes de leads e contatos | **Incluir** | Somente da própria empresa, com nome, contatos, origem e situação permitidos |
-| Cadastrar leads e contatos manualmente | **Incluir** | Sem conceder automaticamente importação em massa, API pública ou robôs |
-| Editar cadastro e atualizar situação comercial manualmente | **Incluir** | Histórico de mudanças e integridade de origem; se mover no funil implica recursos de outro módulo ainda não aprovados, separar direitos |
-| Pesquisar e filtrar leads/contatos | **Incluir busca básica** | Por nome, telefone, e-mail, origem e situação, sem relatórios avançados automaticamente incluídos |
-| Registrar observações/anotações simples e histórico de atendimento manual | **Proposta de inclusão** | Campos, permissões, anexos e atividades avançadas serão definidos sem pressupor automações pagas |
-| Identificar possíveis duplicidades | **Incluir alerta básico, se aprovado** | Não mesclar nem excluir dados automaticamente; mesclagem manual avançada e auditoria exigem decisão |
-| Arquivar/inativar registros | **Incluir com preservação de histórico, se aprovado** | Definir distinção entre inativar, excluir, atender direitos LGPD e conservar auditoria |
-| Excluir definitivamente ou mesclar leads/contatos | **A definir separadamente** | Não fazer exclusão/mesclagem irreversível por padrão; critérios LGPD e auditoria |
-| Exportar dados e exercer portabilidade LGPD | **Permitir cumprimento da lei independentemente de upgrade** | Escopo e fluxo de CSV básico, exportações em massa/avançadas e evidências de autorização ainda a definir |
-| Importação em massa (CSV/XLSX), API externa, lead scoring avançado, campos personalizados | **Não incluir automaticamente** | Verificar recursos de planos pagos e aprovar diferenciação, sem proibir direitos legais |
-| Limite comercial mensal/total de leads e contatos | **Não aprovado** | Evitar perda de leads capturados/confirmados; definir quotas de armazenamento, retenção e uso justo antes de qualquer limite novo |
+| Visualizar lista de leads e contatos | **APROVADO** | Apenas dados da própria organização, conforme permissões e proteção de dados |
+| Consultar detalhes de lead ou contato | **APROVADO** | Exibir dados cadastrais e origem/site/formulário quando disponíveis, sem expor outros tenants |
+| Cadastrar manualmente lead ou contato | **APROVADO** | Um registro por operação humana autorizada; **não concede** importação em massa, API pública ou robôs |
+| Editar cadastro, informações de contato e situação básica do lead | **APROVADO** | Preservar histórico/autor/data, validação de campos e origem; movimentação em funil dependerá do módulo Oportunidades/Funis |
+| Pesquisar e filtrar por nome, telefone, e-mail, origem e situação | **APROVADO: busca básica** | Não concede analytics avançado, motor de pesquisa global ou acesso irrestrito a outros módulos |
+| Registrar observações simples e histórico manual de atendimento | **APROVADO** | Autor/data/hora, preservação de histórico e isolamento de empresa; anexos, atividades avançadas, automações e envios externos dependem de suas próprias permissões |
+| Detectar e sinalizar possíveis cadastros duplicados | **APROVADO: alerta** | Utilizar dados disponíveis e critérios a detalhar; **não mesclar, descartar, substituir ou apagar automaticamente** os cadastros, nem perder origens |
+| Arquivar/inativar leads e contatos | **APROVADO** | Retirar da visualização ativa sem excluir o registro, seus vínculos e histórico; restauração, consentimentos, prazos e UX requerem detalhamento |
+| Excluir definitivamente lead/contato ou mesclar registros | **AINDA NÃO APROVADO para o Básico** | Definir separadamente mecanismo seguro, auditoria, LGPD, vínculos e conflitos; direitos legais de eliminação/correção devem ser atendidos sem exigir upgrade indevido |
+| Importar lote de contatos (CSV/XLSX) ou criar por API pública | **PENDENTE** | Cadastro **manual** foi aprovado; isso não é permissão para importação em massa ou automação externa |
+| Exportar CSV/XLSX/relatórios ou solicitações de portabilidade | **PENDENTE na matriz funcional** | A empresa deve poder exercer direitos legais à portabilidade/acesso de dados independentemente de cobrança por upgrade; formato, escopo, autorização e exportação comercial serão definidos |
+| Quantidade de leads/contatos, quota de armazenamento e retenção | **PENDENTE** | Não criar limite oculto, presumir leads ilimitados ou aplicar a quota do trial; preservar leads aceitos e informar claramente limites futuros |
 
-**Próxima decisão:** validar quais dessas operações de Leads e Contatos o Administrador da Empresa do Básico poderá executar. Depois tratar separadamente limites, duplicidades, arquivamento/mesclagem, importação/exportação e retenção. **Não programar antes do fechamento do planejamento.**
+### Critérios de aceite para o escopo aprovado
+
+1. Administrador autenticado e com MFA pode realizar **consultas, cadastros e atualizações manuais**, dentro de sua organização, com verificações de permissão no backend.
+2. Todo lead recebido do formulário aprovado é vinculado ao tenant e à origem correta, tratado em integração durável, com prevenção de perda silenciosa de registros confirmados.
+3. **Suspeita de duplicidade apenas alerta:** o administrador decide o que fazer dentro das capacidades aprovadas. Não presumir que mesclagem ou exclusão definitiva estejam disponíveis no Básico.
+4. **Arquivar não equivale a excluir:** preservar identificação, origem, histórico de atendimento e vínculos com agenda/oportunidades, respeitando a política de retenção e direitos de privacidade que ainda serão detalhados.
+5. Observações manuais ficam atribuídas ao autor e protegidas por isolamento multiempresa. O direito não amplia automaticamente armazenamento de anexos, automações comerciais nem canais externos.
+6. Mudanças de status operacionais não liberam **funis configuráveis, oportunidades ou ações avançadas** sem decisões do módulo próprio.
+
+### Próximas decisões — NÃO aprovadas por IN-023
+
+- **Limite de leads e contatos**: distinguir recepção dos formulários, cadastro manual, estoque de registros ativos/inativos, armazenamento e condições de uso justo, sem descartar um lead aceito.
+- **Importação**: inclusão ou exclusão da importação em massa CSV/XLSX no Básico, limites e prevenção de duplicidades.
+- **Exportação/portabilidade**: CSV básico, operações em lote e direitos LGPD, com autorização/auditoria, sem paywall para direitos legais.
+- **Exclusão definitiva, mesclagem e recuperação**: política por vínculo e obrigações de privacidade; não confundir arquivamento já aprovado com apagamento.
+- **Retenção e restauração de arquivados**: duração do histórico, interfaces, auditoria e regras de dados pessoais.
+- Detalhes opcionais de campos e filtros, cadastro manual de interações e registro de situação comercial, sem conceder funcionalidades premium por inferência.
+
+**Próxima decisão a submeter ao responsável:** política de quantidade de leads/contatos no Básico, tratando com prioridade o **recebimento seguro de leads do site**. Depois, importação, exportação e exclusão em decisões separadas. **Nenhuma programação autorizada até aprovação do planejamento.**
 
 ## Módulos seguintes ainda pendentes
 
