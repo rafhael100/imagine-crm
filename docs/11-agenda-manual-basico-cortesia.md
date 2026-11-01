@@ -1,6 +1,6 @@
 # 11 — CRM Básico Cortesia: Agenda Manual (um profissional), serviços e regras operacionais
 
-> **IN-008, IN-009, IN-011, IN-012, IN-013 e IN-014 APROVADAS em 2026-11-01:** o CRM Básico Cortesia permite **1 profissional com agenda própria, até 10 serviços ativos, expediente flexível e agendamentos manuais sem teto comercial mensal**, sujeitos a uso justo e controles técnicos contra abuso. A agenda permanece **exclusivamente manual e interna** (IN-007).  
+> **IN-008, IN-009, IN-011, IN-012, IN-013, IN-014 e IN-015 APROVADAS em 2026-11-01:** o CRM Básico Cortesia permite **1 profissional com agenda própria, até 10 serviços ativos, expediente flexível e agendamentos manuais sem teto comercial mensal**, sujeitos a uso justo e controles técnicos contra abuso. A agenda permanece **exclusivamente manual e interna** (IN-007).  
 > **Somente as decisões identificadas como APROVADAS têm esse status.** Regras complementares, número de reservas mensais e características não detalhadas permanecem PROPOSTOS. Não implementar, criar cobranças ou publicar a funcionalidade.
 
 ## 1. Decisões já aprovadas e limites de interpretação
@@ -11,6 +11,7 @@
 - **IN-011:** aprovada a configuração semanal flexível (inclusive dias sem expediente, sábados e domingos), múltiplos períodos por dia, pausas/intervalos, bloqueios manuais de folgas, férias e feriados, duração própria de cada serviço, preservação dos compromissos nas mudanças de expediente, e **agendamento manual excepcional fora do expediente** com aviso e confirmação explícita de usuário autorizado, **sem ignorar conflitos**. Não concede página pública de autoagendamento.
 - **IN-013:** notificações e lembretes operacionais da agenda apenas internamente no CRM Básico, sem consumir vagas de automações comerciais (IN-005). Envios automáticos de e-mail ao cliente e WhatsApp oficial ficam para planos pagos ou adicionais elegíveis, sujeitos a habilitação e contrato.
 - **IN-014:** dois lembretes internos padrão por agendamento (24 horas e 1 hora antes), cada um com opção independente de alterar antecedência ou desativar pelo profissional autorizado.
+- **IN-015:** central persistente de notificações internas da agenda, com estados lido/não lido. Avisos cujo evento aconteceu enquanto o profissional estava fora do CRM ficam disponíveis na volta, vinculados ao compromisso e com a data original.
 - **IN-012:** aprovada **ausência de teto comercial rígido para a quantidade mensal de agendamentos manuais** da única agenda do Básico, com **uso justo e controles técnicos contra abuso**. Não estabelecer limiar mensal oculto nem bloquear utilização humana legítima por atingir quantidade de reservas; quota de reservas públicas segue indisponível no Básico (IN-007).
 - **IN-009:** o profissional da empresa beneficiária pode manter **até 10 serviços ativos simultaneamente**, somando todos os tipos de atendimento cadastrados para essa agenda. Serviços inativos/arquivados **não ocupam vaga ativa**, mas seus históricos/agendamentos associados devem ser preservados. Não multiplicar a quota por site ou formulário. Ao tentar ativar o 11º serviço, bloquear a operação com explicação e opção de inativar outro serviço ou contratar plano elegível.
 - As automações comerciais do Básico permanecem em modelos prontos, até **3 ativas simultaneamente por empresa como baseline atual** (IN-005), com revisão final numérica planejada (IN-006). Essas automações não autorizam agendamento público.
@@ -108,7 +109,7 @@
 | Agenda compartilhada/equipe | Não incluída por IN-008 | Reservar para planos pagos |
 | Agendamento recorrente/grupos/lista de espera | Não incluído automaticamente | Reservar para pagos inicialmente |
 | Armazenamento/anexos de agenda | Definir com matriz geral do benefício | Quota específica a aprovar |
-| Notificações e lembretes de agenda | **IN-013 e IN-014: internos no CRM, padrão 24h e 1h antes, individuais e ajustáveis, sem ocupar automações** | Visualização e preferências complementares a detalhar |
+| Notificações e lembretes de agenda | **IN-013 a IN-015:** internos e persistentes no CRM, 24h e 1h antes por padrão, editáveis separadamente, status lido/não lido e sem consumir automações comerciais | Forma de marcar lido e preferências complementares a definir |
 | E-mail automático ao cliente e WhatsApp oficial | **Não incluídos no Básico (IN-013)** | Planos pagos ou adicionais elegíveis, com custos/canais próprios |
 
 **Justificativa para não impor um teto baixo de reservas manuais sem análise:** o cliente já precisa registrar manualmente cada atendimento e há apenas um profissional; o custo incremental por evento é pequeno, mas ainda existem riscos de abuso e limites de infraestrutura. Quotas técnicas, antifraude e retenção independem do número de registros permitido comercialmente.
@@ -167,15 +168,25 @@ As regras de expediente flexível, múltiplos períodos, pausas, duração por s
 - **Fora do Básico:** e-mail automático ao cliente atendido e WhatsApp Business API oficial, que dependem de plano pago ou adicional elegível, aprovação da contratação, canal, consentimento, políticas e custos. O botão/link comum do WhatsApp no site não constitui envio automático e não é modificado aqui.
 - **Separação do catálogo:** candidato T04 (lembrete de compromisso próximo) passa a representar **operação interna de sistema**, não template comercial que consome slot. Um template adicional de acompanhamento comercial continua contando slot quando ativado e habilitado.
 - **Não presumir entrega ao visitante:** aviso interno ao empresário não é confirmação enviada ao cliente.
-- **IN-014 aprovada:** 24 horas e 1 hora antes do início como padrões independentes; profissional autorizado pode alterar ou desativar cada lembrete por compromisso. Ao reagendar, recalcular instantes futuros e cancelar lembretes obsoletos; ao cancelar o compromisso, não enviar lembretes posteriores. Não disparar retroativamente um lembrete cujo horário já passou quando a reserva foi criada perto da hora. **Pendências:** central de leitura, repetição/adiamento, preferências globais e push do navegador; o aviso interno não é envio externo.
+- **IN-014 aprovada:** 24 horas e 1 hora antes do início como padrões independentes; profissional autorizado pode alterar ou desativar cada lembrete por compromisso. Ao reagendar, recalcular instantes futuros e cancelar lembretes obsoletos; ao cancelar o compromisso, não enviar lembretes posteriores. Não disparar retroativamente um lembrete cujo horário já passou quando a reserva foi criada perto da hora. **IN-015:** central de notificações persistente, status lido/não lido, incluindo lembretes vencidos enquanto o CRM estava fechado. **Pendências:** forma de marcar lido, repetição/adiamento, preferências globais e push do navegador; aviso interno não significa envio externo.
 
+
+### 9.2B Central de notificações persistente — IN-015 APROVADA
+
+**Diretriz aprovada:** a agenda interna do Básico manterá avisos e lembretes no CRM de forma **persistente no servidor**, com **lido/não lido por destinatário autorizado**. O lembrete deverá ser registrado quando chegar o prazo, inclusive sem sessão de usuário aberta, e poderá ser consultado após o retorno ao CRM, respeitando empresa e permissões.
+
+**Tratamento técnico a detalhar na implementação:** registrar referência do compromisso, tipo e data/hora real do evento; evitar avisos duplicados; preservar o estado de leitura entre sessões e dispositivos. Compromissos antigos devem aparecer com data e situação atual, nunca como se fossem agendamentos futuros. Cancelamentos e remarcações invalidam lembretes futuros obsoletos, sem apagar avisos já apresentados ou seu histórico. Não emitir lembretes retroativos que já estariam vencidos quando o compromisso é criado.
+
+**Esta decisão não autoriza** notificação push do navegador/celular, som, e-mail ao cliente ou WhatsApp oficial. A central é interna e seus eventos não consomem vagas de automações comerciais.
+
+**Pendências:** como marcar como lido (abrir o aviso ou botão explícito), filtros, ordenação, contagem de não lidas, retenção/arquivamento, soneca, comportamento de notificações antigas e regras de acesso de outros usuários.
 
 ### 9.3 Decisões seguintes
 
 1. **IN-009 e IN-011 já aprovaram** até 10 serviços ativos e a agenda flexível, incluindo bloqueios e exceção manual fora do expediente com confirmação e sem conflitos. Consolidar apenas detalhes técnicos/UX ainda abertos.
 2. **IN-012 aprovada:** agendamentos manuais sem teto comercial mensal; especificar apenas métricas técnicas e controles proporcionais de uso justo, sem quota escondida.
-3. **IN-013 e IN-014 aprovadas:** lembretes internos sem ocupar automações, padrões 24h e 1h ajustáveis/desativáveis separadamente. **Próxima decisão:** persistência e apresentação na central interna de notificações.
+3. **IN-013 a IN-015 aprovadas:** lembretes internos sem consumir automações, padrões 24h/1h ajustáveis/desativáveis, central persistente com lido/não lido mesmo após ausência. **Próxima decisão:** definir como um aviso é marcado como lido.
 4. Revisar campos de serviço, permissões e limite de usuários do Básico; funcionalidades externas (WhatsApp Business API, Outlook/Google Calendar etc.) não são autorizadas pela IN-009.
 
 
-**Situação:** IN-008 aprova **1 profissional com agenda**; IN-009 aprova **até 10 serviços ativos**; IN-011 aprova horários flexíveis e exceções manuais fora do expediente sem conflitos; **IN-012 aprova agendamentos manuais sem teto comercial mensal, com uso justo e controles técnicos contra abuso**. **IN-013 e IN-014 aprovaram avisos internos e antecedências padrão de 24h e 1h, ajustáveis/desativáveis sem consumir automações; interface, persistência e canais externos permanecem pendentes**. Somente documentação de planejamento, sem implementação.
+**Situação:** IN-008 aprova **1 profissional com agenda**; IN-009 aprova **até 10 serviços ativos**; IN-011 aprova horários flexíveis e exceções manuais fora do expediente sem conflitos; **IN-012 aprova agendamentos manuais sem teto comercial mensal, com uso justo e controles técnicos contra abuso**. **IN-013 a IN-015 aprovaram avisos internos, antecedências de 24h/1h configuráveis e central persistente lido/não lido sem consumir automações; forma de marcação de leitura, UX e canais externos continuam pendentes**. Somente documentação de planejamento, sem implementação.
