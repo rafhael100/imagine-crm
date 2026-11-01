@@ -170,4 +170,10 @@
 - Cliente pode solicitar atendimento humano a qualquer momento; o CRM deve encaminhar o pedido, preservar histórico e registrar o fluxo até aceite efetivo, respeitando horários do setor.
 - Se fora do expediente, informar horário de atendimento humano e não prometer resposta imediata.
 - Não confundir solicitação de transferência com aceite/conclusão da transferência; aplicam-se as regras anteriores de posse de conversa e responsabilidade.
-- Pendente: comportamento da IA enquanto o pedido de atendimento humano aguarda aceite.
+- **Resolvido:** IA permanece pausada enquanto pedido humano aguarda aceite; cliente pode desistir e pedir retorno à IA antes de humano assumir.
+
+## Solicitação de humano pelo cliente — pausa automática da IA (APROVADO)
+- Quando cliente pedir atendimento humano, a IA confirma o pedido e **cessa respostas automáticas naquela conversa**, aguardando transferência/aceite humano; pendência permanece ativa conforme regras de expediente e alertas.
+- Enquanto nenhum humano tiver assumido efetivamente, o cliente pode solicitar retorno à IA; cancelar/retirar solicitação pendente com auditoria e reativar o agente apenas se permitido pelas configurações e regras de canal.
+- Depois da tomada de posse por atendente, volta a valer a regra de **devolução explícita por humano autorizado**; mensagem do cliente pedindo IA não ignora essa proteção.
+- Preservar histórico e controlar mensagens enfileiradas para evitar envio após pausa e respostas simultâneas.
