@@ -12,6 +12,7 @@ Esta documentação distingue regras **APROVADAS**, decisões **PARCIAIS** e ite
 - [Agentes de IA](05-agentes-de-ia.md)
 - [Infraestrutura e operações](06-infraestrutura-e-operacoes.md)
 - [Integração com sites Imagine e CRM Básico cortesia (IN-002)](07-integracao-site-e-crm-basico.md)
+- [CRM Básico cortesia — matriz proposta (IN-003)](08-plano-basico-cortesia.md)
 - [Registro de decisões](decisoes.md)
 - [Pendências](pendencias.md)
 
