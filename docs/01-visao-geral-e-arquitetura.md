@@ -334,4 +334,14 @@
 - A lista resultante deve identificar, conforme permissão, cliente, conversa, equipe, responsável e situação/tempo relevante, com acesso ao histórico correspondente pelo fluxo normal de atendimento.
 - **Aplicar as permissões no servidor a cada consulta e abertura de conversa**, respeitando tenant, equipe, número de WhatsApp e escopo do funcionário; métricas agregadas e links não podem revelar conversas ou dados que o usuário não está autorizado a acessar.
 - Evitar divergências de definição entre o número do indicador e os itens detalhados: usar critérios de filtro e apuração coerentes e explicar diferenças causadas por atualizações concorrentes ou janelas temporais.
-- A aprovação contempla **navegação interativa e filtros preservados**; ações operacionais diretamente na lista (assumir, transferir, responder, encerrar) dependem de definição específica.
+- A aprovação contempla **navegação interativa e filtros preservados**; ações rápidas de assumir ou redistribuir foram aprovadas posteriormente; responder e encerrar diretamente na lista ainda dependem de definição específica.
+
+## MVP — Ações rápidas de supervisão no painel WhatsApp — APROVADO
+- O painel gerencial de desempenho e as listagens acessadas a partir de indicadores (drill-down) deverão permitir **ações rápidas por gestores autorizados**, sem exigir navegação extensa entre telas.
+- O gestor com permissão para supervisionar a conversa pode **assumir o atendimento para si** ou **redistribuí-lo para funcionário/equipe autorizada** diretamente na lista, com acesso ao histórico e aos indicadores de fila/SLA.
+- Antes de confirmar, validar no servidor **isolamento por tenant, número/linha de WhatsApp, equipe, permissões, status da conversa, elegibilidade do destino, expediente, disponibilidade e limites simultâneos de capacidade individual/coletiva**; não permitir exceder capacidade por intervenção de gestor no MVP.
+- A intervenção humana deve preservar e atualizar **posse/responsabilidade da conversa**, pausar os envios automáticos externos da IA/automações conforme as regras já aprovadas e impedir respostas simultâneas conflitantes.
+- A interface deve apresentar o responsável atual e o novo destino, evitando alteração silenciosa de contexto e confirmando o estado após a ação; manter a conversa e seu histórico completos.
+- Registrar em auditoria **gestor que executou a ação, data/hora, conversa, responsabilidade anterior, destino e tipo de alteração**, sem atribuir falsamente um aceite humano quando a ação for executada pelo gestor.
+- As regras de métricas e SLA devem preservar o histórico e não apagar violações anteriores por troca de responsável. A contagem de capacidade deve mudar atomicamente, evitando dupla atribuição.
+- **A detalhar posteriormente:** necessidade de justificativa obrigatória/opcional para intervenção, confirmação em ações que afetem atendimento em andamento, e política de contagem/reinício do SLA ao trocar de responsável.
