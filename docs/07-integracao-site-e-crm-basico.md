@@ -2,6 +2,10 @@
 
 > **Decisão IN-002 aprovada (2026-11-01).** Planejamento funcional e contratual; nenhuma integração está implementada. O documento é uma extensão dos planos e regras do CRM Imagine, sincronizada com o projeto `rafhael100/imagine-portal`.
 
+### IN-020 — Usuário de login e profissional de agenda são quotas separadas
+
+O CRM Básico Cortesia concede **até 1 usuário autenticado por organização**, independente de seu **único profissional agendável** (IN-008). Vários contratos Onepage/Landing Page na mesma empresa não multiplicam a quota de contas nem a de agendas. Atribuir um profissional à agenda não cria uma conta de login automaticamente. A tentativa de adicionar usuário acima da quota deve informar restrição e upgrade elegível no CRM, sem cobrança automática (IN-010); a definição de papéis e permissões está pendente. O Portal Imagine não pode criar usuário extra contornando os entitlements do CRM. [Especificação IN-020](11-agenda-manual-basico-cortesia.md).
+
 ### IN-013 — Canais de aviso da agenda vinculados à cortesia
 
 A agenda do CRM Básico Cortesia oferece somente **notificações e lembretes internos no próprio CRM**. Esses avisos operacionais **não ocupam vagas de automações comerciais**. O Portal Imagine não deverá enviar e-mails automáticos de agendamento aos visitantes nem acionar API oficial WhatsApp como benefício do site: canais externos para agenda requerem plano CRM pago ou adicional elegível e respectivas autorizações. [Agenda manual — IN-013](11-agenda-manual-basico-cortesia.md).
