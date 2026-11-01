@@ -36,7 +36,8 @@
 - **APROVADO:** até **1 usuário autenticado com login por empresa/organização do Básico**, quota independente de **1 profissional agendável** (IN-008).
 - Excesso de usuários: informar limite **1/1**, sugerir upgrade ou adicional de assento que realmente resolva, sem cobrança automática (IN-010), sem compartilhar identidade ou criar login por serviço/site.
 - **IN-021 APROVADA:** único usuário Básico usa perfil **Administrador da Empresa**, com **MFA obrigatório**, direitos administrativos somente sobre módulos incluídos no plano, sem superadmin SaaS; preservar auditoria, RBAC e isolamento entre empresas.
-- **PENDENTE:** especificar permissões e ações por módulo, titularidade e troca de acesso, convite pendente versus usuário ativo, participação em múltiplas empresas, acesso após downgrade e recuperação de acesso. A aprovação do papel não aprova todos os recursos propostos.
+- **IN-022 APROVADA:** consultar/atualizar cadastro comum da empresa; CNPJ somente com validação específica; senha/e-mail/MFA sob verificação de identidade, com MFA obrigatório; consultar/encerrar sessões; consultar plano/limites e contratar upgrade após aceite expresso; sem 2º usuário, outros tenants ou superadmin.
+- **PENDENTE:** fluxo exato de validação de CNPJ e mudança de identidade, titularidade e troca/recuperação da conta, convites e participação em várias empresas. **Próximo módulo: Leads e Contatos — proposta ainda não aprovada** (consulta, cadastro/edição, busca, notas, duplicidade, arquivamento e exportação). Quotas de leads/contatos, importação, deduplicação, LGPD e histórico exigem análise específica. [Matriz de permissões](13-matriz-permissoes-basico-cortesia.md).
 - Documento principal: [11-agenda-manual-basico-cortesia.md](11-agenda-manual-basico-cortesia.md).
 
 ## Notificações e lembretes internos de agenda — IN-013 (01/11/2026)
