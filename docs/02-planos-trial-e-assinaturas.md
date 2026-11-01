@@ -15,6 +15,10 @@
 - Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
 - Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
 
+## IN-013 — Notificações e lembretes internos no Básico, sem consumir automações
+
+**Aprovada em 2026-11-01:** no CRM Básico Cortesia, a agenda oferece **apenas avisos e lembretes internos na interface autenticada do CRM**, como funções do sistema que **não consomem vagas da biblioteca de automações comerciais**. **E-mails automáticos ao cliente atendido e WhatsApp Business API oficial** ficam disponíveis somente por **planos pagos ou adicionais elegíveis**, com contratação e autorização específicas. Não confundir comunicação interna com mensagem enviada ao visitante. Antecedência e detalhes da UX da agenda continuam pendentes. [Especificação IN-013](11-agenda-manual-basico-cortesia.md).
+
 ## Benefício CRM Básico vinculado ao Site Imagine — IN-002 APROVADA em 2026-11-01
 
 - Quem contrata Site Onepage ou futura Landing Page da Imagine recebe **acesso ao CRM Básico sem cobrança extra**, enquanto elegível ao benefício vinculado ao contrato do site. **Portal Imagine cobra somente o site** (Onepage: implantação R$ 990 em D0/D30/D60; assinatura R$ 79,90/mês a partir de D90).
