@@ -316,3 +316,5 @@
 - **WhatsApp e atendimento omniorigem no MVP (aprovado):** API oficial Meta; central compartilhada no CRM com histórico unificado e autoria identificada (humano, IA, automação, cliente); envio/recebimento e disparos automáticos por automações e agentes de IA; IA autônoma sob limites; humano visualiza e assume conversa com contexto preservado. Regra de pausa automática da IA na tomada por humano proposta, aguardando aprovação.
 
 - **Transferência humano ↔ IA no WhatsApp (aprovada):** quando humano assume conversa, agente de IA pausa respostas naquela conversa; só retoma após devolução humana explícita. Preservar histórico, contexto e trilha de auditoria; bloquear mensagens da IA pendentes após mudança de posse.
+
+- **Pausa de automações WhatsApp no atendimento humano (aprovada):** quando humano assume, suspender todos os envios automáticos ao cliente na conversa, inclusive follow-ups e lembretes; automações internas continuam. Ao devolver à IA, reavaliar cada disparo, sem envio em massa automático das mensagens acumuladas.
