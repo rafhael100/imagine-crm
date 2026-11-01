@@ -15,6 +15,10 @@
 - Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
 - Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
 
+## IN-027 — Exclusão definitiva controlada de leads e contatos no Básico (APROVADA)
+
+**Aprovada em 2026-11-01:** o Administrador da Empresa do CRM Básico Cortesia pode **excluir definitivamente leads/contatos elegíveis após confirmação explícita**. Cadastros com vínculos a agendamentos, oportunidades, histórico relevante ou obrigações legais de preservação exigem **fluxo protegido**, respeitando LGPD, integridade e trilhas de auditoria; não realizar exclusão indiscriminada em cascata nem apagar provas legalmente necessárias. Arquivamento já aprovado (IN-023) é operação distinta. **Mesclagem manual de duplicados, eliminação em massa, regras técnicas de elegibilidade, desvinculação, anonimização e recuperação não foram aprovadas por esta decisão.** [Matriz IN-027](13-matriz-permissoes-basico-cortesia.md).
+
 ## IN-026 — Exportação CSV/XLSX completa ou filtrada de leads e contatos (APROVADA)
 
 **Aprovada em 2026-11-01:** no CRM Básico Cortesia, o Administrador da Empresa pode exportar **todos os leads/contatos autorizados da própria organização ou apenas os registros filtrados**, em **CSV e XLSX**, com revalidação de acesso, proteção dos downloads, auditoria e controles técnicos proporcionais. Os dados não precisam ser transferidos para o Portal Imagine e a exportação não altera a assinatura do site. **Não** conceder relatórios avançados, API pública, exportação de outros módulos ou dados de outros tenants. Definir expiração dos downloads, campos, lotes e prazo dos arquivos temporários sem bloquear direitos de acesso e portabilidade ou criar quota oculta contrária à IN-024. [Matriz IN-026](13-matriz-permissoes-basico-cortesia.md).
