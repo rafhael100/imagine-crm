@@ -61,7 +61,7 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 | Excluir definitivamente lead/contato ou mesclar registros | **AINDA NÃO APROVADO para o Básico** | Definir separadamente mecanismo seguro, auditoria, LGPD, vínculos e conflitos; direitos legais de eliminação/correção devem ser atendidos sem exigir upgrade indevido |
 | Importar leads e contatos via CSV e XLSX | **IN-025 APROVADA: importação básica por arquivo** | Administrador autenticado; mapeamento de colunas, prévia, validação e alertas de duplicidade, **sem mesclagem automática**; limites técnicos por arquivo pendentes |
 | Criar leads/contatos por API pública, bots ou integrações externas | **NÃO concedido por IN-025** | Importação autorizada somente pelo fluxo de arquivo e permissões; APIs externas exigem autorização distinta |
-| Exportar CSV/XLSX/relatórios ou solicitações de portabilidade | **PENDENTE na matriz funcional** | A empresa deve poder exercer direitos legais à portabilidade/acesso de dados independentemente de cobrança por upgrade; formato, escopo, autorização e exportação comercial serão definidos |
+| Exportar leads e contatos em **CSV ou XLSX** | **IN-026 APROVADA** | Exportar **todos os registros autorizados da organização ou somente os filtrados**, com controle de acesso, proteção do arquivo, auditoria e limites técnicos proporcionais; não concede exportação de relatórios avançados |
 | Quantidade de leads/contatos | **IN-024 APROVADA: sem teto comercial rígido** | Vale para leads captados dos sites e leads/contatos cadastrados manualmente, sujeitos a uso justo e controles técnicos contra abuso; sem quota numérica oculta |
 | Quotas de armazenamento e retenção de leads/contatos | **PENDENTES** | Definir sem contrariar a proteção dos leads já aceitos e os direitos de privacidade |
 
@@ -86,7 +86,7 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 5. **Armazenamento e retenção de dados, tamanho de anexos, política de backup e descarte** continuam **PENDENTES**, com respeito à LGPD, à integridade das informações já aceitas e sem criar indiretamente um teto comercial de registros incompatível com IN-024.
 6. O cadastro manual legítimo e os formulários homologados devem continuar funcionando conforme permissões e uso justo; empresas não devem ter que contratar plano pago simplesmente por terem mais contatos.
 
-**Situação:** IN-024 **APROVADA** (quantidade sem teto comercial); IN-025 **APROVADA POSTERIORMENTE** (importação básica CSV/XLSX). Limites técnicos da importação, parâmetros de armazenamento e política de retenção **NÃO APROVADOS**. Exportação e exclusão serão debatidas separadamente.
+**Situação:** IN-024 (quantidade sem teto), IN-025 (importação básica CSV/XLSX) e IN-026 (exportação básica CSV/XLSX, completa ou filtrada, com segurança e auditoria) **APROVADAS**. Parâmetros técnicos de importação/exportação, armazenamento e retenção permanecem **PENDENTES**. Exclusão/mesclagem serão debatidas separadamente.
 
 ### Importação básica de Leads e Contatos — IN-025 APROVADA em 2026-11-01
 
@@ -104,18 +104,35 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 
 **PENDENTES, sem aprovação presumida:** limite máximo de tamanho e número de linhas por arquivo; formatos/encoding CSV, folhas aceitas em XLSX, campos obrigatórios e especiais; regras de linhas inválidas e tratamento de duplicidades (p.ex. ignorar, atualizar com consentimento ou revisão manual); processamento síncrono/assíncrono, histórico e retenção do arquivo temporário, relatórios finais detalhados, contagem e UX da importação. Essas decisões não revogam a importação mais avançada já aprovada para o **CRM geral**, mas não a concedem integralmente ao Básico.
 
-**Próximo assunto:** exportação de leads e contatos do Básico, incluindo formatos, filtros/escopo, autorização, limites operacionais e direito à portabilidade independente de upgrade.
+**IN-026 aprovou posteriormente a exportação CSV/XLSX completa ou filtrada, sujeita a autorização, proteção de dados e auditoria. Próximo assunto: exclusão definitiva e mesclagem dos registros, diferenciando esses atos de arquivamento, correção e direitos legais dos titulares.**
 
-### Situação consolidada dos complementos às IN-023, IN-024 e IN-025
+### Exportação básica de Leads e Contatos — IN-026 APROVADA em 2026-11-01
+
+**Decisão expressamente aprovada:** o CRM Básico Cortesia permitirá ao **Administrador da Empresa autenticado** exportar **leads e contatos nos formatos CSV e XLSX**, escolhendo entre **todos os registros aos quais tem acesso na organização** e **somente os registros que atendam aos filtros selecionados**. A exportação deve respeitar autorização e isolamento multiempresa, proteção dos dados pessoais, **trilha de auditoria** e **controles técnicos proporcionais de geração/download**.
+
+**Regras funcionais e de segurança:**
+1. **Escopo:** incluir a opção "todos os registros autorizados" e a opção "registros filtrados" (com critérios aplicados e validados no servidor). "Todos" nunca inclui registros de outras organizações, dados fora da autorização ou campos sensíveis inacessíveis ao usuário. Leads e contatos exportados não autorizam extrair dados de módulos pagos ou relatórios avançados.
+2. **Formatos:** CSV e XLSX disponíveis no Básico para essa operação; gerar arquivos a partir do escopo efetivamente autorizado, com representação correta dos valores, codificação apropriada e proteção contra injeção de fórmulas em CSV/XLSX.
+3. **Proteção:** downloads de dados pessoais acessíveis apenas ao destinatário autenticado e autorizado; não publicar arquivos em URLs permanentes e abertas; revalidar autorização no momento da geração e da retirada, inclusive quando o processamento for assíncrono.
+4. **Auditoria:** registrar, conforme política de auditoria do CRM, usuário/organização, data/hora, escopo e filtros solicitados, execução/resultado e referência ao arquivo sem registrar dados pessoais desnecessários no log. Não alterar a base original durante uma exportação.
+5. **Capacidade técnica:** controles proporcionais de tamanho, paginação, geração assíncrona, fila, prevenção de abuso e expiração de downloads serão definidos na especificação técnica. **Não criar teto comercial de leads/contatos disfarçado em IN-024**, nem exigir upgrade para portabilidade legal de dados.
+6. **Segregação:** exportação de dados do CRM Básico é ação do Administrador da Empresa dentro do CRM, **não uma permissão para o Portal Imagine copiar ou baixar indiscriminadamente os dados pessoais de clientes finais**.
+7. **Diferenciação:** exportação de leads e contatos em CSV/XLSX **não concede automaticamente** relatórios gerenciais avançados, PDF, personalização de modelos de relatório, exportação de outros módulos, API pública nem exportações automatizadas agendadas.
+
+**Ainda PENDENTE:** campos específicos autorizados e tratamento de informações sensíveis, política de filtros aplicados e dados arquivados/inativos, link seguro de download e sua expiração, tamanho do lote por arquivo, jobs/filas e limitação de requisições, armazenamento/retencão de arquivos temporários, UX de seleção de escopo e canal de entrega. Regras de acesso/portabilidade e solicitações de titulares conforme LGPD não dependem de upgrade indevido.
+
+**Próxima decisão:** operações de exclusão definitiva e mesclagem de leads/contatos (diferentes do arquivamento aprovado em IN-023), com preservação de integridade, histórico, direitos dos titulares e obrigações legais.
+
+### Situação consolidada dos complementos às IN-023, IN-024, IN-025 e IN-026
 
 - **IN-024 APROVADA:** sem teto comercial rígido de quantidade de leads e contatos, tanto os recebidos via site como os cadastrados manualmente, sujeitos a uso justo e controles técnicos. **Pendentes:** parâmetros operacionais de proteção antiabuso, capacidade física de armazenamento e retenção, que não podem impor uma quota comercial disfarçada.
 - **IN-025 APROVADA:** importação básica via CSV e XLSX, com mapeamento, prévia, validação e alerta de possíveis duplicidades, sem mesclagem automática. **Pendentes:** limites técnicos por arquivo/lote, regras de correspondência de campos, tratamento de linhas inválidas, política de duplicidades (ignorar/atualizar/decidir individualmente), concorrência e relatório final.
-- **Exportação/portabilidade**: CSV básico, operações em lote e direitos LGPD, com autorização/auditoria, sem paywall para direitos legais.
+- **IN-026 APROVADA:** exportação de leads/contatos em CSV e XLSX, **todos os registros autorizados ou somente os filtrados**, protegida e auditada, com limites técnicos a detalhar. **Pendente:** campos exportáveis sensíveis, duração/link de download e arquivos temporários, tarefas assíncronas, proteção em caso de volumes grandes e política de requisições LGPD (sem paywall para direitos legais).
 - **Exclusão definitiva, mesclagem e recuperação**: política por vínculo e obrigações de privacidade; não confundir arquivamento já aprovado com apagamento.
 - **Retenção e restauração de arquivados**: duração do histórico, interfaces, auditoria e regras de dados pessoais.
 - Detalhes opcionais de campos e filtros, cadastro manual de interações e registro de situação comercial, sem conceder funcionalidades premium por inferência.
 
-**Próxima decisão a submeter ao responsável:** exportação comercial de leads e contatos (formatos, escopo e autorizações). Depois, exclusão/mesclagem, armazenamento e retenção em decisões separadas. **Nenhuma programação autorizada até aprovação do planejamento.**
+**Próxima decisão a submeter ao responsável:** política de **exclusão definitiva e mesclagem** dos leads/contatos, preservando vínculos, auditoria, LGPD e prevenção de perdas. Depois, armazenamento/retencão e detalhes técnicos de importação/exportação. **Nenhuma programação autorizada até aprovação do planejamento.**
 
 ## Módulos seguintes ainda pendentes
 
