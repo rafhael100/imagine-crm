@@ -385,3 +385,14 @@
 - Deve ser funcional no MVP Web responsivo, inclusive na experiência por navegador móvel; tratar erros e indisponibilidade da IA sem bloquear envio humano manual.
 - Proteger dados sensíveis, registrar consumo e custo da IA sob as cotas aprovadas, e respeitar regras de acesso a contexto e auditoria.
 - **Pendências:** design final do editor, escopo das informações contextuais utilizadas, indicação visual das mudanças manuais, limites de consumo específicos por utilização e detalhamento da experiência móvel.
+
+## MVP — Resumo inteligente de conversas WhatsApp pelo copiloto IA — APROVADO
+- Incluir ação **"Resumir atendimento"** na Central de Atendimento WhatsApp para funcionários autorizados, integrada ao copiloto de IA Comercial.
+- Gerar um resumo contextualizado do histórico de mensagens e dados relacionados que o usuário e o agente estão autorizados a consultar, respeitando permissões de empresa (tenant), equipe, linha/número e contato.
+- Estruturar o resumo, conforme dados disponíveis, em: **motivo do contato, interesse comercial (produtos/serviços), informações coletadas, dúvidas e objeções, situação atual e próximos passos sugeridos**.
+- **Separar fatos comprovados no histórico de interpretações e sugestões da IA**; não inventar informações ausentes nem tratar hipóteses como declarações do cliente. Permitir consultar a conversa original para conferência.
+- O resumo será exibido **internamente** para o profissional autorizado e **não será enviado automaticamente ao cliente** nem substituirá o histórico completo.
+- Permitir **geração de novo resumo sob demanda** quando houver mais mensagens; identificar o momento e o alcance do histórico considerado para evitar uso de resumo desatualizado.
+- Funcionalidade especialmente útil ao assumir atendimento iniciado por IA, transferido entre humanos ou entre números/equipes. Histórico e posse seguem as regras já aprovadas.
+- Considerar controle de consumo/cotas/custos da IA, privacidade, retenção, logs e medidas contra conteúdo não confiável recebido de clientes.
+- **A detalhar:** persistência/edição dos resumos gerados, anexação automática à ficha do cliente, atualização contínua versus sob demanda e seleção de alcance temporal de mensagens.
