@@ -17,7 +17,7 @@
 
 ## IN-020 — Uma vaga de usuário autenticado no CRM Básico (APROVADA)
 
-**Aprovada em 2026-11-01:** a empresa beneficiária do CRM Básico Cortesia terá até **1 usuário autenticado com acesso ao CRM**, independente da quota de **1 profissional agendável** (IN-008), independentemente do número de sites. O perfil exato do usuário e suas permissões, convites e regra de substituição ainda serão detalhados. Ao tentar incluir o 2º login, informar **1/1**, sugerir upgrade para plano elegível (ou adicional aprovado, se existir), e **não ativar nova assinatura nem cobrar sem aceite expresso**, conforme IN-010. Não alterar as regras já aprovadas de contratação de usuários extras dos planos pagos. [Agenda/usuários Básico](11-agenda-manual-basico-cortesia.md).
+**Aprovada em 2026-11-01:** a empresa beneficiária do CRM Básico Cortesia terá até **1 usuário autenticado com acesso ao CRM**, independente da quota de **1 profissional agendável** (IN-008), independentemente do número de sites. **IN-021 (2026-11-01) aprovou o perfil obrigatório Administrador da Empresa para a única conta do Básico, com MFA obrigatório**, autorizações restritas aos recursos incluídos e sem poderes de superadministrador SaaS. A matriz de operações por módulo, convites e substituição ainda serão detalhadas. Ao tentar incluir o 2º login, informar **1/1**, sugerir upgrade para plano elegível (ou adicional aprovado, se existir), e **não ativar nova assinatura nem cobrar sem aceite expresso**, conforme IN-010. Não alterar as regras já aprovadas de contratação de usuários extras dos planos pagos. [Agenda/usuários Básico](11-agenda-manual-basico-cortesia.md).
 
 ## IN-013 — Notificações e lembretes internos no Básico, sem consumir automações
 
