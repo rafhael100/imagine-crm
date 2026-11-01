@@ -241,4 +241,12 @@
 - Registrar no histórico hora de entrada na fila, distribuição e efetiva tomada de posse pelo humano; diferenciar essas três etapas.
 - Transferências de setor podem criar entrada em outra fila com seu próprio registro e horário; regras específicas para preservar posição em reenvio de mensagens e em tentativas de distribuição serão detalhadas posteriormente.
 - A ausência de atendente elegível mantém a solicitação na fila, sem encerramento automático ou retomada indevida da IA; a fila respeita políticas de privacidade e tenant.
-- **Ainda pendente:** efeito de novas mensagens do cliente sobre sua posição, cancelamento/desistência da fila, mensagens de estimativa de espera e regra de pré-atribuição sem aceite.
+- **Resolvido posteriormente:** novas mensagens preservam a posição. **Ainda pendente:** cancelamento/desistência da fila, mensagens de estimativa de espera e regra de pré-atribuição sem aceite.
+
+## Posição na fila não muda com novas mensagens do cliente — APROVADO
+- Para solicitações aguardando atendimento humano em uma mesma fila FIFO, o momento de entrada inicial determina a posição na fila.
+- **Novas mensagens do cliente não alteram sua posição**, nem reiniciam o horário de entrada, nem criam uma segunda entrada de fila para a mesma conversa/solicitação pendente.
+- Registrar todas as mensagens no histórico unificado e atualizar indicadores de **não lidas/novas mensagens** para funcionários autorizados, mantendo a ordem e os demais dados de atribuição inalterados.
+- A interface deve permitir consultar a conversa atualizada sem causar reposicionamento automático na fila; envio reiterado de mensagens não concede prioridade.
+- Evitar entradas duplicadas e condições de corrida em eventos recebidos repetidos ou fora de ordem pela integração WhatsApp.
+- **Pendente:** regras para saída voluntária da fila e reentrada, especialmente se o cliente voltar a solicitar humano após ter cancelado a espera.
