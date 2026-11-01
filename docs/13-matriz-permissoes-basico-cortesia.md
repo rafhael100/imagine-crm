@@ -61,7 +61,8 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 | Excluir definitivamente lead/contato ou mesclar registros | **AINDA NÃO APROVADO para o Básico** | Definir separadamente mecanismo seguro, auditoria, LGPD, vínculos e conflitos; direitos legais de eliminação/correção devem ser atendidos sem exigir upgrade indevido |
 | Importar lote de contatos (CSV/XLSX) ou criar por API pública | **PENDENTE** | Cadastro **manual** foi aprovado; isso não é permissão para importação em massa ou automação externa |
 | Exportar CSV/XLSX/relatórios ou solicitações de portabilidade | **PENDENTE na matriz funcional** | A empresa deve poder exercer direitos legais à portabilidade/acesso de dados independentemente de cobrança por upgrade; formato, escopo, autorização e exportação comercial serão definidos |
-| Quantidade de leads/contatos, quota de armazenamento e retenção | **PENDENTE** | Não criar limite oculto, presumir leads ilimitados ou aplicar a quota do trial; preservar leads aceitos e informar claramente limites futuros |
+| Quantidade de leads/contatos | **IN-024 APROVADA: sem teto comercial rígido** | Vale para leads captados dos sites e leads/contatos cadastrados manualmente, sujeitos a uso justo e controles técnicos contra abuso; sem quota numérica oculta |
+| Quotas de armazenamento e retenção de leads/contatos | **PENDENTES** | Definir sem contrariar a proteção dos leads já aceitos e os direitos de privacidade |
 
 ### Critérios de aceite para o escopo aprovado
 
@@ -72,16 +73,30 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 5. Observações manuais ficam atribuídas ao autor e protegidas por isolamento multiempresa. O direito não amplia automaticamente armazenamento de anexos, automações comerciais nem canais externos.
 6. Mudanças de status operacionais não liberam **funis configuráveis, oportunidades ou ações avançadas** sem decisões do módulo próprio.
 
+### Quantidade sem teto comercial rígido — IN-024 APROVADA em 2026-11-01
+
+**Aprovação expressa:** o CRM Básico Cortesia **não terá limite comercial numérico rígido para quantidade de leads ou contatos**, sejam recebidos pelos **formulários públicos de captura dos sites Imagine** (IN-001), sejam **cadastrados manualmente pelo Administrador da Empresa** (IN-023). A regra não faz distinção entre leads e contatos para imposição de quota comercial por número de registros, mês ou estoque; o histórico legítimo da empresa e os vínculos operacionais devem ser preservados.
+
+**Proteções e proibições:**
+1. **Uso justo e controles técnicos contra abuso** são permitidos e necessários (por exemplo, proteção antispam, limites técnicos proporcionais de requisições, validação de origem e tamanho do payload, integridade do tenant, idempotência, antifraude e monitoração), com parâmetros técnicos a especificar. **Não apresentar controle técnico como cota comercial oculta** nem sugerir upgrade quando o bloqueio decorre de segurança ou infraestrutura (IN-010).
+2. **Não recusar nem descartar silenciosamente leads já confirmados como recebidos.** O ponto de confirmação exige persistência durável, fila/outbox ou compromisso equivalente de processamento. Em indisponibilidade transitória, manter pendência/reprocessamento com alertas e idempotência. Para envios não aceitos por motivo legítimo (spam, risco, formato), informar resultado real, sem falsa confirmação.
+3. **Nenhuma quota numérica mensal ou total oculta** de leads e contatos no Básico; não reutilizar o limite do trial nem quotas de planos pagos. Número de registros por si só não enseja cobrança ou convite de upgrade.
+4. A decisão **não concede** importação em massa, API pública para cadastro, bots, rotinas de bulk, armazenamento irrestrito de arquivos/anexos ou recursos comerciais premium; cada capacidade depende de seu próprio escopo e aprovação.
+5. **Armazenamento e retenção de dados, tamanho de anexos, política de backup e descarte** continuam **PENDENTES**, com respeito à LGPD, à integridade das informações já aceitas e sem criar indiretamente um teto comercial de registros incompatível com IN-024.
+6. O cadastro manual legítimo e os formulários homologados devem continuar funcionando conforme permissões e uso justo; empresas não devem ter que contratar plano pago simplesmente por terem mais contatos.
+
+**Situação:** IN-024 **APROVADA**; limites técnicos específicos, parâmetros de armazenamento e política de retenção **NÃO APROVADOS**. Próxima etapa: discutir **importação em massa CSV/XLSX** sem presumir que IN-024 autoriza importação, exportação ou exclusão.
+
 ### Próximas decisões — NÃO aprovadas por IN-023
 
-- **Limite de leads e contatos**: distinguir recepção dos formulários, cadastro manual, estoque de registros ativos/inativos, armazenamento e condições de uso justo, sem descartar um lead aceito.
+- **IN-024 APROVADA:** sem teto comercial rígido de quantidade de leads e contatos, tanto os recebidos via site como os cadastrados manualmente, sujeitos a uso justo e controles técnicos. **Pendentes:** parâmetros operacionais de proteção antiabuso, capacidade física de armazenamento e retenção, que não podem impor uma quota comercial disfarçada.
 - **Importação**: inclusão ou exclusão da importação em massa CSV/XLSX no Básico, limites e prevenção de duplicidades.
 - **Exportação/portabilidade**: CSV básico, operações em lote e direitos LGPD, com autorização/auditoria, sem paywall para direitos legais.
 - **Exclusão definitiva, mesclagem e recuperação**: política por vínculo e obrigações de privacidade; não confundir arquivamento já aprovado com apagamento.
 - **Retenção e restauração de arquivados**: duração do histórico, interfaces, auditoria e regras de dados pessoais.
 - Detalhes opcionais de campos e filtros, cadastro manual de interações e registro de situação comercial, sem conceder funcionalidades premium por inferência.
 
-**Próxima decisão a submeter ao responsável:** política de quantidade de leads/contatos no Básico, tratando com prioridade o **recebimento seguro de leads do site**. Depois, importação, exportação e exclusão em decisões separadas. **Nenhuma programação autorizada até aprovação do planejamento.**
+**Próxima decisão a submeter ao responsável:** importação de leads e contatos por CSV/XLSX no Básico; depois exportação, exclusão/mesclagem, armazenamento e retenção em decisões separadas. **Nenhuma programação autorizada até aprovação do planejamento.**
 
 ## Módulos seguintes ainda pendentes
 
