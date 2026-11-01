@@ -49,3 +49,13 @@
 - Proposta de implementação para validação: WhatsApp Business Platform oficial; caixa de entrada e histórico vinculados a contatos/leads; recebimento e envio; gatilhos de automação; respostas/qualificação com IA; transferência para atendente; templates e variáveis; auditoria, consentimento e opt-out.
 - Aplicar regras da Meta, incluindo janela de atendimento e templates aprovados quando exigidos; limites, prevenção de spam, controle de custos, permissões e possibilidade de pausar agentes e disparos.
 - O escopo detalhado do MVP WhatsApp, graus de autonomia dos agentes e modelo de cobrança da integração ainda exigem decisões específicas; editor avançado de chatbot pode ser fase posterior sem impedir automações básicas de mensagens.
+
+## MVP — Central de Atendimento WhatsApp oficial e IA autônoma (APROVADO)
+- Integrar exclusivamente pela **WhatsApp Business Platform/API oficial da Meta**, sem dependência de APIs não oficiais.
+- Construir **Central de Atendimento WhatsApp dentro do CRM Imagine**, com caixa de entrada compartilhada, visibilidade por permissões, histórico cronológico unificado por cliente e vínculo com contato, lead e oportunidade.
+- Identificar claramente a autoria/origem de cada interação: cliente, atendente humano, automação ou agente de IA; distinguir mensagens efetivamente enviadas de eventos internos (tarefas, mudanças de estágio, transferências etc.).
+- Permitir que agentes de IA conversem **autonomamente** com clientes, recebam e enviem mensagens, sem aprovação humana mensagem a mensagem, dentro de políticas e limites configurados por empresa.
+- Permitir envio automático de mensagens por gatilhos/regras de automações e agentes de IA, com templates aprovados quando exigidos, consentimento, opt-out, controle de custos, horários e limites, auditoria e interrupção imediata.
+- Permitir que humanos visualizem todas as interações autorizadas, respondam, assumam conversas e transfiram atendimento entre humano e IA sem perder contexto.
+- **Recomendação pendente de aprovação específica:** ao humano assumir uma conversa, pausar respostas automáticas do agente naquela conversa até devolução explícita para IA, evitando conflitos.
+- Detalhes ainda pendentes: regras de distribuição e filas, modelo de números por empresa, níveis de acesso, custos e configuração de templates.
