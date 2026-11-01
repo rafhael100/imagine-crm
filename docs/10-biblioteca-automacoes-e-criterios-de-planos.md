@@ -87,6 +87,10 @@ Cada template deve especificar:
 
 **UX sugerida:** uma única Biblioteca de Automações com categorias, busca, “Disponível no seu plano”, “Requer upgrade”, prévia do efeito, configuração guiada e indicador de vagas ativas. Nunca permitir ao usuário iniciar um template Premium por link direto à API se o plano não inclui o entitlement.
 
+### IN-010 — Limites atingidos na Biblioteca
+
+O cliente que tentar ativar automação **não habilitada no plano** deve ser informado de que aquele modelo exige outro entitlement, com indicação dos planos elegíveis e possibilidade de comparar/contratar. Se tentar ativar automação **além da quantidade simultânea**, mostrar quota e vagas utilizadas e oferecer **pausar outra automação** ou conhecer um plano com limite maior. Respeitar a revisão posterior dos números (IN-006); nenhuma tentativa de ativação gera assinatura ou cobrança automaticamente. Detalhes: [12 — Limites e upgrade contextual](12-limites-e-upgrade-contextual.md).
+
 ## 6. Roteiro de fechamento da documentação, antes de rever quantidades
 
 1. Inventariar todos os gatilhos/eventos possíveis dos módulos aprovados e novos módulos conforme forem documentados.
