@@ -2,6 +2,10 @@
 
 > **Decisão IN-002 aprovada (2026-11-01).** Planejamento funcional e contratual; nenhuma integração está implementada. O documento é uma extensão dos planos e regras do CRM Imagine, sincronizada com o projeto `rafhael100/imagine-portal`.
 
+### IN-024 — Sem teto comercial de leads e contatos na cortesia (APROVADA)
+
+**IN-024 aprovada em 2026-11-01:** não existe limite comercial rígido de **quantidade de leads/contatos captados pelos formulários Imagine ou cadastrados manualmente** no Básico; proteger com uso justo, antispam e controles técnicos documentados, nunca quota mensal/total oculta. Capturas já confirmadas devem permanecer duravelmente enfileiradas/registradas e entregues ao CRM, sem descarte silencioso; falha real deve ser tratada como tal. **Não incluídos por essa decisão:** API pública de ingestão, importação em massa, armazenamento irrestrito ou política de retenção. O Portal respeita a separação de direitos; não inventar contagem de leads para bloquear formulário/forçar upgrade. [Matriz IN-024](13-matriz-permissoes-basico-cortesia.md).
+
 ### IN-023 — Leads e Contatos: administração manual no Básico (APROVADA)
 
 O administrador único do CRM Básico pode **consultar, cadastrar, editar e pesquisar leads e contatos**, registrar observações/histórico manual, detectar possíveis duplicidades por alerta **sem mesclar automaticamente** e **arquivar sem excluir dados ou histórico**. O formulário do Onepage/Landing Page continua enviando leads à organização autorizada; envio confirmado não poderá ser silenciosamente perdido. Não conceder automaticamente importação em massa, exportação comercial, mesclagem ou exclusão definitiva; limites de registros, retenção e requisitos LGPD serão definidos separadamente. O formulário público não cria reservas. [Matriz IN-023](13-matriz-permissoes-basico-cortesia.md).
