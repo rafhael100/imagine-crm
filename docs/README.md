@@ -17,6 +17,7 @@ Esta documentação distingue regras **APROVADAS**, decisões **PARCIAIS** e ite
 - [Biblioteca de Automações e diferenciação por plano — IN-006](10-biblioteca-automacoes-e-criterios-de-planos.md)
 - [Agenda Manual do Básico Cortesia — um profissional e limites propostos (IN-008)](11-agenda-manual-basico-cortesia.md)
 - [Limites por plano, mensagens contextuais e incentivo ao upgrade (IN-010)](12-limites-e-upgrade-contextual.md)
+- [Matriz de permissões do Básico Cortesia por módulo — IN-022 e Leads/Contatos em discussão](13-matriz-permissoes-basico-cortesia.md)
 - [Registro de decisões](decisoes.md)
 - [Pendências](pendencias.md)
 
