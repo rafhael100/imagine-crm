@@ -2,6 +2,10 @@
 
 > **Decisão IN-002 aprovada (2026-11-01).** Planejamento funcional e contratual; nenhuma integração está implementada. O documento é uma extensão dos planos e regras do CRM Imagine, sincronizada com o projeto `rafhael100/imagine-portal`.
 
+### IN-022 — Administração da Empresa e Segurança do CRM Básico (APROVADA)
+
+O Administrador único do Básico pode editar dados cadastrais comuns da empresa, alterar CNPJ somente após validação específica, gerir senha/e-mail/MFA com verificação de identidade, consultar/encerrar suas sessões, consultar plano e limites e **contratar upgrade CRM apenas mediante aceite expresso**, mantendo a assinatura do site no Portal independente. **Não** cria segundo usuário nem obtém superadmin ou acesso indevido a outros tenants. O Portal Imagine não deve fornecer atalhos que contornem MFA, validação de identidade, os direitos do CRM ou a separação de faturamento. [Matriz de permissões IN-022](13-matriz-permissoes-basico-cortesia.md).
+
 ### IN-020 — Usuário de login e profissional de agenda são quotas separadas
 
 O CRM Básico Cortesia concede **até 1 usuário autenticado por organização**, independente de seu **único profissional agendável** (IN-008). Vários contratos Onepage/Landing Page na mesma empresa não multiplicam a quota de contas nem a de agendas. Atribuir um profissional à agenda não cria uma conta de login automaticamente. A tentativa de adicionar usuário acima da quota deve informar restrição e upgrade elegível no CRM, sem cobrança automática (IN-010); **IN-021 aprovou o perfil Administrador da Empresa para o único usuário, com MFA obrigatório**, limitado aos recursos efetivamente incluídos no Básico; detalhamento de ações por módulo e substituição da conta ainda está pendente. O Portal Imagine não pode criar usuário extra contornando os entitlements do CRM. [Especificação IN-020](11-agenda-manual-basico-cortesia.md).
