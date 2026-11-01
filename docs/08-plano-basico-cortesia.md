@@ -19,7 +19,7 @@
 | Empresas | **1 organização vinculada por contrato elegível**, com múltiplos sites da mesma empresa podendo apontar para ela | Usuário multiempresa continua possível por outros vínculos |
 | Formulários de lead | **Formulário por site/landing page contratado**, gerado pelo publicador Imagine; sem construtor livre de formulários no Básico | Form builder e formulários avulsos nos planos pagos |
 | Leads recebidos e contatos cadastrados | **IN-024 APROVADA: sem teto comercial rígido de quantidade**, tanto dos formulários dos sites quanto dos cadastros manuais; uso justo/antiabuso | Armazenamento e retenção pendentes; não descartar leads aceitos ou impor quota oculta |
-| Lead / contato | **IN-023/IN-025 APROVADAS:** visualizar, cadastrar/editar manualmente, buscar/filtrar, registrar observações, alertar duplicidades **sem mesclagem automática**, arquivar com histórico preservado e **importar CSV/XLSX com mapeamento, prévia e validação** | **Exportação de leads/contatos aprovada IN-026**; mesclagem/exclusão definitiva, armazenamento/retencão e parâmetros técnicos por arquivo ainda a definir |
+| Lead / contato | **IN-023 a IN-027 APROVADAS:** consultar/cadastrar/editar/filtrar/arquivar; importar CSV/XLSX com prévia; exportar CSV/XLSX completo ou filtrado; **exclusão definitiva controlada de registro elegível mediante confirmação** | **Mesclagem de duplicados ainda pendente**, além de regras de armazenamento, retenção, vínculos e parâmetros técnicos |
 | Funil | **1 funil** de oportunidades, com etapas padrão configuradas e movimentação manual | Múltiplos funis, automações e personalização avançada nos pagos |
 | Atividades | Notas e lembretes manuais básicos nos registros, se aprovados | Tarefas avançadas, equipes e automações nos pagos |
 | Dashboard | Total de leads, novos leads e situação simples do funil | Relatórios avançados, metas e forecast nos planos pagos |
@@ -53,6 +53,10 @@
 
 O único Administrador da Empresa do Básico pode consultar/atualizar dados comuns da empresa, solicitar alteração de **CNPJ somente com validação específica**, alterar senha/e-mail/configurações de MFA com **verificação de identidade**, consultar sessões e encerrar sessões em outros dispositivos, consultar o plano e suas quotas e contratar upgrade com aceite financeiro expresso. **MFA segue obrigatório**. Não pode criar 2º usuário, acessar outras empresas ou funções de superadministrador Imagine. Detalhar verificação de CNPJ, recuperação e fluxos de risco antes da implementação.
 
+### IN-027 — Exclusão definitiva controlada de Leads e Contatos (APROVADA)
+
+O **Administrador da Empresa** poderá excluir definitivamente leads/contatos **elegíveis** depois de **confirmação explícita**. Se houver **vínculos com agendamentos, oportunidades, histórico ou obrigações de guarda**, seguir um **fluxo protegido**, sem exclusão em cascata nem perda indevida de informações, respeitando a **LGPD e a auditoria**. Arquivar (IN-023) permanece opção separada. **Não aprova mesclagem automática nem a manual no Básico**, exclusão em massa ou eliminação dos históricos/auditoria. Critérios específicos de elegibilidade, anonimização, desvinculação, recuperação e prazos ficam pendentes. [Matriz IN-027](13-matriz-permissoes-basico-cortesia.md).
+
 ### IN-026 — Exportação de Leads e Contatos em CSV e XLSX (APROVADA)
 
 O Administrador da Empresa do Básico poderá **exportar todos os leads e contatos autorizados** da própria organização ou **apenas os registros filtrados**, nos formatos **CSV e XLSX**, com arquivos protegidos, validação de permissões, auditoria e controles técnicos proporcionais. Filtrar não autoriza dados alheios nem campos indisponíveis; não concede relatórios avançados ou exportações de outros módulos. **Pendentes:** expiração do arquivo, volume por tarefa, filtros/campos sensíveis, entrega segura, retenção temporária e UX. Portabilidade legal não fica condicionada a upgrade. [Detalhamento IN-026](13-matriz-permissoes-basico-cortesia.md).
@@ -67,7 +71,7 @@ O Básico Cortesia não limitará comercialmente a **quantidade mensal/total de 
 
 ### IN-023 — Leads e Contatos: operações manuais do Básico (APROVADA)
 
-O Administrador da Empresa pode **visualizar registros, cadastrar e editar leads/contatos manualmente, pesquisar por nome/telefone/e-mail/origem/situação, registrar observações e histórico de atendimento, receber alerta de possíveis duplicidades (sem mesclagem automática) e arquivar preservando dados, vínculos e histórico**. O formulário Imagine continua alimentando leads na organização correta (IN-001). **Não aprovado:** quota numérica de leads/contatos, importação em massa, exportações comerciais, mesclagem, exclusão definitiva, regras de retenção e campos personalizados premium. Direitos LGPD devem ser atendidos sem exigir upgrade indevido. [Matriz por módulo — IN-023](13-matriz-permissoes-basico-cortesia.md).
+O Administrador da Empresa pode **visualizar registros, cadastrar e editar leads/contatos manualmente, pesquisar por nome/telefone/e-mail/origem/situação, registrar observações e histórico de atendimento, receber alerta de possíveis duplicidades (sem mesclagem automática) e arquivar preservando dados, vínculos e histórico**. O formulário Imagine continua alimentando leads na organização correta (IN-001). **Situação após decisões posteriores:** IN-024 eliminou teto comercial de quantidade; IN-025 autorizou importação básica CSV/XLSX; IN-026 autorizou exportação CSV/XLSX; IN-027 autorizou exclusão definitiva controlada para registros elegíveis. **Pendentes:** mesclagem, regras técnicas/armazenamento/retencão e campos premium. Direitos LGPD devem ser atendidos sem exigir upgrade indevido. [Matriz por módulo — IN-023](13-matriz-permissoes-basico-cortesia.md).
 
 
 
@@ -108,7 +112,7 @@ Ao tentar utilizar recurso não incluído ou ultrapassar quota, mostrar **plano 
 
 ## 6. Decisões necessárias antes da implementação
 
-1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente limites técnicos de importação/exportação IN-025/IN-026, armazenamento/retencão, exclusão, 1 funil, formulário por site e regras técnicas de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
+1. Aprovar o **restante da matriz concreta** ou editar limites/funcionalidades (especialmente mesclagem de duplicados após IN-027, limites técnicos de importação/exportação, armazenamento/retencão, 1 funil, formulário por site e regras técnicas de leads). **Agenda e Agendamentos manuais/internos aprovados por IN-004/IN-007, com 1 profissional agendável aprovado por IN-008 e até 10 serviços ativos aprovados por IN-009; **agendamentos manuais sem teto mensal aprovados por IN-012**; expediente flexível com exceções manuais aprovado em IN-011. **Notificações/lembretes externos permanecem pendentes**.**
 2. Definir quota armazenamento e limites de uso justo, sem bloquear captação legítima silenciosamente.
 3. Estabelecer recursos mínimos do Essencial pago para justificar upgrade e preservar diferenciação.
 4. Estabelecer quando benefício termina se site for inadimplente/cancelado, e como preservar leads em retenção e exportação.
