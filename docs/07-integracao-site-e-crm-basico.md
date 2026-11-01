@@ -4,7 +4,7 @@
 
 ### IN-020 — Usuário de login e profissional de agenda são quotas separadas
 
-O CRM Básico Cortesia concede **até 1 usuário autenticado por organização**, independente de seu **único profissional agendável** (IN-008). Vários contratos Onepage/Landing Page na mesma empresa não multiplicam a quota de contas nem a de agendas. Atribuir um profissional à agenda não cria uma conta de login automaticamente. A tentativa de adicionar usuário acima da quota deve informar restrição e upgrade elegível no CRM, sem cobrança automática (IN-010); a definição de papéis e permissões está pendente. O Portal Imagine não pode criar usuário extra contornando os entitlements do CRM. [Especificação IN-020](11-agenda-manual-basico-cortesia.md).
+O CRM Básico Cortesia concede **até 1 usuário autenticado por organização**, independente de seu **único profissional agendável** (IN-008). Vários contratos Onepage/Landing Page na mesma empresa não multiplicam a quota de contas nem a de agendas. Atribuir um profissional à agenda não cria uma conta de login automaticamente. A tentativa de adicionar usuário acima da quota deve informar restrição e upgrade elegível no CRM, sem cobrança automática (IN-010); **IN-021 aprovou o perfil Administrador da Empresa para o único usuário, com MFA obrigatório**, limitado aos recursos efetivamente incluídos no Básico; detalhamento de ações por módulo e substituição da conta ainda está pendente. O Portal Imagine não pode criar usuário extra contornando os entitlements do CRM. [Especificação IN-020](11-agenda-manual-basico-cortesia.md).
 
 ### IN-013 — Canais de aviso da agenda vinculados à cortesia
 
