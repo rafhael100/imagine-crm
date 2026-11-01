@@ -205,13 +205,22 @@
 - Sem atendente elegível disponível, **manter as conversas em fila e alertar a equipe/responsável autorizado**; não encerrar atendimento nem reativar IA automaticamente enquanto houver pedido de humano ou posse humana.
 - Registrar de modo auditável a desconexão detectada, prazo aplicável, reavaliações, alertas, responsáveis anteriores e novos e motivo das transferências; evitar ações duplicadas e condições de corrida.
 - Se o funcionário original reconectar após a redistribuição, **não retomar automaticamente** as conversas já atribuídas a terceiros; só mediante nova transferência autorizada.
-- **A detalhar posteriormente:** quais conversas são consideradas sem resposta para redistribuição, exceções por equipe, critérios de contagem e precedência de limites de carga simultânea, prazos de presença/heartbeat e tratamento de situações em que uma resposta esteja sendo enviada.
+- **A detalhar posteriormente:** quais conversas são consideradas sem resposta para redistribuição, exceções por equipe, precedência de limites de carga simultânea, prazos de presença/heartbeat e tratamento de situações em que uma resposta esteja sendo enviada.
 
 ## Limite configurável de atendimentos simultâneos por funcionário/equipe — APROVADO
 - Cada empresa pode configurar limites máximos de conversas simultâneas por **funcionário e/ou equipe** na Central de Atendimento WhatsApp; não há um teto fixo universal imposto pelo CRM Imagine para todas as empresas.
 - A distribuição automática deve considerar a **capacidade restante** de cada funcionário elegível, além das regras já aprovadas de disponibilidade, equipe, expediente, permissões e estratégia de alocação.
 - Quando um funcionário atingir o limite configurado, **não receberá novas conversas automaticamente** até liberar capacidade; isso não precisa alterar seu estado manual Disponível/Ocupado/Ausente/Offline.
-- Encerramento ou transferência efetiva de conversa libera capacidade conforme critérios de contagem a detalhar. Se todos os atendentes elegíveis estiverem no limite, manter novas solicitações em **fila de espera**, com histórico e status preservados e sem reativação indevida de IA.
-- O limite configurável poderá ser diferenciado por funcionário e equipe. A definição de precedência entre limites individuais e coletivos e de quais estados contam como atendimento simultâneo será especificada posteriormente.
+- Encerramento ou transferência efetiva de responsabilidade libera capacidade, segundo os critérios de contagem aprovados posteriormente. Se todos os atendentes elegíveis estiverem no limite, manter novas solicitações em **fila de espera**, com histórico e status preservados e sem reativação indevida de IA.
+- O limite configurável poderá ser diferenciado por funcionário e equipe. A precedência entre limites individuais e coletivos ainda precisa ser especificada; os estados de conversa contabilizados foram aprovados posteriormente.
 - Evitar distribuição acima do limite por corridas entre eventos simultâneos, usando alocação transacional/controle de concorrência; não retirar conversas já atribuídas automaticamente quando um administrador reduzir o teto abaixo da ocupação atual.
 - Exemplo apenas ilustrativo: limite 5 por funcionário. Nenhum número foi aprovado como valor padrão obrigatório.
+
+## Quais conversas contam no limite simultâneo humano — APROVADO
+- A capacidade de atendimento de cada funcionário considera **somente conversas abertas sob sua responsabilidade efetiva**.
+- Contabilizar: (1) conversas abertas em atendimento humano, (2) conversas abertas atribuídas ao humano mesmo quando ele está **aguardando resposta do cliente**, e (3) **transferências pendentes** nas quais o atendente de origem permanece responsável até aceite ou início efetivo no destino.
+- Não contabilizar: (1) conversas encerradas, (2) conversas sob atendimento **exclusivo de IA**, e (3) conversas **na fila sem funcionário responsável**.
+- Quando uma transferência é efetivamente aceita/iniciada por outro funcionário, remover a conversa da contagem do responsável anterior e contabilizá-la no novo responsável, evitando dupla contagem.
+- A contagem deve ser alterada de forma atômica nas mudanças de responsável/status para evitar exceder limites por concorrência ou criar capacidade fictícia.
+- O estado de funcionário (Disponível, Ocupado, Ausente, Offline) define **elegibilidade para novas atribuições** e não altera por si só a quantidade de conversas abertas que já estão sob sua responsabilidade.
+- **A definir:** tratamento da reserva de capacidade quando uma conversa é pré-atribuída mas ainda não aceita, e precedência entre limite individual e limite coletivo.
