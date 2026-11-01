@@ -9,6 +9,18 @@
 - Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
 - Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
 
+## Benefício CRM Básico vinculado ao Site Imagine — IN-002 APROVADA em 2026-11-01
+
+- Quem contrata Site Onepage ou futura Landing Page da Imagine recebe **acesso ao CRM Básico sem cobrança extra**, enquanto elegível ao benefício vinculado ao contrato do site. **Portal Imagine cobra somente o site** (Onepage: implantação R$ 990 em D0/D30/D60; assinatura R$ 79,90/mês a partir de D90).
+- Ao contratar **upgrade para um plano pago** pelo CRM Imagine, passa a pagar **duas mensalidades distintas**: site no Portal Imagine e plano avançado no CRM Imagine. Upgrade não substitui nem altera a assinatura do site.
+- **Não há assinatura CRM Básico financeira de valor zero a ser cobrada; o acesso é uma concessão/entitlement vinculado ao site.** O upgrade no CRM requer contratação e autorização financeira próprias.
+- Esta cortesia é **exceção condicionada ao contrato do site**, não um plano gratuito permanente aberto ao público. O teste de 14 dias permanece independente e não deve ser usado como substituto do benefício.
+- Não redefinir unilateralmente os planos aprovados em conceito (**Essencial, Profissional e Empresarial**). “Básico” é denominação provisória do benefício e a matriz de recursos/quotas e correspondência comercial com esses planos ainda requerem aprovação.
+- O vínculo é por empresa/organização e pedido elegível, com isolamento multi-tenant; usuário de várias empresas não recebe automaticamente o benefício em todas.
+- Upgrade self-service e pró-rata, liberação após pagamento e downgrade no próximo ciclo seguem as regras já aprovadas para **assinaturas pagas**. Retorno ao Básico quando terminar plano CRM pago e o site ainda estiver elegível exige regra detalhada para excedentes, período de acesso, retenção e comunicação.
+- Cancelamento/suspensão do site não pode cancelar automaticamente uma assinatura CRM avançada contratada à parte. Política específica de elegibilidade do benefício durante inadimplência, encerramento e recontratação permanece pendente.
+- **Integração técnica e comercial detalhada:** [07 — Integração de sites Imagine com CRM Básico cortesia](07-integracao-site-e-crm-basico.md).
+
 ## Teste gratuito — APROVADO
 - **14 dias**, sem cartão.
 - **CNPJ obrigatório**, um único teste por CNPJ.
@@ -95,7 +107,7 @@ Permitir unidades adicionais com cobrança extra sem mudança de plano (preço a
 - Adotar modelo híbrido de **mensalidade fixa por empresa, com usuários incluídos por plano**, em vez de cobrar por usuário desde o primeiro acesso.
 - Manter os planos Essencial, Profissional e Empresarial; referências comerciais **não definitivas**: R$ 69/mês com 2 usuários, R$ 149/mês com 5 usuários e R$ 299/mês com 10 usuários, sujeitas a validação de mercado e aprovação posterior.
 - Direção aprovada: contatos ilimitados nos planos pagos sujeitos a política de uso justo, sem cobrança por contato individual; permitir contratação paga de usuários adicionais, sem teto rígido; agentes de IA e WhatsApp como opcionais, com custos próprios claramente identificados.
-- Manter teste gratuito de 14 dias sem cartão e sem plano gratuito permanente no lançamento inicial.
+- Manter teste gratuito de 14 dias sem cartão e sem plano gratuito público permanente no lançamento inicial, **ressalvada a cortesia condicionada à contratação de site Imagine aprovada em IN-002**.
 - Estratégia inicial de aquisição: foco em pequenas empresas que recebem leads e precisam organizar vendas; testar parcerias com agências e consultores, aquisição via produto e marketing segmentado; validar preços e disposição a pagar com potenciais clientes antes do lançamento.
 - Acompanhar ativação, conversão trial-pago, MRR, CAC, churn, retenção e margem para ajustar estratégia de crescimento.
 - **Revisão pendente:** quotas técnicas de armazenamento de 1/5/10 GB anteriormente aprovadas permanecem registradas; definir política comercial e operacional de uso justo, sem prometer armazenamento absolutamente ilimitado.
