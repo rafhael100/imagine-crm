@@ -241,7 +241,7 @@
 - Registrar no histórico hora de entrada na fila, distribuição e efetiva tomada de posse pelo humano; diferenciar essas três etapas.
 - Transferências de setor podem criar entrada em outra fila com seu próprio registro e horário; regras específicas para preservar posição em reenvio de mensagens e em tentativas de distribuição serão detalhadas posteriormente.
 - A ausência de atendente elegível mantém a solicitação na fila, sem encerramento automático ou retomada indevida da IA; a fila respeita políticas de privacidade e tenant.
-- **Resolvido posteriormente:** novas mensagens preservam a posição. **Resolvido posteriormente:** cancelamento/desistência voluntária. **Ainda pendente:** mensagens de estimativa de espera e regra de pré-atribuição sem aceite.
+- **Resolvido posteriormente:** novas mensagens preservam a posição. **Resolvido posteriormente:** cancelamento/desistência voluntária. **Ainda pendente:** mensagens de estimativa de espera; reserva de pré-atribuição antes do aceite foi aprovada posteriormente.
 
 ## Posição na fila não muda com novas mensagens do cliente — APROVADO
 - Para solicitações aguardando atendimento humano em uma mesma fila FIFO, o momento de entrada inicial determina a posição na fila.
@@ -258,3 +258,14 @@
 - Distinguir saída voluntária de perda de conexão, ausência de resposta e falha de sistema. Essas situações não significam desistência automática.
 - Registrar, em trilha auditável, horário, meio da desistência, motivo identificado quando disponível, cancelamento da espera e nova solicitação de atendimento.
 - Evitar duplicidade de solicitações abertas para a mesma conversa/fila, revalidação de estados concorrentes e alteração indevida de posições de outros clientes.
+
+## Aceite obrigatório pelo atendente após distribuição automática — APROVADO
+- Uma conversa encaminhada automaticamente a um funcionário elegível **não é considerada assumida até que o funcionário aceite explicitamente** a atribuição.
+- A empresa poderá configurar o **prazo de aceite**, com valor inicial sugerido de **2 minutos**; iniciar contagem no momento da distribuição/reserva, considerando o expediente e disponibilidade aplicáveis conforme políticas operacionais.
+- Durante o prazo, a conversa fica em estado **reservada/aguardando aceite** para apenas um funcionário; a reserva ocupa temporariamente **uma unidade de capacidade individual e uma unidade de capacidade da equipe**, a fim de impedir sobrealocação.
+- Se o atendente aceitar dentro do prazo, converter atomicamente a reserva em atendimento humano assumido, mantendo histórico, responsabilidade e contagem de capacidade, sem ocupar uma segunda vaga.
+- Se não aceitar no prazo, expirar a reserva e liberar a capacidade, retornando a conversa à alocação para **outro funcionário elegível**. Preservar o horário e a **prioridade FIFO original** do cliente; não reinserir no fim da fila.
+- Se nenhum outro funcionário estiver disponível ou com capacidade, manter solicitação pendente na fila, sem encerramento automático nem retomada indevida da IA.
+- A distribuição e aceite devem validar, de forma transacional/atômica, estado da conversa, disponibilidade, reservas de capacidade, permissões, tenant e expiração para impedir **aceites atrasados, atribuições simultâneas ou reservas duplicadas**.
+- Registrar horários de distribuição, reserva, aceite, expiração e redistribuição e seus responsáveis no log auditável.
+- **A definir posteriormente:** como proceder em recusas explícitas, regras de repetição para o mesmo atendente, tratamento de múltiplas tentativas sem aceite e limites de redistribuições.
