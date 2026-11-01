@@ -108,4 +108,13 @@
 - Atendentes e agentes de IA do destino podem consultar contexto da origem **somente conforme permissões**; preservar isolamento de dados e equipes.
 - Sinalizar na origem o status de transferência e evitar atendimento concorrente ou envio automático descontextualizado durante a transição, aplicando regras de posse humano/IA já aprovadas.
 - **Não presumir que o novo número possa iniciar mensagem livremente**: qualquer contato ativo de destino deve seguir as políticas da WhatsApp Business Platform, consentimento e, quando aplicável, templates aprovados e janela de atendimento específica da linha.
-- **Pendente:** se agentes de IA podem iniciar autonomamente transferências entre números; quando notificar o cliente e qual confirmação/fluxo de entrada usar para o número de destino; tratamento de transferências rejeitadas ou sem atendente disponível.
+- **Aprovado:** agentes de IA podem iniciar autonomamente transferências entre números autorizados por configuração de administrador. **Pendente:** quando notificar o cliente e qual confirmação/fluxo de entrada usar para o número de destino; detalhar transferências rejeitadas ou sem atendente disponível.
+
+## Transferência autônoma entre números WhatsApp por agentes de IA — APROVADA
+- Agentes de IA podem **transferir automaticamente atendimentos entre diferentes números oficiais de WhatsApp da mesma empresa**, sem exigir autorização humana por transferência, desde que o administrador tenha configurado os destinos e critérios permitidos por agente.
+- Condições de roteamento podem considerar assunto/intenção da mensagem, setor (Vendas, Financeiro, Suporte), equipe responsável e regras da empresa; transferências fora dos destinos ou condições configuradas são bloqueadas.
+- Antes de iniciar, validar tenant, permissões do agente, número de destino ativo, estado/posse da conversa e condições de atendimento; impedir loops de transferência e registrar razão, agente solicitante, origem e destino em auditoria.
+- A operação gera **atendimentos vinculados porém separados por número**, preservando cadastro único do cliente, histórico, autoria, visibilidade por equipe e vínculo com o atendimento anterior; não equivale a mover tecnicamente a thread no WhatsApp.
+- Enviar mensagens pelo número de destino **somente se permitido pelas regras oficiais Meta**, inclusive consentimento, janela de atendimento específica do número de destino e templates aprovados quando exigidos. Nunca interpretar transferência interna como autorização automática de envio.
+- Se o destino estiver indisponível, o envio não for autorizado ou outra regra impedir a transferência, manter solicitação e histórico íntegros, registrar a falha e encaminhar à fila/atendente responsável conforme regras configuradas, evitando perda do atendimento.
+- **Pendente de detalhamento:** notificação ao cliente, número de tentativas/timeout, indisponibilidade de destino e regra exata de quando o atendimento de origem pode ser encerrado.
