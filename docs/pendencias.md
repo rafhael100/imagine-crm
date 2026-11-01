@@ -31,6 +31,13 @@
 - **Pendência de fechamento:** contar modelos homologados e simular uso/custos, definir quais ficam em cada plano, distinguir automações comerciais de operações obrigatórias da agenda/sistema, e só então submeter novas quotas numéricas para aprovação.
 - Referência: [10-biblioteca-automacoes-e-criterios-de-planos.md](10-biblioteca-automacoes-e-criterios-de-planos.md).
 
+## Avisos por plano e upgrade contextual — IN-010 (01/11/2026)
+
+- **Aprovado:** ao tentar recurso fora do plano ou atingir quota, explicar motivo e oferecer upgrade pertinente (ou adicional elegível), preservando opção de liberar capacidade dentro do plano; sem ativação, cobrança ou mudança de plano sem consentimento e autorização.
+- Não oferecer upsell por problemas de segurança, falta de permissão de usuário, cobrança pendente, integração fora do ar ou erro técnico.
+- **Pendente:** UX detalhada, avisos preventivos, cores/textos, política de exibição, contrato de erros para API, matriz comercial final, custos e preços publicados, casos de trial e assinaturas negociadas.
+- Detalhes: [12-limites-e-upgrade-contextual.md](12-limites-e-upgrade-contextual.md).
+
 ## Observações
 - Este conjunto é um marco documental inicial; não significa que todos os capítulos estão fechados.
 - Não aprovar automaticamente exemplos, descontos ilustrativos nem arquitetura apenas sugerida.
