@@ -345,3 +345,14 @@
 - Registrar em auditoria **gestor que executou a ação, data/hora, conversa, responsabilidade anterior, destino e tipo de alteração**, sem atribuir falsamente um aceite humano quando a ação for executada pelo gestor.
 - As regras de métricas e SLA devem preservar o histórico e não apagar violações anteriores por troca de responsável. A contagem de capacidade deve mudar atomicamente, evitando dupla atribuição.
 - **A detalhar posteriormente:** necessidade de justificativa obrigatória/opcional para intervenção, confirmação em ações que afetem atendimento em andamento, e política de contagem/reinício do SLA ao trocar de responsável.
+
+## MVP — Indicadores de conversão comercial originados do WhatsApp — APROVADO
+- Incluir no painel de desempenho WhatsApp do MVP indicadores comerciais vinculando **atendimentos WhatsApp, contatos/leads, oportunidades no funil e vendas efetivamente marcadas como ganhas no CRM**, dentro do mesmo tenant.
+- Exibir pelo menos: **leads atendidos**, **oportunidades comerciais geradas ou vinculadas a atendimentos**, **vendas concluídas (oportunidades ganhas)**, **valor das vendas ganhas** e **taxa de conversão dos leads atendidos em vendas**.
+- Permitir filtros por **período, equipe/setor, funcionário e, quando aplicável, agente de IA**, respeitando visibilidade por tenant, número de WhatsApp e permissões do usuário; um usuário não deve conseguir inferir detalhes restritos por links de indicadores.
+- Tornar possível analisar o contexto da venda e o histórico do atendimento correspondente, preservando autoria de mensagens por **humano, IA, automação e cliente** e as transferências de responsabilidade.
+- Registrar separadamente quando um atendimento tiver participação de **IA, humano ou ambos**. A visualização de participação **não autoriza contar a mesma oportunidade/venda mais de uma vez nos totais agregados**.
+- A apuração precisa distinguir **correlação/vínculo operacional** entre atendimento e venda de **atribuição causal**; não prometer que uma venda ocorreu exclusivamente por causa da IA ou do WhatsApp.
+- Evitar dupla contagem em múltiplas conversas, números, transferências e alterações de equipe; preservar IDs estáveis de atendimento, contato e oportunidade, mantendo trilha de auditoria para ganhos, reversões e atualizações de valores.
+- Não contabilizar como faturamento recebido um negócio apenas marcado como ganho: o indicador **valor vendido** será, inicialmente, o valor das oportunidades ganhas no CRM, sem implicar liquidação financeira.
+- **Pendente de especificação e aprovação:** metodologia exata de atribuição de oportunidades/vendas a um ou mais atendimentos, denominador da taxa de conversão, janelas temporais e regras de crédito entre IA, funcionários e equipes; métricas financeiras reais só com integração adequada.
