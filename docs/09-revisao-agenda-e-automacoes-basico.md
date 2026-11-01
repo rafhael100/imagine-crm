@@ -126,7 +126,7 @@ Os lembretes/avisos operacionais indispensáveis à agenda podem ser considerado
 5. Critérios de uso justo contra abuso de formulários e automações não devem bloquear o recebimento de contatos legítimos sem mensagem de erro apropriada.
 6. Contagem e quota de uso da API externa, quando habilitada, são regras diferentes do número de 3 automações ativas.
 
-**IN-015 APROVADA:** a central da agenda Básico persiste notificações e lembretes dentro do CRM com status lido/não lido, inclusive se vencerem durante ausência da sessão. A ação exata para marcar como lido e retenção ainda serão detalhadas. Não se trata de push externo, e-mail ou WhatsApp; não consome automações comerciais.
+**IN-015 APROVADA:** a central da agenda Básico persiste notificações e lembretes dentro do CRM com status lido/não lido, inclusive se vencerem durante ausência da sessão. **IN-016 APROVADA:** abrir os detalhes de um aviso marca aquele aviso como lido, e o usuário pode marcá-lo novamente como não lido. Simples visualização da lista não muda o status. Filtros, ações em lote e retenção ainda serão detalhados. Não se trata de push externo, e-mail ou WhatsApp; não consome automações comerciais.
 
 ## 4C. Agenda Básico Cortesia — modo manual APROVADO (IN-007)
 
