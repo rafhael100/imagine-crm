@@ -112,7 +112,7 @@ Os lembretes/avisos operacionais indispensáveis à agenda podem ser considerado
 | T01 | Novo lead: não deixar sem resposta | Novo lead validado via formulário/site e salvo no CRM | Criar tarefa de primeiro contato e mostrar notificação interna ao administrador | Prioridade da tarefa, prazo em minutos/horas, origem de formulário (opcional) | 1 ativa |
 | T02 | Lead aguardando contato | Lead sem interação comercial válida após prazo | Alertar no CRM e/ou criar tarefa de acompanhamento se não existir outra pendente equivalente | Atraso configurável (horas/dias) e habilitar notificação interna | 1 ativa |
 | T03 | Oportunidade parada no funil | Oportunidade aberta sem mudança de etapa/interação por período | Alerta interno e/ou tarefa de retorno | Dias de inatividade, etapas selecionadas | 1 ativa |
-| T04 | Compromisso próximo | Proximidade de agendamento → aviso interno no CRM | **IN-013/IN-014:** aviso operacional aprovado com padrões de 24h e 1h antes, ajustáveis/desativáveis separadamente | Não consome slot de automação comercial | **Não conta como automação ativa** |
+| T04 | Compromisso próximo | Proximidade de agendamento → aviso interno no CRM | **IN-013 a IN-015:** 24h/1h ajustáveis, com aviso persistente lido/não lido mesmo após o usuário retornar | Operação de sistema, não template comercial | **Não conta como automação ativa** |
 | T05 | Atendimento realizado: próximo passo | Agendamento marcado como realizado | Criar tarefa opcional de acompanhamento comercial vinculada ao lead/contato | Atraso da tarefa e serviço selecionado | 1 ativa, se aprovada no catálogo |
 
 **Os cinco exemplos não estão aprovados.** A aprovação do IN-005 permite escolher de modelos prontos **até três ativos ao mesmo tempo**; não limita a biblioteca a apenas três templates. Um template não pode enviar mensagens automáticas a visitantes por WhatsApp oficial sem produto/canal habilitado, aceite e política de custos. Nenhum modelo de rotina agenda deve emitir cobrança de agendamento, recurso rejeitado para o CRM.
@@ -125,6 +125,8 @@ Os lembretes/avisos operacionais indispensáveis à agenda podem ser considerado
 4. Suspender, editar parâmetros e reativar requer permissão administrativa da empresa. Modelo removido de catálogo não deve parar silenciosamente instâncias existentes.
 5. Critérios de uso justo contra abuso de formulários e automações não devem bloquear o recebimento de contatos legítimos sem mensagem de erro apropriada.
 6. Contagem e quota de uso da API externa, quando habilitada, são regras diferentes do número de 3 automações ativas.
+
+**IN-015 APROVADA:** a central da agenda Básico persiste notificações e lembretes dentro do CRM com status lido/não lido, inclusive se vencerem durante ausência da sessão. A ação exata para marcar como lido e retenção ainda serão detalhadas. Não se trata de push externo, e-mail ou WhatsApp; não consome automações comerciais.
 
 ## 4C. Agenda Básico Cortesia — modo manual APROVADO (IN-007)
 
