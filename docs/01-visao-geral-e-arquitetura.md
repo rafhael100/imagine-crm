@@ -316,3 +316,13 @@
 - Registrar horários de início, primeira resposta, duração útil, cumprimento/violação, alertas e responsáveis, respeitando permissões e auditoria; isso permitirá indicadores gerenciais posteriores.
 - Implementação deve revalidar estado da conversa antes do alerta, evitando alerta duplicado se o funcionário já respondeu, e tratar mudança de responsável sem perda do histórico.
 - **A detalhar:** política de recalcular SLA se a conversa mudar de funcionário antes da primeira resposta, escalonamento recorrente e critérios exatos de mensagens de saída em casos de falha ou atraso de envio.
+
+## MVP — Painel gerencial de desempenho da Central de Atendimento WhatsApp (APROVADO)
+- **Incluir no MVP comercial** um painel de indicadores da Central de Atendimento do WhatsApp para acompanhar produtividade, cumprimento dos tempos e filas.
+- Apresentar indicadores essenciais de **tempo médio da primeira resposta humana**, **percentual de primeiras respostas dentro do SLA**, **conversas aguardando atendimento**, **atendimentos por funcionário** e **desempenho por equipe/setor**, com visão agregada por período.
+- Permitir **filtros por período, equipe/setor e funcionário**, sempre limitando o acesso aos números, equipes, conversas e empresas autorizados para o usuário (segregação multi-tenant).
+- Usar os eventos e timestamps auditáveis já previstos para aceite, atribuição automática excepcional, resposta real, mudança de responsável, transferências, entrada em fila e encerramento.
+- Não confundir **resposta automática de IA** ou disparo de automação com **primeira resposta humana**; manter métricas de atendimento humano separadas das de agentes de IA para evitar distorções.
+- O painel deve oferecer visibilidade clara do volume de conversas e dos gargalos operacionais, especialmente filas e violações do SLA de primeira resposta.
+- **Proposta a detalhar:** indicadores adicionais de volumes de IA e transferências, definição técnica de cada métrica, séries temporais, atualização em tempo real, exportação e relatórios customizados; não presumir esses itens como escopo obrigatório já fechado.
+- **Pendente:** fórmulas e regras de cálculo por janela de expediente, período-base para contagem de atendimentos, regras de atribuição quando conversas trocam de equipe e critérios de acesso dos gestores.
