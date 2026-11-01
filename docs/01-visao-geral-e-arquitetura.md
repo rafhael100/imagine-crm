@@ -233,3 +233,12 @@
 - Reduzir um limite não encerra nem transfere conversas existentes, apenas impede novas atribuições enquanto estiver cheio.
 - Exemplo de cinco conversas por funcionário e vinte por equipe não é valor universal obrigatório.
 - Pendentes: regras de fila e reserva de capacidade antes do aceite de atendimento.
+
+## Fila de espera para atendimento humano por ordem de chegada (FIFO) — APROVADO
+- No MVP, cada equipe ou setor terá **fila de espera de atendimentos humanos por ordem cronológica de entrada (FIFO)**, sem prioridade especial para clientes VIP nem classificação de prioridade que ultrapasse a ordem.
+- Ao liberar capacidade elegível, distribuir a conversa pendente **mais antiga daquela fila**, respeitando número/linha autorizada, equipe, funcionários disponíveis, expediente, permissões e os limites simultâneos de funcionário e equipe já aprovados.
+- O ordenamento deve usar o momento em que a **solicitação ingressou na fila**, com desempate técnico estável, e não permitir que eventos assíncronos atribuam duas vezes a mesma conversa.
+- Registrar no histórico hora de entrada na fila, distribuição e efetiva tomada de posse pelo humano; diferenciar essas três etapas.
+- Transferências de setor podem criar entrada em outra fila com seu próprio registro e horário; regras específicas para preservar posição em reenvio de mensagens e em tentativas de distribuição serão detalhadas posteriormente.
+- A ausência de atendente elegível mantém a solicitação na fila, sem encerramento automático ou retomada indevida da IA; a fila respeita políticas de privacidade e tenant.
+- **Ainda pendente:** efeito de novas mensagens do cliente sobre sua posição, cancelamento/desistência da fila, mensagens de estimativa de espera e regra de pré-atribuição sem aceite.
