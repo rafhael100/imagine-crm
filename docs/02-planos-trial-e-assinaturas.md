@@ -17,7 +17,7 @@
 
 ## IN-013 — Notificações e lembretes internos no Básico, sem consumir automações
 
-**Aprovada em 2026-11-01:** no CRM Básico Cortesia, a agenda oferece **apenas avisos e lembretes internos na interface autenticada do CRM**, como funções do sistema que **não consomem vagas da biblioteca de automações comerciais**. **E-mails automáticos ao cliente atendido e WhatsApp Business API oficial** ficam disponíveis somente por **planos pagos ou adicionais elegíveis**, com contratação e autorização específicas. Não confundir comunicação interna com mensagem enviada ao visitante. Antecedência e detalhes da UX da agenda continuam pendentes. [Especificação IN-013](11-agenda-manual-basico-cortesia.md).
+**Aprovada em 2026-11-01:** no CRM Básico Cortesia, a agenda oferece **apenas avisos e lembretes internos na interface autenticada do CRM**, como funções do sistema que **não consomem vagas da biblioteca de automações comerciais**. **E-mails automáticos ao cliente atendido e WhatsApp Business API oficial** ficam disponíveis somente por **planos pagos ou adicionais elegíveis**, com contratação e autorização específicas. Não confundir comunicação interna com mensagem enviada ao visitante. **IN-014 aprova lembretes internos padrão 24h e 1h antes do compromisso, com possibilidade de o profissional ajustar ou desativar cada lembrete independentemente**. A central de leitura e detalhes da UX ainda estão pendentes. [Especificação IN-013](11-agenda-manual-basico-cortesia.md).
 
 ## Benefício CRM Básico vinculado ao Site Imagine — IN-002 APROVADA em 2026-11-01
 
