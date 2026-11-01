@@ -1,5 +1,11 @@
 # 02 — Planos, trial e assinaturas
 
+## Regra transversal IN-010 — Avisar limites e orientar upgrade (APROVADA)
+
+**Aprovação em 2026-11-01:** se o cliente tentar realizar ação **não disponível no plano efetivo** ou **superar a quota aplicável**, o CRM deverá informar de maneira compreensível o motivo e oferecer uma oportunidade pertinente de upgrade ou contratação de capacidade adicional, **se existir e resolver o limite**. Oferecer também alternativa legítima para liberar capacidade no próprio plano (ex.: inativar serviço ou pausar automação), quando disponível. A regra vale para todos os planos e módulos CRM, inclusive o Básico Cortesia.
+
+**Não cobrar, ativar upgrade nem alterar assinatura automaticamente** pela tentativa de acesso; contratação paga exige aceite expresso do administrador autorizado, termos, preço, ciclo e confirmação de pagamento conforme regras já aprovadas. Não oferecer upgrade enganoso em falha técnica, restrição de segurança/identidade ou falta de permissão do usuário. Mensagens, UX, API, auditoria e testes em [12 — Limites e upgrade contextual](12-limites-e-upgrade-contextual.md).
+
 ## Planos aprovados em conceito
 - Três faixas: **Essencial, Profissional e Empresarial**.
 - É possível comprar usuários adicionais, sem limite máximo fixo estabelecido.
