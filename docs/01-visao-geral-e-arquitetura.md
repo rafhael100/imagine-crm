@@ -289,3 +289,10 @@
 - Mesmo sem justificativa, registrar em auditoria **conversa, funcionário, data/hora, recusa, estado da reserva e destino subsequente quando houver**; motivo e observação ficam associados quando informados.
 - Permitir que gestores autorizados consultem e agreguem motivos de recusa para diagnosticar carga de trabalho, elegibilidade, treinamento e problemas na distribuição; não expor observações sensíveis sem necessidade.
 - **Pendente:** permitir personalização por empresa das opções predefinidas e definir relatórios específicos de recusas.
+
+## Tratamento de recusa por todos os atendentes: escolha automática por menor carga — DIRETRIZ DO RESPONSÁVEL
+- Se todos os funcionários elegíveis de uma equipe recusarem a mesma conversa no ciclo inicial, o CRM **não deve encerrar a tentativa de distribuição simplesmente por todas as recusas**: selecionar automaticamente o funcionário **com menor número de atendimentos humanos ativos** entre os elegíveis/disponíveis e dentro das capacidades individual e coletiva.
+- Persistir a posição e horário FIFO originais do cliente, histórico de recusas e escolha do funcionário; registrar e sinalizar a exceção ao supervisor para acompanhamento operacional.
+- A direção solicitada é **atribuição automática ao menos sobrecarregado**. Para não contrariar silenciosamente a regra já aprovada de **aceite humano obrigatório**, tratar inicialmente essa escolha como **reserva/reoferta automática aguardando aceite**, não como atendimento efetivamente assumido.
+- **Decisão explícita pendente:** a seleção após todas as recusas deve excepcionalmente tornar-se atribuição definitiva SEM novo aceite, ou permanecer dependente de aceite? Se a escolha puder ser novamente recusada, especificar limitação de tentativas/escalonamento para evitar loop infinito.
+- Nunca exceder capacidades, atribuir a funcionários offline/ausentes/ocupados ou mascarar uma conversa sem responsável como atendimento já iniciado; respeitar horário, segurança e auditoria.
