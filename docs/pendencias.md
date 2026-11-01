@@ -31,6 +31,13 @@
 - **Pendência de fechamento:** contar modelos homologados e simular uso/custos, definir quais ficam em cada plano, distinguir automações comerciais de operações obrigatórias da agenda/sistema, e só então submeter novas quotas numéricas para aprovação.
 - Referência: [10-biblioteca-automacoes-e-criterios-de-planos.md](10-biblioteca-automacoes-e-criterios-de-planos.md).
 
+## Leads e Contatos do CRM Básico — IN-023 (01/11/2026)
+
+- **IN-023 APROVADA:** o Administrador da Empresa pode visualizar lista/detalhes, cadastrar/editar manualmente, pesquisar/filtrar, adicionar observações/histórico manual, receber alertas de possíveis duplicidades **sem mesclagem automática** e arquivar leads/contatos **preservando histórico e vínculos**.
+- **IN-001 já aprovada:** integração de captação dos formulários Onepage/Landing Page para leads na organização correta; não descartar envio confirmado por erro/quota não aprovada.
+- **PENDENTE:** limites de quantidade e armazenamento de leads/contatos, importação em massa, exportação (respeitar direitos LGPD), exclusão definitiva/mesclagem, retenção/restauração e detalhes de UX; não assumir ilimitado nem quota do trial.
+- [Matriz detalhada IN-023](13-matriz-permissoes-basico-cortesia.md).
+
 ## Quota de usuários da empresa no CRM Básico — IN-020 (01/11/2026)
 
 - **APROVADO:** até **1 usuário autenticado com login por empresa/organização do Básico**, quota independente de **1 profissional agendável** (IN-008).
