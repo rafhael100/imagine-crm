@@ -35,7 +35,8 @@
 
 - **APROVADO:** até **1 usuário autenticado com login por empresa/organização do Básico**, quota independente de **1 profissional agendável** (IN-008).
 - Excesso de usuários: informar limite **1/1**, sugerir upgrade ou adicional de assento que realmente resolva, sem cobrança automática (IN-010), sem compartilhar identidade ou criar login por serviço/site.
-- **PENDENTE:** definir perfil padrão do único usuário, permissões por módulo, titularidade e troca de acesso, contagem de convite pendente versus usuário ativo, participação em múltiplas empresas, acesso após downgrade e recuperação de acesso.
+- **IN-021 APROVADA:** único usuário Básico usa perfil **Administrador da Empresa**, com **MFA obrigatório**, direitos administrativos somente sobre módulos incluídos no plano, sem superadmin SaaS; preservar auditoria, RBAC e isolamento entre empresas.
+- **PENDENTE:** especificar permissões e ações por módulo, titularidade e troca de acesso, convite pendente versus usuário ativo, participação em múltiplas empresas, acesso após downgrade e recuperação de acesso. A aprovação do papel não aprova todos os recursos propostos.
 - Documento principal: [11-agenda-manual-basico-cortesia.md](11-agenda-manual-basico-cortesia.md).
 
 ## Notificações e lembretes internos de agenda — IN-013 (01/11/2026)
