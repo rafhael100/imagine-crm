@@ -15,6 +15,10 @@
 - Preços e assentos negociados para empresas específicas são permitidos a administradores autorizados, com auditoria.
 - Descontos percentuais, fixos e temporários: benefícios não cumulativos, aplicar o maior elegível; limite máximo por papel administrativo configurável. Percentuais ilustrativos não são aprovados.
 
+## IN-023 — Leads e Contatos básicos (APROVADA)
+
+**Aprovada em 2026-11-01:** no CRM Básico Cortesia, o único administrador pode **visualizar, cadastrar/editar manualmente, pesquisar/filtrar, registrar observações e histórico manual e arquivar leads/contatos preservando o histórico**. Detectar duplicidade gera **alerta sem mesclagem automática**. O recebimento de leads dos formulários Imagine permanece autorizado pela integração IN-001. **Não houve aprovação de limites quantitativos de leads/contatos, importação em massa, exportação comercial, exclusão definitiva ou mesclagem**; avaliar uso justo, armazenamento, retenção e direitos de privacidade separadamente. Não aplicar ao Básico a quota de 20 leads do trial. [Matriz de permissões IN-023](13-matriz-permissoes-basico-cortesia.md).
+
 ## IN-022 — Permissões de Administração da Empresa e Segurança no Básico (APROVADA)
 
 **Aprovada em 2026-11-01:** o único usuário, com perfil Administrador da Empresa (IN-021), pode consultar/atualizar dados cadastrais comuns da própria empresa; alterar CNPJ/identificador fiscal **somente sob validação específica**; gerir senha/e-mail/configurações de MFA com verificação de identidade (**MFA obrigatório permanece**); consultar sessões e encerrar sessões em outros dispositivos; consultar seu plano/limites e contratar upgrade no CRM com **consentimento financeiro expresso**. Criar um 2º usuário, acessar outros tenants ou utilizar superadmin Imagine **não está permitido**. Validação de CNPJ, segurança das alterações e titularidade ainda precisarão de fluxo técnico aprovado. A aprovação não libera automaticamente leads, funis e recursos premium. [Matriz de permissões Básico — IN-022](13-matriz-permissoes-basico-cortesia.md).
