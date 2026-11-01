@@ -194,7 +194,7 @@
 - O CRM deve **detectar desconexões automaticamente**, sem assumir que a sessão está conectada apenas porque uma página ficou aberta em algum dispositivo. Monitorar atividade/conectividade de maneira segura e considerar múltiplas sessões antes de determinar desconexão completa.
 - A detecção de desconexão impede novas atribuições quando o funcionário estiver efetivamente offline, **sem transferir ou encerrar automaticamente conversas em andamento** por uma desconexão breve. Regras de indisponibilidade prolongada e redistribuição serão definidas à parte.
 - O sistema deve evitar oscilação indevida entre online/offline por falhas transitórias, com período de tolerância a definir; mudanças de estado manuais ou automáticas relevantes ficam registradas e visíveis aos autorizados.
-- Definições ainda pendentes: timeout/heartbeat, regras de estado manual após reconexão, disponibilidade em múltiplos dispositivos, limites de atendimentos simultâneos, redistribuição de conversas de atendente offline prolongadamente.
+- Definições ainda pendentes: timeout/heartbeat, regras de estado manual após reconexão, disponibilidade em múltiplos dispositivos, limites de atendimentos simultâneos (aprovados; critérios de contagem ainda a definir), redistribuição de conversas de atendente offline prolongadamente.
 
 ## Redistribuição automática após desconexão prolongada do atendente — APROVADO
 - Cada empresa poderá definir um **prazo de desconexão contínua** para reavaliar e redistribuir atendimentos humanos; **10 minutos é o valor inicial sugerido**, configurável.
@@ -205,4 +205,13 @@
 - Sem atendente elegível disponível, **manter as conversas em fila e alertar a equipe/responsável autorizado**; não encerrar atendimento nem reativar IA automaticamente enquanto houver pedido de humano ou posse humana.
 - Registrar de modo auditável a desconexão detectada, prazo aplicável, reavaliações, alertas, responsáveis anteriores e novos e motivo das transferências; evitar ações duplicadas e condições de corrida.
 - Se o funcionário original reconectar após a redistribuição, **não retomar automaticamente** as conversas já atribuídas a terceiros; só mediante nova transferência autorizada.
-- **A detalhar posteriormente:** quais conversas são consideradas sem resposta para redistribuição, exceções por equipe, limites de carga simultânea, prazos de presença/heartbeat e tratamento de situações em que uma resposta esteja sendo enviada.
+- **A detalhar posteriormente:** quais conversas são consideradas sem resposta para redistribuição, exceções por equipe, critérios de contagem e precedência de limites de carga simultânea, prazos de presença/heartbeat e tratamento de situações em que uma resposta esteja sendo enviada.
+
+## Limite configurável de atendimentos simultâneos por funcionário/equipe — APROVADO
+- Cada empresa pode configurar limites máximos de conversas simultâneas por **funcionário e/ou equipe** na Central de Atendimento WhatsApp; não há um teto fixo universal imposto pelo CRM Imagine para todas as empresas.
+- A distribuição automática deve considerar a **capacidade restante** de cada funcionário elegível, além das regras já aprovadas de disponibilidade, equipe, expediente, permissões e estratégia de alocação.
+- Quando um funcionário atingir o limite configurado, **não receberá novas conversas automaticamente** até liberar capacidade; isso não precisa alterar seu estado manual Disponível/Ocupado/Ausente/Offline.
+- Encerramento ou transferência efetiva de conversa libera capacidade conforme critérios de contagem a detalhar. Se todos os atendentes elegíveis estiverem no limite, manter novas solicitações em **fila de espera**, com histórico e status preservados e sem reativação indevida de IA.
+- O limite configurável poderá ser diferenciado por funcionário e equipe. A definição de precedência entre limites individuais e coletivos e de quais estados contam como atendimento simultâneo será especificada posteriormente.
+- Evitar distribuição acima do limite por corridas entre eventos simultâneos, usando alocação transacional/controle de concorrência; não retirar conversas já atribuídas automaticamente quando um administrador reduzir o teto abaixo da ocupação atual.
+- Exemplo apenas ilustrativo: limite 5 por funcionário. Nenhum número foi aprovado como valor padrão obrigatório.
