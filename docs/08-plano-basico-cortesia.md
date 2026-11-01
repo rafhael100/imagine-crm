@@ -18,7 +18,7 @@
 | Usuários incluídos | **IN-020/IN-021 APROVADAS: 1 usuário autenticado com perfil Administrador da Empresa, MFA obrigatório**; administra somente os recursos incluídos no Básico | Equipes e assentos extras nos planos pagos/adicional elegível; sem superadmin SaaS |
 | Empresas | **1 organização vinculada por contrato elegível**, com múltiplos sites da mesma empresa podendo apontar para ela | Usuário multiempresa continua possível por outros vínculos |
 | Formulários de lead | **Formulário por site/landing page contratado**, gerado pelo publicador Imagine; sem construtor livre de formulários no Básico | Form builder e formulários avulsos nos planos pagos |
-| Leads recebidos | **Sem teto comercial rígido de recebimento no formulário**, com política antifraude/uso justo; cotas de retenção/armazenamento a definir | Evitar que a cortesia cause perda de oportunidades ao atingir cota |
+| Leads recebidos e contatos cadastrados | **IN-024 APROVADA: sem teto comercial rígido de quantidade**, tanto dos formulários dos sites quanto dos cadastros manuais; uso justo/antiabuso | Armazenamento e retenção pendentes; não descartar leads aceitos ou impor quota oculta |
 | Lead / contato | **IN-023 APROVADA:** visualizar, cadastrar/editar manualmente, buscar/filtrar, registrar observações, alertar duplicidades **sem mesclagem automática** e arquivar com histórico preservado | Importação/exportação comerciais, mesclagem/exclusão definitiva e limites numéricos ainda a definir |
 | Funil | **1 funil** de oportunidades, com etapas padrão configuradas e movimentação manual | Múltiplos funis, automações e personalização avançada nos pagos |
 | Atividades | Notas e lembretes manuais básicos nos registros, se aprovados | Tarefas avançadas, equipes e automações nos pagos |
@@ -35,7 +35,7 @@
 | Uploads/armazenamento | **Quota mínima específica a definir**; não herdar automaticamente a quota Essencial de 1 GB | Uploads avançados e capacidade nos pagos |
 | Suporte | Ajuda e suporte contratual do produto sob regras a definir | Diferenciação de SLA sem privar de correções e suporte essencial |
 
-**Nota importante:** **1 usuário** já foi **aprovado** em IN-020 (perfil Administrador da Empresa/MFA obrigatório em IN-021 e permissões de Empresa e Segurança em IN-022). A proposta de **1 funil** e a ausência de limite comercial rígido de recebimento de leads **não foram aprovadas** como quotas comerciais do Básico. Quotas efetivas de armazenamento, contatos, relatórios e retenção continuam pendentes. A captação de leads deve ter fila durável; nunca descartar silenciosamente dados após dizer ao visitante que foram recebidos.
+**Nota importante:** **1 usuário** já foi **aprovado** em IN-020 (perfil Administrador da Empresa/MFA obrigatório em IN-021 e permissões de Empresa e Segurança em IN-022). A proposta de **1 funil** ainda não foi aprovada; **IN-024 aprovou a ausência de teto comercial rígido de quantidade de leads e contatos** captados no site ou cadastrados manualmente. Quotas efetivas de armazenamento, contatos, relatórios e retenção continuam pendentes. A captação de leads deve ter fila durável; nunca descartar silenciosamente dados após dizer ao visitante que foram recebidos.
 
 ### Observações IN-004, IN-005 e IN-006 sobre agenda, biblioteca e automações
 
@@ -52,6 +52,10 @@
 ### IN-022 — Administração da Empresa e Segurança (APROVADA)
 
 O único Administrador da Empresa do Básico pode consultar/atualizar dados comuns da empresa, solicitar alteração de **CNPJ somente com validação específica**, alterar senha/e-mail/configurações de MFA com **verificação de identidade**, consultar sessões e encerrar sessões em outros dispositivos, consultar o plano e suas quotas e contratar upgrade com aceite financeiro expresso. **MFA segue obrigatório**. Não pode criar 2º usuário, acessar outras empresas ou funções de superadministrador Imagine. Detalhar verificação de CNPJ, recuperação e fluxos de risco antes da implementação.
+
+### IN-024 — Quantidade de leads e contatos sem teto comercial rígido (APROVADA)
+
+O Básico Cortesia não limitará comercialmente a **quantidade mensal/total de leads ou contatos**: inclui **leads captados por formulários dos sites Imagine e leads/contatos criados manualmente**. Uso justo e controles técnicos contra spam/abuso continuam aplicáveis, **sem quota oculta nem oferta enganosa de upgrade por bloqueio técnico** (IN-010). Leads já aceitos devem ser persistidos e não podem desaparecer silenciosamente. **Armazenamento físico e retenção ficam para definição separada**, sem contrariar o direito de manter dados legítimos aceitos; esta decisão não concede importação em lote, API pública, bots ou envio automatizado. [Matriz IN-024](13-matriz-permissoes-basico-cortesia.md).
 
 ### IN-023 — Leads e Contatos: operações manuais do Básico (APROVADA)
 
