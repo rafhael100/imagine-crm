@@ -195,3 +195,14 @@
 - A detecção de desconexão impede novas atribuições quando o funcionário estiver efetivamente offline, **sem transferir ou encerrar automaticamente conversas em andamento** por uma desconexão breve. Regras de indisponibilidade prolongada e redistribuição serão definidas à parte.
 - O sistema deve evitar oscilação indevida entre online/offline por falhas transitórias, com período de tolerância a definir; mudanças de estado manuais ou automáticas relevantes ficam registradas e visíveis aos autorizados.
 - Definições ainda pendentes: timeout/heartbeat, regras de estado manual após reconexão, disponibilidade em múltiplos dispositivos, limites de atendimentos simultâneos, redistribuição de conversas de atendente offline prolongadamente.
+
+## Redistribuição automática após desconexão prolongada do atendente — APROVADO
+- Cada empresa poderá definir um **prazo de desconexão contínua** para reavaliar e redistribuir atendimentos humanos; **10 minutos é o valor inicial sugerido**, configurável.
+- Após detectar que o funcionário não possui mais sessão/conexão ativa, marcar seu estado como **Offline**, tornando-o inelegível para novas distribuições; considerar todas as sessões válidas e tolerância a falhas transitórias antes de confirmar a desconexão.
+- **Antes de vencer o prazo** não redistribuir automaticamente conversas já atribuídas ao funcionário apenas pela queda da conexão. Caso o funcionário volte em tempo, preservar responsabilidade e andamento.
+- Se a desconexão ultrapassar o prazo, identificar as **conversas ainda abertas que precisam de resposta/continuidade**, verificar novamente indisponibilidade e posse atual e **redistribuir automaticamente somente as elegíveis**, obedecendo equipe, permissões, expediente, capacidade e estratégia configurada (rodízio ou menor carga).
+- Havendo funcionário disponível, atribuir atendimento a ele com registro de horário, motivo "desconexão prolongada" e contexto completo preservado.
+- Sem atendente elegível disponível, **manter as conversas em fila e alertar a equipe/responsável autorizado**; não encerrar atendimento nem reativar IA automaticamente enquanto houver pedido de humano ou posse humana.
+- Registrar de modo auditável a desconexão detectada, prazo aplicável, reavaliações, alertas, responsáveis anteriores e novos e motivo das transferências; evitar ações duplicadas e condições de corrida.
+- Se o funcionário original reconectar após a redistribuição, **não retomar automaticamente** as conversas já atribuídas a terceiros; só mediante nova transferência autorizada.
+- **A detalhar posteriormente:** quais conversas são consideradas sem resposta para redistribuição, exceções por equipe, limites de carga simultânea, prazos de presença/heartbeat e tratamento de situações em que uma resposta esteja sendo enviada.
