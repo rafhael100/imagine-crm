@@ -279,4 +279,13 @@
 - Sem outro funcionário elegível, manter a solicitação na fila de espera, com histórico preservado e IA pausada nos casos previstos.
 - Registrar de forma auditável qual funcionário recusou, quando, o vínculo da conversa e eventual destinatário seguinte; recusa não equivale a atendimento aceito.
 - Validar o estado/reserva da conversa no momento da recusa para evitar disputa com aceite, expiração de prazo e redistribuição simultânea.
-- **Pendente de decisão:** se a recusa exigirá motivo obrigatório, motivo opcional ou nenhum motivo, e como proceder após sucessivas recusas de todos os membros da equipe.
+- **Resolvido em decisão posterior:** motivo de recusa opcional, com opções rápidas e observações; **pendente:** como proceder após sucessivas recusas de todos os membros da equipe.
+
+## Motivo opcional ao recusar atendimento distribuído — APROVADO
+- O funcionário poderá recusar uma conversa reservada/aguardando aceite **sem a obrigação de escolher ou escrever um motivo**.
+- A interface oferecerá opções rápidas de motivo de recusa, por exemplo: **Estou ocupado**, **Não é minha especialidade**, **Preciso encaminhar para outra equipe**, **Outro motivo**.
+- Permitir **observação livre opcional**, inclusive para detalhar o motivo selecionado, respeitando limites de tamanho, privacidade e permissões.
+- A ausência de motivo ou observação **não deve bloquear nem retardar a liberação da reserva e a redistribuição imediata** já aprovadas.
+- Mesmo sem justificativa, registrar em auditoria **conversa, funcionário, data/hora, recusa, estado da reserva e destino subsequente quando houver**; motivo e observação ficam associados quando informados.
+- Permitir que gestores autorizados consultem e agreguem motivos de recusa para diagnosticar carga de trabalho, elegibilidade, treinamento e problemas na distribuição; não expor observações sensíveis sem necessidade.
+- **Pendente:** permitir personalização por empresa das opções predefinidas e definir relatórios específicos de recusas.
