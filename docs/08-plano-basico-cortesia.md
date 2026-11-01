@@ -36,9 +36,9 @@
 
 **Nota importante:** as quantidades **1 usuário**, **1 funil**, e a ausência de limite rígido de **envio de leads** são recomendações concretas para debate, não aprovações do usuário. Quotas efetivas de armazenamento, contatos, relatórios e retenção continuam pendentes. A captação de leads deve ter fila durável; nunca descartar silenciosamente dados após dizer ao visitante que foram recebidos.
 
-### Observações IN-004 e IN-005 sobre agenda e automações
+### Observações IN-004, IN-005 e IN-006 sobre agenda, biblioteca e automações
 
-**Aprovado:** permitir Agenda e Agendamentos no CRM Básico cortesia; **não está aprovada** a concessão de todas as funcionalidades avançadas do módulo geral. Limites de agendamentos ilimitados do Essencial/Profissional/Empresarial não se estendem automaticamente ao Básico. **IN-005:** somente modelos prontos, até 3 ativos por empresa; rascunhos/pausados não consomem vagas. O catálogo exato permanece em revisão. Detalhamento dos modelos e da agenda em [09 — Agenda e automações do Básico](09-revisao-agenda-e-automacoes-basico.md).
+**Aprovado:** permitir Agenda e Agendamentos no CRM Básico cortesia; **não está aprovada** a concessão de todas as funcionalidades avançadas do módulo geral. Limites de agendamentos ilimitados do Essencial/Profissional/Empresarial não se estendem automaticamente ao Básico. **IN-005:** somente modelos prontos, até 3 ativos por empresa; rascunhos/pausados não consomem vagas. **IN-006:** primeiro documentar toda a biblioteca, prevendo modelos simples no Básico e modelos avançados exclusivos de planos pagos; rever as quantidades por plano só ao final. Os limites atuais (3/5/20/50) continuam como referência até nova aprovação. O catálogo exato permanece em revisão. [Biblioteca central](10-biblioteca-automacoes-e-criterios-de-planos.md). Detalhamento dos modelos e da agenda em [09 — Agenda e automações do Básico](09-revisao-agenda-e-automacoes-basico.md).
 
 ## 3. Aplicação dos direitos por produto
 
@@ -76,4 +76,4 @@
 5. Formalizar telas de ativação, upgrade e acesso por empresa, além de preços finais dos planos pagos.
 6. Concluir testes de idempotência, autorização multi-tenant, cobranças independentes e fluxo de formulário integrado.
 
-**Estado:** IN-001 (captação integrada), IN-002 (benefício gratuito + upgrade cobrado no CRM), IN-003 (versão enxuta exclusiva), IN-004 (Agenda e Agendamentos incluídos) e **IN-005 (modelos prontos, até 3 automações ativas por empresa)** aprovadas como **diretrizes**. Matriz/limites deste documento estão **propostos**, não aprovados. Não iniciar programação.
+**Estado:** IN-001 a IN-005 aprovadas nos respectivos escopos; **IN-006 registra a estratégia da biblioteca por plano e revisão posterior das quotas**. O Básico segue com 3 automações ativas como limite de planejamento atual, sujeito a revisão expressa após a biblioteca estar completa. Matriz/limites deste documento estão **propostos**, não aprovados. Não iniciar programação.
