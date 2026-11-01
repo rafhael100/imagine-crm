@@ -312,3 +312,5 @@
 
 - **MVP com IA (aprovado):** incluir IA Prospector, IA Comercial e automações comerciais essenciais no lançamento.
 - **WhatsApp como diferencial de lançamento (requisito do responsável):** integrar WhatsApp com automações e envio automático de mensagens pelos agentes de IA e pelas regras do CRM; detalhamento de canais, autonomia, consentimento e preços ainda pendente.
+
+- **WhatsApp e atendimento omniorigem no MVP (aprovado):** API oficial Meta; central compartilhada no CRM com histórico unificado e autoria identificada (humano, IA, automação, cliente); envio/recebimento e disparos automáticos por automações e agentes de IA; IA autônoma sob limites; humano visualiza e assume conversa com contexto preservado. Regra de pausa automática da IA na tomada por humano proposta, aguardando aprovação.
