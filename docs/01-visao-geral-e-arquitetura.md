@@ -187,3 +187,11 @@
 - **Designação automática não equivale necessariamente a aceite/início de atendimento**: preservar distinção entre conversa designada, assumida e em espera, conforme regras anteriores de posse e transferência.
 - A IA permanece pausada diante de pedido de humano; não enviar respostas automatizadas enquanto o cliente aguarda ou quando um humano assumiu a conversa, nos termos das decisões já aprovadas.
 - **Ainda pendente:** forma de definir disponibilidade do funcionário (status manual, login, escala e expediente), limites de capacidade por atendente, timeout de aceite e reatribuição automática, prioridades nas filas.
+
+## Status de disponibilidade na Central de Atendimento WhatsApp — APROVADO
+- Funcionário pode selecionar manualmente os estados **Disponível**, **Ocupado**, **Ausente** e **Offline**. Apenas o funcionário efetivamente **Disponível** poderá receber novas conversas por distribuição automática, sujeito também a equipe, permissão, expediente e outros requisitos de elegibilidade.
+- **Disponível:** apto a receber novas conversas na fila/equipe autorizada; **Ocupado**, **Ausente** e **Offline:** não recebe novas conversas automaticamente.
+- O CRM deve **detectar desconexões automaticamente**, sem assumir que a sessão está conectada apenas porque uma página ficou aberta em algum dispositivo. Monitorar atividade/conectividade de maneira segura e considerar múltiplas sessões antes de determinar desconexão completa.
+- A detecção de desconexão impede novas atribuições quando o funcionário estiver efetivamente offline, **sem transferir ou encerrar automaticamente conversas em andamento** por uma desconexão breve. Regras de indisponibilidade prolongada e redistribuição serão definidas à parte.
+- O sistema deve evitar oscilação indevida entre online/offline por falhas transitórias, com período de tolerância a definir; mudanças de estado manuais ou automáticas relevantes ficam registradas e visíveis aos autorizados.
+- Definições ainda pendentes: timeout/heartbeat, regras de estado manual após reconexão, disponibilidade em múltiplos dispositivos, limites de atendimentos simultâneos, redistribuição de conversas de atendente offline prolongadamente.
