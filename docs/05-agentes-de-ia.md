@@ -46,3 +46,12 @@
 - Esta marcação não converte, por si só, um atendimento **Humano** em **Misto**; esta última categoria requer participação direta de IA e de humano nas interações conforme decisão de classificação comercial.
 - Manter contagem de resultados/vendas sem duplicidade e distinguir consumo técnico do agente, envio direto autônomo e assistência ao funcionário em análises futuras.
 - **Pendente:** definir regras de edição de sugestões, UX da ferramenta, telemetria de adoção e critérios para alterações substanciais antes do envio.
+
+## Copiloto de respostas IA Comercial na Central WhatsApp — APROVADO
+- Adicionar ação **"Sugerir resposta com IA"** à própria conversa WhatsApp conduzida por humano, sem exigir copiar mensagens para ferramentas externas.
+- Gerar sugestão com base no histórico autorizado e dados relevantes de cliente/lead/oportunidade; limitar contexto à empresa e permissões efetivas, adotando minimização de dados.
+- Oferecer revisão, edição, utilização e descarte pelo funcionário. **Somente o funcionário envia a mensagem** no fluxo do copiloto; agentes autônomos seguem suas próprias regras de atuação já aprovadas.
+- Mensagem enviada a partir de sugestão realmente utilizada recebe marcação **"Assistida por IA"** com autoria humana e agente auxiliar, sem classificação automática de conversa como "Misto".
+- Simples solicitação/visualização de sugestão sem aplicação não constitui mensagem assistida; requisições de geração continuam sujeitas a cotas, custos e controles técnicos do agente.
+- Respeitar pausas de IA autônoma em conversas sob posse humana: essas pausas não impedem a **assistência sob demanda ao funcionário**, mas o copiloto não deve assumir o canal nem disparar autonomamente mensagens.
+- **Pendências:** aprovação de modelos de prompt, UX, limites de contexto, seleção de conhecimento empresarial e medição do uso após edições substanciais.
