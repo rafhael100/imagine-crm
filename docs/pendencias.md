@@ -31,6 +31,13 @@
 - **Pendência de fechamento:** contar modelos homologados e simular uso/custos, definir quais ficam em cada plano, distinguir automações comerciais de operações obrigatórias da agenda/sistema, e só então submeter novas quotas numéricas para aprovação.
 - Referência: [10-biblioteca-automacoes-e-criterios-de-planos.md](10-biblioteca-automacoes-e-criterios-de-planos.md).
 
+## Quota de usuários da empresa no CRM Básico — IN-020 (01/11/2026)
+
+- **APROVADO:** até **1 usuário autenticado com login por empresa/organização do Básico**, quota independente de **1 profissional agendável** (IN-008).
+- Excesso de usuários: informar limite **1/1**, sugerir upgrade ou adicional de assento que realmente resolva, sem cobrança automática (IN-010), sem compartilhar identidade ou criar login por serviço/site.
+- **PENDENTE:** definir perfil padrão do único usuário, permissões por módulo, titularidade e troca de acesso, contagem de convite pendente versus usuário ativo, participação em múltiplas empresas, acesso após downgrade e recuperação de acesso.
+- Documento principal: [11-agenda-manual-basico-cortesia.md](11-agenda-manual-basico-cortesia.md).
+
 ## Notificações e lembretes internos de agenda — IN-013 (01/11/2026)
 
 - **APROVADO:** somente avisos e lembretes internos no CRM Básico; não consomem quota das automações comerciais.
