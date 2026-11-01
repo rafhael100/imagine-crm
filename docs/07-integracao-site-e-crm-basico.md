@@ -2,6 +2,10 @@
 
 > **Decisão IN-002 aprovada (2026-11-01).** Planejamento funcional e contratual; nenhuma integração está implementada. O documento é uma extensão dos planos e regras do CRM Imagine, sincronizada com o projeto `rafhael100/imagine-portal`.
 
+### IN-026 — Exportação CSV/XLSX de leads e contatos pelo cliente CRM (APROVADA)
+
+O Administrador da Empresa pode **exportar os leads e contatos de sua organização em CSV e XLSX**, incluindo todos os registros autorizados ou só os filtrados, com isolamento tenant, auditoria, autenticação e downloads protegidos. O Portal Imagine continua operando apenas a integração técnica/contractual do site: **não deve expor nem baixar em nome próprio a base de clientes do contratante** apenas por manter o site. **Ainda pendentes:** tamanho de lotes, expiração dos links, arquivos temporários e escopo exato dos campos exportáveis. Os direitos LGPD não exigem compra de upgrade. [Matriz IN-026](13-matriz-permissoes-basico-cortesia.md).
+
 ### IN-025 — Importação básica de leads e contatos por CSV e XLSX no CRM (APROVADA)
 
 O Administrador da Empresa no Básico pode **importar CSV e XLSX de leads/contatos**, dentro do **CRM autenticado**, com mapeamento de campos, prévia, validação e alerta de possíveis duplicidades; **sem mesclagem automática ou alterações silenciosas**. O upload manual autorizado não equivale a API pública, ingestão por robôs ou importação feita pelo Portal Imagine em nome do cliente. As importações respeitam isolamento do tenant, validações, registros de execução e direitos IN-024 (sem teto comercial de quantidade), mantendo **pendentes os limites técnicos por arquivo/lote e o tratamento de duplicidades**. A captação dos formulários do site continua **fluxo independente**; não criar agendamento a partir da importação. [Matriz IN-025](13-matriz-permissoes-basico-cortesia.md).
