@@ -90,7 +90,7 @@
 - Na **Central de Atendimento**, manter **conversas distintas para cada número oficial/linha**, sem misturar seus remetentes, estados, responsáveis, filas, permissões ou janelas de atendimento; a visão consolidada da ficha não funde conversas operacionais.
 - Um funcionário autorizado pode consultar histórico em outros números da mesma empresa, enquanto funcionário sem permissão não deve visualizar conteúdo restrito; o isolamento entre empresas (tenant) é absoluto.
 - Registrar os identificadores estáveis do contato, do número empresarial de WhatsApp, da conversa e de cada mensagem, preservando rastreabilidade e auditoria.
-- **Aprovado:** reconhecimento automático quando o mesmo número de telefone/WhatsApp já estiver associado inequivocamente a um contato da mesma empresa; para números distintos, oferecer apenas sugestões, exigindo vinculação humana autorizada. Transferência entre linhas deverá ser especificada em decisão própria.
+- **Aprovado:** reconhecimento automático quando o mesmo número de telefone/WhatsApp já estiver associado inequivocamente a um contato da mesma empresa; para números distintos, oferecer apenas sugestões, exigindo vinculação humana autorizada. Transferência entre linhas aprovada em nível funcional; regras de início de contato no destino, notificações e autorização de IA ainda requerem detalhamento.
 
 ## Identificação de clientes por WhatsApp — APROVADA
 - No recebimento de mensagens, normalizar e comparar o identificador/telefone do WhatsApp com os números vinculados aos contatos **dentro do mesmo tenant**.
@@ -100,3 +100,12 @@
 - Registrar em auditoria vínculo, desvinculação, responsável, data e motivação, mantendo rastreabilidade e permitindo correção segura de associação equivocada sem apagar registros.
 - Garantir isolamento entre empresas e respeito às permissões de visualização; não expor informações restritas em sugestões de correspondência.
 - Detalhes para especificação técnica: normalização internacional de telefones, identificação do remetente retornada pela API oficial, gestão de telefones compartilhados/reutilizados e revisão de associação de contatos.
+
+## Transferência de atendimento entre números oficiais WhatsApp — APROVADA
+- Permitir que **funcionário autorizado** transfira um atendimento da linha oficial de origem para outra linha oficial da **mesma empresa**, por exemplo Vendas → Suporte.
+- Registrar o motivo da transferência, atendente solicitante, origem, destino, horários e status no histórico auditável.
+- Manter **conversas operacionais distintas por linha**, sem fingir que o WhatsApp possui um recurso de transporte da mesma conversa entre números. Criar/vincular atendimento no número de destino e referenciar o atendimento de origem no CRM; o contato/cliente permanece único.
+- Atendentes e agentes de IA do destino podem consultar contexto da origem **somente conforme permissões**; preservar isolamento de dados e equipes.
+- Sinalizar na origem o status de transferência e evitar atendimento concorrente ou envio automático descontextualizado durante a transição, aplicando regras de posse humano/IA já aprovadas.
+- **Não presumir que o novo número possa iniciar mensagem livremente**: qualquer contato ativo de destino deve seguir as políticas da WhatsApp Business Platform, consentimento e, quando aplicável, templates aprovados e janela de atendimento específica da linha.
+- **Pendente:** se agentes de IA podem iniciar autonomamente transferências entre números; quando notificar o cliente e qual confirmação/fluxo de entrada usar para o número de destino; tratamento de transferências rejeitadas ou sem atendente disponível.
