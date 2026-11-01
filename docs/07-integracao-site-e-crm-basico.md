@@ -2,6 +2,10 @@
 
 > **Decisão IN-002 aprovada (2026-11-01).** Planejamento funcional e contratual; nenhuma integração está implementada. O documento é uma extensão dos planos e regras do CRM Imagine, sincronizada com o projeto `rafhael100/imagine-portal`.
 
+### IN-032 — Avisos em 80%/95% e bloqueio apenas de novos anexos a 100% (APROVADA)
+
+**Aprovada em 2026-11-01:** nos quatro planos CRM, exibir utilização e saldo da franquia de arquivos/anexos, com avisos **internos no CRM em 80% e 95%**. A **100% do espaço**, bloquear **somente novos uploads de anexos**, sem excluir ou negar acesso autorizado aos arquivos existentes e sem interromper geração/recepção de **leads por formulário Imagine**, contatos, agendamentos, oportunidades ou demais dados estruturados. Tentativas de upload acima do saldo não podem ser confirmadas como aceitas. Respeitar quota por organização, segurança e separação entre Portal Imagine e CRM; avisos internos do CRM **não criam mensagens externas, campanhas, ou cobranças automáticas**. Armazenamento adicional e preços, arquivos temporários e política de retenção seguem pendentes. [Matriz IN-032](13-matriz-permissoes-basico-cortesia.md).
+
 ### IN-031 — Franquias de arquivos/anexos dos quatro planos CRM (APROVADA)
 
 **Aprovada em 2026-11-01:** as franquias totais **por empresa e somente para arquivos/anexos** passam a ser **Básico Cortesia 1 GB, Essencial 5 GB, Profissional 20 GB, Empresarial 50 GB**. **Dados estruturados ficam fora da franquia em todos os planos**, não apenas no Básico (IN-029). Quotas anteriores dos pagos 1/5/10 GB foram substituídas. Esgotamento da franquia de anexos não afeta recebimento de leads sem anexos nem permite descartar arquivos aceitos. O limite global anterior de 5 MB por arquivo e o mesmo catálogo de tipos (IN-030) permanecem. Sem mudança automática de plano ou cobrança; adicionais, avisos e arquivos temporários ainda pendentes. O Portal Imagine não passa a possuir acesso aos anexos CRM. [Matriz IN-031](13-matriz-permissoes-basico-cortesia.md).
