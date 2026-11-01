@@ -2,6 +2,10 @@
 
 > **Decisão IN-002 aprovada (2026-11-01).** Planejamento funcional e contratual; nenhuma integração está implementada. O documento é uma extensão dos planos e regras do CRM Imagine, sincronizada com o projeto `rafhael100/imagine-portal`.
 
+### IN-030 — Tipos de anexos iguais entre CRM Básico e planos pagos (APROVADA)
+
+**Aprovação em 2026-11-01:** o Administrador da Empresa poderá anexar a leads/contatos no CRM Básico os **mesmos tipos de imagens, PDFs e documentos comuns permitidos nos planos pagos**, com lista de formatos seguros comum, verificação de arquivos, armazenamento privado, controle de acesso, histórico e auditoria. Limite global por arquivo **5 MB**, já aprovado para o CRM geral. **Próximo assunto:** revisar franquias totais de arquivos para **Básico, Essencial, Profissional e Empresarial**; os limites pagos 1/5/10 GB ainda não foram alterados e o Básico não possui franquia total aprovada. A IN-029 mantém dados estruturados fora da franquia. **O Portal Imagine não recebe acesso automático aos arquivos anexados ao CRM** pela oferta Onepage; capturas e documentos do site seguem autorização específica. [Matriz IN-030](13-matriz-permissoes-basico-cortesia.md).
+
 ### IN-029 — Dados estruturados fora da franquia comercial fixa de arquivos (APROVADA)
 
 **IN-029 aprovada em 2026-11-01:** no CRM Básico Cortesia, dados cadastrais/textuais de leads, contatos e seus históricos **não consomem a franquia comercial fixa destinada a anexos/arquivos**; a quantidade de leads e contatos continua sem teto comercial rígido (IN-024). O formulário Imagine pode receber leads legítimos mesmo quando a futura franquia de anexos estiver esgotada; não descartar capturas confirmadas. **Não presumir** que anexos nos contatos ou uploads permanentes foram incluídos, nem quotas/tamanhos. Arquivos temporários de importação/exportação e retenção serão especificados separadamente. A integração do Portal não obtém novo acesso a arquivos dos clientes. [Matriz IN-029](13-matriz-permissoes-basico-cortesia.md).
