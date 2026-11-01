@@ -15,6 +15,7 @@ Esta documentação distingue regras **APROVADAS**, decisões **PARCIAIS** e ite
 - [CRM Básico cortesia — matriz proposta (IN-003)](08-plano-basico-cortesia.md)
 - [Agenda e automações no Básico — revisão (IN-004)](09-revisao-agenda-e-automacoes-basico.md)
 - [Biblioteca de Automações e diferenciação por plano — IN-006](10-biblioteca-automacoes-e-criterios-de-planos.md)
+- [Agenda Manual do Básico Cortesia — um profissional e limites propostos (IN-008)](11-agenda-manual-basico-cortesia.md)
 - [Registro de decisões](decisoes.md)
 - [Pendências](pendencias.md)
 
