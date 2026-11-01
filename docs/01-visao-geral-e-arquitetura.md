@@ -117,4 +117,13 @@
 - A operação gera **atendimentos vinculados porém separados por número**, preservando cadastro único do cliente, histórico, autoria, visibilidade por equipe e vínculo com o atendimento anterior; não equivale a mover tecnicamente a thread no WhatsApp.
 - Enviar mensagens pelo número de destino **somente se permitido pelas regras oficiais Meta**, inclusive consentimento, janela de atendimento específica do número de destino e templates aprovados quando exigidos. Nunca interpretar transferência interna como autorização automática de envio.
 - Se o destino estiver indisponível, o envio não for autorizado ou outra regra impedir a transferência, manter solicitação e histórico íntegros, registrar a falha e encaminhar à fila/atendente responsável conforme regras configuradas, evitando perda do atendimento.
-- **Pendente de detalhamento:** notificação ao cliente, número de tentativas/timeout, indisponibilidade de destino e regra exata de quando o atendimento de origem pode ser encerrado.
+- **Pendente de detalhamento:** número de tentativas/timeout, indisponibilidade de destino e regra exata de quando o atendimento de origem pode ser encerrado. Notificação automática ao cliente aprovada em decisão posterior.
+
+## Avisos automáticos ao cliente em transferências entre números WhatsApp — APROVADO
+- Sempre que um atendimento for transferido entre números oficiais de WhatsApp da mesma empresa, seja por **funcionário autorizado ou agente de IA**, o CRM deve **notificar o cliente automaticamente**, respeitando as permissões e as regras da WhatsApp Business Platform.
+- Permitir **modelo personalizado por empresa/setor**, com variáveis autorizadas (nome, setor de destino etc.), sem revelar dados internos ou sensíveis indevidamente.
+- Registrar no histórico do contato a solicitação de transferência, origem/destino, agente ou humano responsável, conteúdo/status do aviso, horários e eventuais falhas.
+- Priorizar aviso pelo **número de origem** quando permitido; se o número de destino não puder iniciar uma conversa válida, fornecer ao cliente **link para iniciar o contato com o setor de destino**, também por canal permitido.
+- O fluxo de transferir atendimento na aplicação **não significa transferir a thread nativa do WhatsApp** e **não autoriza automaticamente mensagem ativa no número de destino**. Validar consentimento, janela de atendimento e template aprovado quando exigido.
+- A interface deve distinguir aviso enfileirado/solicitado, enviado, entregue, lido e falha conforme os retornos efetivamente disponibilizados pela integração. Nunca confirmar como entregue antes da confirmação correspondente.
+- **Detalhes técnicos pendentes:** política de tentativas, preferências de templates por setor, mensagens alternativas quando o aviso falhar e regra de conclusão da transferência conforme disponibilidade/aceite do destino.
