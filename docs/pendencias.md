@@ -35,7 +35,7 @@
 
 - **APROVADO:** somente avisos e lembretes internos no CRM Básico; não consomem quota das automações comerciais.
 - **APROVADO:** e-mails automáticos ao cliente e mensagens pela API oficial do WhatsApp são recursos de planos pagos ou adicionais elegíveis, com autorização e contratos/custos próprios; **não incluídos no Básico**.
-- **PENDENTE:** antecedência dos lembretes, repetição, preferências, eventos obrigatórios, apresentação na interface, push e detalhes de envio/custos nos planos pagos.
+- **IN-014 APROVADA:** lembretes internos 24h e 1h antes do agendamento, independentes e ajustáveis/desativáveis por compromisso. **PENDENTE:** central e leitura, soneca/repetição, preferências globais, push e canais externos dos pagos.
 - Referência: [11-agenda-manual-basico-cortesia.md](11-agenda-manual-basico-cortesia.md).
 
 ## Avisos por plano e upgrade contextual — IN-010 (01/11/2026)
