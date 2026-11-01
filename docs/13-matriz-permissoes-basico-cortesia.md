@@ -65,7 +65,9 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 | Exportar leads e contatos em **CSV ou XLSX** | **IN-026 APROVADA** | Exportar **todos os registros autorizados da organização ou somente os filtrados**, com controle de acesso, proteção do arquivo, auditoria e limites técnicos proporcionais; não concede exportação de relatórios avançados |
 | Quantidade de leads/contatos | **IN-024 APROVADA: sem teto comercial rígido** | Vale para leads captados dos sites e leads/contatos cadastrados manualmente, sujeitos a uso justo e controles técnicos contra abuso; sem quota numérica oculta |
 | Armazenamento dos dados estruturados (leads, contatos e históricos) | **IN-029 APROVADA: não consomem franquia comercial fixa de arquivos** | Independente da quantidade legítima de registros sem teto rígido (IN-024); manter infraestrutura, uso justo, segurança, capacidade operacional e LGPD |
-| Inclusão e limites dos anexos/documentos no Básico | **PENDENTE** | Definir se anexos são permitidos, quais tipos, franquia e tamanho; não presumir inclusão por IN-029 |
+| Inclusão e tipos de anexos de leads/contatos no Básico | **IN-030 APROVADA: mesmos tipos permitidos nos planos pagos** | Imagens, PDFs e documentos comuns constantes da mesma lista de extensões/MIME permitidas a todos os planos; segurança, autorização, vínculo e histórico. Não criar limitação por tipo só para Básico |
+| Franquia total de arquivos/anexos por plano, inclusive o Básico | **PENDENTE — próxima decisão** | Quotas pagas anteriormente aprovadas: Essencial 1 GB, Profissional 5 GB, Empresarial 10 GB; revisar em conjunto, incluindo Básico, sem alteração automática por IN-030 |
+| Limite global por arquivo e validação de upload | **Regra geral preexistente: até 5 MB/arquivo** | Vale para todos os planos, conforme diretriz geral já aprovada, até revisão expressa; igualdade de formatos não cria exceção de tamanho |
 | Armazenamento temporário de importações/exportações | **PENDENTE** | Políticas próprias de tamanho, processamento, expiração, descarte e proteção de uploads/downloads |
 | Retenção e recuperação de leads/contatos e histórico | **PENDENTE** | Definir ciclo de vida e direitos legais sem confundir com a retenção de 90 dias de avisos internos da agenda |
 
@@ -170,18 +172,34 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 
 **Distinções obrigatórias:**
 1. **Dados estruturados:** registros normais de leads/contatos, histórico e informações textuais, sob controle de acesso, uso justo, medidas técnicas contra abuso, disponibilidade e segurança. Não mostrar “espaço de anexos esgotado” como motivo para impedir cadastro/recepção legítima de um lead.
-2. **Anexos e documentos permanentes:** **ainda não foi aprovado se o Básico incluirá upload/armazenamento de imagens, PDFs e documentos vinculados aos contatos, nem franquia, limites por arquivo ou pacotes adicionais**. Não presumir inclusão nem gratuidade ilimitada por IN-029. Outras decisões de módulos pagos permanecem intactas.
+2. **Anexos e documentos permanentes:** **IN-030 aprovou posteriormente que o Básico inclua anexos com os mesmos formatos permitidos nos planos pagos**, como imagens, PDFs e documentos comuns, com autorização e segurança. **A franquia total de armazenamento por plano (inclusive Básico) está pendente de revisão conjunta**. O limite geral anteriormente aprovado de **5 MB por arquivo** permanece vigente em todos os planos até decisão específica de alteração; inclusão não significa armazenamento ilimitado.
 3. **Arquivos temporários:** uploads de **importação CSV/XLSX** (IN-025), prévias de processamento, downloads/arquivos de **exportação CSV/XLSX** (IN-026) e outros artefatos técnicos devem seguir regras **próprias a definir** para tamanho, segurança, retenção transitória, expiração, limpeza e auditoria. A aprovação dessas operações não concede depósito permanente de arquivos.
 4. **Sem ilimitado técnico:** a inexistência de franquia comercial fixa para dados estruturados **não significa recursos computacionais ou armazenamento físico infinitos**. Manter proteções antispam, limites técnicos proporcionais e escalabilidade, **sem quota comercial oculta por número de contatos** e sem descartar silenciosamente leads já confirmados como recebidos.
 5. **Integridade e privacidade:** políticas de retenção, backup, restauração, descarte, LGPD e obrigações legais dos registros estruturados **ainda serão definidas**. Preservar vínculos de agenda, oportunidades, origens e trilhas de auditoria conforme regras próprias, inclusive quando houver arquivamento (IN-023), mesclagem (IN-028) ou exclusão controlada (IN-027).
 6. **Assinaturas pagas independentes:** as quotas de armazenamento aprovadas para planos CRM **Essencial (1 GB), Profissional (5 GB) e Empresarial (10 GB)** são decisões do catálogo pago, **não quotas automaticamente aplicáveis ao Básico Cortesia**. A IN-029 não as revoga nem redefine.
 7. **Separação financeira/operacional:** não criar cobrança, upgrade compulsório ou bloqueio de leads legítimos devido ao uso dos dados estruturados; a futura franquia de arquivos deverá ter condições claras e não alterar os contratos do Onepage sem autorização.
 
-**Ainda PENDENTES:** se anexos serão incluídos no Básico; tipos e quantidade/tamanho/volume de anexos e suas franquias; exibição de uso e comportamento ao esgotar espaço de arquivos; arquivos transitórios e duração; política de retenção e recuperação de leads/contatos; volume técnico de processamento e operações sem perda de leads aceitos. Não extrapolar a retenção de **90 dias das notificações internas da agenda** (IN-018) para dados de contato ou históricos comerciais.
+**IN-030 APROVADA POSTERIORMENTE:** o Básico permite os **mesmos tipos de anexos dos demais planos**, com segurança e históricos. **PENDENTES:** revisão da franquia total por plano (Básico/Essencial/Profissional/Empresarial), comportamento ao atingir espaço; arquivos transitórios e duração; política de retenção e recuperação. O limite geral por arquivo continua 5 MB até eventual revisão expressa. Não extrapolar a retenção de **90 dias das notificações internas da agenda** (IN-018) para dados de contato ou históricos comerciais.
 
-**Próxima decisão:** inclusão funcional de anexos/documentos em leads e contatos no Básico. Caso aprovados, definir a franquia de arquivos em etapa específica, separada dos dados estruturados.
+**IN-030 aprovou posteriormente inclusão e paridade de formatos de anexos no Básico. Próxima decisão:** revisar franquias totais de armazenamento **para todos os planos** — Básico Cortesia, Essencial, Profissional e Empresarial — mantendo dados estruturados fora da franquia comercial fixa do Básico (IN-029).
 
-### Situação consolidada dos complementos às IN-023 a IN-029
+### Paridade de tipos de anexos entre Básico e planos pagos — IN-030 APROVADA em 2026-11-01
+
+**Decisão expressa:** o **CRM Básico Cortesia permite anexar a leads e contatos os mesmos tipos de arquivo que os planos pagos Essencial, Profissional e Empresarial**. Não criar listas de extensões/MIME mais restritivas por se tratar do Básico. Entre os arquivos comuns estão **imagens, PDFs e documentos usuais**, conforme a **lista segura e centralizada de formatos efetivamente autorizados do CRM geral**. O catálogo exato de extensões/MIME e eventuais revisões de formatos são regras transversais, não permissões comerciais diferentes entre esses planos.
+
+**Regras preservadas e alcance da aprovação:**
+1. O administrador autenticado poderá anexar e consultar os documentos **nos leads/contatos da própria empresa**, com validação de tipo real de arquivo, antivírus/segurança, proteção de armazenamento, isolamento multiempresa, controle de acesso e histórico de inclusão/substituição/exclusão.
+2. **Tipos aceitos iguais** não significam acesso a módulos pagos, a envios de arquivos por APIs externas, a armazenamento ilimitado nem a funcionalidades avançadas de gestão documental não aprovadas no Básico.
+3. **Limite técnico global já aprovado no CRM geral: 5 MB por arquivo**, para os planos e formatos permitidos. A IN-030 **não o altera**. Revisões futuras precisam de aprovação explícita.
+4. **Franquias totais de arquivos são uma decisão separada a rever para todos os planos**, inclusive o Básico: as quotas atuais registradas do CRM pago são **Essencial 1 GB, Profissional 5 GB, Empresarial 10 GB** por empresa; **nenhuma franquia total foi aprovada para o Básico ainda**. Não modificar quotas pagas sem nova decisão. A quota deve refletir o armazenamento efetivo de anexos e versões conforme regras gerais.
+5. **IN-029 continua válida:** dados estruturados de leads/contatos e seus históricos textuais no Básico **não consomem a franquia comercial fixa de anexos**. Esgotamento de futura quota de arquivos não deve impedir o recebimento de leads legítimos do formulário (IN-024).
+6. Uploads temporários de importação e arquivos temporários de exportação (IN-025/IN-026), política de expiração, retenção, backup e recuperação **ainda serão detalhados separadamente**; não inferir que ocuparão a franquia permanente de anexos.
+
+**PENDENTES:** aprovação das **capacidades totais de anexos para Básico, Essencial, Profissional e Empresarial**, regras de armazenamento atingido e eventuais pacotes adicionais; catálogo técnico exato de formatos/MIME (mesmo em todos os planos); detalhes de histórico de arquivos/visibilidade; retenção e temporários. A IN-030 **aprova a inclusão e igualdade de tipos**, não as quotas de armazenamento.
+
+**Próxima decisão:** comparar e definir as **franquias totais de armazenamento dos quatro planos**, partindo das quotas previamente aprovadas para os três pagos (1/5/10 GB), sem inventar valor para o Básico.
+
+### Situação consolidada dos complementos às IN-023 a IN-030
 
 - **IN-024 APROVADA:** sem teto comercial rígido de quantidade de leads e contatos, tanto os recebidos via site como os cadastrados manualmente, sujeitos a uso justo e controles técnicos. **IN-029 aprovada posteriormente:** dados estruturados não contam na franquia comercial fixa de arquivos; parâmetros técnicos de proteção, capacidade operacional e retenção permanecem pendentes, sem quota comercial disfarçada.
 - **IN-025 APROVADA:** importação básica via CSV e XLSX, com mapeamento, prévia, validação e alerta de possíveis duplicidades, sem mesclagem automática. **Pendentes:** limites técnicos por arquivo/lote, regras de correspondência de campos, tratamento de linhas inválidas, política de duplicidades (ignorar/atualizar/decidir individualmente), concorrência e relatório final.
@@ -190,7 +208,7 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 - **Retenção e restauração de arquivados**: duração do histórico, interfaces, auditoria e regras de dados pessoais.
 - Detalhes opcionais de campos e filtros, cadastro manual de interações e registro de situação comercial, sem conceder funcionalidades premium por inferência.
 
-**Próxima decisão a submeter ao responsável:** inclusão de **anexos** no CRM Básico Cortesia e, em seguida, capacidade/limites dos anexos, armazenamento temporário de uploads, retenção e recuperação. **Nenhuma programação autorizada até aprovação do planejamento.**
+**Próxima decisão a submeter ao responsável:** **franquias de armazenamento de arquivos por plano**, incluindo Básico Cortesia e revisão dos valores anteriormente aprovados (Essencial 1 GB, Profissional 5 GB, Empresarial 10 GB); depois armazenamento temporário, retenção e recuperação. **Nenhuma programação autorizada até aprovação do planejamento.**
 
 ## Módulos seguintes ainda pendentes
 
