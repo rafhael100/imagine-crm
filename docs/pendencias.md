@@ -13,6 +13,16 @@
 10. Planejar recuperação de desastres para comprovar RPO de 15 minutos/RTO de 4 horas.
 11. Definir UX, protótipos e critérios de aceite antes de iniciar desenvolvimento.
 
+## Integração Imagine Portal × CRM — pendências após IN-002 (01/11/2026)
+
+- **Aprovado:** comprador de Onepage/futura Landing Page recebe benefício gratuito de CRM Básico e paga somente o site no Portal Imagine; upgrade CRM é contratado e cobrado no próprio CRM, criando segunda mensalidade.
+- Definir cotas/recursos Básico e mapeamento para os planos comerciais Essencial/Profissional/Empresarial; não extrapolar limites do trial.
+- Definir vigência do benefício e regras de inadimplência, cancelamento, estorno e recontratação do site.
+- Definir fallback do plano pago CRM para o Básico, limites excedentes e retenção.
+- Definir catálogo e valor da Landing Page e marcos para concessão do benefício.
+- Definir API autenticada, vínculos tenant/pedido, fila idempotente de lead forms, privacidade e testes de integração.
+- Documento: [07-integracao-site-e-crm-basico.md](07-integracao-site-e-crm-basico.md).
+
 ## Observações
 - Este conjunto é um marco documental inicial; não significa que todos os capítulos estão fechados.
 - Não aprovar automaticamente exemplos, descontos ilustrativos nem arquitetura apenas sugerida.
