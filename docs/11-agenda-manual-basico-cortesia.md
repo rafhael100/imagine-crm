@@ -1,6 +1,6 @@
 # 11 — CRM Básico Cortesia: Agenda Manual (um profissional), serviços e regras operacionais
 
-> **IN-008 APROVADA em 2026-11-01:** o CRM Básico Cortesia permite **1 profissional com agenda própria por empresa/organização**. A agenda permanece **exclusivamente manual e interna** (IN-007).  
+> **IN-008 e IN-009 APROVADAS em 2026-11-01:** o CRM Básico Cortesia permite **1 profissional com agenda própria e até 10 serviços ativos por empresa/organização**. A agenda permanece **exclusivamente manual e interna** (IN-007).  
 > **Demais parâmetros, quantidades e requisitos abaixo são PROPOSTOS e aguardam aprovação explícita.** Não implementar, criar cobranças ou publicar a funcionalidade.
 
 ## 1. Decisões já aprovadas e limites de interpretação
@@ -8,6 +8,7 @@
 - **IN-004:** o Básico Cortesia, benefício de clientes elegíveis ao Onepage/Landing Page Imagine, inclui o módulo Agenda e Agendamentos.
 - **IN-007:** a agenda é **manual** no Básico: usuário autenticado e autorizado registra e administra agendamentos; visitantes não acessam página pública para reservar, nem botão, embed, chatbot ou API pública para autoagendamento. A página pública e a capacidade de reservar pelo site ficam exclusivas dos planos CRM pagos.
 - **IN-008:** somente **1 profissional com agenda própria**, por organização CRM beneficiária do Básico, independentemente de quantos contratos de Onepage/Landing Page estejam vinculados à mesma empresa. Não confundir **profissional agendável** com **usuário habilitado a entrar no CRM**: a quota de usuários administrativos ainda está pendente. Se houver apenas um usuário no plano, esse usuário pode ser o profissional, mas isso deve ser configurado e validado.
+- **IN-009:** o profissional da empresa beneficiária pode manter **até 10 serviços ativos simultaneamente**, somando todos os tipos de atendimento cadastrados para essa agenda. Serviços inativos/arquivados **não ocupam vaga ativa**, mas seus históricos/agendamentos associados devem ser preservados. Não multiplicar a quota por site ou formulário. Ao tentar ativar o 11º serviço, bloquear a operação com explicação e opção de inativar outro serviço ou contratar plano elegível.
 - As automações comerciais do Básico permanecem em modelos prontos, até **3 ativas simultaneamente por empresa como baseline atual** (IN-005), com revisão final numérica planejada (IN-006). Essas automações não autorizam agendamento público.
 - Nos planos pagos Essencial, Profissional e Empresarial, a agenda e a página pública já constam do produto geral e **os agendamentos mensais foram aprovados como ilimitados**. Isso não estabelece automaticamente quota mensal para o Básico.
 - O **pagamento pelo serviço agendado** (taxa, sinal, checkout, Pix/cartão dos clientes da empresa) foi rejeitado para o CRM geral e continua fora do escopo.
@@ -22,11 +23,11 @@
 - `availability_rule`: janelas semanais por dia; exceções de data; férias, feriados e bloqueios. Aplicação no motor de validação de conflitos.
 - Contato/lead criado pela integração do site não deve criar um appointment por si só.
 
-## 3. Serviços cadastráveis — PROPOSTO, NÃO APROVADO
+## 3. Serviços cadastráveis — IN-009 APROVOU A QUANTIDADE; DEMAIS CAMPOS PROPOSTOS
 
 | Dimensão | Recomendação | Justificativa |
 | --- | --- | --- |
-| Quantidade | **Até 10 serviços ativos por organização Básico** como ponto de partida (avaliar 5, 10 ou sem teto comercial) | Pequenos prestadores podem ter mais de um atendimento; custo baixo de cadastro, mas manter diferenciação |
+| Quantidade | **IN-009 APROVADO: até 10 serviços ativos por organização Básico e seu único profissional** | O 11º não pode ser ativado enquanto houver 10 ativos; serviços inativos não consomem vaga e histórico permanece |
 | Nome | Obrigatório, único por empresa entre serviços ativos | Ex.: Consulta, Orçamento, Avaliação, Visita Técnica |
 | Descrição | Opcional | Uso interno, não vira página pública no Básico |
 | Duração | Por serviço (ex.: 15, 30, 45, 60, 90 min) e opção de duração customizada validada | A duração determina ocupação e conflito |
@@ -35,7 +36,7 @@
 | Serviço ativo/inativo | Inativar sem excluir histórico | Protege agendamentos anteriores |
 | Capacidade | **Um atendimento não simultâneo para o único profissional**, salvo exceção expressamente aprovada no futuro | Alinha ao objetivo de agenda individual manual |
 
-**Não implicar:** dez serviços não significa dez profissionais ou dez agendas.
+**Não implicar:** dez serviços não significa dez profissionais ou dez agendas. Uma mesma categoria de serviço não pode ser usada para criar outra agenda pública no Básico. **Serviço ativo** é o objeto que pode ser selecionado pelo usuário durante registro manual; serviço inativo pode ser consultado historicamente, mas não deve ser oferecido como novo atendimento até reativação autorizada. Se ocorrer downgrade com mais de 10 ativos, preservar configurações/dados, exigir escolha de até dez ativos e suspender novas seleções dos excedentes; não excluir histórico.
 
 ## 4. Horários do profissional — PROPOSTO, NÃO APROVADO
 
@@ -64,7 +65,7 @@
 | --- | --- | --- |
 | Profissionais com agenda própria | **1 — IN-008 APROVADO** | 1 |
 | Usuários CRM | 1 ou mais; o profissional pode ser o único usuário ou um registro distinto | **1 usuário** (a aprovar separadamente) |
-| Serviços ativos | 5 / **10** / sem limite rígido | Até **10** |
+| Serviços ativos | **IN-009 APROVADO: 10** | 10 simultaneamente ativos; demais inativos não consomem quota |
 | Agendamentos manuais por mês | 30 / 100 / **sem limite rígido com uso justo** | Sem teto rígido comercial (a confirmar) |
 | Unidades/localidades | 1 / mais | **1 unidade lógica** sem várias agendas; a aprovar |
 | Agendamentos simultâneos | Um por horário do único profissional, salvo encaixes autorizados | 1 sem sobreposição |
@@ -98,8 +99,33 @@
 9. Retorno de plano pago a Básico mantém reservas/histórico; bloqueia novas públicas e impede cadastro do segundo profissional ativo se a quota for excedida, sem exclusão silenciosa.
 10. A contagem das três automações comerciais ativas é distinta de validar agendamentos ou manter o calendário.
 
-## 9. Próxima aprovação
+## 9. Detalhamento para próxima aprovação — horários e agenda mensal
 
-**Primeiro definir a capacidade da agenda manual em serviços cadastrados**: quantos serviços ativos o profissional poderá manter no Básico? Em seguida, detalhar horários, exceções e o teto ou ausência de teto comercial de agendamentos mensais, sem alterar quotas de automações comerciais neste momento.
+### 9.1 Expediente, pausas e exceções (proposta funcional ainda NÃO aprovada)
 
-**Situação:** IN-008 aprova **1 profissional com agenda**; demais quantitativos permanecem propostos. Todas as mudanças somente em documentos de planejamento.
+- **Agenda semanal flexível:** dias da semana configuráveis, inclusive sábado e domingo; mais de um intervalo de atendimento em um mesmo dia (exemplo: 08h–12h e 13h–18h). Sem impor 08h–18h como padrão obrigatório.
+- **Intervalos de serviço:** duração individual por serviço, com intervalo adicional antes/depois quando configurado; bloquear sobreposição considerando a duração total.
+- **Bloqueios:** almoço, folgas, férias, ausências pessoais, manutenção ou outras indisponibilidades, com intervalos e datas. Bloqueios não apagam reservas já confirmadas; exibir conflitos existentes para revisão manual.
+- **Exceção de expediente em data específica:** permitir abrir ou fechar períodos de um dia distinto do horário padrão, sem reconfigurar toda a semana.
+- **Feriados:** permitir bloqueio manual por enquanto; importação automática de feriados nacionais/municipais seria decisão separada.
+- **Agendamento fora do expediente:** propor permitir **somente a usuário autorizado**, exibindo aviso destacado e exigindo confirmação/justificativa; ainda a aprovar. Nunca ignorar conflitos com reservas existentes.
+- **Fuso horário:** cada empresa mantém fuso IANA e eventos com hora normalizada em UTC; interface exibe dia e hora locais com correções de horário de verão.
+- **Calendário interno:** visualização diária/semanal/mensal e estados de reservas já aprovados para o CRM geral, com verificação de permissões e isolamento por empresa.
+
+### 9.2 Quantidade mensal de agendamentos manuais (PENDENTE)
+
+**Recomendação:** não impor teto comercial rígido de **agendamentos manuais** por mês no Básico, sujeito a política clara de uso justo e limites técnicos contra abuso (tamanho de payload, requisições, retenção, rate-limit). Razões: só há **um profissional** e **não existe autoagendamento público**; controlar por volume de compromissos pode atrapalhar um pequeno prestador legítimo. Isso **não significa** acesso irrestrito a APIs públicas, importações em massa, robôs ou integrações de agendamento. Os planos pagos já têm agendamentos mensais ilimitados aprovados.
+
+Outras opções a avaliar antes de aprovar: teto de 100 agendamentos novos/mês ou de 300 agendamentos novos/mês, sempre com regra explícita de contagem, mês/fuso, estornos/cancelamentos, não comparecimentos, dados históricos e migração.
+
+**Critério sugerido para uso justo:** taxa e frequência humana compatíveis com lançamento manual; limites técnicos documentados contra abuso, sem interromper trabalho legítimo ou apagar agendamentos aceitos silenciosamente. Se a política bloquear algo, mostrar ao usuário o motivo e fluxo de suporte/upgrade.
+
+### 9.3 Decisões seguintes
+
+1. **IN-009 já aprovou** até 10 serviços ativos. Aguardar definição sobre **horários semanais flexíveis, bloqueios e permissões de exceção fora de expediente**.
+2. Aprovar **agendamentos manuais sem teto comercial rígido**, ou escolher limite mensal explícito.
+3. Definir se notificações internas comuns de agenda fazem parte do sistema sem consumir as vagas de automação comercial.
+4. Revisar campos de serviço, permissões e limite de usuários do Básico; funcionalidades externas (WhatsApp Business API, Outlook/Google Calendar etc.) não são autorizadas pela IN-009.
+
+
+**Situação:** IN-008 aprova **1 profissional com agenda**, IN-009 aprova **até 10 serviços ativos por organização Básico**; regras de expediente e quantidade mensal de reservas manuais permanecem **propostas**. Somente documentação de planejamento, sem implementação.
