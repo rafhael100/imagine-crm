@@ -1,13 +1,14 @@
 # 11 — CRM Básico Cortesia: Agenda Manual (um profissional), serviços e regras operacionais
 
-> **IN-008 e IN-009 APROVADAS em 2026-11-01:** o CRM Básico Cortesia permite **1 profissional com agenda própria e até 10 serviços ativos por empresa/organização**. A agenda permanece **exclusivamente manual e interna** (IN-007).  
-> **Demais parâmetros, quantidades e requisitos abaixo são PROPOSTOS e aguardam aprovação explícita.** Não implementar, criar cobranças ou publicar a funcionalidade.
+> **IN-008, IN-009 e IN-011 APROVADAS em 2026-11-01:** o CRM Básico Cortesia permite **1 profissional com agenda própria, até 10 serviços ativos e horários flexíveis com exceção manual fora de expediente mediante aviso e confirmação explícita, sem conflitos**. A agenda permanece **exclusivamente manual e interna** (IN-007).  
+> **Somente as decisões identificadas como APROVADAS têm esse status.** Regras complementares, número de reservas mensais e características não detalhadas permanecem PROPOSTOS. Não implementar, criar cobranças ou publicar a funcionalidade.
 
 ## 1. Decisões já aprovadas e limites de interpretação
 
 - **IN-004:** o Básico Cortesia, benefício de clientes elegíveis ao Onepage/Landing Page Imagine, inclui o módulo Agenda e Agendamentos.
 - **IN-007:** a agenda é **manual** no Básico: usuário autenticado e autorizado registra e administra agendamentos; visitantes não acessam página pública para reservar, nem botão, embed, chatbot ou API pública para autoagendamento. A página pública e a capacidade de reservar pelo site ficam exclusivas dos planos CRM pagos.
 - **IN-008:** somente **1 profissional com agenda própria**, por organização CRM beneficiária do Básico, independentemente de quantos contratos de Onepage/Landing Page estejam vinculados à mesma empresa. Não confundir **profissional agendável** com **usuário habilitado a entrar no CRM**: a quota de usuários administrativos ainda está pendente. Se houver apenas um usuário no plano, esse usuário pode ser o profissional, mas isso deve ser configurado e validado.
+- **IN-011:** aprovada a configuração semanal flexível (inclusive dias sem expediente, sábados e domingos), múltiplos períodos por dia, pausas/intervalos, bloqueios manuais de folgas, férias e feriados, duração própria de cada serviço, preservação dos compromissos nas mudanças de expediente, e **agendamento manual excepcional fora do expediente** com aviso e confirmação explícita de usuário autorizado, **sem ignorar conflitos**. A decisão não concede página pública de autoagendamento e não aprova limite mensal.
 - **IN-009:** o profissional da empresa beneficiária pode manter **até 10 serviços ativos simultaneamente**, somando todos os tipos de atendimento cadastrados para essa agenda. Serviços inativos/arquivados **não ocupam vaga ativa**, mas seus históricos/agendamentos associados devem ser preservados. Não multiplicar a quota por site ou formulário. Ao tentar ativar o 11º serviço, bloquear a operação com explicação e opção de inativar outro serviço ou contratar plano elegível.
 - As automações comerciais do Básico permanecem em modelos prontos, até **3 ativas simultaneamente por empresa como baseline atual** (IN-005), com revisão final numérica planejada (IN-006). Essas automações não autorizam agendamento público.
 - Nos planos pagos Essencial, Profissional e Empresarial, a agenda e a página pública já constam do produto geral e **os agendamentos mensais foram aprovados como ilimitados**. Isso não estabelece automaticamente quota mensal para o Básico.
@@ -38,15 +39,44 @@
 
 **Não implicar:** dez serviços não significa dez profissionais ou dez agendas. Uma mesma categoria de serviço não pode ser usada para criar outra agenda pública no Básico. **Serviço ativo** é o objeto que pode ser selecionado pelo usuário durante registro manual; serviço inativo pode ser consultado historicamente, mas não deve ser oferecido como novo atendimento até reativação autorizada. Se ocorrer downgrade com mais de 10 ativos, preservar configurações/dados, exigir escolha de até dez ativos e suspender novas seleções dos excedentes; não excluir histórico.
 
-## 4. Horários do profissional — PROPOSTO, NÃO APROVADO
+## 4. Horários do profissional — IN-011 APROVADA (detalhes complementares indicados)
 
-- Configuração semanal por dia da semana, podendo ter **múltiplos períodos por dia** (ex.: 08h–12h e 13h–18h) e dias sem expediente.
-- **Fuso horário da organização** e exibição no fuso selecionado, datas armazenadas em UTC com fuso IANA; tratar mudança de horário de verão e datas ambíguas.
-- Bloqueios manuais de almoço, férias, consulta pessoal ou indisponibilidade temporária; exceções por data (horário reduzido/estendido).
-- Agendamento manual normalmente respeita expediente e bloqueios. Se usuário autorizado desejar agendar fora do expediente, mostrar alerta e pedir confirmação/motivo; **a permissão excepcional ainda é decisão pendente**.
-- Alterações do expediente não devem cancelar automaticamente reservas existentes; informar conflitos para tratamento manual.
-- Feriados: possibilidade de bloquear manualmente; importação automática de calendário nacional/municipal é recurso pendente e não incluído automaticamente.
-- Recomendação de antecedência: permitir reservas para hoje e futuras, configurando antecipação máxima sem limite obrigatório inicial; decidir depois se haverá exceção de reservas retroativas para registro histórico.
+**Regra funcional aprovada:** a agenda de um profissional pode operar em dias e horários livremente configurados, com validação real de disponibilidade, sem reservas incompatíveis e sem criação automática pelo visitante.
+
+### 4.1 Expediente regular — APROVADO
+
+- Configurar individualmente **segunda a domingo**, inclusive dias sem atendimento, sábados e domingos, sem obrigar um horário padrão (ex.: 08h–18h).
+- Permitir **vários períodos por dia** (ex.: 08h–12h e 13h–18h).
+- Configurar pausas/intervalos de almoço, descanso e **intervalos entre serviços**; cada um dos até 10 serviços ativos terá sua própria duração.
+- Exibir agenda por dia, semana e mês no CRM, com foco no único profissional do Básico.
+- Modificar as janelas de expediente sem apagar/rescindir automaticamente compromissos existentes; apontar conflitos e permitir análise/ajuste manual autorizado.
+
+### 4.2 Bloqueios e exceções de expediente — APROVADO
+
+- Inserir **bloqueio manual** por horas, datas ou períodos para almoço, folgas, férias, feriados e indisponibilidades.
+- Configurar exceções pontuais para determinado dia com horário diferente do padrão, sem alterar a grade semanal.
+- A existência de reserva anterior que colida com bloqueio novo exige aviso e tratamento manual; **não excluir, reagendar ou cancelar silenciosamente**.
+- **Feriados:** aprovada marcação/bloqueio manual; sincronização automática com calendário nacional/municipal ou Google/Outlook **não foi aprovada** por esta decisão.
+
+### 4.3 Agendamento manual fora do expediente — APROVADO SOB CONFIRMAÇÃO
+
+1. Um usuário **autenticado e autorizado** seleciona um horário fora da grade regular.
+2. O CRM apresenta **aviso claro** de exceção, com dia/horário e identificação de que está fora do expediente.
+3. O operador precisa **confirmar expressamente** a exceção antes da gravação. A confirmação não deve ser presumida nem reaproveitada em outras reservas.
+4. O backend **revalida disponibilidade e conflito atomicamente**, incluindo duração do serviço e pausas; não aceita sobreposição incompatível mesmo que haja confirmação.
+5. Registrar no histórico e auditoria autor, momento, horário, justificativa **se informada** e a marcação de exceção, para investigação e futuras alterações.
+6. O aviso de fora do expediente **não autoriza superar bloqueios específicos** (férias, indisponibilidade) nem reserva pública do visitante; qualquer política para abrir exceção de bloqueio específico ou encaixe incompatível exige **decisão própria posterior**.
+7. Motivo obrigatório, papéis específicos autorizados e forma exata do aviso são **detalhes de UX/permissionamento pendentes**, não presumidos além da autorização exigida.
+
+### 4.4 Validação, horários e fusos — diretrizes técnicas derivadas (propostas de implementação)
+
+- Validar overlap no servidor por profissional, organização, janela e ocupação total (duração + intervalos), inclusive concorrência de duas operações.
+- Armazenar timestamps normalizados em UTC e fuso IANA da organização, apresentar hora local e tratar diferenças de fuso/horário de verão.
+- Registrar alteração de horário padrão/bloqueio/exceção e suas consequências, respeitando separação multiempresa.
+- A entrada manual pode criar um compromisso para o próprio dia ou futuro. Se agendamento retroativo será autorizado, e se há antecedência máxima ou mínima obrigatória, **segue pendente**.
+
+**Observação:** agendamentos fora do expediente são ações **manuais dentro do CRM**. Não equivalem ao agendamento público automático, que continua restrito a planos pagos (IN-007).
+
 
 ## 5. Operações manuais da agenda — núcleo aprovado, detalhamento proposto
 
@@ -105,16 +135,12 @@
 
 ## 9. Detalhamento para próxima aprovação — horários e agenda mensal
 
-### 9.1 Expediente, pausas e exceções (proposta funcional ainda NÃO aprovada)
+### 9.1 Expediente, pausas e exceções — IN-011 APROVADA
 
-- **Agenda semanal flexível:** dias da semana configuráveis, inclusive sábado e domingo; mais de um intervalo de atendimento em um mesmo dia (exemplo: 08h–12h e 13h–18h). Sem impor 08h–18h como padrão obrigatório.
-- **Intervalos de serviço:** duração individual por serviço, com intervalo adicional antes/depois quando configurado; bloquear sobreposição considerando a duração total.
-- **Bloqueios:** almoço, folgas, férias, ausências pessoais, manutenção ou outras indisponibilidades, com intervalos e datas. Bloqueios não apagam reservas já confirmadas; exibir conflitos existentes para revisão manual.
-- **Exceção de expediente em data específica:** permitir abrir ou fechar períodos de um dia distinto do horário padrão, sem reconfigurar toda a semana.
-- **Feriados:** permitir bloqueio manual por enquanto; importação automática de feriados nacionais/municipais seria decisão separada.
-- **Agendamento fora do expediente:** propor permitir **somente a usuário autorizado**, exibindo aviso destacado e exigindo confirmação/justificativa; ainda a aprovar. Nunca ignorar conflitos com reservas existentes.
-- **Fuso horário:** cada empresa mantém fuso IANA e eventos com hora normalizada em UTC; interface exibe dia e hora locais com correções de horário de verão.
-- **Calendário interno:** visualização diária/semanal/mensal e estados de reservas já aprovados para o CRM geral, com verificação de permissões e isolamento por empresa.
+As regras de expediente flexível, múltiplos períodos, pausas, duração por serviço, bloqueios, folgas, férias, feriados manuais, exceções por data, preservação dos compromissos e agendamentos manuais excepcionais fora do expediente **com aviso/confirmação e sem conflitos** estão aprovadas. Os detalhes operacionais constam na seção 4.
+
+**Pendente:** política exata para bloqueios específicos e possíveis exceções, justificativa obrigatória ou opcional, agendamento retroativo, integrações externas e a quantidade mensal de reservas; **não interpretar aprovação de horários como aprovação de agendamentos ilimitados**.
+
 
 ### 9.2 Quantidade mensal de agendamentos manuais (PENDENTE)
 
@@ -126,10 +152,10 @@ Outras opções a avaliar antes de aprovar: teto de 100 agendamentos novos/mês 
 
 ### 9.3 Decisões seguintes
 
-1. **IN-009 já aprovou** até 10 serviços ativos. Aguardar definição sobre **horários semanais flexíveis, bloqueios e permissões de exceção fora de expediente**.
+1. **IN-009 e IN-011 já aprovaram** até 10 serviços ativos e a agenda flexível, incluindo bloqueios e exceção manual fora do expediente com confirmação e sem conflitos. Consolidar apenas detalhes técnicos/UX ainda abertos.
 2. Aprovar **agendamentos manuais sem teto comercial rígido**, ou escolher limite mensal explícito.
 3. Definir se notificações internas comuns de agenda fazem parte do sistema sem consumir as vagas de automação comercial.
 4. Revisar campos de serviço, permissões e limite de usuários do Básico; funcionalidades externas (WhatsApp Business API, Outlook/Google Calendar etc.) não são autorizadas pela IN-009.
 
 
-**Situação:** IN-008 aprova **1 profissional com agenda**, IN-009 aprova **até 10 serviços ativos por organização Básico**; regras de expediente e quantidade mensal de reservas manuais permanecem **propostas**. Somente documentação de planejamento, sem implementação.
+**Situação:** IN-008 aprova **1 profissional com agenda**; IN-009 aprova **até 10 serviços ativos**; **IN-011 aprova horários flexíveis e exceções manuais fora do expediente com aviso/confirmação sem conflitos**. **A quantidade mensal de agendamentos manuais permanece pendente de aprovação**. Somente documentação de planejamento, sem implementação.
