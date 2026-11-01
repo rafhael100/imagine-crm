@@ -43,7 +43,7 @@
 
 ### IN-013 — Avisos internos da agenda incluídos no Básico (APROVADA)
 
-A empresa poderá ver notificações operacionais e lembretes da agenda **somente dentro do CRM**, sem consumir o limite de automações comerciais ativas (IN-005). **Não incluir e-mail automático ao cliente ou envio por API oficial do WhatsApp** no benefício; esses serviços ficam disponíveis somente em **planos pagos ou adicionais elegíveis**, sujeitos a contratação e permissões. Antecedência, frequência, personalização e UX de notificações internas ainda aguardam especificação. [Agenda Manual do Básico](11-agenda-manual-basico-cortesia.md).
+A empresa poderá ver notificações operacionais e lembretes da agenda **somente dentro do CRM**, sem consumir o limite de automações comerciais ativas (IN-005). **Não incluir e-mail automático ao cliente ou envio por API oficial do WhatsApp** no benefício; esses serviços ficam disponíveis somente em **planos pagos ou adicionais elegíveis**, sujeitos a contratação e permissões. **IN-014 aprovou dois lembretes internos padrão, 24 horas e 1 hora antes do atendimento, com ajuste e desativação independentes por compromisso**. A central de exibição, o comportamento de lembretes não lidos e preferências mais amplas ainda precisam de especificação. [Agenda Manual do Básico](11-agenda-manual-basico-cortesia.md).
 
 ### IN-010 — Mensagens de recursos indisponíveis e limites atingidos (APROVADA)
 
