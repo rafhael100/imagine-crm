@@ -224,3 +224,12 @@
 - A contagem deve ser alterada de forma atômica nas mudanças de responsável/status para evitar exceder limites por concorrência ou criar capacidade fictícia.
 - O estado de funcionário (Disponível, Ocupado, Ausente, Offline) define **elegibilidade para novas atribuições** e não altera por si só a quantidade de conversas abertas que já estão sob sua responsabilidade.
 - **A definir:** tratamento da reserva de capacidade quando uma conversa é pré-atribuída mas ainda não aceita, e precedência entre limite individual e limite coletivo.
+
+## Limites simultâneos por funcionário e equipe — APROVADO
+- Na distribuição automática das conversas WhatsApp, validar em conjunto os limites por funcionário e por equipe. O primeiro teto atingido impede novas atribuições.
+- O teto da equipe soma conversas abertas sob responsabilidade dos seus funcionários, sem duplicar uma conversa durante redistribuições e transferências.
+- Se o funcionário ou a equipe alcançar o teto, novos atendimentos permanecem em fila; a liberação de capacidade permite retomar as atribuições conforme disponibilidade e permissões.
+- Aplicar validação transacional para evitar exceder limites por atribuições concorrentes.
+- Reduzir um limite não encerra nem transfere conversas existentes, apenas impede novas atribuições enquanto estiver cheio.
+- Exemplo de cinco conversas por funcionário e vinte por equipe não é valor universal obrigatório.
+- Pendentes: regras de fila e reserva de capacidade antes do aceite de atendimento.
