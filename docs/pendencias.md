@@ -16,7 +16,8 @@
 ## Integração Imagine Portal × CRM — pendências após IN-002 (01/11/2026)
 
 - **Aprovado:** comprador de Onepage/futura Landing Page recebe benefício gratuito de CRM Básico e paga somente o site no Portal Imagine; upgrade CRM é contratado e cobrado no próprio CRM, criando segunda mensalidade.
-- **IN-003 aprovada:** Básico cortesia será uma versão enxuta, exclusiva para site/landing page, diferente do Essencial. **Ainda aprovar** matriz recomendada de recursos/quotas (1 usuário, 1 funil, formulários por site, sem agentes/automações etc.), após avaliar escala, custo, uso justo e retenção. Ver [08-plano-basico-cortesia.md](08-plano-basico-cortesia.md).
+- **IN-003 aprovada:** Básico cortesia será uma versão enxuta, exclusiva para site/landing page, diferente do Essencial.
+- **IN-004 aprovada:** liberar Agenda e Agendamentos no Básico. **Ainda definir** agenda pública/incorporada ao site, limites e recursos de calendário, confirmações e notificações, número de usuários/profissionais, quotas de reservas. Revisar quais automações comerciais do CRM geral serão liberadas, sem presumir recursos e limites dos planos pagos. Documento: [09-revisao-agenda-e-automacoes-basico.md](09-revisao-agenda-e-automacoes-basico.md). **Ainda aprovar** matriz recomendada de recursos/quotas (1 usuário, 1 funil, formulários por site, sem agentes/automações etc.), após avaliar escala, custo, uso justo e retenção. Ver [08-plano-basico-cortesia.md](08-plano-basico-cortesia.md).
 - Definir vigência do benefício e regras de inadimplência, cancelamento, estorno e recontratação do site.
 - Definir fallback do plano pago CRM para o Básico, limites excedentes e retenção.
 - Definir catálogo e valor da Landing Page e marcos para concessão do benefício.
