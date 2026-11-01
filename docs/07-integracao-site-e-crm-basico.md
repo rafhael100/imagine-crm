@@ -2,9 +2,13 @@
 
 > **Decisão IN-002 aprovada (2026-11-01).** Planejamento funcional e contratual; nenhuma integração está implementada. O documento é uma extensão dos planos e regras do CRM Imagine, sincronizada com o projeto `rafhael100/imagine-portal`.
 
+### IN-028 — Mesclagem manual completa e controlada no CRM Básico (APROVADA)
+
+O Administrador da Empresa poderá **mesclar manualmente leads e contatos duplicados**, com **escolha do registro principal, revisão dos conflitos campo a campo e confirmação explícita**, sem perda de vínculos com agendamentos/oportunidades, origens do site, observações, históricos ou auditoria. **Mesclagem automática não é permitida**, inclusive no recebimento de formulários ou na importação CSV/XLSX. O **Portal Imagine não poderá iniciar mesclagem em nome do cliente** apenas por manter o site ou a integração; o fluxo deve ser autenticado, autorizado e restrito à empresa no CRM. Detalhes de referência histórica e tratamento de consentimentos estão pendentes. [Matriz IN-028](13-matriz-permissoes-basico-cortesia.md).
+
 ### IN-027 — Exclusão definitiva controlada de leads e contatos dentro do CRM (APROVADA)
 
-O Administrador da Empresa do CRM Básico poderá **excluir definitivamente cadastros elegíveis, com confirmação explícita**. Cadastros ligados a agendamentos, oportunidades, históricos ou obrigações legais exigem **procedimento protegido**, com preservação da integridade dos vínculos, LGPD e auditoria; sem eliminação automática em cascata. O **Portal Imagine não ganha permissão de exclusão dos registros de CRM** somente por operar o Onepage ou a integração dos formulários, e não deve confundir encerramento do site com instrução de apagar a base CRM. **Mesclagem de duplicados, critérios de elegibilidade, anonimização e retenção continuam a definir.** [Matriz IN-027](13-matriz-permissoes-basico-cortesia.md).
+O Administrador da Empresa do CRM Básico poderá **excluir definitivamente cadastros elegíveis, com confirmação explícita**. Cadastros ligados a agendamentos, oportunidades, históricos ou obrigações legais exigem **procedimento protegido**, com preservação da integridade dos vínculos, LGPD e auditoria; sem eliminação automática em cascata. O **Portal Imagine não ganha permissão de exclusão dos registros de CRM** somente por operar o Onepage ou a integração dos formulários, e não deve confundir encerramento do site com instrução de apagar a base CRM. **IN-028 aprovou posteriormente a mesclagem manual controlada; critérios técnicos de exclusão/mesclagem, anonimização e retenção ainda precisam ser definidos.** [Matriz IN-027](13-matriz-permissoes-basico-cortesia.md).
 
 ### IN-026 — Exportação CSV/XLSX de leads e contatos pelo cliente CRM (APROVADA)
 
