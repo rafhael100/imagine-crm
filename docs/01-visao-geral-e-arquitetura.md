@@ -177,3 +177,13 @@
 - Enquanto nenhum humano tiver assumido efetivamente, o cliente pode solicitar retorno à IA; cancelar/retirar solicitação pendente com auditoria e reativar o agente apenas se permitido pelas configurações e regras de canal.
 - Depois da tomada de posse por atendente, volta a valer a regra de **devolução explícita por humano autorizado**; mensagem do cliente pedindo IA não ignora essa proteção.
 - Preservar histórico e controlar mensagens enfileiradas para evitar envio após pausa e respostas simultâneas.
+
+## Distribuição automática de conversas para atendimento humano — APROVADO
+- Quando cliente solicitar atendimento humano ou uma conversa for encaminhada a equipe humana, o CRM poderá **distribuir automaticamente a conversa a funcionário elegível e disponível** da equipe responsável, conforme configuração da empresa/equipe.
+- Oferecer como estratégias configuráveis de distribuição: **rodízio (Round Robin)** entre funcionários disponíveis e **menor carga de atendimentos ativos**; a empresa/equipe define a estratégia aplicável.
+- Considerar equipe/número de WhatsApp, permissões de visualização e atendimento, isolamento por tenant, disponibilidade e estado de expediente antes de distribuir. Um usuário não autorizado ou indisponível não deve receber atribuição automática.
+- Se não houver atendente elegível disponível, manter **fila de espera por atendimento humano**, sem encerrar ou abandonar a conversa e sem reativar a IA automaticamente; registrar claramente pendência e equipe de destino.
+- Registrar funcionário designado, horários, estratégia, mudanças de responsável e eventuais redistribuições em trilha auditável.
+- **Designação automática não equivale necessariamente a aceite/início de atendimento**: preservar distinção entre conversa designada, assumida e em espera, conforme regras anteriores de posse e transferência.
+- A IA permanece pausada diante de pedido de humano; não enviar respostas automatizadas enquanto o cliente aguarda ou quando um humano assumiu a conversa, nos termos das decisões já aprovadas.
+- **Ainda pendente:** forma de definir disponibilidade do funcionário (status manual, login, escala e expediente), limites de capacidade por atendente, timeout de aceite e reatribuição automática, prioridades nas filas.
