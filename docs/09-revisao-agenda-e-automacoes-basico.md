@@ -4,7 +4,7 @@
 > **IN-005 APROVADA em 2026-11-01:** modelos prontos, até **3 automações comerciais ativas simultaneamente por empresa** no Básico Cortesia. Catálogo exato e detalhes da agenda ainda sob avaliação.
 > **IN-006 — diretriz de catálogo:** inventariar toda a biblioteca antes de revisar as quotas de todos os planos; modelos avançados deverão ser elegíveis somente a planos pagos. As **3 ativas** do IN-005 são referência atual, sujeita a **nova aprovação** na revisão final.
 > **IN-007 APROVADA em 2026-11-01:** Básico Cortesia terá **Agenda e Agendamentos apenas internos e manuais**; autoagendamento público por site, link, página do CRM ou visitante fica reservado aos **planos pagos**.
-> **IN-008, IN-009 e IN-011 APROVADAS em 2026-11-01:** somente **1 profissional com agenda própria e até 10 serviços ativos por empresa**; expediente semanal flexível, pausas, bloqueios e agendamento excepcional fora do expediente mediante confirmação de usuário autorizado, sempre sem conflitos. Quotas de usuários e agendamentos por mês permanecem pendentes; ver [11 — Agenda manual](11-agenda-manual-basico-cortesia.md).
+> **IN-008, IN-009 e IN-011 APROVADAS em 2026-11-01:** somente **1 profissional com agenda própria e até 10 serviços ativos por empresa**; expediente semanal flexível, pausas, bloqueios e agendamento excepcional fora do expediente mediante confirmação de usuário autorizado, sempre sem conflitos. **IN-012 aprovou agendamentos manuais sem teto comercial mensal, sujeitos a uso justo**; quotas de usuários e notificações externas ainda pendentes; ver [11 — Agenda manual](11-agenda-manual-basico-cortesia.md).
 > Referência: `docs/04-empresas-e-usuarios.md` (especificação completa, funcionalidade geral CRM aprovada) e `docs/02-planos-trial-e-assinaturas.md` (planos pagos).
 
 ## 1. Decisão IN-004 aprovada
@@ -93,7 +93,7 @@ Os lembretes/avisos operacionais indispensáveis à agenda podem ser considerado
 
 **Por que não liberar tudo de imediato?** O Básico cortesia deve entregar valor imediato sem sacrificar diferenciação dos planos pagos. Distribuição/redistribuição por equipes, construtor genérico de regras, scoring configurável/avançado, integrações oficiais de WhatsApp, agendamentos em grupo, sincronização múltipla de calendários, automações por proposta e relatórios programados podem justificar o Essencial/Profissional/Empresarial.
 
-**Já aprovado:** até 3 automações comerciais ativas de modelos prontos (IN-005) e **IN-007: agendamento manual/interno no Básico, público/automático só em planos pagos**. **Ainda não aprovados:** catálogo exato de modelos, parâmetros/editabilidade, cotas de agendamentos manuais, Google/Outlook, lembretes externos e-mail/WhatsApp, usuários, número de serviços/profissionais e o tratamento de notificações operacionais de sistema.
+**Já aprovado:** até 3 automações comerciais ativas de modelos prontos (IN-005) e **IN-007: agendamento manual/interno no Básico, público/automático só em planos pagos**. **Ainda não aprovados:** catálogo exato de modelos, parâmetros/editabilidade, política técnica de uso justo de agendamentos manuais (IN-012), Google/Outlook, lembretes externos e-mail/WhatsApp, usuários, número de serviços/profissionais e o tratamento de notificações operacionais de sistema.
 
 ## 4A. Decisão IN-005 — Modelos prontos e 3 automações ativas (APROVADA)
 
@@ -160,7 +160,7 @@ Os lembretes/avisos operacionais indispensáveis à agenda podem ser considerado
 | Integrações Google/Outlook, múltiplos profissionais e unidades | PENDENTE; não concedidas por IN-007 | Conforme produto e direitos pagos |
 | Limite mensal de agendamentos | A definir para Básico | Ilimitados já aprovados para planos pagos |
 
-**IN-008 aprovou 1 profissional e IN-009 aprovou até 10 serviços ativos.** **Pendentes:** quantidade de usuários, unidades no Básico; quota mensal e horários; limites de armazenamento; notificações internas ou externas; confirmação por e-mail/WhatsApp; integração Google/Outlook; calendário de equipe; modalidades coletivas/recorrentes. A quota de 3 automações comerciais do Básico (IN-005) é **independente** das operações obrigatórias de registrar e validar agenda.
+**IN-008 aprovou 1 profissional e IN-009 aprovou até 10 serviços ativos.** **Pendentes:** quantidade de usuários, unidades no Básico; limites técnicos de uso justo (sem teto comercial mensal, IN-012); limites de armazenamento; notificações internas ou externas; confirmação por e-mail/WhatsApp; integração Google/Outlook; calendário de equipe; modalidades coletivas/recorrentes. A quota de 3 automações comerciais do Básico (IN-005) é **independente** das operações obrigatórias de registrar e validar agenda.
 
 
 ### Decisão posterior IN-006 — biblioteca central e revisão de quotas no fim do planejamento
@@ -178,4 +178,4 @@ Construir primeiro o inventário completo, documentar modelos, dependências, cu
 5. Definir política de retenção, armazenamento e uso justo do Básico e recursos que exigem upgrade.
 6. Testar captação de lead → agenda → lembrete/ação → upgrade e retorno, sem perda de registros nem cobrança indevida.
 
-**Situação:** IN-004 aprovou Agenda e Agendamentos; **IN-005 aprovou biblioteca de modelos prontos e até três automações comerciais ativas por empresa no Básico**; **IN-006 orienta diferenciar a biblioteca por plano e revisar todas as quotas apenas ao fim da especificação**; **IN-007 definiu agenda somente manual no Básico e autoagendamento público exclusivo dos planos pagos**; **IN-008 definiu 1 profissional agendável por empresa no Básico; IN-009 definiu até 10 serviços ativos por empresa**. Catálogo específico, parâmetros e funcionalidades detalhadas da agenda permanecem em análise. Nenhuma programação autorizada.
+**Situação:** IN-004 aprovou Agenda e Agendamentos; **IN-005 aprovou biblioteca de modelos prontos e até três automações comerciais ativas por empresa no Básico**; **IN-006 orienta diferenciar a biblioteca por plano e revisar todas as quotas apenas ao fim da especificação**; **IN-007 definiu agenda somente manual no Básico e autoagendamento público exclusivo dos planos pagos**; **IN-008 definiu 1 profissional agendável; IN-009 definiu até 10 serviços ativos; IN-011 definiu horários flexíveis; IN-012 definiu agendamentos manuais sem teto comercial mensal, com uso justo**. Catálogo específico, parâmetros e funcionalidades detalhadas da agenda permanecem em análise. Nenhuma programação autorizada.
