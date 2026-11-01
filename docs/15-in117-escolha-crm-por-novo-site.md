@@ -2,6 +2,8 @@
 
 > Decisão de planejamento de 01/11/2026. **Não implementar antes da conclusão e aprovação de toda a documentação.** Esta regra complementa IN-001/002, IN-020/021, IN-024 e IN-116; não altera preços nem amplia automaticamente vagas, usuários ou quotas dentro de uma organização existente.
 
+> **COMPLEMENTO APROVADO EM 01/11/2026:** a opção de novo ambiente CRM **também é incluída sem mensalidade de CRM, por contrato de site elegível, mesmo quando vários sites/organizações pertencem ao mesmo CNPJ**. Não somar quotas se o cliente optar por vincular vários sites a uma única organização. Revisar este complemento em conjunto com as decisões históricas abaixo.
+
 ## 1. Necessidade e decisão funcional aprovada
 
 Se um cliente que já possui um Onepage ou Landing Page Imagine contratar **outro site ou Landing Page**, o **Portal Imagine deverá perguntar explicitamente** qual **organização (ambiente de trabalho) do CRM Imagine** será usada para o novo projeto, apresentando **duas opções claras**:
@@ -38,11 +40,29 @@ A confirmação de destino deve fazer parte da jornada de **contratação, ativa
 
 ## 5. Pontos a decidir antes da implementação
 
-- **Novo ambiente para mesmo CNPJ:** confirmar se qualquer contrato adicional de site elegível **pode conceder uma organização CRM Básico separada gratuitamente**, com os mesmos recursos e 1 usuário próprio por organização, mesmo quando várias organizações representam uma mesma pessoa jurídica; critérios de abuso/escala e eventual teto comercial/contábil. A decisão de apresentar a alternativa ao cliente está aprovada; **os termos comerciais específicos de múltiplos ambientes no mesmo CNPJ não estão**.
+- **Nova organização para o mesmo CNPJ — decisão posteriormente APROVADA em 01/11/2026:** **cada novo contrato de site elegível pode conceder uma organização CRM Básico separada, com o mesmo conjunto de direitos, sem mensalidade adicional de CRM, mesmo se o cliente tiver outro site/CRM sob o mesmo CNPJ**. A criação exige escolha expressa, validação do contrato, titularidade e isolamento; controles antifraude, custeio e regras de ciclo continuam pendentes, **mas não podem ser confundidos com proibição comercial por mesmo CNPJ ou cobrança de CRM adicional que não foi aprovada**.
 - Quem pode escolher ou alterar a organização vinculada (titular, administrador, representante), convites e verificações de CNPJ, especialmente quando empresa contratante do Portal é diferente do titular da organização CRM.
 - Se uma organização existente estiver em trial, paga, cancelada, suspensa ou de outra pessoa jurídica: política explícita de elegibilidade e verificação.
 - Se nenhum vínculo for permitido, como orientar ou permitir continuar a contratação/ativação e quando pedir auxílio administrativo.
 - Regras de desconexão, reversão, migração voluntária de leads, exclusão, custos, retenção, auditoria, timing e LGPD.
 - Critérios finais de entitlements e preço/recursos de todos os planos serão **revistos ao fim de toda a documentação**, antes de programação, homologação e lançamento.
 
-**Status:** aprovada a **pergunta obrigatória e as duas opções** no Portal Imagine ao contratar site adicional. Políticas de concessão para organizações separadas sob mesmo CNPJ e outras regras detalhadas permanecem **pendentes**, sem decisão implícita de novo custo ou de gratuidade por tenant ilimitado. **Nenhum código, banco, checkout, cliente ou ambiente de produção foi alterado.**
+**Status atualizado:** foram aprovadas **a pergunta obrigatória e as duas opções** no Portal Imagine, bem como **o direito de criar uma organização CRM Básico independente incluída por novo contrato elegível mesmo sob o mesmo CNPJ**. Não existe uma franquia arbitrária de ambientes por mera identidade: cada concessão depende de contrato de site real, elegível e validado. Regras de ciclo, titularidade, antiabuso, retenção e recuperação continuam pendentes. **Nenhum código, banco, checkout, cliente ou ambiente de produção foi alterado.**
+
+
+## IN-117 — Complemento aprovado: novo CRM Básico independente por contrato elegível (01/11/2026)
+
+**Nova regra comercial explicitamente aprovada, superando a pendência anterior:** para **cada novo Onepage ou Landing Page com contrato elegível efetivamente confirmado**, o cliente poderá escolher **criar uma nova organização CRM Básico**, com **os mesmos recursos e quotas previstos para uma organização Básico** e **sem mensalidade de CRM adicional**, **inclusive se outros sites e ambientes CRM pertencerem à mesma pessoa jurídica/CNPJ**. A pergunta obrigatória permanece: **usar uma organização CRM existente autorizada ou criar uma nova organização segregada**. Uma nova organização é um ambiente lógico com dados separados, não outra senha, outra pessoa ou um segundo login obrigatório. O mesmo usuário autorizado pode alternar seus ambientes; ele ocupa no máximo sua vaga de usuário em cada organização Básico, sem somar vagas dentro de um único ambiente.
+
+**Regra de vínculo e quotas:**
+- **Cada site contratado possui pedido/site_id e vínculo de elegibilidade auditável**, e aponta para **uma organização CRM autorizada por vez**. Um ambiente separado deve ter benefício vinculado ao **site real que lhe deu origem**, não à mera repetição de CNPJ, e-mail ou clique.
+- **Múltiplos sites na mesma organização:** leads vão à mesma base, com identificação de origem site/formulário/campanha; vários benefícios elegíveis não multiplicam quotas do plano, número de usuários, vagas de automação, agendas ou 1 GB de anexos de uma **mesma organização Básico**.
+- **Sites em organizações distintas:** cada organização tem isolamento real e **sua própria franquia do Básico**, permissões e limite de 1 usuário administrador. A identidade de login pode ser a mesma em ambas; isso não equivale a habilitar dois usuários dentro de uma única organização.
+- **Um novo benefício não é uma assinatura CRM paga**, nem cria fatura de R$ 0, nem torna o Básico permanentemente gratuito após o fim de todas as elegibilidades de site. O custo de cada site segue em seu próprio contrato no Portal. Se houver CRM pago, prevalece o plano pago efetivo nessa organização sem duplicar cobranças ou quotas.
+- **Cancelamento/suspensão de um site:** reavaliar somente os vínculos e ambientes afetados, sem cancelar outros sites, organizações ou assinaturas de CRM pagas; **se uma organização ainda possuir outro contrato de site elegível, não perder o benefício por causa do cancelamento de um único site**. A transição de organização sem elegibilidade para o Básico avulso, a possível suspensão e a retenção segura dependem da política contratual detalhada, e **não poderão gerar cobrança automática sem aceite explícito**.
+
+**Segurança e trilha:** Portal verifica autoridade do representante sobre pedido e organização, CNPJ e identidade, evita duplicidade por repetição/retry, aplica idempotência, RBAC, MFA e isolamento multiempresa, registra destino confirmado, origem da elegibilidade e estados por contrato; nenhum formulário recebe tenant_id livremente fornecido pelo visitante. Dados históricos não são mesclados ou migrados automaticamente. Alterar o destino do site depois exige fluxo específico autorizado.
+
+**Pendências de implementação e contrato (não alteram a decisão comercial aprovada):** como lidar com criação de organizações duplicadas acidentalmente, conferência de CNPJ/representação, organizações em trial ou plano pago, janela e etapas de provisionamento, fila de ativação, suspensão por inadimplência, cancelamento, retenção, reativação, eventual migração manual de dados, proteção contra abuso contratual e UX. A revisão final de preços e serviços dos planos acontece somente após toda a documentação do projeto, conforme IN-116. **Não inventar taxa de nova organização, limite por CNPJ ou obrigação de novo login.**
+
+**Status:** somente planejamento e documentação; **sem programação, criação real de ambientes, cobrança de clientes, mudanças no checkout, banco ou produção**.
