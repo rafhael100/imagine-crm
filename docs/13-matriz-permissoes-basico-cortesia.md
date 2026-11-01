@@ -165,7 +165,7 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 
 **PENDÊNCIAS de detalhamento antes da implementação:** tratamento de conflitos entre consentimentos e canais, contatos vinculados a organizações/identificadores incompatíveis, regra para combinações lead-contato, concorrência e transação, notificações e referência ao cadastro secundário, preview e confirmação visual, histórico imutável da operação, possibilidade e prazo de desfazer/reverter (não aprovada), política de inativação dos duplicados, restauração e retenção/anonimização. Nenhuma mesclagem deve ocultar evidências ou excluir vínculos sem autorização própria.
 
-**IN-029 aprovada posteriormente:** dados estruturados de leads, contatos e históricos do Básico não consomem franquia comercial fixa de arquivos. Anexos e arquivos temporários ainda serão definidos separadamente; retenção e recuperação também permanecem pendentes.
+**IN-029 aprovou a separação de dados estruturados no Básico, depois estendida aos quatro planos pela IN-031. IN-030 aprovou os mesmos tipos de anexos; IN-031 fixou franquias 1/5/20/50 GB somente de arquivos; IN-032 aprovou avisos e bloqueio de novos anexos.** Arquivos temporários, retenção e recuperação permanecem pendentes.
 
 ### Separação de armazenamento de dados estruturados e arquivos — IN-029 APROVADA em 2026-11-01
 
@@ -180,7 +180,7 @@ A recepção de **leads pelos formulários do Onepage/Landing Page Imagine já h
 6. **IN-031 (decisão posterior):** para armazenamento de **arquivos/anexos por organização**, passam a vigorar **Básico 1 GB; Essencial 5 GB; Profissional 20 GB; Empresarial 50 GB**, **substituindo as franquias pagas anteriores de 1/5/10 GB**. Dados estruturados não são contabilizados na franquia **em nenhum dos quatro planos**. A IN-029 continua preservada e ampliada.
 7. **Separação financeira/operacional:** não criar cobrança, upgrade compulsório ou bloqueio de leads legítimos devido ao uso dos dados estruturados; a futura franquia de arquivos deverá ter condições claras e não alterar os contratos do Onepage sem autorização.
 
-**IN-030 APROVADA:** mesmo catálogo seguro de anexos nos quatro planos; **IN-031 APROVADA POSTERIORMENTE:** franquias totais **1/5/20/50 GB** para arquivos/anexos por empresa, sem incluir dados estruturados em qualquer plano. **PENDENTES:** avisos e comportamento detalhado ao atingir espaço, arquivos transitórios e duração, adicionais, retenção e recuperação. Limite por arquivo permanece 5 MB até eventual revisão. Não extrapolar a retenção de **90 dias das notificações internas da agenda** (IN-018) para dados de contato ou históricos comerciais.
+**IN-030 APROVADA:** mesmo catálogo seguro de anexos; **IN-031:** franquias 1/5/20/50 GB só de arquivos/anexos nos quatro planos; **IN-032:** avisos internos em 80%/95% e bloqueio somente de novos anexos a 100%. **PENDENTES:** detalhes técnicos de aviso, arquivos temporários e duração, adicionais, retenção e recuperação. Limite por arquivo permanece 5 MB até eventual revisão. Não extrapolar a retenção de **90 dias das notificações internas da agenda** (IN-018) para dados de contato ou históricos comerciais.
 
 **IN-030 aprovou paridade de tipos de anexos; IN-031 aprovou posteriormente franquias de 1/5/20/50 GB para arquivos/anexos por empresa nos quatro planos, mantendo dados estruturados fora da franquia em todos eles.**
 
