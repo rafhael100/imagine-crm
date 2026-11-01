@@ -4,7 +4,7 @@
 > **IN-005 APROVADA em 2026-11-01:** modelos prontos, até **3 automações comerciais ativas simultaneamente por empresa** no Básico Cortesia. Catálogo exato e detalhes da agenda ainda sob avaliação.
 > **IN-006 — diretriz de catálogo:** inventariar toda a biblioteca antes de revisar as quotas de todos os planos; modelos avançados deverão ser elegíveis somente a planos pagos. As **3 ativas** do IN-005 são referência atual, sujeita a **nova aprovação** na revisão final.
 > **IN-007 APROVADA em 2026-11-01:** Básico Cortesia terá **Agenda e Agendamentos apenas internos e manuais**; autoagendamento público por site, link, página do CRM ou visitante fica reservado aos **planos pagos**.
-> **IN-008 e IN-009 APROVADAS em 2026-11-01:** somente **1 profissional com agenda própria e até 10 serviços ativos por empresa no Básico**. Quotas de usuários, agendamentos por mês e regras de horários permanecem pendentes; ver [11 — Agenda manual](11-agenda-manual-basico-cortesia.md).
+> **IN-008, IN-009 e IN-011 APROVADAS em 2026-11-01:** somente **1 profissional com agenda própria e até 10 serviços ativos por empresa**; expediente semanal flexível, pausas, bloqueios e agendamento excepcional fora do expediente mediante confirmação de usuário autorizado, sempre sem conflitos. Quotas de usuários e agendamentos por mês permanecem pendentes; ver [11 — Agenda manual](11-agenda-manual-basico-cortesia.md).
 > Referência: `docs/04-empresas-e-usuarios.md` (especificação completa, funcionalidade geral CRM aprovada) e `docs/02-planos-trial-e-assinaturas.md` (planos pagos).
 
 ## 1. Decisão IN-004 aprovada
@@ -81,7 +81,7 @@ Rascunhos de automações não consomem quota; no downgrade, preservar configura
 
 ## 4. Recomendação para a matriz do Básico (não aprovada)
 
-**IN-007 substitui a proposta anterior:** Básico terá **agenda interna funcional e agendamentos manuais**; página pública, links de autoagendamento e reserva criada pelo visitante são exclusividade de planos pagos. Propostas de detalhes: definir serviço, expediente/folgas/bloqueios, disponibilidade, editar/reagendar/cancelar, vínculo ao lead/contato e histórico. **IN-008 e IN-009 já estabeleceram os limites concretos de 1 profissional e 10 serviços ativos por empresa.**
+**IN-007 substitui a proposta anterior:** Básico terá **agenda interna funcional e agendamentos manuais**; página pública, links de autoagendamento e reserva criada pelo visitante são exclusividade de planos pagos. Propostas de detalhes: definir serviço, expediente/folgas/bloqueios, disponibilidade, editar/reagendar/cancelar, vínculo ao lead/contato e histórico. **IN-008 e IN-009 já estabeleceram 1 profissional e 10 serviços ativos por empresa; IN-011 já aprovou as regras de expediente e exceções manuais.**
 
 **IN-005 APROVADA:** permitir **até 3 automações comerciais ativas por empresa**, escolhidas de biblioteca de **modelos prontos**. **O número de modelos disponíveis e os parâmetros exatos estão sob proposta**, sem aprovação nesta etapa. Sugestões iniciais:
 
