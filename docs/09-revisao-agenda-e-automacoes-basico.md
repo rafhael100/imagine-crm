@@ -4,6 +4,7 @@
 > **IN-005 APROVADA em 2026-11-01:** modelos prontos, até **3 automações comerciais ativas simultaneamente por empresa** no Básico Cortesia. Catálogo exato e detalhes da agenda ainda sob avaliação.
 > **IN-006 — diretriz de catálogo:** inventariar toda a biblioteca antes de revisar as quotas de todos os planos; modelos avançados deverão ser elegíveis somente a planos pagos. As **3 ativas** do IN-005 são referência atual, sujeita a **nova aprovação** na revisão final.
 > **IN-007 APROVADA em 2026-11-01:** Básico Cortesia terá **Agenda e Agendamentos apenas internos e manuais**; autoagendamento público por site, link, página do CRM ou visitante fica reservado aos **planos pagos**.
+> **IN-008 APROVADA em 2026-11-01:** somente **1 profissional com agenda própria por empresa no Básico**. Quotas de usuários, serviços e agendamentos por mês continuam pendentes; ver [11 — Agenda manual](11-agenda-manual-basico-cortesia.md).
 > Referência: `docs/04-empresas-e-usuarios.md` (especificação completa, funcionalidade geral CRM aprovada) e `docs/02-planos-trial-e-assinaturas.md` (planos pagos).
 
 ## 1. Decisão IN-004 aprovada
@@ -159,7 +160,7 @@ Os lembretes/avisos operacionais indispensáveis à agenda podem ser considerado
 | Integrações Google/Outlook, múltiplos profissionais e unidades | PENDENTE; não concedidas por IN-007 | Conforme produto e direitos pagos |
 | Limite mensal de agendamentos | A definir para Básico | Ilimitados já aprovados para planos pagos |
 
-**Pendente, sem aprovação pela IN-007:** quantidade de usuários/profissionais/unidades/serviços no Básico; quota mensal; limites de armazenamento; notificações internas ou externas; confirmação por e-mail/WhatsApp; integração Google/Outlook; calendário de equipe; modalidades coletivas/recorrentes. A quota de 3 automações comerciais do Básico (IN-005) é **independente** das operações obrigatórias de registrar e validar agenda.
+**IN-008 aprovou 1 profissional**. **Pendentes:** quantidade de usuários, unidades e serviços no Básico; quota mensal; limites de armazenamento; notificações internas ou externas; confirmação por e-mail/WhatsApp; integração Google/Outlook; calendário de equipe; modalidades coletivas/recorrentes. A quota de 3 automações comerciais do Básico (IN-005) é **independente** das operações obrigatórias de registrar e validar agenda.
 
 
 ### Decisão posterior IN-006 — biblioteca central e revisão de quotas no fim do planejamento
@@ -172,9 +173,9 @@ Construir primeiro o inventário completo, documentar modelos, dependências, cu
 
 1. **IN-005 definida:** modelos prontos, até 3 ativas por empresa; ainda aprovar quais modelos e personalizações disponibilizar.
 2. Definir regras de edição, pausa/reativação, exclusão e downgrade dos modelos; não permitir editor universal no Básico sem revisão.
-3. **IN-007 decidiu:** agenda Básico somente interna/manual; agendamento público pelo site apenas nos planos pagos. Detalhar quotas e regras operacionais do modo manual.
+3. **IN-007 e IN-008 decidiram:** agenda Básico interna/manual, apenas 1 profissional; agendamento público pelo site apenas nos planos pagos. Detalhar serviços, horários e quotas do modo manual em [11 — Agenda manual](11-agenda-manual-basico-cortesia.md).
 4. Definir notificações: dentro do CRM, e-mail transacional, WhatsApp API; custos externos e titular do canal.
 5. Definir política de retenção, armazenamento e uso justo do Básico e recursos que exigem upgrade.
 6. Testar captação de lead → agenda → lembrete/ação → upgrade e retorno, sem perda de registros nem cobrança indevida.
 
-**Situação:** IN-004 aprovou Agenda e Agendamentos; **IN-005 aprovou biblioteca de modelos prontos e até três automações comerciais ativas por empresa no Básico**; **IN-006 orienta diferenciar a biblioteca por plano e revisar todas as quotas apenas ao fim da especificação**; **IN-007 definiu agenda somente manual no Básico e autoagendamento público exclusivo dos planos pagos**. Catálogo específico, parâmetros e funcionalidades detalhadas da agenda permanecem em análise. Nenhuma programação autorizada.
+**Situação:** IN-004 aprovou Agenda e Agendamentos; **IN-005 aprovou biblioteca de modelos prontos e até três automações comerciais ativas por empresa no Básico**; **IN-006 orienta diferenciar a biblioteca por plano e revisar todas as quotas apenas ao fim da especificação**; **IN-007 definiu agenda somente manual no Básico e autoagendamento público exclusivo dos planos pagos**; **IN-008 definiu 1 profissional agendável por empresa no Básico**. Catálogo específico, parâmetros e funcionalidades detalhadas da agenda permanecem em análise. Nenhuma programação autorizada.
