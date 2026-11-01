@@ -38,3 +38,11 @@
 - Se **um funcionário já tiver assumido efetivamente** a conversa, somente um humano autorizado poderá devolvê-la à IA. Pedido do cliente isoladamente não pode reativar IA durante a posse humana.
 - Não permitir que mensagens automáticas do agente já enfileiradas sejam enviadas após a pausa; revalidar posse e status antes de cada envio e auditar transições.
 - A comunicação de solicitação recebida deve ser clara, sem inventar disponibilidade ou prometer tempo exato de resposta humana.
+
+## Assistência de IA em mensagens enviadas por funcionários — APROVADO
+- Quando um funcionário utilizar efetivamente uma sugestão de mensagem da IA Comercial ou outro agente autorizado e enviar a mensagem, identificar a interação como **"Assistida por IA"**.
+- A **autoria da mensagem enviada é do funcionário**, não do agente, inclusive após revisão e edição. Registrar vínculo ao agente que auxiliou e horário relevante, sem exposição indevida de dados sensíveis.
+- A simples visualização ou geração de sugestão sem utilização **não deve contar como mensagem assistida**.
+- Esta marcação não converte, por si só, um atendimento **Humano** em **Misto**; esta última categoria requer participação direta de IA e de humano nas interações conforme decisão de classificação comercial.
+- Manter contagem de resultados/vendas sem duplicidade e distinguir consumo técnico do agente, envio direto autônomo e assistência ao funcionário em análises futuras.
+- **Pendente:** definir regras de edição de sugestões, UX da ferramenta, telemetria de adoção e critérios para alterações substanciais antes do envio.
