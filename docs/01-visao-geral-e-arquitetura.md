@@ -144,4 +144,13 @@
 - Usuários com permissão poderão **cancelar ou redirecionar** uma transferência pendente, mantendo íntegros o histórico original e a trilha de auditoria.
 - Registrar configuração aplicável, início da transferência, prazo, disparo do alerta, destinatários, intervenções humanas, mudanças de status e conclusão efetiva.
 - Evitar alertas indevidos quando o destino já tiver assumido o atendimento; executar checagem do estado antes do alerta, com proteção contra envios repetidos da mesma ocorrência.
-- A configuração operacional detalhada (horário útil, alertas reincidentes, escalonamento para gestores e limites de prazo) permanece para decisão posterior.
+- Horários úteis por equipe e contagem dos prazos de transferência foram aprovados posteriormente; alertas reincidentes, escalonamento para gestores e limites de prazo permanecem para decisão futura.
+
+## Horários de funcionamento por equipe e SLA de transferência — APROVADO
+- Cada empresa pode configurar dias da semana e **horários de funcionamento por equipe/setor**, incluindo opção de funcionamento **24 horas, 7 dias por semana**.
+- O prazo configurável para aceitar/iniciar uma transferência entre números WhatsApp deve contar **somente durante os períodos de funcionamento da equipe de destino**; suspender a contagem fora do expediente e retomá-la no próximo período de atendimento, preservando tempo já transcorrido.
+- Se uma transferência for solicitada fora do expediente de destino, iniciar contagem no próximo início do expediente. Exemplo: suporte 08h–18h, transferência às 22h, prazo de 10 minutos => alerta às 08h10 do próximo dia em que houver expediente, salvo aceite anterior.
+- Para equipes configuradas como 24/7, contagem e alertas ocorrem continuamente.
+- Executar o cálculo segundo **fuso horário configurado da operação/equipe**, guardando timestamps em UTC para evitar erros em transições de horário de verão; considerar dias de funcionamento e exceções configuradas.
+- Mesmo fora do expediente, **manter atendimento de origem responsável** pela transferência pendente até o início efetivo ou aceite do destino; não concluir automaticamente nem perder a solicitação.
+- Registrar alterações de horários e regras de SLA em auditoria; decidir posteriormente aplicação retroativa dessas mudanças a transferências já pendentes e configuração de feriados/ausências nesta central.
