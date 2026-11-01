@@ -2,6 +2,10 @@
 
 > **Decisão IN-002 aprovada (2026-11-01).** Planejamento funcional e contratual; nenhuma integração está implementada. O documento é uma extensão dos planos e regras do CRM Imagine, sincronizada com o projeto `rafhael100/imagine-portal`.
 
+### IN-023 — Leads e Contatos: administração manual no Básico (APROVADA)
+
+O administrador único do CRM Básico pode **consultar, cadastrar, editar e pesquisar leads e contatos**, registrar observações/histórico manual, detectar possíveis duplicidades por alerta **sem mesclar automaticamente** e **arquivar sem excluir dados ou histórico**. O formulário do Onepage/Landing Page continua enviando leads à organização autorizada; envio confirmado não poderá ser silenciosamente perdido. Não conceder automaticamente importação em massa, exportação comercial, mesclagem ou exclusão definitiva; limites de registros, retenção e requisitos LGPD serão definidos separadamente. O formulário público não cria reservas. [Matriz IN-023](13-matriz-permissoes-basico-cortesia.md).
+
 ### IN-022 — Administração da Empresa e Segurança do CRM Básico (APROVADA)
 
 O Administrador único do Básico pode editar dados cadastrais comuns da empresa, alterar CNPJ somente após validação específica, gerir senha/e-mail/MFA com verificação de identidade, consultar/encerrar suas sessões, consultar plano e limites e **contratar upgrade CRM apenas mediante aceite expresso**, mantendo a assinatura do site no Portal independente. **Não** cria segundo usuário nem obtém superadmin ou acesso indevido a outros tenants. O Portal Imagine não deve fornecer atalhos que contornem MFA, validação de identidade, os direitos do CRM ou a separação de faturamento. [Matriz de permissões IN-022](13-matriz-permissoes-basico-cortesia.md).
