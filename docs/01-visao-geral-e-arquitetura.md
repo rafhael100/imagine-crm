@@ -356,3 +356,13 @@
 - Evitar dupla contagem em múltiplas conversas, números, transferências e alterações de equipe; preservar IDs estáveis de atendimento, contato e oportunidade, mantendo trilha de auditoria para ganhos, reversões e atualizações de valores.
 - Não contabilizar como faturamento recebido um negócio apenas marcado como ganho: o indicador **valor vendido** será, inicialmente, o valor das oportunidades ganhas no CRM, sem implicar liquidação financeira.
 - **Pendente de especificação e aprovação:** metodologia exata de atribuição de oportunidades/vendas a um ou mais atendimentos, denominador da taxa de conversão, janelas temporais e regras de crédito entre IA, funcionários e equipes; métricas financeiras reais só com integração adequada.
+
+## MVP — Classificação de participação comercial no WhatsApp: IA, Humano e Misto — APROVADO
+- Classificar atendimentos WhatsApp e resultados comerciais vinculados em três categorias de **participação operacional**: **IA** (interações conduzidas exclusivamente por agente(s) de IA), **Humano** (interações conduzidas exclusivamente por funcionário(s)) e **Misto** (participação de ao menos um agente de IA e um funcionário).
+- A classificação deve usar o histórico auditável de autoria das interações relevantes vinculadas ao atendimento e à oportunidade; distinguir mensagens de cliente, envios humanos, respostas de agentes e disparos de automação. **Disparo automático de regra sem ação de um agente de IA não deve, isoladamente, contar como participação de IA**.
+- Exemplo aprovado: IA Comercial qualifica o lead e vendedor humano conclui a negociação → atendimento/resultado **Misto**.
+- **Uma mesma oportunidade marcada como ganha deve ser contabilizada somente uma vez** nos indicadores agregados de vendas, valor de oportunidades ganhas e conversões, mesmo quando vários agentes, humanos ou números de WhatsApp participarem.
+- Preservar a trilha de contribuição individual dos participantes (agentes e funcionários), sem multiplicar receita, e permitir filtragem por categoria no painel, conforme permissões.
+- A classificação representa **participação observada**, não comprovação causal de que a IA ou um funcionário específico gerou a venda; não apresentar receitas atribuídas exclusivamente sem metodologia aprovada.
+- Vínculos entre conversas e oportunidades, reversões de negócios ganhos e mudanças de autoria/status devem atualizar o indicador sem duplicação, mantendo trilha de auditoria.
+- **A detalhar:** escopo temporal e quais conversas contribuem para classificação da oportunidade, se mensagens sugeridas pela IA e enviadas pelo humano contam como Misto, e método de análise da influência individual sem duplicar receita.
