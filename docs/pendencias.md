@@ -35,7 +35,8 @@
 
 - **IN-023 APROVADA:** o Administrador da Empresa pode visualizar lista/detalhes, cadastrar/editar manualmente, pesquisar/filtrar, adicionar observações/histórico manual, receber alertas de possíveis duplicidades **sem mesclagem automática** e arquivar leads/contatos **preservando histórico e vínculos**.
 - **IN-001 já aprovada:** integração de captação dos formulários Onepage/Landing Page para leads na organização correta; não descartar envio confirmado por erro/quota não aprovada.
-- **PENDENTE:** limites de quantidade e armazenamento de leads/contatos, importação em massa, exportação (respeitar direitos LGPD), exclusão definitiva/mesclagem, retenção/restauração e detalhes de UX; não assumir ilimitado nem quota do trial.
+- **IN-024 APROVADA:** leads/contatos sem teto comercial rígido de quantidade — tanto captados pelo site quanto cadastrados manualmente — sujeitos a uso justo/antiabuso. Não inventar quota oculta nem perder leads já aceitos; a quota de 20 leads do trial não se aplica.
+- **PENDENTE:** parâmetros técnicos de uso justo, armazenamento e retenção, importação em massa, exportação (respeitar direitos LGPD), exclusão definitiva/mesclagem, restauração e detalhes de UX. A IN-024 não concede API pública nem importação irrestrita.
 - [Matriz detalhada IN-023](13-matriz-permissoes-basico-cortesia.md).
 
 ## Quota de usuários da empresa no CRM Básico — IN-020 (01/11/2026)
