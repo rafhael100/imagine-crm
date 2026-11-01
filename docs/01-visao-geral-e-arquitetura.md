@@ -82,4 +82,12 @@
 - Fornecer **Central de Atendimento unificada** com filtro por número e visibilidade conforme autorização do usuário.
 - Cada conversa e cada envio/recebimento devem identificar o **número oficial de origem/destino** correto; mensagens de saída usam a identidade do canal associado à conversa, sujeitas a regras da Meta.
 - Prever no modelo de dados identificadores estáveis de cada linha/canal conectado, suas credenciais, configurações, estados, eventos e trilhas de auditoria; segredos armazenados com proteção adequada.
-- Pendente de decisão: exibição do mesmo contato em múltiplos números, relação entre históricos e mecanismo de transferência de conversa entre linhas sem confundir remetentes.
+- **Aprovado:** cadastro único por cliente com histórico integrado entre números oficiais, mantendo conversas individualizadas por número e acesso conforme permissões. Transferência de atendimento entre números e critérios de vinculação de contatos ainda pendentes.
+
+## Histórico unificado por cliente em múltiplos números WhatsApp — APROVADO
+- Uma empresa mantém **cadastro único de contato/cliente** que pode estar vinculado a interações realizadas por diferentes números oficiais de WhatsApp da própria empresa.
+- A ficha do cliente reúne, com controle de autorização, **linha do tempo de interações**, contatos, oportunidades, atividades, automações e intervenções dos agentes de IA ou de funcionários, identificando canal e autoria.
+- Na **Central de Atendimento**, manter **conversas distintas para cada número oficial/linha**, sem misturar seus remetentes, estados, responsáveis, filas, permissões ou janelas de atendimento; a visão consolidada da ficha não funde conversas operacionais.
+- Um funcionário autorizado pode consultar histórico em outros números da mesma empresa, enquanto funcionário sem permissão não deve visualizar conteúdo restrito; o isolamento entre empresas (tenant) é absoluto.
+- Registrar os identificadores estáveis do contato, do número empresarial de WhatsApp, da conversa e de cada mensagem, preservando rastreabilidade e auditoria.
+- **Ainda não definido:** regras automáticas e manuais para identificar/vincular cadastros da mesma pessoa quando houver telefones diferentes ou homônimos; evitar junções incorretas de dados. Transferência entre linhas deverá ser especificada em decisão própria.
