@@ -14,6 +14,7 @@ Esta documentação distingue regras **APROVADAS**, decisões **PARCIAIS** e ite
 - [Integração com sites Imagine e CRM Básico cortesia (IN-002)](07-integracao-site-e-crm-basico.md)
 - [CRM Básico cortesia — matriz proposta (IN-003)](08-plano-basico-cortesia.md)
 - [Agenda e automações no Básico — revisão (IN-004)](09-revisao-agenda-e-automacoes-basico.md)
+- [Biblioteca de Automações e diferenciação por plano — IN-006](10-biblioteca-automacoes-e-criterios-de-planos.md)
 - [Registro de decisões](decisoes.md)
 - [Pendências](pendencias.md)
 
