@@ -1,6 +1,6 @@
 # 11 — CRM Básico Cortesia: Agenda Manual (um profissional), serviços e regras operacionais
 
-> **IN-008, IN-009, IN-011 e IN-012 APROVADAS em 2026-11-01:** o CRM Básico Cortesia permite **1 profissional com agenda própria, até 10 serviços ativos, expediente flexível e agendamentos manuais sem teto comercial mensal**, sujeitos a uso justo e controles técnicos contra abuso. A agenda permanece **exclusivamente manual e interna** (IN-007).  
+> **IN-008, IN-009, IN-011, IN-012 e IN-013 APROVADAS em 2026-11-01:** o CRM Básico Cortesia permite **1 profissional com agenda própria, até 10 serviços ativos, expediente flexível e agendamentos manuais sem teto comercial mensal**, sujeitos a uso justo e controles técnicos contra abuso. A agenda permanece **exclusivamente manual e interna** (IN-007).  
 > **Somente as decisões identificadas como APROVADAS têm esse status.** Regras complementares, número de reservas mensais e características não detalhadas permanecem PROPOSTOS. Não implementar, criar cobranças ou publicar a funcionalidade.
 
 ## 1. Decisões já aprovadas e limites de interpretação
@@ -9,6 +9,7 @@
 - **IN-007:** a agenda é **manual** no Básico: usuário autenticado e autorizado registra e administra agendamentos; visitantes não acessam página pública para reservar, nem botão, embed, chatbot ou API pública para autoagendamento. A página pública e a capacidade de reservar pelo site ficam exclusivas dos planos CRM pagos.
 - **IN-008:** somente **1 profissional com agenda própria**, por organização CRM beneficiária do Básico, independentemente de quantos contratos de Onepage/Landing Page estejam vinculados à mesma empresa. Não confundir **profissional agendável** com **usuário habilitado a entrar no CRM**: a quota de usuários administrativos ainda está pendente. Se houver apenas um usuário no plano, esse usuário pode ser o profissional, mas isso deve ser configurado e validado.
 - **IN-011:** aprovada a configuração semanal flexível (inclusive dias sem expediente, sábados e domingos), múltiplos períodos por dia, pausas/intervalos, bloqueios manuais de folgas, férias e feriados, duração própria de cada serviço, preservação dos compromissos nas mudanças de expediente, e **agendamento manual excepcional fora do expediente** com aviso e confirmação explícita de usuário autorizado, **sem ignorar conflitos**. Não concede página pública de autoagendamento.
+- **IN-013:** notificações e lembretes operacionais da agenda apenas internamente no CRM Básico, sem consumir vagas de automações comerciais (IN-005). Envios automáticos de e-mail ao cliente e WhatsApp oficial ficam para planos pagos ou adicionais elegíveis, sujeitos a habilitação e contrato.
 - **IN-012:** aprovada **ausência de teto comercial rígido para a quantidade mensal de agendamentos manuais** da única agenda do Básico, com **uso justo e controles técnicos contra abuso**. Não estabelecer limiar mensal oculto nem bloquear utilização humana legítima por atingir quantidade de reservas; quota de reservas públicas segue indisponível no Básico (IN-007).
 - **IN-009:** o profissional da empresa beneficiária pode manter **até 10 serviços ativos simultaneamente**, somando todos os tipos de atendimento cadastrados para essa agenda. Serviços inativos/arquivados **não ocupam vaga ativa**, mas seus históricos/agendamentos associados devem ser preservados. Não multiplicar a quota por site ou formulário. Ao tentar ativar o 11º serviço, bloquear a operação com explicação e opção de inativar outro serviço ou contratar plano elegível.
 - As automações comerciais do Básico permanecem em modelos prontos, até **3 ativas simultaneamente por empresa como baseline atual** (IN-005), com revisão final numérica planejada (IN-006). Essas automações não autorizam agendamento público.
@@ -88,7 +89,7 @@
 5. Salva `Agendado`, com histórico e autor; demais estados planejados no CRM geral: `Confirmado`, `Realizado`, `Não compareceu` e `Cancelado`.
 6. Editar, reagendar, cancelar e alterar status fica condicionado à permissão; preservar horário anterior, motivo de alteração quando relevante e auditoria.
 7. O cliente/visitante não pode usar URL pública, API de agendamento ou formulário do Onepage para criar compromissos, mesmo que tente chamar endpoint diretamente.
-8. Notificações **internas** de mudança e registro são sugeridas como funcionamento do sistema; e-mail externo e WhatsApp por API continuam pendentes (canais, consentimento, orçamento).
+8. **IN-013 APROVADA:** apresentar avisos e lembretes da agenda somente dentro do CRM Básico, como operações de sistema sem consumo das vagas de automações comerciais; não enviar e-mails automáticos aos clientes ou WhatsApp Business API no Básico.
 
 ## 6. Limites comerciais ainda NÃO aprovados
 
@@ -106,7 +107,8 @@
 | Agenda compartilhada/equipe | Não incluída por IN-008 | Reservar para planos pagos |
 | Agendamento recorrente/grupos/lista de espera | Não incluído automaticamente | Reservar para pagos inicialmente |
 | Armazenamento/anexos de agenda | Definir com matriz geral do benefício | Quota específica a aprovar |
-| Avisos externos e lembretes | Canal/volume/custos ainda pendentes | Internos no Básico; externos em oferta própria |
+| Notificações e lembretes de agenda | **IN-013: internos no CRM, sem ocupar automações comerciais** | Prazos e preferências ainda a detalhar |
+| E-mail automático ao cliente e WhatsApp oficial | **Não incluídos no Básico (IN-013)** | Planos pagos ou adicionais elegíveis, com custos/canais próprios |
 
 **Justificativa para não impor um teto baixo de reservas manuais sem análise:** o cliente já precisa registrar manualmente cada atendimento e há apenas um profissional; o custo incremental por evento é pequeno, mas ainda existem riscos de abuso e limites de infraestrutura. Quotas técnicas, antifraude e retenção independem do número de registros permitido comercialmente.
 
@@ -157,25 +159,22 @@ As regras de expediente flexível, múltiplos períodos, pausas, duração por s
 
 **Não decidido por IN-012:** canais de confirmação/lembrete, prazo e antecedência, quotas de envio externo, armazenamento e retenção, múltiplos profissionais, usuários licenciados, agendamento recorrente e regras para operações em massa.
 
-### 9.2A Agenda: notificações e lembretes — próxima revisão, NÃO APROVADOS para o Básico
+### 9.2A Agenda: avisos e lembretes internos — IN-013 APROVADA
 
-O CRM geral já tem **central de notificações internas**, preferências e avisos de alteração de agendamento, confirmações/lembretes ao cliente por canais habilitados e registros de envio. **Ainda não está definido quais desses recursos serão incluídos especificamente no Básico Cortesia.**
-
-**Proposta A — avisos operacionais internos de sistema (recomendada):** registro, cancelamento, reagendamento, alterações de disponibilidade e compromissos próximos aparecem no painel/central de notificações; os avisos necessários à operação não consomem as três automações comerciais ativas do IN-005. Definir antecedência de lembrete e possibilidade de ajustes sem spam ou avisos duplicados.
-
-**Proposta B — mensagens externas transacionais por e-mail:** notificações/confirmacões de agenda para clientes, exigindo canal verificado, política de privacidade/consentimento, proteção de dados, entrega e custos; pode ser incluída ou oferecida somente em planos pagos conforme aprovação.
-
-**Proposta C — WhatsApp oficial:** envio automático exige integração WhatsApp Business API, templates/categorias válidas, consentimento, custos e direitos apropriados. Um botão de WhatsApp ou link simples não equivale a envio automático. Não habilitar automaticamente no Básico.
-
-**Separação obrigatória para a futura decisão:** notificação operacional gerada pelo próprio módulo agenda ≠ **modelo configurável de automação comercial**, que conta uma vaga ativa quando o cliente o habilitar. Não permitir que alertas essenciais deixem de funcionar por a empresa ter usado três modelos comerciais.
+- **Incluídos no Básico:** notificações e lembretes operacionais **dentro do CRM autenticado** de agendamento criado, remarcado, cancelado, compromisso próximo e conflitos de expediente, com visibilidade por permissões.
+- **Não consomem automações comerciais ativas:** são funções do próprio calendário. Não bloquear lembretes internos mesmo que os três slots atuais da biblioteca estejam ocupados. Evitar duplicidade, alertas obsoletos e informações de outros tenants.
+- **Fora do Básico:** e-mail automático ao cliente atendido e WhatsApp Business API oficial, que dependem de plano pago ou adicional elegível, aprovação da contratação, canal, consentimento, políticas e custos. O botão/link comum do WhatsApp no site não constitui envio automático e não é modificado aqui.
+- **Separação do catálogo:** candidato T04 (lembrete de compromisso próximo) passa a representar **operação interna de sistema**, não template comercial que consome slot. Um template adicional de acompanhamento comercial continua contando slot quando ativado e habilitado.
+- **Não presumir entrega ao visitante:** aviso interno ao empresário não é confirmação enviada ao cliente.
+- **Pendências:** horário/antecedência dos lembretes, frequência, silenciar/adiar, preferências, push do navegador, eventos obrigatórios e textos. Push e mensagens externas não são automaticamente aprovados por IN-013.
 
 
 ### 9.3 Decisões seguintes
 
 1. **IN-009 e IN-011 já aprovaram** até 10 serviços ativos e a agenda flexível, incluindo bloqueios e exceção manual fora do expediente com confirmação e sem conflitos. Consolidar apenas detalhes técnicos/UX ainda abertos.
 2. **IN-012 aprovada:** agendamentos manuais sem teto comercial mensal; especificar apenas métricas técnicas e controles proporcionais de uso justo, sem quota escondida.
-3. **Próxima decisão:** definir quais notificações internas da agenda são operações de sistema sem consumir as vagas de automação comercial; avaliar envio externo por e-mail e WhatsApp em etapa separada.
+3. **IN-013 aprovada:** avisos e lembretes internos de agenda sem ocupar automações; e-mail automático ao cliente/WhatsApp oficial reservados a planos pagos ou adicionais. **Próxima decisão:** antecedência e preferências dos lembretes internos.
 4. Revisar campos de serviço, permissões e limite de usuários do Básico; funcionalidades externas (WhatsApp Business API, Outlook/Google Calendar etc.) não são autorizadas pela IN-009.
 
 
-**Situação:** IN-008 aprova **1 profissional com agenda**; IN-009 aprova **até 10 serviços ativos**; IN-011 aprova horários flexíveis e exceções manuais fora do expediente sem conflitos; **IN-012 aprova agendamentos manuais sem teto comercial mensal, com uso justo e controles técnicos contra abuso**. **Notificações, lembretes e integrações externas permanecem pendentes**. Somente documentação de planejamento, sem implementação.
+**Situação:** IN-008 aprova **1 profissional com agenda**; IN-009 aprova **até 10 serviços ativos**; IN-011 aprova horários flexíveis e exceções manuais fora do expediente sem conflitos; **IN-012 aprova agendamentos manuais sem teto comercial mensal, com uso justo e controles técnicos contra abuso**. **IN-013 aprovou avisos e lembretes internos sem consumir automações; frequência, interface e detalhes de canais externos permanecem pendentes**. Somente documentação de planejamento, sem implementação.
