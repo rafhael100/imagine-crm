@@ -1,6 +1,6 @@
 # 11 — CRM Básico Cortesia: Agenda Manual (um profissional), serviços e regras operacionais
 
-> **IN-008, IN-009, IN-011, IN-012, IN-013, IN-014, IN-015, IN-016 e IN-017 APROVADAS em 2026-11-01:** o CRM Básico Cortesia permite **1 profissional com agenda própria, até 10 serviços ativos, expediente flexível e agendamentos manuais sem teto comercial mensal**, sujeitos a uso justo e controles técnicos contra abuso. A agenda permanece **exclusivamente manual e interna** (IN-007).  
+> **IN-008, IN-009, IN-011, IN-012, IN-013, IN-014, IN-015, IN-016, IN-017 e IN-018 APROVADAS em 2026-11-01:** o CRM Básico Cortesia permite **1 profissional com agenda própria, até 10 serviços ativos, expediente flexível e agendamentos manuais sem teto comercial mensal**, sujeitos a uso justo e controles técnicos contra abuso. A agenda permanece **exclusivamente manual e interna** (IN-007).  
 > **Somente as decisões identificadas como APROVADAS têm esse status.** Regras complementares, número de reservas mensais e características não detalhadas permanecem PROPOSTOS. Não implementar, criar cobranças ou publicar a funcionalidade.
 
 ## 1. Decisões já aprovadas e limites de interpretação
@@ -13,7 +13,8 @@
 - **IN-014:** dois lembretes internos padrão por agendamento (24 horas e 1 hora antes), cada um com opção independente de alterar antecedência ou desativar pelo profissional autorizado.
 - **IN-015:** central persistente de notificações internas da agenda, com estados lido/não lido. Avisos cujo evento aconteceu enquanto o profissional estava fora do CRM ficam disponíveis na volta, vinculados ao compromisso e com a data original.
 - **IN-016:** **abrir os detalhes de uma notificação** marca automaticamente aquele aviso como **lido**. O usuário autorizado pode **marcar novamente como não lido** por ação explícita; visualizar a lista ou o indicador não marca tudo como lido. Marcação em lote não foi aprovada.
-- **IN-017:** a central terá **filtros por estado (Todas, Não lidas, Lidas), por tipo de evento e por período**, exibindo por padrão **da notificação mais recente para a mais antiga**. A busca textual avançada, ações em lote e retenção não estão aprovadas.
+- **IN-017:** a central terá **filtros por estado (Todas, Não lidas, Lidas), por tipo de evento e por período**, exibindo por padrão **da notificação mais recente para a mais antiga**. Pesquisa textual e ações em lote continuam pendentes.
+- **IN-018:** o histórico de **notificações internas da agenda no CRM Básico Cortesia terá retenção de 90 dias**, independente do estado lido/não lido, sem reduzir a retenção dos registros de agendamento ou de auditoria. Tratamento dos avisos ainda não lidos ao fim do prazo e arquivamento seguem pendentes.
 - **IN-012:** aprovada **ausência de teto comercial rígido para a quantidade mensal de agendamentos manuais** da única agenda do Básico, com **uso justo e controles técnicos contra abuso**. Não estabelecer limiar mensal oculto nem bloquear utilização humana legítima por atingir quantidade de reservas; quota de reservas públicas segue indisponível no Básico (IN-007).
 - **IN-009:** o profissional da empresa beneficiária pode manter **até 10 serviços ativos simultaneamente**, somando todos os tipos de atendimento cadastrados para essa agenda. Serviços inativos/arquivados **não ocupam vaga ativa**, mas seus históricos/agendamentos associados devem ser preservados. Não multiplicar a quota por site ou formulário. Ao tentar ativar o 11º serviço, bloquear a operação com explicação e opção de inativar outro serviço ou contratar plano elegível.
 - As automações comerciais do Básico permanecem em modelos prontos, até **3 ativas simultaneamente por empresa como baseline atual** (IN-005), com revisão final numérica planejada (IN-006). Essas automações não autorizam agendamento público.
@@ -111,7 +112,7 @@
 | Agenda compartilhada/equipe | Não incluída por IN-008 | Reservar para planos pagos |
 | Agendamento recorrente/grupos/lista de espera | Não incluído automaticamente | Reservar para pagos inicialmente |
 | Armazenamento/anexos de agenda | Definir com matriz geral do benefício | Quota específica a aprovar |
-| Notificações e lembretes de agenda | **IN-013 a IN-017:** internas, persistentes, 24h/1h configuráveis, estados lido/não lido, leitura ao abrir detalhes, filtros por estado/tipo/período e recentes primeiro, sem consumir automações | Retenção, arquivamento, pesquisa textual e ações em lote ainda a definir |
+| Notificações e lembretes de agenda | **IN-013 a IN-018:** internas, persistentes, 24h/1h configuráveis, lido/não lido, filtros por estado/tipo/período, recentes primeiro e **histórico na central por 90 dias**, sem consumir automações | Destino das não lidas ao fim de 90 dias, arquivamento, pesquisa textual e ações em lote a definir |
 | E-mail automático ao cliente e WhatsApp oficial | **Não incluídos no Básico (IN-013)** | Planos pagos ou adicionais elegíveis, com custos/canais próprios |
 
 **Justificativa para não impor um teto baixo de reservas manuais sem análise:** o cliente já precisa registrar manualmente cada atendimento e há apenas um profissional; o custo incremental por evento é pequeno, mas ainda existem riscos de abuso e limites de infraestrutura. Quotas técnicas, antifraude e retenção independem do número de registros permitido comercialmente.
@@ -206,16 +207,35 @@ As regras de expediente flexível, múltiplos períodos, pausas, duração por s
 
 **Aplicação e segurança:** combinar os filtros selecionados sobre os avisos do **usuário autenticado e empresa atual**; respeitar isolamento multiempresa e regras de acesso antes de computar resultados/contagens. Não revelar avisos de outro profissional, contato, usuário ou organização sem permissão. Estado lido/não lido deve refletir a situação persistida no servidor, inclusive após abrir detalhes e marcar novamente como não lido (IN-015/IN-016).
 
-**Exclusões explícitas da IN-017:** busca textual por cliente, serviço ou dados do agendamento não foi escolhida; "marcar todos como lidos", ações em lote, regras de retenção, expiração, arquivamento/exclusão, notificações push e pesquisa universal continuam pendentes. **Filtrar por período não elimina registros do histórico e não define por quanto tempo permanecem guardados.**
+**Exclusões da IN-017 isoladamente:** pesquisa textual, marcação em lote, arquivamento, exclusão, push e pesquisa universal não foram escolhidos. **A IN-018, aprovada posteriormente, estabelece 90 dias de retenção das notificações internas**; os filtros não alteram o prazo de guarda.
 
-**Próxima definição:** tempo de retenção dos avisos internos, possibilidade de arquivar e política de exclusão, sem confundir exclusão de notificação de interface com exclusão de compromisso ou trilha de auditoria do CRM.
+**IN-018 definiu 90 dias para a retenção de notificações internas. Próxima definição:** tratamento das notificações não lidas ao final desse prazo e possibilidade de arquivar avisos, sem confundir limpeza da central com remoção de compromisso ou auditoria.
+
+### 9.2E Retenção de notificações internas — IN-018 APROVADA
+
+**Decisão aprovada em 2026-11-01:** a central de notificações da agenda do **CRM Básico Cortesia** terá **90 dias de retenção do histórico de avisos e lembretes internos**, independentemente de estarem lidos ou não lidos. Esse prazo refere-se somente ao **registro de notificação da central**, não à existência do agendamento, dos contatos, nem às trilhas de auditoria, cujas regras próprias permanecem intactas.
+
+**Critério de contagem para a especificação:** usar o momento de geração/registro do aviso no sistema como referência inicial dos 90 dias, e não a data do atendimento, último acesso do usuário ou eventual mudança de lido para não lido; decisões técnicas de processamento/expiração devem respeitar o prazo aprovado e as obrigações legais aplicáveis.
+
+**Regras necessárias para preservar consistência:**
+- O histórico pode ser consultado dentro da janela de 90 dias, inclusive avisos gerados enquanto o usuário estava desconectado (IN-015).
+- Marcar um aviso como lido ou novamente como não lido (IN-016), aplicar filtros (IN-017) ou sair/entrar no CRM não reinicia a janela de retenção.
+- A execução de manutenção de retenção não altera, cancela ou exclui reservas/atendimentos, nem remove históricos de alteração, trilhas de auditoria e demais registros de outra categoria.
+- Aviso expirado não deve constar como alerta pendente acionável indevidamente; assegurar isolamento de organização/destinatário, registros de controle e obrigação legal quando houver retenção mais longa exigida.
+- Os 90 dias não definem quota de quantidade de agendamentos manuais (IN-012), armazenamento total da empresa ou entitlements de planos pagos.
+
+**Decisões expressamente PENDENTES, não presumidas por IN-018:**
+1. **Não lidas ao completar 90 dias:** expirar normalmente, avisar antes, oferecer um painel específico, ou outra alternativa de preservação? Nunca prometer ao cliente que uma notificação poderá ficar para sempre não lida.
+2. **Arquivamento manual:** permitir ocultar notificações da caixa principal antes dos 90 dias sem perder histórico, ou não oferecer arquivar?
+3. **Exclusão/limpeza:** se a retenção resultar em descarte físico, anonimização ou apenas saída da interface, e como conciliar backup, LGPD, prova de processamento e auditoria; detalhar política técnica e prazo operacional, sem alterar a janela de 90 dias para consulta comum.
+4. Histórico de leituras e retenção de logs técnicos específicos, pesquisa avançada e ações em lote continuam fora desta decisão.
 
 ### 9.3 Decisões seguintes
 
 1. **IN-009 e IN-011 já aprovaram** até 10 serviços ativos e a agenda flexível, incluindo bloqueios e exceção manual fora do expediente com confirmação e sem conflitos. Consolidar apenas detalhes técnicos/UX ainda abertos.
 2. **IN-012 aprovada:** agendamentos manuais sem teto comercial mensal; especificar apenas métricas técnicas e controles proporcionais de uso justo, sem quota escondida.
-3. **IN-013 a IN-017 aprovadas:** avisos internos com lembretes 24h/1h, central persistente, leitura ao abrir detalhes e filtros por estado/tipo/período com mais recentes primeiro. **Próxima decisão:** retenção, arquivamento e política de exclusão de avisos.
+3. **IN-013 a IN-018 aprovadas:** lembretes 24h/1h, central persistente, lido/não lido, filtros e retenção de 90 dias para notificações internas. **Próxima decisão:** como tratar avisos não lidos após 90 dias e se haverá arquivamento manual.
 4. Revisar campos de serviço, permissões e limite de usuários do Básico; funcionalidades externas (WhatsApp Business API, Outlook/Google Calendar etc.) não são autorizadas pela IN-009.
 
 
-**Situação:** IN-008 aprova **1 profissional com agenda**; IN-009 aprova **até 10 serviços ativos**; IN-011 aprova horários flexíveis e exceções manuais fora do expediente sem conflitos; **IN-012 aprova agendamentos manuais sem teto comercial mensal, com uso justo e controles técnicos contra abuso**. **IN-013 a IN-017 aprovaram avisos internos, lembretes 24h/1h configuráveis, central persistente, leitura ao abrir detalhes e filtros por estado/tipo/período com mais recentes primeiro, sem consumir automações; retenção, arquivamento, pesquisa textual e detalhes adicionais de UX continuam pendentes**. Somente documentação de planejamento, sem implementação.
+**Situação:** IN-008 aprova **1 profissional com agenda**; IN-009 aprova **até 10 serviços ativos**; IN-011 aprova horários flexíveis e exceções manuais fora do expediente sem conflitos; **IN-012 aprova agendamentos manuais sem teto comercial mensal, com uso justo e controles técnicos contra abuso**. **IN-013 a IN-018 aprovaram avisos internos, lembretes 24h/1h, central persistente, leitura ao abrir, filtros por estado/tipo/período e retenção de 90 dias, sem consumir automações; arquivamento, destino das não lidas após expiração, pesquisa textual e detalhes de UX seguem pendentes**. Somente documentação de planejamento, sem implementação.
