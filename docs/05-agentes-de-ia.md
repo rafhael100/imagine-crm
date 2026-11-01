@@ -29,4 +29,12 @@
 - Ao receber solicitação de humano, encaminhar para **equipe/fila permitida** com contexto necessário, histórico e rastreabilidade, respeitando permissões e regras de posse e transferência já aprovadas.
 - Fora do expediente humano, informar os horários aplicáveis, registrar a solicitação e **não prometer atendimento humano imediato**; a confirmação de aceite depende do efetivo início ou aceite pelo destino.
 - Seguir as políticas aplicáveis à plataforma WhatsApp, consentimento e privacidade, inclusive regras de envio e templates aprovados quando exigidos.
-- **Pendente:** decidir se a IA deve parar de responder imediatamente após solicitação de humano ou se pode continuar ajudando até o atendente assumir.
+- **Resolvido:** IA pausa imediatamente ao pedido de humano; pode retomar por pedido explícito do cliente somente enquanto ainda não houver atendente humano que assumiu. Após posse humana, retorno exige devolução autorizada.
+
+## Pausa de IA por solicitação do cliente para falar com humano — APROVADA
+- Ao reconhecer um pedido inequívoco do cliente para falar com uma pessoa, o agente de IA deve **confirmar o encaminhamento** e **pausar imediatamente suas respostas automáticas naquela conversa**.
+- A solicitação é registrada e encaminhada à fila/equipe humana autorizada, mantendo contexto e histórico. Enquanto não houver aceite/início efetivo, a solicitação permanece **pendente**, sem conclusão automática e respeitando o horário de funcionamento e SLA já definidos.
+- Quando o cliente **ainda estiver aguardando** a equipe humana, ele poderá pedir explicitamente para voltar a conversar com o assistente virtual; o sistema deve cancelar a solicitação pendente e registrar a retomada, evitando atendimento simultâneo.
+- Se **um funcionário já tiver assumido efetivamente** a conversa, somente um humano autorizado poderá devolvê-la à IA. Pedido do cliente isoladamente não pode reativar IA durante a posse humana.
+- Não permitir que mensagens automáticas do agente já enfileiradas sejam enviadas após a pausa; revalidar posse e status antes de cada envio e auditar transições.
+- A comunicação de solicitação recebida deve ser clara, sem inventar disponibilidade ou prometer tempo exato de resposta humana.
