@@ -117,7 +117,7 @@
 - A operação gera **atendimentos vinculados porém separados por número**, preservando cadastro único do cliente, histórico, autoria, visibilidade por equipe e vínculo com o atendimento anterior; não equivale a mover tecnicamente a thread no WhatsApp.
 - Enviar mensagens pelo número de destino **somente se permitido pelas regras oficiais Meta**, inclusive consentimento, janela de atendimento específica do número de destino e templates aprovados quando exigidos. Nunca interpretar transferência interna como autorização automática de envio.
 - Se o destino estiver indisponível, o envio não for autorizado ou outra regra impedir a transferência, manter solicitação e histórico íntegros, registrar a falha e encaminhar à fila/atendente responsável conforme regras configuradas, evitando perda do atendimento.
-- **Pendente de detalhamento:** número de tentativas/timeout, indisponibilidade de destino e regra exata de quando o atendimento de origem pode ser encerrado. Notificação automática ao cliente aprovada em decisão posterior.
+- **Pendente de detalhamento:** número de tentativas/timeout e tratamento operacional de indisponibilidade do destino; a regra de conclusão e manutenção do responsável de origem foi aprovada posteriormente. Notificação automática ao cliente aprovada em decisão posterior.
 
 ## Avisos automáticos ao cliente em transferências entre números WhatsApp — APROVADO
 - Sempre que um atendimento for transferido entre números oficiais de WhatsApp da mesma empresa, seja por **funcionário autorizado ou agente de IA**, o CRM deve **notificar o cliente automaticamente**, respeitando as permissões e as regras da WhatsApp Business Platform.
@@ -126,4 +126,13 @@
 - Priorizar aviso pelo **número de origem** quando permitido; se o número de destino não puder iniciar uma conversa válida, fornecer ao cliente **link para iniciar o contato com o setor de destino**, também por canal permitido.
 - O fluxo de transferir atendimento na aplicação **não significa transferir a thread nativa do WhatsApp** e **não autoriza automaticamente mensagem ativa no número de destino**. Validar consentimento, janela de atendimento e template aprovado quando exigido.
 - A interface deve distinguir aviso enfileirado/solicitado, enviado, entregue, lido e falha conforme os retornos efetivamente disponibilizados pela integração. Nunca confirmar como entregue antes da confirmação correspondente.
-- **Detalhes técnicos pendentes:** política de tentativas, preferências de templates por setor, mensagens alternativas quando o aviso falhar e regra de conclusão da transferência conforme disponibilidade/aceite do destino.
+- **Detalhes técnicos pendentes:** política de tentativas, preferências de templates por setor, mensagens alternativas quando o aviso falhar e definição detalhada do mecanismo de aceite do destino e notificações de pendência.
+
+## Transferências pendentes: origem mantém a responsabilidade — APROVADO
+- Quando um humano ou agente de IA solicitar transferência entre números oficiais de WhatsApp da mesma empresa, criar um registro de transferência com status **aguardando transferência** até confirmação efetiva.
+- **Não encerrar nem abandonar o atendimento de origem** somente porque foi solicitado encaminhamento, enviado aviso ou fornecido link ao número de destino. A origem continua responsável pelo cliente durante a pendência.
+- Considerar transferência **concluída apenas quando o atendimento no destino for efetivamente iniciado ou expressamente aceito pelo destino**, com registro identificável da confirmação e vínculo entre atendimentos.
+- Se o cliente não clicar no link, o setor de destino não aceitar ou houver indisponibilidade/falha técnica, manter transferência pendente (ou marcar falha conforme tratamento futuro) e **sinalizar ao responsável de origem**, sem perder o histórico ou o cliente.
+- Registrar solicitação, status, origem, destino, timestamps, responsáveis e eventos de aceite/conclusão/falha com trilha de auditoria, evitando confirmações artificiais ou duplicadas.
+- Evitar disparos automáticos contraditórios durante a transição, observando as regras já aprovadas de posse humano/IA, pausa de automações externas e políticas da Meta.
+- **A detalhar em decisões futuras:** tempo de espera/alertas, tentativas, encaminhamento ao gestor, critérios de aceite e tratamento de transferência cancelada ou recusada.
