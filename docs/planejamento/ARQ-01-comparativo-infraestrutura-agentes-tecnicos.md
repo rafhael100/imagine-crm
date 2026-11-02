@@ -7,7 +7,7 @@
 
 ## 1. Premissas documentadas e verificações pendentes
 
-- Planejamento de infraestrutura existente nas conversas: **servidor dedicado AlmaLinux/WHM/cPanel para hospedagem de sites**, **VPS Leaseweb com Ubuntu 24.04 LTS + Docker, 6 vCPU, 16 GB RAM e 200 GB NVMe para n8n/PostgreSQL**, e **CRM Imagine SaaS separado do WHM/cPanel**. Esses dados são premissas de planejamento e **não comprovação de que todos os recursos já estejam instalados, em uso ou com capacidade ociosa**.
+- **Hospedagem dos novos sites Onepage/Landing Pages Imagine: Cloudflare Workers Static Assets**, conforme **IN-096 aprovada em 01/11/2026**, com GitHub para versionamento e publicação automatizada por integrações/APIs e agentes autorizados. A proposta anterior de **AlmaLinux + WHM/cPanel para esses sites foi substituída** e não deve reaparecer como arquitetura atual. **Workers for Platforms** é somente evolução futura, sujeita a nova análise/aprovação. A **VPS Leaseweb prevista, Ubuntu 24.04 LTS + Docker, 6 vCPU, 16 GB RAM e 200 GB NVMe**, permanece referência para n8n/PostgreSQL. Estes são dados de planejamento, não comprovação de recursos já instalados ou de capacidade ociosa.
 - Duas APIs de captação de formulários, **principal e contingência**, com persistência durável independente, separação efetiva de infraestrutura e preferência por fornecedores distintos, conforme IN-124. Não usar orquestrador, servidor dos agentes, n8n ou painel administrativo como único caminho obrigatório de aceitação durável de leads.
 - Sete agentes especializados e um Supervisor **são papéis lógicos**; não equivalem a oito processos continuamente executando nem a oito servidores separados.
 - Agentes podem utilizar modelos de IA remotos contratados mediante aprovação; **nenhum requisito de GPU ou modelo local foi aprovado**, portanto não dimensionar GPU por suposição.
@@ -65,7 +65,7 @@ Possibilidade de **transição planejada**: preservar os limites arquiteturais p
 
 | Domínio | Diretriz |
 |---|---|
-| Sites públicos | Servidor de hospedagem WHM/cPanel, sem atuar como único repositório de leads. |
+| Sites Onepage/Landing Pages dos clientes | **Cloudflare Workers Static Assets**, CDN/HTTPS, GitHub para versões e publicação via APIs/automação controlada; sem WHM/cPanel nem banco local de leads. |
 | CRM SaaS | Infraestrutura de aplicação e banco segregada da hospedagem de sites e do ambiente de ferramentas. |
 | API principal de leads | Recepção e persistência durável independentes, separadas do Portal e agentes. |
 | API de contingência de leads | Outra infraestrutura e armazenamento durável independente da API principal. |
@@ -88,7 +88,7 @@ Possibilidade de **transição planejada**: preservar os limites arquiteturais p
 
 ## 6. Informações ainda necessárias para fechar ARQ-01
 
-1. Estado real **confirmado** do servidor WHM/cPanel, da VPS n8n, PostgreSQL, CRM SaaS e duas APIs (planejado, contratado, instalado, em produção).
+1. Estado real **confirmado** das contas/projetos Cloudflare Workers Static Assets e GitHub, do Portal Imagine, da VPS n8n, PostgreSQL, CRM SaaS e das duas APIs (planejado, contratado, instalado, em produção), sem presumir uso de WHM/cPanel para os sites.
 2. Medições de capacidade disponível, picos, tamanho de bancos/disco e utilização do n8n; sem inventar headroom.
 3. Estimativa de volume de incidentes, usuários/empresas e ações simultâneas dos agentes; necessidades de ferramentas.
 4. Alternativas reais de infraestrutura independente, custos mensais, custo de backups, tráfego, monitoramento e manutenção.
@@ -111,4 +111,9 @@ Possibilidade de **transição planejada**: preservar os limites arquiteturais p
 
 **Decisão aprovada:** hospedar o **Portal Imagine** e o **CRM Imagine SaaS** em **servidores separados**, com aplicações e dados isolados. A integração entre os dois ocorrerá por APIs autenticadas e com permissões restritas. A indisponibilidade do Portal não deverá interromper o funcionamento do CRM, e a recepção durável de formulários continuará independente do Portal, preservando a separação entre API principal e contingência da IN-124.
 
-**Distribuição lógica prevista:** (1) hospedagem WHM/cPanel, (2) Portal Imagine, (3) CRM Imagine SaaS, (4) n8n, (5) agentes técnicos e orquestrador, (6) API principal, (7) API de contingência. **São sete ambientes previstos no desenho completo, não sete novas contratações.** A alternativa de hospedar agentes em servidor próprio continua **recomendada, porém sem aprovação final expressa**. Não foram definidos provedores, capacidade, valores ou compras. O estado real dos recursos ainda deve ser confirmado. **Programação não iniciada.**
+**Distribuição lógica prevista (revisada pela IN-096):** (1) sites dos clientes em **Cloudflare Workers Static Assets** (plataforma, não VPS dedicada para sites), (2) Portal Imagine em servidor próprio, (3) CRM Imagine SaaS em servidor distinto, (4) n8n em VPS própria, (5) agentes técnicos e orquestrador — servidor independente recomendado e ainda pendente de escolha, (6) API principal com persistência durável própria, (7) API de contingência com persistência durável própria e infraestrutura independente da principal. **São sete grupos de serviços, não sete servidores necessariamente contratados.** Os provedores e custos de cada bloco ainda dependem de dimensionamento. **Programação não iniciada.**
+
+
+## Correção de arquitetura aprovada — hospedagem Imagine (02/11/2026)
+
+O responsável reafirmou a **IN-096**, já aprovada em 01/11/2026: os novos sites Onepage/Landing Pages Imagine serão publicados em **Cloudflare Workers Static Assets**, com **GitHub** para código/versões, deploy e operação automatizados por **APIs, n8n e agentes de IA sob autorização**, sem **WHM/cPanel** como hospedagem padrão dos sites dos clientes. **Cloudflare Workers for Platforms** permanece opção futura para escala, dependente de análise e aprovação. Sites estáticos não guardam leads localmente; captação ocorre pelas **duas APIs independentes** do IN-124. A infraestrutura dos **sites dos clientes** não deve ser confundida com os servidores separados do Portal Imagine, CRM Imagine SaaS, n8n ou agentes técnicos. A decisão não autoriza migração, publicação, contratação ou programação.
