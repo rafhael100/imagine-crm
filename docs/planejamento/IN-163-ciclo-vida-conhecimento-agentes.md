@@ -90,9 +90,14 @@ O Agente de Integrações aprendeu um procedimento seguro de recuperação, que 
 5. Design de acesso, segregação multiempresa, controles de confidencialidade, anonimização e auditoria.
 6. Como a limpeza alcançará índices, cópias técnicas e backups, respeitando limitações de mídia imutável.
 7. Custo e dimensionamento de armazenamento, busca e indexação; sem contratação de recursos pagos sem aprovação humana.
-8. Regras para rascunhos ou conhecimentos nunca homologados, cuja política de descarte ainda deve ser detalhada para que não permaneçam indefinidamente.
+8. Aplicação da revisão de **rascunhos sem movimentação relevante por 90 dias**, posteriormente aprovada na IN-164; a revisão **não é descarte automático**, e a política final de destino de rascunhos não arquivados ainda deve ser detalhada.
 9. Proteção de evidências necessárias e prevenção de uso de versões obsoletas em agentes.
 
 **Aprovado:** preservar conhecimento e procedimentos enquanto ativos/necessários; versionar mudanças e registrar homologação; arquivar versões obsoletas e impedir execução; **reter conhecimento arquivado por 24 meses contados do arquivamento**, salvo exceção legítima; minimizar informações sensíveis; revisar/substituir conhecimentos e permitir descarte controlado após vencimento.  
-**Pendente:** detalhes de implementação e políticas especiais para rascunhos e evidências excepcionais.  
+**Pendente:** detalhes de implementação, destinação de rascunhos revisados mas não arquivados e preservação de evidências excepcionais. A revisão após 90 dias de inatividade foi aprovada posteriormente na IN-164.  
 **Programação:** não iniciada.
+
+
+## Complemento posterior — IN-164 (02/11/2026)
+
+A [IN-164 — Curadoria Inteligente do Conhecimento dos Agentes Técnicos](IN-164-curadoria-inteligente-conhecimento-agentes.md) aprovou verificação de qualidade e obsolescência, detecção de duplicidades com preservação de diferenças e históricos, curadoria de rascunhos e **revisão após 90 dias sem movimentação relevante**. O prazo de 90 dias **não determina descarte automático ou homologação** de rascunhos. Os agentes podem organizar, classificar e sugerir revisão/arquivamento, mas **não homologam por conta própria novos playbooks executáveis**. O conhecimento efetivamente arquivado segue a retenção padrão de **24 meses contados do arquivamento** da IN-163. A forma técnica de tratar rascunhos revisados e ainda não arquivados continua pendente.
