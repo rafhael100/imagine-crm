@@ -74,7 +74,14 @@ Nenhuma resposta HTTP 2xx/202, webhook ou workflow n8n concluído é prova unive
 
 **Operação de FIN orquestrada:** INT-09 coordena pedido tipado, INT-04 transporta; aceite de provedor é técnico e FIN confirma o fato financeiro. Timeout após escrita pede reconciliação antes de reenvio; estorno, troca de provedor crítico ou compensação não são decisões livres da IA/INT-09.
 
-## 7. Itens pendentes de aceite P0-CON-01
+## 7. Aplicação das famílias de contrato aos requisitos e atos
+
+- [P0-TR53 — 53 associações propostas TR → CT](P0-TR53-vinculo-contratos-aceite.md).
+- [P0-OP — 12 casos operacionais de referência](P0-OP-casos-operacionais-contratos-alcadas.md).
+
+Essas referências não aprovam schemas, decisões funcionais ou execução.
+
+## 8. Itens pendentes de aceite P0-CON-01
 - CON-A: schemas físicos definitivos e campos condicionais por contrato.
 - CON-B: transições de estados por tipo e situações inválidas.
 - CON-C: erros/versionamento/garantias por provedor.
