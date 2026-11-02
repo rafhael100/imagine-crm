@@ -1,15 +1,15 @@
-# IA-01 — Matriz Proposta de Classes de Modelos por Tarefa (Agentes Técnicos Imagine)
+# IA-01 — Matriz Aprovada de Classes de Modelos por Tarefa (Agentes Técnicos Imagine)
 
-**Status:** PROPOSTA PARA REVISÃO — **não aprovada ainda**.  
+**Status:** **APROVADA funcionalmente em 02/11/2026** (resposta "ok") — adoção das classes **econômica, intermediária e avançada** para roteamento por tarefa dos agentes técnicos. **Modelos, fornecedores, limites financeiros, valores e implementação ainda não aprovados.**  
 **Data:** 02/11/2026.  
 **Fase:** somente planejamento e documentação. Não programar, contratar, provisionar ou ativar provedores e consumo.
 **Base funcional já aprovada:** [IN-157 — Modelos e Contingência](IN-157-gestao-inteligente-modelos-ia-contingencia.md), [IN-158 — Custos](IN-158-monitoramento-inteligente-custos-consumo-agentes.md), [IN-166 — Permissões](IN-166-gestao-inteligente-ferramentas-permissoes-agentes.md), [IN-167 — Arquitetura Consolidada](IN-167-consolidacao-arquitetura-agentes-tecnicos.md). A escolha da VPS exclusiva para agentes é uma decisão de arquitetura distinta; consultar [ARQ-01](ARQ-01-comparativo-infraestrutura-agentes-tecnicos.md).
 
 ## 1. Objetivo
 
-Detalhar uma **matriz operacional por complexidade e classe de custo/capacidade** para os sete agentes técnicos e Supervisor. O catálogo multimodelo, a seleção por tarefa e o fallback homologado **já foram aprovados na IN-157**; **este documento não solicita reaprovação dessas capacidades**. Em discussão está **a política de classes**, enquanto modelos específicos, preços, limites mensais, fornecedores e metas de qualidade continuarão como decisões posteriores.
+Detalhar uma **matriz operacional por complexidade e classe de custo/capacidade** para os sete agentes técnicos e Supervisor. O catálogo multimodelo, a seleção por tarefa e o fallback homologado **já foram aprovados na IN-157**; **este documento não solicita reaprovação dessas capacidades**. **Aprovada está a política de três classes**, enquanto modelos específicos, preços, limites mensais, fornecedores e metas de qualidade continuam como decisões posteriores.
 
-## 2. Classes propostas (sem fixar fornecedores)
+## 2. Classes aprovadas (sem fixar fornecedores)
 
 | Classe | Exemplos de tarefas elegíveis | Requisitos de qualidade |
 |---|---|---|
@@ -19,7 +19,7 @@ Detalhar uma **matriz operacional por complexidade e classe de custo/capacidade*
 
 **Observação:** a classe descreve **a adequação e o custo relativo esperados**, não uma qualidade garantida, produto ou preço. Modelos devem ser testados, homologados e avaliados por tarefa antes de entrarem no catálogo utilizável. Uma tarefa com regras estáveis e verificações determinísticas deve **preferencialmente não utilizar IA** quando isso oferecer resultado seguro e adequado.
 
-## 3. Roteamento proposto
+## 3. Diretrizes de roteamento aprovadas
 
 1. **Primeiro regras determinísticas:** monitoramento, validações de integridade, autenticação, fila, alertas críticos e recepção de leads independentes dos modelos.
 2. **Identificar o objetivo:** tipo de atividade, criticidade, recursos da tarefa, dados tratados, restrições de fornecedor/ambiente, orçamento e permissões autorizadas.
@@ -57,11 +57,12 @@ O Supervisor **não tem superprivilégios**; complexidade do modelo não altera 
 
 ## 6. Itens ainda não decididos
 
-1. **Se a matriz de três classes será adotada** como base funcional para os agentes técnicos.
-2. Modelos e fornecedores específicos para cada tarefa (OpenAI, Anthropic, Google ou outros), sujeitos a capacidade, compliance e homologação futura.
-3. Ordem de preferência e política de fallback por domínio e criticidade.
-4. Tetos financeiros e preço efetivo por modelo/fornecedor, cotas por tarefas e limite mensal interno.
-5. Regras concretas de segurança para envio de dados e validação das políticas de retenção e processamento por provedor.
-6. Metas quantitativas, banco de testes e dimensionamento final do servidor e serviços auxiliares.
+1. Modelos e fornecedores específicos para cada tarefa (OpenAI, Anthropic, Google ou outros), sujeitos a capacidade, conformidade e homologação futura.
+2. Ordem de preferência e política de fallback por domínio e criticidade.
+3. Tetos financeiros e preço efetivo por modelo/fornecedor, cotas por tarefas e limite mensal interno.
+4. Regras concretas de segurança para envio de dados e validação das políticas de retenção e processamento por provedor.
+5. Metas quantitativas, banco de testes e dimensionamento final do servidor e serviços auxiliares.
 
-**Próxima decisão solicitada ao responsável:** aprovar ou ajustar a classificação **econômica / intermediária / avançada** para orientar o catálogo da IN-157, **sem escolher modelos, provedores, valores nem iniciar programação**.
+**Decisão tomada em 02/11/2026:** o responsável **aprovou** a classificação **econômica / intermediária / avançada** como base funcional para orientar o catálogo da IN-157. **Não foram aprovados modelos, provedores, valores, contratações nem programação.**
+
+**Próxima etapa sugerida:** comparar modelos e fornecedores concretos como **candidatos**, por classe e tarefa, com testes de qualidade, disponibilidade, segurança de dados e custos; submeter escolhas finais e orçamentos à aprovação separada.
