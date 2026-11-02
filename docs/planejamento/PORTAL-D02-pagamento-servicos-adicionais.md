@@ -1,6 +1,6 @@
 # PORTAL-D02 — Pagamentos, Parcelamento e Execução de Serviços Adicionais do Portal Imagine
 
-**Status:** **APROVAÇÃO PARCIAL EM 02/11/2026**: aprovados (a) início de execução condicionado ao aceite e ao recebimento integral ou da primeira parcela e (b) **até três parcelas sem juros ao cliente para adicionais acima de R$ 270,00**, com valor total e parcelas informados previamente. **Vencimentos, meios de pagamento, inadimplência, cancelamento e reembolso permanecem pendentes.**  
+**Status:** **APROVAÇÃO PARCIAL EM 02/11/2026**: aprovados (a) início de execução condicionado ao aceite e ao recebimento integral ou da primeira parcela e (b) **até três parcelas sem juros ao cliente para adicionais acima de R$ 270,00**, com valor total e parcelas informados previamente. **Pix como meio de pagamento, inclusive em até três cobranças Pix sem juros para adicionais acima de R$ 270, e diretriz de incentivo transparente ao Pix foram aceitos em manifestação posterior do responsável. Taxas, percentuais de desconto, vencimentos, configuração do provedor, inadimplência, cancelamento e reembolso permanecem pendentes.**  
 **Fase:** somente planejamento e documentação. **Não autoriza cobrança real, contratação, programação, comunicação comercial, emissão de faturas ou alteração operacional**.
 **Escopo:** serviços extras/adicionais e orçamentos específicos solicitados por clientes no **Portal Imagine**, **não** implantação base de Onepage/Landing Page, mensalidade normal do site, contratação de CRM ou benefícios do CRM.
 **Referências:** [PORTAL-D01 — aceite expresso](PORTAL-D01-aceite-eletronico-versoes-orcamentos.md), [PORTAL-01 — matriz de pendências](PORTAL-01-matriz-pendencias-plataforma-sites.md), contratos e políticas financeiras ainda sujeitos a revisão ao final do planejamento.
@@ -61,3 +61,43 @@
 ## 6. Registro da segunda aprovação parcial PORTAL-D02 (02/11/2026)
 
 O responsável respondeu **“sim”** à pergunta expressa sobre o **parcelamento em até três vezes sem juros** para adicionais **acima de R$ 270**, com **valor fechado e informado antes do aceite**. Preserva-se a regra anterior de serviço liberado **somente após aceite eletrônico válido e recebimento confirmado do valor à vista ou da primeira parcela**, respectivamente. O preço será formado contemplando custos previsíveis de processamento, **sem cobrar juros do cliente pelo parcelamento**, nem adicionar encargos inesperados após aceitar o orçamento. Não houve aprovação de desconto à vista automático, juros por atraso, meios de pagamento, datas das parcelas, antecipação financeira, inadimplência, reembolso, operações reais ou programação. O item **PORTAL-D02 permanece parcialmente aberto**.
+
+
+## 7. Decisão posterior — Pix parcelado e incentivo comercial ao Pix (02/11/2026)
+
+**Direção aprovada pelo responsável, com linguagem expressa:** "no parcelamento, podemos aceitar também o PIX parcelado. Podemos incentivar seja por texto levando o cliente à escolha do PIX ou por ações de mais desconto o cliente efetuar todos os pagamentos via PIX". Assim, a proposta anterior de parcelamento exclusivamente por cartão **não foi aprovada** e não deve constar como restrição funcional.
+
+### 7.1 Opções de pagamento dentro do escopo de serviços adicionais
+
+- **Pix à vista:** elegível para orçamentos de qualquer valor, com liberação do serviço somente após aceite válido + confirmação do **valor total efetivamente recebido**.
+- **Pix em parcelas cobradas diretamente pela Imagine:** para **orçamentos acima de R$ 270**, oferecer **até três parcelas sem juros** pagas por Pix. Emitir cobranças/vencimentos individuais ou solução de Pix Automático homologada, **somente depois de aceite/autorizações aplicáveis**. A Imagine recebe **cada parcela na respectiva liquidação**; não considerar as futuras antecipadamente recebidas. O serviço é liberado após aceite + **primeira parcela efetivamente paga**, preservadas demais autorizações contratuais e técnicas.
+- **Cartão de crédito:** manter opção à vista e até três vezes sem juros para orçamentos acima de R$ 270, desde que produto/processador permita as condições aprovadas; a política de disponibilidade e tarifas do provedor é detalhe operacional pendente.
+- **Boleto à vista:** conservar como **opção em avaliação** da proposta anterior, ainda sem decisão expressa de adoção final nesta etapa.
+- **Pix parcelado financiado pelo banco do cliente:** **diferente** de três cobranças Pix da Imagine. Em operação de crédito concedida pela instituição, a transferência pode ser integral e imediata ao fornecedor, enquanto o cliente paga parcelas ao banco, possivelmente com juros e encargos próprios. **Não promover como “sem juros” sem garantia contratual real para o cliente.** Disponibilidade, taxas, comunicação e compatibilidade com política da Imagine ainda exigem escolha específica.
+- **Pix Automático:** possibilidade técnica para futuras parcelas se houver provedor compatível e autorização formal do pagador; **não presumir débitos automáticos**, autorização irrevogável ou ausência de tarifas.
+
+### 7.2 Incentivos ao Pix — diretriz aprovada, parâmetros ainda pendentes
+
+- **Diretriz comercial aceita:** o Portal poderá **destacar o Pix de forma informativa e positiva**, incluindo mensagens de conveniência, conciliação mais rápida e eventuais benefícios comerciais, sem esconder cartão ou outras opções contratualmente permitidas.
+- **Estratégia de descontos em planejamento:** poderá oferecer condição mais vantajosa para **Pix à vista** e avaliar benefício também quando **todas as parcelas do orçamento** forem pagas via Pix, sempre com política de elegibilidade, preço total e regras transparentes. Nenhum **percentual/valor de desconto foi aprovado agora**; **nenhum desconto automático deve ser ativado** antes de aprovação expressa de suas condições e margem.
+- **Não prometer recebimento total instantâneo no Pix em três cobranças**; somente cada transferência liquidada é instantânea. A menor tarifa do Pix pode variar por banco, intermediador e serviço; **simular custo líquido real** versus cartão (tarifas, estornos, crédito, fraudes, cobrança/atraso, adiantamento e esforço operacional).
+- **Transparência:** mostrar o valor total com e sem benefício, o meio de pagamento, valor e vencimento de cada parcela e requisitos de elegibilidade **antes do aceite do orçamento**, sem taxas surpresas, descontos fictícios, preços de referência artificiais ou alterações retroativas. Forma de comunicação e regras devem ser revisadas à luz da Lei nº 13.455/2017 e da proteção do consumidor.
+- **Regras de preferência Pix não substituem segurança:** somente pagamentos conciliados e confirmados liberam execução. Cobranças Pix futuras precisam de identificador próprio, estados, monitoramento e tratamento idempotente de duplicidade.
+
+### 7.3 Temas expressamente pendentes
+
+1. **Percentual/valor e elegibilidade** do desconto de Pix integral, eventual desconto para todas as parcelas em Pix, possibilidade de desconto à vista no cartão e política de não cumulatividade.
+2. **Datas de vencimento**, intervalo entre até três parcelas, prazo de pagamento da primeira parcela, cronograma de entrega e aviso de atraso.
+3. Formas de **cobrança Pix** (Pix Cobrança QR dinâmico, Pix Automático/autorizações, pagamento manual) e provedor, integração, conciliação, tarifas e custos operacionais.
+4. **Parcelas não pagas**, cancelamento de autorização Pix Automático, disputa de comprovantes, estornos, reembolsos e efeitos em serviço já iniciado.
+5. **Apresentação comercial** por modalidade, aceites, limites de uso, obrigações legais e impacto financeiro de descontos.
+6. Confirmar se Pix com crédito contratado no banco será oferecido como mecanismo adicional, sem presumir isenção de juros do financiamento.
+
+### 7.4 Fontes públicas consultadas (02/11/2026)
+
+- Banco Central — Pix Cobrança e liquidação: https://www.bcb.gov.br/estabilidadefinanceira/pix-cobranca
+- Banco Central — Pix Automático para recebedores e tarifas: https://www.bcb.gov.br/estabilidadefinanceira/pix-automatico-recebedores
+- Banco Central — oferta de crédito durante Pix, Resolução BCB nº 603 de 23/10/2026: https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?numero=603&tipo=Resolu%C3%A7%C3%A3o+BCB
+- Lei nº 13.455/2017 — diferenciação de preços por prazo/meio, com informação ostensiva de desconto: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2017/lei/l13455.htm
+
+**Esta seção registra a decisão de aceitar Pix no parcelamento e a orientação comercial de incentivar Pix. Não define preço/percentual, não ativa cobranças reais nem autoriza desenvolvimento.**
