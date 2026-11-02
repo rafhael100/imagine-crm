@@ -1,6 +1,6 @@
 # PORTAL-REL-01 — Jornada Inteligente de Boas-Vindas, Treinamento e Acompanhamento Pós-Entrega (30 dias)
 
-**Status:** **JORNADA, CALENDÁRIO-BASE E INÍCIO NA ENTREGA OFICIAL CONFIRMADA NO PORTAL APROVADOS em 02/11/2026.** O responsável respondeu **“sim”** à proposta expressa da REL-01, com ações nos **dias 0, 3, 7, 15 e 30 após a entrega do site**, incluindo boas-vindas, treinamento, orientação sobre formulários/leads/CRM quando aplicável, verificação de necessidade de ajuda e acompanhamento de satisfação/próximos passos. **Canais, horários, conteúdos específicos, permissões de disparo e regras técnicas permanecem pendentes de aprovação detalhada.**
+**Status:** **JORNADA, CALENDÁRIO-BASE, INÍCIO NA ENTREGA OFICIAL E RESPONSABILIDADE DE CONFIRMAÇÃO PELA EQUIPE IMAGINE APROVADOS em 02/11/2026.** O responsável respondeu **“sim”** à proposta expressa da REL-01, com ações nos **dias 0, 3, 7, 15 e 30 após a entrega do site**, incluindo boas-vindas, treinamento, orientação sobre formulários/leads/CRM quando aplicável, verificação de necessidade de ajuda e acompanhamento de satisfação/próximos passos. **Canais, horários, conteúdos específicos, permissões de disparo e regras técnicas permanecem pendentes de aprovação detalhada.**
 **Fase:** planejamento e documentação, sem programação, envios, contratação de provedores, ativação de automação ou cobrança.
 **Produto responsável:** Central de Relacionamento Inteligente e Crescimento da Imagine, **módulo oficial aprovado** em [PORTAL-COM-12](PORTAL-COM-12-relacionamento-inteligente-retencao-expansao-clientes.md).
 **Relacionamentos:** [PORTAL-01 — matriz](PORTAL-01-matriz-pendencias-plataforma-sites.md), [PORTAL-COM-11 — catálogo de serviços](PORTAL-COM-11-proposta-gestao-servicos-produtos-adicionais-automacoes.md), [IN-123 — integração sites/CRM](IN-123-painel-integracoes-sites-crm.md), [PORTAL-D01 — aceite](PORTAL-D01-aceite-eletronico-versoes-orcamentos.md), [PORTAL-D02 — orçamento/serviços adicionais](PORTAL-D02-pagamento-servicos-adicionais.md).
@@ -50,7 +50,7 @@ Agente pode sugerir material relevante, criar lembrete, sinalizar dúvidas recor
 
 ## 6. Pendências para a próxima rodada
 
-1. **APROVADO:** a jornada inicia na **data de entrega oficial confirmada no Portal**, não por publicação ou aceite isolado. **Pendente:** quem confirma, verificações exigidas, evidência e fluxo de correção/reversão sem disparos indevidos; horário e fuso.
+1. **APROVADO:** a jornada inicia na **data de entrega oficial confirmada no Portal**, não por publicação ou aceite isolado. **Complemento aprovado:** a **equipe Imagine confirma no painel administrativo**, após verificar publicação, funcionamento e aceites necessários. **Pendente:** perfil autorizado, checklist/evidências detalhadas e fluxo de correção/reversão sem disparos indevidos; horário e fuso.
 2. Canais por etapa, **autorização e preferências comerciais** e possibilidade de mensagens internas não promocionais; regras de LGPD e canais.
 3. Horários de disparo, férias/feriados, se dias 0/3/7/15/30 são corridos, opções administrativas de ajuste, deduplicação e pausas.
 4. Roteiros e materiais de cada dia, biblioteca versionada e variantes para site com/sem CRM Básico.
@@ -69,4 +69,19 @@ Agente pode sugerir material relevante, criar lembrete, sinalizar dúvidas recor
 
 **Requisitos de integridade para especificar:** evento de entrega único e auditável, identificador do projeto/contrato/versão, data-hora e fuso, origem e autorização da confirmação, idempotência por entrega e política de reentrega/republicação/reversão/correção. O aceite eletrônico aprovado na PORTAL-D01 **não é automaticamente sinônimo de confirmação da entrega**; a integração entre os estados do workflow de aceite, publicação e entrega precisa ser mapeada. Não presumir que confirmação de entrega dispensa o aceite já exigido por outros fluxos.
 
-**Permanecem pendentes:** quem confirma formalmente a entrega (cliente, equipe Imagine ou ambos), forma e prova de confirmação, horários, dias corridos/úteis, reagendamentos e permissões/canais/consentimentos de contato. **Nenhuma mensagem ou automação real ativada**.
+**Responsável aprovado posteriormente:** a **equipe Imagine** registra/confirma oficialmente a entrega no **painel administrativo**, após verificar que o site está publicado, funcional e com os aceites necessários. **Permanecem pendentes:** qual perfil de funcionário pode confirmar, checklist técnico e evidências de conferência, modo de notificar o cliente no Portal, horários, dias corridos/úteis, reagendamentos e permissões/canais/consentimentos de contato. **Nenhuma mensagem ou automação real ativada**.
+
+
+## 8. Aprovação complementar — equipe Imagine confirma entrega no painel administrativo (02/11/2026)
+
+**Pergunta apresentada ao responsável:** “Você aprova que a equipe Imagine seja responsável pela confirmação oficial da entrega?”, acompanhada da proposta de verificação de site **publicado, funcional e com aprovações necessárias**, confirmação pelo **painel administrativo**, seguida de informação ao cliente no Portal e marco inicial da REL-01. **Resposta:** “sim”.
+
+**Regra funcional aprovada:**
+
+1. A **responsabilidade pela confirmação oficial de entrega é da equipe Imagine**, executada mediante ação autorizada no **painel administrativo do Portal Imagine**; não atribuir essa confirmação automaticamente ao cliente ou a um agente de IA sem decisão posterior.
+2. Antes da confirmação, a equipe deve verificar que o **site correspondente está publicado e funcional**, e que as **aprovações/aceites necessários** ao fluxo foram obtidos. **A aprovação da versão pelo cliente (PORTAL-D01) não substitui, isoladamente, a confirmação administrativa de entrega**, e a confirmação não dispensa aprovações prévias exigidas.
+3. A ação grava **evento oficial verificável e auditável**, vinculado ao cliente, projeto, versão, responsável autorizado, estado, data/hora e fuso, impedindo confirmações repetidas/retroativas indevidas. **Esquema detalhado e trilha de provas são requisitos de implementação a especificar.**
+4. A conclusão será **visível ao cliente no Portal**, com indicação clara de que o site foi entregue. **Canal de aviso externo, modelos de mensagem e autorização para disparo automático ainda não aprovados.**
+5. **Somente esse evento de entrega confirmada** estabelece o **Dia 0 da REL-01**, iniciando futuramente o calendário-base de dias **0, 3, 7, 15 e 30**, depois de homologadas as regras de comunicação. A mera publicação, o aceite isolado, o pagamento e a contratação não acionam a jornada.
+
+**Ainda não aprovados neste complemento:** perfis de funcionários habilitados, checklist técnico preciso de publicação e testes, necessidade de validação humana adicional, telas do Portal, horários e dias úteis/corridos, canais de envio, disparo automático, revisão e reversão em caso de entrega confirmada indevidamente, e eventos de reentrega. **Sem programação nem envios reais.**
