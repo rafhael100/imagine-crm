@@ -99,3 +99,8 @@ A análise por IA fica indisponível; mecanismos determinísticos e alertas esse
 **Aprovado:** catálogo de modelos por agente, seleção inteligente, contingência automática para alternativas homologadas, controle de qualidade e custos, continuidade segura de tarefas, aprendizado e operação técnica degradada independente de IA.  
 **Pendente:** fornecedores e modelos específicos, quotas, indicadores quantitativos, arquitetura e testes.  
 **Programação:** não iniciada.
+
+
+## Complemento posterior — IN-165 (02/11/2026)
+
+A [IN-165 — Versionamento e Homologação das Instruções dos Agentes Técnicos](IN-165-versionamento-homologacao-instrucoes-agentes.md) aprovou versionamento, testes, controle de publicação, auditoria e rollback das **instruções comportamentais**. Ajustes de baixo risco podem ser automáticos **somente dentro de política e procedimento previamente homologados**. Mudanças relevantes de comportamento exigem homologação humana; mudanças críticas seguem a aprovação humana única aplicável. **Instruções/prompts não concedem ferramentas, permissões ou autorização de execução, tampouco substituem homologação de playbooks ou controles externos da IA.** A retenção das versões de instruções ainda será definida separadamente e não herda automaticamente o prazo de 24 meses aplicável ao conhecimento arquivado da IN-163.
