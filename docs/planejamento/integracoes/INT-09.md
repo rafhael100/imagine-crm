@@ -33,6 +33,13 @@
 - Nenhum SQL arbitrário, scripts/código livre de clientes, URLs irrestritas, acesso direto aos bancos de negócio ou superprivilégios ao n8n.
 - Não confundir dados estruturados obrigatórios de operação/auditoria com franquias de arquivos. Preservar CRM Básico e trial sem API pública, com integrações nativas autorizadas.
 
+## Complemento de rastreabilidade P0 (sem nova aprovação)
+- A deliberação detalhada distingue **modelo de processo**, **instância**, estado do **processo solicitado/autorizado/programado/iniciado/parcialmente concluído/suspenso/bloqueado/em compensação/reconciliado/concluído/encerrado com ressalvas**, estados da **etapa** (elegível/iniciada/pendente/confirmada/rejeitada/inconclusiva), do **comando** (preparado/enviado/aceito/aplicado/oficialmente confirmado), da **aprovação** (solicitada/concedida) e da **compensação** (planejada/solicitada/executada/verificada/parcial/inconclusiva). A modelagem formal e as transições ficam para especificação P0-CON, sem inventar transições.
+- Convergência de paralelismo requer confirmação efetiva das dependências; nenhuma etapa obrigatória é dispensada por sucesso de etapa independente. Iterações somente com limites e critérios de parada, sem ciclos inválidos.
+- Revalidar autorizações vigentes em início, retomada, antes de operações protegidas e compensações e em tarefas assíncronas. **Cancelamento técnico não altera retroativamente fatos de negócio confirmados**.
+- As comunicações a clientes pertencem a COM; eventos, tarefas, prazos, aprovações e arquivos aos serviços centrais. A IA não reprocessa escritas inconclusivas nem executa compensação crítica autonomamente.
+- [Conferência P0 INT-09 a INT-12](P0-REV-INT09-12-conferencia-cruzada.md). Cotejo integral da origem com referência imutável continua pendente.
+
 ## Governança e próximo passo
 - Rastrear cada requisito à decisão original, responsável, versão, contrato, invariantes INV e cenário HT em [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md).
 - Não presumir que esta síntese reproduz palavra por palavra o texto integral da aprovação. Conferir literalidade, lacunas, limites, prazos e exceções no item P0-DOC da [matriz P0](INT-P0-fechamento-documental.md).
