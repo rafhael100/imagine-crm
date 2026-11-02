@@ -90,3 +90,10 @@ Na sequência de planejamento, elaborar opções para **localização e isolamen
 ## Complemento de análise — ARQ-01 (02/11/2026)
 
 Foi preparada a [comparação de infraestrutura dos agentes técnicos — ARQ-01](ARQ-01-comparativo-infraestrutura-agentes-tecnicos.md), com as alternativas **A (compartilhar a VPS n8n/PostgreSQL com isolamento lógico)** e **B (infraestrutura própria para agentes/orquestrador)**. A análise técnica **recomenda B** por isolamento, independência de manutenção e menor correlação de falhas, porém **o responsável ainda não escolheu a arquitetura**, nem aprovou nova VPS, orçamento, provedor, contratação ou implantação. **ARQ-01 continua P0 e PENDENTE DE DECISÃO** até aprovação expressa, confirmação da infraestrutura realmente existente e dimensionamento/custos. Permanecem preservadas duas APIs de leads com persistência independente e a proibição de iniciar programação antes do fechamento do planejamento.
+
+
+## Decisão parcial de ARQ-01 — Portal Imagine separado do CRM (02/11/2026)
+
+**Aprovado:** Portal Imagine e CRM Imagine SaaS terão **servidores próprios e separados** entre si. É diretriz de arquitetura, não autorização de contratação. Integração por APIs seguras e bancos isolados; falha do Portal não pode impedir funcionamento do CRM nem recepção de leads pelas APIs independentes.
+
+**ARQ-01 continua parcialmente pendente:** infraestrutura dos agentes (Opção B recomendada, ainda não escolhida expressamente), provedores, capacidade, orçamento e confirmação dos recursos instalados. O comparativo e a topologia de sete ambientes de referência estão documentados em [ARQ-01](ARQ-01-comparativo-infraestrutura-agentes-tecnicos.md). **Sem programação.**
