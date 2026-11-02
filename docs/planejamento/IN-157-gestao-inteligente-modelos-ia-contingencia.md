@@ -104,3 +104,10 @@ A análise por IA fica indisponível; mecanismos determinísticos e alertas esse
 ## Complemento posterior — IN-165 (02/11/2026)
 
 A [IN-165 — Versionamento e Homologação das Instruções dos Agentes Técnicos](IN-165-versionamento-homologacao-instrucoes-agentes.md) aprovou versionamento, testes, controle de publicação, auditoria e rollback das **instruções comportamentais**. Ajustes de baixo risco podem ser automáticos **somente dentro de política e procedimento previamente homologados**. Mudanças relevantes de comportamento exigem homologação humana; mudanças críticas seguem a aprovação humana única aplicável. **Instruções/prompts não concedem ferramentas, permissões ou autorização de execução, tampouco substituem homologação de playbooks ou controles externos da IA.** A retenção das versões de instruções ainda será definida separadamente e não herda automaticamente o prazo de 24 meses aplicável ao conhecimento arquivado da IN-163.
+
+
+## Complemento aprovado — classes de modelos por tarefa (IA-01, 02/11/2026)
+
+O responsável **aprovou funcionalmente** a classificação dos modelos elegíveis em **três classes: econômica, intermediária e avançada**, com seleção por complexidade, qualidade e custo da tarefa, preservando a política multimodelo e fallback já aprovada nesta IN-157. A [matriz IA-01 de classes por tarefa](IA-01-matriz-classes-modelos-por-tarefa-agentes-tecnicos.md) define exemplos de atividades, escalonamento controlado, uso prioritário de regras determinísticas quando suficientes, verificação de resultados, limites de autonomia e segurança de dados. O nível de classe **não altera permissões do agente, alçada ou aprovação humana necessária**, e modelos externos continuam sujeitos a homologação, orçamento e políticas de dados.
+
+**Permanecem pendentes e não foram implicitamente aprovados:** provedores e modelos específicos, versões, preços, metas numéricas, ordem de preferência/fallback por tarefa, limites e reservas financeiras, contratos de proteção de dados, testes e implantação. **Não iniciar programação ou contratação.**
