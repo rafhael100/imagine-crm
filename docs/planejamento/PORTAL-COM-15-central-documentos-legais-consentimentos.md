@@ -1,6 +1,6 @@
 # PORTAL-COM-15 — Central de Documentos Legais e Consentimentos
 
-**Status:** **MÓDULO FUNCIONAL APROVADO em 02/11/2026; REGRA POSTERIOR APROVADA: POLÍTICA DE PRIVACIDADE PADRÃO EM TODOS OS NOVOS SITES IMAGINE, COM ACEITE OU PEDIDO DE ALTERAÇÃO PELO CLIENTE ANTES DE PUBLICAR.** O responsável respondeu **“ok”** à pergunta específica sobre aprovar uma **Central de Documentos Legais e Consentimentos**, com **gestão administrativa, versionamento e histórico de aceites**, aplicável ao Portal Imagine e aos sites dos clientes, com documentos apropriados a cada cliente/projeto e aprovação do responsável quando necessária.
+**Status:** **MÓDULO FUNCIONAL APROVADO em 02/11/2026; POLÍTICA DE PRIVACIDADE PADRÃO POR SITE, ACEITE OU PEDIDO DE ALTERAÇÃO PELO CLIENTE E REVISÃO INTELIGENTE POR IA APROVADOS.** A IA poderá preparar novas versões a partir de solicitações do cliente e submetê-las novamente para aprovação expressa; exceções jurídicas/fora do padrão seguem para revisão humana. O responsável respondeu **“ok”** à pergunta específica sobre aprovar uma **Central de Documentos Legais e Consentimentos**, com **gestão administrativa, versionamento e histórico de aceites**, aplicável ao Portal Imagine e aos sites dos clientes, com documentos apropriados a cada cliente/projeto e aprovação do responsável quando necessária.
 **Fase:** apenas planejamento/documentação. Não programar, publicar termos, substituir política existente, disparar solicitações de consentimento ou coletar novas informações antes de aprovação e homologação.
 **Dependências:** [COM-14 — LGPD e aceites](PORTAL-COM-14-lgpd-aceites-privacidade-consentimentos-checklist.md), [COM-13 — checklist IA de entrega](PORTAL-COM-13-entrega-automatica-checklist-qualidade-agente-ia.md), [D01 — aceite de versões/orçamentos](PORTAL-D01-aceite-eletronico-versoes-orcamentos.md), [IN-125 — formulários](IN-125-gestao-inteligente-formularios.md), [IN-150 — segurança](IN-150-seguranca-inteligente-formularios-apis.md), [COM-12/REL-01 — relacionamento](PORTAL-COM-12-relacionamento-inteligente-retencao-expansao-clientes.md).
 
@@ -131,3 +131,30 @@ Registro por site: ID do modelo global, versão do modelo, ID da política do pr
 Layout das telas, checklist jurídico mínimo do modelo padrão, dados e fontes para preencher cada campo, perfil/representação do cliente, notificações e lembretes, prazo para resposta, quantidade/limites contratuais de ajustes (não criar cobrança por simples pedido sem previsão contratual), quando alterações jurídicas específicas exigem revisão especializada, procedimento de publicação, correção/reversão e manutenção das versões após o lançamento.
 
 **Resumo:** **modelo padrão por site + cliente pode APROVAR ou SOLICITAR ALTERAÇÕES + só publicar após aceite expresso da versão correta** são regras aprovadas. **Não iniciar programação nem publicar documentos reais nesta fase.**
+
+
+## 10. Revisão inteligente das Políticas de Privacidade após pedido de ajustes — APROVADO (02/11/2026)
+
+**Proposta apresentada ao responsável:** “quando o cliente solicitar alterações, o agente de IA analise o pedido, prepare uma versão revisada e a encaminhe novamente ao cliente para aprovação, com intervenção humana quando houver questões jurídicas ou situações fora do padrão”. **Resposta do responsável: “ok”. REGRA FUNCIONAL APROVADA.**
+
+### 10.1 Fluxo de revisão automática assistida por IA
+
+1. **Pedido do cliente:** a partir da política padrão específica do seu site, o representante autorizado escolhe **Solicitar Alterações**, registra os trechos e correções pretendidos e, quando necessário, recebe pedido de esclarecimento. Vincular o pedido ao projeto, controlador, documento e **versão exata** apresentada.
+2. **Análise pelo agente IA:** identificar os trechos afetados, consultar apenas dados autorizados da empresa, contrato, funcionalidades do site e modelo jurídico previamente homologado; distinguir **ajuste simples/paramétrico** de **mudança jurídica relevante**, informação desconhecida, pedido contraditório ou uso não previsto de dados. **Não inventar práticas, finalidades, dados, provedores, consentimentos ou bases legais**.
+3. **Revisão simples dentro da autonomia aprovada:** agente prepara **nova minuta versionada**, preservando cláusulas padronizadas necessárias e destacando alterações relevantes; executa verificações de completude e consistência com formulários, cookies, integrações e escopo do site. Um procedimento homologado pode preparar uma minuta sem exigir aprovação humana repetitiva para cada ajuste rotineiro.
+4. **Exceção:** dúvida de interpretação legal, cláusula que altere finalidade/base legal, dados sensíveis/de crianças, transferência internacional relevante, omissão de direitos/transparência, remoção de aviso essencial, conflito com dados reais, fora do modelo homologado ou tentativa de impor consentimento indevido **bloqueiam a liberação automática da nova minuta**. Encaminhar para responsável humano/jurídico habilitado, com resumo do pedido, diferença entre versões e riscos; só retomar após análise/alteração autorizada.
+5. **Nova apresentação:** após passar controles técnicos e revisões exigidas, a versão revisada será **encaminhada ao cliente no Portal** para avaliação. Cliente poderá **Aprovar** ou **Solicitar novas alterações**, mantendo o ciclo rastreável. **Não há aprovação por silêncio e a IA jamais aprova em nome do cliente**.
+6. **Publicação:** somente após **aprovação expressa do cliente à versão final** e verificações técnicas/jurídicas cabíveis, autorizar publicação do texto exato no site. Agente COM-13 confirma o vínculo entre texto aprovado e publicado no checklist. **Documento pendente de aprovação ou ajuste impede ENTREGUE**, sem iniciar Dia 0 REL-01.
+
+### 10.2 Controles e histórico mínimos
+
+- Registros por cliente/site: pedido, usuário autorizado, data/hora e fuso, versão original, comentários, classificação (rotineiro/exceção), agente/modelo/playbook usado, diferenças entre versões e testes, identidade do revisor humano quando exigido, nova versão/hash, nova solicitação de aceite e decisão final do cliente.
+- Estados sugeridos: **Aguardando revisão IA → Em análise → Aguardando esclarecimento ou revisão humana (se necessário) → Nova versão aguardando aprovação do cliente → Aprovada → Liberada/publicada**. Falhas devem ficar visíveis e recuperáveis, sem alteração silenciosa ou publicação antecipada.
+- Segregar políticas e dados por cliente, não permitir que a IA se autoatribua privilégios, não substituir aceitações históricas e não apagar versões/recusas anteriores por atualização.
+- Ajustes solicitados e novas versões **não criam cobrança automática**, número mínimo/máximo de revisões nem SLA novo. Condições comerciais e prazos específicos ainda serão definidos em decisão própria.
+
+### 10.3 Aprovado versus pendente
+
+**APROVADO:** após solicitação de alteração, **IA analisa, prepara nova minuta versionada e devolve ao cliente para aprovação**, escalando questões jurídicas e casos fora do padrão à equipe habilitada. A política padrão, aprovação do cliente antes da publicação e bloqueio de entrega sem aprovação continuam vigentes.
+
+**PENDENTE PARA ESPECIFICAÇÃO:** matriz de classificação de risco, modelos jurídico/legais homologados, permissões, regras de intervenção, telas para comparação de versões, forma de notificar/encaminhar a nova versão, limites de tentativas, custos/capacidade, revisão jurídica dos templates e testes. **Não há programação, envio de mensagens ou publicação de documentos reais.**
