@@ -42,3 +42,8 @@ Automatizar os avisos sobre o encerramento da cortesia do CRM Básico e permitir
 **Pendente de detalhamento técnico:** templates e escalonamento de notificação, fuso/marco oficial, regras antifraude, idempotência, casos limítrofes de reativação e integração exata com contratos/assinaturas.
 
 **Não autoriza programação.**
+
+
+## Complemento COM-08 — suspensao por inadimplencia e comunicacao especifica (02/11/2026)
+
+O Portal usará tolerância de **7 dias corridos de inadimplência** como referência do CRM, e **suspenderá o acesso operacional do CRM Básico cortesia com o site que sustenta sozinho seu benefício**, depois de confirmar dívida e suspensão do site. Notificar o cliente com motivo e possibilidade de regularização; a recorrência CRM paga e a cortesia de conta com outro site ativo elegível não serão suspensas por esse evento. Uma conta suspensa por dívida deverá poder ser reativada com regularização e validação dos vínculos. **Não aplicar automaticamente o cronograma Dia 0/15/25/29/30 deste documento** ao evento de suspensão por inadimplência; esse cronograma foi aprovado para **encerramento definitivo da elegibilidade/cancelamento do último site**, com transição de 30 dias. Caso dívida evolua para cancelamento formal, o encadeamento técnico e as mensagens devem ser harmonizados antes de implementar; manter dados e portabilidade. A cortesia para novos contratos pode ser configurada por serviço/campanha. Ver [PORTAL-COM-08](PORTAL-COM-08-inadimplencia-site-cortesia-crm-configuravel.md).
