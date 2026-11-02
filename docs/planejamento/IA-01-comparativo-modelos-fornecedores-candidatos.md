@@ -130,3 +130,8 @@ Os resultados de qualidade, os tokenizadores, as políticas de raciocínio, a qu
 - Google — preços e reajustes anunciados: https://ai.google.dev/gemini-api/docs/pricing
 
 **Conclusão:** pesquisa documentada; **nenhum candidato foi escolhido, homologado, contratado ou autorizado a consumir recursos**, e não houve programação.
+
+
+## Decisão posterior de 02/11/2026 — Lista inicial para avaliação
+
+**Aprovado:** conservar os nove modelos apresentados nas tabelas das seções 3.1, 3.2 e 3.3 como **candidatos para futura avaliação e homologação**, distribuídos pelas três classes previamente aprovadas. Esta aprovação não escolhe nenhum modelo como principal ou contingência e não equivale a homologação técnica, autorização de uso, contratação ou orçamento. Antes de qualquer escolha final, confirmar os nomes e identificadores de API, disponibilidade e preços atualizados, qualidade por tarefa, compatibilidade de ferramentas e requisitos de proteção de dados. Os dois modelos excepcionais citados no estudo não fazem parte desta lista de nove. **Nenhuma programação, contratação, criação de credenciais ou consumo das APIs foi autorizada.**
