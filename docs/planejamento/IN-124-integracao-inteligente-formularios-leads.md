@@ -42,9 +42,33 @@ Capturar, entregar, rastrear e recuperar automaticamente envios dos formulários
 **Pendente:** parâmetros técnicos e fluxos detalhados acima.  
 **Programação:** não iniciada.
 
-## Esclarecimento arquitetural levantado em 01/11/2026 (aguardando aprovação específica)
+## Arquitetura de recepção redundante — APROVADA em 01/11/2026
 
-- O responsável confirmou que **os sites e landing pages Imagine não terão banco de dados próprio**. Por isso a fila de reenvio não deve depender de armazenamento no site hospedado.
-- **Proposta, ainda não homologada:** formulários enviam via HTTPS a uma **API central de ingestão da Imagine**, que valida e **persiste com durabilidade** o envio e seu identificador; processadores assíncronos entregam o conteúdo à conta CRM vinculada, com retentativas e auditoria. Tecnologias candidatas: Laravel com fila baseada em PostgreSQL, dentro da infraestrutura central segregada da hospedagem dos sites (ou serviço independente do CRM).
-- Se a API central estiver indisponível **antes de persistir**, o formulário não deve exibir confirmação de envio: deve mostrar erro e orientar nova tentativa. Não é possível recuperar com certeza um formulário que não foi recebido por nenhum serviço disponível.
-- Definir na decisão futura onde hospedar gateway, banco e processadores, separação do CRM e do n8n, disponibilidade, retenção, capacidade, backups, notificações e custos. Não considerar arquitetura final aprovada até confirmação do responsável.
+O responsável aprovou explicitamente a arquitetura com **API principal + API de contingência**, para reduzir o risco de perda de leads, com as condições abaixo.
+
+### Princípios aprovados
+1. **Sites e landing pages Imagine sem banco de dados próprio.** Os formulários enviam os dados via HTTPS à camada central de ingestão.
+2. **Duas APIs de recepção:** uma **principal** e uma **secundária de contingência**, implantadas em infraestruturas independentes, sem dependência operacional única que invalide a redundância.
+3. **Armazenamento durável independente para cada rota de recepção** ou outra solução que preserve a independência comprovável das duas rotas. Uma segunda API que dependa do mesmo banco indisponível da primeira não constitui contingência suficiente.
+4. **Failover automático:** quando a principal estiver indisponível ou não puder confirmar a persistência, tentar a secundária com o **mesmo identificador único de envio**.
+5. **Confirmação somente após persistência:** o visitante vê mensagem de sucesso apenas depois de uma das rotas confirmar gravação durável do envio; retorno não recebido ou resultado incerto não autoriza indicar sucesso nem descartar o conteúdo.
+6. **Envio idempotente e deduplicação:** falhas de rede e respostas incertas podem provocar tentativas nas duas rotas. A ingestão e a entrega ao CRM devem impedir criação duplicada do mesmo lead decorrente do reenvio.
+7. **Entrega posterior ao CRM:** cada rota persiste o envio com identificação do projeto, vínculo da conta CRM e contexto temporal; trabalhadores de entrega reprocessam quando o CRM voltar, com rastreabilidade, limites, alertas e tratamento de pendências.
+8. **Portal Imagine:** a área administrativa concentra o **monitoramento e gestão das filas, tentativas, falhas e reprocessamento**, mas sua indisponibilidade não deverá interromper as APIs.
+9. **Independência do CRM:** indisponibilidade temporária do CRM não interrompe a recepção de envios pelas APIs, desde que sua própria infraestrutura esteja operacional.
+10. **Indisponibilidade simultânea:** se ambas as APIs não puderem confirmar recebimento, o formulário não exibirá sucesso; deverá preservar os campos enquanto possível na página e permitir nova tentativa, com informação clara ao visitante e cuidados de privacidade.
+11. **Sem alegação de garantia absoluta de zero perda:** falhas simultâneas, indisponibilidade da rede do visitante e fechamento da página antes de qualquer confirmação podem impedir a entrega.
+
+### Diretriz de tecnologia e operação
+- **Opção arquitetural recomendada, não fixada como decisão de tecnologia:** backend Laravel e armazenamento relacional PostgreSQL para persistência/fila, com trabalhadores assíncronos e controles de idempotência.
+- Implementação de duas rotas precisa incluir **domínios/endpoints e armazenamento realmente independentes**, políticas de autenticação e CORS adequadas, monitoramento de saúde, roteamento de contingência e alertas.
+- A operação e visualização ficam integradas à **área administrativa do Portal Imagine**, sem tornar seu frontend ou seu backend administrativo um ponto único de falha no recebimento.
+
+### Pendências para dimensionamento e detalhamento (não impedem a aprovação funcional)
+- Servidores/provedores e isolamento físico/lógico das duas APIs, incluindo DNS, certificados, gateway e bancos de dados.
+- Estratégia de failover, timeout, resposta ambígua, reconciliação entre filas e identificação única end-to-end.
+- Retenção e limpeza dos dados temporários, criptografia, permissões, conformidade com LGPD, monitoramento e custos.
+- Objetivos mensuráveis de disponibilidade, capacidade, testes periódicos de falha e recuperação.
+- Opções de infraestrutura existentes da Imagine e custo de manter um ambiente secundário.
+
+**Status desta arquitetura:** aprovada funcionalmente; escolhas de tecnologia e de hospedagem serão detalhadas e revisadas antes da implementação. **Não iniciar programação.**
