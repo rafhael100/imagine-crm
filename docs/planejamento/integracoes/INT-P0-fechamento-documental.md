@@ -25,6 +25,12 @@
 
 Esses documentos **não concluem automaticamente** as pendências, que permanecem em revisão.
 
+## Conferência cruzada INT-01 a INT-04 — realizada parcialmente em 02/11/2026
+
+- [Revisão cruzada P0-REV-INT01-04](P0-REV-INT01-04-conferencia-cruzada.md): confronta as sínteses com documentos correlatos IN-124/148/149/150/151/167/168 e a governança INT-R01/R02.
+- Não foi localizado o texto integral original das aprovações INT-01 a INT-04. **P0-DOC-01 permanece aberto**, sem declaração de verificação literal nem de ausência definitiva de conflitos.
+- INT-01..04 exigem ainda contratos técnicos completos, permissões por operação e rastreabilidade individual (P0-TR/OWN/CON/SEC).
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
