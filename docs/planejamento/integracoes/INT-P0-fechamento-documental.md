@@ -31,6 +31,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - Não foi localizado o texto integral original das aprovações INT-01 a INT-04. **P0-DOC-01 permanece aberto**, sem declaração de verificação literal nem de ausência definitiva de conflitos.
 - INT-01..04 exigem ainda contratos técnicos completos, permissões por operação e rastreabilidade individual (P0-TR/OWN/CON/SEC).
 
+## Conferência cruzada INT-05 a INT-08 — realizada parcialmente em 02/11/2026
+
+- [Revisão cruzada P0-REV-INT05-08](P0-REV-INT05-08-conferencia-cruzada.md): relaciona INT-05/06/07/08 às políticas IN-118, IN-122/123, IN-124/125, IN-127/128/147/148/149, IN-150/151 e IN-162.
+- **Lacuna de referência identificada:** o resumo INT-08 deve vincular expressamente a Central de Backup e Portabilidade IN-118, com autoatendimento essencial em todos os planos (inclusive Básico); não significa alterar sua competência ou as regras comerciais aprovadas.
+- **P0-DOC-01 permanece pendente** da comparação literal de todas as quatro aprovações originais; não marcar como concluída. Contratos por operação, quotas, autorização, portabilidade e critérios HT permanecem em especificação.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
