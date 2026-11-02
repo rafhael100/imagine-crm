@@ -1,6 +1,6 @@
 # IN-127 — Retenção, Reenvio e Diagnóstico das Filas de Leads
 
-**Estado:** APROVADA quanto aos prazos de 3 dias e 15 dias e ao reenvio/diagnóstico automático; aspectos complementares pendentes de revisão.  
+**Estado:** APROVADA a retenção máxima de **18 dias totais (3 + 15 dias consecutivos)**, o reenvio e o diagnóstico automático; questões de descarte, conteúdo entregue e auditoria continuam pendentes.  
 **Data:** 01/11/2026.  
 **Etapa:** planejamento/documentação; **não autoriza implementação**.  
 **Dependências:** IN-124 (APIs principal e contingência, armazenamento durável), IN-125 (formulários) e IN-126 (monitoramento e recuperação).
@@ -14,11 +14,17 @@
 5. **Segurança dos diagnósticos:** registrar códigos técnicos/HTTP e causas úteis ao suporte sem expor chaves de API, tokens, senhas, conteúdo sensível de formulários ou dados pessoais desnecessários nos logs.
 6. **Evitar duplicidades:** usar identificador único por envio e idempotência ao retentar, alternar entre APIs, fazer reconciliação ou reprocessamento manual.
 
-## Interpretação operacional explicitada para validação
+## Prazo total e contagem — APROVADOS EXPRESSAMENTE
 
-A redação dos dois prazos sugere **etapas sucessivas**: até **3 dias de fila de entrega**, seguidos por **até 15 dias na fila de falhas**, resultando em **até 18 dias** desde o recebimento se ambas as etapas forem integralmente utilizadas. Essa forma de contagem é uma **interpretação de trabalho** e deverá ser confirmada antes de ser fixada como regra de expiração definitiva. Também será detalhado o marco inicial da contagem em casos de falha identificada antes dos 3 dias.
+O responsável confirmou **até 18 dias no total, divididos em duas etapas consecutivas**:
 
-Em falhas temporárias, repetir automaticamente em intervalos progressivos; em erros permanentes ou de autenticação/configuração, apresentar diagnóstico e evitar repetição agressiva até a causa ser corrigida. Após correção, retomar de forma automática quando seguro e/ou por intervenção autorizada.
+1. **Dias 0 a 3:** fila normal de entrega com tentativas automáticas, até **3 dias** a partir da confirmação de persistência do envio por uma das APIs.
+2. **Dias 3 a 18:** caso o envio ainda não tenha sido entregue, mover para a **fila de falhas/exceções por mais 15 dias**. A correção do problema permite reprocessamento automático quando viável, com reprocessamento manual autorizado disponível.
+3. **Dia 18:** fim do prazo máximo da permanência nessas duas filas para um envio não entregue; a política sobre aviso, exportação e descarte ao vencimento ainda precisa de aprovação específica. **O prazo não constitui, por si só, uma autorização para apagar silenciosamente um lead.**
+
+O **marco temporal de referência** é a primeira persistência durável confirmada do identificador único de envio, preservado mesmo se o processamento alternar entre a API principal e a secundária. Reenvios, alterações de estado e transferências entre filas não reiniciam o prazo.
+
+Erros permanentes detectados antes do terceiro dia podem ser sinalizados imediatamente para diagnóstico e correção, sem antecipar a expiração máxima de 18 dias. Em falhas temporárias, repetir em intervalos progressivos. Em erros permanentes, de autenticação ou configuração, registrar a causa e evitar tentativas agressivas até resolução. Em qualquer caso, exibir código/categoria/descrição do erro e histórico no Portal Imagine.
 
 ## Exemplo de visualização administrativa
 
@@ -38,9 +44,9 @@ Em falhas temporárias, repetir automaticamente em intervalos progressivos; em e
 - **Após entrega bem-sucedida:** a proposta anterior de manter o conteúdo por 24 horas antes da limpeza **não foi expressamente confirmada**.
 - **Histórico/auditoria:** a proposta anterior de 90 dias **não foi expressamente confirmada**.
 - **Descarte ao fim da fila de falhas:** definir avisos antecipados, exportação/recuperação, política de eliminação segura e exceções legais; não apagar silenciosamente. Sem compromisso de retenção ilimitada.
-- Frequência e limites das tentativas; distinção entre erros temporários e permanentes; marco da contagem do prazo de 15 dias; comportamento quando o CRM associado foi suspenso ou alterado.
+- Frequência e limites das tentativas; classificação de erros temporários e permanentes; tratamento de contas CRM suspensas ou de alterações do vínculo CRM durante a retenção.
 - Armazenamento criptografado, backups de filas, retenção de conteúdo pessoal, limites de volume, métricas e custos.
-- Revisar o prazo máximo de 18 dias conforme interpretação acima antes da implementação.
+- Os **18 dias consecutivos (3 + 15)** estão aprovados; restam detalhes técnicos de fuso, horários, avisos preventivos e funcionamento sob incidentes.
 
 ## Restrições permanentes
 - Sites Imagine **não possuem banco de dados próprio**.
