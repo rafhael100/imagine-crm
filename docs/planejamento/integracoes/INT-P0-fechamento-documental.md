@@ -37,6 +37,13 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - **Lacuna de referência identificada:** o resumo INT-08 deve vincular expressamente a Central de Backup e Portabilidade IN-118, com autoatendimento essencial em todos os planos (inclusive Básico); não significa alterar sua competência ou as regras comerciais aprovadas.
 - **P0-DOC-01 permanece pendente** da comparação literal de todas as quatro aprovações originais; não marcar como concluída. Contratos por operação, quotas, autorização, portabilidade e critérios HT permanecem em especificação.
 
+## Conferência cruzada INT-09 a INT-12 e conciliação transversal — 02/11/2026
+
+- [P0-REV-INT09-12](P0-REV-INT09-12-conferencia-cruzada.md): 22 verificações das quatro INTs, incluindo estados, compensações, observabilidade, homologação e auditoria.
+- [P0-REC](P0-REC-conciliacao-transversal.md): estado de todos os P0 e critérios G01–G06, consolidando **48 verificações cruzadas** dos três grupos.
+- **Nenhuma pendência P0 foi declarada encerrada**: documentação literal integral, contratos por operação, matriz de permissões e evidências de aceite permanecem abertas.
+- A Central de Observabilidade IN-159/160 não é duplicada pela INT-10. A retenção técnica IN-162 não define automaticamente a retenção de fatos de negócio sob Auditoria Geral.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
