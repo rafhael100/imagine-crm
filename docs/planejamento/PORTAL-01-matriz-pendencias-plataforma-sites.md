@@ -1,0 +1,63 @@
+# PORTAL-01 — Matriz de Pendências do Portal Imagine (Sites por Assinatura)
+
+**Status:** CONSOLIDAÇÃO DOCUMENTAL E PROPOSTAS DE PAUTA — **nenhuma decisão nova desta matriz aprovada**.  
+**Data:** 02/11/2026.  
+**Escopo:** **Portal Imagine**, que contrata e administra sites Onepage/Landing Page; não é o CRM Imagine SaaS nem a futura Universidade Imagine.  
+**Fase:** somente planejamento e documentação, **sem programação, contratos, cobranças, infraestrutura nova, migração ou publicação**.
+**Rastreabilidade:** este repositório guarda decisões históricas até IN-101 no ramo `docs/integracao-site-crm-basico` em `docs/decisoes.md`, as políticas IN-116/117 naquele ramo e as IN-118+ (integrações, agentes, continuidade) no ramo `main`. Decisões de preços/serviços posteriores IN-102–115 constam também das aprovações conversacionais de 01/11/2026 e devem ser **harmonizadas no documento mestre antes da revisão final**. Esta matriz não altera os registros históricos de cada ramo.
+
+## A. Diretrizes existentes — não reabrir sem solicitação expressa
+
+| Assunto | Situação atual | Observação |
+|---|---|---|
+| **Onepage** | Implantação **R$ 990**; pagamentos de implantação inicialmente definidos em marcos de 0/30/60 dias; **R$ 79,90/mês a partir do 90º dia** | Valores aprovados como referência vigente de planejamento; revisar condições comerciais integralmente no fim |
+| **Landing Page** | Implantação **R$ 1.290**; **R$ 79,90/mês a partir do 90º dia** | Contrato e regras de cobrança específicos ainda precisam ser reconciliados na documentação final |
+| **Entrega e ajustes iniciais** | Referência aprovada de **7 dias úteis** e **2 rodadas de ajustes** para Onepage/Landing Page | Explicitar marco de início, suspensão por materiais e limites do escopo; não prometer prazos sem pré-condições |
+| **Atualização de conteúdo na vigência** | Sem limite comercial rígido de textos/imagens, sob uso justo; alteração **simples em até 3 dias úteis** | Critérios concretos de uso justo, marcos do prazo e complexidade ainda exigem detalhamento |
+| **Mudança estrutural** | Layout, novos blocos e funcionalidades adicionais **dependem de orçamento prévio** | Distinguir atualização incluída de serviço extra, preservar trilha de aceite |
+| **Orçamentos de adicionais** | Portal é canal oficial; orçamento **validado pela Imagine** e **aceito expressamente pelo cliente**; até **R$ 270 à vista**, acima desse valor pode ser **à vista ou em até 3 parcelas** | Taxas, vencimentos, juros, política de cancelamento de adicionais, forma de cobrança e fluxo após pagamento permanecem pendentes |
+| **Site + CRM Básico** | Site elegível concede mesmo CRM Básico público sem mensalidade própria; upgrade do CRM é cobrado pelo próprio CRM | Referências atuais CRM Básico **R$ 69** e Essencial **R$ 89**, sujeitas à revisão comercial final |
+| **Múltiplos sites/organizações CRM** | Pode vincular site a organização CRM existente ou solicitar nova; mudança posterior **gratuita por chamado**, sem migração automática de dados; uma cortesia por organização com site elegível | IN-117 e IN-119–123 já aprovaram regras adicionais, incluindo transição de 30 dias da cortesia e proteção de dados |
+| **Sites estáticos e operação** | **Cloudflare Workers Static Assets**, GitHub para versões, agentes/APIs/n8n para processos autorizados; **sem WHM/cPanel** para novos sites Onepage/Landing Page | IN-096–101; Workers for Platforms é hipótese futura, não escolha |
+| **Domínios e backups** | Domínios próprios preservam titularidade/e-mail; registros novos só conforme autorização/contrato; backups de site separados dos dados CRM; histórico/rollback e aprovação humana para operações críticas | IN-100/101; frequência/retenção/local de backup ainda serão dimensionados |
+| **Suporte e integração de leads** | Central de Suporte IA no Portal com protocolos; formulários protegidos, duas APIs independentes e recibo durável; Portal exibe estados sem acesso indiscriminado aos dados do CRM | IN-099/123–125; critérios operacionais e custos ainda pendentes |
+| **Aceite da versão de site** | Cliente deve aprovar **expressamente a versão apresentada**; silêncio não equivale a aceite | IN-095; evidência técnica, autenticidade, prazos e retenção da prova a definir |
+
+**Atenção:** dados históricos em ramos diferentes não são prova de que existe documento único consolidado em `main`. Fazer sincronização/validação documental antes da aprovação final do projeto, preservando os números já decididos.
+
+## B. Decisões e especificações ainda abertas — priorização sugerida
+
+| Código de pauta | Tema | O que está pendente | Situação |
+|---|---|---|---|
+| **PORTAL-D01** | **Aceite da versão, contratos e orçamentos** | Identidade do aprovador, versão imutável, prova/registro de aceite, recusa e solicitação de ajustes, modelos de contratos e alteração de escopo | **Próxima decisão proposta** |
+| **PORTAL-D02** | **Adicionais e cobrança** | Vencimentos, início de execução de extra, parcelamento acima R$ 270 (taxas/juros/recebimento), atraso, contestação, cancelamento e estornos | **Pendente**; preservar à vista até R$ 270 e até 3x acima |
+| **PORTAL-D03** | **Uso justo e prazos** | Como caracterizar conteúdo simples versus mudança estrutural, evitar abuso sem estabelecer teto oculto, marco de contagem dos 3 dias e cronograma de pedidos complexos | **Pendente**; preservar conteúdo sem teto fixo |
+| **PORTAL-D04** | **Ciclo de contratação e inadimplência do site** | Vínculo contratual e eventos reais de pagamento, tolerância e suspensão, retomada, cancelamento, reembolso, prazos e efeitos na cortesia CRM conforme IN-119–122 | **Pendente de detalhamento/aprovação onde houver regra nova** |
+| **PORTAL-D05** | **Viabilidade econômica** | Custos reais de publicação, agentes, IA, APIs, armazenamento, backups, atendimento, meios de pagamento, impostos e margem por site/serviço; revisão final de preços | **Pendente de orçamento e homologação** |
+| **PORTAL-D06** | **Arquitetura multiempresa da Cloudflare** | Worker por site versus agrupamento seguro, limites/quotas reais, desempenho, isolamento, domínio/SSL, critérios para Workers for Platforms | **Pendente de especificação e testes** (IN-097) |
+| **PORTAL-D07** | **Backups, retenção, segurança e LGPD** | Frequência, destino, prazo de retenção, testes, RTO/RPO, políticas de dados de clientes e descarte seguro, separar Portal/site/CRM | **Pendente de parâmetros e custos** |
+| **PORTAL-D08** | **Experiência e administração do Portal** | Fluxos finais de contratação, financeiro/orçamentos, uploads, briefing, comunicação, histórico, painel de integrações, suporte e papéis; UX e critérios de aceite | **Pendente de especificação e protótipos** |
+| **PORTAL-D09** | **Operação, agentes e suporte** | Alçadas executáveis, evidências de sucesso, prazos/SLA contratuais efetivos, horários e cobertura humana real, observabilidade, escalonamento de incidentes | **Pendente de especificação e capacidade** |
+| **PORTAL-D10** | **Consolidação documental final** | Harmonizar IN-091–115, IN-116/117, IN-118+ e documentação cruzada, confirmar decisões sem duplicação e obter aprovação final expressa antes do Codex | **Pendente, bloqueia programação** |
+
+A priorização **não significa aprovação da solução** nem reabre regras anteriores. No ato de detalhar, verificar todas as decisões anteriores para não refazer perguntas já respondidas pelo responsável.
+
+## C. Primeira proposta a deliberar — PORTAL-D01: aceite formal da versão e do orçamento
+
+**Proposta para aprovação futura, NÃO aprovada nesta matriz:**
+
+1. **Aceite autenticado:** somente cliente/representante **autenticado e autorizado** poderá aprovar a versão específica do site ou um orçamento de adicional no Portal.
+2. **Identificação inequívoca:** apresentar claramente **site/projeto, escopo, número e URL da versão, data, valor/condições de orçamento quando houver** e ação explícita de aceitar; silêncio, visualização, envio automático de URL ou passagem de prazo **não constituem aceite**.
+3. **Registro de evidências:** guardar **versão/identificador, conteúdo relevante do termo aceito, usuário e autorização, data/hora com fuso, evento auditável e integridade verificável**; definir tecnicamente dados mínimos necessários e prazo de retenção em documento contratual/LGPD. IP e dados do dispositivo, caso necessários e proporcionais, precisam de justificativa, controle de acesso e retenção próprios — **não presumir coleta irrestrita**.
+4. **Imutabilidade da prova:** alteração posterior de versão ou orçamento **não reescreve o aceite antigo**; criar novo registro e colher novo aceite quando houver mudança material.
+5. **Solicitação de ajustes:** permitir recusa justificada ou pedido de revisão pelo próprio Portal, com histórico e vinculação à versão; **duas rodadas incluídas** nas condições já aprovadas; excedentes ou alteração estrutural passam ao fluxo de escopo/orçamento, sem cobrança automática.
+6. **Aceite de orçamento ≠ pagamento nem autorização financeira implícita:** orçamento validado previamente pela equipe Imagine, com preço, escopo, prazo e forma de pagamento apresentados. A execução poderá ficar condicionada a um evento de pagamento se **o respectivo marco for expressamente aprovado em PORTAL-D02**, não presumir cobrança automática.
+7. **Contestação e correção administrativa:** preservar histórico, não apagar prova e oferecer chamado para questionamento; correções exigem justificativa, autorização e trilha de auditoria.
+
+**Pendente de discussão separada:** eventual necessidade de autenticação reforçada, assinaturas eletrônicas de nível específico para cada documento, campos e períodos de retenção, contrato padrão, validade do orçamento, marcos de vencimento e início de execução, fluxos de desistência/reembolso e conformidade jurídica. Não afirmar que o aceite proposto supre sozinho todos os requisitos jurídicos.
+
+## D. Regra de trabalho e próxima pergunta
+
+Primeiro revisar/aprovar (ou ajustar) o fluxo funcional **PORTAL-D01**. Na sequência tratar **PORTAL-D02** e **PORTAL-D03**, sem mexer nos preços e condições já aprovados; ao final consolidar contratos, limites, capacidade/custos e revisão jurídica/financeira.
+
+**Nenhuma decisão nova deste documento está aprovada. Nenhum código, contrato ou servidor foi criado e nenhuma contratação realizada.**
