@@ -101,7 +101,7 @@ O Supervisor pode consolidar métricas, propor melhorias e sinalizar suspensões
 
 ## 7. Decisões pendentes antes de executar testes
 
-- **Aprovar/ajustar** os sete critérios de avaliação e os oito requisitos eliminatórios, bem como os pesos sugeridos para comparação. Os nomes das categorias e pesos são **proposta, não política vigente**.
+- **Aprovar/ajustar** os seis critérios ponderados de avaliação e os oito requisitos eliminatórios, bem como os pesos sugeridos para comparação. Os nomes das categorias e pesos são **proposta, não política vigente**.
 - Definir escala de notas, metodologia de amostragem, tamanho mínimo do conjunto de casos por classe e tarefa, cortes mínimos por risco, limites aceitáveis de falha, latência, custo e região.
 - Confirmar existência dos modelos e IDs de API, disponibilidade da conta e requisitos específicos de cada fornecedor; comparar preços **atuais ao executar** os testes, pois a pesquisa anterior representa histórico de 02/11/2026.
 - Aprovar contas, contratos, dados permitidos, orçamento isolado para testes caso seja necessário, reavaliação, responsável homologador e políticas de proteção.
