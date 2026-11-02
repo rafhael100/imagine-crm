@@ -1,6 +1,8 @@
 # PORTAL-D01 — Aceite Eletrônico de Versões de Sites e Orçamentos
 
 **Status:** **APROVADA FUNCIONALMENTE em 02/11/2026** — responsável respondeu **“sim”** à proposta expressa de regras de aceite do Portal Imagine.  
+**ATUALIZAÇÃO (02/11/2026): a Política de Privacidade padrão de sites simples passa a ser publicada automaticamente após validação técnica/jurídica, sem aceite específico prévio do cliente; antigas regras de bloqueio por falta desse aceite foram substituídas pela COM-15 seção 14. ISSO NÃO ALTERA O ACEITE EXPRESSO DA VERSÃO DO SITE E DO ORÇAMENTO NESTA D01.**
+
 **Fase:** somente planejamento e documentação; **não iniciar programação, assinatura de contratos, cobrança, implantação, contratação ou alterações em produção**.  
 **Produto:** Portal Imagine / Imagine Sites (Onepage e Landing Page); não altera a política de contratação e faturamento do CRM Imagine SaaS.  
 **Referências:** [PORTAL-01 — matriz de pendências](PORTAL-01-matriz-pendencias-plataforma-sites.md); IN-095 (aceite expresso da versão), IN-099 (suporte), IN-116/117 (benefício e vínculo CRM), IN-123/125 (painéis e formulários), demais regras de contratos e adicionais já aprovadas em planejamento.
@@ -103,3 +105,10 @@ O responsável aprovou (“sim”) o fluxo de que **a administração Imagine** 
 ## Complemento COM-15 — primeiro lembrete após 3 dias úteis sem aceite tácito (02/11/2026)
 
 **APROVADO (“sim”):** após **3 dias úteis** sem manifestação do cliente sobre a Política de Privacidade do site disponibilizada para aprovação, enviar **um primeiro lembrete pelo Portal Imagine e e-mail**, com acesso autenticado à **versão exata** e opção para aprovar ou solicitar alterações. O cliente **não aprova por silêncio ou clique**. Cancelar agendamento se houver aceite, solicitação de revisão, substituição de versão ou suspensão; reabrir contagem quando uma nova versão for disponibilizada. Prova de aceite somente por ação expressa, segura e registrada. **Este lembrete não cria obrigação de aceitar nem autoriza publicação ou entrega automática COM-13**, e não modifica os aceites de orçamento/versão do site aprovados nesta D01. Segundo lembrete, WhatsApp/SMS, feriados e horários específicos pendentes/não aprovados. [COM-15](PORTAL-COM-15-central-documentos-legais-consentimentos.md). Só planejamento.
+
+
+## Complemento COM-15 — política padrão publicada automaticamente e D01 independente (02/11/2026)
+
+**APROVADO (“sim”)** novo fluxo para sites simples abrangidos pelo modelo jurídico homologado: a Imagine **publica automaticamente a Política de Privacidade padrão personalizada com o site**, depois de conferir informações reais do controlador, tratamentos, segurança e condições legais aplicáveis; **não é necessário que o cliente aprove especificamente o texto padrão antes da publicação**. O cliente recebe ciência no Portal Imagine e pode solicitar modificações posteriores, tratadas por IA sob modelos autorizados e revisão jurídica em exceções. **As seções históricas que exigiam aprovação prévia individual da política e os lembretes de 3/7 dias para obtê-la ficam superadas no fluxo padrão.**
+
+**Ponto essencial:** aprovação/aceite da **versão do site e do orçamento**, previstos nesta D01, **permanecem obrigatórios quando aplicáveis e são atos separados**. Ciência de política não equivale a consentimento do visitante e não autoriza marketing. Recursos que exijam consentimento e/ou análise jurídica extraordinária continuam bloqueados até satisfazer os requisitos próprios; IA não homologa base legal do zero. A entrega COM-13 pode ser concluída quando os demais critérios pertinentes estiverem OK, **sem o clique de aprovação da Política padrão**. [COM-15](PORTAL-COM-15-central-documentos-legais-consentimentos.md). Somente planejamento.
