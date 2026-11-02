@@ -46,3 +46,8 @@ Permitir que clientes com múltiplos sites ou landing pages elegíveis tenham co
 **Aprovado:** regra de uma cortesia por conta com ao menos um site elegível; várias contas podem ser cortesia se cada uma estiver vinculada a site elegível; reavaliação automática dos vínculos.  
 **Pendente:** detalhes operacionais de autorização e consistência.  
 **Programação:** não iniciada.
+
+
+## Complemento COM-08 — prioridade dos multiplos sites elegiveis antes do bloqueio (02/11/2026)
+
+A elegibilidade da cortesia passa a ser **administrável para novas vendas por serviço e campanha**, mediante cláusula expressa no contrato. Antes de suspender operacionalmente o CRM Básico cortesia porque um site foi bloqueado por inadimplência após a tolerância de sete dias, **verificar TODOS os sites que sustentam a mesma conta**: se outro site **ativo e elegível** existir, o benefício **continua ativo e não deve ser bloqueado**. Assinaturas pagas CRM também não podem ser impactadas. Reativação após pagamento válida, preservação de dados e auditoria são obrigatórias. Concessão/não concessão em campanha não altera retroativamente contratos anteriores. Para cancelamento definitivo do último site, mantêm-se IN-119–121 (transição 30 dias), distinto de suspensão temporária. Registro geral: [PORTAL-COM-08](PORTAL-COM-08-inadimplencia-site-cortesia-crm-configuravel.md). Somente planejamento.
