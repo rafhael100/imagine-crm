@@ -44,9 +44,9 @@ Cada ativo ou serviço deverá poder registrar, conforme aplicável:
 ## Estados de implantação e fonte confiável
 
 **É obrigatório diferenciar a arquitetura planejada da infraestrutura que já estiver comprovadamente implantada.** Exemplos de componentes **planejados** do projeto, a confirmar mediante inventário real:
-- Hospedagem de sites em servidor dedicado com AlmaLinux e WHM/cPanel;
+- Hospedagem dos novos sites Onepage/Landing Pages Imagine em **Cloudflare Workers Static Assets**, conforme decisão **IN-096**, com GitHub para versões e operação de publicação via APIs/n8n/agentes; não utilizar WHM/cPanel para essa hospedagem;
 - automações n8n em VPS independente com Docker;
-- CRM Imagine SaaS em infraestrutura segregada dos sites/cPanel;
+- CRM Imagine SaaS em **servidor separado do Portal Imagine** e segregado da plataforma Cloudflare de hospedagem dos sites dos clientes;
 - APIs principal e contingência em ambientes distintos, preferencialmente provedores diferentes;
 - Portal Imagine e banco PostgreSQL conforme definições de arquitetura pertinentes.
 
@@ -105,3 +105,8 @@ Um aviso confiável informa vulnerabilidade numa versão de PHP. O Agente de Seg
 **Aprovado:** inventário de servidores, aplicações, versões e dependências; detecção de alterações; análise de impacto; atualização por mecanismos e agentes autorizados; compartilhamento controlado com oito agentes técnicos, sem registrar segredos.  
 **Pendente:** especificação técnica, modelo, integrações, custos e implantação.  
 **Programação:** não iniciada.
+
+
+## Atualização da premissa de infraestrutura — IN-096 (02/11/2026)
+
+Os sites dos clientes Onepage/Landing Pages utilizarão **Cloudflare Workers Static Assets**, sem WHM/cPanel; GitHub guarda código e versões, enquanto APIs/n8n/agentes com permissões apropriadas coordenam publicação, manutenção, monitoramento e suporte. **Workers for Platforms** é reservado a análise futura. O inventário deve catalogar sites, domínios, workers, versões publicadas e dependências como recursos da plataforma, e **não inventar um servidor de hospedagem próprio para cada site**. Os servidores do Portal Imagine e do CRM Imagine SaaS ficam separados; os serviços de recepção de leads preservam duas rotas independentes. Tudo é planejamento, não descoberta ativa ou implantação.
