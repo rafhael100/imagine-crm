@@ -1,7 +1,8 @@
 # IN-125 — Gestão Inteligente de Formulários dos Sites Imagine
 
 **Estado:** APROVADA funcionalmente em 01/11/2026 pelo responsável do projeto (resposta "ok").  
-**Fase:** planejamento e documentação; não autoriza programação.  
+**Fase:** planejamento e documentação; não autoriza programação.
+**ATUALIZAÇÃO COM-15 (02/11/2026): sites simples terão Política de Privacidade padrão revisada e personalizada publicada automaticamente; não exige aceite prévio do texto pelo cliente, porém requisitos legais dos formulários continuam obrigatórios.**  
 **Escopo:** sites e landing pages Imagine, Portal Imagine e integração com CRM Imagine.  
 **Referências:** IN-123 (painel de integrações) e IN-124 (entrega de leads).
 
@@ -39,3 +40,8 @@ Permitir que formulários produzidos pela Imagine sejam configurados e mantidos 
 ## Complemento COM-14 — LGPD por finalidade e aceite quando cabível (02/11/2026)
 
 Para atender ao pedido do responsável de incorporar os “aceites da LGPD brasileira”, a gestão de formulários deverá **configurar aviso claro de privacidade, finalidade e controlador do site e campos de consentimento apenas quando a base legal os requerer**, separando contato solicitado pelo visitante de autorização opcional para marketing. Consentimentos não podem vir pré-assinalados nem ser presumidos por envio da mensagem; oferecer mecanismo válido de revogação e preservar comprovante/versionamento proporcional. Integração ao CRM deve manter status e escopo corretos, sem conceder autorização para marketing pela própria Imagine a partir de lead de cliente. O **agente de entrega IA** verificará controles aplicáveis na versão do site e seus testes, bloqueando entrega quando obrigatórios e ausentes; juridicidade da base/aviso deve ser aprovada por responsáveis competentes. **LGPD não impõe consentimento universal a toda coleta**. [COM-14](PORTAL-COM-14-lgpd-aceites-privacidade-consentimentos-checklist.md), [COM-13](PORTAL-COM-13-entrega-automatica-checklist-qualidade-agente-ia.md). Sem programação.
+
+
+## Complemento COM-15 — Política padrão publicada automaticamente, formulários com transparência (02/11/2026)
+
+**APROVADO (“sim”):** modelo de Política de Privacidade oficial e juridicamente revisado, personalizado aos tratamentos reais da empresa/site e **publicado automaticamente junto com site simples**, sem aceite individual prévio do cliente ao documento padrão. O cliente poderá solicitar correções depois; casos fora do padrão exigem revisão competente. **Para formulários públicos, isto NÃO elimina** a obrigação de informar controlador, finalidade, destino/CRM, dados tratados, direitos e base legal adequada, nem mecanismos de consentimento quando essa for a hipótese aplicável. Testar correspondência do texto publicado com o formulário ativo e que o lead vai para o tenant CRM correto. **Bloquear a ativação de formulário cujo tratamento não cumpra condições legais/técnicas**, ainda que seja possível publicar páginas estáticas do site. A entrega COM-13 dispensa apenas o clique de aprovação da política padrão, não os demais controles. [COM-15](PORTAL-COM-15-central-documentos-legais-consentimentos.md), [COM-14](PORTAL-COM-14-lgpd-aceites-privacidade-consentimentos-checklist.md). Apenas planejamento.
