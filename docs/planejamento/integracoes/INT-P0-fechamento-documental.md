@@ -63,6 +63,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - **Ainda em aberto:** P0-CON-01 (schema/enum final), P0-SEC-01 e P0-OWN-01 (permissões/alçadas por operação), P0-VER-01 (compatibilidade), P0-ACC-01 (planos de teste), P0-DOC-01 e P0-TR-01 (integralidade das origens).
 - **Aprovação do avanço de etapa não equivale à aprovação automática das escolhas detalhadas nesta minuta.** Nenhum teste foi executado.
 
+## Decisão aprovada e detalhamento operacional — 02/11/2026
+
+- [Aprovação CT-03/CT-04](P0-DEC-aprovacao-CT03-CT04.md): decisão expressa registrada, definindo a especificação como **base documental aprovada**, sem aprovação de schema físico, alçadas, timeout, quotas e versão executável.
+- [P0-OP24 — 24 fichas operacionais de referência](P0-OP24-detalhamento-CT03-CT04-por-operacao.md): dois casos representativos por INT, com proprietário, pré-condição, autorização, resultado técnico/oficial, idempotência, falha, reconciliação e correspondência CT/TR/HT. **Não são novos módulos, nem catálogo exaustivo**.
+- **Pendências P0 permanecem abertas:** o aceite documental da base CT-03/CT-04 não encerra P0-CON-01 (contratos executáveis completos), P0-TR-01 (origem integral), P0-OWN-01/SEC-01 (matriz granular), P0-VER-01 ou P0-ACC-01 (testes planejados ainda não executados).
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
