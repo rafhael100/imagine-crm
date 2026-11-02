@@ -82,7 +82,7 @@ A central COM-12 e a REL-01 devem usar somente **contatos autorizados e base apr
 
 ## 7. Pendências antes de execução
 
-1. Modelos de **Termos do Portal**, Política de Privacidade Imagine e templates configuráveis dos sites dos clientes; aprovações jurídicas e de controladores.
+1. **Central de Documentos Legais e Consentimentos APROVADA na COM-15:** cadastro e manutenção administrativa, versões e histórico de aceites, com associação por cliente/site. **Pendente:** modelos de **Termos do Portal**, Política de Privacidade Imagine e templates configuráveis dos sites e suas aprovações jurídicas e dos controladores.
 2. Matriz de finalidade × dados × base legal × controlador/operador × prazo de retenção × terceiros.
 3. Inventário de cookies, pixels e tecnologias de rastreamento por produto/serviço; requisitos do banner/central de preferências e testes automatizados.
 4. Diferenciar **aceite contratual**, **ciência de aviso** e **consentimento específico** nos eventos, interfaces e arquivos de prova.
@@ -92,3 +92,10 @@ A central COM-12 e a REL-01 devem usar somente **contatos autorizados e base apr
 8. Revisão jurídica brasileira de documentos e fluxos, inclusive situações de dados de crianças/sensíveis e transferências internacionais quando pertinentes.
 
 **Resultado:** requisito LGPD e aceites/controles legais pertinentes **incluídos no planejamento**, núcleo obrigatório de checklist não desativável e checklist **configurável por produto APROVADO**. **Nenhuma programação, campanha ou coleta adicional iniciada.**
+
+
+## 8. Aprovação da Central de Documentos Legais e Consentimentos — COM-15 (02/11/2026)
+
+O responsável respondeu **“ok”** à pergunta expressa sobre criar **Central de Documentos Legais e Consentimentos**, com **gestão administrativa, versionamento e histórico de aceites**, documentos por projeto/site/cliente e validação do responsável quando cabível. **Módulo APROVADO** como governança dos textos e registros previstos nesta COM-14. A Central deverá permitir cadastrar, editar, revisar, publicar, consultar e versionar **Termos, Políticas de Privacidade e consentimentos por finalidade** sem mudança de código para cada texto homologado; preservar versão exata de aceite/consentimento e revogação. Separar **aceite contratual**, **ciência de aviso de privacidade** e **consentimento específico quando essa for a base legal**; não exigir consentimento universal.
+
+**Documentos de sites dos clientes:** aplicar modelos adequados ao controlador, serviços, formulários, scripts/cookies e contexto, com aprovação competente antes da publicação, preservando segregação entre empresas. **Integração COM-13:** entrega IA só quando documentos legais exigidos estiverem vigentes e mecanismos aplicáveis passarem testes, sem IA certificar suficiência jurídica. Detalhes em [COM-15](PORTAL-COM-15-central-documentos-legais-consentimentos.md). Textos, alçadas e prazos de retenção ainda pendentes; sem programação ou publicação.
