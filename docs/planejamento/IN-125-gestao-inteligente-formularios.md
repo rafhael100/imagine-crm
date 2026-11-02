@@ -34,3 +34,8 @@ Permitir que formulários produzidos pela Imagine sejam configurados e mantidos 
 - Garantias de entrega, políticas de fila e retenção conforme especificação central da IN-124.
 
 **Aprovação:** funcional. **Programação:** não iniciada.
+
+
+## Complemento COM-14 — LGPD por finalidade e aceite quando cabível (02/11/2026)
+
+Para atender ao pedido do responsável de incorporar os “aceites da LGPD brasileira”, a gestão de formulários deverá **configurar aviso claro de privacidade, finalidade e controlador do site e campos de consentimento apenas quando a base legal os requerer**, separando contato solicitado pelo visitante de autorização opcional para marketing. Consentimentos não podem vir pré-assinalados nem ser presumidos por envio da mensagem; oferecer mecanismo válido de revogação e preservar comprovante/versionamento proporcional. Integração ao CRM deve manter status e escopo corretos, sem conceder autorização para marketing pela própria Imagine a partir de lead de cliente. O **agente de entrega IA** verificará controles aplicáveis na versão do site e seus testes, bloqueando entrega quando obrigatórios e ausentes; juridicidade da base/aviso deve ser aprovada por responsáveis competentes. **LGPD não impõe consentimento universal a toda coleta**. [COM-14](PORTAL-COM-14-lgpd-aceites-privacidade-consentimentos-checklist.md), [COM-13](PORTAL-COM-13-entrega-automatica-checklist-qualidade-agente-ia.md). Sem programação.
