@@ -27,6 +27,9 @@
 - [P0-REV-INT09-12 — Conferência cruzada e fronteiras centrais](P0-REV-INT09-12-conferencia-cruzada.md)
 - [P0-REC — Reconciliação transversal e critérios G01–G06](P0-REC-conciliacao-transversal.md)
 - [DECISOES — Origem e precedência](DECISOES-origem-precedencia.md)
+- [P0-ORIGEM — Transcrição de aceites disponíveis nesta conversa](P0-ORIGEM-aprovacoes-dialogo.md)
+- [P0-CON — Minuta de contratos técnicos compartilhados](P0-CON-contratos-tecnicos-minuta.md)
+- [P0-SEG — Minuta de matriz de autorizações e alçadas](P0-SEG-matriz-autorizacoes-proposta.md)
 
 ## Situações distintas (não confundir)
 1. **Aprovado funcionalmente:** decisão expressa do responsável; registrada em conversa de planejamento.
