@@ -18,6 +18,13 @@
 | P0-XREF-01 | Conciliação com IN-124/148/149, IN-151/162, IN-167/168 e demais políticas centrais | **Referências identificadas; revisão de consistência pendente** | Relações e exceções registradas |
 | P0-GIT-01 | Versionamento verificável e revisão final de texto consolidado | **Commit inicial a verificar; fechamento pendente** | Commit/revisão final expressamente aceita |
 
+## Entregas complementares da P0
+
+- [Matriz inicial de 53 requisitos rastreáveis](INT-P0-rastreabilidade-requisitos.md): inicia P0-TR-01; ainda requer conferência integral das fontes e inclusão de granularidade.
+- [Matriz de autoridades e contratos de fronteira](INT-P0-autoridades-contratos.md): inicia P0-OWN-01/P0-CON-01; ainda exige contratos executáveis, alçadas e revisão por operação.
+
+Esses documentos **não concluem automaticamente** as pendências, que permanecem em revisão.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 

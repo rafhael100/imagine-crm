@@ -100,6 +100,10 @@ Campos: ID (TR-INTxx-###), origem da decisão e sua versão, descrição, escopo
 
 **Estado atual:** G01–G05 em verificação/pendentes de comprovação integral; G06 requer aceite da versão documental fechada, não apenas um commit inicial.
 
-## 10. Referências cruzadas e precedência
+## 10. Entregas documentais P0 complementares
+- [Matriz de requisitos identificados](INT-P0-rastreabilidade-requisitos.md)
+- [Matriz de autoridades e contratos](INT-P0-autoridades-contratos.md)
+
+## 11. Referências cruzadas e precedência
 - [INT-R01](INT-R01-governanca-contratos-homologacao.md), [Matriz P0](INT-P0-fechamento-documental.md), [Origem e precedência](DECISOES-origem-precedencia.md).
 - [IN-167](../IN-167-consolidacao-arquitetura-agentes-tecnicos.md) e [IN-168](../IN-168-matriz-pendencias-fechamento-arquitetura.md) detalham agentes técnicos e pendências adjacentes: não presumir conclusão de suas especificações pelo fechamento da INT-R02.

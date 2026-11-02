@@ -20,6 +20,8 @@
 - [INT-R01 — Governança, contratos técnicos e homologação integrada](INT-R01-governanca-contratos-homologacao.md)
 - [INT-R02 — Rastreabilidade, dependências e validação final](INT-R02-rastreabilidade-dependencias-validacao.md)
 - [INT-P0 — Matriz de fechamento documental](INT-P0-fechamento-documental.md)
+- [INT-P0 — Primeira matriz de requisitos rastreáveis](INT-P0-rastreabilidade-requisitos.md)
+- [INT-P0 — Autoridades e contratos de fronteira](INT-P0-autoridades-contratos.md)
 - [DECISOES — Origem e precedência](DECISOES-origem-precedencia.md)
 
 ## Situações distintas (não confundir)
