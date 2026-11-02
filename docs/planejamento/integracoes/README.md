@@ -23,6 +23,7 @@
 - [INT-P0 — Primeira matriz de requisitos rastreáveis](INT-P0-rastreabilidade-requisitos.md)
 - [INT-P0 — Autoridades e contratos de fronteira](INT-P0-autoridades-contratos.md)
 - [P0-REV-INT01-04 — Conferência cruzada e ressalvas de proveniência](P0-REV-INT01-04-conferencia-cruzada.md)
+- [P0-REV-INT05-08 — Conferência cruzada e portabilidade IN-118](P0-REV-INT05-08-conferencia-cruzada.md)
 - [DECISOES — Origem e precedência](DECISOES-origem-precedencia.md)
 
 ## Situações distintas (não confundir)
