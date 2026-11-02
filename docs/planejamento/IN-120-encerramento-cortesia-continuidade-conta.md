@@ -38,3 +38,8 @@ A retenção de **120 dias** da política geral se aplica **após cancelamento**
 - Compatibilização com conservação legal, proteção de dados, auditabilidade, política financeira e combate a fraude.
 
 **Status:** regra funcional aprovada; detalhes acima seguem pendentes. **Nenhuma implementação autorizada.**
+
+
+## Complemento COM-08 — suspensao temporaria por inadimplencia do site (02/11/2026)
+
+Aprovado posteriormente: **suspensão efetiva de site inadimplente após tolerância de 7 dias** também **suspende acesso operacional do CRM Básico cortesia quando aquela conta não tiver outro site ativo elegível**. Não suspender CRM pago independente, nem a cortesia sustentada por outro contrato. Este **bloqueio por dívida** é um estado distinto da **transição normal de 30 dias por cancelamento formal do último vínculo elegível**, que continua aprovada neste documento. A integração entre ambos os estados em caso de inadimplência que evolui a cancelamento exige especificação e aceite adicional antes da programação. Preservar conta, dados, exportação/portabilidade, possibilidade de regularização e reativação; **não converter automaticamente para CRM pago**. A cortesia de novos sites pode ser configurada por serviço e campanha. Referência [PORTAL-COM-08](PORTAL-COM-08-inadimplencia-site-cortesia-crm-configuravel.md).
