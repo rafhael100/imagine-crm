@@ -30,6 +30,13 @@
 - Nenhum SQL arbitrário, scripts/código livre de clientes, URLs irrestritas, acesso direto aos bancos de negócio ou superprivilégios ao n8n.
 - Não confundir dados estruturados obrigatórios de operação/auditoria com franquias de arquivos. Preservar CRM Básico e trial sem API pública, com integrações nativas autorizadas.
 
+## Complemento de rastreabilidade P0 (sem nova aprovação)
+- Diferenciar estados de saúde técnica, investigação, recuperação autorizada/em execução, intervenção, verificação, normalização e encerramento com ressalvas; sem equiparar telemetria ausente a estado saudável.
+- **INT-10 utiliza a Central de Observabilidade IN-159 e logs/traces IN-160**, sem criar outra central técnica ou serviço paralelo de alertas/incidentes. A ausência do painel ou do agente de IA não pode interromper monitoramento essencial.
+- Recuperação automática só de procedimento técnico seguro previamente homologado e escopado; ação sensível segue autoridade e aprovação aplicável. A capacidade N2 de agente técnico (IN-167) não implica autoridade livre da IA.
+- Recuperação de conectividade do provedor não comprova conclusão de comandos/negócios pendentes. Resultado desconhecido exige reconciliação e recuperação gradual após revalidação.
+- [Conferência P0 INT-09 a INT-12](P0-REV-INT09-12-conferencia-cruzada.md). Políticas e transições específicas ainda pendentes de detalhamento.
+
 ## Governança e próximo passo
 - Rastrear cada requisito à decisão original, responsável, versão, contrato, invariantes INV e cenário HT em [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md).
 - Não presumir que esta síntese reproduz palavra por palavra o texto integral da aprovação. Conferir literalidade, lacunas, limites, prazos e exceções no item P0-DOC da [matriz P0](INT-P0-fechamento-documental.md).
