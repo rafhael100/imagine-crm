@@ -1,6 +1,6 @@
 # PORTAL-COM-07 — Vencimento mensal configurável e calendário recorrente
 
-**Status:** **DIRETRIZ FUNCIONAL PARCIALMENTE APROVADA em 02/11/2026**: o responsável respondeu **“ok”** à recomendação expressa de permitir **vencimento mensal configurável**, com **padrão no mesmo dia do mês da primeira cobrança** e tratamento adequado dos meses sem essa data. **Os critérios exatos de ajuste para meses curtos, fins de semana e feriados ainda serão deliberados; não são regras específicas aprovadas por esse “ok”.**
+**Status:** **DIRETRIZES FUNCIONAIS APROVADAS em 02/11/2026:** (1) vencimento mensal configurável com padrão no mesmo dia do mês da primeira cobrança e (2) **nos meses sem o dia de referência, vencimento no último dia calendário daquele mês e retorno ao dia original no mês seguinte**. A segunda decisão foi aprovada por novo **“ok”** do responsável à pergunta específica. **Fins de semana e feriados permanecem pendentes de decisão.**
 
 **Escopo:** assinatura recorrente dos sites Imagine (Onepage, Landing Page e outros serviços elegíveis). Não altera o parcelamento de implantação/serviços adicionais nem o CRM Imagine SaaS.  
 **Fase:** exclusivamente planejamento/documentação; não iniciar código, alterações contratuais ou cobranças.  
@@ -24,14 +24,14 @@
 
 Se o dia específico de campanha for diferente do dia da primeira cobrança, o **intervalo até o segundo vencimento** precisa de regra explícita e simulação antes do aceite, para evitar vencimentos muito próximos ou ciclos cobrados duas vezes. Este detalhe ainda depende de aprovação.
 
-## 3. Regra para meses curtos — proposta para próxima aprovação (NÃO APROVADA)
+## 3. Regra para meses curtos — APROVADA em 02/11/2026
 
-**Recomendação:** **se o mês não tiver o dia de referência escolhido, vencer no último dia calendário daquele mês**, e **retomar o dia originalmente pactuado no mês seguinte que o tiver**. Exemplo:
+**Regra aprovada:** **se o mês não tiver o dia de referência escolhido, vencer no último dia calendário daquele mês**, e **retomar o dia originalmente pactuado no mês seguinte que o tiver**. Exemplo:
 - referência dia **31** → janeiro **31**, fevereiro **28** (ou **29** em ano bissexto), março **31**;
 - referência dia **30** → janeiro **30**, fevereiro **28/29**, março **30**;
 - referência dia **29** → fevereiro **28** em ano não bissexto; os demais meses têm dia 29.
 
-**Não tornar padrão automático antes da aprovação expressa.** Alternativas possíveis: dia útil seguinte em caso de data inexistente (quando fizer sentido para cada meio de pagamento), dia fixo anterior, ou impedir escolher 29–31 no dia de vencimento. A primeira opção oferece maior previsibilidade mensal, mas precisa ser deliberada.
+**Aprovado expressamente** como regra funcional. Não confundir a data ajustada de um mês curto com alteração definitiva do dia de referência contratado. O comportamento em feriados e fins de semana, por meio de pagamento, ainda será deliberado separadamente.
 
 ## 4. Fins de semana, feriados e meios de pagamento — ainda pendentes
 
@@ -43,10 +43,15 @@ Se o dia específico de campanha for diferente do dia da primeira cobrança, o *
 
 ## 5. O que falta para o fechamento
 
-1. **Aprovação do tratamento dos meses sem o dia contratado**: recomendação de último dia do mês e retorno ao dia âncora.
+1. **Meses sem o dia contratado — RESOLVIDO:** usar o último dia calendário desse mês e retornar ao dia âncora nos meses seguintes.
 2. Definição de fins de semana/feriados e tratamento por meio de pagamento.
 3. Aprovação das regras quando dia especial de campanha é diferente da primeira mensalidade e das mudanças de vencimento solicitadas por clientes.
 4. Definição do marco concreto dos 90 dias (contratação, ativação etc.), políticas de emissão/aviso, vencimento, conciliação e inadimplência.
 5. Homologação de calendário com ano bissexto, fuso, atraso e retentativas, sem antecipar cobranças nem perder direitos contratados.
 
-**Resumo:** vence mensalmente em dia configurável, **por padrão no mesmo dia da primeira mensalidade**. Meses curtos exigem regra específica a deliberar; sugestão do **último dia do mês**, restaurando o dia de referência posteriormente. Nenhuma implementação ou cobrança autorizada.
+**Resumo vigente:** vence mensalmente em dia configurável, **por padrão no mesmo dia da primeira mensalidade**. Se o mês não tiver o dia contratado, vencerá no **último dia do mês**, recuperando o dia âncora no mês seguinte. **Pendente: fins de semana/feriados e efeitos operacionais por meio de pagamento.** Nenhuma implementação ou cobrança autorizada.
+
+
+## 6. Registro da aprovação complementar dos meses curtos (02/11/2026)
+
+A pergunta explicitou a regra: para vencimento nos dias **29, 30 ou 31**, se o mês não comportar a data, utilizar **o último dia do mês** (28/29 em fevereiro) e **voltar ao dia contratado no mês seguinte**. O responsável respondeu **“ok”**, aprovando essa regra. A data de ajuste é calculada apenas para o ciclo respectivo; não altera o dia âncora nem a duração da mensalidade promocional, preço contratado, reajuste anual ou outros vencimentos. A regra de fins de semana e feriados não foi aprovada nesse aceite e será deliberada separadamente. **Sem programação ou cobrança real.**
