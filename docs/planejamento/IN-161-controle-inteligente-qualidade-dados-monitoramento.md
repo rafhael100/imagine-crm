@@ -102,3 +102,8 @@ Um servidor deixa de enviar métricas, mas o último valor informava condições
 **Aprovado:** validação independente de métricas, detecção de ausências e atrasos, identificação de inconsistências/duplicações, recuperação de coletores por playbooks homologados, alertas de confiabilidade, auditoria e aprendizado contínuo.  
 **Pendente:** parâmetros numéricos, ferramentas, modelo de dados, custo e testes.  
 **Programação:** não iniciada.
+
+
+## Complemento posterior — IN-162 (02/11/2026)
+
+A [IN-162 — Política Inteligente de Retenção e Armazenamento de Logs](IN-162-politica-inteligente-retencao-armazenamento-logs.md) aprovou os seguintes **prazos padrão por categoria**: **7 dias** para logs de debug; **30 dias** para logs operacionais de servidores, sites e APIs; **30 dias** para rastreamento distribuído; **90 dias** para métricas históricas; **90 dias** para auditoria técnica minimizada das filas de leads (prazo já aprovado na IN-128); e **180 dias** para registros de incidentes críticos e eventos de segurança. A retenção do conhecimento estruturado dos agentes **continua pendente de definição própria**. A aplicação dos prazos contempla exclusão automática segura, minimização, preservação excepcional por obrigação legal/investigação, custo e auditoria. A regra específica de eliminação dos payloads temporários dos leads permanece independente (IN-128/IN-147). Esta decisão posterior prevalece sobre as referências históricas à ausência de prazos gerais aprovados.
