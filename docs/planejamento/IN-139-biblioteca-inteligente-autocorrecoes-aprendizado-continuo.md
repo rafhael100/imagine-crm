@@ -64,7 +64,7 @@ O registro e a sugestão de lições são automáticos. A concessão de novas fe
 - Mecanismos de recuperação contextual (busca estruturada e/ou semântica), fronteiras de acesso e anonimização para uso entre clientes.
 - Métricas de aprendizado (redução de tempo de resolução, recorrência, taxa de sucesso, reversões, escalonamentos e falhas).
 - Processo de homologação, teste em ambiente controlado, revisão e desativação de playbooks, alinhado ao risco da ação.
-- Política de retenção das lições e dos casos, considerando que retenção de histórico de incidentes **não é automaticamente a mesma** retenção de 90 dias dos logs de filas de leads.
+- Aplicação técnica do ciclo de vida e retenção de conhecimentos da **IN-163**: manter conhecimentos ativos enquanto necessários, arquivar versões obsoletas e reter por **24 meses após o arquivamento**, salvo exceção legítima. A retenção dos registros de incidentes e dos logs de leads continua independente.
 - Governança de sugestões imprecisas, falsos positivos e mudanças de infraestrutura ou versões de software.
 - Custos e limites de modelos de IA, ferramentas e armazenamento.
 - Integração com futura avaliação contínua do desempenho dos agentes.
@@ -72,5 +72,10 @@ O registro e a sugestão de lições são automáticos. A concessão de novas fe
 ## Delimitação da decisão
 
 **Aprovado:** biblioteca central, versionamento, registro e aprendizado a cada resolução, reutilização contextual das lições, proposta de novas soluções, homologação antes de execução automática, acompanhamento do Supervisor Técnico e preservação da autonomia segura.  
-**Pendente:** modelagem detalhada, retenção, critérios operacionais e implementação.  
+**Pendente:** modelagem detalhada, aplicação técnica da retenção aprovada na IN-163, critérios operacionais e implementação.  
 **Programação:** não iniciada.
+
+
+## Atualização posterior — IN-163 (02/11/2026)
+
+A política de ciclo de vida do conhecimento foi aprovada na [IN-163 — Ciclo de Vida do Conhecimento dos Agentes Técnicos](IN-163-ciclo-vida-conhecimento-agentes.md): manter conhecimento e playbooks **ativos enquanto necessários**; versões **arquivadas permanecem por 24 meses contados do arquivamento**, com exclusão controlada quando elegível, preservação excepcional legítima, versionamento e impossibilidade de execução de procedimentos arquivados. A retenção de logs e registros brutos de incidentes continua regida pelas políticas específicas, sem extensão automática para 24 meses. Esta decisão posterior prevalece sobre qualquer indicação histórica de que o prazo da biblioteca ainda estivesse pendente.
