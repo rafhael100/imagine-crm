@@ -1,0 +1,61 @@
+# PORTAL-REL-01 — Jornada Inteligente de Boas-Vindas, Treinamento e Acompanhamento Pós-Entrega (30 dias)
+
+**Status:** **JORNADA FUNCIONAL E CALENDÁRIO-BASE APROVADOS em 02/11/2026.** O responsável respondeu **“sim”** à proposta expressa da REL-01, com ações nos **dias 0, 3, 7, 15 e 30 após a entrega do site**, incluindo boas-vindas, treinamento, orientação sobre formulários/leads/CRM quando aplicável, verificação de necessidade de ajuda e acompanhamento de satisfação/próximos passos. **Canais, horários, conteúdos específicos, permissões de disparo e regras técnicas permanecem pendentes de aprovação detalhada.**
+**Fase:** planejamento e documentação, sem programação, envios, contratação de provedores, ativação de automação ou cobrança.
+**Produto responsável:** Central de Relacionamento Inteligente e Crescimento da Imagine, **módulo oficial aprovado** em [PORTAL-COM-12](PORTAL-COM-12-relacionamento-inteligente-retencao-expansao-clientes.md).
+**Relacionamentos:** [PORTAL-01 — matriz](PORTAL-01-matriz-pendencias-plataforma-sites.md), [PORTAL-COM-11 — catálogo de serviços](PORTAL-COM-11-proposta-gestao-servicos-produtos-adicionais-automacoes.md), [IN-123 — integração sites/CRM](IN-123-painel-integracoes-sites-crm.md), [PORTAL-D01 — aceite](PORTAL-D01-aceite-eletronico-versoes-orcamentos.md), [PORTAL-D02 — orçamento/serviços adicionais](PORTAL-D02-pagamento-servicos-adicionais.md).
+
+## 1. Objetivo — aprovado
+
+A jornada ajuda o cliente Imagine a **começar a utilizar efetivamente seu novo site, entender os recursos contratados, conhecer o Portal e receber acompanhamento útil**, mantendo o relacionamento ativo no primeiro mês. A eventual identificação de novas necessidades é complementar: **não confundir treinamento, suporte ou boas-vindas com obrigação de compra**.
+
+## 2. Calendário funcional-base aprovado
+
+| Quando | Objetivo e conteúdo aprovado em alto nível | Cuidados |
+|---|---|---|
+| **Dia 0** | **Boas-vindas** e orientações para acessar o Portal Imagine e identificar o site/projeto contratado | Instruções adequadas ao serviço realmente entregue; não enviar credenciais em texto simples |
+| **Dia 3** | **Treinamento inicial** sobre uso do site e serviços contratados | Distinguir recursos inclusos de serviços pagos extras; recomendar material correto |
+| **Dia 7** | **Orientação sobre formulários, recebimento de leads e CRM Imagine, se aplicável à contratação e à conta vinculada** | Não oferecer CRM cortesia indevida; não acessar leads privados dos tenants dos clientes sem base/finalidade |
+| **Dia 15** | **Verificar se o cliente precisa de ajuda**, colher dúvidas e encaminhar a suporte quando necessário | Priorizar resolução de dificuldade, não pressionar para uma venda |
+| **Dia 30** | **Acompanhamento de satisfação e próximos passos**, com orientações e sugestões contextualizadas | Identificação de oportunidades legítimas não significa oferta automática nem ativação de serviços sem aceite |
+
+**Marco de contagem:** referencial “entrega do site”, conforme pergunta aprovada. **Ainda precisa ser definido na especificação técnica** se dia 0 é a publicação, a confirmação de entrega, o aceite da versão publicada ou outro evento contratual auditável, além de horários, dias úteis e fuso. **Não contar os cinco disparos a partir da simples assinatura do contrato, da primeira cobrança ou de evento incompleto**.
+
+**Calendário aprovado é um padrão inicial**, e não autorização para disparar a qualquer cliente por qualquer canal; os cinco marcos e finalidades foram aprovados. A configuração de canal/horário/cadência fina, regras de antecipar/adiar contato e pausa dependerá de aprovação complementar e da origem legítima do contato.
+
+## 3. Elegibilidade e segmentação — especificação proposta
+
+- Vincular jornada ao **cliente/empresa e ao projeto entregue**; reenvio após novo produto, múltiplos sites na mesma conta e repetição de treinamento dependem de regras para não duplicar mensagens.
+- Usar somente dados contratuais pertinentes, contatos autorizados e informações do Portal; **não identificar pessoas pela mera visita anônima ao site**.
+- Adaptar temas ao produto e aos recursos contratados. **CRM Básico cortesia, treinamento de CRM e informações de leads somente quando efetivamente disponíveis**.
+- Durante incidentes graves, reclamações ativas ou impedimentos legítimos, priorizar apoio humano/operacional; mensagens comerciais não se sobrepõem ao suporte.
+- Distinguir conteúdo operacional/educativo daquele que caracteriza publicidade; respeitar preferências, direitos de recusa e bases legais para cada canal.
+- Evitar envios repetidos se o cliente já recebeu treinamento, se etapa foi concluída ou se já há atendimento humano em andamento. A regra de deduplicação exata permanece pendente.
+
+## 4. Papel da IA e da automação — desenho proposto, não ativado
+
+Agente pode sugerir material relevante, criar lembrete, sinalizar dúvidas recorrentes, avaliar se contato foi útil, preparar mensagem personalizada a partir de informações corretas e **encaminhar oportunidades para revisão**. O envio dependerá da política de aprovação/autonomia a ser definida; **a aprovação de REL-01 não autoriza IA a disparar WhatsApp/e-mail sem consentimento/base aplicável nem ativar plano pago**.
+
+**Rastreabilidade sugerida:** identificar projeto, jornada e versão, evento dia 0, etapa, horário agendado, canal/permite contato, conteúdo aprovado, tentativa de envio, confirmação do provedor, resposta, atendimento gerado, pausa/cancelamento e responsável; proteção e retenção proporcionais.
+
+**Métricas candidatas:** chegada à primeira utilização, conclusão de treinamentos, dúvidas resolvidas, satisfação no dia 30, volume de contatos não desejados, abandono de comunicação e eventual oportunidade futura. Métricas/limiares ainda não foram aprovados.
+
+## 5. Regras comerciais e limites
+
+- O objetivo primário é **relacionamento/educação**, não venda; **não gerar pagamento ou contratar serviço automaticamente**.
+- Se o cliente desejar serviço não incluído, encaminhar para orçamento e aceite previstos em PORTAL-D01 e PORTAL-D02. Não cobrar por recurso contratualmente incluso.
+- **Canais possíveis, ainda pendentes de definição:** notificações no Portal, e-mail e eventualmente WhatsApp oficial; custo de mensagens e consentimentos precisam ser avaliados antes da implantação.
+- Bibliotecas de conteúdo e treinamentos deverão ser revistas por responsáveis competentes para não atribuir ao plano funcionalidades não existentes. Pode integrar conteúdos da Universidade Imagine caso haja catálogo e direitos válidos; não presumir acesso livre.
+- Nenhuma integração ou monitoramento do tenant CRM de cada cliente é autorizado por esta aprovação.
+
+## 6. Pendências para a próxima rodada
+
+1. **Evento oficial de início** da jornada: publicação, entrega formal, aceite do site ou combinação definida.
+2. Canais por etapa, **autorização e preferências comerciais** e possibilidade de mensagens internas não promocionais; regras de LGPD e canais.
+3. Horários de disparo, férias/feriados, se dias 0/3/7/15/30 são corridos, opções administrativas de ajuste, deduplicação e pausas.
+4. Roteiros e materiais de cada dia, biblioteca versionada e variantes para site com/sem CRM Básico.
+5. IA somente como recomendadora ou com envio de mensagem previamente aprovada; alçadas humanas, exceções e trilha de auditoria.
+6. Indicadores, mensageria/IA, custos por canal e critérios de sucesso.
+7. Eventos de cancelamento/suspensão do site durante a jornada, reativação, mudanças de titularidade e reconciliação.
+
+**Registro de aprovação:** o usuário respondeu “sim” em 02/11/2026 à pergunta específica “Você aprova essa jornada inicial de relacionamento de 30 dias como REL-01?”, acompanhada da tabela com **dia 0, 3, 7, 15 e 30** e das cinco ações acima. **A jornada e o calendário-base estão APROVADOS; execução técnica, comunicações reais e detalhes adicionais NÃO foram aprovados.** Nenhuma programação iniciada.
