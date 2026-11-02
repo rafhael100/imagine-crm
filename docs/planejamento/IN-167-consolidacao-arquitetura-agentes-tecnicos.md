@@ -106,3 +106,8 @@ Modelos alternativos somente se **homologados**, compatíveis com a tarefa, segu
 ## Atualização posterior — Portal e CRM em servidores separados (02/11/2026)
 
 O responsável **aprovou servidores distintos para o Portal Imagine e o CRM Imagine SaaS**. A integração ocorrerá por APIs autenticadas, mantendo isolamento de dados e continuidade operacional independente. Essa decisão é arquitetural, sem aprovar máquinas, fornecedores, custos ou implantação. A disposição completa de referência e pendências constam do [comparativo ARQ-01](ARQ-01-comparativo-infraestrutura-agentes-tecnicos.md) e da [matriz IN-168](IN-168-matriz-pendencias-fechamento-arquitetura.md). Hospedagem separada dos **agentes em relação ao n8n continua recomendada, mas ainda não aprovada definitivamente**. Programação não iniciada.
+
+
+## Correção de infraestrutura de sites — IN-096 (02/11/2026)
+
+A hospedagem dos sites dos clientes **Onepage/Landing Pages** já havia sido aprovada na **IN-096 de 01/11/2026**: **Cloudflare Workers Static Assets** com **GitHub** para código/versões e publicação, manutenção e monitoramento por APIs/n8n/agentes autorizados; **WHM/cPanel foi descartado para esse modelo de sites**. **Workers for Platforms** permanece uma possibilidade futura de escala, dependente de dimensionamento e aprovação. O Portal Imagine e o CRM Imagine SaaS terão **servidores independentes**; os agentes também poderão ter infraestrutura própria conforme decisão ARQ-01 ainda pendente. As duas APIs de recepção de leads continuam em infraestruturas e persistências independentes dos sites, Portal e agentes. O mapa de referência atualizado está no [ARQ-01](ARQ-01-comparativo-infraestrutura-agentes-tecnicos.md); nenhuma contratação/programação está autorizada.
