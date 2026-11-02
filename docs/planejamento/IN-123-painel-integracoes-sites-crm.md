@@ -38,3 +38,8 @@ Oferecer no **Portal Imagine** um painel centralizado para o cliente consultar s
 **Aprovados:** painel com projetos, CRM vinculado, estado, benefício, escolha de conta na contratação, solicitação de troca via chamado, histórico e teste de integração.  
 **A detalhar antes de desenvolver:** formatos dos testes, permissões granulares, UX, operação de chamados e sincronização de estados.  
 **Nenhuma programação autorizada.**
+
+
+## Complemento COM-08 — visibilidade da cortesia por produto e campanha (02/11/2026)
+
+O Portal deverá permitir à equipe Imagine **configurar no cadastro de cada serviço e campanha** se a contratação **oferece ou não CRM Básico como cortesia**, sempre para novas vendas e com cláusula clara no aceite. O painel de integrações deverá indicar **motivo e contrato(s) que sustentam o benefício**, distinguindo: cortesia ativa, cortesia suspensa por inadimplência do único site elegível, ausência de cortesia por campanha, plano CRM pago e transição de 30 dias após cancelamento do último vínculo. Não bloquear CRM pago ou cortesia mantida por outro site; proteger dados e reavaliar ao regularizar. Condições específicas em [PORTAL-COM-08](PORTAL-COM-08-inadimplencia-site-cortesia-crm-configuravel.md); detalhamento técnico futuro.
