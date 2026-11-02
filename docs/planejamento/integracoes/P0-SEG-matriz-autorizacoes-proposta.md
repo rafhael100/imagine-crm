@@ -36,7 +36,12 @@ IN-167 permite execução por **procedimento determinístico, seguro, homologado
 - **Importação/exportação/backup/restauração:** autoatendimento essencial em todos os planos, inclusive Básico, conforme IN-118; confirmação reforçada e acesso delimitado a dados/arquivos.
 - **Contingência externa:** alternativas homologadas, compatíveis e autorizadas; sem troca crítica unilateral de provedor.
 
-## 5. Matriz que ainda precisa ser preenchida
+## 5. Aplicação aos casos de referência
+
+- [P0-OP — Casos operacionais INT-01..INT-12](P0-OP-casos-operacionais-contratos-alcadas.md) apresenta pré-condições, propriedade do ato e recusa esperada por operação representativa, sem definir alçada numérica ou perfil novo.
+- [P0-TR53 — Vinculação de requisitos](P0-TR53-vinculo-contratos-aceite.md) mantém a associação **proposta** aos contratos e invariantes.
+
+## 6. Matriz que ainda precisa ser preenchida
 | ID | Detalhamento necessário | Situação |
 |---|---|---|
 | SEG-A | Catálogo de operações e módulo proprietário por efeito | Pendente |
