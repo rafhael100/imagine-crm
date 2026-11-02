@@ -114,3 +114,8 @@ Quando um visitante envia um formulário:
 **Preservado:** auditoria técnica minimizada das filas de leads por **90 dias**; payload entregue em 24 horas; envios não entregues sujeitos a descarte após **18 dias totais** sem quarentena adicional.  
 **Pendente:** matriz de retenção geral, ferramentas, padrões, orçamento, arquitetura e testes.  
 **Programação:** não iniciada.
+
+
+## Complemento posterior — IN-162 (02/11/2026)
+
+A [IN-162 — Política Inteligente de Retenção e Armazenamento de Logs](IN-162-politica-inteligente-retencao-armazenamento-logs.md) aprovou os seguintes **prazos padrão por categoria**: **7 dias** para logs de debug; **30 dias** para logs operacionais de servidores, sites e APIs; **30 dias** para rastreamento distribuído; **90 dias** para métricas históricas; **90 dias** para auditoria técnica minimizada das filas de leads (prazo já aprovado na IN-128); e **180 dias** para registros de incidentes críticos e eventos de segurança. A retenção do conhecimento estruturado dos agentes **continua pendente de definição própria**. A aplicação dos prazos contempla exclusão automática segura, minimização, preservação excepcional por obrigação legal/investigação, custo e auditoria. A regra específica de eliminação dos payloads temporários dos leads permanece independente (IN-128/IN-147). Esta decisão posterior prevalece sobre as referências históricas à ausência de prazos gerais aprovados.
