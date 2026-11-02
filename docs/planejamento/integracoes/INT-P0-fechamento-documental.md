@@ -69,6 +69,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - [P0-OP24 — 24 fichas operacionais de referência](P0-OP24-detalhamento-CT03-CT04-por-operacao.md): dois casos representativos por INT, com proprietário, pré-condição, autorização, resultado técnico/oficial, idempotência, falha, reconciliação e correspondência CT/TR/HT. **Não são novos módulos, nem catálogo exaustivo**.
 - **Pendências P0 permanecem abertas:** o aceite documental da base CT-03/CT-04 não encerra P0-CON-01 (contratos executáveis completos), P0-TR-01 (origem integral), P0-OWN-01/SEC-01 (matriz granular), P0-VER-01 ou P0-ACC-01 (testes planejados ainda não executados).
 
+## CT-02 e aceitação das 24 fichas como base documental (02/11/2026)
+
+- [Decisão contextual P0-OP24](P0-DEC-aprovacao-OP24-base.md): a resposta “ok” valida o uso das 24 fichas como **base de documentação** e a continuidade ao CT-02. Não aprova direitos novos, alçadas, campos físicos ou limites.
+- [P0-CT02 — Autorização contextual e alçadas por operação](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md): matriz **em proposta** com 24 operações, fronteiras de segurança/negócio, revalidação, impedimentos e 12 roteiros candidatos de validação negativa.
+- **Continuam abertos:** P0-OWN-01/P0-SEC-01 (RBAC, perfis, alçadas, recurso/campo), P0-CON-01 (schema físico), P0-TR-01/P0-DOC-01 (cotejo integral), P0-ACC-01 (testes), P0-VER-01 (versões), P0-GIT-01 (aceite final). Nenhum teste executado.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
