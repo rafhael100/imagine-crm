@@ -110,3 +110,8 @@ Um aviso confiável informa vulnerabilidade numa versão de PHP. O Agente de Seg
 ## Atualização da premissa de infraestrutura — IN-096 (02/11/2026)
 
 Os sites dos clientes Onepage/Landing Pages utilizarão **Cloudflare Workers Static Assets**, sem WHM/cPanel; GitHub guarda código e versões, enquanto APIs/n8n/agentes com permissões apropriadas coordenam publicação, manutenção, monitoramento e suporte. **Workers for Platforms** é reservado a análise futura. O inventário deve catalogar sites, domínios, workers, versões publicadas e dependências como recursos da plataforma, e **não inventar um servidor de hospedagem próprio para cada site**. Os servidores do Portal Imagine e do CRM Imagine SaaS ficam separados; os serviços de recepção de leads preservam duas rotas independentes. Tudo é planejamento, não descoberta ativa ou implantação.
+
+
+## Atualização de infraestrutura — Opção B de ARQ-01 (02/11/2026)
+
+**Aprovada no planejamento:** VPS/servidor exclusivo para os **sete agentes técnicos, Supervisor Técnico e orquestrador**, **fisicamente/virtualmente separado do servidor do n8n**, sem compartilhamento do mesmo host VPS. Mantidas as decisões: **Portal Imagine e CRM Imagine SaaS em servidores separados**, **sites Onepage/Landing Pages via Cloudflare Workers Static Assets conforme IN-096**, e **API principal e de contingência de leads com persistência durável independente**. A fronteira de infraestrutura dos agentes está escolhida; configurações, provedor, recursos, custos, mecanismos de comunicação e continuidade permanecem em estudo. Ver [ARQ-01](ARQ-01-comparativo-infraestrutura-agentes-tecnicos.md) e [IN-168](IN-168-matriz-pendencias-fechamento-arquitetura.md). **Não contratar, provisionar nem iniciar programação**.
