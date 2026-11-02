@@ -1,6 +1,6 @@
 # PORTAL-COM-12 — Central de Relacionamento Inteligente, Retenção e Expansão de Clientes Imagine
 
-**Status (02/11/2026): OBJETIVOS E ESCOPO DE ALTO NÍVEL SOLICITADOS PELO RESPONSÁVEL; desenho funcional abaixo é PROPOSTA EM DISCUSSÃO, não aprovação de todas as campanhas, gatilhos ou integrações.**
+**Status (02/11/2026): MÓDULO OFICIAL DO PORTAL IMAGINE APROVADO EXPRESSAMENTE** — o responsável respondeu **“sim”** à pergunta específica sobre aprovar a **Central de Relacionamento Inteligente e Crescimento** como módulo oficial, com as frentes de **retenção/educação/relacionamento ativo** e **expansão comercial consultiva**. **Não significa aprovação automática das 10 jornadas exemplificativas, gatilhos, prazos, coleta de sinais, canais, limites, integração com CRM, envio de mensagens ou autonomia dos agentes**: são propostas a deliberar.
 **Origem:** o responsável corrigiu a leitura da PORTAL-COM-11: “precisamos fazer com que o cliente mantenha o contato dele ativo”, utilizar “automações inteligentes”, perceber quando cliente “está acessando um site” e oferecer treinamentos e informações, “identificar oportunidades de novos produtos”, por exemplo ao notar que “não tá renovando a parte do layout faz mais de um ano”, e oportunidades de automações vendidas. **Objetivo principal é manter o cliente engajado e, como segundo objetivo, aumentar contratações relevantes**.
 **Fase:** exclusivamente planejamento/documentação. Nenhum desenvolvimento, disparo de mensagem, coleta adicional de dados, conexão de canal, campanha ou cobrança está autorizado.
 **Escopo:** Imagine Comunicação Digital **como prestadora**, relacionamento com os **clientes que contrataram sites/serviços da Imagine**, incluindo Portal Imagine e, de forma integrada e autorizada, CRM Imagine. **Não confundir com automações de marketing que os próprios clientes operam nos seus tenants CRM.**
@@ -87,7 +87,7 @@ Exclusões: produto/benefício já contratado/incluso, cliente que pediu para n�
 
 ## 8. Próximos pontos a decidir antes de qualquer implementação
 
-1. Aprovar formalmente o módulo **Central de Relacionamento Inteligente e Crescimento**, separado do catálogo de contratação, e sua priorização no roadmap do Portal.
+1. **APROVADO em 02/11/2026:** módulo oficial **Central de Relacionamento Inteligente e Crescimento**, com duas frentes (retenção/educação e oportunidades de expansão); tratar como parte do planejamento do Portal, separado da camada de catálogo da COM-11. A sequência exata de entregas será definida no roadmap.
 2. Definir os **primeiros gatilhos** a implementar, começando por onboarding, conteúdos educativos, revisão de layout e indicação de serviços adequados; aprovar calendários e critérios.
 3. Definir canais/autorizações, frequência máxima, horários, aprovação humana dos envios, regras de exclusão e privacidade.
 4. Definir se o histórico de relacionamento fica no **CRM Imagine da própria Imagine** (preferência arquitetural a validar), sincronizado ao Portal, ou em módulo interno separado; evitar duplicar cadastros.
@@ -96,4 +96,20 @@ Exclusões: produto/benefício já contratado/incluso, cliente que pediu para n�
 7. Definir indicadores, custos de mensageria/IA, limites, campanhas e alçadas para propostas com valores.
 8. Testes com dados sintéticos e modo simulação antes de disparos, cobrança ou implantação real.
 
-**Resumo de status:** intenção de relacionamento ativo e expansão confirmada; desenho COM-12 registrado **como proposta para aprovação**, sem programação. A interpretação anterior de COM-11 como simples catálogo não deve substituir esta estratégia.
+**Resumo de status:** **COM-12 APROVADA COMO MÓDULO OFICIAL DO PORTAL IMAGINE**, com foco em retenção, educação, relacionamento e expansão de contas; **fluxos, gatilhos, conteúdos, canais, cadências, permissões, arquitetura e critérios de autonomia continuam propostas pendentes**, sem programação. A COM-11 permanece como catálogo/contratação e não substitui a estratégia da COM-12.
+
+
+## 9. Aprovação formal da criação do módulo no Portal (02/11/2026)
+
+**Pergunta apresentada:** “Você aprova essa Central de Relacionamento Inteligente como um módulo oficial do Portal Imagine?” **Resposta do responsável:** “sim”.
+
+**O que ficou aprovado:**
+
+- O Portal Imagine incluirá **um módulo oficial de Relacionamento Inteligente e Crescimento**, para a Imagine acompanhar sua base de clientes de sites/serviços de forma contínua.
+- Finalidades distintas e complementares: **(1) manter o cliente engajado com onboarding, conteúdos educativos, treinamentos e suporte proativo; (2) identificar oportunidades relevantes de atualização de layout, melhoria de sites, novos serviços e automações comercializáveis**, evitando contato excessivo ou ofertas desconectadas da necessidade.
+- A camada de **identificação/relacionamento e recomendação (COM-12)** é distinta da **camada de catálogo/orçamento/contratação (COM-11)**. Os contratos e pagamentos concretos seguem os fluxos já aprovados nas D01/D02 e as políticas do CRM conforme elegibilidade.
+- A arquitetura deverá ser planejada de modo a **preservar privacidade, autorizações de canal, proteção dos dados dos tenants dos clientes, revisão humana e controle de frequência**; esses princípios já foram declarados requisitos de segurança e qualidade e **não autorizam coleta ou disparos reais**.
+
+**Ainda não aprovados individualmente:** gatilhos REL-01 a REL-10, cronograma/frequência de cada campanha, modelos e textos de treinamentos, critérios de inatividade e “layout há um ano”, identificação de usuários/visitas, canais oficiais de envio e consentimentos específicos, IA com autonomia de envio, integração do módulo ao CRM Imagine da própria Imagine, preços/serviços que poderão ser recomendados, métricas e custos. **Toda campanha deverá ser aprovada em decisão própria**.
+
+**Próximo bloco recomendado para planejamento (pendente):** REL-01 — jornada pós-entrega/onboarding e relacionamento inicial: disparos, conteúdo, origem dos dados autorizados, duração, preferências e canais, com posterior desenho dos demais módulos REL. **Nenhuma programação, mensagens ou contratação iniciadas.**
