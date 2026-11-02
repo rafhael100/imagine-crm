@@ -65,7 +65,7 @@ Cada produto/serviço poderá ter **seu próprio preço verdadeiro de tabela** (
 ## 6. Próximas decisões ainda abertas (sem reabrir o já aprovado)
 
 1. **Escolha do índice contratual anual**, regra de índice negativo/indisponível e comunicação ao cliente.
-2. **Marco de contagem de meses promocionais**: desde contratação, ativação ou primeira mensalidade, respeitando contrato e o início da cobrança a partir do dia 90.
+2. **MARCO APROVADO POSTERIORMENTE (COM-06):** os N meses promocionais contam a partir da **primeira mensalidade devida**, **não** da assinatura do contrato. A **data da primeira cobrança é administrável por serviço e campanha**, preservados **90 dias como prazo padrão atual**; a data-base e regras de calendário permanecem para especificação.
 3. Definir **preços-base reais por produto** e campanhas concretas; poderão ser geridos no painel, mas só após parametrização aprovada, preço “De” real e validação de margem.
 4. Condições e valores posteriores nos planos temporários, reajuste no caso de transição coincidente com aniversário anual, e regras de proteção dos contratos antigos.
 5. Se e como o preço promocional é conservado em suspensão/retomada, troca de titularidade ou recontratação.
@@ -74,3 +74,8 @@ Cada produto/serviço poderá ter **seu próprio preço verdadeiro de tabela** (
 **Fonte legal:** [Lei nº 10.192/2001, art. 2º — Câmara dos Deputados](https://www2.camara.leg.br/legin/fed/lei/2001/lei-10192-14-fevereiro-2001-365669-normaatualizada-pl.html). CDC arts. 30/31 — [consumidor.gov.br](https://consumidor.gov.br/pages/conteudo/publico/102).
 
 **Resumo:** capacidade de alterar preços de **novas campanhas** no painel e oferecer mensalidade promocional **por N meses ou durante o contrato ativo**, com **reajuste por índice somente após 12 meses de contrato**, **APROVADA** funcionalmente. **Não foi aprovada a edição retroativa de contratos ou qualquer índice, valor, campanha ou operação real.**
+
+
+## 7. Decisão complementar COM-06 — contagem da promoção e prazo configurável da primeira cobrança (02/11/2026)
+
+O responsável aprovou que **o prazo de N mensalidades promocionais começa na primeira mensalidade devida**, não na assinatura contratual. Também definiu que a **data de início da cobrança mensal será configurável administrativamente por serviço e por campanha**, com **90 dias preservados como padrão atual, não como valor fixo do sistema**. O contrato e checkout deverão fixar a condição e a data da primeira cobrança para cada cliente, sem alteração retroativa por edições no painel. O **reajuste anual pelo índice contratado permanece após 12 meses de contrato**, em calendário distinto do ciclo de início da mensalidade e da duração da oferta. Contagem exata de dias/feriados, limites de carência, custos e regras de aniversário permanecem para detalhamento. Registro detalhado: [PORTAL-COM-06 — Primeira cobrança administrável](PORTAL-COM-06-inicio-mensalidade-configuravel-por-campanha.md). **Sem código ou cobranças.**
