@@ -66,3 +66,8 @@ O administrador Imagine poderá configurar para **novas ofertas**, sem programa�
 - Regras para suspensão/cancelamento dos sites após os 7 dias; prazo de cancelamento do **CRM SaaS pago (30 dias)** não deve ser copiado sem aprovação para o Portal.
 
 **Condição final:** documentação de decisões para o Portal, sem desenvolver ou alterar contratos reais.
+
+
+## 6. Decisão posterior aprovada — COM-09 (02/11/2026)
+
+O responsável respondeu **“sim”** à distinção proposta: **se site suspenso por inadimplência for posteriormente cancelado e for o último vínculo elegível**, a **transição de 30 dias da cortesia CRM começa no cancelamento formal, porém o CRM permanece com acesso operacional bloqueado**; o titular conserva **acesso autenticado e restrito para exportação/baixar dados e contratar plano CRM pago expressamente**, sem cobrança nem exclusão automática. **Cancelamentos comuns** continuam com **30 dias de CRM normalmente operacional**, nos termos IN-119–121. Se outro site elegível ativo sustentar a cortesia, não bloquear; se houver CRM pago, não prejudicá-lo. A contagem dos 30 dias **não se confunde com sete dias de tolerância nem com a data da suspensão anterior**. O calendário IN-121 de avisos permanece, com textos adaptados ao tipo de transição; dados preservados e retenção de 120 dias somente após cancelamento formal do CRM. **Detalhes de quando cancelar o site suspenso, reversões e operação técnica ainda pendentes.** Regra detalhada em [PORTAL-COM-09](PORTAL-COM-09-transicao-cortesia-cancelamento-inadimplencia.md). Sem programação/cobrança.
