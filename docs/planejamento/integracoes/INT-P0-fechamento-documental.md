@@ -57,6 +57,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - [P0-OP — 12 casos operacionais de referência](P0-OP-casos-operacionais-contratos-alcadas.md): para cada INT, descreve ato representativo, proprietário, precondições, fonte da confirmação, recusa e CT/HT. São casos de referência, **não** catálogo completo de APIs ou ações e não constituem módulos novos.
 - **P0-TR-01, P0-OWN-01, P0-CON-01, P0-SEC-01 permanecem abertos/parciais**; faltam textos originais, exaustividade, operações granulares, schemas e parâmetros finais, alçadas por ação, códigos e evidência de aceite.
 
+## CT-03/CT-04 — comandos e resultados (02/11/2026)
+
+- [P0-CON CT-03/CT-04](P0-CON-CT03-CT04-comandos-resultados-transicoes.md): minuta detalhada com identidades, dimensões de estados, transições **propostas**, retentativas condicionadas, controle de concorrência, reconciliação e 12 exemplos de aceite documental.
+- **Ainda em aberto:** P0-CON-01 (schema/enum final), P0-SEC-01 e P0-OWN-01 (permissões/alçadas por operação), P0-VER-01 (compatibilidade), P0-ACC-01 (planos de teste), P0-DOC-01 e P0-TR-01 (integralidade das origens).
+- **Aprovação do avanço de etapa não equivale à aprovação automática das escolhas detalhadas nesta minuta.** Nenhum teste foi executado.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
