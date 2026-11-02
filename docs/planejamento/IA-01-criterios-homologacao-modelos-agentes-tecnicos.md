@@ -1,6 +1,6 @@
-# IA-01 — Proposta de Critérios de Homologação dos Modelos dos Agentes Técnicos Imagine
+# IA-01 — Critérios de Homologação dos Modelos dos Agentes Técnicos Imagine
 
-**Status:** PROPOSTA EM REVISÃO, **AINDA NÃO APROVADA FUNCIONALMENTE**.  
+**Status:** **APROVADA funcionalmente em 02/11/2026** — oito requisitos eliminatórios G1–G8 e seis critérios ponderados (30/20/15/15/10/10, total 100). **Sem autorização de execução de testes, aquisição, escolha de modelos ou programação**.  
 **Data:** 02/11/2026.  
 **Origem da pauta:** responsável respondeu “ok” à proposta de **definir os critérios de homologação** antes de escolher principal e contingência. O “ok” autorizou **elaborar a proposta**, não realizar testes nem aprovar resultados, modelos ou fornecedores.  
 **Etapa:** exclusivamente planejamento e documentação. **Não iniciar programação, provisionamento, contratação, testes pagos, chamadas de API, acesso a dados reais ou alterações em produção.**
@@ -17,7 +17,7 @@ Estabelecer um **processo objetivo, rastreável e proporcional ao risco** para a
 - **Homologação das instruções (IN-165):** versão de prompt/instrução também precisa ser compatível com o modelo, sem ampliar as permissões.
 - **Avaliação de modelos ≠ novo módulo de teste sintético em produção:** somente **casos controlados no processo de homologação**, sem reintroduzir o módulo de testes sintéticos periódicos de serviços/formulários **expressamente descartado na IN-168**. Os testes de recuperação existentes da IN-145 continuam válidos.
 
-## 2. Requisitos eliminatórios obrigatórios — proposta
+## 2. Requisitos eliminatórios obrigatórios — aprovados
 
 Uma falha crítica em qualquer item abaixo **impede a homologação para o escopo testado**, independentemente da pontuação de custo ou velocidade. A versão só poderá ser reavaliada com evidências após correção de configuração, instrução ou modelo, sem suavizar regras de proteção.
 
@@ -34,7 +34,7 @@ Uma falha crítica em qualquer item abaixo **impede a homologação para o escop
 
 **Importante:** uma resposta segura do modelo não elimina a necessidade dos controles externos; os testes devem provar que **os controles técnicos efetivamente bloqueiam ações proibidas**, inclusive quando o modelo falha.
 
-## 3. Avaliação comparativa por pontuação — pesos propostos, NÃO aprovados
+## 3. Avaliação comparativa por pontuação — pesos aprovados
 
 Após passar por todos os requisitos eliminatórios, comparar modelos **por tarefa**, nunca por reputação da marca ou pontuação geral abstrata.
 
@@ -48,7 +48,7 @@ Após passar por todos os requisitos eliminatórios, comparar modelos **por tare
 | **Custo por tarefa concluída** | **10** | Tokens, chamadas repetidas, ferramentas pagas, custo efetivo, comparação com modelos alternativos |
 | **Total** | **100** | Segurança continua **eliminatória**, não pode ser compensada com a nota |
 
-Os **pesos são proposta para aprovação**. **Nenhum corte numérico (ex.: pontuação mínima por classe, porcentagem mínima de acerto ou tempo máximo) está aprovado**. Esses valores serão calibrados em etapa específica, com amostra representativa, risco e orçamento definidos. O modelo deve primeiro demonstrar **capacidade e segurança**; só depois otimiza-se preço.
+Os **pesos 30/20/15/15/10/10 foram aprovados em 02/11/2026**. **Nenhum corte numérico (ex.: pontuação mínima por classe, porcentagem mínima de acerto ou tempo máximo) está aprovado**. Esses valores serão calibrados em etapa específica, com amostra representativa, risco e orçamento definidos. O modelo deve primeiro demonstrar **capacidade e segurança**; só depois otimiza-se preço.
 
 ## 4. Conjunto de testes por tarefas — planejamento
 
@@ -101,7 +101,7 @@ O Supervisor pode consolidar métricas, propor melhorias e sinalizar suspensões
 
 ## 7. Decisões pendentes antes de executar testes
 
-- **Aprovar/ajustar** os seis critérios ponderados de avaliação e os oito requisitos eliminatórios, bem como os pesos sugeridos para comparação. Os nomes das categorias e pesos são **proposta, não política vigente**.
+- **Resolvido em 02/11/2026:** os oito requisitos eliminatórios G1–G8 e os seis critérios ponderados, com pesos **30/20/15/15/10/10**, foram **aprovados** como metodologia funcional de homologação.
 - Definir escala de notas, metodologia de amostragem, tamanho mínimo do conjunto de casos por classe e tarefa, cortes mínimos por risco, limites aceitáveis de falha, latência, custo e região.
 - Confirmar existência dos modelos e IDs de API, disponibilidade da conta e requisitos específicos de cada fornecedor; comparar preços **atuais ao executar** os testes, pois a pesquisa anterior representa histórico de 02/11/2026.
 - Aprovar contas, contratos, dados permitidos, orçamento isolado para testes caso seja necessário, reavaliação, responsável homologador e políticas de proteção.
@@ -110,6 +110,6 @@ O Supervisor pode consolidar métricas, propor melhorias e sinalizar suspensões
 
 ## 8. Próxima decisão recomendada
 
-**Pergunta para aprovação funcional:** adotar os **oito requisitos eliminatórios de segurança e os seis indicadores comparativos, com os pesos 30/20/15/15/10/10**, como **base da futura homologação**, sem definir ainda cortes numéricos, fornecedores, seleção de modelos, contratos, testes pagos ou programação?
+**Decisão aprovada pelo responsável em 02/11/2026:** adotar os **oito requisitos eliminatórios de segurança e os seis indicadores comparativos, com os pesos 30/20/15/15/10/10**, como **base da futura homologação**. **Próxima pauta:** escalas de notas, amostras e critérios quantitativos de aprovação por tarefa e classe, sem testes reais não autorizados.
 
-**Conclusão:** proposta documental pronta para revisão. **Não há testes executados, modelo homologado, orçamento novo ou contratação autorizada.**
+**Conclusão:** critérios qualitativos e pesos **aprovados como metodologia funcional**. **Não há testes executados, modelo homologado, limiares numéricos de aceitação, orçamento novo ou contratação autorizada.**
