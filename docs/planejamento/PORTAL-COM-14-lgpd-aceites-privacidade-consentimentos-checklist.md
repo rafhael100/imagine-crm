@@ -1,0 +1,94 @@
+# PORTAL-COM-14 — LGPD, avisos, aceites e consentimentos no Portal e nos sites Imagine
+
+**Status (02/11/2026): REQUISITO DE PRIVACIDADE SOLICITADO PELO RESPONSÁVEL — incluir os “aceites da LGPD brasileira”.** A existência dos avisos, bases legais e controles pertinentes entra no escopo do Portal e no checklist de entrega automatizada. **Detalhes de redação, hipóteses legais por finalidade, telas, parâmetros e responsáveis ainda devem ser definidos e validados antes de implementar.**
+**Decisão relacionada já aprovada:** o checklist de entrega com IA será **CONFIGURÁVEL POR TIPO DE PRODUTO**, sem permissão para desativar requisitos essenciais de qualidade, privacidade, segurança ou aceite contratual.
+**Fase:** planejamento/documentação; nenhuma publicação, consentimento, mensagem, coleta de dados adicional, programação ou implantação real autorizada.
+**Referências internas:** [PORTAL-COM-13 — checklist IA de entrega](PORTAL-COM-13-entrega-automatica-checklist-qualidade-agente-ia.md), [PORTAL-D01 — aceite eletrônico de site/orçamento](PORTAL-D01-aceite-eletronico-versoes-orcamentos.md), [PORTAL-COM-12 — relacionamento](PORTAL-COM-12-relacionamento-inteligente-retencao-expansao-clientes.md), [PORTAL-REL-01 — jornada](PORTAL-REL-01-jornada-pos-entrega-onboarding-30-dias.md), [IN-125 — gestão de formulários](IN-125-gestao-inteligente-formularios.md), [IN-150 — segurança de formulários/APIs](IN-150-seguranca-inteligente-formularios-apis.md), [PORTAL-01 — pendências](PORTAL-01-matriz-pendencias-plataforma-sites.md). Histórico IN-091–IN-101 no ramo docs/integracao-site-crm-basico.
+
+## 1. Bases jurídicas de referência
+
+- **Lei nº 13.709/2018 (LGPD), texto vigente:** https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-normaatualizada-pl.html
+- **ANPD — Perguntas frequentes, bases legais:** https://www.gov.br/anpd/pt-br/acesso-a-informacao/perguntas-frequentes
+- **ANPD — Guia orientativo de cookies:** https://www.gov.br/anpd/pt-br/centrais-de-conteudo/materiais-educativos-e-publicacoes/guia_orientativo_cookies_e_protecao_de_dados_pessoais
+
+**Princípio obrigatório de desenho:** a LGPD **não exige consentimento para todo tratamento**. Identificar finalidades e bases legais adequadas (consentimento, contrato, obrigação legal, legítimo interesse quando cabível, etc.), com transparência e proporcionalidade. **Nunca transformar “aceite da política de privacidade” em autorização genérica e forçada para marketing, analytics ou qualquer finalidade.** Quando **consentimento** for a base, deve ser livre, informado, inequívoco, para finalidade determinada, passível de prova e revogação facilitada; não usar opções pré-marcadas, silêncio ou navegação contínua como consentimento. Aviso de privacidade e termos contratuais **não são o mesmo documento nem o mesmo ato**.
+
+**Revisão especializada:** modelos contratuais, avisos, cookies, responsabilidade dos agentes e bases legais por finalidade devem ser submetidos à revisão jurídica/privacidade competente antes da publicação; IA pode verificar presença e comportamento técnico, **não declarar conformidade jurídica absoluta por conta própria**.
+
+## 2. Onde haverá documentos e controles de aceites (escopo aprovado em princípio; detalhes pendentes)
+
+### 2.1 Portal Imagine — cliente contratante / usuários autenticados
+
+- **Termos de Uso e Contratação:** aceite expresso, versionado e auditável do documento/condições quando a relação contratual o exigir. Preservar todas as regras já aprovadas na PORTAL-D01 sobre versão e autorização do cliente.
+- **Aviso/Política de Privacidade do Portal Imagine:** disponível antes ou no momento pertinente, com informações claras sobre finalidade, controlador, contato, direitos, compartilhamentos, retenção e formas de exercício de direitos. **Dar ciência/acesso não equivale a consentimento para tudo**; não impor caixa “concordo com LGPD” se não houver consentimento apropriado a uma finalidade específica.
+- **Comunicações comerciais e relacionamento inteligente:** separar notificações operacionais ligadas ao contrato de mensagens promocionais, usar bases legais específicas e registrar preferências por canal e finalidade, com respeito a oposição/descadastro e revogação quando aplicável. Relacionamento REL-01 não autoriza marketing indiscriminado.
+- **Cookies e telemetria do Portal:** informar categorias, finalidades, provedores e bases, dar controles proporcionais; quando consentimento for a base, permitir recusa/revogação e não ativar a categoria antes da escolha afirmativa.
+
+### 2.2 Sites públicos feitos pela Imagine — visitante/lead do cliente
+
+- **Política/Aviso de Privacidade do site:** documento configurável por cliente/projeto, com identidade e contato do controlador adequado, categorias e finalidades de dados coletados, integrações, direitos e práticas de tratamento, a ser validado pelo responsável competente.
+- **Formulários de contato, orçamento, agendamento quando elegíveis e outros:** fornecer informação adequada no momento de coleta; campo **separado para comunicações promocionais, se consentimento for a hipótese pertinente**. A submissão pode ser processada sob outra base adequada para atender à solicitação do usuário; **não bloquear desnecessariamente um pedido de contato por recusa ao marketing**.
+- **Banner/central de cookies**, **quando houver cookies ou tecnologias que exijam informação/opção**: descrever categorias como necessários, análise/estatística e publicidade; se o processamento não essencial se basear em consentimento, permitir **aceitar, rejeitar e gerenciar preferências**, sem pré-seleções favoráveis ou ativação prévia incompatível com a finalidade/base. Cookies estritamente necessários devem ser tratados segundo suas bases e necessidade, **sem simular consentimento onde não é aplicável**.
+- **Integração ao CRM Imagine:** verificar que destinatário/tenant é o correto, informação ao titular adequada, finalidades determinadas e consentimentos opcionais propagados com status certo quando forem relevantes. **Não transformar um consentimento de contato com a empresa-cliente em consentimento para a própria Imagine fazer marketing**.
+- **Serviços específicos** como analytics, pixels, chatbot, WhatsApp, mapas, embeds e provedores internacionais exigem análise própria de finalidade, base, fornecedores/fluxo, transparência e eventuais transferências internacionais; não presumir que todos estão contratados.
+- **Crianças, dados sensíveis e segmentos regulados:** aplicar avaliação e requisitos especiais quando o projeto envolver essas situações, sem ativar modalidade padrão antes de revisão adequada.
+
+### 2.3 Relação controlador–operador e responsabilidades
+
+A Imagine deverá manter seus papéis por tratamento efetivamente realizado: **na gestão comercial de seus próprios clientes e Portal, pode atuar como controladora**; **na hospedagem/integração de dados coletados pelo site de empresa-cliente, pode atuar como operadora**, a depender de quem determina finalidades/meios. A atribuição não é automática nem igual para todas as operações: documentar controlador, operadores, suboperadores e instruções/contratos pertinentes. O **cliente que decide finalidades** de seus formulários e marketing deve participar da validação das políticas, dados e fornecedores; agente IA **não pode inventar a base legal ou concordar em nome de alguém**.
+
+## 3. Provas, versionamento e escolhas de titulares
+
+Manter registro seguro e mínimo de eventos **quando houver aceite ou consentimento pertinente**, com:
+1. Identificador do titular/representante ou contexto autenticado aplicável; não recolher documentos ou IP indiscriminadamente por padrão;
+2. Identificador de cliente, projeto, ambiente, finalidade e **documento/termo/versão exata** apresentada;
+3. Base legal definida para cada tratamento, estado **concedido/recusado/revogado/não aplicável** quando pertinente, canal e categorias de cookies;
+4. Data/hora com fuso, origem e prova auditável proporcional, preservando histórico sem manipulação;
+5. Mecanismo de **revisar preferências, revogar consentimento gratuitamente e exercer direitos LGPD**, com reflexo no motor de automações e nas integrações;
+6. Prazo de guarda adequado à finalidade/obrigações, acesso por pessoal autorizado e descarte no prazo apropriado. **Não definir prazo universal sem avaliação**.
+
+**A revogação/recusa de marketing não deve prejudicar indevidamente recursos contratuais essenciais.** Registro histórico de consentimento revogado pode ser mantido pelo prazo legitimamente necessário para comprovação, sem continuar o tratamento baseado no consentimento revogado.
+
+## 4. Checklist configurável POR PRODUTO e requisitos globais irrenunciáveis
+
+**Aprovação expressa em 02/11/2026 (“sim”)** à pergunta “Você aprova um checklist configurável por produto, preservando os requisitos obrigatórios de qualidade e segurança?”. **Diretriz vigente:**
+
+- **Núcleo global obrigatório e não desativável por simples configuração:** identificação de cliente/site/versão/escopo, aceite expresso exigido da versão, segurança técnica mínima, privacidade e LGPD aplicáveis, integridade do formulário/entrega CRM se presente, evidências de testes, ausência de bloqueadores e regras de autorização do agente.
+- **Modelo especializado por produto (Onepage, Landing Page e futuros):** selecionar testes próprios e critérios mensuráveis de páginas, layout, conteúdo, SEO, responsividade, formulários, analytics e integrações conforme o que foi efetivamente contratado.
+- **Itens condicionais:** somente se recurso ou tratamento estiver presente; “NÃO APLICÁVEL” exige prova/justificativa auditável, não podendo esconder falhas legais/técnicas.
+- **Administração/versionamento:** painel poderá atribuir a cada tipo de produto um checklist versionado, com catálogo de critérios, evidências, homologação de mudanças e regras de risco; **não permitir que administrador ou IA retire o núcleo obrigatório por mera edição**, nem que IA se autoatribua autorização ou aceite de titular.
+- **Entrega automática:** somente se os itens globais e condicionais aplicáveis forem aprovados com evidências, inclusive as verificações LGPD do produto; em caso de falta de documento, consentimento requerido, comportamento incorreto de cookie ou dúvida jurídica bloqueadora, suspender entrega e **encaminhar à equipe humana/jurídica competente**. A conformidade não é uma certificação legal emitida pela IA.
+
+## 5. Checklist LGPD sugerido para o agente IA (subcritérios ainda precisam de homologação)
+
+| Verificação | Critério proposto | Aplicação |
+|---|---|---|
+| Inventário de dados e finalidades | O projeto possui inventário dos formulários, cookies, scripts e integrações relevantes, com finalidades/bases validadas | Conforme projeto; global avaliar aplicabilidade |
+| Política de privacidade e responsável | Link acessível, versão correta, controlador/contato/finalidades/direitos adequados, aprovados pelo responsável competente | Global conforme tratamentos praticados |
+| Aceites de contrato/projeto | Aceite expresso do cliente para versão/termos que exijam aceite; não é autorização global para processamento de dados de visitantes | Obrigatório quando exigido |
+| Formulários | Transparência próxima ao botão de envio, coleta mínima e indicação clara da finalidade | Condicional ao recurso |
+| Consentimentos opcionais | Marketing e outras finalidades específicas não vêm pré-marcados; recusa não bloqueia indevidamente pedido essencial; status prova/reflete escolha | Quando a base legal for consentimento |
+| Cookies / trackers | Scripts opcionais respeitam base e preferências; se dependerem de consentimento, **não são ativados antes do opt-in**; preferências podem ser alteradas/revogadas | Condicional ao uso |
+| Destino e transferência | Site → API → CRM vinculado correto, sem compartilhar dados/consentimentos com tenant errado; provedores informados | Quando houver integrações |
+| Direitos e segurança | Canal para direitos, acesso restrito, retenção a definir, dados sintéticos em testes, sem expor dados privados | Conforme projeto |
+| Versões e evidências | Registrar versão dos textos/políticas, teste funcional do banner e dos campos, resultado e responsável | Obrigatório para itens aplicáveis |
+| Revisão de exceção | Dados sensíveis, crianças, integração não padrão, dúvida de base legal ou processo de alto risco exige revisão humana antes da entrega | Quando sinalizado |
+
+**Importante:** o checklist de IA confirma **funcionamento técnico e presença de políticas validadas**; **não é parecer jurídico nem prova absoluta de conformidade à LGPD**. Critérios legais/bases aprovados e textos de referência são responsabilidade dos agentes humanos competentes.
+
+## 6. Relação com relacionamento e oportunidades comerciais
+
+A central COM-12 e a REL-01 devem usar somente **contatos autorizados e base apropriada por finalidade/canal**. Um cliente da Imagine ter comprado um site **não equivale a consentir automaticamente receber publicidade por WhatsApp**, nem permite usar os leads/visitantes do site desse cliente para vender produtos da Imagine. Registrar preferências, deduplicação e limites; ao receber revogação/oposição válida, interromper fluxos afetados. **Avisos operacionais legítimos e conteúdo educativo relacionado à prestação do serviço têm análise própria e não devem ser usados como disfarce para marketing**.
+
+## 7. Pendências antes de execução
+
+1. Modelos de **Termos do Portal**, Política de Privacidade Imagine e templates configuráveis dos sites dos clientes; aprovações jurídicas e de controladores.
+2. Matriz de finalidade × dados × base legal × controlador/operador × prazo de retenção × terceiros.
+3. Inventário de cookies, pixels e tecnologias de rastreamento por produto/serviço; requisitos do banner/central de preferências e testes automatizados.
+4. Diferenciar **aceite contratual**, **ciência de aviso** e **consentimento específico** nos eventos, interfaces e arquivos de prova.
+5. Definir quando a recusa implica apenas bloquear a finalidade opcional, sem bloquear contrato/formulário/entrega por ausência de consentimento não exigido.
+6. Canais para titulares, revogação, resposta a solicitações e propagação a integrações; política de retenção e documentação do fluxo.
+7. Checklist por produto, identificadores/versões, parâmetros de testes, perfil de administração, auditoria e homologação antes de ativar agente IA.
+8. Revisão jurídica brasileira de documentos e fluxos, inclusive situações de dados de crianças/sensíveis e transferências internacionais quando pertinentes.
+
+**Resultado:** requisito LGPD e aceites/controles legais pertinentes **incluídos no planejamento**, núcleo obrigatório de checklist não desativável e checklist **configurável por produto APROVADO**. **Nenhuma programação, campanha ou coleta adicional iniciada.**
