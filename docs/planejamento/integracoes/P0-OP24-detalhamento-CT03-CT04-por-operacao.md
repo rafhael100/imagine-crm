@@ -1,7 +1,7 @@
 # P0-OP24 — Contratos CT-03/CT-04 detalhados por operação
 
 **Data:** 2026-11-02. **Fase:** planejamento e documentação somente.
-**Estado:** **proposta técnica documental para revisão**, após aprovação pelo responsável da especificação CT-03/CT-04 enquanto base de arquitetura. Esta lista de 24 casos refina os 12 casos anteriores; **não são 24 novas funcionalidades/INTs e não é inventário exaustivo das operações aprovadas**.
+**Estado:** **ACEITA COMO BASE DOCUMENTAL DE TRABALHO** pela resposta contextual “ok” em 2026-11-02, conforme [registro de decisão](P0-DEC-aprovacao-OP24-base.md). Esta lista de 24 casos refina os 12 casos anteriores; **não são 24 novas funcionalidades/INTs, não constituem inventário exaustivo e não foram aprovados parâmetros técnicos, perfis/alçadas específicos ou execução**. A [matriz CT-02 por operação](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md) permanece **proposta para revisão**.
 **Decisão de origem:** [aprovação documental CT-03/CT-04](P0-DEC-aprovacao-CT03-CT04.md). **Fonte de estrutura:** [CT-03/04 aprovado como base documental](P0-CON-CT03-CT04-comandos-resultados-transicoes.md), [P0-OP de 12 casos](P0-OP-casos-operacionais-contratos-alcadas.md), [P0-TR53](P0-TR53-vinculo-contratos-aceite.md), [INT-R01/R02](INT-R01-governanca-contratos-homologacao.md).
 **Premissa de rigor:** o fato de existir um caso ou ID de contrato não significa endpoint, job, interface, microsserviço, permissão, política numérica ou código aprovado/implementado. A legalidade, segurança e semântica definitiva dependem dos módulos proprietários e da revisão final das propostas originais.
 
