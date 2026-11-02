@@ -25,5 +25,11 @@ Novas sugestões, interpretações da IA, exemplos e alternativas não são deci
 - Os detalhes aprovados de INT-09 a INT-12 aparecem no histórico conversacional deste projeto, mas a documentação do repositório **ainda não possui uma referência imutável verificável para cada mensagem original**. Para INT-01 a INT-08 também falta conferência completa dos originais.
 - Evitar classificar a revisão cruzada, a redação de síntese ou um commit de trabalho como equivalentes a transcrição literal, validação final ou homologação.
 
+## Aceites expressos agora transcritos nesta documentação
+
+- [P0-ORIGEM — Mensagens de aprovação disponíveis no diálogo](P0-ORIGEM-aprovacoes-dialogo.md) contém os textos de aceite de INT-10, 11, 12, INT-R01 e INT-R02, com ressalva explícita sobre falta de identificador imutável e cotejo com as propostas integrais.
+- O registro de aceites reduz lacuna de reprodução textual, **não fecha P0-DOC-01, G01 nem G05**. A transcrição não aprova contratos técnicos novos.
+- INT-01 a INT-09 continuam sem transcrições integrais comprovadas no material deste diretório.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
