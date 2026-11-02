@@ -91,3 +91,7 @@ Esta decisão aprova **(a)** tentar cobrança na data, **(b)** tolerância sem j
 - Banco Central, Instrução Normativa nº 513: https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?numero=513&tipo=Instru%C3%A7%C3%A3o+Normativa+BCB
 - Banco Central, guia de implementação Pix Automático: https://www.bcb.gov.br/content/estabilidadefinanceira/pix/automatico/guia_pix_automatico.pdf
 - Banco Central, boleto com vencimento em dia não útil: https://www.bcb.gov.br/meubc/faqs/p/boleto-com-vencimento-em-dia-nao-util-e-boleto-vencido
+
+## 8. Etapa seguinte aprovada — pendência e aviso após o prazo (02/11/2026)
+
+O responsável respondeu “ok” à regra posterior: **se não houver quitação até o próximo dia útil bancário disponível para regularizar a falha em dia não útil**, o sistema **registra mensalidade pendente e notifica o cliente, sem suspensão imediata**. O intervalo adicional de tolerância e as regras de suspensão **não foram definidos**. Manter data contratada, prazo sem encargos, status efetivo da conciliação e tratamento de comprovantes distintos. A política funcional de inadimplência está consolidada na [PORTAL-D04](PORTAL-D04-cobranca-recorrente-sites.md); não determinar juros, multa, suspensão nem efeitos no CRM neste documento.
