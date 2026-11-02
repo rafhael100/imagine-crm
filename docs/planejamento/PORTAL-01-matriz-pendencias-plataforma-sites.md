@@ -1,6 +1,6 @@
 # PORTAL-01 — Matriz de Pendências do Portal Imagine (Sites por Assinatura)
 
-**Status:** MATRIZ DE PENDÊNCIAS — **PORTAL-D01 aprovada funcionalmente em 02/11/2026**; demais pautas ainda pendentes de decisão e especificação.  
+**Status:** MATRIZ DE PENDÊNCIAS — **PORTAL-D01 integralmente aprovada funcionalmente** e **PORTAL-D02 parcialmente aprovada** (início de adicional após aceite e confirmação do pagamento exigido). Outras pautas permanecem pendentes de decisão e especificação.  
 **Data:** 02/11/2026.  
 **Escopo:** **Portal Imagine**, que contrata e administra sites Onepage/Landing Page; não é o CRM Imagine SaaS nem a futura Universidade Imagine.  
 **Fase:** somente planejamento e documentação, **sem programação, contratos, cobranças, infraestrutura nova, migração ou publicação**.
@@ -30,7 +30,7 @@
 | Código de pauta | Tema | O que está pendente | Situação |
 |---|---|---|---|
 | **PORTAL-D01** | **Aceite eletrônico de versões de site e orçamentos** | **Aprovado:** cliente autenticado/autorizado, objeto/versão exatos, aceite expresso, registro auditável, preservação da prova, pedido de ajustes e contestação; aceite não representa pagamento. **Pendente:** modelo contratual e detalhes técnicos/jurídicos de assinatura, retenção e UX. | **Fluxo funcional APROVADO** — [PORTAL-D01](PORTAL-D01-aceite-eletronico-versoes-orcamentos.md) |
-| **PORTAL-D02** | **Adicionais e cobrança** | Vencimentos, início de execução de extra, parcelamento acima R$ 270 (taxas/juros/recebimento), atraso, contestação, cancelamento e estornos | **Pendente**; preservar à vista até R$ 270 e até 3x acima |
+| **PORTAL-D02** | **Adicionais e cobrança** | **Aprovado:** início de execução condicionado ao aceite do orçamento e ao recebimento confirmado do valor à vista ou da primeira parcela. **Pendente:** juros e taxas, vencimentos, meios de pagamento, atraso posterior, cancelamento, contestação, reembolso e detalhes financeiros. | **APROVAÇÃO PARCIAL** — [PORTAL-D02](PORTAL-D02-pagamento-servicos-adicionais.md). Preservar à vista até R$ 270 e até 3x acima |
 | **PORTAL-D03** | **Uso justo e prazos** | Como caracterizar conteúdo simples versus mudança estrutural, evitar abuso sem estabelecer teto oculto, marco de contagem dos 3 dias e cronograma de pedidos complexos | **Pendente**; preservar conteúdo sem teto fixo |
 | **PORTAL-D04** | **Ciclo de contratação e inadimplência do site** | Vínculo contratual e eventos reais de pagamento, tolerância e suspensão, retomada, cancelamento, reembolso, prazos e efeitos na cortesia CRM conforme IN-119–122 | **Pendente de detalhamento/aprovação onde houver regra nova** |
 | **PORTAL-D05** | **Viabilidade econômica** | Custos reais de publicação, agentes, IA, APIs, armazenamento, backups, atendimento, meios de pagamento, impostos e margem por site/serviço; revisão final de preços | **Pendente de orçamento e homologação** |
@@ -66,3 +66,8 @@ A priorização **não significa aprovação da solução** nem reabre regras an
 ## Registro de aprovação PORTAL-D01 (02/11/2026)
 
 Em resposta à pergunta direta de aprovação, o responsável respondeu **“sim”** e aprovou as regras de **aceite eletrônico autenticado, por versão e orçamento identificáveis, prova íntegra e auditável, novo aceite para mudança material, solicitação de ajustes e contestação, sem cobrança automática nem confundir aceite com pagamento**. Preservar as duas rodadas de ajustes incluídas, a validação prévia dos orçamentos pela Imagine e o aceite explícito do cliente. Documento funcional detalhado: [PORTAL-D01 — Aceite Eletrônico de Versões e Orçamentos](PORTAL-D01-aceite-eletronico-versoes-orcamentos.md). Retenção de comprovantes, termos legais e tecnologia de assinatura dependem de detalhamento e validação jurídica posteriores. **A PORTAL-D02 segue pendente; nenhuma programação/cobrança autorizada.**
+
+
+## Decisão parcial PORTAL-D02 — liberação da execução após pagamento (02/11/2026)
+
+O responsável respondeu **“ok”** à proposta de **somente iniciar a execução de serviço adicional após aceite eletrônico válido do orçamento + confirmação do pagamento integral (à vista) ou da primeira parcela (parcelado)**. A decisão mantém os marcos comerciais já definidos — **até R$ 270 à vista**; **acima de R$ 270 à vista ou até três parcelas** — e não altera implantação/mensalidade normal dos sites, CRM, autonomia de agentes ou contratos. O fluxo funcional está registrado na [PORTAL-D02 — Pagamento de Serviços Adicionais](PORTAL-D02-pagamento-servicos-adicionais.md). **PORTAL-D02 não está integralmente encerrada:** juros/taxas, vencimentos, meios de pagamento, atrasos posteriores, estornos e cancelamento continuam sem aprovação. Não iniciar cobrança ou programação. Próxima decisão proposta: **parcelamento sem juros ao cliente até 3 vezes para orçamento acima de R$ 270**, com condições claras apresentadas previamente, aguardando aceite expresso.
