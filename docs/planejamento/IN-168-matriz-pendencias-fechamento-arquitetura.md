@@ -109,3 +109,10 @@ O usuário reafirmou a decisão previamente aprovada em **01/11/2026 (IN-096)**:
 **Decisão aprovada:** os **sete agentes técnicos especializados, o Supervisor Técnico e o orquestrador** ficarão em **VPS/servidor exclusivo para esse subsistema**, **separado da VPS do n8n**. Isso complementa a decisão já aprovada de **Portal Imagine e CRM Imagine SaaS em servidores próprios e distintos**. Os sites Onepage/Landing Pages continuam em **Cloudflare Workers Static Assets** conforme IN-096 e as duas APIs de ingestão de leads continuam independentes conforme IN-124.
 
 A **escolha da separação de hospedagem em ARQ-01 está concluída**. O item **ARQ-01 permanece aberto somente para dimensionamento, topologia executável, custos, fornecedor, validação dos ativos existentes, segurança e decisões decorrentes**, que não estão implicitamente aprovados. A comparação histórica e a decisão atual constam de [ARQ-01](ARQ-01-comparativo-infraestrutura-agentes-tecnicos.md). **Não iniciar programação nem aquisição**.
+
+
+## Estudo preliminar de tamanho e custo da VPS de agentes (02/11/2026)
+
+O responsável autorizou a **comparação de capacidade e custos**, não a compra ou a escolha definitiva do porte. Foi concluído o [estudo de dimensionamento e custos de VPS exclusiva dos agentes](ARQ-01-dimensionamento-vps-agentes-tecnicos.md), com três referências: **2 vCPU/4 GB/80 GB (econômica), 4 vCPU/8 GB/160 GB (recomendada como hipótese-base) e 8 vCPU/16 GB/320 GB (expansão)**. Foram levantados preços de tabela de **DigitalOcean** e **Hetzner Europa**; cotação **Leaseweb ainda pendente**, assim como região, capacidade real, backups e custos das APIs de IA.
+
+**ARQ-01:** isolamento dos agentes na VPS própria **já aprovado**, mas **capacidade definitiva, provedor, preço contratado, custo total e implantação continuam pendentes**. Valores e configurações do estudo **não equivalem a orçamento aprovado ou autorização de programação**.
