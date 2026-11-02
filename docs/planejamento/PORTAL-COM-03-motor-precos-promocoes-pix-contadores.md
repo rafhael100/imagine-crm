@@ -102,10 +102,17 @@ Exemplo **sem campanha ativa**: total ilustrativo de 30 ofertas até uma data fi
 **Aprovado como direção funcional em 02/11/2026:** motor de preço-base + campanha configurável + **Pix à vista 20% adicional MESMO sobre campanha** + **Pix Automático 10% sobre mensalidade** + limites de campanha por tempo, quantidade ou ambos, terminando no primeiro evento real.
 
 **Pendente para deliberação específica antes do lançamento:**
-1. Preço-base **R$ 2.500** efetivo de qual(is) produto(s) (Onepage, Landing Page ou ambos), versus valor de mercado/posicionamento; fixar valores reais, regras de promoção e de comparação.
+1. **Cada serviço terá preço-base próprio de implantação e de mensalidade** (decisão posterior aprovada). Falta definir os valores efetivos por produto, inclusive se R$ 2.500 será preço regular real de algum produto ou apenas referência de mercado, e as promoções individuais.
 2. Confirmar a mensalidade-base **R$ 87** por produto e o prazo de início (preservar regra do 90º dia até decisão contrária).
 3. Ratificar **4x no cartão** para implantação e marcos de recebimento/produção; não alterar o limite **3x** dos serviços adicionais sem aprovação específica.
 4. Como distinguir e aprovar promoções de **R$ 1.200 / R$ 600**, seus escopos, duração, cota, elegibilidade e limite de margem; **nenhuma delas está ativa**.
 5. Parâmetros de reserva/contagem, precedência de campanhas, validade de propostas aceitas, descontos em serviços adicionais, regras para clientes legados, forma de cobrança e políticas de retorno após encerramento.
 
 **Não iniciar programação. Nenhuma campanha, preço público ou desconto em cobrança foi ativado.**
+
+
+## 8. Complemento aprovado — De/Por separado por serviço e mensalidade (02/11/2026)
+
+O responsável decidiu que **cada serviço terá seu próprio preço-base de tabela**, e que o motor de campanhas **De/Por** se aplicará também **à mensalidade recorrente**, e não somente à implantação. Assim, cada produto/variante terá **duas dimensões independentes** de preço e promoção, quando aplicáveis: (1) implantação: tabela → promoção → **mais 20% de Pix à vista**; e (2) mensalidade: tabela mensal → promoção mensal → **mais 10% por Pix Automático**. A campanha pode afetar só implantação, só mensalidade ou ambos conforme configuração. Preços e escopos de Onepage e Landing Page não são automaticamente iguais. Documento detalhado e aprovado como diretriz: [PORTAL-COM-04 — Tabelas e promoções independentes](PORTAL-COM-04-precos-individuais-implantacao-mensalidade-de-por.md).
+
+**Valores como R$ 2.500, R$ 1.200, R$ 120 e R$ 87 permanecem exemplos/hipóteses até aprovação de preços para cada produto**, mesmo após aprovação da arquitetura De/Por. **A exibição pública de “De” exige preço regular comprovável, não referência artificial ou estimativa de mercado.** A duração da condição mensal promocional para contratos já celebrados deve ser fechada e comunicada previamente, não alterada apenas pelo fim do contador da campanha.
