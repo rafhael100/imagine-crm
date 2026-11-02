@@ -98,5 +98,11 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - [P0-OP](P0-OP-casos-operacionais-contratos-alcadas.md): **12 casos ilustrativos** com fronteira de autoridade, pré-condição, confirmação proprietária e falha negativa esperada. Não representam todas as operações do módulo.
 - O registro documental não altera nenhum status final dos 11 P0 ou G01..G06. Continuam exigidas as propostas originais, matriz completa de autorizações por operação, schemas e aceite expresso.
 
-## 9. Restrição permanente
+## 9. Minuta detalhada CT-03/CT-04
+
+- [P0-CON CT-03/CT-04](P0-CON-CT03-CT04-comandos-resultados-transicoes.md) detalha comandos/resultados, separa quatro dimensões conceituais (transporte, processamento técnico, negócio e reconciliação), propõe condições de transição e 12 casos documentais de aceite.
+- **As dimensões e transições são propostas de representação, não um motor central paralelo, nem validação final.** Regras já aprovadas: autorização contextual, idempotência, resultado desconhecido exige reconciliação, módulo proprietário confirma atos, IA sem autonomia crítica.
+- Todos os G01–G06 permanecem no estágio já indicado; nenhum critério foi concluído por escrever a minuta.
+
+## 10. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
