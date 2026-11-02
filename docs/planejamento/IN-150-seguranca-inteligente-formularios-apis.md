@@ -69,3 +69,8 @@ Proteger os formulários públicos e as APIs contra spam, requisições abusivas
 **Aprovado:** autenticação/validação de integrações, proteção contra spam e abuso, rate limiting, proteção dos dados, detecção de ataques, bloqueio proporcional, atuação segura do Agente de Segurança e aprendizado contínuo.  
 **Pendente:** escolha de ferramentas, limites, políticas concretas e detalhamento técnico.  
 **Programação:** não iniciada.
+
+
+## Complemento COM-14 — controles LGPD no checklist pré-entrega (02/11/2026)
+
+Em complemento à segurança dos formulários e APIs já aprovada, o responsável solicitou previsão dos **avisos, aceites e consentimentos exigíveis pela LGPD brasileira**. A política por finalidade/base legal e o funcionamento técnico de avisos de privacidade, controles de marketing, cookies não essenciais quando aplicáveis, revogação/preferências, registro de versões, envio ao tenant correto e ausência de tratamento fora de finalidade passam a fazer parte do **núcleo verificável do checklist de entrega IA**, com condições por produto. **Distinguir consentimento de outras bases legais**, não forçar autorizações genéricas nem afirmar conformidade jurídica total apenas por verificação da IA. Falhas relevantes bloqueiam entrega; exceções legais requerem validação humana. Ver [COM-14](PORTAL-COM-14-lgpd-aceites-privacidade-consentimentos-checklist.md) e [COM-13](PORTAL-COM-13-entrega-automatica-checklist-qualidade-agente-ia.md). Sem programação.
