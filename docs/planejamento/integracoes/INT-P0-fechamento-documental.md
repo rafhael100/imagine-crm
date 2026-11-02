@@ -1,0 +1,31 @@
+# INT — Matriz P0 de Fechamento Documental
+
+**Fase:** consolidação iniciada em 2026-11-02; nenhuma programação, implantação, despesa ou alteração de produção autorizada.
+**Escopo:** somente P0 do módulo INT (INT-01 a INT-12, INT-R01 e INT-R02), preservando outras matrizes, como IN-168.
+**Prioridade:** P0 = bloqueia validação documental final; P1/P2 ficam listadas na INT-R02.
+
+| ID | P0 obrigatório | Estado inicial nesta consolidação | Evidência de conclusão |
+|---|---|---|---|
+| P0-DOC-01 | Conferir texto **integral** das aprovações INT-01 a INT-12 vs sínteses, incluindo exceções | **Pendente de conferência literal** | Matriz de diferenças fechada, texto reconciliado, fonte referenciada |
+| P0-DOC-02 | Conferir integralmente aprovação INT-R01/INT-R02 e cruzar requisitos | **Sínteses versionadas; revisão cruzada pendente** | Revisão cruzada documentada |
+| P0-TR-01 | Atribuir ID TR-INTxx-### a cada requisito e ligar à decisão de origem | **Pendente** | Cobertura integral dos requisitos e fontes |
+| P0-OWN-01 | Matriz de autoridades por operação protegida: módulo, identidade, finalidade e confirmação | **Matriz de domínio inicial criada; granularidade pendente** | Contratos e alçadas verificados |
+| P0-CON-01 | Contrato de comando/evento/resultado compartilhado com esquema, estados e códigos | **Diretrizes aprovadas; campos executáveis/códigos pendentes** | Especificação versionada e revisada |
+| P0-SEC-01 | Matriz contextual RBAC, MFA, revogação, revalidação, isolamento e aprovações | **Diretrizes aprovadas; verificação por operação pendente** | Revisão de todas operações protegidas |
+| P0-DEP-01 | Resolver sobreposições INT/serviços centrais e dependências cíclicas ou não resolvidas | **Fronteiras gerais definidas; verificação completa pendente** | Matriz de dependências sem conflitos críticos |
+| P0-VER-01 | Regras de compatibilidade entre versões e instâncias persistentes | **Diretrizes aprovadas; matriz exata pendente** | Compatibilidade e migração documentadas |
+| P0-ACC-01 | Critérios e evidências HT-01 a HT-18 e aceite documental G01 a G06 | **Cenários catalogados; procedimentos pendentes** | Planos de teste documentados; testes reais só no futuro |
+| P0-XREF-01 | Conciliação com IN-124/148/149, IN-151/162, IN-167/168 e demais políticas centrais | **Referências identificadas; revisão de consistência pendente** | Relações e exceções registradas |
+| P0-GIT-01 | Versionamento verificável e revisão final de texto consolidado | **Commit inicial a verificar; fechamento pendente** | Commit/revisão final expressamente aceita |
+
+## Regra para tratar divergências
+Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
+
+## Exemplos de tensões a verificar (não são conflitos definitivamente constatados)
+- IN-162 define retenção de logs técnicos; não aplicar automaticamente a contratos, pagamentos e evidências com regime próprio.
+- IN-124/148/149 exigem confirmação de entrega efetiva de lead ao CRM; não equiparar a simples recebimento nas APIs.
+- IN-167 estabelece níveis de autonomia e aprovação para agentes técnicos; INT-09/10 não criam outra Central de Aprovações nem aprovação dupla para a mesma decisão.
+- Arquitetura n8n + filas + Laravel requer fronteiras técnicas e menor privilégio; não assumir infraestrutura contratada ou instalada.
+
+## Regras de status
+**Aprovação funcional** não implica **documentação literal conferida**. **Versão no GitHub** não implica **revisão final**. **Plano de teste** não implica **homologação realizada**. Não avançar para programação sem aprovação final do planejamento completo do CRM.
