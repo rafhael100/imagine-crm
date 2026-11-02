@@ -112,7 +112,7 @@ Exclusões: produto/benefício já contratado/incluso, cliente que pediu para n�
 
 **Aprovação posterior:** **REL-01 — Jornada pós-entrega de 30 dias APROVADA**, com objetivos nos dias **0, 3, 7, 15 e 30**; detalhes e ressalvas em [PORTAL-REL-01](PORTAL-REL-01-jornada-pos-entrega-onboarding-30-dias.md). **Ainda não aprovados individualmente:** gatilhos REL-02 a REL-10, demais campanhas, modelos e textos específicos de treinamentos, critérios de inatividade e “layout há um ano”, identificação de usuários/visitas, canais oficiais de envio e consentimentos específicos, IA com autonomia de envio, integração do módulo ao CRM Imagine da própria Imagine, preços/serviços que poderão ser recomendados, métricas e custos. **Cada outra campanha deverá ser aprovada em decisão própria**.
 
-**REL-01 já aprovada como jornada de 30 dias:** marcos dia 0/3/7/15/30, com boas-vindas, treinamento, formulários/leads/CRM aplicáveis, ajuda e satisfação. **Próximo bloco para planejamento:** evento formal de início, canais, bases legais e preferências, regras de disparo, conteúdos versionados e alçadas. Os demais módulos REL ainda serão detalhados. **Nenhuma programação, mensagem ou contratação iniciada.**
+**REL-01 já aprovada como jornada de 30 dias:** marcos dia 0/3/7/15/30, com boas-vindas, treinamento, formulários/leads/CRM aplicáveis, ajuda e satisfação. **Evento formal de início APROVADO em decisão posterior:** somente na **entrega oficial do site confirmada no Portal Imagine**; não na mera publicação, contratação, pagamento ou aceite isolado. **Próximo bloco para planejamento:** autoridade e comprovação da confirmação oficial, canais, bases legais e preferências, regras de disparo, conteúdos versionados e alçadas. Os demais módulos REL ainda serão detalhados. **Nenhuma programação, mensagem ou contratação iniciada.**
 
 
 ## 10. Aprovação expressa da REL-01 — jornada de relacionamento inicial por 30 dias (02/11/2026)
@@ -122,3 +122,8 @@ O responsável respondeu **“sim”** à aprovação específica da **REL-01**,
 **Pendente:** evento oficial de entrega que marca o dia 0, horários, canais autorizados, preferências de comunicação, mensagens/textos, consentimentos/bases legais, automações de envio, proteção de dados, limites e tratamento de contatos duplicados, múltiplos projetos, suspensões ou cancelamentos. A aprovação do calendário **não autoriza envio automático sem políticas e implementação homologadas**.
 
 Documentação detalhada: [PORTAL-REL-01 — Jornada Pós-Entrega](PORTAL-REL-01-jornada-pos-entrega-onboarding-30-dias.md). **Somente planejamento; nenhuma programação ou disparo.**
+
+
+## 11. Marco de início da REL-01 — entrega oficial confirmada no Portal (02/11/2026)
+
+**Aprovado pelo responsável (“sim”)**: Dia 0 da jornada pós-entrega **REL-01 só começa na data em que a entrega oficial do site estiver confirmada no Portal Imagine**, e não por simples publicação, envio de URL, aceite de versão isolado, contratação ou pagamento. Os demais marcos 3/7/15/30 seguem esse evento confirmado. O evento deverá ter estado auditável, referência ao projeto e idempotência, ainda sujeitos à especificação da autoridade e do procedimento de confirmação, horários/fuso e mensagens autorizadas. **Não confundir entrega oficial com aceite eletrônico de versões da PORTAL-D01, embora os fluxos possam se relacionar**. Registro principal: [PORTAL-REL-01](PORTAL-REL-01-jornada-pos-entrega-onboarding-30-dias.md). Sem programação nem disparos.
