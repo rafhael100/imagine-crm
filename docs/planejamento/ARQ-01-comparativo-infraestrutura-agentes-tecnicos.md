@@ -1,6 +1,6 @@
 # ARQ-01 — Comparação de infraestrutura dos agentes técnicos Imagine
 
-**Status:** EM ANÁLISE — alternativas comparadas em 02/11/2026; **nenhuma alternativa foi escolhida/aprovada para implantação**.  
+**Status:** **OPÇÃO B APROVADA COMO DIRETRIZ ARQUITETURAL em 02/11/2026**: VPS/servidor exclusivo para agentes técnicos e orquestrador, **separado da VPS do n8n**. **Sem aprovação de contratação, implantação, orçamento, tamanho ou provedor**.  
 **Motivação:** responsável autorizou **iniciar a comparação** de arquiteturas para fechar o item ARQ-01 da [IN-168](IN-168-matriz-pendencias-fechamento-arquitetura.md).  
 **Fase:** planejamento/documentação; **não iniciar programação, provisionar servidores, instalar serviços, conceder acessos ou contratar recursos**.  
 **Referências:** [IN-167](IN-167-consolidacao-arquitetura-agentes-tecnicos.md), [IN-168](IN-168-matriz-pendencias-fechamento-arquitetura.md), [IN-124](IN-124-integracao-inteligente-formularios-leads.md), [IN-143](IN-143-continuidade-operacional-recuperacao-inteligente-desastres.md), [IN-153](IN-153-inventario-inteligente-infraestrutura-dependencias.md), [IN-156](IN-156-autodiagnostico-recuperacao-agentes-tecnicos.md), [IN-157](IN-157-gestao-inteligente-modelos-ia-contingencia.md), [IN-158](IN-158-monitoramento-inteligente-custos-consumo-agentes.md), [IN-159](IN-159-central-inteligente-observabilidade-saude-operacional.md), [IN-166](IN-166-gestao-inteligente-ferramentas-permissoes-agentes.md).
@@ -55,9 +55,9 @@
 
 ## 3. Recomendação técnica para decisão
 
-**Recomenda-se a Opção B como arquitetura-alvo para operação produtiva dos agentes técnicos**, principalmente devido a: separação de falhas entre orquestrador e n8n, independência de manutenção, menor disputa de recursos e segurança proporcional à capacidade dos agentes de atuar sobre infraestrutura/integrações.
+**A Opção B está aprovada como arquitetura-alvo para operação produtiva dos agentes técnicos**, principalmente devido a: separação de falhas entre orquestrador e n8n, independência de manutenção, menor disputa de recursos e segurança proporcional à capacidade dos agentes de atuar sobre infraestrutura/integrações.
 
-**A recomendação não é aprovação de compra, tamanho da VPS, provedor, orçamento ou implantação.** O compartilhamento da Opção A pode ser considerado como alternativa econômica sob condições de uso controlado e capacidade comprovada; não tratar como ambiente de produção definitivo por mera economia.
+**A aprovação arquitetural não é aprovação de compra, tamanho da VPS, provedor, orçamento ou implantação.** A Opção A fica preservada apenas como alternativa analisada historicamente, **não escolhida** para o ambiente planejado; não adotá-la como solução padrão sem nova decisão expressa.
 
 Possibilidade de **transição planejada**: preservar os limites arquiteturais por serviços mesmo se uma avaliação econômica futura escolher hospedagem compartilhada temporária. Migração precisa de plano próprio; **não foi aprovada estratégia de implantação em fases**.
 
@@ -70,7 +70,7 @@ Possibilidade de **transição planejada**: preservar os limites arquiteturais p
 | API principal de leads | Recepção e persistência durável independentes, separadas do Portal e agentes. |
 | API de contingência de leads | Outra infraestrutura e armazenamento durável independente da API principal. |
 | n8n e sua base | VPS de automações, sem exigir agentes para receber/confirmar leads. |
-| Orquestrador/agentes | Opção A: containers isolados no host n8n; Opção B: infraestrutura própria; **decisão pendente**. |
+| Orquestrador/agentes | **Opção B aprovada:** servidor/VPS exclusiva para agentes e orquestrador, **distinta do n8n**; dimensionamento e aquisição pendentes. |
 | Autorizador/credenciais | Política e segredo fora do controle textual do modelo; detalhamento SEG-01/SEG-02 pendente. |
 | Central de observabilidade | Única visão integrada; coletor e alertas críticos independentes da UI e dos próprios agentes. |
 | Armazenamento do conhecimento dos agentes | Segregação por cliente/ambiente e ciclos de retenção IN-163/164; tecnologia pendente. |
@@ -94,7 +94,7 @@ Possibilidade de **transição planejada**: preservar os limites arquiteturais p
 4. Alternativas reais de infraestrutura independente, custos mensais, custo de backups, tráfego, monitoramento e manutenção.
 5. Risco aceitável de parada conjunta n8n/agentes e avaliação da necessidade de isolamento por provedor/zona.
 6. Definição posterior dos RTO/RPO por serviço e custos de atendê-los (IN-144), sem usar os prazos de assunção de incidentes IN-135 como substitutos.
-7. Aprovação explícita da alternativa preferida **antes de atualizar o estado de ARQ-01 para concluído**.
+7. **Resolvido em 02/11/2026:** a alternativa **B foi expressamente aprovada** para agentes. Resta dimensionar/configurar a infraestrutura, validar dependências e aprovar eventual contratação/despesa antes de considerar todo o ARQ-01 tecnicamente fechado.
 
 ## 7. Fontes técnicas de referência (não decisões de compra)
 
@@ -102,8 +102,8 @@ Possibilidade de **transição planejada**: preservar os limites arquiteturais p
 - Documentação n8n, modo de filas e workers: https://docs.n8n.io/deploy/host-n8n/configure-n8n/scaling/enable-queue-mode.md
 - Documentação n8n, problemas de memória em ambientes self-hosted: https://docs.n8n.io/deploy/host-n8n/configure-n8n/scaling/fix-memory-issues.md
 
-**Resultado da análise:** **comparação concluída**, **Opção B tecnicamente recomendada**, **escolha final e custos pendentes**.  
-**ARQ-01 na IN-168:** continua **pendente de decisão**.  
+**Resultado da análise:** **comparação concluída e Opção B aprovada como diretriz arquitetural**. Provedor, capacidade, custos, contratos e implantação continuam pendentes.  
+**ARQ-01 na IN-168:** **separação dos agentes aprovada**; especificação de infraestrutura, capacidade, custos e verificação do ambiente real permanecem pendentes.  
 **Programação:** **não iniciada**.
 
 
@@ -111,9 +111,16 @@ Possibilidade de **transição planejada**: preservar os limites arquiteturais p
 
 **Decisão aprovada:** hospedar o **Portal Imagine** e o **CRM Imagine SaaS** em **servidores separados**, com aplicações e dados isolados. A integração entre os dois ocorrerá por APIs autenticadas e com permissões restritas. A indisponibilidade do Portal não deverá interromper o funcionamento do CRM, e a recepção durável de formulários continuará independente do Portal, preservando a separação entre API principal e contingência da IN-124.
 
-**Distribuição lógica prevista (revisada pela IN-096):** (1) sites dos clientes em **Cloudflare Workers Static Assets** (plataforma, não VPS dedicada para sites), (2) Portal Imagine em servidor próprio, (3) CRM Imagine SaaS em servidor distinto, (4) n8n em VPS própria, (5) agentes técnicos e orquestrador — servidor independente recomendado e ainda pendente de escolha, (6) API principal com persistência durável própria, (7) API de contingência com persistência durável própria e infraestrutura independente da principal. **São sete grupos de serviços, não sete servidores necessariamente contratados.** Os provedores e custos de cada bloco ainda dependem de dimensionamento. **Programação não iniciada.**
+**Distribuição lógica prevista (revisada pela IN-096):** (1) sites dos clientes em **Cloudflare Workers Static Assets** (plataforma, não VPS dedicada para sites), (2) Portal Imagine em servidor próprio, (3) CRM Imagine SaaS em servidor distinto, (4) n8n em VPS própria, (5) agentes técnicos e orquestrador — **VPS/servidor independente APROVADO como diretriz**, (6) API principal com persistência durável própria, (7) API de contingência com persistência durável própria e infraestrutura independente da principal. **São sete grupos de serviços, não sete servidores necessariamente contratados.** Os provedores e custos de cada bloco ainda dependem de dimensionamento. **Programação não iniciada.**
 
 
 ## Correção de arquitetura aprovada — hospedagem Imagine (02/11/2026)
 
 O responsável reafirmou a **IN-096**, já aprovada em 01/11/2026: os novos sites Onepage/Landing Pages Imagine serão publicados em **Cloudflare Workers Static Assets**, com **GitHub** para código/versões, deploy e operação automatizados por **APIs, n8n e agentes de IA sob autorização**, sem **WHM/cPanel** como hospedagem padrão dos sites dos clientes. **Cloudflare Workers for Platforms** permanece opção futura para escala, dependente de análise e aprovação. Sites estáticos não guardam leads localmente; captação ocorre pelas **duas APIs independentes** do IN-124. A infraestrutura dos **sites dos clientes** não deve ser confundida com os servidores separados do Portal Imagine, CRM Imagine SaaS, n8n ou agentes técnicos. A decisão não autoriza migração, publicação, contratação ou programação.
+
+
+## Aprovação expressa posterior — Opção B / agentes separados do n8n (02/11/2026)
+
+O responsável respondeu **"sim"** à proposta de adotar **uma VPS exclusiva para os agentes técnicos de IA e o orquestrador, em servidor diferente da VPS de n8n**. A **Opção B está formalmente escolhida para o planejamento**. A Opção A (compartilhar a mesma VPS do n8n) deixa de ser alternativa ativa. Permanece válida a separação anteriormente aprovada entre **Portal Imagine** e **CRM SaaS**; hospedagem de **sites Onepage/Landing Pages em Cloudflare Workers Static Assets (IN-096)**; **API principal e API de contingência de leads** com persistência e infraestrutura próprias e independentes (IN-124).
+
+**Pendente:** provedor e localização, dimensionamento CPU/RAM/armazenamento, sistema operacional e runtime, isolamento de serviços e segredos, alta disponibilidade ou contingência, custos fixos/variáveis, orçamento e contratação; inventário real e RTO/RPO. **Não provisionar, não contratar e não programar enquanto o planejamento não estiver concluído e aprovado**.
