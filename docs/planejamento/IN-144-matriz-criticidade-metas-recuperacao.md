@@ -62,8 +62,13 @@ Falha conjunta do processamento das filas e de um workflow n8n que entrega leads
 - **Nenhum valor numérico de RTO ou RPO foi aprovado nesta IN.**
 - Prioridades dentro de subcomponentes, tempos de recuperação e planos de failback serão dimensionados por serviço.
 - Não autorizar gastos automáticos nem elevação unilateral de permissões por agentes.
-- Não tratar a futura definição de RPO como autorização para descartar dados de leads confirmados nem alterar os prazos de retenção aprovados nas IN-127/IN-128.
+- Não tratar a futura definição de RPO como autorização para apagar leads efetivamente entregues ao CRM nem alterar a política de **3+15 dias** para envios não entregues; o descarte desses payloads após completar 18 dias foi **aprovado posteriormente na IN-147**, com auditoria e salvaguardas.
 
 **Aprovado:** prioridades iniciais crítica/alta/média da matriz, priorização real por dependências e impacto, conceitos de RTO/RPO e a exigência de dimensioná-los futuramente, preservando dados de leads confirmados e recuperação verificável.  
 **Pendente:** metas numéricas, custos, arquitetura detalhada, testes e plano operacional de recuperação.  
 **Programação:** não iniciada.
+
+
+## Complemento posterior — IN-147 (01/11/2026)
+
+O descarte de envios **não entregues** após o prazo de **3 dias na fila normal + 15 dias na fila de falhas** está autorizado pela [IN-147](IN-147-exclusao-leads-nao-entregues-apos-18-dias.md). Preservam-se os avisos 72h antes, alerta crítico no vencimento, verificação determinística antes de excluir, auditoria minimizada por 90 dias e exceções legais. Não criar quarentena operacional adicional. Esta atualização prevalece sobre qualquer indicação histórica de que o descarte final permanecia sem aprovação; **não se aplica a leads confirmados no CRM**.
