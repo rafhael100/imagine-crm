@@ -29,6 +29,12 @@
 - Nenhum SQL arbitrário, scripts/código livre de clientes, URLs irrestritas, acesso direto aos bancos de negócio ou superprivilégios ao n8n.
 - Não confundir dados estruturados obrigatórios de operação/auditoria com franquias de arquivos. Preservar CRM Básico e trial sem API pública, com integrações nativas autorizadas.
 
+## Relação documental importante com a Central de Backup e Portabilidade
+- [IN-118 — Central de Backup e Portabilidade de Dados](../IN-118-central-backup-portabilidade-dados.md) assegura autoatendimento essencial em **todos os planos, inclusive Básico**: exportação e importação CSV/XLSX, backup completo para download, restauração compatível, migração entre contas autorizadas e histórico, sem cobrança adicional por operação. A INT-08 participa das movimentações delimitadas; **não assumir que detém integralmente a Central de Backup** nem duplicar infraestrutura central de arquivos/backups.
+- Exportação simples e backup completo são distintos. O limite de **100% da franquia de anexos** bloqueia apenas novos uploads de anexos, não a exportação/download de dados existentes. Valem as franquias 1/5/20/50 GB e avisos 80/95%, com limites operacionais de backup/processamento a dimensionar.
+- Transferência de vínculo de site para outra conta CRM por chamado: Imagine realiza gratuitamente apenas a alteração técnica. A migração de dados históricos cabe ao cliente, usando funcionalidades autorizadas de portabilidade (IN-118/122/123).
+- Conferência cruzada documentada em [P0-REV-INT05-08](P0-REV-INT05-08-conferencia-cruzada.md). **O cotejo literal da aprovação INT-08 ainda está pendente**; este acréscimo é uma referência a decisões existentes, não nova decisão.
+
 ## Governança e próximo passo
 - Rastrear cada requisito à decisão original, responsável, versão, contrato, invariantes INV e cenário HT em [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md).
 - Não presumir que esta síntese reproduz palavra por palavra o texto integral da aprovação. Conferir literalidade, lacunas, limites, prazos e exceções no item P0-DOC da [matriz P0](INT-P0-fechamento-documental.md).
