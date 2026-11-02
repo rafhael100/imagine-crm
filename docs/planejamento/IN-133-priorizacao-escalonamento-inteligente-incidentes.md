@@ -1,51 +1,52 @@
 # IN-133 — Priorização e Escalonamento Inteligente de Incidentes
 
-**Status:** APROVADA funcionalmente em 01/11/2026, mediante confirmação do responsável do projeto ("ok").  
-**Etapa:** planejamento e documentação; **não autoriza iniciar programação**.  
-**Escopo:** Central de Incidentes Técnicos e agentes especializados da Imagine.  
-**Referências:** IN-124 a IN-129 (formulários, APIs, entrega, filas e recuperação), IN-130 (Central de Incidentes), IN-131 (autonomia), IN-132 (catálogo e Supervisor Técnico).
+**Status:** APROVADA funcionalmente pelo responsável do projeto em 01/11/2026 ("ok").  
+**Fase:** planejamento e documentação; não iniciar programação.  
+**Escopo:** Central de Incidentes Técnicos da Imagine e seus agentes especializados.  
+**Referências:** IN-124–IN-129 (formulários, filas, diagnóstico e agente de integrações), IN-130 (Central de Incidentes), IN-131 (autonomia), IN-132 (catálogo e Supervisor Técnico).
 
 ## Objetivo
-Classificar incidentes técnicos segundo gravidade e impacto, priorizar a resposta, direcioná-los aos agentes especializados e escalar a responsáveis humanos quando necessário, mantendo contexto, rastreabilidade e controle de operações críticas.
+Priorizar casos técnicos de acordo com impacto, abrangência, urgência e risco, distribuir incidentes a agentes especializados, escalar para humanos quando necessário e dar tratamento imediato a ocorrências críticas.
 
 ## Níveis de prioridade aprovados
 
-| Prioridade | Exemplo | Ação |
+| Prioridade | Exemplo ilustrativo | Tratamento funcional |
 |---|---|---|
-| **Crítica** | Ambas as APIs de recepção de formulários indisponíveis | **Acionamento imediato e simultâneo** do agente especializado e do responsável humano, sem aguardar conclusão da correção automática |
-| **Alta** | Entrega de leads de múltiplos clientes comprometida | Diagnóstico prioritário pelo agente especializado, alerta e escalonamento conforme impacto |
-| **Média** | Falha isolada em integração específica | Abrir caso e permitir procedimento de autocorreção previamente autorizado |
-| **Baixa** | Problema sem impacto imediato na operação | Registrar, acompanhar e programar correção |
+| **Crítica** | API principal e API de contingência de formulários indisponíveis simultaneamente | **Acionar imediatamente, em paralelo, o agente especializado e o responsável técnico humano**, sem aguardar a conclusão de tentativas automáticas |
+| **Alta** | Leads de vários clientes sem entrega | Abrir/priorizar incidente e iniciar diagnóstico pelo especialista |
+| **Média** | Uma integração de cliente apresenta falha | Abrir caso e permitir correção automática se segura e previamente autorizada |
+| **Baixa** | Problema sem impacto operacional imediato | Registrar, acompanhar e programar correção segundo prioridade |
 
-Os exemplos são ilustrativos; a classificação final exige critérios objetivos de impacto, alcance, urgência, segurança e continuidade operacional.
+Exemplos são referenciais: a classificação concreta deve considerar **impacto real, abrangência, gravidade e evolução do evento**, e não depender somente do código de erro ou da quantidade de sites.
 
-## Regras funcionais aprovadas
+## Regras adicionais aprovadas
 
-1. **Classificação automática inicial** dos incidentes em baixa, média, alta ou crítica, com justificativa visível na Central.
-2. **Reclassificação automática** se o impacto/urgência aumentar ou diminuir, registrando motivo, momento e histórico. Permitir revisão por responsável autorizado.
-3. **Correlação e agrupamento** de eventos e erros relacionados em um único incidente rastreável, evitando abertura de chamados duplicados sem apagar eventos individuais.
-4. **Distribuição** a agente especializado conforme o serviço afetado, com um responsável principal pelo incidente e colaboração entre especialistas quando necessário.
-5. **Incidentes críticos:** acionar **simultaneamente** o agente especializado e o responsável humano designado; não postergar o alerta humano enquanto o agente tenta diagnosticar ou corrigir. Registrar tentativas e falhas de notificação.
-6. **Escalonamento humano** sempre que o agente não resolver, não possuir a autorização necessária, detectar risco maior, ou houver falha persistente; preservar diagnóstico, evidências e ações já realizadas.
-7. **Supervisor Técnico** acompanha casos recorrentes, agravamentos de prioridade, qualidade das correções e pendências, mas não pode dispensar aprovações humanas obrigatórias.
-8. **Histórico completo:** registrar identificação, prioridade e suas alterações, impacto, detecção, atribuição, notificações, respostas, diagnósticos, aprovações, intervenções, resultados, tempos de resposta e resolução.
-9. **Prazos de resposta configuráveis por prioridade**, com valores a dimensionar e aprovar antes da implementação; não fixar SLAs numéricos nesta etapa.
-10. **Segurança:** respeitar os três níveis da IN-131; ações críticas e alterações sensíveis exigem aprovação humana explícita e autorizada mesmo em incidentes críticos. Severidade não concede novos privilégios aos agentes.
+1. **Classificação automática com critérios auditáveis:** atribuir prioridade inicial a cada incidente e mostrar as razões e evidências relevantes.
+2. **Reclassificação dinâmica:** elevar ou reduzir a prioridade quando mudarem abrangência, impacto, estado de recuperação ou risco, mantendo o histórico.
+3. **Correlação e agrupamento:** falhas relacionadas devem ser agrupadas em um incidente principal quando compartilham uma causa ou dependência, evitando chamados repetidos; preservar cada site, conta, envio e ocorrência afetada com rastreabilidade e segregação de dados.
+4. **Distribuição especializada:** encaminhar casos ao agente técnico responsável pela categoria (IN-132); colaboração de outros agentes é permitida com coordenador ou responsável principal.
+5. **Escalonamento humano:** acionar responsável humano quando o agente não resolver, quando não possuir autorização para corrigir, quando houver risco elevado ou quando se aproximarem prazos operacionais.
+6. **Incidentes críticos:** acionar **simultaneamente** agente especializado e responsável humano, com notificação imediata e registro; não esperar a falha se repetir nem o término de qualquer ciclo de retentativas.
+7. **Supervisor Técnico:** acompanhar andamento, recorrências, evolução de prioridade, casos sem solução e confirmação de recuperação; não substituir aprovações humanas para mudanças críticas.
+8. **Histórico integral:** registrar detecção, classificação, mudanças de prioridade, agrupamento, atribuições, ações, tentativas, aprovações, encaminhamentos, solução e tempos de resposta/resolução.
+9. **Prazos de atendimento:** permitir SLAs/tempos de resposta e escalonamento **configuráveis por prioridade**; os valores numéricos serão dimensionados e aprovados antes da implementação.
+10. **Autonomia limitada:** ações críticas em servidores, DNS, credenciais, permissões, dados de clientes e alterações irreversíveis permanecem dependentes de aprovação humana, conforme IN-131.
 
-## Integração com a recuperação de leads
-- Preservar a **fila de entrega por 3 dias** e a **fila de falhas por mais 15 dias**, totalizando 18 dias; a classificação crítica não reinicia esses prazos.
-- Manter o aviso administrativo 72 horas antes do vencimento, alerta crítico e interrupção de retentativas automáticas no dia 18, conforme IN-127 e IN-128.
-- Se ambas as APIs não puderem receber formulários, o site não pode confirmar envio bem-sucedido sem persistência durável; os responsáveis humanos e agentes devem ser acionados imediatamente.
-- Não descartar silenciosamente leads pendentes. A política final de descarte continua pendente de aprovação específica.
+## Interação com a operação de leads
 
-## Pontos técnicos a especificar
-- Matriz objetiva de severidade (quantidade de clientes, criticidade do serviço, duração, segurança, perda potencial, impacto financeiro).
-- SLAs/tempos de resposta por prioridade, eventuais escalonamentos por ausência de confirmação e escalas de atendimento humano.
-- Canais e redundância de alertas, confirmação de recebimento, fallbacks e janelas de atendimento.
-- Regras de correlação e deduplicação de incidentes, reabertura, despriorização e prevenção de oscilação entre níveis.
-- Proteção de dados sensíveis em alertas e histórico, segregação por cliente e perfis autorizados.
-- Métricas de tempo de detecção, resposta, resolução, recorrência e validação de correções.
+- Integrar eventos das APIs principal/secundária, filas e CRM à Central de Incidentes.
+- Considerar a retenção aprovada de **3 dias em fila normal + 15 dias em falhas**, os alertas pré-expiração e a interrupção de retentativas automáticas no dia 18 (IN-127/IN-128).
+- Detecção de erro que exija correção técnica abre caso e aciona o Agente de Integrações sem aguardar 3 dias (IN-129).
+- Incidente de recepção com ambas as APIs fora do ar deve ser tratado como crítico; mensagem de sucesso ao visitante só quando algum endpoint confirmar persistência durável do envio, conforme IN-124.
 
-**Aprovado:** níveis de prioridade, classificação e reclassificação, agrupamento, escalonamento, histórico, Supervisor Técnico e acionamento humano simultâneo em incidentes críticos.  
-**Pendente:** valores de SLA, canais operacionais, escalas, critérios quantitativos e detalhamento de automações.  
+## Especificações ainda pendentes
+- Matriz objetiva de impacto e urgência, classificação e reclassificação, abrangência por clientes e severidade.
+- Tempos concretos de resposta, escalonamento e resolução, horários de cobertura, contatos humanos e canais de notificação.
+- Deduplicação e regras de correlação entre incidentes distintos e múltiplas empresas sem exposição indevida de dados.
+- Alertas confiáveis mesmo se o Portal Imagine estiver indisponível; reconciliação e auditoria de notificações.
+- Catálogo de playbooks por prioridade e políticas de mudanças emergenciais com autorização humana e rollback.
+- Métricas, relatórios, testes periódicos de escalação e regras de fechamento.
+
+**Aprovado:** níveis crítica/alta/média/baixa, reclassificação automática, agrupamento, escalonamento humano, Supervisor Técnico, histórico e configuração futura de SLA, com notificação imediata e paralela de humano e agente para incidentes críticos.  
+**Pendente:** parâmetros operacionais e tempos concretos.  
 **Programação:** não iniciada.
