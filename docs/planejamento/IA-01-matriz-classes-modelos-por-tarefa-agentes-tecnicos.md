@@ -66,3 +66,8 @@ O Supervisor **não tem superprivilégios**; complexidade do modelo não altera 
 **Decisão tomada em 02/11/2026:** o responsável **aprovou** a classificação **econômica / intermediária / avançada** como base funcional para orientar o catálogo da IN-157. **Não foram aprovados modelos, provedores, valores, contratações nem programação.**
 
 **Próxima etapa sugerida:** comparar modelos e fornecedores concretos como **candidatos**, por classe e tarefa, com testes de qualidade, disponibilidade, segurança de dados e custos; submeter escolhas finais e orçamentos à aprovação separada.
+
+
+## Comparação documental de candidatos — 02/11/2026
+
+Foi concluída a [pesquisa IA-01 de modelos e fornecedores candidatos](IA-01-comparativo-modelos-fornecedores-candidatos.md) com dados oficiais de OpenAI, Anthropic e Google, classes, preços por tokens e reajustes anunciados. **A pesquisa foi autorizada; a inclusão de qualquer modelo no catálogo de produção NÃO foi aprovada.** Permanecem pendentes a escolha expressa dos modelos e fornecedores, primário/fallback por tarefa, versões, custos totais e orçamento mensal, privacidade/LGPD, testes de qualidade e homologação. As três classes desta IA-01 **continuam aprovadas**, sem alteração. Não iniciar programação ou contratação.
