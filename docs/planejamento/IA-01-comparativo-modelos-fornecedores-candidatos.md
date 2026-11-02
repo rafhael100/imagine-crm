@@ -1,6 +1,6 @@
 # IA-01 — Comparativo de Modelos e Fornecedores Candidatos para Agentes Técnicos Imagine
 
-**Status:** PESQUISA E COMPARAÇÃO CONCLUÍDAS; **MODELOS, FORNECEDORES E ORDEM DE PREFERÊNCIA AINDA NÃO APROVADOS**.  
+**Status atual:** **lista dos nove candidatos aprovada para futura avaliação em 02/11/2026**; nenhum modelo homologado, contratado ou escolhido para operação. A comparação original permanece como histórico.  
 **Data da referência de preços e catálogo:** 02/11/2026.  
 **Autorização do responsável:** resposta "ok" para **iniciar a comparação** de OpenAI, Anthropic e Google, sem decisão de compra ou catálogo definitivo.  
 **Fase:** exclusivamente planejamento e documentação; sem programação, testes pagos, provisionamento, contratação, alteração de permissões ou consumo real.
