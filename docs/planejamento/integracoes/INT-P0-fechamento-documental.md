@@ -44,6 +44,13 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - **Nenhuma pendência P0 foi declarada encerrada**: documentação literal integral, contratos por operação, matriz de permissões e evidências de aceite permanecem abertas.
 - A Central de Observabilidade IN-159/160 não é duplicada pela INT-10. A retenção técnica IN-162 não define automaticamente a retenção de fatos de negócio sob Auditoria Geral.
 
+## Complementos de especificação e proveniência — 02/11/2026
+
+- [P0-CON — Contratos técnicos compartilhados (minuta)](P0-CON-contratos-tecnicos-minuta.md): 11 famílias de contrato propostas, campos conceituais, estados e classes candidatas de erro. **P0-CON-01 segue aberto** para schemas finais, transições e parâmetros por operação.
+- [P0-SEG — Autorizações e alçadas (minuta)](P0-SEG-matriz-autorizacoes-proposta.md): critérios de autorização contextual, revalidação e divisão de competência. **P0-OWN-01 e P0-SEC-01 seguem abertos** até matriz granular por ação/campo/identidade.
+- [P0-ORIGEM — Aceites disponíveis no diálogo](P0-ORIGEM-aprovacoes-dialogo.md): transcrição de aprovações expressas de INT-10, INT-11, INT-12, INT-R01 e INT-R02, sem fonte imutável de mensagem e sem cotejo integral das propostas. **P0-DOC-01 e P0-TR-01 seguem abertos.**
+- Nenhum nome de campo, enum, código de erro, política numérica ou alçada adicional das minutas deve ser tratado como aprovado sem deliberação expressa.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
