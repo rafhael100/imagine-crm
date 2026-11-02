@@ -118,3 +118,8 @@ A política de ciclo de vida do conhecimento foi aprovada na [IN-163 — Ciclo d
 ## Complemento posterior — IN-165 (02/11/2026)
 
 A [IN-165 — Versionamento e Homologação das Instruções dos Agentes Técnicos](IN-165-versionamento-homologacao-instrucoes-agentes.md) aprovou versionamento, testes, controle de publicação, auditoria e rollback das **instruções comportamentais**. Ajustes de baixo risco podem ser automáticos **somente dentro de política e procedimento previamente homologados**. Mudanças relevantes de comportamento exigem homologação humana; mudanças críticas seguem a aprovação humana única aplicável. **Instruções/prompts não concedem ferramentas, permissões ou autorização de execução, tampouco substituem homologação de playbooks ou controles externos da IA.** A retenção das versões de instruções ainda será definida separadamente e não herda automaticamente o prazo de 24 meses aplicável ao conhecimento arquivado da IN-163.
+
+
+## Complemento posterior — IN-166 (02/11/2026)
+
+A [IN-166 — Gestão Inteligente das Ferramentas e Permissões dos Agentes Técnicos](IN-166-gestao-inteligente-ferramentas-permissoes-agentes.md) aprovou catálogo técnico de ferramentas, permissões **por agente/operação/alvo/ambiente**, verificação de autorização **antes de cada ação por mecanismo independente da IA**, homologação/controle de versões de ferramentas, revogação de acessos e auditoria. **Alteração de prompt, troca de modelo, transferência de tarefa ou homologação de procedimento não concede novos privilégios.** Playbooks seguros previamente autorizados podem executar automaticamente dentro dos limites aplicáveis; intervenção crítica mantém **uma única aprovação humana específica**, quando cabível, sem dupla aprovação. Não iniciar programação.
