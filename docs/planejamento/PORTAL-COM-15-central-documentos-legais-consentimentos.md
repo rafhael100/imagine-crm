@@ -60,6 +60,33 @@ A **Central de Relacionamento COM-12/REL-01** deverá consultar preferências e 
 
 **Aprovado pelo “ok”:** módulo Central, cadastro/edição via painel administrativo, **versionamento, histórico auditável de aceites e consentimentos**, aplicação de textos apropriados por site/cliente e aprovação do responsável quando necessária.
 
-**Ainda por decidir/homologar:** perfis de administração e aprovadores, modelos concretos, cláusulas jurídicas, bases legais por tipo de tratamento, política de cookies por produto, formatos de consentimento, templates por idioma, fluxos de nova manifestação, guarda legal das evidências, gestão de titulares, notificações, calendário de revisão e quais alterações precisam de reaceite; LGPD, segurança e conformidade serão submetidas à revisão humana competente.
+**Fluxo de aprovadores definido posteriormente:** documentos da própria Imagine são aprovados pela **administração Imagine** após revisão necessária; políticas de privacidade específicas de sites dos clientes exigem **aprovação expressa de representante autorizado do cliente responsável**, após preparação assistida por IA. **Ainda por decidir/homologar:** perfis/permissões granulares de administração, modelos concretos, cláusulas jurídicas, bases legais por tipo de tratamento, política de cookies por produto, formatos de consentimento, templates por idioma, fluxos de nova manifestação, guarda legal das evidências, gestão de titulares, notificações, calendário de revisão e quais alterações precisam de reaceite; LGPD, segurança e conformidade serão submetidas à revisão humana competente.
 
 **Somente planejamento. Nenhuma programação, publicação de documentos jurídicos ou coleta/alteração de consentimentos realizada.**
+
+
+## 8. Fluxo de aprovação dos documentos legais — decisão complementar (02/11/2026)
+
+**Pergunta apresentada ao responsável:** “Você aprova esse fluxo de aprovação dos documentos legais?”, após a proposta explícita de que **(a) os documentos da própria Imagine sejam aprovados pela administração Imagine, após a revisão necessária; (b) as políticas de privacidade específicas dos sites dos clientes possam ser preparadas com auxílio de IA, mas dependam da validação do cliente responsável antes da publicação**. **Resposta do responsável: “sim”. FLUXO APROVADO.**
+
+### 8.1 Documentos da Imagine — fluxo aprovado
+
+1. O documento (Termos do Portal Imagine, Aviso/Política de Privacidade Imagine ou outro documento sob responsabilidade dela) é criado/revisado no painel administrativo, podendo receber sugestões de IA.
+2. Submeter à **revisão jurídica/privacidade necessária** ao tipo de conteúdo, preservando evidências de quem revisou e da versão examinada; a IA não pode substituir a análise jurídica competente nem presumir suficiência legal.
+3. A **administração Imagine**, por representante autorizado a ser configurado no controle de permissões, **aprova expressamente a versão exata** após revisão apropriada. Silêncio e passagem de tempo não equivalem a aprovação.
+4. Após autorização válida, o sistema poderá **publicar a versão aprovada** conforme o fluxo técnico homologado, preservando data/hora/fuso, responsável, versão, conteúdo/hash e vínculo de vigência. O detalhamento de alçadas e ativação automática da publicação ainda será definido.
+
+### 8.2 Políticas de Privacidade dos sites dos clientes — fluxo aprovado
+
+1. A Imagine pode disponibilizar **modelo adequado ao site**, preencher dados informados pelo cliente e usar agentes de IA para **preparar uma minuta**, identificar lacunas e recomendar ajustes, respeitando finalidade, controlador, integrações e serviços realmente contratados.
+2. O texto **não pode ser presumido verdadeiro, juridicamente válido ou autorizado** por ter sido gerado/revisado por IA. Apresentá-lo no Portal ao **cliente responsável pelo site/controlador ou representante expressamente habilitado para aprová-lo**, permitindo revisar, corrigir, solicitar alterações ou rejeitar.
+3. **Antes da publicação**, obter **aprovação explícita e auditável do cliente responsável sobre a versão exata** da política do seu site. A confirmação deve preservar identidade/autorização do aprovador, versão/hash, data/hora/fuso, manifestações e histórico. A aprovação do cliente não dispensa revisão jurídica quando a natureza do tratamento exigir.
+4. **Sem aprovação válida do cliente responsável, a política específica não será publicada como versão definitiva**; se essa política for requisito obrigatório, **o agente COM-13 não poderá marcar o site como ENTREGUE**. O projeto poderá permanecer em preparação/prévia sob controles técnicos próprios, sem publicação final do documento não aprovado.
+5. Alteração posterior material da política exige **revisão e nova aprovação do responsável quando aplicável**, com rastreabilidade da versão anterior; alteração de política não concede consentimento novo automaticamente nem exige sempre novo consentimento de todos os visitantes.
+
+### 8.3 Separações e limites
+
+- **Aprovação de política de privacidade do site pelo cliente ≠ aceite da versão visual/funcional do site (PORTAL-D01) ≠ consentimento do visitante ≠ aceite contratual do Portal.** São eventos distintos, embora possam aparecer organizados na Central.
+- A Imagine administra seus próprios documentos; **não aprova unilateralmente a política do site do cliente em nome dele**. O cliente não recebe por isso acesso de administração aos documentos legais da Imagine.
+- A finalidade/bases legais, obrigações relativas a cookies, formulários, direitos de titulares e papéis controlador/operador seguem a COM-14 e exigem análise jurídica contextual; não inserir um checkbox universal de “aceito a LGPD”.
+- Definições pendentes: permissões específicas, modelos de notificação, prazos de revisão, delegação de representação, reaprovação por atualização, retenção e fluxos de correção/contestação. **Nenhuma programação, aceite ou publicação real iniciada**.
