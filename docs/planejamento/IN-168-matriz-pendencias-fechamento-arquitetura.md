@@ -72,7 +72,7 @@ Status **"aprovado funcionalmente"** não significa desenvolvido, testado ou ins
 
 ## 6. Primeira pauta de decisão sugerida: ARQ-01
 
-Antes de selecionar tecnologia adicional, validar o **mapa de ambientes reais e planejados**. O projeto já considerou: sites em hospedagem WHM/cPanel; n8n em VPS separado; CRM SaaS segregado do cPanel; APIs de formulários principal e contingência com persistência independente e infraestrutura separada; painel administrativo Imagine. **Essas diretrizes não comprovam que todos os componentes já estejam instalados.**
+Antes de selecionar tecnologia adicional, validar o **mapa de ambientes reais e planejados**. Conforme a **IN-096 aprovada**, os sites Onepage/Landing Pages Imagine serão hospedados em **Cloudflare Workers Static Assets**, com GitHub e publicação automatizada por APIs/n8n/agentes sob controles; **não WHM/cPanel**. O Portal e o CRM SaaS terão servidores independentes; n8n tem VPS prevista; as duas APIs principal e contingência de leads têm persistência durável independente; a hospedagem separada dos agentes continua recomendada e pendente de aprovação final. **O planejamento não comprova o que já está instalado.**
 
 Na sequência de planejamento, elaborar opções para **localização e isolamento lógico dos agentes técnicos, orquestrador, serviços de monitoramento/autorização e seus dados**, com requisitos de independência das APIs e avaliação de despesas. **Nenhuma opção concreta foi aprovada nesta IN.**
 
@@ -97,3 +97,8 @@ Foi preparada a [comparação de infraestrutura dos agentes técnicos — ARQ-01
 **Aprovado:** Portal Imagine e CRM Imagine SaaS terão **servidores próprios e separados** entre si. É diretriz de arquitetura, não autorização de contratação. Integração por APIs seguras e bancos isolados; falha do Portal não pode impedir funcionamento do CRM nem recepção de leads pelas APIs independentes.
 
 **ARQ-01 continua parcialmente pendente:** infraestrutura dos agentes (Opção B recomendada, ainda não escolhida expressamente), provedores, capacidade, orçamento e confirmação dos recursos instalados. O comparativo e a topologia de sete ambientes de referência estão documentados em [ARQ-01](ARQ-01-comparativo-infraestrutura-agentes-tecnicos.md). **Sem programação.**
+
+
+## Correção da hospedagem de sites — IN-096 (02/11/2026)
+
+O usuário reafirmou a decisão previamente aprovada em **01/11/2026 (IN-096)**: **sites dos clientes Onepage/Landing Pages em Cloudflare Workers Static Assets**, código/versões via GitHub e operação/publicação por APIs, n8n e agentes autorizados. **WHM/cPanel não integra a hospedagem padrão desses sites**. Workers for Platforms permanece **possibilidade futura**, sem implantação autorizada. Portal e CRM em servidores distintos permanecem aprovados. A infraestrutura independente dos agentes continua **recomendada, mas ainda sem escolha expressa**. O quadro de sete blocos descreve **serviços**, não sete máquinas novas. Atualizar a estimativa de custos e a comparação ARQ-01 à luz desse modelo; **nenhuma programação ou contratação**.
