@@ -86,7 +86,12 @@ Essas referências não aprovam schemas, decisões funcionais ou execução.
 - [P0-CON CT-03/CT-04 — Comandos, resultados, transições, idempotência e reconciliação](P0-CON-CT03-CT04-comandos-resultados-transicoes.md) aprofunda as regras já aprovadas, mantendo campos, máquinas de estados, estratégias de retry e esquemas físicos na condição de **proposta para validação**.
 - Não presumir que essa minuta autorize desenvolvimento, configure uma segunda máquina de estados ou confirme fatos de negócio fora do módulo proprietário.
 
-## 9. Itens pendentes de aceite P0-CON-01
+## 9. Decisão CT-03/CT-04 e detalhamento por operação
+
+- [Aprovação expressa CT-03/CT-04](P0-DEC-aprovacao-CT03-CT04.md): especificação documental de base aceita, sem aprovar schemas físicos ou parâmetros por provedor.
+- [24 fichas de operações de referência](P0-OP24-detalhamento-CT03-CT04-por-operacao.md): aplicação da base aprovada como **proposta operacional de revisão**, com fronteiras de segurança e confirmações.
+
+## 10. Itens pendentes de aceite P0-CON-01
 - CON-A: schemas físicos definitivos e campos condicionais por contrato.
 - CON-B: transições de estados por tipo e situações inválidas.
 - CON-C: erros/versionamento/garantias por provedor.
