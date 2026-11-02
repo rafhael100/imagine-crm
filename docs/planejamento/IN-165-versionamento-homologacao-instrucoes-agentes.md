@@ -95,3 +95,8 @@ O Agente de Integrações produz respostas excessivamente longas e repetitivas, 
 **Aprovado:** controle de versões das instruções dos agentes, testes de qualidade/segurança antes de publicação, homologação de mudanças relevantes, atualização controlada, ajustes automáticos de baixo risco dentro das regras homologadas, reversão segura, auditoria por versão e impedimento de ampliação não autorizada de permissões, segurança ou custos.  
 **Pendente:** detalhes técnicos, limites, seleção de ferramentas, critérios quantitativos e política específica de retenção das versões de instruções.  
 **Programação:** não iniciada.
+
+
+## Complemento posterior — IN-166 (02/11/2026)
+
+A [IN-166 — Gestão Inteligente das Ferramentas e Permissões dos Agentes Técnicos](IN-166-gestao-inteligente-ferramentas-permissoes-agentes.md) aprovou catálogo técnico de ferramentas, permissões **por agente/operação/alvo/ambiente**, verificação de autorização **antes de cada ação por mecanismo independente da IA**, homologação/controle de versões de ferramentas, revogação de acessos e auditoria. **Alteração de prompt, troca de modelo, transferência de tarefa ou homologação de procedimento não concede novos privilégios.** Playbooks seguros previamente autorizados podem executar automaticamente dentro dos limites aplicáveis; intervenção crítica mantém **uma única aprovação humana específica**, quando cabível, sem dupla aprovação. Não iniciar programação.
