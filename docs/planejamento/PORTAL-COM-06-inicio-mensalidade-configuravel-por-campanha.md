@@ -62,3 +62,8 @@
 6. Intervalos de configuração de prazo, alçadas comerciais, limites de risco/margem, simulações e aprovação antes de publicação.
 
 **Resumo da decisão:** **cada serviço e cada campanha podem definir quando vence a primeira mensalidade; hoje, padrão de 90 dias; contagem de N mensalidades promocionais começa na primeira mensalidade devida; reajuste anual mantém aniversário próprio após 12 meses de contrato.** Sem programação, alteração retroativa ou nova cobrança.
+
+
+## Decisão complementar COM-07 — dia de vencimento mensal configurável (02/11/2026)
+
+O responsável respondeu **“ok”** à recomendação de permitir **dia de vencimento recorrente configurável**, sendo **o mesmo dia do mês da primeira mensalidade devida o padrão** para as cobranças seguintes, salvo condição diferente expressamente pactuada. Isso não muda o prazo de início da primeira cobrança (90 dias padrão atual, variável por produto/campanha), a contagem de N meses promocionais desde o primeiro ciclo devido, nem o aniversário contratual do reajuste anual após 12 meses. **Regra exata para meses sem o dia 29/30/31 e finais de semana/feriados ainda pendente**; proposta descrita em [PORTAL-COM-07](PORTAL-COM-07-vencimentos-recorrentes-configuraveis.md). Não modificar contratos existentes automaticamente e não iniciar programação.
