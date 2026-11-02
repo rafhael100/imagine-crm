@@ -28,6 +28,10 @@
 - Nenhum SQL arbitrário, scripts/código livre de clientes, URLs irrestritas, acesso direto aos bancos de negócio ou superprivilégios ao n8n.
 - Não confundir dados estruturados obrigatórios de operação/auditoria com franquias de arquivos. Preservar CRM Básico e trial sem API pública, com integrações nativas autorizadas.
 
+## Conferência documental P0 — INT-05 a INT-08
+- A sincronização contínua não deve adotar ausência de dados como exclusão automática nem resolver conflitos por último escritor universal. Reconciliar escritas inconclusivas antes de novas tentativas de risco (ver INT-R01/R02 e IN-148/149).
+- Evidências, ressalvas e títulos ainda sujeitos a conferência literal em [P0-REV-INT05-08](P0-REV-INT05-08-conferencia-cruzada.md). **Não equivale a homologação nem a encerramento de P0-DOC-01.**
+
 ## Governança e próximo passo
 - Rastrear cada requisito à decisão original, responsável, versão, contrato, invariantes INV e cenário HT em [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md).
 - Não presumir que esta síntese reproduz palavra por palavra o texto integral da aprovação. Conferir literalidade, lacunas, limites, prazos e exceções no item P0-DOC da [matriz P0](INT-P0-fechamento-documental.md).
