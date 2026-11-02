@@ -32,6 +32,7 @@
 - [P0-SEG — Minuta de matriz de autorizações e alçadas](P0-SEG-matriz-autorizacoes-proposta.md)
 - [P0-TR53 — Vínculo dos 53 requisitos iniciais a contratos, invariantes e HT](P0-TR53-vinculo-contratos-aceite.md)
 - [P0-OP — Catálogo de 12 casos operacionais de referência](P0-OP-casos-operacionais-contratos-alcadas.md)
+- [P0-CON CT-03/CT-04 — Comandos, resultados, transições e reconciliação](P0-CON-CT03-CT04-comandos-resultados-transicoes.md)
 
 ## Situações distintas (não confundir)
 1. **Aprovado funcionalmente:** decisão expressa do responsável; registrada em conversa de planejamento.
