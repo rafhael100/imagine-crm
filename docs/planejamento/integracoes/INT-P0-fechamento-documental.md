@@ -51,6 +51,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - [P0-ORIGEM — Aceites disponíveis no diálogo](P0-ORIGEM-aprovacoes-dialogo.md): transcrição de aprovações expressas de INT-10, INT-11, INT-12, INT-R01 e INT-R02, sem fonte imutável de mensagem e sem cotejo integral das propostas. **P0-DOC-01 e P0-TR-01 seguem abertos.**
 - Nenhum nome de campo, enum, código de erro, política numérica ou alçada adicional das minutas deve ser tratado como aprovado sem deliberação expressa.
 
+## Detalhamento de P0-TR / P0-OWN / P0-CON / P0-SEC — 02/11/2026
+
+- [P0-TR53 — Vínculos dos 53 requisitos iniciais](P0-TR53-vinculo-contratos-aceite.md): **53/53 requisitos previamente identificados** receberam CT candidatas, INV, HT e evidência esperada. **Não** atesta proveniência original exaustiva, validação de 53 requisitos do projeto completo ou homologação.
+- [P0-OP — 12 casos operacionais de referência](P0-OP-casos-operacionais-contratos-alcadas.md): para cada INT, descreve ato representativo, proprietário, precondições, fonte da confirmação, recusa e CT/HT. São casos de referência, **não** catálogo completo de APIs ou ações e não constituem módulos novos.
+- **P0-TR-01, P0-OWN-01, P0-CON-01, P0-SEC-01 permanecem abertos/parciais**; faltam textos originais, exaustividade, operações granulares, schemas e parâmetros finais, alçadas por ação, códigos e evidência de aceite.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
