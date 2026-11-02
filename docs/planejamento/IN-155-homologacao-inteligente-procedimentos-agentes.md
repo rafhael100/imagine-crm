@@ -113,3 +113,8 @@ Se a verificação falhar, se houver conflito de versões, risco elevado, ausên
 ## Atualização posterior — IN-163 (02/11/2026)
 
 A política de ciclo de vida do conhecimento foi aprovada na [IN-163 — Ciclo de Vida do Conhecimento dos Agentes Técnicos](IN-163-ciclo-vida-conhecimento-agentes.md): manter conhecimento e playbooks **ativos enquanto necessários**; versões **arquivadas permanecem por 24 meses contados do arquivamento**, com exclusão controlada quando elegível, preservação excepcional legítima, versionamento e impossibilidade de execução de procedimentos arquivados. A retenção de logs e registros brutos de incidentes continua regida pelas políticas específicas, sem extensão automática para 24 meses. Esta decisão posterior prevalece sobre qualquer indicação histórica de que o prazo da biblioteca ainda estivesse pendente.
+
+
+## Complemento posterior — IN-165 (02/11/2026)
+
+A [IN-165 — Versionamento e Homologação das Instruções dos Agentes Técnicos](IN-165-versionamento-homologacao-instrucoes-agentes.md) aprovou versionamento, testes, controle de publicação, auditoria e rollback das **instruções comportamentais**. Ajustes de baixo risco podem ser automáticos **somente dentro de política e procedimento previamente homologados**. Mudanças relevantes de comportamento exigem homologação humana; mudanças críticas seguem a aprovação humana única aplicável. **Instruções/prompts não concedem ferramentas, permissões ou autorização de execução, tampouco substituem homologação de playbooks ou controles externos da IA.** A retenção das versões de instruções ainda será definida separadamente e não herda automaticamente o prazo de 24 meses aplicável ao conhecimento arquivado da IN-163.
