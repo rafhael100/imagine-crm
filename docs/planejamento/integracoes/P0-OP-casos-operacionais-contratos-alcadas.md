@@ -162,7 +162,12 @@ Em cada caso, o roteiro documental de homologação deverá definir:
 - **Auditoria e retenção (INT-12/IN-162):** logs técnicos possuem política por categoria; evidências estruturadas de negócio seguem proprietários e Auditoria Geral.
 - **Parceiros (INT-11):** homologação de versão não é autorização de conta, contratação ou acesso ao ambiente.
 
-## 5. Pendências abertas
+## 5. Refinamento de comando e resultado
+
+- [Minuta P0-CON CT-03/CT-04](P0-CON-CT03-CT04-comandos-resultados-transicoes.md) define os marcos de transporte, processamento técnico, confirmação de negócio e reconciliação, com exemplos de aceite documental ainda não testados.
+- O catálogo de 12 casos continua ilustrativo; o detalhamento não define automaticamente schema definitivo, prazo ou alçada.
+
+## 6. Pendências abertas
 | P0 | O que este documento melhora | Para fechar de fato |
 |---|---|---|
 | P0-TR-01 | Relaciona famílias CT e casos OP às 53 TR iniciais | Cobertura completa e fonte original por requisito |
