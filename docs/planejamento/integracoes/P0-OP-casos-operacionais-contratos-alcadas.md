@@ -167,7 +167,12 @@ Em cada caso, o roteiro documental de homologação deverá definir:
 - [Minuta P0-CON CT-03/CT-04](P0-CON-CT03-CT04-comandos-resultados-transicoes.md) define os marcos de transporte, processamento técnico, confirmação de negócio e reconciliação, com exemplos de aceite documental ainda não testados.
 - O catálogo de 12 casos continua ilustrativo; o detalhamento não define automaticamente schema definitivo, prazo ou alçada.
 
-## 6. Pendências abertas
+## 6. Detalhamento CT-03/CT-04 por operação
+
+- [P0-OP24 — 24 fichas de operações representativas](P0-OP24-detalhamento-CT03-CT04-por-operacao.md): amplia a matriz inicial de 12 casos em preparação/executação, confirmação/reconciliação e controle por competência. **São hipóteses documentais de decomposição das capacidades aprovadas, não 24 novas automações ou catálogo exaustivo de APIs.**
+- [Aprovação documental de CT-03/CT-04](P0-DEC-aprovacao-CT03-CT04.md) garante a base arquitetural; o detalhamento por operação, schemas e parâmetros exatos requerem validação posterior.
+
+## 7. Pendências abertas
 | P0 | O que este documento melhora | Para fechar de fato |
 |---|---|---|
 | P0-TR-01 | Relaciona famílias CT e casos OP às 53 TR iniciais | Cobertura completa e fonte original por requisito |
