@@ -1,6 +1,6 @@
 # PORTAL-COM-07 — Vencimento mensal configurável e calendário recorrente
 
-**Status:** **DIRETRIZES FUNCIONAIS APROVADAS em 02/11/2026:** (1) vencimento mensal configurável com padrão no mesmo dia do mês da primeira cobrança e (2) **nos meses sem o dia de referência, vencimento no último dia calendário daquele mês e retorno ao dia original no mês seguinte**. A segunda decisão foi aprovada por novo **“ok”** do responsável à pergunta específica. **Fins de semana e feriados permanecem pendentes de decisão.**
+**Status:** **DIRETRIZES FUNCIONAIS APROVADAS em 02/11/2026:** (1) vencimento mensal configurável com padrão no mesmo dia do mês da primeira cobrança e (2) **nos meses sem o dia de referência, vencimento no último dia calendário daquele mês e retorno ao dia original no mês seguinte**. A segunda decisão foi aprovada por novo **“ok”** do responsável à pergunta específica. **DECISÃO MAIS RECENTE (02/11/2026):** tentar a cobrança na **data configurada**, mesmo em sábado, domingo ou feriado bancário; se **não concluir** em dia não útil, permitir regularização **até o próximo dia útil sem juros nem multa**. **Pix Automático depende de configuração válida do PSP e verificação jurídica para débito em dia não útil**. A implementação do calendário bancário, retentativas e particularidades dos meios segue para detalhamento.
 
 **Escopo:** assinatura recorrente dos sites Imagine (Onepage, Landing Page e outros serviços elegíveis). Não altera o parcelamento de implantação/serviços adicionais nem o CRM Imagine SaaS.  
 **Fase:** exclusivamente planejamento/documentação; não iniciar código, alterações contratuais ou cobranças.  
@@ -33,7 +33,7 @@ Se o dia específico de campanha for diferente do dia da primeira cobrança, o *
 
 **Aprovado expressamente** como regra funcional. Não confundir a data ajustada de um mês curto com alteração definitiva do dia de referência contratado. O comportamento em feriados e fins de semana, por meio de pagamento, ainda será deliberado separadamente.
 
-## 4. Fins de semana, feriados e meios de pagamento — ainda pendentes
+## 4. Fins de semana, feriados e meios de pagamento — decisão expressa posterior na seção 7; detalhes técnicos pendentes
 
 - **Calendário de vencimento contratual** e **data real de débito/liquidação** são coisas diferentes. Pix Automático e cartão dependem de fluxo e prazos do PSP, autorização e políticas técnicas. Definir o que ocorre quando o vencimento cai em sábado, domingo ou feriado, sem antecipar cobrança inesperadamente.
 - Não presumir que todos os meios possuem o mesmo comportamento de débito; avisos, retentativas e identificação de cada competência precisam ser configurados.
@@ -44,7 +44,7 @@ Se o dia específico de campanha for diferente do dia da primeira cobrança, o *
 ## 5. O que falta para o fechamento
 
 1. **Meses sem o dia contratado — RESOLVIDO:** usar o último dia calendário desse mês e retornar ao dia âncora nos meses seguintes.
-2. Definição de fins de semana/feriados e tratamento por meio de pagamento.
+2. **Regra funcional de dias não úteis aprovada:** tentar cobrar no dia configurado e, se falhar em sábado/domingo/feriado bancário, permitir pagamento até o próximo dia útil sem juros nem multa. **Pendente:** compatibilidade de cada meio e do PSP (Pix Automático pode ter ajuste-padrão para dia útil), calendário de feriados locais, autorização e estratégia de retentativas.
 3. Aprovação das regras quando dia especial de campanha é diferente da primeira mensalidade e das mudanças de vencimento solicitadas por clientes.
 4. Definição do marco concreto dos 90 dias (contratação, ativação etc.), políticas de emissão/aviso, vencimento, conciliação e inadimplência.
 5. Homologação de calendário com ano bissexto, fuso, atraso e retentativas, sem antecipar cobranças nem perder direitos contratados.
@@ -55,3 +55,39 @@ Se o dia específico de campanha for diferente do dia da primeira cobrança, o *
 ## 6. Registro da aprovação complementar dos meses curtos (02/11/2026)
 
 A pergunta explicitou a regra: para vencimento nos dias **29, 30 ou 31**, se o mês não comportar a data, utilizar **o último dia do mês** (28/29 em fevereiro) e **voltar ao dia contratado no mês seguinte**. O responsável respondeu **“ok”**, aprovando essa regra. A data de ajuste é calculada apenas para o ciclo respectivo; não altera o dia âncora nem a duração da mensalidade promocional, preço contratado, reajuste anual ou outros vencimentos. A regra de fins de semana e feriados não foi aprovada nesse aceite e será deliberada separadamente. **Sem programação ou cobrança real.**
+
+
+## 7. Correção e aprovação expressa — tentativa no vencimento mesmo em dia não útil; tolerância após falha (02/11/2026)
+
+**Prevalência:** esta decisão é **posterior e substitui** qualquer leitura da proposta de simplesmente **adiar o vencimento e a primeira tentativa para o dia útil seguinte**. O responsável declarou que **“o pagamento será passado no dia que está configurado, porém se porventura der algum problema e o pagamento que era no sábado, domingo ou feriado bancário ele pode pagar no próximo dia útil sem juro e multa”**.
+
+### Regra funcional aprovada
+
+1. **Data de vencimento original preservada:** o ciclo possui a data **contratada/configurada** (inclusive em fim de semana/feriado). Se a data de referência 29, 30 ou 31 não existir, aplica-se primeiro a regra **já aprovada** do último dia do mês; esse dia pode também ser não útil.
+2. **Tentativa de pagamento na data configurada:** a Imagine deve solicitar a cobrança automática naquela data, **inclusive em sábado, domingo ou feriado bancário**, desde que o meio, o provedor, o mandato e a legislação aplicável permitam essa operação. **Não adiar voluntariamente e indiscriminadamente** toda cobrança para o próximo dia útil.
+3. **Sucesso:** pagamento recebido e conciliado na data originalmente programada → **quitado**, sem cobrança repetida.
+4. **Falha ou não liquidação em dia não útil:** disponibilizar possibilidade de o cliente **pagar/regularizar até o próximo dia útil bancário**, **sem juros, multa ou marcação de atraso com consequências financeiras durante esse prazo**, respeitado o meio e contrato. O vencimento original permanece registrado; a **data-limite de regularização sem encargos** é um campo distinto.
+5. **Segunda-feira feriado:** vencer no sábado → prazo até **segunda-feira** se útil, ou **terça-feira/próximo dia útil** caso segunda não seja útil. Usar calendário de feriados bancários aplicável, inclusive locais quando exigido.
+6. **Nenhuma suspensão/cobrança punitiva antes de vencer a tolerância de dia não útil** por aquela falha. Ao final do período, qualquer inadimplência/retentativa depende da política PORTAL-D04 e contrato; este aceite **não fixa taxas futuras, prazo extra geral em dias úteis ou regime de inadimplência**.
+7. **Recuperação segura:** permitir pagamento manual e/ou tentativa autorizada conforme regras do PSP, com verificação do estado real, idempotência e prevenção de débito duplicado. **Não presumir autorização para repetidas tentativas de cartão/Pix** quando o meio não permitir ou o mandato for cancelado.
+8. **Preservar calendário dos próximos meses:** o deslocamento da data-limite sem encargos por falha **não altera o dia contratado** dos ciclos futuros.
+
+### Cuidados por modalidade, sem contrariar a decisão comercial
+
+- **Pix Automático:** regulamentação técnica do Banco Central contempla cobranças para datas úteis e não úteis, mas **o ajuste para próximo dia útil pode ser a configuração padrão do PSP**. Para tentar liquidar no dia não útil, a Imagine/PSP precisará **desabilitar o ajuste automático quando permitido e certificar-se do respaldo jurídico**; se o parceiro não suportar, informar a limitação e escolher fluxo homologado, sem prometer operação inviável. Segundo Instrução Normativa BCB nº 513 e guia oficial, há requisitos próprios de autorização, agendamento, calendário e novas tentativas.
+- **Cartão de crédito recorrente:** programar a solicitação de pagamento no dia contratado, inclusive não útil, se o adquirente permitir; **confirmação efetiva** e calendário de repasse não são equivalentes à data de tentativa. Se ocorrer falha em dia não útil, aplicar a mesma tolerância comercial ao cliente. Política de retentativas e notificações depende da adquirente e do contrato.
+- **Pix avulso/manual:** opção de regularização quando habilitada e devida, com QR Code identificável e valor sem multa até a data-limite. Não duplicar Pix Automático eventualmente liquidado.
+- **Boleto (se futuramente aprovado):** considerar regra específica de vencimento em dia não útil, em que o Banco Central informa ser possível o pagamento no próximo dia útil sem multa/juros; não presumir que boleto tem débito automático no fim de semana.
+
+### Exemplo didático
+
+Vencimento **sábado, 14/11/2026** (exemplo de calendário), cartão recorrente autorizado: solicitar cobrança no sábado; se pago, quitar; se falhar, admitir pagamento até **segunda-feira, 16/11/2026**, **somente se esta for dia útil bancário aplicável**, sem juros ou multa. Se segunda for feriado bancário local, permitir no próximo dia útil bancário, sem antecipar penalidade.
+
+### Fronteiras da aprovação
+
+Esta decisão aprova **(a)** tentar cobrança na data, **(b)** tolerância sem juros/multa até próximo dia útil após falha no dia não útil, **(c)** preservar data contratual, **(d)** conciliação sem duplicidade. **Não aprova** regras gerais de inadimplência após esse prazo, forma de pagamento específica que ainda esteja apenas proposta, calendário exato/integração do PSP, retentativas obrigatórias ou débito em dia não útil caso seja juridicamente inviável. Nenhuma programação ou cobrança iniciada.
+
+**Fontes oficiais para revisão de integração:**
+- Banco Central, Instrução Normativa nº 513: https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?numero=513&tipo=Instru%C3%A7%C3%A3o+Normativa+BCB
+- Banco Central, guia de implementação Pix Automático: https://www.bcb.gov.br/content/estabilidadefinanceira/pix/automatico/guia_pix_automatico.pdf
+- Banco Central, boleto com vencimento em dia não útil: https://www.bcb.gov.br/meubc/faqs/p/boleto-com-vencimento-em-dia-nao-util-e-boleto-vencido
