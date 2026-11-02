@@ -101,3 +101,8 @@ Modelos alternativos somente se **homologados**, compatíveis com a tarefa, segu
 
 **Aprovado na IN-167:** consolidar o planejamento, organizar relações e pendências, sem novas decisões operacionais.  
 **Programação:** não iniciada.
+
+
+## Atualização posterior — Portal e CRM em servidores separados (02/11/2026)
+
+O responsável **aprovou servidores distintos para o Portal Imagine e o CRM Imagine SaaS**. A integração ocorrerá por APIs autenticadas, mantendo isolamento de dados e continuidade operacional independente. Essa decisão é arquitetural, sem aprovar máquinas, fornecedores, custos ou implantação. A disposição completa de referência e pendências constam do [comparativo ARQ-01](ARQ-01-comparativo-infraestrutura-agentes-tecnicos.md) e da [matriz IN-168](IN-168-matriz-pendencias-fechamento-arquitetura.md). Hospedagem separada dos **agentes em relação ao n8n continua recomendada, mas ainda não aprovada definitivamente**. Programação não iniciada.
