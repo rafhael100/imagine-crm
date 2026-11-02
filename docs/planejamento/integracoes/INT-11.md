@@ -29,6 +29,13 @@
 - Nenhum SQL arbitrário, scripts/código livre de clientes, URLs irrestritas, acesso direto aos bancos de negócio ou superprivilégios ao n8n.
 - Não confundir dados estruturados obrigatórios de operação/auditoria com franquias de arquivos. Preservar CRM Básico e trial sem API pública, com integrações nativas autorizadas.
 
+## Complemento de rastreabilidade P0 (sem nova aprovação)
+- O catálogo distingue **parceiro**, **provedor**, **conector** e **conexão**; INT-11 homologa/publica conectores por versão, INT-01 administra conexões e INT-02 administra autorizações e segredos.
+- A proposta aprovada prevê estados de rascunho, avaliação, homologação, homologado, publicado, restrito, suspenso, descontinuando, descontinuado e revogado, sob políticas por versão. Nova versão não é automaticamente homologada.
+- Submissão por terceiro não autoriza publicação autônoma nem execução livre de código na plataforma. Possível marketplace futuro não é lançamento aprovado.
+- Condições comerciais e distribuição administráveis não concedem à INT-11 poder de cobrança (FIN), contrato (CON) ou mudança de provedores críticos.
+- [Conferência P0 INT-09 a INT-12](P0-REV-INT09-12-conferencia-cruzada.md). Matriz de transições por versão/conexão e fontes originais ainda pendentes.
+
 ## Governança e próximo passo
 - Rastrear cada requisito à decisão original, responsável, versão, contrato, invariantes INV e cenário HT em [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md).
 - Não presumir que esta síntese reproduz palavra por palavra o texto integral da aprovação. Conferir literalidade, lacunas, limites, prazos e exceções no item P0-DOC da [matriz P0](INT-P0-fechamento-documental.md).
