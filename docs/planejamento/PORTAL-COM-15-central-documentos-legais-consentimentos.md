@@ -181,6 +181,28 @@ Layout das telas, checklist jurídico mínimo do modelo padrão, dados e fontes 
 
 ### 11.3 Escopo não aprovado por inferência
 
-**APROVADO:** notificações **automáticas no Portal e por e-mail** quando a política padrão ou revisão fica disponível para análise, com acesso seguro ao documento; **não** foram aprovados **lembretes recorrentes**, prazos de reenvio, horários/cadências, WhatsApp/SMS, escalonamento por inatividade, aprovação automática, links de aceite sem autenticação nem alteração do conteúdo contratual. Definir esses elementos, modelos de mensagem, provedores, custos e homologação em rodada específica antes de implementar.
+**APROVADO:** notificações **automáticas no Portal e por e-mail** quando a política padrão ou revisão fica disponível para análise, com acesso seguro ao documento; **não** foram aprovados **lembretes recorrentes além do primeiro lembrete de 3 dias úteis posteriormente aprovado**, nem novos prazos de reenvio, horários detalhados, WhatsApp/SMS, escalonamento por inatividade, aprovação automática, links de aceite sem autenticação nem alteração do conteúdo contratual. A aprovação posterior do primeiro lembrete está na seção 12. Definir esses elementos, modelos de mensagem, provedores, custos e homologação em rodada específica antes de implementar.
 
 **Somente planejamento/documentação. Nenhuma comunicação real enviada.**
+
+
+## 12. Primeiro lembrete após três dias úteis — Portal e e-mail APROVADO (02/11/2026)
+
+**Pergunta submetida ao responsável:** “Recomendo que, se o cliente não responder, o sistema envie **um lembrete automático após 3 dias úteis**, pelo Portal e por e-mail, sem aprovar nada automaticamente. Você aprova esse primeiro lembrete após 3 dias úteis?” **Resposta: “sim”. REQUISITO FUNCIONAL APROVADO.**
+
+### 12.1 Regra funcional e contagem
+
+1. Para cada **versão específica de Política de Privacidade de um site** colocada à disposição do cliente para aprovação, registrar o marco de início: **disponibilização da versão no Portal e geração da notificação inicial**, após a preparação da política padrão ou da nova versão revisada. A referência formal de relógio, fuso, feriados e exceções será homologada posteriormente.
+2. Se a mesma versão permanecer no estado **AGUARDANDO APROVAÇÃO DO CLIENTE** sem manifestação após **3 dias úteis**, emitir **um primeiro lembrete** pelo **Portal Imagine** e **e-mail** para o representante autorizado. O lembrete contém contexto mínimo e link seguro autenticado para **a versão exata**, com opções de **Aprovar** ou **Solicitar Alterações** acessíveis somente no Portal.
+3. **Não enviar** o lembrete se, antes do disparo, o cliente **aprovou**, **solicitou alterações**, a versão foi **substituída/cancelada**, houve **suspensão do fluxo** ou o destinatário perdeu autorização. Revalidar status, versão e destinatário no momento de enfileirar/enviar.
+4. Quando o cliente solicita alterações, aquela versão deixa de estar aguardando aprovação e **o lembrete pendente é cancelado**. Uma **nova versão disponibilizada** constitui novo ciclo de análise: aviso inicial pelo Portal/e-mail e primeiro lembrete dessa **nova versão após 3 dias úteis**, se continuar pendente. Não disparar o aviso de uma versão obsoleta.
+5. **Apenas um primeiro lembrete por versão/ciclo** está aprovado. Evitar duplicação por retentativas de sistemas e múltiplos agentes; registrar evento/versionamento e estado real de envio/erro de cada canal, sem presumir que mensagem foi entregue só porque houve tentativa.
+6. **Sem aprovação expressa do cliente não há publicação definitiva da política nem estado ENTREGUE do site pelo agente COM-13.** O lembrete é apenas informativo, não decisão em nome do cliente. A ausência de resposta não autoriza publicação, aceite tácito ou bloqueio adicional não contratado.
+
+### 12.2 Controles de privacidade e pendências
+
+- Os avisos são operacionais e vinculados à aprovação do documento; **não incluir publicidade**. Aplicar base legal, transparência, endereço validado, segurança do link, minimização de dados no e-mail e segregação por empresa/site.
+- **Pendente de definição técnica:** calendário de dias úteis (feriados nacionais, estaduais/municipais conforme operação, fuso e horários-limite), expediente de envio, texto do lembrete, limitações e forma de tratamento de falha de provedor/cliente, telas, provedor/custo e eventual deduplicação entre múltiplos sites.
+- **Não aprovados por esta decisão:** segundo lembrete, recorrência semanal/diária, WhatsApp/SMS, escalonamento automático à equipe, aprovação automática ou prazo fatal/penalidade por não responder.
+
+**Registro:** primeiro lembrete após 3 dias úteis, por **Portal e e-mail**, **APROVADO**. Planejamento exclusivamente; nenhuma automação ativa nem mensagem enviada.
