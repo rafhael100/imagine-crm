@@ -105,3 +105,10 @@ Possibilidade de **transição planejada**: preservar os limites arquiteturais p
 **Resultado da análise:** **comparação concluída**, **Opção B tecnicamente recomendada**, **escolha final e custos pendentes**.  
 **ARQ-01 na IN-168:** continua **pendente de decisão**.  
 **Programação:** **não iniciada**.
+
+
+## Atualização de arquitetura — Portal e CRM (02/11/2026)
+
+**Decisão aprovada:** hospedar o **Portal Imagine** e o **CRM Imagine SaaS** em **servidores separados**, com aplicações e dados isolados. A integração entre os dois ocorrerá por APIs autenticadas e com permissões restritas. A indisponibilidade do Portal não deverá interromper o funcionamento do CRM, e a recepção durável de formulários continuará independente do Portal, preservando a separação entre API principal e contingência da IN-124.
+
+**Distribuição lógica prevista:** (1) hospedagem WHM/cPanel, (2) Portal Imagine, (3) CRM Imagine SaaS, (4) n8n, (5) agentes técnicos e orquestrador, (6) API principal, (7) API de contingência. **São sete ambientes previstos no desenho completo, não sete novas contratações.** A alternativa de hospedar agentes em servidor próprio continua **recomendada, porém sem aprovação final expressa**. Não foram definidos provedores, capacidade, valores ou compras. O estado real dos recursos ainda deve ser confirmado. **Programação não iniciada.**
