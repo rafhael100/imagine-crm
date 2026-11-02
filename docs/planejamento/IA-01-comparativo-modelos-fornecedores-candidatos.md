@@ -135,3 +135,8 @@ Os resultados de qualidade, os tokenizadores, as políticas de raciocínio, a qu
 ## Decisão posterior de 02/11/2026 — Lista inicial para avaliação
 
 **Aprovado:** conservar os nove modelos apresentados nas tabelas das seções 3.1, 3.2 e 3.3 como **candidatos para futura avaliação e homologação**, distribuídos pelas três classes previamente aprovadas. Esta aprovação não escolhe nenhum modelo como principal ou contingência e não equivale a homologação técnica, autorização de uso, contratação ou orçamento. Antes de qualquer escolha final, confirmar os nomes e identificadores de API, disponibilidade e preços atualizados, qualidade por tarefa, compatibilidade de ferramentas e requisitos de proteção de dados. Os dois modelos excepcionais citados no estudo não fazem parte desta lista de nove. **Nenhuma programação, contratação, criação de credenciais ou consumo das APIs foi autorizada.**
+
+
+## Proposta posterior de homologação — critérios em revisão (02/11/2026)
+
+O responsável concordou em avançar **para a elaboração** dos critérios. Foi registrada a [proposta de critérios de homologação IA-01](IA-01-criterios-homologacao-modelos-agentes-tecnicos.md), com requisitos de segurança eliminatórios e avaliação comparativa por qualidade, ferramentas, robustez, rastreabilidade, latência e custo. **A proposta e os pesos ainda não foram aprovados**; os nove modelos **continuam somente candidatos**, sem testes ou homologação. Não foram autorizados consumo de API, compra, credenciais, programação ou testes em produção.
