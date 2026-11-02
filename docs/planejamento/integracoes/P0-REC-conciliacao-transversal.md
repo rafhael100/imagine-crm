@@ -110,5 +110,11 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - [24 fichas operacionais](P0-OP24-detalhamento-CT03-CT04-por-operacao.md): propostas para decompor responsabilidades e resultados, sem ampliar escopo ou considerar exaustividade.
 - Os 11 P0 e os critérios G01..G06 ainda não foram encerrados. Contratos executáveis, vínculo literal a todas as decisões e testes técnicos continuam pendentes.
 
-## 11. Restrição permanente
+## 11. Matriz contextual CT-02 e validação da base OP24
+
+- [Decisão OP24](P0-DEC-aprovacao-OP24-base.md): 24 operações de referência aceitas como base documental, sem conceder privilégios ou encerrar pendências P0.
+- [CT-02](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md): proposta de permissões/alçadas contextuais para 24 operações, com casos candidatos de validação negativa, não testados.
+- P0-OWN-01, P0-SEC-01, P0-CON-01, P0-TR-01, P0-DOC-01, P0-ACC-01 e G01–G06 **não** se tornam concluídos por existir a matriz.
+
+## 12. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
