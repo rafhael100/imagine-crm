@@ -72,3 +72,25 @@ O responsável aprovou explicitamente a arquitetura com **API principal + API de
 - Opções de infraestrutura existentes da Imagine e custo de manter um ambiente secundário.
 
 **Status desta arquitetura:** aprovada funcionalmente; escolhas de tecnologia e de hospedagem serão detalhadas e revisadas antes da implementação. **Não iniciar programação.**
+
+
+## Hospedagem da API principal e de contingência — APROVADA em 01/11/2026
+
+Decisão expressamente aprovada pelo responsável do projeto, dando continuidade à arquitetura redundante acima:
+
+1. **API principal:** serviço central da Imagine, separado da interface/painel administrativo do Portal Imagine, com execução independente da disponibilidade do painel.
+2. **Persistência principal:** banco/fila central durável (PostgreSQL como opção arquitetural preferida, a confirmar na arquitetura técnica), sob operação do serviço de integração.
+3. **API de contingência:** implantação **em outro servidor**, independente do servidor da API principal, com preferência por **outro provedor** quando a análise de custos e disponibilidade permitir. A aprovação não escolhe provedor nem contrata infraestrutura.
+4. **Persistência de contingência:** banco/fila durável **independente** do principal, de forma que o colapso de uma infraestrutura não impeça a outra de receber os formulários.
+5. **Portal Imagine — Administração:** centralizar consulta de status, monitoramento e gestão de falhas, filas e reprocessamentos. O painel não será dependência operacional necessária para receber leads nas APIs.
+6. **Integração CRM Imagine:** processadores de entrega a partir de ambas as filas, com identificador único por envio, deduplicação, rastreabilidade e tratamento seguro de retornos incertos.
+7. **Sem banco nos sites:** as páginas e landing pages hospedadas não precisam de banco de dados próprio.
+8. **Regra de confirmação:** só informar envio bem-sucedido ao visitante quando uma rota confirmar persistência durável; na indisponibilidade simultânea, não exibir sucesso.
+
+### Definições técnicas e comerciais ainda pendentes
+- Dimensionamento da API principal e da secundária, servidores/provedores concretos, custos fixos e variáveis.
+- Localização dos bancos, administração e acesso seguro à fila de contingência, políticas de backups, retenção e limpeza.
+- Testes regulares de recuperação e failover, alertas, limite de espera, circuit breaker, política de reenvios e idempotência inter-regiões.
+- Pontos únicos de falha que possam restar em DNS, certificados, proxy, autenticação e dependências compartilhadas.
+
+**Status:** topologia lógica e independência das infraestruturas **aprovadas**; alocação concreta de servidores e tecnologias **a dimensionar**. Esta decisão é documental, sem iniciar desenvolvimento ou contratar serviços.
