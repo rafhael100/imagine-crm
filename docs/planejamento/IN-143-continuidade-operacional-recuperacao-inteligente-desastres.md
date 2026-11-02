@@ -21,7 +21,7 @@ Manter continuidade de operação na ocorrência de falhas graves, com detecçã
 ## Separação entre serviços e planos de recuperação
 - **Sites Imagine:** preservar código, artefatos, configurações e fluxos de publicação; utilizar backups e versionamento conforme IN-101.
 - **Recepção de leads:** API principal e **API de contingência em infraestrutura separada, preferencialmente em provedores distintos**, com persistência durável independente, conforme IN-124. O failover deverá reduzir indisponibilidades sem criar duplicidade de processamento nem confirmar recebimento antes de persistir o envio.
-- **Filas de leads:** recuperar processadores e retomar entregas idempotentes, preservando envios já recebidos; respeitar as políticas aprovadas de **3 dias em fila normal + 15 dias em fila de falhas**, sem reiniciar prazo por tentativa. A destinação final de mensagens não entregues após o prazo total permanece **pendente** — não permitir descarte silencioso.
+- **Filas de leads:** recuperar processadores e retomar entregas idempotentes, preservando envios já recebidos; respeitar as políticas aprovadas de **3 dias em fila normal + 15 dias em fila de falhas**, sem reiniciar prazo por tentativa. A política final foi aprovada posteriormente na **IN-147**: mensagens sem entrega confirmada poderão ter o payload temporário **excluído automaticamente após 18 dias**, mediante verificação final, avisos e auditoria, sem descarte silencioso.
 - **CRM Imagine SaaS:** terá política de backup, retenção e recuperação **independente** daquela dos sites; não equiparar restauração do CRM ao restabelecimento de um site.
 - **Automações/n8n e serviços complementares:** verificar dependências, credenciais, versionamento de workflows e consistência antes de ativar processamento ou repeti-lo.
 - **Portal Imagine administrativo:** indisponibilidade do painel não deve impedir, por si só, recepção durável nas APIs independentes nem inviabilizar todos os alertas técnicos críticos.
@@ -66,3 +66,8 @@ Detecção → classificação de gravidade → abertura de incidente e alertas 
 **Aprovado:** detecção de falhas graves, contingência pré-configurada, recuperação por agentes com autonomia controlada, proteção e validação de dados, recuperação por backups, testes periódicos, aprendizado e definição futura de RTO/RPO.  
 **Pendente:** metas numéricas, infraestrutura detalhada, custos, procedimentos e homologação.  
 **Programação:** não iniciada.
+
+
+## Complemento posterior — IN-147 (01/11/2026)
+
+O descarte de envios **não entregues** após o prazo de **3 dias na fila normal + 15 dias na fila de falhas** está autorizado pela [IN-147](IN-147-exclusao-leads-nao-entregues-apos-18-dias.md). Preservam-se os avisos 72h antes, alerta crítico no vencimento, verificação determinística antes de excluir, auditoria minimizada por 90 dias e exceções legais. Não criar quarentena operacional adicional. Esta atualização prevalece sobre qualquer indicação histórica de que o descarte final permanecia sem aprovação; **não se aplica a leads confirmados no CRM**.
