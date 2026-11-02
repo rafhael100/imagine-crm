@@ -1,6 +1,6 @@
 # PORTAL-01 — Matriz de Pendências do Portal Imagine (Sites por Assinatura)
 
-**Status:** CONSOLIDAÇÃO DOCUMENTAL E PROPOSTAS DE PAUTA — **nenhuma decisão nova desta matriz aprovada**.  
+**Status:** MATRIZ DE PENDÊNCIAS — **PORTAL-D01 aprovada funcionalmente em 02/11/2026**; demais pautas ainda pendentes de decisão e especificação.  
 **Data:** 02/11/2026.  
 **Escopo:** **Portal Imagine**, que contrata e administra sites Onepage/Landing Page; não é o CRM Imagine SaaS nem a futura Universidade Imagine.  
 **Fase:** somente planejamento e documentação, **sem programação, contratos, cobranças, infraestrutura nova, migração ou publicação**.
@@ -29,7 +29,7 @@
 
 | Código de pauta | Tema | O que está pendente | Situação |
 |---|---|---|---|
-| **PORTAL-D01** | **Aceite da versão, contratos e orçamentos** | Identidade do aprovador, versão imutável, prova/registro de aceite, recusa e solicitação de ajustes, modelos de contratos e alteração de escopo | **Próxima decisão proposta** |
+| **PORTAL-D01** | **Aceite eletrônico de versões de site e orçamentos** | **Aprovado:** cliente autenticado/autorizado, objeto/versão exatos, aceite expresso, registro auditável, preservação da prova, pedido de ajustes e contestação; aceite não representa pagamento. **Pendente:** modelo contratual e detalhes técnicos/jurídicos de assinatura, retenção e UX. | **Fluxo funcional APROVADO** — [PORTAL-D01](PORTAL-D01-aceite-eletronico-versoes-orcamentos.md) |
 | **PORTAL-D02** | **Adicionais e cobrança** | Vencimentos, início de execução de extra, parcelamento acima R$ 270 (taxas/juros/recebimento), atraso, contestação, cancelamento e estornos | **Pendente**; preservar à vista até R$ 270 e até 3x acima |
 | **PORTAL-D03** | **Uso justo e prazos** | Como caracterizar conteúdo simples versus mudança estrutural, evitar abuso sem estabelecer teto oculto, marco de contagem dos 3 dias e cronograma de pedidos complexos | **Pendente**; preservar conteúdo sem teto fixo |
 | **PORTAL-D04** | **Ciclo de contratação e inadimplência do site** | Vínculo contratual e eventos reais de pagamento, tolerância e suspensão, retomada, cancelamento, reembolso, prazos e efeitos na cortesia CRM conforme IN-119–122 | **Pendente de detalhamento/aprovação onde houver regra nova** |
@@ -42,9 +42,9 @@
 
 A priorização **não significa aprovação da solução** nem reabre regras anteriores. No ato de detalhar, verificar todas as decisões anteriores para não refazer perguntas já respondidas pelo responsável.
 
-## C. Primeira proposta a deliberar — PORTAL-D01: aceite formal da versão e do orçamento
+## C. PORTAL-D01 — aceite formal da versão e do orçamento (APROVADA em 02/11/2026)
 
-**Proposta para aprovação futura, NÃO aprovada nesta matriz:**
+**Fluxo funcional aprovado expressamente pelo responsável em 02/11/2026 (resposta “sim”) à proposta abaixo. O detalhamento jurídico e técnico permanece pendente:**
 
 1. **Aceite autenticado:** somente cliente/representante **autenticado e autorizado** poderá aprovar a versão específica do site ou um orçamento de adicional no Portal.
 2. **Identificação inequívoca:** apresentar claramente **site/projeto, escopo, número e URL da versão, data, valor/condições de orçamento quando houver** e ação explícita de aceitar; silêncio, visualização, envio automático de URL ou passagem de prazo **não constituem aceite**.
@@ -56,8 +56,13 @@ A priorização **não significa aprovação da solução** nem reabre regras an
 
 **Pendente de discussão separada:** eventual necessidade de autenticação reforçada, assinaturas eletrônicas de nível específico para cada documento, campos e períodos de retenção, contrato padrão, validade do orçamento, marcos de vencimento e início de execução, fluxos de desistência/reembolso e conformidade jurídica. Não afirmar que o aceite proposto supre sozinho todos os requisitos jurídicos.
 
-## D. Regra de trabalho e próxima pergunta
+## D. Continuidade do planejamento — próxima pauta PORTAL-D02
 
-Primeiro revisar/aprovar (ou ajustar) o fluxo funcional **PORTAL-D01**. Na sequência tratar **PORTAL-D02** e **PORTAL-D03**, sem mexer nos preços e condições já aprovados; ao final consolidar contratos, limites, capacidade/custos e revisão jurídica/financeira.
+**PORTAL-D01 está aprovada** e documentada em [PORTAL-D01](PORTAL-D01-aceite-eletronico-versoes-orcamentos.md). **Próxima pauta: PORTAL-D02 — regras financeiras de adicionais e orçamentos**, seguida de PORTAL-D03 (uso justo e prazos), sem alterar os preços e condições já aprovados; ao final consolidar contratos, limites, capacidade/custos e revisão jurídica/financeira.
 
-**Nenhuma decisão nova deste documento está aprovada. Nenhum código, contrato ou servidor foi criado e nenhuma contratação realizada.**
+**Somente a PORTAL-D01 recebeu aprovação funcional nova nesta matriz. PORTAL-D02 e seguintes não foram aprovadas. Nenhum código, contrato ou servidor foi criado e nenhuma contratação realizada.**
+
+
+## Registro de aprovação PORTAL-D01 (02/11/2026)
+
+Em resposta à pergunta direta de aprovação, o responsável respondeu **“sim”** e aprovou as regras de **aceite eletrônico autenticado, por versão e orçamento identificáveis, prova íntegra e auditável, novo aceite para mudança material, solicitação de ajustes e contestação, sem cobrança automática nem confundir aceite com pagamento**. Preservar as duas rodadas de ajustes incluídas, a validação prévia dos orçamentos pela Imagine e o aceite explícito do cliente. Documento funcional detalhado: [PORTAL-D01 — Aceite Eletrônico de Versões e Orçamentos](PORTAL-D01-aceite-eletronico-versoes-orcamentos.md). Retenção de comprovantes, termos legais e tecnologia de assinatura dependem de detalhamento e validação jurídica posteriores. **A PORTAL-D02 segue pendente; nenhuma programação/cobrança autorizada.**
