@@ -158,3 +158,29 @@ Layout das telas, checklist jurídico mínimo do modelo padrão, dados e fontes 
 **APROVADO:** após solicitação de alteração, **IA analisa, prepara nova minuta versionada e devolve ao cliente para aprovação**, escalando questões jurídicas e casos fora do padrão à equipe habilitada. A política padrão, aprovação do cliente antes da publicação e bloqueio de entrega sem aprovação continuam vigentes.
 
 **PENDENTE PARA ESPECIFICAÇÃO:** matriz de classificação de risco, modelos jurídico/legais homologados, permissões, regras de intervenção, telas para comparação de versões, forma de notificar/encaminhar a nova versão, limites de tentativas, custos/capacidade, revisão jurídica dos templates e testes. **Não há programação, envio de mensagens ou publicação de documentos reais.**
+
+
+## 11. Notificações automáticas de análise da Política de Privacidade — Portal e e-mail (02/11/2026)
+
+**Pergunta submetida ao responsável:** “Recomendo que, quando a política estiver pronta para análise ou uma versão revisada estiver disponível, o cliente receba uma notificação no Portal Imagine e um aviso por e-mail, com acesso direto ao documento. Você aprova essas notificações automáticas por Portal e e-mail?” **Resposta: “ok”. APROVADO.**
+
+### 11.1 Gatilhos e destinatários aprovados
+
+- **Política padrão individual do projeto pronta para primeira análise:** disponibilizar ao cliente responsável uma **notificação interna no Portal Imagine** e **um aviso por e-mail** informando a necessidade de sua decisão.
+- **Nova versão revisada pronta após pedido de alterações:** repetir notificação interna e e-mail referentes à **nova versão**; não reaproveitar link de versão obsoleta como se ainda estivesse pendente.
+- Direcionar para **cliente responsável ou representante com permissão de aprovação no projeto**; destinatários e endereços devem ser validados e vinculados àquela empresa/site. **Não notificar outros clientes ou expor dados de um projeto alheio**.
+- Aviso e notificação devem permitir acessar **a versão exata da política no Portal por link autenticado, com controles de autorização e expiração/revogação apropriados**. E-mail poderá trazer identificação mínima do projeto e chamada para revisar, mas **não levar dados pessoais ou informações jurídicas sensíveis desnecessariamente**, nem ser meio de aprovar o documento sem autenticação e aceite expresso.
+
+### 11.2 Operação, auditoria e segurança (requisitos de desenho)
+
+- Um aviso por **evento relevante/versão** em cada canal aprovado, com mecanismos para evitar duplicações por retentativa, processamento concorrente ou reprocessamento do agente IA; notificações de novas versões são eventos legítimos distintos.
+- Manter histórico de evento, site/cliente, versão, destinatário autorizado, canal, estado de agendamento/tentativa/entrega conforme retorno efetivo, falha e auditoria, protegendo dados pessoais e seguindo retenção a definir.
+- Tratar esses avisos como **comunicações operacionais vinculadas ao fluxo de aprovação requerido**, distintas de marketing; analisar base legal, política de privacidade, canal, endereço, segurança e direitos aplicáveis. **Não confundir com consentimento universal para publicidade**.
+- Se e-mail falhar, a notificação interna permanece acessível; falha de e-mail **não é aceite**, não remove a necessidade de aprovação do cliente e deve ficar rastreável para correção. O Portal poderá exibir estado **Aguardando aprovação do cliente**.
+- A política só é aprovada quando o cliente realiza ato expresso, independentemente de leitura ou clique no aviso. Se solicitar alteração, gera-se nova minuta e nova notificação após disponibilização; **não publicar versão não aprovada nem marcar site ENTREGUE**.
+
+### 11.3 Escopo não aprovado por inferência
+
+**APROVADO:** notificações **automáticas no Portal e por e-mail** quando a política padrão ou revisão fica disponível para análise, com acesso seguro ao documento; **não** foram aprovados **lembretes recorrentes**, prazos de reenvio, horários/cadências, WhatsApp/SMS, escalonamento por inatividade, aprovação automática, links de aceite sem autenticação nem alteração do conteúdo contratual. Definir esses elementos, modelos de mensagem, provedores, custos e homologação em rodada específica antes de implementar.
+
+**Somente planejamento/documentação. Nenhuma comunicação real enviada.**
