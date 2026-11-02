@@ -63,3 +63,8 @@ Consultadas em 02/11/2026:
 - Banco Central — regulamentação de crédito durante iniciação de Pix: https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?numero=603&tipo=Resolu%C3%A7%C3%A3o+BCB
 
 **Conclusão: a escolha do responsável sobre cartão como único parcelamento dos adicionais já foi registrada na PORTAL-D02. Os meios de pagamento recorrente desta PORTAL-D04 são somente PROPOSTA, aguardando decisão expressa. Não iniciar programação nem cobrança.**
+
+
+## Proposta comercial posterior — mensalidade R$ 87 e Pix Automático 10% (02/11/2026)
+
+O responsável manifestou estar **considerando**, sem aprovação final, alterar a mensalidade-base de **R$ 79,90 para R$ 87,00**, aplicando **10% de desconto em Pix Automático** (**R$ 78,30 efetivos**) e **sem desconto em cartão recorrente** (**R$ 87,00**). Na política anterior de referência, mensalidade-base R$ 79,90 e desconto Pix Automático de 5% levariam a R$ 75,91 efetivos. Assim, o Pix proposto de R$ 78,30 é **R$ 1,60 menor que a mensalidade-base antiga, mas R$ 2,39 maior que a antiga mensalidade Pix descontada**. As novas condições **são hipótese para análise e não substituem preços/descontos aprovados**. O estudo está em [PORTAL-COM-02](PORTAL-COM-02-proposta-revisao-precos-pix-20-cartao-4x-mensalidade-87.md). Confirmar aplicabilidade a Onepage/Landing Page, início no 90º dia, proteção de contratos vigentes, custos de tarifas e margem antes de qualquer decisão/publicação. Não autoriza cobrança ou programação.
