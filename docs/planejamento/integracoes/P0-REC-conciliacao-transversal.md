@@ -104,5 +104,11 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - **As dimensões e transições são propostas de representação, não um motor central paralelo, nem validação final.** Regras já aprovadas: autorização contextual, idempotência, resultado desconhecido exige reconciliação, módulo proprietário confirma atos, IA sem autonomia crítica.
 - Todos os G01–G06 permanecem no estágio já indicado; nenhum critério foi concluído por escrever a minuta.
 
-## 10. Restrição permanente
+## 10. Avanço documental CT-03/CT-04 e fichas operacionais
+
+- [Aceite literal CT-03/CT-04](P0-DEC-aprovacao-CT03-CT04.md): princípios e representação documental de comandos/resultados passam a **aprovados**, sem autorização de implementação ou de parâmetros numéricos.
+- [24 fichas operacionais](P0-OP24-detalhamento-CT03-CT04-por-operacao.md): propostas para decompor responsabilidades e resultados, sem ampliar escopo ou considerar exaustividade.
+- Os 11 P0 e os critérios G01..G06 ainda não foram encerrados. Contratos executáveis, vínculo literal a todas as decisões e testes técnicos continuam pendentes.
+
+## 11. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
