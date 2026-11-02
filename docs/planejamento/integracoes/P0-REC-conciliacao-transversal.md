@@ -92,5 +92,11 @@ Nenhuma das 11 pendências fica encerrada automaticamente por esta matriz. “Pa
 
 O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CON-01, P0-SEC-01. Os critérios G01..G06 não mudam para concluído por mera existência das minutas.
 
-## 8. Restrição permanente
+## 8. Detalhamento por requisito e por caso operacional
+
+- [P0-TR53](P0-TR53-vinculo-contratos-aceite.md): todas as **53 linhas iniciais** da matriz TR foram associadas, de modo **proposto**, a CT-01..11, INV e HT, com evidência esperada. Não equivale a fonte literal/cobertura exaustiva.
+- [P0-OP](P0-OP-casos-operacionais-contratos-alcadas.md): **12 casos ilustrativos** com fronteira de autoridade, pré-condição, confirmação proprietária e falha negativa esperada. Não representam todas as operações do módulo.
+- O registro documental não altera nenhum status final dos 11 P0 ou G01..G06. Continuam exigidas as propostas originais, matriz completa de autorizações por operação, schemas e aceite expresso.
+
+## 9. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
