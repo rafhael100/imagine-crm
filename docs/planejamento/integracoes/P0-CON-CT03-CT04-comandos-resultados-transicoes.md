@@ -129,7 +129,7 @@ As dimensões **não** são enums físicos aprovados. A representação final de
 2. Identificar módulo proprietário, conexão/versão, autorizações atuais, recurso e efeito solicitado.
 3. Consultar fonte oficial externa ou interna por mecanismo **homologado e autorizado**, preferencialmente apenas leitura.
 4. Comparar evidências de envio, aceite, aplicação, rejeição, eventos fora de ordem, checkpoints e registros oficiais; registrar lacunas.
-5. Se comprovado, encaminhar resultado factual ao proprietário para registro/confirmacão da competência; se divergente, manter inconclusivo/pendente e escalar.
+5. Se comprovado, encaminhar resultado factual ao proprietário para registro/confirmação da competência; se divergente, manter inconclusivo/pendente e escalar.
 6. Reexecutar comando somente se operação, autorização, contexto e idempotência permitirem e se efeito duplicado estiver controlado.
 7. Para efeito parcial, propor compensação **tipada**, com elegibilidade/risco/alçada, autorização competente, execução e verificação próprias.
 8. Correlacionar incidentes/consulta no INT-10 e evidências no INT-12/Auditoria Geral, sem trilhas duplicadas; conservar resultados desconhecidos quando ainda não resolvidos.
@@ -162,7 +162,7 @@ Casos CT34-AC01..12 detalham **propostas de procedimentos** dentro dos cenários
 | Aceite/aplicação técnica | Fonte técnica documentada | Traduz status técnico sem promoção a negócio | Aguarda dependência | Reconcilia se necessário | Investiga | Avalia o impacto/efeito |
 | Ato oficial de negócio | Não é autoridade por padrão | Não confirma | Não confirma | Não confirma | Não confirma | **Atesta conforme regras do seu domínio** |
 | Compensação | Executa só comando autorizado | Transporta | Coordena | Auxilia diagnóstico | Audita | **Autoriza/efetua/confirma o ato de sua competência** |
-| Auditoria/retencão | Sinais técnicos minimizados | Correlaciona IDs | Referencia | Usa observabilidade | Visão especializada | Auditoria Geral é trilha oficial; módulos são donos dos fatos |
+| Auditoria/retenção | Sinais técnicos minimizados | Correlaciona IDs | Referencia | Usa observabilidade | Visão especializada | Auditoria Geral é trilha oficial; módulos são donos dos fatos |
 
 ## 11. Pendências para apreciação e encerramento
 
