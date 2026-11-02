@@ -27,7 +27,7 @@ Permitir que agentes técnicos e mecanismos de contingência **detectem falhas, 
 - **Não confundir recepção, persistência e entrega ao CRM.** Receber um lead na API de contingência não significa que o CRM já o processou. Os estados e suas transições devem ser auditáveis.
 - **Deduplicação sem perda indevida.** Uma tentativa repetida não pode gerar dois leads equivalentes indevidamente, mas detecção de duplicata ambígua não autoriza descartar uma submissão genuína.
 - **Reprocessamento seguro.** Mensagens persistidas em cada ambiente devem continuar rastreáveis até entrega confirmada ao CRM, falha/escalonamento ou tratamento explícito autorizado.
-- **Retenção das filas preservada.** Permanecem as regras de **3 dias de fila normal e 15 dias de fila de falhas** contados da primeira persistência; alternância entre ambientes não reinicia a contagem nem permite descarte silencioso. A destinação final de não entregues após 18 dias segue pendente (IN-128).
+- **Retenção das filas preservada.** Permanecem as regras de **3 dias de fila normal e 15 dias de fila de falhas** contados da primeira persistência; alternância entre ambientes não reinicia a contagem nem permite descarte silencioso. A política final foi aprovada na **IN-147**: o payload de não entregues poderá ser excluído automaticamente após completar 18 dias, sem quarentena adicional, com auditoria, avisos e verificação de status.
 - **Reconciliação controlada.** Quando um ambiente retorna, confrontar eventos por IDs e estados e verificar diferenças de processamento antes de corrigir qualquer inconsistência, especialmente se houver risco de sobrescrever dados.
 
 ## Condições para troca automática (failover)
@@ -85,8 +85,13 @@ Permitir que agentes técnicos e mecanismos de contingência **detectem falhas, 
 5. Ambientes de teste, cenários de falha parcial/partição de rede, métricas, logs, alçadas operacionais e avaliação de custos.
 6. Definição de RTO/RPO por serviço (valores numéricos ainda **não aprovados** na IN-144).
 7. Políticas de acesso, autenticação técnica, autorização humana para riscos críticos e guarda de evidências.
-8. Proteção de leads já confirmados e política final para registros não entregues após a janela de 18 dias, ainda não aprovada.
+8. Proteção de leads já entregues ao CRM e **detalhamento técnico** da política aprovada na IN-147 para excluir payloads não entregues após 18 dias, com reconciliação entre ambientes e controle de réplicas.
 
 **Aprovado:** detecção de falha, acionamento automático de contingência homologada, prevenção de conflitos e duplicações, observação da recuperação, retorno automático seguro e autorizado, reconciliação de dados e aprendizado contínuo.  
 **Pendente:** arquitetura executável, parâmetros técnicos, provas de consistência, dimensionamento e testes.  
 **Programação:** não iniciada.
+
+
+## Complemento posterior — IN-147 (01/11/2026)
+
+O descarte de envios **não entregues** após o prazo de **3 dias na fila normal + 15 dias na fila de falhas** está autorizado pela [IN-147](IN-147-exclusao-leads-nao-entregues-apos-18-dias.md). Preservam-se os avisos 72h antes, alerta crítico no vencimento, verificação determinística antes de excluir, auditoria minimizada por 90 dias e exceções legais. Não criar quarentena operacional adicional. Esta atualização prevalece sobre qualquer indicação histórica de que o descarte final permanecia sem aprovação; **não se aplica a leads confirmados no CRM**.
