@@ -1,6 +1,6 @@
 # PORTAL-D04 — Cobranças Recorrentes dos Sites Imagine
 
-**Status:** **PROPOSTA PARA DELIBERAÇÃO — modalidades de recorrência AINDA NÃO APROVADAS** (02/11/2026).  
+**Status:** **10% DE DESCONTO PARA MENSALIDADES PAGAS POR PIX AUTOMÁTICO APROVADO COMO DIRETRIZ COMERCIAL em 02/11/2026**. O preço-base R$ 87 por produto, ativação das modalidades recorrentes, provedores e parâmetros financeiros continuam pendentes. Proposta de Pix Automático + cartão recorrente sujeita a homologação/contratação específica.  
 **Origem:** pergunta do responsável "E nos pagamentos recorrentes?" após decidir que **serviços adicionais só parcelam por cartão de crédito** ([PORTAL-D02](PORTAL-D02-pagamento-servicos-adicionais.md)).
 **Escopo:** mensalidades recorrentes de **Onepage e Landing Page** contratados pelo **Portal Imagine**, não parcelamento de orçamento de adicional, nem mensalidade/upgrade do CRM Imagine.
 **Fase:** planejamento/documentação exclusivamente. Não iniciar implementação, contratar instituição/PSP, emitir cobrança ou ativar débito real.
@@ -68,3 +68,8 @@ Consultadas em 02/11/2026:
 ## Proposta comercial posterior — mensalidade R$ 87 e Pix Automático 10% (02/11/2026)
 
 O responsável manifestou estar **considerando**, sem aprovação final, alterar a mensalidade-base de **R$ 79,90 para R$ 87,00**, aplicando **10% de desconto em Pix Automático** (**R$ 78,30 efetivos**) e **sem desconto em cartão recorrente** (**R$ 87,00**). Na política anterior de referência, mensalidade-base R$ 79,90 e desconto Pix Automático de 5% levariam a R$ 75,91 efetivos. Assim, o Pix proposto de R$ 78,30 é **R$ 1,60 menor que a mensalidade-base antiga, mas R$ 2,39 maior que a antiga mensalidade Pix descontada**. As novas condições **são hipótese para análise e não substituem preços/descontos aprovados**. O estudo está em [PORTAL-COM-02](PORTAL-COM-02-proposta-revisao-precos-pix-20-cartao-4x-mensalidade-87.md). Confirmar aplicabilidade a Onepage/Landing Page, início no 90º dia, proteção de contratos vigentes, custos de tarifas e margem antes de qualquer decisão/publicação. Não autoriza cobrança ou programação.
+
+
+## Diretriz comercial posterior aprovada — Pix Automático com 10% de desconto (02/11/2026)
+
+O responsável esclareceu que a mensalidade de cliente que habilite **Pix Automático recebe 10% de desconto**, como camada permanente de incentivo à recorrência, **independente do desconto de 20% do Pix à vista da implantação**. Portanto o percentual **10%** não é mera hipótese pendente: está decidido como diretriz funcional. **Exemplo:** se a mensalidade-base de R$ 87 anteriormente proposta for efetivamente aprovada para determinado produto, a cobrança mensal será R$ 78,30 por Pix Automático e R$ 87 por cartão recorrente. **A mensalidade-base por produto e os meios técnicos de cobrança ainda exigem aprovação final**; não ativar cobrança ou modificar contratos legados. O desconto não se aplica automaticamente a Pix manual ou cartão. Base documental: [PORTAL-COM-03 — Motor promocional](PORTAL-COM-03-motor-precos-promocoes-pix-contadores.md).
