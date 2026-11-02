@@ -50,3 +50,8 @@ Gerenciar automaticamente a concessão, manutenção e fim da cortesia comercial
 - Conciliação com promoções, condições comerciais personalizadas e prazos das assinaturas.
 
 **Próximo passo:** seguir planejamento agrupado e obter novas aprovações. **Nenhum desenvolvimento deve ser iniciado.**
+
+
+## Complemento COM-08 — beneficio por campanha e suspensao de acesso por inadimplencia (02/11/2026)
+
+Nova direção funcional: a elegibilidade **CRM Básico cortesia passa a ser configurável no painel por serviço e campanha**, e deverá constar do contrato/aceite para **novas vendas**; benefícios já concedidos não são revogados pela edição de campanhas. **Caso especial de inadimplência:** se o site for **suspenso após 7 dias de tolerância** e a conta CRM depender **exclusivamente desse site** para cortesia, **bloquear acesso operacional do Básico cortesia no mesmo evento**, preservando dados, portabilidade e reativação segura. **Outros sites elegíveis ativos e planos CRM pagos independentes impedem esse bloqueio**. Este bloqueio **temporário por inadimplência não revoga nem substitui automaticamente** a transição de 30 dias já aprovada para **cancelamento formal do último vínculo elegível**. Os fluxos em que uma suspensão evolui para cancelamento precisam de harmonização para respeitar ambas as políticas e o contrato. Ver [PORTAL-COM-08](PORTAL-COM-08-inadimplencia-site-cortesia-crm-configuravel.md). Sem programação.
