@@ -79,3 +79,8 @@ Exemplo **fictício**, sem afirmar tarifas reais: se cartão 4x custar efetivame
 5. **Revisão financeira:** validar tarifas reais, prazo de recebimento no cartão 4x, necessidade de antecipação, margem e preço efetivo antes de publicar ou faturar.
 
 **Conclusão:** documento **somente de PROPOSTA**. Não alterar tabela pública, assinaturas, preços históricos, descontos vigentes ou parcelamentos aprovados sem nova autorização expressa do responsável e revisão final do planejamento.
+
+
+## Atualização posterior — motor de campanhas e desconto Pix cumulativo (02/11/2026)
+
+O responsável posteriormente esclareceu/aprovou a arquitetura funcional da [PORTAL-COM-03 — motor de promoções](PORTAL-COM-03-motor-precos-promocoes-pix-contadores.md): **preço-base verdadeiro por produto, promoção especial, desconto ADICIONAL de 20% para pagamento Pix à vista sobre o preço já promocional, 10% no Pix Automático da mensalidade e campanhas encerradas por quantidade real, por prazo real ou pelo primeiro limite atingido entre ambos**. Esta seção prevalece sobre qualquer leitura da hipótese anterior de Pix 20% não cumulativo com campanha. O preço R$ 2.500 e ofertas de R$ 1.200/R$ 600 são exemplos de referência para desenho e não preços automaticamente ativados. O preço-base real de cada produto, a base mensal R$ 87, extensão de 4x à implantação, margens e parâmetros de cada promoção ainda exigem fechamento comercial e jurídico. Sem programação/publicação de ofertas.
