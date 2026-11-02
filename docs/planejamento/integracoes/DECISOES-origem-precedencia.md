@@ -31,5 +31,11 @@ Novas sugestões, interpretações da IA, exemplos e alternativas não são deci
 - O registro de aceites reduz lacuna de reprodução textual, **não fecha P0-DOC-01, G01 nem G05**. A transcrição não aprova contratos técnicos novos.
 - INT-01 a INT-09 continuam sem transcrições integrais comprovadas no material deste diretório.
 
+## Aprovação específica CT-03/CT-04 (2026-11-02)
+
+- [P0-DEC-aprovacao-CT03-CT04](P0-DEC-aprovacao-CT03-CT04.md) transcreve a **aprovação expressa** da base documental dos contratos, estados técnicos e resultados oficiais, idempotência, concorrência, retentativas seguras e reconciliação.
+- [P0-CON-CT03-CT04](P0-CON-CT03-CT04-comandos-resultados-transicoes.md) é a especificação documental de base aprovada, sem implicar homologação, parâmetros executáveis ou encerramento de P0-CON-01.
+- [P0-OP24](P0-OP24-detalhamento-CT03-CT04-por-operacao.md) é detalhamento **proposto**, não nova aprovação funcional, 24 novas automações nem APIs programadas.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
