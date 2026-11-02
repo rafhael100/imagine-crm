@@ -103,3 +103,16 @@ Foi aprovado expressamente por **“ok”** do responsável que o vencimento men
 ## Decisão posterior COM-07 — cobrar na data mesmo em dia não útil; tolerância após falha (02/11/2026)
 
 O responsável **corrigiu expressamente a proposta anterior de postergar cobranças para o próximo dia útil**: deve-se **tentar efetuar pagamento automático no dia contratualmente configurado mesmo quando sábado, domingo ou feriado bancário** (quando permitido pelo meio/provedor e juridicamente válido). Se o pagamento **falhar em dia não útil**, o cliente poderá **regularizar até o próximo dia útil bancário sem juros nem multa**, sem suspensão por essa falha durante tal janela. **Registrar distintamente data contratada, tentativa, situação de liquidação e data-limite sem encargos**. Não deslocar o dia âncora dos próximos ciclos, não cobrar em duplicidade. **Pix Automático:** o PSP pode adotar ajuste-padrão ao próximo dia útil; escolher e homologar configuração para não úteis, quando juridicamente admitida. **Cartão:** sujeitar ao suporte do processador e conciliação. Retentativas, feriados locais e políticas posteriores de atraso permanecem pendentes. Detalhes em [PORTAL-COM-07](PORTAL-COM-07-vencimentos-recorrentes-configuraveis.md). Não iniciar cobrança real ou programação.
+
+
+## Decisão parcial sobre inadimplência — após o prazo sem encargos (02/11/2026)
+
+O responsável respondeu **“ok”** à proposta expressa: **se a mensalidade não for paga até o prazo de regularização concedido após uma falha em fim de semana/feriado bancário**, o Portal deverá:
+1. **marcar o ciclo como pendente de pagamento**, registrando vencimento contratual, falha de tentativa, prazo de regularização sem encargos e status financeiro comprovado;
+2. **enviar notificação ao cliente** sobre o pagamento pendente, com forma segura para regularização e informações claras, sem assumir que um pagamento feito e ainda em conciliação não existe;
+3. **não suspender imediatamente o site** por essa pendência. A duração da tolerância antes de suspensão e os avisos prévios serão aprovados em decisão específica futura;
+4. preservar dados, contrato, histórico e controles de duplicidade. **Não presumir suspensão imediata do CRM Básico Cortesia** por mera falha de cobrança: os gatilhos são separados, sujeitos às regras já aprovadas de elegibilidade e transição;
+5. distinguir o período aprovado **sem juros e multa até o próximo dia útil em caso de falha no dia não útil** de qualquer política posterior de encargos, tolerância e suspensão. **Juros, multa, sua incidência e carência após esse limite ainda não foram aprovados**;
+6. se o pagamento for confirmado na conciliação, quitar a competência, encerrar a pendência e impedir notificações/cobranças duplicadas.
+
+**Aprovação somente parcial:** prazo para suspensão (**quantos dias**), contagem de dias corridos/úteis, política de encargos, reenvios, notificações finais, suspensão, reativação e repercussão no CRM ainda **pendentes**. O presente aceite não autoriza cobrança real nem programação. Referência da regra anterior de vencimento: [COM-07](PORTAL-COM-07-vencimentos-recorrentes-configuraveis.md).
