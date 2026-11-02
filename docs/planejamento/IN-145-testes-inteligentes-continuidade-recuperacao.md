@@ -45,7 +45,7 @@ Planejamento e seleção do cenário → identificação da criticidade e dos se
 ### Filas e entrega de leads
 - Testar reinício de workers, repetição de processamento, falhas parciais e reconexão ao CRM, usando submissões sintéticas e contas de homologação.
 - Preservar as regras aprovadas de **3 dias em fila normal + 15 dias em fila de falhas** (IN-127), sem reiniciar contagem por retentativas, e alertas antes de atingir o prazo (IN-128).
-- Não tratar os testes como autorização para descarte de mensagens reais, inclusive após a janela de 18 dias; a política final para não entregues permanece pendente.
+- Não usar **testes** como justificativa para descarte de mensagens reais. A política operacional de **exclusão automática de envios não entregues após completar 18 dias** foi aprovada posteriormente na **IN-147**, com avisos, verificação de elegibilidade e auditoria.
 
 ### Backups de sites, CRM e serviços
 - Validar separadamente cópias de sites e os dados do CRM, pois possuem **políticas independentes**.
@@ -82,3 +82,8 @@ Planejamento e seleção do cenário → identificação da criticidade e dos se
 **Decisão aprovada:** testes de APIs e contingência, backups, simulação de falhas, filas, tempos de recuperação, aprendizado dos agentes, relatórios e controles para evitar riscos à produção.  
 **Pendente:** cadência, ambientes e capacidade, cenários técnicos, metas quantitativas, custos e implementação.  
 **Programação:** não iniciada.
+
+
+## Complemento posterior — IN-147 (01/11/2026)
+
+O descarte de envios **não entregues** após o prazo de **3 dias na fila normal + 15 dias na fila de falhas** está autorizado pela [IN-147](IN-147-exclusao-leads-nao-entregues-apos-18-dias.md). Preservam-se os avisos 72h antes, alerta crítico no vencimento, verificação determinística antes de excluir, auditoria minimizada por 90 dias e exceções legais. Não criar quarentena operacional adicional. Esta atualização prevalece sobre qualquer indicação histórica de que o descarte final permanecia sem aprovação; **não se aplica a leads confirmados no CRM**.
