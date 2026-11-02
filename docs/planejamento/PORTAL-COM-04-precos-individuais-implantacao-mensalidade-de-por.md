@@ -86,3 +86,8 @@ A **estrutura De/Por para a mensalidade foi aprovada**, mas **prazo de garantia 
 7. Especificar integração, contadores, versão de preço, checkout, faturamento, LGPD e auditoria.
 
 **Conclusão:** **aprovada a arquitetura comercial de tabelas e promoções “De/Por” independentes por serviço para implantação e mensalidade**, com incentivos adicionais Pix distintos já aprovados. **Não aprovados preços concretos, publicação de ofertas, prazos contratuais ou programação.**
+
+
+## Complemento aprovado COM-05 — administração de campanhas e duas modalidades de mensalidade (02/11/2026)
+
+O responsável definiu que **os preços-base e as condições de campanhas serão gerenciáveis pelo painel administrativo para cada serviço**. A mensalidade promocional de uma campanha poderá ser **por uma quantidade definida de meses** (depois passa para a condição futura **previamente informada e aceita**) **OU por todo o período em que o contrato continuar ativo**. Em ambos os modelos, **reajuste somente anual pelo índice indicado no contrato, depois de 12 meses de contrato**, sem reajustes intermediários por índice. O fim de campanha para novos clientes não altera o contrato já vigente. O desconto de 10% Pix Automático aplica-se sobre a mensalidade contratada elegível, inclusive promocional; os 20% Pix à vista da implantação permanecem separados. **Índice específico, valores por produto, marcos de contagem dos N meses e políticas de reajuste técnico/contratual não estão definidos.** Veja [COM-05 — Gestão administrativa e reajuste anual](PORTAL-COM-05-gestao-administrativa-precos-campanhas-reajuste-anual.md). Nenhuma programação/cobrança autorizada.
