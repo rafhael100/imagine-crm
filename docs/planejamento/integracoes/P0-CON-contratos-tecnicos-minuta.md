@@ -81,7 +81,12 @@ Nenhuma resposta HTTP 2xx/202, webhook ou workflow n8n concluído é prova unive
 
 Essas referências não aprovam schemas, decisões funcionais ou execução.
 
-## 8. Itens pendentes de aceite P0-CON-01
+## 8. Especialização dos contratos CT-03 e CT-04
+
+- [P0-CON CT-03/CT-04 — Comandos, resultados, transições, idempotência e reconciliação](P0-CON-CT03-CT04-comandos-resultados-transicoes.md) aprofunda as regras já aprovadas, mantendo campos, máquinas de estados, estratégias de retry e esquemas físicos na condição de **proposta para validação**.
+- Não presumir que essa minuta autorize desenvolvimento, configure uma segunda máquina de estados ou confirme fatos de negócio fora do módulo proprietário.
+
+## 9. Itens pendentes de aceite P0-CON-01
 - CON-A: schemas físicos definitivos e campos condicionais por contrato.
 - CON-B: transições de estados por tipo e situações inválidas.
 - CON-C: erros/versionamento/garantias por provedor.
