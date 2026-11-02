@@ -14,8 +14,8 @@ Eliminar cópias temporárias de leads que já foram entregues de forma confirma
 2. **Histórico técnico:** conservar registros de auditoria por **90 dias**, em formato minimizado, sem reproduzir conteúdos de formulários ou dados pessoais desnecessários. A retenção técnica é independente da cópia temporária do payload e não significa manter dados completos por 90 dias.
 3. **Pendências:** reenvio normal por até **3 dias** e manutenção por mais **15 dias na fila de falhas**, totalizando **18 dias**, conforme IN-127. Reenvios não renovam o relógio da retenção.
 4. **Alerta preventivo:** quando um lead ainda não entregue estiver a **72 horas** do vencimento dos 18 dias, emitir aviso à administração Imagine com identificação do envio e diagnóstico do erro, sem expor segredos ou dados pessoais em notificações.
-5. **No vencimento dos 18 dias:** emitir **alerta crítico** e **interromper novas tentativas automáticas** daquele envio, mantendo a ocorrência identificada para análise e tratamento segundo política de descarte.
-6. **Sem exclusão silenciosa:** o vencimento não representa aprovação para apagar automaticamente um lead pendente. Qualquer eliminação de pendências depende de **política de descarte específica, aprovada e auditada**, considerando obrigações legais, segurança e operação.
+5. **No vencimento dos 18 dias:** emitir **alerta crítico**, interromper novas tentativas automáticas, realizar verificação final de entrega/estado e, se elegível, permitir **exclusão automática do conteúdo temporário**, mantendo registro técnico minimizado conforme IN-147.
+6. **Descarte autorizado (IN-147):** após completar 18 dias sem entrega confirmada ao CRM, o conteúdo temporário **pode ser excluído automaticamente** por política específica, com verificação final, avisos, auditoria minimizada e exceções de guarda legal. **Não há quarentena adicional de 30 dias nem exigência de aprovação individual para cada descarte.**
 7. **Administração:** funcionários autorizados poderão consultar situação, diagnóstico e histórico e exportar dados ou registros ainda disponíveis em conformidade com as permissões e a política de privacidade; o envio de dados pessoais em exportações deve ser controlado e auditado.
 8. **Segregação e segurança:** isolar por cliente/conta/site, proteger dados temporários e históricos de auditoria, restringir acesso ao necessário, e registrar intervenções e reprocessamentos de modo rastreável.
 
@@ -27,15 +27,15 @@ Eliminar cópias temporárias de leads que já foram entregues de forma confirma
 | Lead não entregue, dia 0 a 3 | Tentativas automáticas normais |
 | Lead não entregue, dia 3 a 18 | Fila de exceções/erros e recuperação conforme IN-127 |
 | Lead não entregue, dia 15 | Alerta de que faltam 72 horas para o limite |
-| Lead não entregue, dia 18 | Alerta crítico, interromper tentativas automáticas e aguardar tratamento controlado |
+| Lead não entregue, dia 18 | Alerta crítico, interromper tentativas, reconciliar o estado e permitir exclusão automática segura após o prazo (IN-147) |
 | Eventos e tentativas | Auditoria técnica minimizada por 90 dias |
 
 Observação: os dias são relativos ao marco de persistência durável estabelecido na IN-127; a operacionalização de horários e fuso será especificada na arquitetura técnica.
 
 ## Salvaguardas e pendências de especificação
 
-- **Política de descarte final dos leads não entregues continua pendente**. Nada nesta aprovação define exclusão automática no 18º dia nem autoriza retenção indefinida.
-- Estabelecer procedimento de decisão humana para pendências vencidas, responsáveis autorizados, registro de justificativa, alertas e requisitos legais/LGPD; definir prazos e condições de exceção antes da implantação.
+- **Política de descarte final aprovada posteriormente na IN-147:** o payload de envios não entregues poderá ser excluído automaticamente após os 18 dias, com alertas e auditoria e sem quarentena adicional de 30 dias. A implementação detalhada e exceções de guarda legal permanecem para especificação.
+- Definir verificações determinísticas para descarte após 18 dias, tratamento de concorrência/estado de entrega, auditoria, alertas e exceções legais/LGPD antes da implantação; não exigir revisão humana por envio como regra.
 - Diferenciar confirmação de entrega efetiva ao CRM de mera resposta intermediária da API; impedir a limpeza de dados em entregas incertas.
 - Definir como a retenção de 24h lida com réplicas nas APIs principal/secundária, backups técnicos, filas de erro e consistência de status.
 - Ajustar política de limpeza segura à arquitetura de persistência, proteção de dados, restabelecimento após incidente e exigências legais.
@@ -46,5 +46,10 @@ Observação: os dias são relativos ao marco de persistência durável estabele
 ## Situação
 
 **Aprovado:** cópia temporária entregue por 24h; auditoria técnica por 90 dias; aviso 72h antes da expiração; alerta crítico e interrupção de reenvio automático no dia 18; não excluir silenciosamente pendências; consulta/exportação autorizada.  
-**Pendente:** política final de eliminação ou tratamento das pendências após os 18 dias, fluxo de aprovação, detalhes técnicos e de conformidade.  
+**Pendente:** detalhes técnicos e de conformidade da eliminação automática autorizada na IN-147; não há pendência de aprovação do prazo de descarte.  
 **Programação:** não iniciada.
+
+
+## Atualização documental — decisão IN-147 (01/11/2026)
+
+Aprovação posterior do responsável: **“passou os 18 dias pode excluir”**. Por isso, a política consolidada para envios não entregues é **3 dias de fila normal + 15 dias de falhas**, aviso 72 horas antes, alerta crítico no vencimento e **permissão para excluir automaticamente o payload temporário após completar 18 dias**, com conferência do estado, auditoria minimizada de 90 dias e exceções legais. **Não criar quarentena extra de 30 dias.** Veja [IN-147](IN-147-exclusao-leads-nao-entregues-apos-18-dias.md). Esta atualização prevalece sobre eventuais trechos históricos anteriores.
