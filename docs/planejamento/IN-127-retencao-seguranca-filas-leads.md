@@ -41,9 +41,9 @@ Erros permanentes detectados antes do terceiro dia podem ser sinalizados imediat
 
 ## Pontos não aprovados e pendentes de detalhamento
 
-- **Após entrega bem-sucedida:** a proposta anterior de manter o conteúdo por 24 horas antes da limpeza **não foi expressamente confirmada**.
-- **Histórico/auditoria:** a proposta anterior de 90 dias **não foi expressamente confirmada**.
-- **Descarte ao fim da fila de falhas:** definir avisos antecipados, exportação/recuperação, política de eliminação segura e exceções legais; não apagar silenciosamente. Sem compromisso de retenção ilimitada.
+- **Após entrega bem-sucedida:** prazo de 24 horas para limpeza da cópia temporária **aprovado na IN-128**; os detalhes de limpeza em ambas as APIs permanecem para especificação técnica.
+- **Histórico/auditoria:** retenção técnica minimizada por 90 dias **aprovada na IN-128**, com restrição a dados pessoais e ressalvas de obrigações legais.
+- **Descarte ao fim da fila de falhas:** avisos 72 horas antes e alerta crítico/interrupção de retentativas no vencimento **aprovados na IN-128**. Política final para descarte de pendências e exceções legais **ainda pendente**; não apagar silenciosamente.
 - Frequência e limites das tentativas; classificação de erros temporários e permanentes; tratamento de contas CRM suspensas ou de alterações do vínculo CRM durante a retenção.
 - Armazenamento criptografado, backups de filas, retenção de conteúdo pessoal, limites de volume, métricas e custos.
 - Os **18 dias consecutivos (3 + 15)** estão aprovados; restam detalhes técnicos de fuso, horários, avisos preventivos e funcionamento sob incidentes.
@@ -56,3 +56,8 @@ Erros permanentes detectados antes do terceiro dia podem ser sinalizados imediat
 - Falha simultânea das duas APIs pode impedir o recebimento; não prometer garantia absoluta de perda zero.
 
 **Status funcional:** novas decisões aprovadas e documentadas; parâmetros pendentes separados. **Programação não iniciada.**
+
+
+## Complemento posterior — IN-128
+
+Ver [IN-128 — Limpeza Segura e Auditoria das Filas de Leads](IN-128-limpeza-segura-auditoria-filas-leads.md) para os prazos aprovados de limpeza de cópias entregues (24 horas), histórico técnico (90 dias), aviso de expiração (72 horas de antecedência) e alerta crítico/interrupção do reenvio automático no dia 18. A eliminação final dos leads não entregues ainda exige política específica.
