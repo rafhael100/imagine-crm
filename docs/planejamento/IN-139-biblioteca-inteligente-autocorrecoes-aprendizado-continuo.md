@@ -79,3 +79,8 @@ O registro e a sugestão de lições são automáticos. A concessão de novas fe
 ## Atualização posterior — IN-163 (02/11/2026)
 
 A política de ciclo de vida do conhecimento foi aprovada na [IN-163 — Ciclo de Vida do Conhecimento dos Agentes Técnicos](IN-163-ciclo-vida-conhecimento-agentes.md): manter conhecimento e playbooks **ativos enquanto necessários**; versões **arquivadas permanecem por 24 meses contados do arquivamento**, com exclusão controlada quando elegível, preservação excepcional legítima, versionamento e impossibilidade de execução de procedimentos arquivados. A retenção de logs e registros brutos de incidentes continua regida pelas políticas específicas, sem extensão automática para 24 meses. Esta decisão posterior prevalece sobre qualquer indicação histórica de que o prazo da biblioteca ainda estivesse pendente.
+
+
+## Complemento posterior — IN-164 (02/11/2026)
+
+A [IN-164 — Curadoria Inteligente do Conhecimento dos Agentes Técnicos](IN-164-curadoria-inteligente-conhecimento-agentes.md) aprovou verificação de qualidade e obsolescência, detecção de duplicidades com preservação de diferenças e históricos, curadoria de rascunhos e **revisão após 90 dias sem movimentação relevante**. O prazo de 90 dias **não determina descarte automático ou homologação** de rascunhos. Os agentes podem organizar, classificar e sugerir revisão/arquivamento, mas **não homologam por conta própria novos playbooks executáveis**. O conhecimento efetivamente arquivado segue a retenção padrão de **24 meses contados do arquivamento** da IN-163. A forma técnica de tratar rascunhos revisados e ainda não arquivados continua pendente.
