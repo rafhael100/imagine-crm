@@ -1,6 +1,6 @@
 # PORTAL-D02 — Pagamentos, Parcelamento e Execução de Serviços Adicionais do Portal Imagine
 
-**Status:** **APROVAÇÃO PARCIAL EM 02/11/2026**: condição de início de execução aprovada pelo responsável (resposta “ok” à pergunta explícita). **Restante da política financeira está pendente.**  
+**Status:** **APROVAÇÃO PARCIAL EM 02/11/2026**: aprovados (a) início de execução condicionado ao aceite e ao recebimento integral ou da primeira parcela e (b) **até três parcelas sem juros ao cliente para adicionais acima de R$ 270,00**, com valor total e parcelas informados previamente. **Vencimentos, meios de pagamento, inadimplência, cancelamento e reembolso permanecem pendentes.**  
 **Fase:** somente planejamento e documentação. **Não autoriza cobrança real, contratação, programação, comunicação comercial, emissão de faturas ou alteração operacional**.
 **Escopo:** serviços extras/adicionais e orçamentos específicos solicitados por clientes no **Portal Imagine**, **não** implantação base de Onepage/Landing Page, mensalidade normal do site, contratação de CRM ou benefícios do CRM.
 **Referências:** [PORTAL-D01 — aceite expresso](PORTAL-D01-aceite-eletronico-versoes-orcamentos.md), [PORTAL-01 — matriz de pendências](PORTAL-01-matriz-pendencias-plataforma-sites.md), contratos e políticas financeiras ainda sujeitos a revisão ao final do planejamento.
@@ -8,9 +8,9 @@
 ## 1. Valores e formas anteriormente definidos — preservar
 
 - **Orçamento adicional até R$ 270,00:** pagamento **à vista**.
-- **Orçamento adicional acima de R$ 270,00:** cliente poderá optar entre **à vista ou parcelamento em até 3 vezes**, sujeito às regras financeiras e contratuais que ainda serão definidas.
+- **Orçamento adicional acima de R$ 270,00:** cliente poderá optar entre **à vista ou parcelamento em até 3 vezes sem juros para o cliente**, com preço total fechado e parcelas apresentadas previamente. Custos previstos de processamento devem ser considerados na formação do orçamento pela Imagine; os meios e vencimentos ainda serão definidos.
 - **Orçamento pré-validado pela equipe Imagine** é submetido a **aceite eletrônico expresso pelo cliente ou representante autorizado**, conforme PORTAL-D01.
-- Essa política não estabelece juros, parcelamento automático, descontos, meio de pagamento, vencimentos ou termos jurídicos por simples inferência.
+- **Sem juros no parcelamento** aprovado; não incluir acréscimos financeiros surpresa no orçamento aceito. Esta decisão não cria desconto automático à vista, nem define meio de pagamento, calendário de vencimento, antecipação financeira ou termos jurídicos.
 
 ## 2. Decisão funcional expressamente aprovada — marco para iniciar execução
 
@@ -37,11 +37,11 @@
 | R$ 300,00 | À vista | Aceite expresso + R$ 300,00 recebidos e confirmados |
 | R$ 300,00 | Até 3 parcelas | Aceite expresso + **primeira parcela recebida e confirmada**, segundo plano efetivamente contratado; vencimentos/saldos sujeitos à próxima decisão |
 
-Os valores e exemplos não aprovam juros, eventual divisão em quantias iguais, taxas ou descontos; essas condições devem aparecer claramente no orçamento final antes do aceite.
+**Juros ao cliente no parcelamento foram expressamente dispensados pela aprovação posterior.** Valor total e valores das parcelas devem ser exibidos antes do aceite; valores exatos de cada parcela, vencimentos, meios, política de taxas cobradas de fornecedores e descontos à vista ainda dependem de especificação, sem acréscimos inesperados depois do aceite.
 
 ## 4. Pendências que NÃO foram aprovadas neste “ok”
 
-1. **Parcelamento:** se será **sem juros para o cliente**, com juros/taxa explicitamente informados ou dependente do meio de pagamento; como distribuir parcelas e lidar com custos do adquirente.
+1. **Parcelamento — parcialmente resolvido:** **sem juros ao cliente**, até 3 vezes, para orçamentos acima de R$ 270,00. **Ainda pendentes:** como serão distribuídos os valores e vencimentos, quais meios aceitam parcelamento e como tratar taxas do adquirente sem repassá-las como acréscimo surpresa ao preço aceito.
 2. **Meios de pagamento:** cartão, Pix, boleto e eventuais outros; conciliação, expiração e disponibilidade por modalidade.
 3. **Vencimentos e prazos:** validade do orçamento, prazo para pagamento da primeira parcela, vencimentos das demais, início da contagem dos prazos de entrega e expiração da ordem de serviço.
 4. **Atraso posterior:** consequências de inadimplência de parcela subsequente para serviços iniciados/em andamento/concluídos, aviso, suspensão quando contratualmente permitida, cobrança e renegociação.
@@ -49,10 +49,15 @@ Os valores e exemplos não aprovam juros, eventual divisão em quantias iguais, 
 6. **Autorizações excepcionais:** casos de gratuidade, crédito, serviços contratuais já cobertos, compensações e procedimentos de liberação manual, com alçadas e auditoria.
 7. **Contrato, termos e compliance:** impostos/documentos fiscais, retenção dos comprovantes, apresentação de informações ao cliente, reconciliação, antifraude e revisão jurídica.
 
-## 5. Próxima decisão proposta — parcelamento dos adicionais acima de R$ 270
+## 5. Parcelamento sem juros — DECISÃO APROVADA
 
-**Proposta a deliberar, NÃO aprovada:** oferecer **até três parcelas sem juros ao cliente**, com **valor total do orçamento já contemplando os custos previstos de processamento**, sem acrescentar encargos inesperados ao final; discriminar no orçamento o valor à vista e os valores/vencimentos de cada parcela, sem conceder desconto automático para pagamento à vista, salvo política posterior. Essa proposta **não decide** tecnologia de cobrança, antecipação financeira, taxas do adquirente nem fluxo de vencimentos.
+**Aprovado em 02/11/2026 (resposta “sim” à pergunta específica):** oferecer **até três parcelas sem juros ao cliente** para serviços adicionais acima de **R$ 270,00**, com **valor total fechado já contemplando custos de processamento previstos** na formação do preço, sem acrescentar encargos inesperados; apresentar previamente os valores das parcelas. Não criar desconto automático à vista sem aprovação própria. Esta regra **não define** tecnologia de cobrança, antecipação financeira, taxas concretas do adquirente, calendário de vencimentos ou meios aceitos.
 
-**Pergunta de continuação:** aprova oferecer os adicionais acima de R$ 270,00 em **até 3 parcelas sem juros**, com total fechado e informado previamente no orçamento?
+**Próxima decisão pendente:** estabelecer **meios de pagamento e calendário de vencimentos** dos serviços adicionais, distinguindo parcelamento em cartão de pagamentos recorrentes via Pix/boleto quando houver. Após isso, tratar cobrança de atraso, cancelamento, reembolso e contestação.
 
 **Sem testes, software, contratação ou execução financeira realizados.**
+
+
+## 6. Registro da segunda aprovação parcial PORTAL-D02 (02/11/2026)
+
+O responsável respondeu **“sim”** à pergunta expressa sobre o **parcelamento em até três vezes sem juros** para adicionais **acima de R$ 270**, com **valor fechado e informado antes do aceite**. Preserva-se a regra anterior de serviço liberado **somente após aceite eletrônico válido e recebimento confirmado do valor à vista ou da primeira parcela**, respectivamente. O preço será formado contemplando custos previsíveis de processamento, **sem cobrar juros do cliente pelo parcelamento**, nem adicionar encargos inesperados após aceitar o orçamento. Não houve aprovação de desconto à vista automático, juros por atraso, meios de pagamento, datas das parcelas, antecipação financeira, inadimplência, reembolso, operações reais ou programação. O item **PORTAL-D02 permanece parcialmente aberto**.
