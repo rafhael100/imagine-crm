@@ -37,5 +37,10 @@ Novas sugestões, interpretações da IA, exemplos e alternativas não são deci
 - [P0-CON-CT03-CT04](P0-CON-CT03-CT04-comandos-resultados-transicoes.md) é a especificação documental de base aprovada, sem implicar homologação, parâmetros executáveis ou encerramento de P0-CON-01.
 - [P0-OP24](P0-OP24-detalhamento-CT03-CT04-por-operacao.md) é detalhamento **proposto**, não nova aprovação funcional, 24 novas automações nem APIs programadas.
 
+## Aceite contextual das fichas e proposta CT-02
+
+- [P0-DEC — Aprovação OP24 como base](P0-DEC-aprovacao-OP24-base.md): a resposta “ok” autorizou a continuidade documental, sem criar nova regra funcional ou implementar direitos.
+- [P0-CT02](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md): matriz nova **proposta para revisão**; os princípios gerais de segurança já aprovados prevalecem e os papéis/alçadas específicos continuam pendentes.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
