@@ -1,6 +1,6 @@
 # PORTAL-COM-15 — Central de Documentos Legais e Consentimentos
 
-**Status:** **MÓDULO FUNCIONAL APROVADO em 02/11/2026.** O responsável respondeu **“ok”** à pergunta específica sobre aprovar uma **Central de Documentos Legais e Consentimentos**, com **gestão administrativa, versionamento e histórico de aceites**, aplicável ao Portal Imagine e aos sites dos clientes, com documentos apropriados a cada cliente/projeto e aprovação do responsável quando necessária.
+**Status:** **MÓDULO FUNCIONAL APROVADO em 02/11/2026; REGRA POSTERIOR APROVADA: POLÍTICA DE PRIVACIDADE PADRÃO EM TODOS OS NOVOS SITES IMAGINE, COM ACEITE OU PEDIDO DE ALTERAÇÃO PELO CLIENTE ANTES DE PUBLICAR.** O responsável respondeu **“ok”** à pergunta específica sobre aprovar uma **Central de Documentos Legais e Consentimentos**, com **gestão administrativa, versionamento e histórico de aceites**, aplicável ao Portal Imagine e aos sites dos clientes, com documentos apropriados a cada cliente/projeto e aprovação do responsável quando necessária.
 **Fase:** apenas planejamento/documentação. Não programar, publicar termos, substituir política existente, disparar solicitações de consentimento ou coletar novas informações antes de aprovação e homologação.
 **Dependências:** [COM-14 — LGPD e aceites](PORTAL-COM-14-lgpd-aceites-privacidade-consentimentos-checklist.md), [COM-13 — checklist IA de entrega](PORTAL-COM-13-entrega-automatica-checklist-qualidade-agente-ia.md), [D01 — aceite de versões/orçamentos](PORTAL-D01-aceite-eletronico-versoes-orcamentos.md), [IN-125 — formulários](IN-125-gestao-inteligente-formularios.md), [IN-150 — segurança](IN-150-seguranca-inteligente-formularios-apis.md), [COM-12/REL-01 — relacionamento](PORTAL-COM-12-relacionamento-inteligente-retencao-expansao-clientes.md).
 
@@ -90,3 +90,44 @@ A **Central de Relacionamento COM-12/REL-01** deverá consultar preferências e 
 - A Imagine administra seus próprios documentos; **não aprova unilateralmente a política do site do cliente em nome dele**. O cliente não recebe por isso acesso de administração aos documentos legais da Imagine.
 - A finalidade/bases legais, obrigações relativas a cookies, formulários, direitos de titulares e papéis controlador/operador seguem a COM-14 e exigem análise jurídica contextual; não inserir um checkbox universal de “aceito a LGPD”.
 - Definições pendentes: permissões específicas, modelos de notificação, prazos de revisão, delegação de representação, reaprovação por atualização, retenção e fluxos de correção/contestação. **Nenhuma programação, aceite ou publicação real iniciada**.
+
+
+## 9. Política de Privacidade padrão por site — aprovação ou solicitação de alterações pelo cliente (02/11/2026)
+
+**Decisão expressa do responsável:** “os sites ja terao uma politica de privacidade padrao que o cliente precisa dar o ok para que possa ser liberada no site dele ou solicitar alterações”. **Regra funcional APROVADA, mais específica que a possibilidade anterior de criar uma minuta do zero para cada cliente.**
+
+### 9.1 Modelo padrão e preparação do documento
+
+1. **Cada novo site Imagine (Onepage, Landing Page e futuros produtos) terá, por padrão, uma Política de Privacidade pronta para revisão**, derivada do **modelo oficial versionado e juridicamente revisado** mantido na Central COM-15; não deixar o cliente começar com documento em branco como fluxo normal.
+2. O sistema **gera uma instância do modelo por cliente/site**, com **dados reais da empresa responsável**, contatos pertinentes, formulários, finalidades/base legal adequadas, provedores, cookies, integrações/CRM e particularidades efetivamente existentes no projeto. A IA pode sugerir conteúdo e apontar lacunas, mas **não inventar práticas ou bases legais**.
+3. O modelo padrão é **ponto de partida, não uma declaração universal de conformidade**: tratamentos incomuns, dados sensíveis, crianças, ferramentas de rastreamento e outros contextos especiais podem exigir revisão humana/jurídica e cláusulas próprias antes de submeter ao cliente.
+4. **A política individual do cliente não é a Política de Privacidade do Portal Imagine** e não representa consentimento do visitante para marketing.
+
+### 9.2 Duas ações do cliente no Portal — regra aprovada
+
+Depois de preparada a versão específica para o site, apresentar a **política integral, de forma legível**, no Portal Imagine, com identificação da empresa, site/URL de destino e número da versão, oferecendo **duas ações inequívocas**:
+
+- **“Aprovar Política de Privacidade”**: exige ato positivo de representante do cliente autorizado, para a **versão exata** exibida. Ao aprovar, o documento fica **APROVADO PARA PUBLICAÇÃO NO SITE DO CLIENTE**, condicionado à ausência de outros bloqueios técnicos, legais ou operacionais. Guardar evidência de quem aprovou, papel/autorização, data/hora/fuso, identificador/hash e versão do documento, sem mudar o texto aprovado silenciosamente.
+- **“Solicitar Alterações”**: cliente informa correções e observações; pedido cria histórico/chamado vinculado à versão e deixa o documento em **AJUSTES SOLICITADOS / NÃO APROVADO**. A Imagine, com auxílio permitido de IA e supervisão adequada, prepara **nova versão** e devolve ao cliente para **nova análise e aprovação expressa**. Não publicar automaticamente após simples envio de ajustes.
+
+**O cliente poderá revisar, aprovar ou solicitar ajustes; o silêncio, visualização ou encerramento de prazo não constituem aceite.** Não atribuir à IA poder para aprovar em nome do cliente.
+
+### 9.3 Liberação no site e bloqueio de entrega
+
+- **Antes do aceite expresso do cliente, a política é apenas uma minuta/instância interna de revisão no Portal** e **não deve ser publicada como versão definitiva no site público**.
+- **Depois da aprovação válida da versão exata**, e da validação técnica aplicável, o fluxo pode **liberar/publicar automaticamente** o texto aprovado no site correspondente, dentro de playbook/permissões homologadas, sem necessidade de confirmação manual de rotina. Esse resultado **não dispensa** outros aceites de versão/contrato da D01 ou a revisão jurídica especial quando exigida.
+- **O agente IA da entrega COM-13 deve verificar que a Política de Privacidade específica do site foi aprovada pelo cliente e que a mesma versão está efetivamente publicada/acessível**; se não, o estado do projeto não poderá ser **ENTREGUE**, e consequentemente não haverá evento oficial de Dia 0 REL-01.
+- Qualquer nova redação material posterior deve resultar em **nova versão** para avaliação do cliente e eventual nova aprovação, preservando a política anteriormente vigente durante o processo conforme legitimidade, segurança e requisitos legais.
+- O aceite do cliente à política de seu site **não equivale ao consentimento de seus visitantes**, nem autoriza usar leads de seu CRM para marketing Imagine.
+
+### 9.4 Estados e evidência de auditoria (modelo de desenho)
+
+**Modelo base instanciado → Em revisão pelo cliente → (Aprovado para publicação | Ajustes solicitados) → Nova versão para revisão, quando necessário → Publicado no site após aceite válido → Versionado/atualizado quando necessário.**
+
+Registro por site: ID do modelo global, versão do modelo, ID da política do projeto, conteúdo/hash da versão individual, empresa/controlador, aprovador/representação, data/hora/fuso, aprovação ou pedido de ajustes, comentários e versões subsequentes, URL/versão publicada, evento de publicação e integridade dos históricos.
+
+### 9.5 Itens de detalhamento ainda pendentes
+
+Layout das telas, checklist jurídico mínimo do modelo padrão, dados e fontes para preencher cada campo, perfil/representação do cliente, notificações e lembretes, prazo para resposta, quantidade/limites contratuais de ajustes (não criar cobrança por simples pedido sem previsão contratual), quando alterações jurídicas específicas exigem revisão especializada, procedimento de publicação, correção/reversão e manutenção das versões após o lançamento.
+
+**Resumo:** **modelo padrão por site + cliente pode APROVAR ou SOLICITAR ALTERAÇÕES + só publicar após aceite expresso da versão correta** são regras aprovadas. **Não iniciar programação nem publicar documentos reais nesta fase.**
