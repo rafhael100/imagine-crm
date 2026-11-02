@@ -181,7 +181,7 @@ Layout das telas, checklist jurídico mínimo do modelo padrão, dados e fontes 
 
 ### 11.3 Escopo não aprovado por inferência
 
-**APROVADO:** notificações **automáticas no Portal e por e-mail** quando a política padrão ou revisão fica disponível para análise, com acesso seguro ao documento; **não** foram aprovados **lembretes recorrentes além do primeiro lembrete de 3 dias úteis posteriormente aprovado**, nem novos prazos de reenvio, horários detalhados, WhatsApp/SMS, escalonamento por inatividade, aprovação automática, links de aceite sem autenticação nem alteração do conteúdo contratual. A aprovação posterior do primeiro lembrete está na seção 12. Definir esses elementos, modelos de mensagem, provedores, custos e homologação em rodada específica antes de implementar.
+**APROVADO:** notificações **automáticas no Portal e por e-mail** quando a política padrão ou revisão fica disponível para análise, com acesso seguro ao documento; **não** foram aprovados **lembretes além do primeiro de 3 dias úteis e do segundo/último de 7 dias úteis aprovados posteriormente**, nem novos prazos de reenvio, horários detalhados, WhatsApp/SMS, escalonamento por inatividade, aprovação automática, links de aceite sem autenticação nem alteração do conteúdo contratual. A aprovação posterior do primeiro lembrete está na seção 12. Definir esses elementos, modelos de mensagem, provedores, custos e homologação em rodada específica antes de implementar.
 
 **Somente planejamento/documentação. Nenhuma comunicação real enviada.**
 
@@ -203,6 +203,44 @@ Layout das telas, checklist jurídico mínimo do modelo padrão, dados e fontes 
 
 - Os avisos são operacionais e vinculados à aprovação do documento; **não incluir publicidade**. Aplicar base legal, transparência, endereço validado, segurança do link, minimização de dados no e-mail e segregação por empresa/site.
 - **Pendente de definição técnica:** calendário de dias úteis (feriados nacionais, estaduais/municipais conforme operação, fuso e horários-limite), expediente de envio, texto do lembrete, limitações e forma de tratamento de falha de provedor/cliente, telas, provedor/custo e eventual deduplicação entre múltiplos sites.
-- **Não aprovados por esta decisão:** segundo lembrete, recorrência semanal/diária, WhatsApp/SMS, escalonamento automático à equipe, aprovação automática ou prazo fatal/penalidade por não responder.
+- **REGISTRO HISTÓRICO SUPERADO PARCIALMENTE:** o **segundo e último lembrete após 7 dias úteis desde a disponibilização** foi aprovado posteriormente; continuam NÃO aprovados: recorrência além de dois lembretes, WhatsApp/SMS, escalonamento automático à equipe, aprovação automática, prazo fatal ou penalidade por não responder. Ver seção 13.
 
 **Registro:** primeiro lembrete após 3 dias úteis, por **Portal e e-mail**, **APROVADO**. Planejamento exclusivamente; nenhuma automação ativa nem mensagem enviada.
+
+
+## 13. Segundo lembrete após 7 dias úteis e site público antes da aprovação da política — decisão posterior APROVADA (02/11/2026)
+
+**Decisão expressa do responsável:** à proposta de **“um segundo e último lembrete após 7 dias úteis contados da disponibilização da política, caso continue sem resposta; depois disso, a pendência ficaria visível para a equipe Imagine, sem envios repetitivos”**, respondeu **“sim”**, com a ressalva determinante de que **“a dependencia do ok do cliente nao impende de colocar o site no ar”**, devendo-se **informar que a parte de LGPD/Política de Privacidade somente será publicada após aprovação do cliente**.
+
+### 13.1 Cadência definitiva dos avisos por versão — APROVADA
+
+| Marco por versão | Canais | Condição |
+|---|---|---|
+| Dia útil de disponibilização (evento inicial) | Notificação no **Portal Imagine** + **e-mail** | Política padrão individual ou versão revisada pronta para análise |
+| **Após 3 dias úteis** | **Primeiro lembrete**, Portal + e-mail | Mesma versão ainda aguardando decisão |
+| **Após 7 dias úteis contados da disponibilização inicial** | **Segundo e último lembrete**, Portal + e-mail | Mesma versão ainda sem resposta |
+| Depois do segundo lembrete | **Pendência visível no painel da equipe Imagine**, sem novos disparos automáticos por essa pendência | Não autoriza aceite tácito nem cancelamento de direitos |
+
+A contagem de **7 dias úteis é desde a disponibilização da versão**, e não desde o primeiro lembrete. Caso o cliente **aprove, solicite alterações, a versão seja substituída ou o fluxo suspenso**, cancelar avisos remanescentes. Nova versão revisada abre **novo ciclo documental**, com aviso inicial, primeiro/segundo lembrete próprios, se permanecer pendente. A cadência é no máximo **dois lembretes** por versão; evitar duplicidade e registrar canal, data, responsável autorizado e resultado real de entrega. Feriados, fuso e horários de envio devem ser homologados posteriormente. WhatsApp/SMS e lembretes adicionais **não foram aprovados**.
+
+### 13.2 Distinção entre SITE NO AR e POLÍTICA PENDENTE — APROVADA
+
+- **Publicar site (colocar no ar) NÃO depende, por si só, do aceite da Política de Privacidade do cliente.** A publicação técnica/visual do site pode ser realizada **com a política ainda pendente**, desde que a versão do site e as outras condições de publicação/autorização já tenham sido atendidas. A exigência de aceite da **versão do site pelo cliente, quando aplicável (PORTAL-D01)** continua própria e independente.
+- Criar status factual separado: **SITE PUBLICADO — POLÍTICA DE PRIVACIDADE AGUARDANDO APROVAÇÃO**. Registrar data/versão da publicação, situação da política, funcionalidades eventualmente desabilitadas, restrições de dados e comunicação ao cliente.
+- Informar claramente **ao cliente no Portal e nos avisos operacionais** que o site já está no ar, mas **a Política de Privacidade específica para seu site só será disponibilizada/publicada após aprovação expressa da versão correta**. Não apresentar minuta não aprovada publicamente como política definitiva; não declarar conformidade LGPD integral antes das verificações aplicáveis.
+- **Aprovação pendente da política não paralisa a publicação de páginas, layout e conteúdo que possam operar legalmente**. Contudo, **não ativar captura de dados por formulários, newsletter, lead/CRM, cookies/pixels não essenciais, analytics identificáveis e integrações que exijam avisos/consentimentos/condições ainda ausentes**, até que exista base legal apropriada, transparência exigível e controles aprovados. **Mesmo a operação pública mínima envolve potencial tratamento técnico, como logs de servidor**; o agente deve avaliar requisitos de transparência/segurança sobre o tratamento residual. Quando não for possível manter requisitos legais mínimos, suspender as funcionalidades afetadas ou impedir aquela exposição até regularização. **Não usar a pendência do cliente como dispensa das obrigações LGPD.**
+- **Somente a Política de Privacidade individual aprovada expressamente poderá ser publicada como versão definitiva**; a aprovação do cliente não é consentimento dos visitantes para marketing. A Imagine poderá usar políticas/modelos homologados para preparar o texto, mas não publicar sua adaptação ao cliente sem o aceite aprovado.
+
+### 13.3 Conclusão técnica, entrega oficial e REL-01
+
+**Separar dois eventos no planejamento**: **(1) SITE NO AR**, permitido se cumprir os requisitos técnicos, contratuais e LGPD cabíveis para a configuração pública efetiva; e **(2) ENTREGA OFICIAL COMPLETA** (COM-13), cujo checklist permanece exigindo que a Política de Privacidade obrigatória tenha sido aprovada e publicada, além dos demais controles.
+
+A decisão atual **retira a aprovação da Política de Privacidade como bloqueio universal à publicação técnica do site**, mas **não declarou que a publicação provisória equivale à entrega oficial integral**. Enquanto a política exigida estiver pendente, manter **SITE PUBLICADO / ENTREGA COMPLETA PENDENTE** e não disparar o marco Dia 0 da REL-01 por publicação isolada. Essa separação preserva a aprovação anterior de que o **Dia 0 é a entrega oficial registrada**, não a mera publicação. A possibilidade de tratar o site já publicado como oficialmente entregue, com pendência legal ainda aberta, deverá ser deliberada separadamente se desejada.
+
+O cliente recebe os avisos de aprovação e a informação do estado da política; **não iniciar mensagens de relacionamento REL-01 sem o evento formal aprovado nem sem suas políticas de comunicação homologadas**. Esta decisão não altera faturamento/contratos automaticamente.
+
+### 13.4 Aprovação, pendências e revisão especializada
+
+**APROVADO:** **segundo e último lembrete após 7 dias úteis do envio inicial**, Portal/e-mail; após isso, pendência no painel Imagine sem novos lembretes repetitivos; **site pode ficar no ar sem o aceite da política** quando a configuração pública é segura/legalmente adequada; **política individual somente após aceite expresso**; cliente será informado do status.
+
+**Não aprovado por inferência:** ausência de requisitos mínimos de transparência LGPD, ativação de formulários/pixels sem base/aviso aplicável, consentimento tácito, política publicada sem aceite, mudança automática da definição de **ENTREGUE** ou início da REL-01 por publicação isolada. **Ainda pendentes:** desenho exato do banner de estado para cliente, análise jurídica de transparência mínima para componentes técnicos do site público, regras de ativação de funcionalidades após aceite, fuso/feriados/horários, mensagens, operação/homologação técnica e alçadas para exceções. Nenhuma publicação, programação ou envio real iniciados.
