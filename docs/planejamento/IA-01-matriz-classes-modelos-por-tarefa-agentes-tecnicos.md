@@ -71,3 +71,8 @@ O Supervisor **não tem superprivilégios**; complexidade do modelo não altera 
 ## Comparação documental de candidatos — 02/11/2026
 
 Foi concluída a [pesquisa IA-01 de modelos e fornecedores candidatos](IA-01-comparativo-modelos-fornecedores-candidatos.md) com dados oficiais de OpenAI, Anthropic e Google, classes, preços por tokens e reajustes anunciados. **A pesquisa foi autorizada; a inclusão de qualquer modelo no catálogo de produção NÃO foi aprovada.** Permanecem pendentes a escolha expressa dos modelos e fornecedores, primário/fallback por tarefa, versões, custos totais e orçamento mensal, privacidade/LGPD, testes de qualidade e homologação. As três classes desta IA-01 **continuam aprovadas**, sem alteração. Não iniciar programação ou contratação.
+
+
+## Decisão posterior — nove candidatos para avaliação futura (02/11/2026)
+
+O responsável **aprovou manter os nove modelos do [comparativo IA-01](IA-01-comparativo-modelos-fornecedores-candidatos.md) como lista inicial de candidatos** à futura homologação. As **três classes** desta matriz continuam aprovadas, mas **nenhum modelo, versão ou fornecedor foi homologado, contratado ou escolhido** para primário/fallback. Os preços e nomes devem ser reconfirmados na documentação oficial antes de testes, cotações ou escolhas finais, observando segurança, LGPD, compatibilidade e qualidade verificada. **Não iniciar programação ou consumo de API.**
