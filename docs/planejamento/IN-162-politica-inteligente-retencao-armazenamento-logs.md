@@ -19,7 +19,7 @@ Definir **prazos padrão diferenciados por categoria** para registros técnicos,
 | Métricas históricas de desempenho | **90 dias** | Séries de disponibilidade, erro, latência, recursos, filas e capacidade; agregações futuras poderão ter política distinta quando aprovada. |
 | Auditoria técnica minimizada das filas de leads | **90 dias — decisão anterior preservada** | IN-128: metadados de recebimento, tentativas, entrega, falhas, vencimento e descarte, sem conservar o conteúdo completo do formulário apenas para auditoria. |
 | Registros de incidentes críticos e eventos de segurança | **180 dias** | Padrão para evidências técnicas relevantes dessa categoria, salvo retenção legal/contratual ou preservação excepcional. |
-| Histórico estruturado de soluções e aprendizado dos agentes | **Conforme política própria da biblioteca — prazo ainda a definir** | IN-139/IN-155: preservar conhecimento técnico útil e versionado separadamente, minimizando e anonimizado quando adequado. |
+| Histórico estruturado de soluções e aprendizado dos agentes | **Enquanto ativo e necessário; 24 meses após arquivamento** | Definido posteriormente na **IN-163** para conhecimento estruturado e versões arquivadas; não se aplica à retenção de logs brutos. |
 
 **Interpretação:** esses prazos são **padrões operacionais aprovados**, sujeitos a guarda excepcional legítima e a requisitos legais/contratuais aplicáveis. Não estender todas as categorias indiscriminadamente ao prazo de 180 dias. Caso um mesmo evento tenha naturezas diferentes, a classificação, os controles de acesso e a retenção apropriada precisam ser definidos por política verificável para evitar duplicação sem finalidade.
 
@@ -57,7 +57,7 @@ A política de logs **não altera** as decisões anteriores sobre os dados tempo
 - A Biblioteca de Autocorreções da IN-139 e os procedimentos homologados da IN-155 são **artefatos de conhecimento distintos** dos logs técnicos brutos.
 - Antes do vencimento de logs relevantes, os agentes e mecanismos autorizados poderão registrar causa verificada, solução, versões, condições, testes, resultado e riscos, em formato **minimizado, seguro e versionado**.
 - Não salvar senhas, credenciais, conteúdo completo de leads ou dados pessoais identificáveis apenas para manter aprendizado.
-- **Prazo de retenção do conhecimento técnico permanece pendente de aprovação específica**; este documento não cria retenção ilimitada.
+- **Prazo do conhecimento técnico definido posteriormente na IN-163:** manter enquanto ativo e necessário, e reter versões/conhecimentos arquivados por **24 meses a partir do arquivamento**, com descarte seguro após prazo e ressalvas legais. Não criar retenção ilimitada por padrão.
 - A expiração de logs originais não deve apagar automaticamente uma solução homologada, mas não permite conservar cópias brutas em campos do conhecimento como forma de contornar retenção.
 
 ## Central administrativa, alertas e governança
@@ -86,12 +86,17 @@ Um log de erro operacional da API completa **30 dias**. O processo de retenção
 2. Desenho de expiração em armazenamento principal, índices, réplicas, arquivos compactados e backups técnicos.
 3. Política de preservação excepcional, responsável, revisão, escopo, auditoria e integração com incidentes jurídicos/segurança.
 4. Políticas de minimização por campo, mascaramento antes da coleta, acesso, LGPD e tratamento de obrigações legais/contratuais.
-5. Definição específica de retenção do **histórico estruturado de soluções dos agentes** e de eventuais outras auditorias não abrangidas pela tabela.
+5. Detalhar a **aplicação técnica da retenção do conhecimento dos agentes aprovada na IN-163** (ativo enquanto necessário; arquivado por 24 meses), e a retenção de outras auditorias ainda não abrangidas.
 6. Tecnologia de armazenamento, compressão, indexação, amostragem, projeção de custos, alertas e contingência.
 7. Procedimentos de limpeza homologados, testes de integridade e evidência de descarte sem guardar novamente o conteúdo expirado.
 8. Política operacional para registros com dados mistos, duplicações de eventos entre sistemas e investigação iniciada próximo à expiração.
 9. Métricas de qualidade e disponibilidade da limpeza/telemetria integradas às IN-159/IN-161.
 
 **Aprovado:** prazos padrão de 7, 30, 30, 90, 90 e 180 dias conforme tabela; limpeza automática; armazenamento otimizado; proteção dos dados; preservação excepcional controlada; alertas de capacidade; vedação de despesas automáticas; aprendizado técnico separado dos logs brutos.  
-**Pendente:** prazo da biblioteca de conhecimento, exceções específicas, parâmetros técnicos, ferramentas, custos e testes.  
+**Pendente:** detalhes operacionais da política IN-163, exceções específicas, parâmetros técnicos, ferramentas, custos e testes. O prazo da biblioteca de conhecimento **foi aprovado posteriormente**.  
 **Programação:** não iniciada.
+
+
+## Atualização posterior — IN-163 (02/11/2026)
+
+A política de ciclo de vida do conhecimento foi aprovada na [IN-163 — Ciclo de Vida do Conhecimento dos Agentes Técnicos](IN-163-ciclo-vida-conhecimento-agentes.md): manter conhecimento e playbooks **ativos enquanto necessários**; versões **arquivadas permanecem por 24 meses contados do arquivamento**, com exclusão controlada quando elegível, preservação excepcional legítima, versionamento e impossibilidade de execução de procedimentos arquivados. A retenção de logs e registros brutos de incidentes continua regida pelas políticas específicas, sem extensão automática para 24 meses. Esta decisão posterior prevalece sobre qualquer indicação histórica de que o prazo da biblioteca ainda estivesse pendente.
