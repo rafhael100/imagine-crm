@@ -42,3 +42,8 @@ Na perda do **último site elegível por cancelamento comum**, sem suspensão po
 - Revisão jurídica das cláusulas de bloqueio, transição, direito de portabilidade e cancelamento antes do lançamento.
 
 **Conclusão:** aprovada a **exceção de 30 dias com CRM operacional bloqueado após cancelamento decorrente de inadimplência**, preservando os **30 dias normais** de cancelamento comum. Dados protegidos; nenhum plano pago suspenso indevidamente; nenhuma programação ou cobrança autorizada.
+
+
+## 5. Complemento COM-10 — reativação pós-cancelamento (02/11/2026)
+
+O responsável aprovou possibilidade de **solicitar reativação de site formalmente cancelado na janela comercial padrão de 60 dias, ajustável pelo administrador e condicionada a backups efetivamente recuperáveis, com cobrança de taxa específica de reativação (preço ainda não definido)**. Caso a nova contratação seja válida e seu serviço/campanha **conceda CRM Básico cortesia**, reavaliar e recuperar o benefício conforme IN-119–122, cessando quando cabível o estado de transição/restrição da conta correta. **Não reabrir automaticamente cortesia por pagamento tardio, nem suspender CRM pago independente ou benefício sustentado por outro site.** Garantia técnica de recuperação, prazo de backup, preço novo e reativação após expirar a janela ainda exigem definição. Ver [COM-10](PORTAL-COM-10-proposta-reativacao-site-apos-cancelamento.md). Sem programação.
