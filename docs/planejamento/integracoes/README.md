@@ -24,6 +24,8 @@
 - [INT-P0 — Autoridades e contratos de fronteira](INT-P0-autoridades-contratos.md)
 - [P0-REV-INT01-04 — Conferência cruzada e ressalvas de proveniência](P0-REV-INT01-04-conferencia-cruzada.md)
 - [P0-REV-INT05-08 — Conferência cruzada e portabilidade IN-118](P0-REV-INT05-08-conferencia-cruzada.md)
+- [P0-REV-INT09-12 — Conferência cruzada e fronteiras centrais](P0-REV-INT09-12-conferencia-cruzada.md)
+- [P0-REC — Reconciliação transversal e critérios G01–G06](P0-REC-conciliacao-transversal.md)
 - [DECISOES — Origem e precedência](DECISOES-origem-precedencia.md)
 
 ## Situações distintas (não confundir)
