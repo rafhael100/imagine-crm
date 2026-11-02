@@ -84,5 +84,13 @@ Nenhuma das 11 pendências fica encerrada automaticamente por esta matriz. “Pa
 4. **Planos de teste (P0-ACC-01):** detalhar HT-01 a HT-18 com critérios e evidências, não executá-los.
 5. **Fechamento controlado (G01–G06/P0-GIT-01):** conferir versão e solicitar aceite expresso somente após os critérios acima. O projeto CRM geral permanece bloqueado para programação até aprovação final de todo o planejamento.
 
-## 7. Restrição permanente
+## 7. Documentos adicionais P0 em minuta
+
+- [P0-ORIGEM](P0-ORIGEM-aprovacoes-dialogo.md): transcrições literais de cinco mensagens de aceite disponíveis; melhor rastreabilidade parcial, ainda sem ID de origem imutável ou proposta integral.
+- [P0-CON](P0-CON-contratos-tecnicos-minuta.md): classes CT-01..CT-11, envelope conceitual, estados de resultado e categorias de erro **propostas para validação**.
+- [P0-SEG](P0-SEG-matriz-autorizacoes-proposta.md): dimensões de autorização e pontos de revalidação **para revisão**.
+
+O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CON-01, P0-SEC-01. Os critérios G01..G06 não mudam para concluído por mera existência das minutas.
+
+## 8. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
