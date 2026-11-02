@@ -32,7 +32,7 @@ A homologação de um playbook **não concede acesso irrestrito**, não altera a
 5. **Homologado e ativo:** após aprovação humana de responsável habilitado e publicação controlada da **versão exata**, elegível a execução automática se for seguro e permitido.
 6. **Suspenso:** impedir novas execuções automáticas em caso de falhas, mudanças de ambiente, risco ou revogação; preservar auditoria.
 7. **Revisão/substituição:** testar e homologar nova versão antes de habilitar; manter rastreabilidade da anterior.
-8. **Revogado/arquivado:** impossibilitar novas execuções e conservar histórico conforme política de retenção ainda a definir.
+8. **Revogado/arquivado:** impossibilitar novas execuções e conservar a versão arquivada por **24 meses a partir do arquivamento**, conforme política posteriormente aprovada na IN-163, ressalvadas preservações legítimas.
 
 A execução só é permitida quando coexistirem **procedimento homologado + versão ativa + permissões do agente + serviço e ambiente autorizados + condições de segurança atuais + limites operacionais e financeiros respeitados**.
 
@@ -100,7 +100,7 @@ Se a verificação falhar, se houver conflito de versões, risco elevado, ausên
 4. Processo de aprovação humana **única** de novos playbooks e mecanismo de autorização humana única por intervenção crítica quando necessário.
 5. Ambientes de homologação, testes sintéticos, métricas de regressão, critérios de validação e rollback.
 6. Regras de execução concorrente, limites de tentativas, tempo, cotas e custo.
-7. Retenção de evidências de testes e histórico de execução, anonimização e isolamento multiempresa.
+7. Retenção de evidências de testes e histórico de execução segundo políticas próprias; para **conhecimento/playbooks arquivados**, aplicar **24 meses desde o arquivamento** conforme IN-163, com anonimização e isolamento multiempresa.
 8. Integração com inventário, incidentes, mudanças técnicas, observabilidade, aprendizado e avaliações dos agentes.
 9. Tratamento de playbook cujo ambiente, versão ou dependência mudaram após a homologação.
 
@@ -108,3 +108,8 @@ Se a verificação falhar, se houver conflito de versões, risco elevado, ausên
 **Ressalva permanente:** ações críticas exigem autorização humana única por intervenção conforme IN-137/IN-138; homologar não é conceder autonomia crítica irrestrita.  
 **Pendente:** especificações técnicas, controles quantitativos, ambientes e implementação.  
 **Programação:** não iniciada.
+
+
+## Atualização posterior — IN-163 (02/11/2026)
+
+A política de ciclo de vida do conhecimento foi aprovada na [IN-163 — Ciclo de Vida do Conhecimento dos Agentes Técnicos](IN-163-ciclo-vida-conhecimento-agentes.md): manter conhecimento e playbooks **ativos enquanto necessários**; versões **arquivadas permanecem por 24 meses contados do arquivamento**, com exclusão controlada quando elegível, preservação excepcional legítima, versionamento e impossibilidade de execução de procedimentos arquivados. A retenção de logs e registros brutos de incidentes continua regida pelas políticas específicas, sem extensão automática para 24 meses. Esta decisão posterior prevalece sobre qualquer indicação histórica de que o prazo da biblioteca ainda estivesse pendente.
