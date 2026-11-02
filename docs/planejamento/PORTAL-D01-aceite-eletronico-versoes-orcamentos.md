@@ -49,3 +49,8 @@
 **Aprovado em 02/11/2026:** fluxo funcional PORTAL-D01 conforme as regras acima. A proposta anterior na PORTAL-01 foi expressamente aceita, após o responsável responder “sim” à pergunta “Você aprova a PORTAL-D01 com essas regras?”. Não reabrir essa regra sem pedido do responsável.
 
 **Pendente:** PORTAL-D02, PORTAL-D03, detalhamento técnico e jurídico do comprovante, homologação, implementação e aprovação final de toda a documentação. **Nenhum software, cobrança ou contrato foi iniciado/alterado.**
+
+
+## Complemento REL-01 — distinção entre aceite e entrega oficial (02/11/2026)
+
+O responsável aprovou que a **jornada de relacionamento REL-01** (dias 0, 3, 7, 15, 30) só inicie com a **entrega oficial do site confirmada no Portal Imagine**, e **não apenas por publicação, submissão/aceite de versão, contratação ou pagamento**. Este complemento **não altera o fluxo de aceite eletrônico aprovado nesta PORTAL-D01**, que continuará exigindo ato expresso e registro auditável conforme suas regras. O evento de **confirmação de entrega** é estado próprio a ser articulado com publicação, aceite e entrega, sem assumir quem o realiza (equipe Imagine, cliente ou ambos). Precisará de rastreabilidade e validação de autorização, além de prevenir dois inícios de jornada por republicação/retentativa. [REL-01](PORTAL-REL-01-jornada-pos-entrega-onboarding-30-dias.md). Apenas planejamento, sem implementação.
