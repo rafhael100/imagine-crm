@@ -124,3 +124,10 @@ O responsável reafirmou a **IN-096**, já aprovada em 01/11/2026: os novos site
 O responsável respondeu **"sim"** à proposta de adotar **uma VPS exclusiva para os agentes técnicos de IA e o orquestrador, em servidor diferente da VPS de n8n**. A **Opção B está formalmente escolhida para o planejamento**. A Opção A (compartilhar a mesma VPS do n8n) deixa de ser alternativa ativa. Permanece válida a separação anteriormente aprovada entre **Portal Imagine** e **CRM SaaS**; hospedagem de **sites Onepage/Landing Pages em Cloudflare Workers Static Assets (IN-096)**; **API principal e API de contingência de leads** com persistência e infraestrutura próprias e independentes (IN-124).
 
 **Pendente:** provedor e localização, dimensionamento CPU/RAM/armazenamento, sistema operacional e runtime, isolamento de serviços e segredos, alta disponibilidade ou contingência, custos fixos/variáveis, orçamento e contratação; inventário real e RTO/RPO. **Não provisionar, não contratar e não programar enquanto o planejamento não estiver concluído e aprovado**.
+
+
+## Estudo preliminar de tamanho e custo da VPS de agentes (02/11/2026)
+
+O responsável autorizou a **comparação de capacidade e custos**, não a compra ou a escolha definitiva do porte. Foi concluído o [estudo de dimensionamento e custos de VPS exclusiva dos agentes](ARQ-01-dimensionamento-vps-agentes-tecnicos.md), com três referências: **2 vCPU/4 GB/80 GB (econômica), 4 vCPU/8 GB/160 GB (recomendada como hipótese-base) e 8 vCPU/16 GB/320 GB (expansão)**. Foram levantados preços de tabela de **DigitalOcean** e **Hetzner Europa**; cotação **Leaseweb ainda pendente**, assim como região, capacidade real, backups e custos das APIs de IA.
+
+**ARQ-01:** isolamento dos agentes na VPS própria **já aprovado**, mas **capacidade definitiva, provedor, preço contratado, custo total e implantação continuam pendentes**. Valores e configurações do estudo **não equivalem a orçamento aprovado ou autorização de programação**.
