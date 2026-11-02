@@ -20,5 +20,10 @@
 
 Novas sugestões, interpretações da IA, exemplos e alternativas não são decisões aprovadas. Nenhuma modificação funcional, comercial ou de autoridade pode ser inferida da atualização documental.
 
+## Revisões cruzadas P0 e natureza da origem
+- [INT-01 a INT-04](P0-REV-INT01-04-conferencia-cruzada.md), [INT-05 a INT-08](P0-REV-INT05-08-conferencia-cruzada.md), [INT-09 a INT-12](P0-REV-INT09-12-conferencia-cruzada.md), e [reconciliação geral](P0-REC-conciliacao-transversal.md).
+- Os detalhes aprovados de INT-09 a INT-12 aparecem no histórico conversacional deste projeto, mas a documentação do repositório **ainda não possui uma referência imutável verificável para cada mensagem original**. Para INT-01 a INT-08 também falta conferência completa dos originais.
+- Evitar classificar a revisão cruzada, a redação de síntese ou um commit de trabalho como equivalentes a transcrição literal, validação final ou homologação.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
