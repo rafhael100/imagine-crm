@@ -1,6 +1,6 @@
 # UNI-001 — Universidade Imagine: Diretrizes Iniciais e Metodologia de Ensino por Módulo
 
-**Status:** **APROVADOS O OBJETIVO E A ORDEM DO PROJETO** em 02/11/2026 por solicitação expressa do responsável: criar a **Universidade Imagine** como plataforma de treinamento do **Portal Imagine** e do **CRM Imagine**, **após a conclusão integral do desenvolvimento de ambos**. A metodologia detalhada e as funcionalidades abaixo são **PROPOSTAS PARA REVISÃO**, não decisões já aprovadas.  
+**Status:** **APROVADOS O OBJETIVO E A ORDEM DO PROJETO** em 02/11/2026 por solicitação expressa do responsável: criar a **Universidade Imagine** como plataforma de treinamento do **Portal Imagine** e do **CRM Imagine**, **após a conclusão integral do desenvolvimento de ambos**. A **metodologia-base em sete etapas para cada módulo foi aceita em resposta posterior “ok”**, como diretriz pedagógica. **Formatos, ferramentas, avaliação quantitativa, LMS, certificação, tutor de IA, integrações e demais funcionalidades são propostas para revisão futura**.  
 **Fase atual:** somente registro conceitual e diretrizes de desenho instrucional; **não desenvolver a Universidade, não criar infraestrutura, não contratar LMS, não gravar cursos de funcionalidades ainda não prontas e não desviar o escopo da conclusão do Portal/CRM**.  
 **Relação com projetos:** Portal Imagine (gestão dos projetos, sites, assinaturas, integrações e suporte) e CRM Imagine SaaS (gestão comercial, automações, agentes, permissões, atendimento e demais módulos previstos). O currículo será alinhado **ao comportamento efetivamente implementado e validado** de cada módulo, não a promessas ou telas de planejamento.
 
@@ -22,9 +22,9 @@ Antes da conclusão dos sistemas, pode-se **guardar este documento de planejamen
 
 **Não confundir a ordem de desenvolvimento com obrigação de lançar os dois produtos na mesma data**; cronograma, definição objetiva de “desenvolvimento completo”, lançamentos e treinamento inicial de onboarding devem ser especificados em revisão posterior.
 
-## 3. Método de aprendizagem por módulo — PROPOSTA
+## 3. Método de aprendizagem por módulo — diretriz-base APROVADA
 
-Sugerir um **Método Imagine de Aprendizagem**, consistente em todos os cursos, baseado em objetivos de aprendizagem observáveis, demonstração guiada, prática ativa, avaliação de domínio e revisão. As sete etapas sugeridas são:
+Adotar como **diretriz pedagógica-base aprovada** um método de ensino consistente em todos os módulos, com objetivos observáveis, demonstração guiada, prática ativa, avaliação de domínio e revisão. As sete etapas aprovadas como **estrutura de referência**, sujeitas à adaptação à tarefa e ao público, são:
 
 | Etapa | Nome | Entrega ao aluno |
 |---|---|---|
@@ -36,7 +36,7 @@ Sugerir um **Método Imagine de Aprendizagem**, consistente em todos os cursos, 
 | 6 | **Feedback e recuperação** | Apontar erro e motivo, orientar correção e permitir nova tentativa conforme regra futura |
 | 7 | **Aplicação e revisão** | Checklist de uso no trabalho, consulta rápida, reforço posterior e atualizações |
 
-**Aprovação pendente:** a nomenclatura, número de etapas, pesos, duração, formato da avaliação e marca “Método Imagine” são propostas deste documento. O princípio de **metodologia em cada módulo** foi pedido e deve ser preservado.
+**Aprovado:** a estrutura didática em sete etapas por módulo e a verificação da aprendizagem por aplicação prática. **Pendente:** nome de marca do método, duração, conteúdos específicos, instrumentos de avaliação, pesos, notas mínimas, certificações e implementação pedagógica detalhada. O princípio de **metodologia em cada módulo** deve ser preservado.
 
 ### Camada de produção instrucional
 
@@ -152,8 +152,13 @@ Esses exemplos são **roteiros de referência**, não telas prontas, ações imp
 
 **Já confirmado pelo responsável:** nome **Universidade Imagine**; propósito de **treinamento para Portal Imagine e CRM Imagine**; existência de **metodologia de ensino por módulo**; **iniciar o desenvolvimento somente depois da conclusão integral dos dois sistemas**.
 
-**Proposta ainda NÃO aprovada:** nome/etapas exatos do Método Imagine; estrutura final de cursos e trilhas; formas de exercício, modalidade LMS, vídeo, tutor IA, certificações, pontuação e critérios de conclusão; políticas de acessibilidade, orçamento, suporte, hospedagem e integração; desenho funcional e cronograma.
+**Diretriz pedagógica-base aprovada no “ok” posterior:** sete etapas — objetivo, compreensão, demonstração, prática, avaliação, feedback, aplicação e revisão — para cada módulo, sem impor formato ou pontuação uniforme para todo curso. **Ainda pendentes:** eventual nome comercial “Método Imagine”, estrutura final de trilhas, tecnologias e formas de exercício, modalidade LMS, vídeo, tutor de IA, certificações, pontuação e critérios de conclusão, políticas de acessibilidade, orçamento, suporte, hospedagem e integração, desenho funcional e cronograma.
 
 **Próximo marco:** continuar e concluir os projetos atuais de Portal e CRM. Quando concluídos, revisar o catálogo real de módulos, levantar perfis, aprovar o desenho instrucional da Universidade e somente então autorizar seu desenvolvimento.
 
-**Conclusão:** diretriz estratégica da Universidade Imagine registrada; metodologia preliminar proposta e rastreável; **nenhuma implementação antecipada**.
+**Conclusão:** diretriz estratégica e **metodologia-base de sete etapas por módulo aprovadas**; desenho operacional e funcionalidades da Universidade ainda pendentes de planejamento específico. **Nenhuma implementação antecipada**.
+
+
+## Complemento de decisão — concordância com a metodologia por módulo (02/11/2026)
+
+Após receber a proposta de ensino em **sete etapas** para cada módulo (objetivo, compreensão, demonstração, prática, avaliação, feedback e aplicação com revisão), o responsável respondeu **“ok”**. A estrutura pedagógica-base é, portanto, **aprovada como diretriz funcional futura** da Universidade Imagine. O aceite **não** aprova novas funções do CRM ou Portal, plataforma LMS, orçamento, contratação, grades definitivas, pontuações, certificados ou programação. **A Universidade Imagine só poderá começar a ser desenvolvida após o Portal Imagine e o CRM Imagine estarem integralmente desenvolvidos**, conforme ordem do projeto já decidida.
