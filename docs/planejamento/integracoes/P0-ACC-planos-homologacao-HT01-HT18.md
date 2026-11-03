@@ -1,7 +1,7 @@
 # P0-ACC — Planos documentais de homologação HT-01 a HT-18
 
 **Data de registro:** 2026-11-03.
-**Estado:** **18 procedimentos DOCUMENTAIS PROPOSTOS PARA REVISÃO**, elaborados sob aprovação expressa de [P0-SEC e P0-VER como bases documentais](P0-DEC-aprovacao-SEC-VER-base.md). As **categorias HT-01..18 já foram aprovadas** na [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md); os **procedimentos detalhados abaixo ainda não foram aceitos individualmente nem executados**.
+**Estado:** **18 procedimentos ACEITOS COMO BASE DOCUMENTAL DE TRABALHO** mediante resposta contextual “ok”, registrada em [P0-DEC — aceite dos planos HT](P0-DEC-aprovacao-ACC-HT01-HT18-base.md). Os cenários HT-01..18 já haviam sido aprovados na [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md). **Os detalhes de cada procedimento ainda precisam de revisão/aceite final específico, e nenhum teste foi executado.**
 **Proibição vigente:** NÃO executar testes, scripts, operações, cargas, migrações, chamadas a provedores, alterações de produção, contratação, novas automações ou programação. Este documento contém somente roteiro para futuro planejamento/homologação após autorização específica.
 **Escopo:** INT-01 a INT-12, contratos CT-01..11, 24 fichas operacionais de referência, INV-01..16, Identidade e Segurança, Central de Aprovações, serviços centrais e módulos proprietários.
 
