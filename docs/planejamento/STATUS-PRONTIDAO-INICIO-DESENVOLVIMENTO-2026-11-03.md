@@ -144,7 +144,13 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - Próxima evidência: **ARQ01-F01 inventário factual**, depois alocação física, custo e riscos comuns; só decisões explícitas fecham os P0. **ARQ-01, ARQ-02, ARQ-03, SEG-01, SEG-02 e AGT-01 continuam P0 parciais/abertos; G01–G06 não concluídos**.
 - Continuamos sem autorização de programação, implantação, contratação ou testes executados; critérios de validação já estão planejados para etapa de desenvolvimento/homologação posterior.
 
-## 20. Próxima recomendação objetiva
+## 20. Instrumento P0-ARQ-01 aceito e F01 de infraestrutura ainda não confirmado (03/11/2026)
+
+- [CRM-DEC](CRM-DEC-aprovacao-P0-ARQ-01-instrumento.md): o [instrumento P0-ARQ-01](P0-ARQ-01-topologia-fronteiras-plano-fechamento.md) foi **aprovado somente como base documental**. **ARQ-01 permanece P0 PARCIAL** até evidência factual, topologia física, custos e aceite posterior.
+- [ARQ01-F01](P0-ARQ01-F01-inventario-factual-ativos-e-servicos.md): **minuta de inventário**, com 13 ativos/domínios, incluindo VPS n8n/Leaseweb referida historicamente e dedicado legado com relatos de sistemas operacionais conflitantes. Nenhuma inspeção ou medição foi feita; não declarar fornecedor/contrato/instalação como atual sem fonte.
+- Próximo ato documental: validar estado contratado/provisionado/em execução por ativo, escolher alocação e dimensionamento, prosseguir ARQ01-F02 com custos verificados. **Não há liberação para Codex ou alteração de infraestrutura**.
+
+## 21. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
