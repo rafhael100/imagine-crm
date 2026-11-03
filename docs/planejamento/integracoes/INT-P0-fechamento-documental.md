@@ -82,6 +82,13 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - [P0-VER — Compatibilidade e evolução de versões](P0-VER-matriz-compatibilidade-evolucao-versoes.md): famílias CT-01..CT-11, cobertura dos 24 casos por INT, oito cenários futuros e regras propostas de evolução sem mutação silenciosa. **P0-VER-01 segue aberto.**
 - A escrita de minutas ou aceite da base CT-02 não encerra P0-DOC/TR/CON/DEP/ACC/GIT, G01–G06 ou homologação, e não permite implementação.
 
+## P0-SEC/P0-VER aprovadas como bases e planos P0-ACC criados (03/11/2026)
+
+- [P0-DEC — Aceite expresso de SEC e VER](P0-DEC-aprovacao-SEC-VER-base.md): aprovação como **bases documentais**, com alçadas, perfis, MFA, parâmetros, versões executáveis e demais definições ainda pendentes.
+- [P0-ACC — Planos HT-01 a HT-18](P0-ACC-planos-homologacao-HT01-HT18.md): **18 procedimentos de homologação redigidos em minuta**, com pré-condições, etapas futuras, verificações negativas, resultados, evidências e critérios de aceite; **nenhum teste executado**.
+- [P0-ACC — Matriz de evidências e aceite](P0-ACC-matriz-controle-evidencias-HT01-HT18.md): status individual dos 18 planos, responsabilidades funcionais e evidências futuras, sem preenchimento de PASS/FAIL.
+- **P0-ACC-01 passa a possuir documentação inicial estruturada, mas continua ABERTO/PARCIAL**, até conferir integralmente requisitos e aprovar os procedimentos finais. P0-DOC/TR/CON/SEC/OWN/DEP/VER/XREF/GIT e G01..G06 ainda exigem suas comprovações.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
