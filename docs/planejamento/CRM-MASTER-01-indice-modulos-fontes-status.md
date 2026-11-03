@@ -338,7 +338,13 @@
 - Atenção ao conflito de fontes: a branch antiga informa créditos comprados até consumo, enquanto revisão posterior aponta validade **90 dias**. Resolver procedência literal, categoria e vigência antes de homologar faturamento/consumo, sem escolher unilateralmente.
 - [Gratuidade administrativa](CRM-DEC-gratuidade-administrativa-qualquer-plano.md): plano de uma empresa grátis não implica créditos adicionais de IA grátis; GRAT-P05 ainda pendente.
 
-## 14. Próximo pacote de revisão proposto
+## 14. Duas modalidades de gratuidade administrativa aprovadas (03/11/2026)
+
+- [CRM-DEC — Vigência das concessões](CRM-DEC-gratuidade-vigencia-modalidades.md): **prazo determinado e prazo indeterminado aprovados**, sem prazo máximo ou padrão fixado. Exemplo de seis meses não é valor normativo.
+- **Nenhuma cobrança recorrente é ativada automaticamente** após expiração ou encerramento. Concessões continuam por organização, com mensalidade base do plano escolhido isenta; extras não foram incluídos automaticamente.
+- **GRAT-P01 e GRAT-P04 parcialmente resolvidos**; outros aspectos de início de vigência, transição, adicionais, alçadas, faturamento e precedência permanecem em revisão. CRM-REV-08 continua **minuta**, sem aceite.
+
+## 15. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
