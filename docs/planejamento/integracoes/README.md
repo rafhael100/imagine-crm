@@ -38,7 +38,7 @@
 - [P0-DEC — Aceite contextual das fichas OP24](P0-DEC-aprovacao-OP24-base.md)
 - [P0-CT02 — Autorizações, permissões e alçadas por 24 operações](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md) — aceita como base documental
 - [P0-DEC — Aceite contextual de CT-02 como base](P0-DEC-aprovacao-CT02-base.md)
-- [P0-SEC — Políticas de autorização contextual por operação](P0-SEC-politicas-autorizacao-CT02.md) — minuta para revisão
+- [P0-SEC — Políticas de autorização contextual por operação](P0-SEC-politicas-autorizacao-CT02.md) — aprovada como base documental
 - [P0-VER — Matriz de compatibilidade e evolução de versões](P0-VER-matriz-compatibilidade-evolucao-versoes.md) — aprovada como base documental
 - [P0-DEC — Aprovação expressa SEC e VER como bases](P0-DEC-aprovacao-SEC-VER-base.md)
 - [P0-ACC — Planos de homologação HT-01 a HT-18](P0-ACC-planos-homologacao-HT01-HT18.md) — 18 procedimentos em minuta, não executados
