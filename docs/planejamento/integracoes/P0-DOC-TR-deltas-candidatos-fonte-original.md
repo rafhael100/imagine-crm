@@ -62,7 +62,7 @@
 | Parâmetro técnico não foi definido | Marcar **PARÂMETRO PENDENTE**, não preencher números por estimativa |
 | Foi confirmado somente em decisão transversal posterior | Referenciar decisão posterior distinta, sem reescrever a aprovação anterior |
 
-## 4. Proveniência: disponibilidade real nesta etapa
+## 5. Proveniência: disponibilidade real nesta etapa
 
 - Os arquivos **INT-01..12** conferidos são secundários; nenhum contém a transcrição completa da proposta original.
 - [P0-ORIGEM](P0-ORIGEM-aprovacoes-dialogo.md) possui textos de aceite de INT-10/11/12 e INT-R01/R02, mas **não** as propostas inteiras às quais esses aceites se referem.
@@ -70,7 +70,7 @@
 - Não atribuir a uma mensagem original URL, hash, transcrição ou exata data/hora que não foram verificados.
 - Os **aceites de bases documentais posteriores** (CT-03/04, CT-02, OP24, P0-SEC, P0-VER, P0-ACC) continuam válidos e registrados; não preenchem o lugar dos textos originais das INTs.
 
-## 5. Atividades necessárias para fechar P0-DOC-01 e P0-TR-01
+## 6. Atividades necessárias para fechar P0-DOC-01 e P0-TR-01
 
 1. Recuperar a proposta e a mensagem de aceite de cada INT-01..12, bem como as propostas integrais INT-R01/INT-R02.
 2. Garantir referência primária estável ou cópia documental verificável do texto, identificando origem e versão (sem expor dados sensíveis).
@@ -79,7 +79,7 @@
 5. Registrar eventuais conflitos no histórico documental para decisão expressa; **não presumir aprovação pelo silêncio**.
 6. Conferir a matriz integral e obter aceite final; não iniciar a programação até o planejamento total do CRM estar aprovado.
 
-## 6. Resultado
+## 7. Resultado
 
 - **28 verificações de granularidade cadastradas**: INT-01 2; INT-02 2; INT-03 2; INT-04 2; INT-05 2; INT-06 2; INT-07 2; INT-08 4; INT-09 4; INT-10 2; INT-11 2; INT-12 2.
 - **Nenhuma reivindicação de inconsistência literal comprovada**.
