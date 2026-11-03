@@ -122,6 +122,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - **CT-01 é ainda apenas família conceitual**, sem minuta especializada aceita; a associação TR-INT08-005→CT-10 não autoriza compensação pela INT-08.
 - **P0-CON-01, P0-TR-01, P0-OWN-01, P0-SEC-01, P0-DEP-01, P0-VER-01 permanecem abertos/parciais**; G01–G06 não encerrados. Nenhum teste ou programação.
 
+## Minuta CT-01 especializada — 03/11/2026
+
+- [P0-CON CT-01](P0-CON-CT01-conectores-conexoes-capacidades-minuta.md): especificação documental proposta para parceiros/provedores, conexões, conector homologado, capacidade tipada e autorização separada; mantém regras dos proprietários INT-01/02/04/11 e a segurança central.
+- **Cobertura nominal CT-01..11:** agora há ficha especializada para CT-01 em **minuta**, CT-02/03/04 e CT-05..11 aceitas como bases documentais; **sem schema final por operação, sem parâmetros aprovados e sem teste**.
+- **P0-CON-01 continua parcial/aberto**, assim como P0-OWN/SEC/DEP/VER/DOC/TR/ACC e G01–G06. A apresentação da ficha não é homologação nem cria sistemas.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
