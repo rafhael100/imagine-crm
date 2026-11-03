@@ -84,5 +84,10 @@ Novas sugestões, interpretações da IA, exemplos e alternativas não são deci
 - [P0-DEC OP15/OP09](P0-DEC-aprovacao-OP15-OP09-bases.md): “ok” contextual ao aceite de **24 fichas especializadas como bases documentais**; não equivale a permissões executáveis.
 - [P0-OP24 SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md) foi criada **após** esse aceite e permanece **proposta para revisão**, não automaticamente aprovada pelo “ok”.
 
+## Aprovação OP24 SEC/STATE/PARAM e revisão de permissões por campo (03/11/2026)
+
+- [P0-DEC SEC/STATE/PARAM](P0-DEC-aprovacao-OP24-SEC-STATE-PARAM-instrumento.md): manifestação “aprovado” para **instrumento documental**, sem definir direitos, MFA, alçadas ou schemas.
+- [P0-OWN-SEC](P0-OWN-SEC-matriz-recursos-campos-OP24.md): proposta posterior de titularidade de 13 classes de recursos e revisão por campo/ação nas 24 OP, ainda sem aprovação específica.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
