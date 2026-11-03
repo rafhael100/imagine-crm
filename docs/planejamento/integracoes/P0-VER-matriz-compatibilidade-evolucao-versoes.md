@@ -1,6 +1,6 @@
 # P0-VER — Matriz de compatibilidade, versões e evolução controlada das integrações
 
-**Data:** 2026-11-03. **Situação:** **MINUTA PARA REVISÃO DOCUMENTAL**, elaborada a partir das diretrizes já aprovadas de INT-R01/R02 e da CT-03/CT-04, não aprovada automaticamente pelo aceite de CT-02.
+**Data:** 2026-11-03. **Situação:** **APROVADA COMO BASE DOCUMENTAL** em 2026-11-03, conforme [decisão expressa](P0-DEC-aprovacao-SEC-VER-base.md), elaborada a partir das diretrizes de INT-R01/R02 e CT-03/CT-04. **Aprovação da base não torna definitivos IDs de versão, classes V-C, critérios técnicos por fornecedor, retenção, planos de migração, alçadas ou parâmetros pendentes.**
 **Fase:** planejamento e documentação apenas. Não programa, migra, distribui, atualiza sistemas reais, publica conectores ou contrata ferramentas.
 **Pendência relacionada:** P0-VER-01 (compatibilidade entre versões e instâncias persistentes), P0-DEP-01, P0-SEC-01 e P0-CON-01.
 **Competência:** INT-11 homologa conector; INT-01 mantém conexão; INT-02/Identidade e Segurança autoriza; INT-03 schema; INT-04 comando/resultado; INT-06/07/08 fronteiras próprias; INT-09 orquestra; INT-10 recupera; INT-12 audita. Proprietários de negócio confirmam efeitos.
