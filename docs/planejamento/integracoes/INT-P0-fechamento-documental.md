@@ -115,6 +115,13 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - **Não houve aceite desta minuta**, criação de automação nem implementação. CT-02 e CT-03/04 continuam bases documentais aceitas; P0-SEC/P0-VER/ACC seguem bases documentais aprovadas nos respectivos limites.
 - **P0-CON-01 permanece parcial/aberto**: detalhamento físico, semântica por operação/provedor, propriedades, políticas de erro, parâmetros, riscos/alçadas e cotejo literal de decisões ainda pendentes. G01–G06 e demais P0 não foram encerrados.
 
+## Aceite CT-05..11 e conferência entre os 11 contratos (03/11/2026)
+
+- [P0-DEC — aceite contextual CT-05 a CT-11](P0-DEC-aprovacao-CT05-CT11-base.md): bases documentais aprovadas, parâmetros e direitos ainda pendentes.
+- [P0-CON — revisão cruzada CT-01 a CT-11](P0-CON-revisao-cruzada-CT01-CT11.md): 11 famílias, 105 vínculos inicialmente propostos entre 53 TR e CT, 13 riscos de fronteira a validar. **Sem 105 novos requisitos** e sem certeza de exaustividade.
+- **CT-01 é ainda apenas família conceitual**, sem minuta especializada aceita; a associação TR-INT08-005→CT-10 não autoriza compensação pela INT-08.
+- **P0-CON-01, P0-TR-01, P0-OWN-01, P0-SEC-01, P0-DEP-01, P0-VER-01 permanecem abertos/parciais**; G01–G06 não encerrados. Nenhum teste ou programação.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
