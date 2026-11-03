@@ -91,7 +91,13 @@ Essas referências não aprovam schemas, decisões funcionais ou execução.
 - [Aprovação expressa CT-03/CT-04](P0-DEC-aprovacao-CT03-CT04.md): especificação documental de base aceita, sem aprovar schemas físicos ou parâmetros por provedor.
 - [24 fichas de operações de referência](P0-OP24-detalhamento-CT03-CT04-por-operacao.md): aplicação da base aprovada como **proposta operacional de revisão**, com fronteiras de segurança e confirmações.
 
-## 10. Itens pendentes de aceite P0-CON-01
+## 10. Especificações CT-05 a CT-11 (03/11/2026)
+
+- [P0-CON CT-05 a CT-11 — minutas de contratos técnicos](P0-CON-CT05-CT11-contratos-integracoes-minuta.md) apresenta **sete fichas conceituais**, com dados, marcos, falhas, reconciliação, exemplos negativos e critérios de revisão, ligadas a INT-06..12, CT-02/03/04, OP24, INV e HT.
+- As diretrizes funcionais existentes permanecem aprovadas, mas **estas sete especificações são propostas documentais para aceite posterior**. Não aprovam schemas, perfis/alçadas, limites, retenções, versões, APIs, serviços, automações ou testes.
+- [P0-GATE](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md) continua controlando P0-CON-01 como parcial/aberto; as fontes originais integrais e a homologação não estão concluídas.
+
+## 11. Itens pendentes de aceite P0-CON-01
 - CON-A: schemas físicos definitivos e campos condicionais por contrato.
 - CON-B: transições de estados por tipo e situações inválidas.
 - CON-C: erros/versionamento/garantias por provedor.
