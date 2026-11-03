@@ -109,7 +109,12 @@ Os pares OP24 são **amostras de operações aceitas como base documental**, nã
 - [P0-CON CT-05 a CT-11](P0-CON-CT05-CT11-contratos-integracoes-minuta.md) explicita os campos conceituais de identificação de versão, preservação de eventos antigos, cursores/checkpoints, artefatos de lote, instâncias, playbooks, compensações e evidências.
 - A matriz de compatibilidade P0-VER segue **base documental aprovada**, mas os formatos físicos e migrações reais de cada família estão pendentes. Não ativar atualização silenciosa de instâncias ou publicar conector por recomendação de IA.
 
-## 9. Pendências P0-VER-01 ainda não resolvidas
+## 9. CT-01: versões de catálogo, conector e conexão (03/11/2026)
+
+- [P0-CON CT-01 — minuta especializada](P0-CON-CT01-conectores-conexoes-capacidades-minuta.md) distingue versão homologada do conector, capacidade tipada, vínculo da conexão por tenant, autorização externa e instâncias ativas, sem publicação ou troca silenciosa.
+- Essa ficha é **proposta**: coexistência, migração, compatibilidade e descontinuação por provedor **ainda não são regras finais**; preservar P0-VER-01 aberto.
+
+## 10. Pendências P0-VER-01 ainda não resolvidas
 
 | ID | Definição faltante | Situação |
 |---|---|---|
