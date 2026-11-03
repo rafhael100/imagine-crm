@@ -286,7 +286,13 @@
 
 **Fase D — Revisão final e autorização:** revisão cruzada global de contratos, política de precedência, LGPD/segurança/financeiro, evidências P0, backlog e referências/commit imutáveis; **aprovação expressa do planejamento completo**. Codex só depois desse marco.
 
-## 6. Próximo pacote de revisão proposto
+## 6. Revisões produzidas e seus limites (03/11/2026)
+
+- [CRM-REV-01](CRM-REV-01-nucleo-identidade-multitenant-permissoes.md): núcleo multiempresa/RBAC **aceito como base documental**, conforme [CRM-DEC](CRM-DEC-aprovacao-REV-01-base.md); dez lacunas CORE-P0 ainda abertas.
+- [CRM-REV-02](CRM-REV-02-planos-trial-assinaturas-cobrancas-basico.md): planos, trial, cobrança e cortesia **redigidos em minuta**, reunindo 20 regras funcionais, 12 pontos de precedência e 12 pendências propostas; preços atuais de planejamento preservados. **Ainda não recebeu aceite específico**.
+- O índice mestre permanece ferramenta de reconciliação, não aprovação global de prontidão ou autorização de desenvolvimento.
+
+## 7. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
