@@ -79,5 +79,10 @@ Novas sugestões, interpretações da IA, exemplos e alternativas não são deci
 - [OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) e [OP09](P0-CON-OP09-contratos-operacoes-complementares.md), reunidas no [índice OP24](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md), são **propostas de especialização documental**, ainda sem aceite específico. O aceite anterior da base OP24 não aprova automaticamente essas fichas nem novos perfis, alçadas, ferramentas ou parâmetros.
 - Não houve alterações das decisões funcionais originárias, programação ou execução de testes.
 
+## Aceite OP15/OP09 e matriz operacional proposta (03/11/2026)
+
+- [P0-DEC OP15/OP09](P0-DEC-aprovacao-OP15-OP09-bases.md): “ok” contextual ao aceite de **24 fichas especializadas como bases documentais**; não equivale a permissões executáveis.
+- [P0-OP24 SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md) foi criada **após** esse aceite e permanece **proposta para revisão**, não automaticamente aprovada pelo “ok”.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
