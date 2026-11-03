@@ -112,7 +112,7 @@ Essas referências não aprovam schemas, decisões funcionais ou execução.
 
 - [P0-DEC CT-01](P0-DEC-aprovacao-CT01-base.md) documenta o aceite da **CT-01 como base documental**. Agora **11/11 famílias CT** possuem bases aceitas, sem esquemas executáveis, alçadas ou parâmetros por provedor automaticamente aprovados.
 - [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) organiza responsáveis, fontes oficiais, **53 TR iniciais / 105 associações propostas**, lacunas, HT futuros e as evidências E-CON01..09 necessárias para encerrar P0-CON-01.
-- A matriz consolidada é **proposta para revisão**, não aceite final. **P0-CON-01 permanece aberta/parcial** e não autoriza programação.
+- A [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) foi **aceita como instrumento documental**, conforme [P0-DEC](P0-DEC-aprovacao-CON-MASTER-base.md). [P0-CON-OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) apresenta 15 fichas de alto impacto **ainda propostas para revisão**, com outras 9 pendentes. **P0-CON-01 permanece aberta/parcial** e não autoriza programação.
 
 ## 14. Itens pendentes de aceite P0-CON-01
 - CON-A: schemas físicos definitivos e campos condicionais por contrato.
