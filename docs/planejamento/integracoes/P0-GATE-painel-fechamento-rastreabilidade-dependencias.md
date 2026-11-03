@@ -59,7 +59,12 @@ O fato de uma necessidade estar documentada não altera a prioridade original. I
 - **Evidência positiva:** cotejo com IN-118/122/123/124/148/149, sínteses de INT-08/09, CT-02/03/04 e planos HT. **Evidência ainda faltante:** propostas e aprovações integrais originais com referência verificável.
 - **G01, G02 e P0-DOC-01/P0-TR-01 permanecem parciais/abertos**; nenhum gate final foi encerrado por essa análise.
 
-## 7. Controle de aprovação e execução
+## 7. Origem focal INT-08/09 — verificação de histórico e commits
+
+- [P0-ORIGEM-INT08-09](P0-ORIGEM-INT08-09-localizadores-historicos.md) aponta referências contextuais de mensagens históricas e os commits de consolidação da INT-08/09, distinguindo fonte primária de síntese.
+- **P0-DOC-01 e P0-TR-01 seguem abertos:** proposta e aceite integrais de INT-08 e INT-09 ainda não foram recuperados para comparação cláusula a cláusula. Localizadores não equivalem à origem literal.
+
+## 8. Controle de aprovação e execução
 
 - **P0-SEC e P0-VER:** aprovados como **bases documentais**, com políticas específicas pendentes.
 - **CT-03 e CT-04:** aprovados como **base documental**, sem esquema final de implementação.
