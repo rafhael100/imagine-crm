@@ -1,6 +1,6 @@
 # P0-CON-OP15 — Contratos documentais de 15 operações com impacto elevado
 
-**Data:** 2026-11-03. **Estado:** **PROPOSTA DE DETALHAMENTO POR OPERAÇÃO PARA REVISÃO**; não é aceite definitivo, homologação ou contrato físico executável.
+**Data:** 2026-11-03. **Estado atualizado:** **15 FICHAS ACEITAS COMO BASES DOCUMENTAIS** conforme [P0-DEC OP15/OP09](P0-DEC-aprovacao-OP15-OP09-bases.md). Isto **não aprova** schemas, alçadas, perfis, estados executáveis, políticas de provedor ou homologação; a [matriz nova de autorização/estados/parâmetros](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md) segue **minuta para revisão**.
 **Autorização da etapa:** [P0-DEC — CON-MASTER aceita como instrumento documental](P0-DEC-aprovacao-CON-MASTER-base.md); [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) aceita como base de acompanhamento, sem aprovar condições técnicas pendentes.
 **Fontes complementares:** [24 fichas OP24 aceitas como referência](P0-OP24-detalhamento-CT03-CT04-por-operacao.md), [CT-02 aceita como base](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md), [P0-SEC](P0-SEC-politicas-autorizacao-CT02.md), [CT-03/04](P0-CON-CT03-CT04-comandos-resultados-transicoes.md), [CT-05..11](P0-CON-CT05-CT11-contratos-integracoes-minuta.md), [HT-01..18](P0-ACC-planos-homologacao-HT01-HT18.md).
 **Escopo desta primeira rodada:** **15 das 24 operações de referência**, escolhidas por potencial impacto sobre **autorizações, dados, escrita externa, compensação, publicação e recuperação**. A classificação de prioridade é **de revisão documental**, não um novo nível N3 ou política de segurança.
@@ -481,9 +481,9 @@ Os nove casos restantes não são considerados de risco irrelevante ou dispensad
 ## 6. Resultados e portas de fechamento P0-CON-01
 
 - **Concluído neste documento:** primeira rodada de **15 fichas conceituais propostas**, com referência às OP24 e a CT-02, pré-condições, evidências, falhas e pendências por tipo de efeito.
-- **Não concluído:** aprovação específica das 15 fichas, as 9 restantes, contratos físicos por operação, fonte original integral, direitos, schemas, políticas de retry/provedor, proprietários e testes.
-- A [matriz CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) permanece **aprovada como instrumento de acompanhamento**, enquanto este desdobramento de operação é **proposta sujeita a revisão**.
+- **Não concluído:** aceite definitivo de contratos físicos por operação, fontes originais integrais, direitos, schemas, políticas de retry/provedor, alçadas, confirmação específica dos proprietários e testes. As nove fichas complementares também foram aceitas **como bases documentais** no [mesmo P0-DEC](P0-DEC-aprovacao-OP15-OP09-bases.md).
+- A [matriz CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) permanece **aprovada como instrumento documental**; este desdobramento foi **aceito como base documental**, mas os contratos de implementação permanecem sujeitos a revisão.
 - **P0-CON-01, P0-OWN-01, P0-SEC-01, P0-DEP-01, P0-VER-01, P0-TR-01, P0-DOC-01/02, P0-XREF-01, P0-ACC-01 e G01–G06 permanecem abertos/parciais.**
 - **HT-01..18 não foram executados.** A fase de documentação é separada da futura fase autorizada de implementação e homologação.
 
-**Conclusão:** 15 operações detalhadas **em minuta documental**, sem conceder permissões, aprovar schemas ou afirmar prontidão para programação.
+**Conclusão atual:** 15 operações detalhadas e **aceitas como bases documentais**, sem conceder permissões, aprovar schemas ou afirmar prontidão para programação.
