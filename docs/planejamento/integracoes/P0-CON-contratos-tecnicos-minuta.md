@@ -108,7 +108,13 @@ Essas referências não aprovam schemas, decisões funcionais ou execução.
 - [P0-CON CT-01 — Conectores, contas, conexões e capacidades](P0-CON-CT01-conectores-conexoes-capacidades-minuta.md) desenvolve **minuta especializada da última família ainda somente conceitual**, com separação INT-01/02/04/11, elegibilidade contextual, estados distintos, suspensão e proteção de instâncias pendentes.
 - **CT-01 segue em proposta para revisão**, não recebeu aceite especializado; CT-02..11 possuem bases documentais anteriormente aceitas. Nenhuma norma de conexão, enum, schema, alçada, provedor ou parâmetro foi aprovada por essa minuta.
 
-## 13. Itens pendentes de aceite P0-CON-01
+## 13. Aceite CT-01 e matriz consolidada de critérios (03/11/2026)
+
+- [P0-DEC CT-01](P0-DEC-aprovacao-CT01-base.md) documenta o aceite da **CT-01 como base documental**. Agora **11/11 famílias CT** possuem bases aceitas, sem esquemas executáveis, alçadas ou parâmetros por provedor automaticamente aprovados.
+- [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) organiza responsáveis, fontes oficiais, **53 TR iniciais / 105 associações propostas**, lacunas, HT futuros e as evidências E-CON01..09 necessárias para encerrar P0-CON-01.
+- A matriz consolidada é **proposta para revisão**, não aceite final. **P0-CON-01 permanece aberta/parcial** e não autoriza programação.
+
+## 14. Itens pendentes de aceite P0-CON-01
 - CON-A: schemas físicos definitivos e campos condicionais por contrato.
 - CON-B: transições de estados por tipo e situações inválidas.
 - CON-C: erros/versionamento/garantias por provedor.
