@@ -1,11 +1,11 @@
 # P0-ARQ01-F04 — Orçamento progressivo de armazenamento, backups e continuidade
 
 **Data:** 03/11/2026
-**Estado:** MINUTA PARA REVISÃO, NÃO APROVADA/NÃO HOMOLOGADA.
+**Estado:** APROVADA COMO BASE DOCUMENTAL em 03/11/2026; **não homologada comercial ou tecnicamente**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-ARQ01-F04-base-2026-11-03.md).
 **Origem:** F03 aprovada como base documental; estratégia econômica Leaseweb aprovada.
 **Limites:** nenhum servidor, assinatura, domínio, bucket ou aplicação foi contratado/configurado. Sem programação ou teste de produção.
 
-## 1. Decisão a avaliar
+## 1. Direção de estudo aceita, sem escolha física homologada
 Para minimizar custo sem comprometer dados: **Cloudflare R2 Standard** como armazenamento primário candidato de anexos, **Leaseweb Object Storage On Demand** como destino independente candidato da réplica de anexos, **PostgreSQL autogerido em VPS isolada** como hipótese econômica e **backup de PostgreSQL orientado a PITR**, preferencialmente com pgBackRest ou ferramenta equivalente, gravado em armazenamento externo protegido. Nenhuma dessas escolhas físicas está homologada.
 
 ## 2. Preços públicos verificados (03/11/2026)
@@ -78,4 +78,4 @@ Documentação:
 - F04-P06: modelo de custo completo, aprovação de RPO/RTO e tolerância à indisponibilidade.
 - F04-P07: homologação futura de restauração, integridade e failover.
 
-**ARQ-01 continua P0 parcial.** F04 é minuta informativa. Sua revisão/aceite não autoriza programação, contratação, instalação, testes ou implantação.
+**ARQ-01 continua P0 parcial.** F04 está aceita somente como base documental, priorizando os candidatos R2 Standard, Leaseweb On Demand e PostgreSQL com PITR/pgBackRest para análise de custos e riscos. Itens F04-P01..P07 continuam pendentes de escolha/homologação específica; nenhuma programação, contratação, instalação, teste ou implantação está autorizada.
