@@ -304,7 +304,14 @@
 - [CRM-REV-04](CRM-REV-04-atendimento-whatsapp-conversas.md) foi redigida como **minuta para revisão**, com 28 regras documentadas, 12 riscos de conciliação, 14 pendências e 16 cenários futuros. **Não recebeu aceite ainda**.
 - O planejamento global e a primeira liberação do Codex permanecem bloqueados até fechamento transversal e aprovação final.
 
-## 9. Próximo pacote de revisão proposto
+## 9. Aceite da CRM-REV-04 e elaboração da CRM-REV-05 (03/11/2026)
+
+- [CRM-REV-04](CRM-REV-04-atendimento-whatsapp-conversas.md) foi **aceita como base documental**, conforme [CRM-DEC](CRM-DEC-aprovacao-REV-04-base.md). Pendências de WhatsApp/IA/posse/fila e provedores continuam abertas.
+- [CRM-REV-05](CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md) reúne 28 regras de automações, 12 riscos de conciliação, 14 pendências e 14 cenários documentais; **minuta para revisão, ainda não aprovada**.
+- Preservada a separação das operações de sistema, automações comerciais em slots e chatbot/canais/IA com direitos e custos próprios.
+- Sem contratos de implementação fechados ou autorização para iniciar Codex.
+
+## 10. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
