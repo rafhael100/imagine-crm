@@ -142,6 +142,6 @@ P0-CON-01 **somente poderá ser declarada documentalmente encerrada** quando:
 1. [Primeiro lote OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) já detalhado **em proposta**, cobrindo 15 operações de maior impacto sobre dados, autorizações e efeitos. Restam 9 OP24 para a segunda rodada, além de outras operações que surgirem do cotejo das aprovações integrais.
 2. Desdobrar os 13 pontos de fronteira e suas dependências por tipo de aresta, sem assumir erro arquitetural comprovado.
 3. Recuperar aprovação original por cláusula (INT-01..12, INT-R01/R02) e corrigir/confirmar vínculos TR→CT/INV/HT apenas quando fundamentados.
-4. Obter aceite expresso desta matriz e das decisões concretas antes de declarar P0-CON-01 concluída.
+4. O **aceite desta matriz como instrumento documental já está registrado** em [P0-DEC](P0-DEC-aprovacao-CON-MASTER-base.md). Ainda é necessário obter aceite específico das fichas de operação e das decisões concretas, sem declarar P0-CON-01 concluída.
 
 **Conclusão:** matriz mestre das **11 CT** criada, 105 vínculos iniciais TR→CT identificados, critérios documentais P0-CON-01 estruturados. **P0-CON-01 permanece ABERTO/PARCIAL**, sem autorização para implementação, testes ou criação de automações.
