@@ -47,5 +47,10 @@ Novas sugestões, interpretações da IA, exemplos e alternativas não são deci
 - [P0-DEC — Aceite contextual CT-02](P0-DEC-aprovacao-CT02-base.md): “ok” subsequente à recomendação de aprovação da base CT-02, limitado a prosseguir com documentação. Não aprova por inferência perfis, MFA por ação, alçadas ou esquemas técnicos.
 - [P0-SEC](P0-SEC-politicas-autorizacao-CT02.md) e [P0-VER](P0-VER-matriz-compatibilidade-evolucao-versoes.md) são **minutas para revisão**, não escolhas técnicas ou operações automaticamente aprovadas.
 
+## Aprovação SEC/VER e autorização de documentação de homologação (03/11/2026)
+
+- [P0-DEC — Aceite SEC/VER](P0-DEC-aprovacao-SEC-VER-base.md): transcrição da aprovação expressa como bases documentais, sem fechar perfis, MFA/alçadas, parâmetros ou aceites finais.
+- [P0-ACC — HT-01 a HT-18](P0-ACC-planos-homologacao-HT01-HT18.md) e [controle de evidências](P0-ACC-matriz-controle-evidencias-HT01-HT18.md) são **minutas para revisão**, criadas sem executar testes, não constituindo nova automação ou homologação.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
