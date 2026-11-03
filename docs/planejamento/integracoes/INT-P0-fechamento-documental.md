@@ -75,6 +75,13 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - [P0-CT02 — Autorização contextual e alçadas por operação](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md): matriz **em proposta** com 24 operações, fronteiras de segurança/negócio, revalidação, impedimentos e 12 roteiros candidatos de validação negativa.
 - **Continuam abertos:** P0-OWN-01/P0-SEC-01 (RBAC, perfis, alçadas, recurso/campo), P0-CON-01 (schema físico), P0-TR-01/P0-DOC-01 (cotejo integral), P0-ACC-01 (testes), P0-VER-01 (versões), P0-GIT-01 (aceite final). Nenhum teste executado.
 
+## Política CT-02 e compatibilidade de versões — 03/11/2026
+
+- [P0-DEC — CT-02 aceita como base documental](P0-DEC-aprovacao-CT02-base.md): aceite contextual **não aprova** direitos/perfis, MFA adicional, limites e alçadas por operação.
+- [P0-SEC — Políticas de autorização contextual](P0-SEC-politicas-autorizacao-CT02.md): 24 operações com condições propostas de acesso/revalidação, competência do autorizador/proprietário e oito verificações documentais futuras. **P0-OWN-01 e P0-SEC-01 continuam abertos.**
+- [P0-VER — Compatibilidade e evolução de versões](P0-VER-matriz-compatibilidade-evolucao-versoes.md): famílias CT-01..CT-11, cobertura dos 24 casos por INT, oito cenários futuros e regras propostas de evolução sem mutação silenciosa. **P0-VER-01 segue aberto.**
+- A escrita de minutas ou aceite da base CT-02 não encerra P0-DOC/TR/CON/DEP/ACC/GIT, G01–G06 ou homologação, e não permite implementação.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
