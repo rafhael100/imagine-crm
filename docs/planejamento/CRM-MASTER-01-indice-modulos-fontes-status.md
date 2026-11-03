@@ -377,7 +377,14 @@
 - Próxima etapa: conferir inventário factual com fonte atualizada, dimensionar serviços/custos e completar ARQ01-F02 de alocação física. Não reabrir separações Portal×CRM, agentes×n8n, Sites Cloudflare ou APIs independentes. **ARQ-01 e demais P0/G01..06 continuam abertos**.
 - Não executar programação, acesso a servidores, contratação ou testes reais nesta fase.
 
-## 20. Próximo pacote de revisão proposto
+## 20. Servidor novo para o CRM e preferência técnica de hospedagem (03/11/2026)
+
+- O responsável confirmou que **o CRM Imagine será colocado em servidor novo**, sem reaproveitar o host referido para n8n, e solicitou a escolha técnica. [CRM-DEC — servidor novo e recomendação Vultr São Paulo](CRM-DEC-infraestrutura-novo-servidor-e-recomendacao-provedor.md).
+- **Recomendação inicial para o servidor de aplicação:** Vultr São Paulo High Performance AMD, **4 vCPU compartilhadas / 8 GB RAM / 180 GB NVMe**, preço de referência **US$ 48/mês** **apenas da VPS**, sujeito a disponibilidade, variação regional, impostos e contratação futura. PostgreSQL separado, preferivelmente gerenciado na mesma região, precisa de orçamento próprio e confirmação de oferta. **Sem aprovação de compra ou de topologia final**.
+- O [inventário ARQ01-F01](P0-ARQ01-F01-inventario-factual-ativos-e-servicos.md) foi atualizado com a preferência. Opção B dos agentes, separação Portal/CRM, n8n, sites Cloudflare e APIs independentes permanecem **decisões aprovadas**. A escolha do novo servidor de aplicação **não fecha ARQ-01**; serviços externos, HA, DB, backups, custos integrais e segurança estão pendentes.
+- Próxima etapa: revisar o pacote ARQ01-F02 de alocação física, banco, capacidade e custos **antes de contratar/provisionar**. Sem programação até aprovação global.
+
+## 21. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
