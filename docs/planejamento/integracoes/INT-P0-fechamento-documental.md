@@ -140,6 +140,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - [P0-CON-OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md): 15 fichas priorizadas (autorização/revogação, escrita externa, leads/eventos, portabilidade, orquestração/compensações, recuperação, conectores e auditoria); **propostas para revisão**, sem execução. Outras 9 OP24 ainda precisam de especialização.
 - **P0-CON-01, P0-SEC/OWN/DEP/VER/ACC/TR/DOC permanecem abertos/parciais**, G01–G06 não concluídos, e 0/18 testes executados.
 
+## Contratos especializados — 24 operações de referência cobertas (03/11/2026)
+
+- [15 fichas de maior impacto](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) e [9 complementares](P0-CON-OP09-contratos-operacoes-complementares.md) estão **redigidas como propostas**, cobrindo os 24 IDs OP já aceitos como referência, sem criar novas operações ou alçadas.
+- [Índice operacional OP24](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md) consolida CT/TR/HT e competências de autorização **candidatas**, distingue base de especificação por operação e registra as lacunas.
+- **P0-CON-01/OWN-01/SEC-01/TR-01/ACC-01 e G01..G06 permanecem abertos/parciais**, porque documentação especializada não equivale a aceite final ou contrato físico por provedor. **0/18 HT executados; sem programação.**
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
