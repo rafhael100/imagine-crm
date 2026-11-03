@@ -55,7 +55,14 @@
 
 Se o responsável posteriormente quiser **alterar expressamente o processo** e autorizar uma etapa de fundação técnica isolada antes do fechamento global, isso precisará de aprovação de mudança de estratégia, escopo/risco e critérios próprios. **A presente avaliação não propõe nem executa essa exceção por padrão.**
 
-## 6. Próxima recomendação objetiva
+## 6. Primeiras entregas do inventário global (03/11/2026)
+
+- [CRM-MASTER-01](CRM-MASTER-01-indice-modulos-fontes-status.md): **20 áreas do CRM e 2 projetos/interfaces relacionados** classificadas por fontes, fase de consolidação e prioridade. Documentação histórica localizada em branch separada não deve ser descartada nem copiada cegamente para a `main`.
+- [CRM-REV-01](CRM-REV-01-nucleo-identidade-multitenant-permissoes.md): **13 princípios funcionais localizados** em fontes históricas e atuais, **10 lacunas propostas CORE-P0** e **10 cenários negativos documentais** para o núcleo multiempresa, usuários/MFA/RBAC e isolamento. **A minuta ainda não recebeu aceite como base**.
+- Exemplo confirmado de precedência interna: o capítulo histórico 01 inicialmente diz que `tenant_id` + RLS era proposta, **mas uma seção posterior do mesmo capítulo registra aprovação explícita**. Essa aprovação deve ser preservada, sujeita ao cotejo de eventuais decisões ainda posteriores.
+- **Sem nova data de início nem autorização de programação.** O índice mestre é mapa de trabalho, não atestado de fechamento.
+
+## 7. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
