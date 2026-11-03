@@ -53,7 +53,13 @@ O fato de uma necessidade estar documentada não altera a prioridade original. I
 - [P0-ORIGEM — texto de aceites preservados](P0-ORIGEM-aprovacoes-dialogo.md): a autenticidade literal de cada transcrição frente ao registro original ainda requer fonte primária verificável.
 - **Bloqueios P0-DOC-01 / P0-TR-01:** não encerrados; a ação seguinte é recuperar e cotejar textos originais, registrar versões e corrigir somente diferenças comprovadas mediante decisão.
 
-## 6. Controle de aprovação e execução
+## 6. Aprofundamento focal INT-08/INT-09 — 03/11/2026
+
+- [P0-FOCO-INT08-09](P0-FOCO-INT08-09-confronto-11TR-8lacunas.md) analisa **8 lacunas candidatas** distribuídas em 4 da INT-08 e 4 da INT-09 e preserva 5+6 TR originais sem alterar sua redação.
+- **Evidência positiva:** cotejo com IN-118/122/123/124/148/149, sínteses de INT-08/09, CT-02/03/04 e planos HT. **Evidência ainda faltante:** propostas e aprovações integrais originais com referência verificável.
+- **G01, G02 e P0-DOC-01/P0-TR-01 permanecem parciais/abertos**; nenhum gate final foi encerrado por essa análise.
+
+## 7. Controle de aprovação e execução
 
 - **P0-SEC e P0-VER:** aprovados como **bases documentais**, com políticas específicas pendentes.
 - **CT-03 e CT-04:** aprovados como **base documental**, sem esquema final de implementação.
