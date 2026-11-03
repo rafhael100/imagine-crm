@@ -143,7 +143,12 @@ P0-CON-01 **somente poderá ser declarada documentalmente encerrada** quando:
 - [P0-OP24 SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md): instrumento **proposto** para confrontar autoridade, estados, condições de falha e valores pendentes das 24 OP.
 - **P0-CON-01 segue aberto**, inclusive fontes originais completas, parâmetros, autoridade e aceites por operação/provedor.
 
-## 10. Próximos passos documentais sugeridos
+## 10. Permissões por recurso/campo e revisão de propriedade (03/11/2026)
+
+- [P0-OP24 SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md) foi **aceita como instrumento de acompanhamento documental**, conforme [P0-DEC](P0-DEC-aprovacao-OP24-SEC-STATE-PARAM-instrumento.md).
+- [P0-OWN-SEC](P0-OWN-SEC-matriz-recursos-campos-OP24.md) discrimina 13 grupos de recursos e direitos candidatos nas 24 OP. **Minuta sem aceite próprio**; direitos por perfil/campo e parâmetros técnicos ainda pendentes.
+
+## 11. Próximos passos documentais sugeridos
 
 1. [Os dois lotes OP15/OP09](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md) agora cobrem **24/24 operações de referência em propostas documentais** (15 de maior impacto e nove complementares). Revisar as fichas e identificar outras operações que eventualmente surjam do cotejo das aprovações integrais.
 2. Desdobrar os 13 pontos de fronteira e suas dependências por tipo de aresta, sem assumir erro arquitetural comprovado.
