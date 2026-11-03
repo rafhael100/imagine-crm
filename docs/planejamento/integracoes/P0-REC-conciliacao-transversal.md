@@ -160,5 +160,11 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - [P0-CON CT-01](P0-CON-CT01-conectores-conexoes-capacidades-minuta.md): separação de nove classes de objetos, conexão/versão/autoridade, transições propostas e efeitos pendentes, preservando INT-01/02/04/11 e serviços centrais.
 - **A CT-01 foi redigida, não aprovada como base.** As onze famílias CT agora dispõem de detalhamento documental (CT-01 em minuta; CT-02..11 aceitas como bases), ainda sem contratos executáveis ou homologação. P0-CON-01 e G01–G06 continuam abertos.
 
-## 19. Restrição permanente
+## 19. CT-01 aprovada como base e consolidação P0-CON (03/11/2026)
+
+- [P0-DEC CT-01](P0-DEC-aprovacao-CT01-base.md) delimita o aceite documental da última família de contratos, preservando as competências INT-01/02/04/11.
+- [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) consolida 11 famílias documentais aceitas, com esquemas executáveis/autorizações por ato ainda pendentes.
+- **P0-CON-01 segue aberta/parcial**, G01..G06 não concluídos e 0 HT executados. Não há autorização de programação.
+
+## 20. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
