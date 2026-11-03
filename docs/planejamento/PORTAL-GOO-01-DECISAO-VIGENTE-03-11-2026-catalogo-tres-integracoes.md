@@ -28,3 +28,10 @@ SEO básico, monitoramento técnico e PageSpeed/CrUX por URL podem ser especific
 Esta decisão é **posterior e prevalece** sobre a seção 10 do arquivo `PORTAL-GOO-01-integracoes-google-propriedades-contas-clientes-autosservico.md`, que anteriormente aprovava cinco integrações, e sobre o registro de cinco integrações no `PORTAL-01-matriz-pendencias-plataforma-sites.md`. Essas seções antigas são **histórico substituído**, não especificação vigente.
 
 **Nenhuma programação ou integração real foi iniciada.**
+
+
+## Complemento vigente — GA4 apenas instalação/conexão sem relatórios Imagine (03/11/2026)
+
+**Decisão expressa do responsável:** a Imagine disponibilizará **Google Analytics 4 apenas como integração facultativa no Portal** para o cliente escolher/criar conta Google, autorizar sua propriedade e permitir a configuração técnica/instalação de medição no site. **A Imagine NÃO importará, coletará por API, armazenará nem exibirá no Portal Imagine dados e relatórios de acessos, sessões, fontes, eventos ou conversões do GA4.** Quando quiser consultar seus indicadores GA4, o **cliente acessará diretamente a plataforma Google Analytics**.
+
+Esta decisão **substitui os trechos anteriores que tratavam o GA4 como fonte de relatórios e métricas nos painéis Imagine**. Não elimina Google Search Console nem Google Tag Manager do catálogo de três ferramentas. A instrumentação GA4 é opcional e ainda depende de transparência/controles LGPD e permissões do cliente. O monitoramento técnico da Cloudflare poderá ter painel próprio, sujeito à aprovação do MON-01. [Estudo CF-01](PORTAL-CF-01-estudo-custos-cloudflare-100-a-700-sites-PROPOSTA.md). Apenas planejamento.
