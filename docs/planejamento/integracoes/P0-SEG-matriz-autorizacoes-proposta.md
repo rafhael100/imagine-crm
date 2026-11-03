@@ -46,7 +46,14 @@ IN-167 permite execução por **procedimento determinístico, seguro, homologado
 - [Matriz P0-CT02](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md) distingue solicitante, autorizações centrais, executor técnico e confirmador proprietário para as 24 fichas OP aceitas como base.
 - São **propostas de verificações contextuais por operação**, não criação de papéis, alçadas, MFA obrigatório geral ou políticas de acesso. P0-SEC-01 e P0-OWN-01 continuam pendentes de fechamento integral.
 
-## 7. Matriz que ainda precisa ser preenchida
+## 7. Complemento de política CT-02 — 03/11/2026
+
+- [P0-DEC](P0-DEC-aprovacao-CT02-base.md) registra CT-02 aceita como **base documental**.
+- [P0-SEC](P0-SEC-politicas-autorizacao-CT02.md) relaciona revisão e revalidação às 24 fichas de operação, sem aprovar perfis/MFA/alçadas exatos.
+- [P0-VER](P0-VER-matriz-compatibilidade-evolucao-versoes.md) relaciona evolução de política/credencial/contrato/instância à autorização corrente.
+- **P0-OWN-01 e P0-SEC-01 permanecem abertos**, pois o detalhamento final por direito, recurso, campo, perfil e decisão ainda depende de validação.
+
+## 8. Matriz que ainda precisa ser preenchida
 | ID | Detalhamento necessário | Situação |
 |---|---|---|
 | SEG-A | Catálogo de operações e módulo proprietário por efeito | Pendente |
