@@ -42,5 +42,10 @@ Novas sugestões, interpretações da IA, exemplos e alternativas não são deci
 - [P0-DEC — Aprovação OP24 como base](P0-DEC-aprovacao-OP24-base.md): a resposta “ok” autorizou a continuidade documental, sem criar nova regra funcional ou implementar direitos.
 - [P0-CT02](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md): matriz nova **proposta para revisão**; os princípios gerais de segurança já aprovados prevalecem e os papéis/alçadas específicos continuam pendentes.
 
+## Aceite contextual CT-02 e novas minutas P0 (03/11/2026)
+
+- [P0-DEC — Aceite contextual CT-02](P0-DEC-aprovacao-CT02-base.md): “ok” subsequente à recomendação de aprovação da base CT-02, limitado a prosseguir com documentação. Não aprova por inferência perfis, MFA por ação, alçadas ou esquemas técnicos.
+- [P0-SEC](P0-SEC-politicas-autorizacao-CT02.md) e [P0-VER](P0-VER-matriz-compatibilidade-evolucao-versoes.md) são **minutas para revisão**, não escolhas técnicas ou operações automaticamente aprovadas.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
