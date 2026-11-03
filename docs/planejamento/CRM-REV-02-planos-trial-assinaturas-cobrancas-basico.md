@@ -141,7 +141,14 @@ Os 12 itens são **questões de revisão**, não 12 novas funcionalidades ou apr
 
 Os 14 casos são **cenários documentais candidatos** a futuros critérios de aceite, não testes executados, nem novos números HT.
 
-## 8. Aceite documental contextual e limites mantidos
+## 8. Decisão posterior: gratuidade administrativa de qualquer plano (03/11/2026)
+
+- [CRM-DEC — Gratuidade administrativa em qualquer plano](CRM-DEC-gratuidade-administrativa-qualquer-plano.md): **nova decisão funcional aprovada expressamente**. O Administrador Geral Imagine pode conceder a **uma organização específica** qualquer plano público do CRM, inclusive Essencial, Profissional e Empresarial, **sem mensalidade base enquanto a concessão for válida**, sem exigir contrato de site e sem utilizar trial.
+- Esta modalidade **não altera preços de tabela**, não estende privilégios a outra organização do mesmo CNPJ e **não substitui** a cortesia Básico por contrato elegível da IN-119. O plano concedido mantém seus recursos e franquias próprios; adicionais e consumo de terceiros **não estão automaticamente cobertos**.
+- **Pendentes:** vigência e prazos (determinado/indeterminado), concessão a cliente pagante, expiração/revogação, alçadas/justificativas, auditoria, conflitos com site/trial/promoção, cobertura de adicionais, NFS-e e conciliação financeira (GRAT-P01..08). **Não converter o término do benefício em cobrança automática sem contratação expressa**.
+- O aceite anterior de CRM-REV-02 permanece como base documental; a nova decisão está aprovada em seu núcleo, **não** em parâmetros e fluxo operacional final.
+
+## 9. Aceite documental contextual e limites mantidos
 
 **CRM-REV-02 foi aceita como base documental de reconciliação funcional** no [CRM-DEC correspondente](CRM-DEC-aprovacao-REV-02-base.md), reconhecendo COM-R01..20, os regimes distintos de trial/assinatura/site e o registro de divergências REV02-D01..12. O aceite **não homologou** preços finais, pacotes de IA, alçadas de cobrança, provedores, prazos físicos, campanhas ou contratos de API.
 
