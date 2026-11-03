@@ -16,21 +16,25 @@
 
 ## 2. Não foi aprovado por inferência
 
-- **Prazo e modalidades de vigência dos adicionais:** as opções **determinado e indeterminado** estão aprovadas para a **gratuidade do plano**, em [CRM-DEC de vigência](CRM-DEC-gratuidade-vigencia-modalidades.md). **Ainda é preciso decidir** se se aplicam automaticamente às concessões de cada tipo de adicional, sobretudo créditos de consumo.
+- **Prazo e modalidades — NOVA DECISÃO APROVADA:** a [CRM-DEC de vigência e pacotes adicionais](CRM-DEC-gratuidade-adicionais-vigencia-e-pacotes-ia.md) confirmou **prazo determinado e indeterminado para usuários extras e armazenamento adicional**, enquanto **créditos IA serão concedidos em pacotes com quantidade definida**, sujeitos à política própria de validade ainda pendente. Não presumir prazo padrão, limite de GB/usuários/créditos ou validade de pacote IA.
 - **Quantidade, franquia, preço e custo externo**: capacidade (GB), número de assentos, volume de créditos, validade de saldo, elegibilidade por plano, serviços de terceiros e política de limite/abuso.
 - **Fluxo executável e segurança:** nomes de perfis, alçada de aprovador adicional, step-up, confirmação, reembolso/pró-rata para cliente já pagante, motivos obrigatórios, agenda, avisos, suspensão, revogação, estados, schemas, eventos e auditoria detalhada.
 - Nenhuma gratuidade automática em massa, extensão a outras organizações do mesmo CNPJ ou contratação de provedores.
 - Nenhuma programação, teste, publicação, provisionamento de benefícios reais, despesa ou cobrança foi autorizada.
 
-## 3. Questões de fechamento
+## 3. Vigência adicional aprovada em decisão posterior
+
+A [CRM-DEC — Gratuidade de adicionais por vigência e créditos IA quantificados](CRM-DEC-gratuidade-adicionais-vigencia-e-pacotes-ia.md) aprovou **prazo determinado ou indeterminado para concessões gratuitas de usuários extras e armazenamento adicional**. Para **créditos de IA**, aprova-se pacote com **quantidade definida**, com validade própria ainda sujeita a cotejo e aprovação. Não há concessões ilimitadas, definição de valores padrão ou alteração de política de 90 dias sem decisão específica.
+
+## 4. Questões de fechamento
 
 | ID | Decisão ainda necessária | Estado |
 |---|---|---|
 | GRAT-EX-P01 | Quais tipos de adicionais CRM serão elegíveis além de usuários, armazenamento e IA? | Aberta |
-| GRAT-EX-P02 | Permitir vigência determinada e/ou indeterminada para adicionais; validade e consumo de créditos IA seguem regime próprio? | Aberta |
-| GRAT-EX-P03 | Quantidade por concessão, acumulação, limites antiabuso e coexistência com pacotes pagos | Aberta |
+| GRAT-EX-P02 — **PARCIAL** | **Aprovadas as duas modalidades** (determinado e indeterminado) para usuários extras e armazenamento. Créditos IA em pacotes **quantificados**, mas prazo/consumo próprios ainda sem decisão final. [Registro](CRM-DEC-gratuidade-adicionais-vigencia-e-pacotes-ia.md). | Parcialmente resolvida |
+| GRAT-EX-P03 — **PARCIAL** | **Pacotes gratuitos IA terão quantidade definida**; quantidades em usuários/GB também devem ser especificadas em cada concessão. Acumulação, tetos e coexistência com extras pagos ainda pendentes. | Parcialmente resolvida |
 | GRAT-EX-P04 | Efeito em assinatura já paga, fatura do ciclo, pró-rata, crédito, fiscal e NFS-e | Aberta |
-| GRAT-EX-P05 | Avisos, expiração, revogação, downgrade/limites, retenção e proteção dos dados preexistentes | Aberta |
+| GRAT-EX-P05 — **PARCIAL** | Sem cobrança automática ao encerrar gratuidade. Falta definir aviso, encerramento de acesso extra, queda de quota e preservação/portabilidade. | Parcialmente resolvida |
 | GRAT-EX-P06 | Alçadas, identidade do Administrador Geral, auditoria, justificativa, antifraude e segregação de acesso | Aberta |
 | GRAT-EX-P07 | Definição dos planos que podem receber cada adicional, pré-requisitos técnicos e quota incluída | Aberta |
 | GRAT-EX-P08 | Conciliação do catálogo/precificação final de adicionais e das regras de pacotes de IA | Aberta |
