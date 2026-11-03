@@ -70,7 +70,14 @@ O fato de uma necessidade estar documentada não altera a prioridade original. I
 - **Evidência acrescentada em P0-CON-01:** representação conceitual dos objetos, marcos, falhas e reconciliação para CT-05..11. **Ainda falta:** schemas/estados definitivos, contratos por provedor/operação, alçadas, compatibilidade, parâmetros, evidências técnicas e aceite dos proprietários.
 - **P0-DOC-01 e P0-TR-01 permanecem abertos** até cotejo integral das fontes originais. Nenhuma nova HT, programação, teste ou gate concluído.
 
-## 9. Controle de aprovação e execução
+## 9. Revisão cruzada de CT-01 a CT-11 — 03/11/2026
+
+- [Decisão CT-05..11 como bases](P0-DEC-aprovacao-CT05-CT11-base.md): aceita a estrutura documental das sete famílias, **sem homologação técnica**.
+- [P0-CON Revisão CT-01..11](P0-CON-revisao-cruzada-CT01-CT11.md): 11 contratos revisados, 105 associações propostas de 53 TR às CT, 13 riscos de fronteira documentais, incluindo leitura restritiva do vínculo CT-10/INT-08.
+- **Bloqueio de P0-CON-01:** CT-01 precisa de especificação própria; para CT-02..11 faltam schemas, permissões, estados por operação, parâmetros, provedores e aceite/homologação final. Contratos **não** significam motores novos.
+- Nenhum dos gates G01–G06 muda de estado por esta revisão; P0-DOC-01/P0-TR-01 permanecem pendentes de texto original.
+
+## 10. Controle de aprovação e execução
 
 - **P0-SEC e P0-VER:** aprovados como **bases documentais**, com políticas específicas pendentes.
 - **CT-03 e CT-04:** aprovados como **base documental**, sem esquema final de implementação.
