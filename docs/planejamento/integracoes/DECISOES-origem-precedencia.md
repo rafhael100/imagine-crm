@@ -52,5 +52,11 @@ Novas sugestões, interpretações da IA, exemplos e alternativas não são deci
 - [P0-DEC — Aceite SEC/VER](P0-DEC-aprovacao-SEC-VER-base.md): transcrição da aprovação expressa como bases documentais, sem fechar perfis, MFA/alçadas, parâmetros ou aceites finais.
 - [P0-ACC — HT-01 a HT-18](P0-ACC-planos-homologacao-HT01-HT18.md) e [controle de evidências](P0-ACC-matriz-controle-evidencias-HT01-HT18.md) são **minutas para revisão**, criadas sem executar testes, não constituindo nova automação ou homologação.
 
+## Aceite P0-ACC e verificação de origem/dependências (03/11/2026)
+
+- [P0-DEC — 18 planos HT como base documental](P0-DEC-aprovacao-ACC-HT01-HT18-base.md) documenta a aprovação contextual “ok”, sem aceite individual definitivo ou execução de teste.
+- [P0-TR-AUD](P0-TR-AUD-auditoria-proveniencia-requisitos.md) diferencia aceites transcritos, sínteses funcionais e propostas integrais não cotejadas. Os 53 IDs iniciais não são cobertura exaustiva certificada.
+- [P0-DEP](P0-DEP-dependencias-criticas-e-fronteiras.md) e [P0-GATE](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md) registram dependências e bloqueios sem reabrir decisões aprovadas, nem declarar os critérios G01–G06 cumpridos.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
