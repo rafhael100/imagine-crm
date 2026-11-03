@@ -104,7 +104,12 @@ Os pares OP24 são **amostras de operações aceitas como base documental**, nã
 | VER-T07 | Processar checkpoints após mudança incompatível no cursor | Suspensão/reconciliação, sem avanço não comprovado | HT-06, HT-12 |
 | VER-T08 | Recuperar evidência histórica de versão antiga | Consulta auditável com origem e interpretação correta | HT-14, HT-17 |
 
-## 8. Pendências P0-VER-01 ainda não resolvidas
+## 8. Detalhes de versões associados às famílias CT-05..11 (03/11/2026)
+
+- [P0-CON CT-05 a CT-11](P0-CON-CT05-CT11-contratos-integracoes-minuta.md) explicita os campos conceituais de identificação de versão, preservação de eventos antigos, cursores/checkpoints, artefatos de lote, instâncias, playbooks, compensações e evidências.
+- A matriz de compatibilidade P0-VER segue **base documental aprovada**, mas os formatos físicos e migrações reais de cada família estão pendentes. Não ativar atualização silenciosa de instâncias ou publicar conector por recomendação de IA.
+
+## 9. Pendências P0-VER-01 ainda não resolvidas
 
 | ID | Definição faltante | Situação |
 |---|---|---|
