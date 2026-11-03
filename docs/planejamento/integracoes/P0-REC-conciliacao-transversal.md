@@ -148,5 +148,12 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - [P0-CON-CT05-CT11](P0-CON-CT05-CT11-contratos-integracoes-minuta.md) formaliza sete fichas documentais de interoperabilidade, com autoridades dos módulos proprietários, serviços centrais, controles de idempotência, estados por domínio, reconciliação e cenários negativos vinculados aos HT existentes.
 - As sete fichas **não foram aprovadas como parâmetros executáveis ou base documental final**; P0-CON-01, P0-SEC-01, P0-VER-01, P0-TR-01, P0-DOC-01, P0-ACC-01 e os gates G01..G06 seguem abertos/parciais.
 
-## 17. Restrição permanente
+## 17. Decisão CT-05..11 e revisão cruzada das famílias CT (03/11/2026)
+
+- [CT-05..11 como bases documentais](P0-DEC-aprovacao-CT05-CT11-base.md) — sem parâmetros físicos aprovados.
+- [Revisão CT-01..11](P0-CON-revisao-cruzada-CT01-CT11.md) — 11 famílias, 105 relações propostas TR→CT nas 53 linhas iniciais e 13 riscos documentais; sem comprovação de cobertura integral.
+- **CT-01 especializada pendente**, CT-02..11 aceitas como bases, fonte literal INT e especificações executáveis não encerradas.
+- P0-CON-01/SEC-01/OWN-01/VER-01/DEP-01/TR-01/DOC-01/ACC-01 e G01–G06 continuam pendentes/parciais.
+
+## 18. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
