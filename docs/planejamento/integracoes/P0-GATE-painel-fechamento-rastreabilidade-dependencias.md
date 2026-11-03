@@ -82,7 +82,13 @@ O fato de uma necessidade estar documentada não altera a prioridade original. I
 - [P0-CON CT-01 — minuta especializada](P0-CON-CT01-conectores-conexoes-capacidades-minuta.md): cobre catálogo, conexão, conta, conector homologado, capacidade, autorizações separadas e proteção de operações pendentes com **11 TR iniciais e 9 roteiros negativos propostos**.
 - **P0-CON-01 evoluiu documentalmente**, mas CT-01 ainda aguarda aprovação como base, esquemas físicos, critérios de homologação por provedor, alçadas, parâmetros e rastreabilidade das fontes originais. **Nenhum gate G01–G06 concluído.**
 
-## 11. Controle de aprovação e execução
+## 11. CT-01 aceita e pacote P0-CON-01 organizado (03/11/2026)
+
+- [P0-DEC CT-01](P0-DEC-aprovacao-CT01-base.md): agora todas as 11 famílias CT estão aceitas **como bases documentais**, sem homologação técnica e sem esquemas físicos aprovados.
+- [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md): reúne responsáveis/efeitos de 11 CT, 53 TR iniciais / 105 vínculos documentais, nove evidências E-CON01..09 de fechamento e vinculação aos gates G01..G06.
+- **P0-CON-01 segue ABERTO/PARCIAL**; o aceite da base não significa aprovação final de contratos por operação ou prontidão para programação. P0-DOC/TR, OWN/SEC, DEP/VER, ACC e G01..G06 permanecem com suas pendências.
+
+## 12. Controle de aprovação e execução
 
 - **P0-SEC e P0-VER:** aprovados como **bases documentais**, com políticas específicas pendentes.
 - **CT-03 e CT-04:** aprovados como **base documental**, sem esquema final de implementação.
