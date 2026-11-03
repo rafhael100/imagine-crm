@@ -1,7 +1,7 @@
 # P0-CON — CT-01: Conectores, contas, conexões e capacidades (minuta especializada)
 
 **Data:** 2026-11-03.
-**Situação:** **MINUTA DE ESPECIFICAÇÃO DOCUMENTAL PARA REVISÃO**, criada após o “ok” que autorizou prosseguir com o detalhamento da CT-01. **Não** existe aprovação nova dos estados físicos, campos, níveis de risco, esquemas, ferramentas, quotas ou transições por provedor.
+**Situação:** **ACEITA COMO BASE DOCUMENTAL** pelo responsável em 2026-11-03, conforme [registro de aceite contextual](P0-DEC-aprovacao-CT01-base.md). O aceite **não aprova** estados físicos, campos, níveis de risco, esquemas, ferramentas, quotas, alçadas, transições por provedor ou execução. A [matriz consolidada CT-01..11](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) segue proposta para revisão.
 **Natureza:** CT-01 é uma família de contrato de interoperabilidade previamente catalogada, **não** uma nova INT, automação, catálogo concorrente, cofre de segredos, IAM, motor de estados, API ou execução.
 **Fontes funcionais já aprovadas:** [INT-01](INT-01.md), [INT-02](INT-02.md), [INT-04](INT-04.md), [INT-11](INT-11.md), [INT-R01](INT-R01-governanca-contratos-homologacao.md), [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md); cruzamento inicial [P0-CON CT-01..11](P0-CON-revisao-cruzada-CT01-CT11.md).
 **Contratos complementares:** [CT-02](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md) (base documental aceita), [CT-03/04](P0-CON-CT03-CT04-comandos-resultados-transicoes.md) (base documental aceita), [CT-05..11](P0-CON-CT05-CT11-contratos-integracoes-minuta.md) (bases documentais aceitas). **CT-01 ainda não recebeu aceite documental especializado.**
