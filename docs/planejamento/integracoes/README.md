@@ -45,6 +45,7 @@
 - [P0-ACC — Controle de evidências e aceite HT-01 a HT-18](P0-ACC-matriz-controle-evidencias-HT01-HT18.md) — base documental aceita, 0/18 testes executados
 - [P0-DEC — Aceite dos planos HT como base](P0-DEC-aprovacao-ACC-HT01-HT18-base.md)
 - [P0-TR-AUD — Conferência de 53 TR, 18 HT, 16 INV](P0-TR-AUD-auditoria-proveniencia-requisitos.md)
+- [P0-DOC-TR — 28 lacunas candidatas de granularidade por fonte](P0-DOC-TR-deltas-candidatos-fonte-original.md) — revisão contra sínteses, fonte literal pendente
 - [P0-DEP — Dependências e fronteiras críticas](P0-DEP-dependencias-criticas-e-fronteiras.md)
 - [P0-GATE — Situação dos 11 P0 e G01–G06](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md)
 
