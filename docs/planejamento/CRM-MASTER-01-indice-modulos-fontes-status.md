@@ -370,7 +370,14 @@
 - **ARQ-01 permanece P0 parcial**. O próximo trabalho é levantar o inventário factual ARQ01-F01 e fechar o desenho físico/sua análise de custo, sem provisionamento. ARQ-02/ARQ-03/SEG-01/SEG-02/AGT-01 e INT G01–G06 seguem abertos.
 - As referências históricas anteriores deste índice refletem situações datadas; o estado atual é esta seção. **Sem programação**.
 
-## 19. Próximo pacote de revisão proposto
+## 19. P0-ARQ-01 aprovada como instrumento e inventário preliminar F01 (03/11/2026)
+
+- [P0-ARQ-01](P0-ARQ-01-topologia-fronteiras-plano-fechamento.md) foi **aceita como instrumento documental de fechamento**, conforme [CRM-DEC](CRM-DEC-aprovacao-P0-ARQ-01-instrumento.md), **sem homologar a topologia física nem resolver ARQ-01**.
+- [ARQ01-F01](P0-ARQ01-F01-inventario-factual-ativos-e-servicos.md) foi **preparado como inventário preliminar não homologado**: 13 ativos e domínios, seis diretrizes consolidadas, 12 itens de conferência. Relatos anteriores de dedicado WHM/cPanel com CentOS 7 versus referência a AlmaLinux 10 e VPS n8n Leaseweb 6vCPU/16GB/200GB constam como **informações históricas sujeitas a conferência**, não estado comprovado.
+- Próxima etapa: conferir inventário factual com fonte atualizada, dimensionar serviços/custos e completar ARQ01-F02 de alocação física. Não reabrir separações Portal×CRM, agentes×n8n, Sites Cloudflare ou APIs independentes. **ARQ-01 e demais P0/G01..06 continuam abertos**.
+- Não executar programação, acesso a servidores, contratação ou testes reais nesta fase.
+
+## 20. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
