@@ -106,7 +106,13 @@ O fato de uma necessidade estar documentada não altera a prioridade original. I
 - [P0-OP24 SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md): minuta com 24 controles por operação; permissões, alçadas, estados físicos, versionamento e parâmetros por provedor **pendentes de decisão**.
 - **P0-CON/OWN/SEC/VER/DEP/DOC/TR/ACC continuam abertos**, G01–G06 ainda não encerrados; zero testes e nenhuma programação.
 
-## 14. Controle de aprovação e execução
+## 14. Matriz SEC/STATE/PARAM aceita e P0-OWN-SEC criada (03/11/2026)
+
+- [P0-DEC — SEC/STATE/PARAM](P0-DEC-aprovacao-OP24-SEC-STATE-PARAM-instrumento.md) registra aprovação **como instrumento documental** de decisões ainda abertas.
+- [P0-OWN-SEC](P0-OWN-SEC-matriz-recursos-campos-OP24.md) identifica 13 classes de recursos e direitos candidatos em 24 operações, com 12 perguntas OWN-Q01..12 e critérios de fechamento; **minuta não aprovada**, sem concessão de poderes.
+- **P0-OWN-01/P0-SEC-01 seguem ABERTOS/PARCIAIS** até catálogo verdadeiro de perfil/recurso/campo, revisão pelos proprietários, alçadas e fonte literal. G01–G06 não foram encerrados.
+
+## 15. Controle de aprovação e execução
 
 - **P0-SEC e P0-VER:** aprovados como **bases documentais**, com políticas específicas pendentes.
 - **CT-03 e CT-04:** aprovados como **base documental**, sem esquema final de implementação.
