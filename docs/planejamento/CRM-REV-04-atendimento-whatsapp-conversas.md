@@ -1,6 +1,6 @@
 # CRM-REV-04 — Atendimento, WhatsApp e Gestão de Conversas
 
-**Data:** 2026-11-03. **Status:** **MINUTA PARA REVISÃO — NÃO APROVADA**. Elaborada após o aceite da [CRM-REV-03](CRM-DEC-aprovacao-REV-03-base.md), que **não constitui aceite antecipado** desta REV-04.
+**Data:** 2026-11-03. **Status atualizado:** **APROVADA COMO BASE DOCUMENTAL**, conforme [CRM-DEC](CRM-DEC-aprovacao-REV-04-base.md). Mantidas as 14 pendências ATD-P01..14, riscos ATD-D01..12, contratos, provedores, direitos e parâmetros. A [CRM-REV-05](CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md) é **minuta para revisão, ainda não aprovada**.
 **Escopo:** Central de Atendimento WhatsApp, posse, filas, equipe, transferências, IA e interfaces com chatbot, CRM, integrações e privacidade. Não criar motores duplicados nem alterar decisões comerciais.
 **Fase:** apenas planejamento/documentação GitHub. **Sem programação, testes executados, mensagens reais, credenciamento Meta/BSP, automações novas, produção ou despesas**.
 
@@ -122,6 +122,6 @@ São itens de **revisão documental**, não novos serviços, normas já aprovada
 
 ## 7. Próxima decisão
 
-**Proposta:** aprovar a CRM-REV-04 **como base documental** das 28 regras identificadas e manter os 14 itens ATD-P01..14 em aberto. **Não** aprovar por inferência o provedor, preço de WhatsApp, schemas, números finais de timeout, regras externas vigentes da Meta, estado técnico exato, novas permissões, fluxos executáveis ou cronograma.
+**CRM-REV-04 foi aprovada como base documental** das 28 regras identificadas conforme [decisão](CRM-DEC-aprovacao-REV-04-base.md); os 14 itens ATD-P01..14 continuam abertos. **Não** aprovar por inferência o provedor, preço de WhatsApp, schemas, números finais de timeout, regras externas vigentes da Meta, estado técnico exato, novas permissões, fluxos executáveis ou cronograma.
 
-Depois, continuar em **CRM-REV-05 — Chatbot, Fluxos, Gatilhos, Condições e Automações**, evitando duplicação do Motor Central. **P0 global, INT-P0, IN-168 e gates G01–G06 seguem abertos**; desenvolvimento somente após aprovação integral e final do planejamento.
+A [CRM-REV-05 — Chatbot, Fluxos, Gatilhos, Condições e Automações](CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md) foi redigida como **minuta para revisão**, sem duplicação do Motor Central. **P0 global, INT-P0, IN-168 e gates G01–G06 seguem abertos**; desenvolvimento somente após aprovação integral e final do planejamento.
