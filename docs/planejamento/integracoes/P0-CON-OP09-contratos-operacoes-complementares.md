@@ -1,6 +1,6 @@
 # P0-CON-OP09 — Contratos documentais das nove operações complementares
 
-**Data:** 2026-11-03. **Estado:** **PROPOSTA DOCUMENTAL PARA REVISÃO**. Conclui o **segundo lote de desdobramento das 24 fichas de referência OP24**; **não** representa aprovação definitiva de contratos por operação nem autorização de execução.
+**Data:** 2026-11-03. **Estado atual:** **NOVE FICHAS ACEITAS COMO BASES DOCUMENTAIS**, conforme [P0-DEC](P0-DEC-aprovacao-OP15-OP09-bases.md), sem homologação de schemas, permissões, alçadas ou parâmetros. A [nova matriz por operação](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md) segue **em proposta**. Conclui o **segundo lote de desdobramento das 24 fichas de referência OP24**; **não** representa aprovação definitiva de contratos por operação nem autorização de execução.
 **Base:** [CON-MASTER aceita como instrumento documental](P0-DEC-aprovacao-CON-MASTER-base.md), [OP24 aceita como base](P0-DEC-aprovacao-OP24-base.md), [OP15 detalhadas em proposta](P0-CON-OP15-contratos-operacoes-impacto-elevado.md), [CT-02](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md) e [CT-01..11](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md).
 **Fase:** documentação apenas; nenhuma automação, integração real, código, teste, alteração de produção ou despesa.
 
