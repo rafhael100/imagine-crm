@@ -332,7 +332,13 @@
 - Impactos documentais: **CRM-02 Administração Geral**, **CRM-03 Identidade/Permissões**, **CRM-04 Planos/Cortesia** e **CRM-05 Faturamento**, além de comunicação no painel central. Não gerar quinto plano “grátis” nem cobrança recorrente sem aceite do cliente.
 - Próxima frente: CRM-REV-08 — agentes de IA e consumo; nenhuma programação até aprovação final global.
 
-## 13. Próximo pacote de revisão proposto
+## 13. CRM-REV-08 preparada após aceite da Agenda e nova concessão administrativa (03/11/2026)
+
+- [CRM-REV-08](CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md): **minuta para revisão**, com 28 itens funcionais cotejados, 12 riscos, 15 pendências e 16 cenários futuros. IA comercial dos clientes, consumo e Base de Conhecimento devem permanecer separados da operação técnica IN-157/158/163..167.
+- Atenção ao conflito de fontes: a branch antiga informa créditos comprados até consumo, enquanto revisão posterior aponta validade **90 dias**. Resolver procedência literal, categoria e vigência antes de homologar faturamento/consumo, sem escolher unilateralmente.
+- [Gratuidade administrativa](CRM-DEC-gratuidade-administrativa-qualquer-plano.md): plano de uma empresa grátis não implica créditos adicionais de IA grátis; GRAT-P05 ainda pendente.
+
+## 14. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
