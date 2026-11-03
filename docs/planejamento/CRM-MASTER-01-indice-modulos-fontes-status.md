@@ -311,7 +311,13 @@
 - Preservada a separação das operações de sistema, automações comerciais em slots e chatbot/canais/IA com direitos e custos próprios.
 - Sem contratos de implementação fechados ou autorização para iniciar Codex.
 
-## 10. Próximo pacote de revisão proposto
+## 10. Aceite da CRM-REV-05 e minuta CRM-REV-06 (03/11/2026)
+
+- [CRM-REV-05](CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md): **aceita como base documental**, conforme [CRM-DEC](CRM-DEC-aprovacao-REV-05-base.md), preservando separação de operações de sistema/automações comerciais/chatbot/IA; 14 pendências AUT-P ainda abertas.
+- [CRM-REV-06](CRM-REV-06-vendas-funis-propostas-catalogo.md): **minuta para revisão**, com 33 itens funcionais de cotejo, 14 riscos, 16 pendências e 18 cenários futuros; 22 seções históricas incorporadas para confronto. **Sem aprovação própria**.
+- Próximo pacote depois da REV-06: Agenda e Agendamentos. O fechamento técnico/global e a revisão comercial final permanecem necessários antes do Codex.
+
+## 11. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
