@@ -152,7 +152,11 @@ Esses DAT-T01..14 são **casos propostos de revisão**, não uma nova família e
 
 A [CRM-DEC — Gratuidade de adicionais específicos](CRM-DEC-gratuidade-administrativa-adicionais-especificos.md) registra aprovação funcional para o Administrador Geral Imagine **conceder uma capacidade/pacote de armazenamento adicional gratuito a uma organização específica, como ação separada da gratuidade de plano**. Não altera quotas incluídas nem regras de anexos (avisos 80%/95%, bloqueio de novos uploads a 100%); quantidades, duração, unidades, transição e custos permanecem pendentes em GRAT-EX-P01..08. A concessão não deve remover arquivos existentes ao expirar nem gerar cobrança automática sem contratação expressa.
 
-## 9. Status da CRM-REV-03 e recomendação de próxima aprovação
+## 9. Vigência da capacidade adicional gratuita (03/11/2026)
+
+A [decisão complementar de gratuidades](CRM-DEC-gratuidade-adicionais-vigencia-e-pacotes-ia.md) aprova **capacidade adicional de armazenamento com quantidade definida e prazo determinado ou indeterminado**, mediante ato administrativo independente. O encerramento não deve apagar anexos, históricos ou dados preexistentes, **nem converter o adicional em compra automática**. Se a capacidade efetiva cair abaixo do uso armazenado, **novos uploads de anexos excedentes** devem continuar protegidos pela política aprovada, sem bloquear leads, contatos ou exportação permitida. Unidades, duração padrão, limites, redução e retenção exatas continuam para decisão técnica.
+
+## 10. Status da CRM-REV-03 e recomendação de próxima aprovação
 
 - **26 regras funcionais cotejadas**, com fontes históricas/currentes indicadas, sem declarar que cada detalhe de implementação esteja integralmente aprovado.
 - **12 divergências/riscos**, **12 pendências técnicas/funcionais** e **14 casos negativos para aceite futuro** organizados.
