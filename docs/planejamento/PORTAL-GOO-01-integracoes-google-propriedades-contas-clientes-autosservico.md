@@ -2,6 +2,7 @@
 
 **Status (02/11/2026): DIRETRIZ FUNCIONAL DE INTEGRAÇÃO SOLICITADA PELO RESPONSÁVEL.** No debate sobre métricas de acesso, SEO e Google Analytics/Search Console, o responsável determinou incluir no relatório/planejamento a **possibilidade de o cliente conectar essas ferramentas pelo sistema de integrações do Portal Imagine**, enquanto a **Imagine cria e mantém o modelo técnico/padrão de integração e realiza configuração e integração quando necessário**. A interpretação operacional adotada é conexão de **contas/propriedades Google do cliente** ou provisionamento orientado pela Imagine, sem criar uma identidade Google em nome de alguém sem autorização. Os três blocos MON-01 / SEO-01 / GOO-01 sugeridos ainda dependem de fechamento formal de escopo; esta especificação cobre inicialmente o **GOO-01** e suas interfaces com métricas/SEO.
 **CLAREZA OPERACIONAL POSTERIOR (03/11/2026): cliente escolhe a conta Google, cria a conta Google se não tiver e autoriza todos os acessos/escopos pertinentes; Imagine disponibiliza o conector e automatiza o que for tecnicamente possível DEPOIS das autorizações. O botão de entrada é “Realizar integração” dentro de uma área de Integrações com explicação de cada serviço. Esta regra prevalece sobre interpretações anteriores de que Imagine criaria contas de usuário Google para clientes ou poderia selecionar/autorizá-las em nome deles.**
+**ESCOPO INICIAL AMPLIADO E APROVADO (03/11/2026): disponibilizar desde a PRIMEIRA VERSÃO do Portal as cinco integrações Google Analytics 4, Search Console, Tag Manager, Google Ads e Perfil da Empresa no Google, com conectores reais, fluxo de autorização e automação conforme recursos/limites de API. As três últimas deixam de ser apenas previsão futura/opcional por etapa, mas continuam optativas PARA CADA CLIENTE e condicionadas a elegibilidade/permissões do provedor. Ver seção 10.**
 **Fase:** PLANEJAMENTO — sem programação, provisionamento real de propriedades, acesso a contas Google, coleta de dados, instalação de tags, publicações ou contratação.
 **Conexões:** [PORTAL-01 — Matriz do Portal](PORTAL-01-matriz-pendencias-plataforma-sites.md), [PORTAL-COM-13 — Checklist IA de entrega](PORTAL-COM-13-entrega-automatica-checklist-qualidade-agente-ia.md), [PORTAL-COM-14 — LGPD](PORTAL-COM-14-lgpd-aceites-privacidade-consentimentos-checklist.md), [PORTAL-COM-15 — Política padrão de privacidade](PORTAL-COM-15-central-documentos-legais-consentimentos.md), [IN-095/096/097 — Produção/Cloudflare/Central de Sites no histórico de decisões], [IN-125 — Formulários](IN-125-gestao-inteligente-formularios.md).
 
@@ -131,3 +132,59 @@ O texto de explicação e ajuda deve ser administrável/atualizável pela equipe
 **APROVADO NESTE ESCLARECIMENTO:** criar **área de integrações no Portal**, com **cartão/explicação por ferramenta e botão “Realizar integração”**, **cliente responsável por escolher ou criar sua conta Google, fazer login no provedor e conceder permissões**, enquanto a **Imagine automatiza todas as etapas técnicas possíveis depois dessas autorizações**, sem pedir senhas.
 
 **PENDENTE DE FECHAMENTO:** lista inicial de integrações expostas, textos definitivos, fluxos específicos por serviço, política de titularidade/acesso das **propriedades** Google e portabilidade, aprovação OAuth do aplicativo pela Google se exigida, escopos, relação de permissão administrativa Google, o que cada plano inclui, limite de sites/propriedades, verificações LGPD e homologação. Nenhuma programação nem conexão real.
+
+
+## 10. DECISÃO APROVADA — cinco integrações Google funcionais no lançamento (03/11/2026)
+
+**Resposta expressa do responsável à proposta de disponibilizar inicialmente somente GA4 e Search Console e deixar GTM, Ads e Perfil da Empresa como opcionais futuros:** “ja vamso deixar as cinco ferramentas preparadas pois o cliente pode querer ja utilizar as demais”. **DECISÃO APROVADA: todas as cinco integrações deverão compor o catálogo funcional da versão inicial, sem deixar a implementação das três últimas para uma fase futura.** O uso por cliente continua facultativo, conforme produto/conta, permissões e LGPD; preparação real de APIs e homologação são pré-requisitos para anunciar conexão operacional.
+
+### 10.1 Catálogo inicial obrigatório — cinco cartões de integração
+
+| Integração | Explicação de valor ao cliente | Conexão mínima planejada |
+|---|---|---|
+| **Google Analytics 4** | Acompanhar visitas, sessões, origens de tráfego, páginas e eventos de conversão quando instrumentados | Autorização do cliente, seleção/criação de propriedade e stream dentro da conta permitida, ligação ao site, verificação de tag/consentimento e dados via API |
+| **Google Search Console** | Ver pesquisa orgânica, consultas, impressões, cliques, CTR, indexação e sitemap | Autorização, seleção/adicionar propriedade do domínio, verificação de titularidade e leitura de dados autorizados |
+| **Google Tag Manager** | Organizar e administrar tags, eventos, integrações e preferências de consentimento | Autorização, seleção da conta/container, conferência de permissões e existência de tags; edições/publicações sensíveis exigem autonomia e aprovação próprias |
+| **Google Ads** | Conectar contas publicitárias, visualizar métricas de campanhas e conversões quando disponíveis | Autorização OAuth e seleção da conta Ads, **developer token e nível de acesso da API necessários à aplicação Imagine**, verificação de permissões e ingestão de dados autorizados; **não criar campanha/gastar dinheiro automaticamente** |
+| **Perfil da Empresa no Google (Business Profile)** | Acompanhar e administrar, quando cabível, presença local e informações/performance da ficha Google | Autorização e escolha da conta/ficha elegível; **a Imagine deve obter acesso às APIs do Business Profile por processo de aprovação Google**; não prometer conexão operacional antes dessa liberação |
+
+Todos os cartões precisam trazer **texto explicativo, botão “Realizar integração”**, pré-requisitos, estados operacionais, passos oficiais de autenticação, propriedades/IDs selecionados e mensagens claras sobre indisponibilidade ou pendência de autorização. **Não apresentar como “Conectado” integrações cujo acesso à API não esteja aprovado ou que não tenham concluído testes.** Se o Google não liberar um conector a tempo do lançamento, isso é **risco de prontidão a resolver**, não autorização para fingir integração ativa ou tratar o conector como entrega pronta.
+
+### 10.2 Experiência e responsabilidade do cliente em todos os cinco serviços
+
+1. O cliente **seleciona ou cria sua conta Google**, faz login por fluxo oficial, aceita termos quando cabíveis, **concede permissões e escolhe a conta/propriedade do produto** a vincular ao site/empresa. A Imagine não escolhe login pelo cliente, não acessa a senha e não substitui verificação de titularidade.
+2. Após concessão de escopos legítimos, a plataforma Imagine automatiza **o máximo tecnicamente suportado**: listar propriedades/contas autorizadas, vincular ao site correto, preencher parâmetros, criar elementos técnicos quando API permite, testar, sincronizar dados, apresentar indicadores e acompanhar status.
+3. **Cada serviço mantém credenciais e permissões de mínimo privilégio separadas**: uma autorização para GA4 não autoriza automaticamente Ads, GTM, Search Console ou Business Profile. Permissões de leitura não se tornam permissão de escrita/publicação por inferência. Não conceder escopos amplos sem necessidade explícita.
+4. Se uma integração já existir no site, detectar/configurar sem **duplicar tags ou medir duas vezes**. Conexão de Google Ads ou Tag Manager não significa contratação de publicidade, aceite de despesas, publicação automática de tags ou ativação de rastreamento. Vincular cada serviço ao tenant/site correto com auditoria.
+5. Não usar consentimento OAuth do administrador como consentimento LGPD dos visitantes; **cookies/rastreadores/eventos pessoais não essenciais precisam de base legal, aviso e mecanismo de escolha adequados à finalidade**. Quando aplicável, consent mode básico poderá bloquear as tags até manifestação apropriada do visitante; técnica exata segue revisão e homologação COM-14/COM-15.
+6. Prover reconexão, revogação de acesso, alertas de falha, guarda segura de tokens, portabilidade e gestão de acesso apropriada. O cliente mantém controle sobre suas contas Google, salvo permissões administrativas explicitamente dadas à Imagine.
+
+### 10.3 Condições particulares, homologação e aceite de entrega
+
+- **GA4:** Analytics Admin API tem métodos para propriedades e data streams em contas com acesso adequado; o cliente pode precisar criar/selecionar a conta e aceitar termos. A Data API deverá oferecer o relatório de sessões/origens/eventos com contexto, sem igualar métricas do Search Console.
+- **Search Console:** site/dominio exige verificação de proprietário/permissões; adicionar propriedade via API não elimina a verificação. Indexação e posição não são garantias nem resultados imediatos.
+- **GTM:** a Tag Manager API permite consultar/editar contêineres e versões, com escopos distintos para publicar ou administrar usuários. Autorização do cliente e controles de mudanças permanecem indispensáveis.
+- **Google Ads:** integração exige OAuth **e token de desenvolvedor aprovado** para o nível de acesso pretendido, podendo envolver quotas/conta gerenciadora. **Dados de campanhas e conversões não autorizam gestão de mídia paga**, mudança de orçamento ou despesas. Vincular conversões exige validar origem, privacidade e conta correta.
+- **Perfil da Empresa no Google:** elegibilidade da empresa, existência ou criação da ficha pelo cliente, verificação, direitos e **aprovação do projeto Google Cloud Imagine para API** são condições externas. Nem todo site/negócio elegível a Onepage é automaticamente elegível a Perfil da Empresa.
+- **Entrega do módulo inicial:** cinco cartões, cinco fluxos de autorização/instruções e conectores homologados para capacidades permitidas, relatórios/status pertinentes e tratamento de falhas, respeitando os prazos e acesso concedido pelo Google. Onde provedor exigir etapas manuais, **o sistema orienta o cliente**, não declara integração concluída antes do sucesso.
+- **Integrações devem ser testadas com ambiente apropriado/contas autorizadas**, segregar empresas e demonstrar reconexão/revogação, consentimento LGPD, limite de custo e logs. Perfis autorizados e provisionamento automático de recursos Google específicos permanecem a detalhar por serviço.
+
+### 10.4 Lista de riscos e pendências da primeira versão
+
+1. Solicitar/verificar **Google Ads API developer token** e nível de acesso apropriado antes de prometer consulta de campanhas via Portal; validar processo de aprovação e escalabilidade por contas dos clientes.
+2. Solicitar **acesso Business Profile APIs** para o projeto Google Cloud Imagine, habilitar serviços correspondentes somente após aprovação; mapear negócios elegíveis, proprietários, unidades e métricas realmente acessíveis.
+3. Homologar OAuth do aplicativo Google (consent screen, escopos/verificação quando exigida), múltiplas contas por cliente, expiração/revogação e auditoria; verificar APIs e quotas das cinco integrações.
+4. Definir o **mínimo viável funcional de cada integração na versão 1** sem prometer recursos de edição/públicação de campanhas, fichas ou tags fora dos escopos e contratos autorizados.
+5. Revisar LGPD, Consent Mode, modelo de política padrão Imagine, padrões de tags e dados compartilhados com provedores antes de ativação, inclusive eventual custo e retenção.
+6. **Não rebaixar Ads, GTM ou Business Profile a “apenas planejados para o futuro”**: a disponibilidade inicial é um requisito a buscar/homologar; riscos de aprovação Google precisam de resolução ou explicitação como bloqueio externo, jamais simulação de funcionamento.
+
+### 10.5 Referências de API para homologação
+
+- Google Ads: autenticação e developer token https://developers.google.com/google-ads/api/rest/auth
+- Google Tag Manager: autenticação e escopos https://developers.google.com/tag-platform/tag-manager/api/v2/authorization
+- Google Tag Manager REST https://developers.google.com/tag-platform/tag-manager/api/reference/rest
+- Google Business Profile: elegibilidade e aprovação https://developers.google.com/my-business/content/overview
+- Google Business Profile: requisitos de configuração https://developers.google.com/my-business/content/basic-setup
+- Google Tag Consent Mode https://developers.google.com/tag-platform/security/concepts/consent-mode
+
+**Estado: escopo de cinco conectores APROVADO para o lançamento do Portal. Não significa que contas, tokens, projetos Google, tags ou integrações já tenham sido configurados. Nenhuma programação iniciada.**
