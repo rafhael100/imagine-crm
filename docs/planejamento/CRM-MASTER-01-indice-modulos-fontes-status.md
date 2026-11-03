@@ -344,7 +344,13 @@
 - **Nenhuma cobrança recorrente é ativada automaticamente** após expiração ou encerramento. Concessões continuam por organização, com mensalidade base do plano escolhido isenta; extras não foram incluídos automaticamente.
 - **GRAT-P01 e GRAT-P04 parcialmente resolvidos**; outros aspectos de início de vigência, transição, adicionais, alçadas, faturamento e precedência permanecem em revisão. CRM-REV-08 continua **minuta**, sem aceite.
 
-## 15. Próximo pacote de revisão proposto
+## 15. Gratuidade administrativa de adicionais por concessão separada (03/11/2026)
+
+- [CRM-DEC — Adicionais gratuitos](CRM-DEC-gratuidade-administrativa-adicionais-especificos.md): **requisito funcional aprovado** para que o Administrador Geral Imagine conceda **usuários extras, armazenamento e pacotes de créditos IA** a organização específica, por **ato distinto da concessão gratuita do plano**.
+- O plano gratuito não torna extras automaticamente gratuitos; extras gratuitos não dão direitos ilimitados, não se estendem a outro tenant e não geram cobrança automática no encerramento. O catálogo final, as quantidades, vigência própria, regras para adicionais já pagos e custos de terceiros permanecem pendentes **GRAT-EX-P01..08**.
+- Impacta **CRM-02/03 (autoridade administrativa)**, **CRM-04/05 (planos/FIN/CON)**, **CRM-13 (IA)** e **CRM-16 (armazenamento)**. **GRAT-P05 parcialmente resolvido**. CRM-REV-08 ainda **minuta não aprovada**.
+
+## 16. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
