@@ -75,6 +75,11 @@
 - A fonte oficial do resultado e os estados próprios de cada negócio permanecem nos respectivos proprietários, não na INT-09 ou INT-10.
 - A proposta de associação CT pode ser revista sem revogar o requisito funcional aprovado. Exigir revisão expressa se mudar efeito, escopo, autonomia ou regra de negócio.
 
+## Auditoria de correspondência e proveniência (03/11/2026)
+
+- [P0-TR-AUD](P0-TR-AUD-auditoria-proveniencia-requisitos.md) conferiu 53/53 IDs entre as matrizes iniciais, com referências a todos os 18 HT e 16 INV.
+- Não se concluiu que sejam somente 53 requisitos no módulo, que suas sínteses tenham redação literal ou que cada vínculo CT/HT seja definitivo. Faltam as propostas integrais e a revisão por módulo/proprietário.
+
 ## Pendências antes de declarar P0-TR-01 encerrada
 1. Recuperar a **lista exaustiva** de requisitos das propostas e aprovações individuais (INT-01 a INT-12) e do planejamento transversal.
 2. Inserir referência inequívoca a texto integral, versão, exceções e decisão de origem por requisito (P0-DOC-01).
