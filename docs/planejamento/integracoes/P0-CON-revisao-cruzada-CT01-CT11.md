@@ -128,7 +128,13 @@ As onze famílias documentais **não são microsserviços ou motores separados**
 - A nova minuta vincula **11 TR iniciais**, separa nove classes de objetos, exemplifica 11 transições conceituais e 9 roteiros negativos associados aos HT existentes. **Não aprova** schemas, estados executáveis, política por provedor nem alçadas.
 - Os 13 riscos de revisão deste documento **não foram resolvidos automaticamente** por criar uma ficha; CT-01 e P0-CON-01 continuam sujeitos ao cotejo original e ao aceite específico.
 
-## 9. Próximo avanço sem programação
+## 9. Aceite CT-01 e consolidação CT-01 a CT-11 (03/11/2026)
+
+- [P0-DEC CT-01](P0-DEC-aprovacao-CT01-base.md) registra que **CT-01 foi aceita como base documental**, sem homologar parâmetros ou regras físicas.
+- [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) consolida os onze contratos-base, seus 105 vínculos propostos TR→CT, critérios E-CON01..09 e pendências para P0-CON-01. O documento master é **proposta para revisão**.
+- As referências históricas deste documento a “CT-01 sem minuta especializada” descrevem o **estado anterior** ao aceite e ao detalhamento; não revogam a decisão posterior. Os **13 pontos de atenção continuam em revisão**.
+
+## 10. Próximo avanço sem programação
 
 1. **Detalhar CT-01** como família ainda somente conceitual, definindo separação entre catálogo homologado, conexão, autorização externa e operação.
 2. Refinar o cenário **REV-12** para não interpretar a relação negativa de CT-10 com INT-08 como permissão de compensação, mediante cotejo original quando disponível.
