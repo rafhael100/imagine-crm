@@ -94,7 +94,13 @@ O fato de uma necessidade estar documentada não altera a prioridade original. I
 - [P0-CON-OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) detalha 15 operações de alto impacto como propostas, com riscos, fontes oficiais, pré-condições, falhas, reconciliação e decisões em aberto. **Nove OP24 ainda aguardam especialização**, sem prejuízo dos requisitos adicionais que surgirem do cotejo integral.
 - Evidência em P0-CON-01: documentação funcional avançou; **P0-CON-01 e G01–G06 seguem sem fechamento**. Não programar, executar HT ou conceder permissões por esta etapa.
 
-## 13. Controle de aprovação e execução
+## 13. Desdobramento operacional completo da base OP24 (03/11/2026)
+
+- [OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) e [OP09](P0-CON-OP09-contratos-operacoes-complementares.md) **redigidas em proposta**, com [índice de 24 contratos por operação](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md).
+- **24/24 operações de referência cobertas** por detalhamento documental e CT-02 por operação, sem aprovar schemas físicos, perfis, alçadas, versões, parâmetros de provedor ou resultados de negócio; pode haver outros atos nas aprovações originais não recuperadas.
+- **P0-CON-01 continua parcial/aberto**, assim como P0-DOC/TR, OWN/SEC/DEP/VER/XREF/ACC e G01–G06. **Nenhum teste HT realizado, nenhuma programação.**
+
+## 14. Controle de aprovação e execução
 
 - **P0-SEC e P0-VER:** aprovados como **bases documentais**, com políticas específicas pendentes.
 - **CT-03 e CT-04:** aprovados como **base documental**, sem esquema final de implementação.
