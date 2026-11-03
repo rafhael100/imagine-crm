@@ -103,7 +103,12 @@ Essas referências não aprovam schemas, decisões funcionais ou execução.
 - [P0-CON Revisão cruzada CT-01..11](P0-CON-revisao-cruzada-CT01-CT11.md): 11 famílias comparadas, 105 associações TR→CT nas 53 linhas iniciais, 13 pontos de atenção e fronteiras preservadas; **não representa 105 requisitos distintos nem cotejo literal integral**.
 - **CT-01** ainda tem apenas definição conceitual no inventário: precisa de minuta especializada e aprovação própria.
 
-## 12. Itens pendentes de aceite P0-CON-01
+## 12. Especificação especializada CT-01 (03/11/2026)
+
+- [P0-CON CT-01 — Conectores, contas, conexões e capacidades](P0-CON-CT01-conectores-conexoes-capacidades-minuta.md) desenvolve **minuta especializada da última família ainda somente conceitual**, com separação INT-01/02/04/11, elegibilidade contextual, estados distintos, suspensão e proteção de instâncias pendentes.
+- **CT-01 segue em proposta para revisão**, não recebeu aceite especializado; CT-02..11 possuem bases documentais anteriormente aceitas. Nenhuma norma de conexão, enum, schema, alçada, provedor ou parâmetro foi aprovada por essa minuta.
+
+## 13. Itens pendentes de aceite P0-CON-01
 - CON-A: schemas físicos definitivos e campos condicionais por contrato.
 - CON-B: transições de estados por tipo e situações inválidas.
 - CON-C: erros/versionamento/garantias por provedor.
