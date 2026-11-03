@@ -122,7 +122,13 @@ As onze famílias documentais **não são microsserviços ou motores separados**
 | CT-X07 | Retenção/capacidade e política especializada de filas de leads, portabilidade e auditoria sem regras globais indevidas | **P0-XREF aberto** |
 | CT-X08 | Cobertura integral TR/CT/INV/HT, responsáveis, critérios e evidências de aceite futuro | **P0-TR/ACC abertos** |
 
-## 8. Próximo avanço sem programação
+## 8. Complemento da revisão: minuta especializada CT-01 (03/11/2026)
+
+- [P0-CON CT-01 — Conectores, conexões e capacidades](P0-CON-CT01-conectores-conexoes-capacidades-minuta.md) foi **redigida após esta revisão cruzada** como proposta para validação. A matriz acima descreve corretamente o **estado anterior à minuta**, não um impedimento de escrever o documento.
+- A nova minuta vincula **11 TR iniciais**, separa nove classes de objetos, exemplifica 11 transições conceituais e 9 roteiros negativos associados aos HT existentes. **Não aprova** schemas, estados executáveis, política por provedor nem alçadas.
+- Os 13 riscos de revisão deste documento **não foram resolvidos automaticamente** por criar uma ficha; CT-01 e P0-CON-01 continuam sujeitos ao cotejo original e ao aceite específico.
+
+## 9. Próximo avanço sem programação
 
 1. **Detalhar CT-01** como família ainda somente conceitual, definindo separação entre catálogo homologado, conexão, autorização externa e operação.
 2. Refinar o cenário **REV-12** para não interpretar a relação negativa de CT-10 com INT-08 como permissão de compensação, mediante cotejo original quando disponível.
