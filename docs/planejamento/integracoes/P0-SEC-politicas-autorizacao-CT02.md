@@ -1,6 +1,6 @@
 # P0-SEC — Políticas de autorização contextual CT-02 por operação
 
-**Registro:** 2026-11-03. **Estado:** **MINUTA PARA ANÁLISE E APROVAÇÃO DOCUMENTAL**, derivada das regras aprovadas de CT-02, INT-R01/R02 e [24 operações aceitas como base](P0-DEC-aprovacao-OP24-base.md).
+**Registro:** 2026-11-03. **Estado:** **APROVADA COMO BASE DOCUMENTAL** pelo responsável em 2026-11-03, conforme [decisão expressa](P0-DEC-aprovacao-SEC-VER-base.md), derivada das regras aprovadas de CT-02, INT-R01/R02 e [24 operações aceitas como base](P0-DEC-aprovacao-OP24-base.md). **Aprovação da base não aprova automaticamente perfis, MFA por operação, alçadas, parâmetros ou schemas físicos.**
 **Aceite anterior:** [CT-02 foi aceita como base documental](P0-DEC-aprovacao-CT02-base.md); **não** estão aprovadas novas regras específicas de MFA, perfis, limiares, alçadas ou mecanismos físicos propostos nesta minuta.
 **Escopo:** completar P0-OWN-01 e P0-SEC-01 por referência operacional; não é novo IAM, cofre, motor de políticas, Central de Aprovações ou serviço.
 **Fase:** planejamento/documentação exclusivamente; sem programação, homologação real, contratação, produção ou despesa.
