@@ -1,7 +1,7 @@
 # P0-ACC — Controle de planos, responsáveis e evidências HT-01 a HT-18
 
 **Data:** 2026-11-03.
-**Estado:** MATRIZ **DOCUMENTAL PROPOSTA**. Não há execução, ambiente homologado, resultado PASS/FAIL, medição ou evidência técnica real.
+**Estado:** MATRIZ **ACEITA COMO BASE DOCUMENTAL**, conforme [P0-DEC](P0-DEC-aprovacao-ACC-HT01-HT18-base.md); sem homologação ou testes. Não há execução, ambiente homologado, resultado PASS/FAIL, medição ou evidência técnica real.
 **Cenários HT-01..18:** aprovados na [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md).
 **Planos detalhados:** [P0-ACC — Procedimentos HT-01 a HT-18](P0-ACC-planos-homologacao-HT01-HT18.md) — **rascunhos para revisão**, não procedimentos finais homologados.
 **Decisão autorizadora:** [P0-DEC — Aprovação SEC/VER como bases](P0-DEC-aprovacao-SEC-VER-base.md) autoriza somente desenvolver documentação, sem programar ou executar testes.
