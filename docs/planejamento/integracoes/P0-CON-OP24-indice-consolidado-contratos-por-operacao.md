@@ -1,5 +1,7 @@
 # P0-CON-OP24 — Índice consolidado das 24 fichas operacionais de contrato
 
+**ATUALIZAÇÃO 03/11/2026:** As 24 fichas especializadas foram aceitas **como bases documentais** em [P0-DEC](P0-DEC-aprovacao-OP15-OP09-bases.md); os estados históricos 'proposta' abaixo referem-se à elaboração inicial. A [matriz SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md) é **nova minuta para revisão**, sem parâmetros, alçadas ou schemas aprovados.
+
 **Data:** 2026-11-03. **Situação:** **ÍNDICE DOCUMENTAL PARA REVISÃO**, consolidando o [primeiro lote com 15 fichas](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) e o [segundo lote com nove fichas](P0-CON-OP09-contratos-operacoes-complementares.md).
 **Autorização:** [CON-MASTER foi aceita como instrumento documental](P0-DEC-aprovacao-CON-MASTER-base.md). As 24 operações originais [OP24](P0-OP24-detalhamento-CT03-CT04-por-operacao.md) foram anteriormente aceitas **como base de referência**, mas o detalhamento adicional **ainda é proposta sem aceite específico**.
 **Fase:** somente planejamento GitHub. Não programar, criar automação, executar testes, mexer em produção, migrar dados, publicar conector ou contratar serviços.
