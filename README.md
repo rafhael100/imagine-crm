@@ -5,6 +5,8 @@
 ## Ponto de partida para acompanhar o projeto
 
 - [Diagnóstico de prontidão para iniciar desenvolvimento](docs/planejamento/STATUS-PRONTIDAO-INICIO-DESENVOLVIMENTO-2026-11-03.md) — fontes verificadas, lacunas do CRM completo, critérios de início.
+- [CRM-MASTER-01 — Inventário das áreas do CRM e fontes por branch](docs/planejamento/CRM-MASTER-01-indice-modulos-fontes-status.md) — 20 áreas CRM e 2 relacionadas, com status e lacunas.
+- [CRM-REV-01 — Núcleo multiempresa, usuários, MFA e permissões](docs/planejamento/CRM-REV-01-nucleo-identidade-multitenant-permissoes.md) — 13 regras documentadas, dez lacunas P0 propostas, em revisão.
 - [Infraestrutura e agentes técnicos: pendências IN-168](docs/planejamento/IN-168-matriz-pendencias-fechamento-arquitetura.md).
 - [Integrações INT-01 a INT-12: índice de documentação](docs/planejamento/integracoes/README.md).
 - [Integrações: painel de pendências e gates G01–G06](docs/planejamento/integracoes/P0-GATE-painel-fechamento-rastreabilidade-dependencias.md).
