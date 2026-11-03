@@ -1,6 +1,6 @@
-# P0-CON — Especificação documental de CT-05 a CT-11 (MINUTA)
+# P0-CON — Especificação documental de CT-05 a CT-11 (BASE DOCUMENTAL ACEITA)
 
-**Data:** 2026-11-03. **Estado:** **PROPOSTA PARA REVISÃO E FUTURA APROVAÇÃO DOCUMENTAL** das sete famílias técnicas já listadas em [P0-CON](P0-CON-contratos-tecnicos-minuta.md).
+**Data:** 2026-11-03. **Estado:** **ACEITA COMO BASE DOCUMENTAL** pela resposta contextual “ok” em 2026-11-03, conforme [registro da decisão](P0-DEC-aprovacao-CT05-CT11-base.md). As diretrizes são referência de planejamento, **não** aceitam automaticamente esquemas físicos, perfis, alçadas, parâmetros por provedor, transições executáveis, novas automações ou testes. [Revisão cruzada CT-01..11](P0-CON-revisao-cruzada-CT01-CT11.md).
 **Alcance da continuidade autorizada:** especificar contratos de integração existentes, não criar uma INT-13, automação, motor de estados, autorizador, fila, central de observabilidade, auditoria ou serviço adicional.
 **Origem funcional:** [INT-R01](INT-R01-governanca-contratos-homologacao.md) (12 seções aprovadas), [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md) (INV-01..16, HT-01..18), sínteses [INT-06..12](README.md), [CT-02](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md) e [CT-03/04](P0-CON-CT03-CT04-comandos-resultados-transicoes.md) aceitas como bases documentais.
 **Limite probatório:** sínteses INT e relações TR→CT→HT são úteis, mas a recuperação literal integral das propostas/aceites originais continua P0-DOC-01/P0-TR-01 pendente. **Não afirmar que a minuta CT-05..11 está aprovada só porque a família já existe.**
