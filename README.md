@@ -21,6 +21,7 @@
 - [CRM-REV-07 — Agenda, profissionais, unidades e agendamentos](docs/planejamento/CRM-REV-07-agenda-profissionais-unidades-agendamentos.md) — base documental aprovada, com seis rejeições e AGD-P01..18 ainda abertos.
 - [CRM-DEC — Aprovação da CRM-REV-07](docs/planejamento/CRM-DEC-aprovacao-REV-07-base.md).
 - [CRM-DEC — Gratuidade administrativa de qualquer plano CRM](docs/planejamento/CRM-DEC-gratuidade-administrativa-qualquer-plano.md) — **requisito funcional aprovado**; Administrador Geral Imagine pode conceder gratuitamente Básico/Essencial/Profissional/Empresarial a empresa específica, sem site; vigência, extras e regras financeiras pendentes.
+- [CRM-REV-08 — Agentes de IA, créditos, conhecimento e supervisão](docs/planejamento/CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md) — **minuta para revisão**, diferenciando IA comercial dos agentes técnicos Imagine, com prazo dos créditos ainda a conciliar.
 - [Infraestrutura e agentes técnicos: pendências IN-168](docs/planejamento/IN-168-matriz-pendencias-fechamento-arquitetura.md).
 - [Integrações INT-01 a INT-12: índice de documentação](docs/planejamento/integracoes/README.md).
 - [Integrações: painel de pendências e gates G01–G06](docs/planejamento/integracoes/P0-GATE-painel-fechamento-rastreabilidade-dependencias.md).
