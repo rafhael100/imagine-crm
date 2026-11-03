@@ -50,7 +50,8 @@
 - [P0-ORIGEM INT08/09 — Localizadores históricos e limites da fonte](P0-ORIGEM-INT08-09-localizadores-historicos.md) — cronologia parcial, sem transcrição original
 - [P0-CON CT-05 a CT-11 — Eventos, sync, lotes, processos, recuperação, compensação e auditoria](P0-CON-CT05-CT11-contratos-integracoes-minuta.md) — sete contratos aceitos como bases documentais, sem homologação
 - [P0-DEC — Aceite contextual CT-05 a CT-11](P0-DEC-aprovacao-CT05-CT11-base.md)
-- [P0-CON — Revisão cruzada CT-01 a CT-11](P0-CON-revisao-cruzada-CT01-CT11.md) — 11 famílias e 13 pontos de atenção, CT-01 especializada ainda pendente
+- [P0-CON — Revisão cruzada CT-01 a CT-11](P0-CON-revisao-cruzada-CT01-CT11.md) — 11 famílias e 13 pontos de atenção
+- [P0-CON CT-01 — Conectores, conexões e capacidades](P0-CON-CT01-conectores-conexoes-capacidades-minuta.md) — especificação especializada em minuta, ainda não aprovada
 - [P0-DEP — Dependências e fronteiras críticas](P0-DEP-dependencias-criticas-e-fronteiras.md)
 - [P0-GATE — Situação dos 11 P0 e G01–G06](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md)
 
