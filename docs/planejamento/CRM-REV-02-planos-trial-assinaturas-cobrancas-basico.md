@@ -1,7 +1,7 @@
 # CRM-REV-02 — Planos, trial, assinaturas, cobrança e benefício CRM Básico
 
 **Data:** 2026-11-03.
-**Estado:** **MINUTA DOCUMENTAL PARA REVISÃO — NÃO APROVADA**. Esta etapa foi elaborada após [CRM-REV-01 aceita como base](CRM-DEC-aprovacao-REV-01-base.md), por continuidade autorizada das revisões. **Não presume aprovação desta REV-02**.
+**Estado atualizado:** **APROVADA COMO BASE DOCUMENTAL DE RECONCILIAÇÃO**, conforme [decisão contextual de 03/11/2026](CRM-DEC-aprovacao-REV-02-base.md). Permanecem **abertas** as 12 diferenças documentais REV02-D01..12, as 12 pendências CRM-REV02-P01..12, parâmetros físicos e preços definitivos. A [CRM-REV-03](CRM-REV-03-leads-contatos-campos-historicos-portabilidade.md) foi elaborada **como minuta ainda não aprovada**.
 **Escopo:** CRM-04/05, integração CRM-15 e partes comerciais CRM-13/16. O **Portal Imagine é outro produto** com cobrança própria; seus contratos de site e campanha influenciam apenas elegibilidade do benefício.
 **Regra de precedência:** distinguir regras históricas expressamente aprovadas, decisões comerciais posteriores e **propostas técnicas pendentes**. **Não alterar preços nem planos automaticamente neste documento**; revisão final de tabela e recursos será conjunta após toda a documentação.
 **Fase:** só GitHub e planejamento. Sem cobrança, emissão NFS-e, teste de PSP, implantação, criação de assinaturas reais, programação ou despesa.
@@ -141,10 +141,10 @@ Os 12 itens são **questões de revisão**, não 12 novas funcionalidades ou apr
 
 Os 14 casos são **cenários documentais candidatos** a futuros critérios de aceite, não testes executados, nem novos números HT.
 
-## 8. Critério de aceite documental desta revisão
+## 8. Aceite documental contextual e limites mantidos
 
-**Proposta:** aceitar CRM-REV-02 **como base documental de reconciliação funcional**, reconhecendo COM-R01..20, os regimes distintos de trial/assinatura/site e o registro de divergências REV02-D01..12. O aceite **não homologaria** preços finais, pacotes de IA, alçadas de cobrança, provedores, prazos físicos, campanhas ou contratos de API.
+**CRM-REV-02 foi aceita como base documental de reconciliação funcional** no [CRM-DEC correspondente](CRM-DEC-aprovacao-REV-02-base.md), reconhecendo COM-R01..20, os regimes distintos de trial/assinatura/site e o registro de divergências REV02-D01..12. O aceite **não homologou** preços finais, pacotes de IA, alçadas de cobrança, provedores, prazos físicos, campanhas ou contratos de API.
 
-**Depois do aceite, recomendação:** iniciar **CRM-REV-03 — Leads, contatos, campos personalizados, histórico e portabilidade**, enquanto decisões comerciais finais permanecerão agrupadas para revisão no fechamento global, e retornar depois às pendências CRM-REV02-P01..12 por impacto.
+A [CRM-REV-03 — Leads, contatos, campos personalizados, histórico e portabilidade](CRM-REV-03-leads-contatos-campos-historicos-portabilidade.md) foi **redigida em minuta documental para revisão**. As decisões comerciais finais permanecem agrupadas para revisão no fechamento global; pendências CRM-REV02-P01..12 seguem por impacto.
 
-**Estado de prontidão:** CRM-REV-02 está **em minuta**, CRM-REV-01 está **aceita como base**, e o CRM global segue com P0 de identidade, negócio, contratos, segurança, cobranças e integração ainda abertos. **Não iniciar programação nem testar integrações reais**.
+**Estado de prontidão:** CRM-REV-02 e CRM-REV-01 estão **aceitas como bases documentais**; CRM-REV-03 está **em minuta**, e o CRM global segue com P0 de identidade, negócio, contratos, segurança, cobranças e integração ainda abertos. **Não iniciar programação nem testar integrações reais**.
