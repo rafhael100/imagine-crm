@@ -18,7 +18,9 @@
 - [CRM-DEC — Aprovação da CRM-REV-05](docs/planejamento/CRM-DEC-aprovacao-REV-05-base.md).
 - [CRM-REV-06 — Vendas, funis, propostas e catálogo](docs/planejamento/CRM-REV-06-vendas-funis-propostas-catalogo.md) — base documental aprovada; VEN-P01..16 abertos.
 - [CRM-DEC — Aprovação da CRM-REV-06](docs/planejamento/CRM-DEC-aprovacao-REV-06-base.md).
-- [CRM-REV-07 — Agenda, profissionais, unidades e agendamentos](docs/planejamento/CRM-REV-07-agenda-profissionais-unidades-agendamentos.md) — minuta para revisão, com seis rejeições preservadas.
+- [CRM-REV-07 — Agenda, profissionais, unidades e agendamentos](docs/planejamento/CRM-REV-07-agenda-profissionais-unidades-agendamentos.md) — base documental aprovada, com seis rejeições e AGD-P01..18 ainda abertos.
+- [CRM-DEC — Aprovação da CRM-REV-07](docs/planejamento/CRM-DEC-aprovacao-REV-07-base.md).
+- [CRM-DEC — Gratuidade administrativa de qualquer plano CRM](docs/planejamento/CRM-DEC-gratuidade-administrativa-qualquer-plano.md) — **requisito funcional aprovado**; Administrador Geral Imagine pode conceder gratuitamente Básico/Essencial/Profissional/Empresarial a empresa específica, sem site; vigência, extras e regras financeiras pendentes.
 - [Infraestrutura e agentes técnicos: pendências IN-168](docs/planejamento/IN-168-matriz-pendencias-fechamento-arquitetura.md).
 - [Integrações INT-01 a INT-12: índice de documentação](docs/planejamento/integracoes/README.md).
 - [Integrações: painel de pendências e gates G01–G06](docs/planejamento/integracoes/P0-GATE-painel-fechamento-rastreabilidade-dependencias.md).
