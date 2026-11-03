@@ -134,6 +134,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md): consolida 11 famílias, 53 TR iniciais, 105 associações propostas, critérios de consistência e evidências E-CON01..09; documento **proposto para revisão**.
 - **P0-CON-01 permanece aberto/parcial**: fonte primária, contratos por operação, permissão/alçada, versão/retentativas, dependências e aceite documental final ainda faltam. **G01–G06 não encerrados; nenhum teste executado ou programação iniciada.**
 
+## CON-MASTER aceita e 15 operações de maior impacto detalhadas (03/11/2026)
+
+- [P0-DEC CON-MASTER](P0-DEC-aprovacao-CON-MASTER-base.md): matriz das 11 famílias **aceita como instrumento de acompanhamento documental**, sem aprovar esquemas, perfis, parâmetros ou operações executáveis.
+- [P0-CON-OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md): 15 fichas priorizadas (autorização/revogação, escrita externa, leads/eventos, portabilidade, orquestração/compensações, recuperação, conectores e auditoria); **propostas para revisão**, sem execução. Outras 9 OP24 ainda precisam de especialização.
+- **P0-CON-01, P0-SEC/OWN/DEP/VER/ACC/TR/DOC permanecem abertos/parciais**, G01–G06 não concluídos, e 0/18 testes executados.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
