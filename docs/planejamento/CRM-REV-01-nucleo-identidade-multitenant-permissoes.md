@@ -97,7 +97,11 @@
 - **Auditoria:** administrativa Imagine (histórico de 5 anos) e comercial tenant (histórico de 12 meses) são categorias distintas; técnicos IN-162 têm prazos próprios, e tudo depende de conformidade legal. Não generalizar um prazo.
 - **Sites/Portal:** novo contrato elegível pode permitir nova organização Básico mesmo mesmo CNPJ, separada do trial; não significa gerar várias organizações por pagamento repetido.
 
-## 7. Aprovação da base e continuidade para CRM-REV-02 (03/11/2026)
+## 7. Nova competência comercial do Administrador Geral Imagine (03/11/2026)
+
+A [decisão funcional aprovada de gratuidade administrativa](CRM-DEC-gratuidade-administrativa-qualquer-plano.md) permite ao **Administrador Geral Imagine** conceder **qualquer plano do CRM gratuitamente a uma organização específica**, sem exigir site ou trial. **Isso não é permissão do Administrador da Empresa**, nem autoriza automações/IA ou agentes de suporte a conceder plano. A matriz efetiva de privilégios, MFA adicional por ato, auditoria, revogação e alçadas continuam pendentes (GRAT-P01..08 e CORE-P0).
+
+## 8. Aprovação da base e continuidade para CRM-REV-02 (03/11/2026)
 
 **CRM-REV-01 foi aceita como BASE DOCUMENTAL DE REVISÃO** dos 13 princípios localizados (N-01..13), dos sete tipos conceituais de atores e das dez lacunas CORE-P0-01..10, **sem aprovar schema físico, perfis, MFA adicional, alçadas, fornecedores ou parâmetros numéricos não decididos**. [Decisão](CRM-DEC-aprovacao-REV-01-base.md).
 
