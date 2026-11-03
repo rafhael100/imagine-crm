@@ -150,7 +150,13 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - [ARQ01-F01](P0-ARQ01-F01-inventario-factual-ativos-e-servicos.md): **minuta de inventário**, com 13 ativos/domínios, incluindo VPS n8n/Leaseweb referida historicamente e dedicado legado com relatos de sistemas operacionais conflitantes. Nenhuma inspeção ou medição foi feita; não declarar fornecedor/contrato/instalação como atual sem fonte.
 - Próximo ato documental: validar estado contratado/provisionado/em execução por ativo, escolher alocação e dimensionamento, prosseguir ARQ01-F02 com custos verificados. **Não há liberação para Codex ou alteração de infraestrutura**.
 
-## 21. Próxima recomendação objetiva
+## 21. Preferência por novo servidor para CRM, ainda sem contratação (03/11/2026)
+
+- O responsável decidiu **CRM Imagine em novo servidor**, independente da VPS mencionada para n8n; a [CRM-DEC de recomendação](CRM-DEC-infraestrutura-novo-servidor-e-recomendacao-provedor.md) propõe **Vultr São Paulo, High Performance AMD 4 vCPU/8 GB/180 GB NVMe** para aplicação, preço público referencial **US$ 48/mês apenas VPS**. Provedor/tamanho ainda precisam homologação física, cotação, validação de capacidade e orçamento completo.
+- **PostgreSQL separado** preferencialmente gerenciado e na mesma região, a validar disponibilidade/custo; objetos privados, backups externos, Redis/filas, observabilidade e agentes/Portal/n8n/APIs têm custos e limites próprios.
+- **ARQ-01 permanece P0 parcial** e os outros P0, INT G01–G06 e aprovação global continuam abertos. Nenhum servidor foi contratado, provisionado, acessado ou alterado por esta decisão.
+
+## 22. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
