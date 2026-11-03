@@ -88,9 +88,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Cadastro/alteração pode exigir revisão de mudança crítica; não afeta operações anteriores Requer alçada de alteração conforme risco; não pressupor aprovação adicional universal
 
-**Negativa obrigatória na revisão documental:** cross-tenant, versão incompatível, conta externa errada. **Salvaguarda preexistente de referência:** HT-01,HT-13.
+**Negativa obrigatória na revisão documental:** cross-tenant, versão incompatível, conta externa errada. **Salvaguarda preexistente de referência:** Revisar tenant, destino, conector e vínculo antes de confirmar; não alterar destino de operações passadas.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-01,HT-13; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -102,9 +102,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Alçada para suspensão de grande impacto ou emergência a definir por política existente Aprovação conforme criticidade/efeitos; contenção segura segue política existente
 
-**Negativa obrigatória na revisão documental:** conexão suspensa com operação já enviada, afetar conta alheia. **Salvaguarda preexistente de referência:** HT-18,HT-08.
+**Negativa obrigatória na revisão documental:** conexão suspensa com operação já enviada, afetar conta alheia. **Salvaguarda preexistente de referência:** Bloquear novas ações, preservar as já transmitidas, não produzir cancelamentos de negócio.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-18,HT-08; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -116,9 +116,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Consenso/consentimento externo conforme necessidade real; autorização de uso por ato permanece separada Aprovações/consentimentos exigidos conforme tipo, sem inventar consentimento universal
 
-**Negativa obrigatória na revisão documental:** token com escopo mais amplo, segredo exposto, principal sem delegação. **Salvaguarda preexistente de referência:** HT-01,HT-02.
+**Negativa obrigatória na revisão documental:** token com escopo mais amplo, segredo exposto, principal sem delegação. **Salvaguarda preexistente de referência:** Não permitir credenciais em browser/IA/log; revalidar origem e delegação.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-01,HT-02; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -130,9 +130,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Revogação disruptiva/emergencial precisa de competência específica; não presumir confirmação remota Revogação potencialmente disruptiva/critica exige alçada aplicável; contenção previamente autorizada pode ter tratamento próprio
 
-**Negativa obrigatória na revisão documental:** revogação incerta, filas pendentes, credencial vinculada a outro serviço. **Salvaguarda preexistente de referência:** HT-02,HT-13.
+**Negativa obrigatória na revisão documental:** revogação incerta, filas pendentes, credencial vinculada a outro serviço. **Salvaguarda preexistente de referência:** Bloqueio local imediato de novos usos quando aplicável; sucesso remoto deve ser comprovado.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-02,HT-13; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -144,9 +144,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Permissão de leitura não se converte em direito de alterar campo; mascaramento conforme classificação Sem aprovação nova quando somente leitura autorizada; dados sensíveis podem exigir controle adicional
 
-**Negativa obrigatória na revisão documental:** prévia exibindo dado sensível/tenant alheio, transformação executa escrita. **Salvaguarda preexistente de referência:** HT-03,HT-07.
+**Negativa obrigatória na revisão documental:** prévia exibindo dado sensível/tenant alheio, transformação executa escrita. **Salvaguarda preexistente de referência:** Máscara/minimização; nenhum ajuste de dado oficial por validação.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-03,HT-07; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -158,9 +158,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Publicação incompatível exige rito de homologação/aceite competente quando aplicável Revisão/aprovação quando versão incompatível ou impacto significativo, conforme governança
 
-**Negativa obrigatória na revisão documental:** instância ativa muda versão silenciosamente. **Salvaguarda preexistente de referência:** HT-12,HT-03.
+**Negativa obrigatória na revisão documental:** instância ativa muda versão silenciosamente. **Salvaguarda preexistente de referência:** Proibir atualização silenciosa de instâncias e mapeamentos ativos; compatibilidade documentada.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-12,HT-03; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -172,9 +172,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Alçada por ato (FIN/CON/AGD/etc.) sem autorização universal do transportador Aprovação do ato de negócio na alçada competente quando exigida
 
-**Negativa obrigatória na revisão documental:** comando para recurso não autorizado, retry de escrita inconclusiva. **Salvaguarda preexistente de referência:** HT-08,HT-13.
+**Negativa obrigatória na revisão documental:** comando para recurso não autorizado, retry de escrita inconclusiva. **Salvaguarda preexistente de referência:** Revalidar no despacho e na escrita; resultado inconclusivo bloqueia retry arriscado.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-08,HT-13; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -186,9 +186,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Registrar prova técnica não requer aprovação humana nova por padrão; retificar negócio só pelo dono Sem nova aprovação para registrar fato técnico legítimo; retificação de negócio segue proprietário
 
-**Negativa obrigatória na revisão documental:** HTTP aceito convertido em pagamento/lead confirmado. **Salvaguarda preexistente de referência:** HT-08,HT-14.
+**Negativa obrigatória na revisão documental:** HTTP aceito convertido em pagamento/lead confirmado. **Salvaguarda preexistente de referência:** Resultado HTTP não modifica status de negócio; evento contraditório é investigado.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-08,HT-14; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -200,9 +200,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Ampliação de escopos/aplicações e efeitos comerciais dependem de donos/políticas vigentes Aprovação para acesso ampliado ou ação crítica, quando política exigir; contratação depende de FIN/CON
 
-**Negativa obrigatória na revisão documental:** API pública habilitada no trial, app obtém dados globais. **Salvaguarda preexistente de referência:** HT-04,HT-13.
+**Negativa obrigatória na revisão documental:** API pública habilitada no trial, app obtém dados globais. **Salvaguarda preexistente de referência:** Trial não libera API pública; não conceder acesso implícito a registros.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-04,HT-13; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -214,9 +214,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Autenticação da API não equivale à aprovação do ato de negócio Aprovação do efeito de negócio quando exigida, não apenas autenticação de API
 
-**Negativa obrigatória na revisão documental:** token A acessa tenant B; trial usa API pública. **Salvaguarda preexistente de referência:** HT-04,HT-13.
+**Negativa obrigatória na revisão documental:** token A acessa tenant B; trial usa API pública. **Salvaguarda preexistente de referência:** Bloquear no trial, preservar integrações nativas permitidas; checar recurso individual.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-04,HT-13; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -228,9 +228,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Assinatura não substitui autorização sobre recurso de negócio Nenhuma assinatura de webhook concede aprovação do ato de negócio
 
-**Negativa obrigatória na revisão documental:** replay, assinatura inválida, payload cruzado. **Salvaguarda preexistente de referência:** HT-05,HT-16.
+**Negativa obrigatória na revisão documental:** replay, assinatura inválida, payload cruzado. **Salvaguarda preexistente de referência:** Sem segredo no payload/log; não assumir que webhook externo já é evento interno confirmado.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-05,HT-16; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -242,9 +242,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Configurar assinatura/destino sensível depende de autoridade, não de URL livre Configuração de assinatura e entrega sujeitas a alçadas de mudanças sensíveis
 
-**Negativa obrigatória na revisão documental:** SSRF, dado pessoal de outro tenant, 2xx que não comprova consumo. **Salvaguarda preexistente de referência:** HT-05,HT-13.
+**Negativa obrigatória na revisão documental:** SSRF, dado pessoal de outro tenant, 2xx que não comprova consumo. **Salvaguarda preexistente de referência:** Impedir envio cross-tenant e vazamento de dados; HTTP de destino é aceite técnico.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-05,HT-13; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -256,9 +256,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Dono decide conflito e exclusão; capacidade bidirecional não autoriza toda mutação Conflitos ou alterações sensíveis exigem decisão do proprietário conforme política
 
-**Negativa obrigatória na revisão documental:** exclusão por ausência, checkpoint sem persistência. **Salvaguarda preexistente de referência:** HT-06,HT-08.
+**Negativa obrigatória na revisão documental:** exclusão por ausência, checkpoint sem persistência. **Salvaguarda preexistente de referência:** Não usar ausência como exclusão automática; checkpoint depois de confirmação apropriada.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-06,HT-08; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -270,9 +270,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Retomada não reaproveita aprovação fora do contexto nem repete ato arriscado Retomada de risco aumenta alçada conforme política, sem dupla aprovação para mesma decisão
 
-**Negativa obrigatória na revisão documental:** retry duplicado, cursor inconsistente, token revogado. **Salvaguarda preexistente de referência:** HT-06,HT-16.
+**Negativa obrigatória na revisão documental:** retry duplicado, cursor inconsistente, token revogado. **Salvaguarda preexistente de referência:** Se estado incerto, reconciliar antes de avançar cursor ou repetir escrita.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-06,HT-16; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -284,9 +284,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Direitos efetivos na origem/destino; sobrescrita/mesclagem destrutiva não presumida Confirmação/aceite para operação destrutiva ou conflito conforme política de proteção
 
-**Negativa obrigatória na revisão documental:** arquivo inseguro, efeito parcial, cross-account, sobrescrita. **Salvaguarda preexistente de referência:** HT-07,HT-13.
+**Negativa obrigatória na revisão documental:** arquivo inseguro, efeito parcial, cross-account, sobrescrita. **Salvaguarda preexistente de referência:** Não restaurar segredos de outro tenant; não mesclar/destruir automaticamente registros.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-07,HT-13; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -298,9 +298,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Exportar pode requerer direito separado de ler; autoatendimento essencial deve permanecer viável Exportação sensível/em massa pode exigir confirmação reforçada conforme política, sem revogar autoatendimento essencial
 
-**Negativa obrigatória na revisão documental:** campo sensível vazado, quota de anexo bloqueando exportação. **Salvaguarda preexistente de referência:** HT-17,HT-13.
+**Negativa obrigatória na revisão documental:** campo sensível vazado, quota de anexo bloqueando exportação. **Salvaguarda preexistente de referência:** Franquia cheia de anexos não bloqueia exportação dos dados existentes; auditoria da extração.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-17,HT-13; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -312,9 +312,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Cada etapa crítica tem autoridade de seu efeito; nenhuma aprovação universal do orquestrador Aprovações específicas dos efeitos críticos, não aprovação universal pelo orquestrador
 
-**Negativa obrigatória na revisão documental:** fim técnico sem conclusão do negócio; ramo com dependência faltante. **Salvaguarda preexistente de referência:** HT-09,HT-15.
+**Negativa obrigatória na revisão documental:** fim técnico sem conclusão do negócio; ramo com dependência faltante. **Salvaguarda preexistente de referência:** Revalidar etapa assíncrona; não dispensar dependência por sucesso independente.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-09,HT-15; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -326,9 +326,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Aprovação do ato compensatório é distinta da original quando exigida Aprovação específica do ato de compensação na alçada proprietária
 
-**Negativa obrigatória na revisão documental:** estorno sem alçada, efeito irreversível, timeout de compensação. **Salvaguarda preexistente de referência:** HT-10,HT-15.
+**Negativa obrigatória na revisão documental:** estorno sem alçada, efeito irreversível, timeout de compensação. **Salvaguarda preexistente de referência:** Sem estorno/cancelamento automático por IA; compensação parcial continua explícita.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-10,HT-15; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -340,9 +340,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Direito de diagnóstico não autoriza recuperação nem acesso irrestrito a dados Monitoramento de baixo risco dentro das permissões existentes; nenhuma aprovação de negócio implícita
 
-**Negativa obrigatória na revisão documental:** ausência de telemetria tida por saudável, acesso interno indiscriminado. **Salvaguarda preexistente de referência:** HT-11,HT-16.
+**Negativa obrigatória na revisão documental:** ausência de telemetria tida por saudável, acesso interno indiscriminado. **Salvaguarda preexistente de referência:** Não misturar operação interna Imagine e dados de tenants; telemetria ausente=desconhecida.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-11,HT-16; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -354,9 +354,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** N2 limitado a playbooks homologados; N3 crítico depende de aprovação humana quando exigida N2 homologado/seguro pode seguir aprovação prévia; intervenção crítica requer aprovação humana específica quando exigida
 
-**Negativa obrigatória na revisão documental:** IA altera alçada, retry de escrita que não provou falha. **Salvaguarda preexistente de referência:** HT-11,HT-08.
+**Negativa obrigatória na revisão documental:** IA altera alçada, retry de escrita que não provou falha. **Salvaguarda preexistente de referência:** IA não concede privilégios; resultado técnico não confirma operação de negócio.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-11,HT-08; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -368,9 +368,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Publicação controlada; submissão de parceiro não é aprovação Publicação controlada exige aprovação humana adequada; não herdar aceite da versão anterior
 
-**Negativa obrigatória na revisão documental:** terceiro executa código livre, versão não homologada publicada. **Salvaguarda preexistente de referência:** HT-12,HT-18.
+**Negativa obrigatória na revisão documental:** terceiro executa código livre, versão não homologada publicada. **Salvaguarda preexistente de referência:** Não executar código livre de terceiros nem distribuir antes de homologação.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-12,HT-18; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -382,9 +382,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Alçada de contenção por impacto; não cancela automaticamente efeitos anteriores Aprovação conforme risco; contenção urgente homologada segue política técnica existente
 
-**Negativa obrigatória na revisão documental:** migração silenciosa, efeito anterior inconclusivo. **Salvaguarda preexistente de referência:** HT-18,HT-12.
+**Negativa obrigatória na revisão documental:** migração silenciosa, efeito anterior inconclusivo. **Salvaguarda preexistente de referência:** Não migrar conexões ativas silenciosamente; notificar pelos serviços centrais competentes.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-18,HT-12; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -396,9 +396,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Investigador autorizado não tem acesso universal; consulta auditável Alçada de investigação/visão sensível segundo política; não presumir gestor com acesso total
 
-**Negativa obrigatória na revisão documental:** investigação lê tenant B ou altera fonte. **Salvaguarda preexistente de referência:** HT-14,HT-17.
+**Negativa obrigatória na revisão documental:** investigação lê tenant B ou altera fonte. **Salvaguarda preexistente de referência:** Consultas também auditáveis, hipóteses separadas de fatos, sem manipular evidência.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-14,HT-17; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
@@ -410,9 +410,9 @@ Estas classes são **rótulos para revisão**, não novos tipos físicos ou tabe
 
 **Limite de alçada, a confirmar com o proprietário e a Segurança:** Direito de exportar pode ser distinto da leitura e sujeito a alçada real Confirmação reforçada e aprovação específica quando exigidas, sem download indiscriminado
 
-**Negativa obrigatória na revisão documental:** exportação em massa indevida, link público ou sem trilha. **Salvaguarda preexistente de referência:** HT-17,HT-14.
+**Negativa obrigatória na revisão documental:** exportação em massa indevida, link público ou sem trilha. **Salvaguarda preexistente de referência:** Minimização e marca de proveniência; registrar a própria exportação; sem retenção ilimitada.
 
-**Evidência e teste futuro:** ; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
+**Evidência e teste futuro:** HT-17,HT-14; documentar permissão por recurso/campo, identidade e escopo, versão/estado, revalidação no ponto protegido, decisão legítima da Central de Aprovações quando aplicável e fonte oficial do efeito. **HT ainda não executado.**
 
 **Pendências:** codificar direitos existentes reais, valores/estados autorizados, MFA por ato, nível de acesso interno/tenant, condições de aprovação e exceções; **não presumir concessão de permissão**.
 
