@@ -88,7 +88,13 @@ O fato de uma necessidade estar documentada não altera a prioridade original. I
 - [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md): reúne responsáveis/efeitos de 11 CT, 53 TR iniciais / 105 vínculos documentais, nove evidências E-CON01..09 de fechamento e vinculação aos gates G01..G06.
 - **P0-CON-01 segue ABERTO/PARCIAL**; o aceite da base não significa aprovação final de contratos por operação ou prontidão para programação. P0-DOC/TR, OWN/SEC, DEP/VER, ACC e G01..G06 permanecem com suas pendências.
 
-## 12. Controle de aprovação e execução
+## 12. Aceite CON-MASTER e 15 fichas operacionais (03/11/2026)
+
+- [P0-DEC CON-MASTER](P0-DEC-aprovacao-CON-MASTER-base.md) registra aceite da matriz como **instrumento documental**, não como liberação de contratos executáveis.
+- [P0-CON-OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) detalha 15 operações de alto impacto como propostas, com riscos, fontes oficiais, pré-condições, falhas, reconciliação e decisões em aberto. **Nove OP24 ainda aguardam especialização**, sem prejuízo dos requisitos adicionais que surgirem do cotejo integral.
+- Evidência em P0-CON-01: documentação funcional avançou; **P0-CON-01 e G01–G06 seguem sem fechamento**. Não programar, executar HT ou conceder permissões por esta etapa.
+
+## 13. Controle de aprovação e execução
 
 - **P0-SEC e P0-VER:** aprovados como **bases documentais**, com políticas específicas pendentes.
 - **CT-03 e CT-04:** aprovados como **base documental**, sem esquema final de implementação.
