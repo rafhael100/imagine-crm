@@ -148,7 +148,13 @@ Os 14 casos são **cenários documentais candidatos** a futuros critérios de ac
 - **Vigência administrativa aprovada em decisão posterior:** [prazo determinado **ou** indeterminado](CRM-DEC-gratuidade-vigencia-modalidades.md). **Não cobrar automaticamente** quando terminar. Ainda pendem prazo padrão, início, avisos, prorrogação, concessão a cliente pagante, revogação/transição, alçadas, auditoria, benefícios concorrentes, extras, NFS-e e conciliação financeira (GRAT-P01/P04 parciais; P02/P03/P05..08 abertos).
 - O aceite anterior de CRM-REV-02 permanece como base documental; a nova decisão está aprovada em seu núcleo, **não** em parâmetros e fluxo operacional final.
 
-## 9. Aceite documental contextual e limites mantidos
+## 9. Complemento aprovado: gratuidade separada de adicionais específicos (03/11/2026)
+
+- A [CRM-DEC — Gratuidade administrativa de adicionais](CRM-DEC-gratuidade-administrativa-adicionais-especificos.md) registra **aprovação funcional** para o Administrador Geral Imagine conceder **usuários adicionais, capacidade de armazenamento e pacotes de créditos IA**, ou outro adicional elegível a homologar, **sem preço ao cliente pela unidade específica concedida**.
+- A concessão exige **ato administrativo separado da gratuidade do plano** e vale para a organização escolhida; **não** concede todos os extras automaticamente, não modifica tabela pública, nem aprova quantidade, prazo, preços, custo de provedor ou benefícios ilimitados.
+- A expiração/revogação **não ativa automaticamente cobrança recorrente**; qualquer continuidade paga exige aceite expresso. **GRAT-P05 parcialmente resolvido** e GRAT-EX-P01..08 abertos para contratos de FIN/CON e regras de entitlements.
+
+## 10. Aceite documental contextual e limites mantidos
 
 **CRM-REV-02 foi aceita como base documental de reconciliação funcional** no [CRM-DEC correspondente](CRM-DEC-aprovacao-REV-02-base.md), reconhecendo COM-R01..20, os regimes distintos de trial/assinatura/site e o registro de divergências REV02-D01..12. O aceite **não homologou** preços finais, pacotes de IA, alçadas de cobrança, provedores, prazos físicos, campanhas ou contratos de API.
 
