@@ -1,6 +1,6 @@
 # CRM-REV-08 — Agentes de IA, Créditos, Base de Conhecimento e Supervisão
 
-**Data:** 2026-11-03. **Estado:** **MINUTA DOCUMENTAL PARA REVISÃO — NÃO APROVADA**.
+**Data:** 2026-11-03. **Estado atualizado:** **APROVADA COMO BASE DOCUMENTAL DE RECONCILIAÇÃO**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-REV-08-base.md). **IA-P01..15 e IA-D01..12 continuam abertas**, incluindo a validade dos créditos; isso não aprova modelos, custos ou esquemas físicos. [CRM-REV-09](CRM-REV-09-infraestrutura-seguranca-auditoria-operacoes-centrais.md) elaborada **como minuta não aprovada**.
 **Contexto:** produzida após [CRM-REV-07 aprovada como base](CRM-DEC-aprovacao-REV-07-base.md) e nova [decisão de gratuidade administrativa](CRM-DEC-gratuidade-administrativa-qualquer-plano.md), que **não aprovam automaticamente esta REV-08**.
 **Âmbito:** CRM-13 IA comercial de clientes (Prospector, Comercial, atendimento, resumos/memória, consumo, Base de Conhecimento, supervisão), interfaces com CRM-04/05/10/11/14/17 e agentes técnicos Imagine IN-130..168.
 **Fase:** apenas planejamento/versionamento. **Sem programação, testes executados, API de IA ativada, cobrança, compra de créditos, modelos em produção, alteração de prompt ou credenciais reais**.
@@ -144,18 +144,18 @@
 - A [CRM-DEC — Gratuidade de adicionais específicos](CRM-DEC-gratuidade-administrativa-adicionais-especificos.md) aprova que o Administrador Geral Imagine possa **conceder individualmente um pacote elegível de créditos de IA gratuitamente**, independentemente da mensalidade de um plano gratuito ou pago.
 - Esta **não** é autorização de IA ilimitada, nem aumento automático dos créditos incluídos do plano: o pacote, volume, validade, fonte, operação, saldo, idempotência, tratamento de consumo/cobranças e limites dependem de **GRAT-EX-P01..08** e **IA-P02..06**.
 - A divergência entre validade de 90 dias e saldo até consumo continua **pendente de cotejo da fonte original**. A concessão administrativa do pacote não resolve esse prazo por inferência.
-- A CRM-REV-08 **continua minuta não aprovada**, embora a **capacidade funcional de concessão gratuita de extras esteja aprovada** em decisão própria.
+- A CRM-REV-08 **foi aprovada posteriormente como base documental**, conforme [CRM-DEC](CRM-DEC-aprovacao-REV-08-base.md); a capacidade funcional de concessão gratuita de extras permanece aprovada **em decisão própria**, sem validade ou crédito ilimitado.
 
 ## 9. Nova decisão aprovada: pacote gratuito de IA com quantidade definida (03/11/2026)
 
 [CRM-DEC — Vigência dos adicionais e créditos IA quantificados](CRM-DEC-gratuidade-adicionais-vigencia-e-pacotes-ia.md): o Administrador Geral Imagine poderá conceder **um pacote de créditos IA com quantidade definida**, como ato de gratuidade específico. **Não** criar crédito ilimitado, reposição mensal automática, compartilhamento entre empresas ou alteração do plano base. Prazo/expiração/ordem de consumo permanecem sujeitos à decisão original e às pendências **IA-P02..06**. O conflito documental **90 dias versus até consumo** ainda precisa ser resolvido; a aprovação de quantidade fixa **não escolheu nenhum dos prazos**.
 
-A CRM-REV-08 **continua minuta não aprovada**, embora a regra funcional independente esteja registrada como aprovada.
+A CRM-REV-08 **foi aprovada como base documental**, conforme [decisão](CRM-DEC-aprovacao-REV-08-base.md). A regra funcional independente de pacote gratuito quantificado permanece aprovada; **validade e volume final de comercialização continuam pendentes**.
 
-## 10. Próxima aprovação e continuidade
+## 10. Aprovação documental registrada e continuidade
 
-**Proposta:** aprovar CRM-REV-08 **como base documental de reconciliação**, reconhecendo 28 itens, 12 divergências, 15 pendências e 16 cenários futuros, sem homologar modelos, preços, prazos de créditos, permissões, perfis, dados de treinamento, APIs, custos ou programação.
+**CRM-REV-08 foi aprovada como base documental de reconciliação** pela [CRM-DEC](CRM-DEC-aprovacao-REV-08-base.md), reconhecendo 28 itens, 12 divergências, 15 pendências e 16 cenários futuros, **sem homologar modelos, preços, prazos de créditos, permissões, perfis, dados de treinamento, APIs, custos ou programação**.
 
-**Depois:** CRM-REV-09 — Infraestrutura, Segurança, Auditoria e Operações Centrais; manter foco no fechamento transversal P0. A referência à gratuidade por plano já é requisito funcional aprovado, não depende do aceite desta REV-08.
+**Etapa seguinte preparada:** [CRM-REV-09 — Infraestrutura, Segurança, Auditoria e Operações Centrais](CRM-REV-09-infraestrutura-seguranca-auditoria-operacoes-centrais.md) como **minuta ainda não aprovada**, com foco nos bloqueios P0 transversais. A gratuidade por plano e extras tem decisões funcionais próprias, separadas do aceite desta REV-08.
 
-**Situação global:** CRM-REV-01..07 bases aprovadas; CRM-REV-08 **minuta não aprovada**. CORE-P0, INT-P0, IN-168 e G01–G06 continuam abertos; nenhuma implementação, implantação ou teste executado.
+**Situação global atualizada:** CRM-REV-01..08 bases aprovadas; CRM-REV-09 **minuta não aprovada**. CORE-P0, INT-P0, IN-168 e G01–G06 continuam abertos; nenhuma implementação, implantação ou teste executado.
