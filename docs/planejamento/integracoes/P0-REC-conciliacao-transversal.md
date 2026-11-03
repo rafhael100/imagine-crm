@@ -166,5 +166,11 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) consolida 11 famílias documentais aceitas, com esquemas executáveis/autorizações por ato ainda pendentes.
 - **P0-CON-01 segue aberta/parcial**, G01..G06 não concluídos e 0 HT executados. Não há autorização de programação.
 
-## 20. Restrição permanente
+## 20. CON-MASTER e duas rodadas de contratos por operação (03/11/2026)
+
+- [P0-DEC CON-MASTER](P0-DEC-aprovacao-CON-MASTER-base.md) limita a aprovação ao acompanhamento documental.
+- [OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md), [OP09](P0-CON-OP09-contratos-operacoes-complementares.md) e [índice OP24](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md) cobrem os **24 IDs de referência**, todos com detalhamentos **propostos e ainda não aceitos como regras físicas definitivas**.
+- O catálogo não é exaustivo; fontes originais e decisões sobre direitos, contratos técnicos por provedor, estados, parâmetros, compatibilidade e aceites ainda pendentes. **G01–G06 e P0-CON-01 seguem abertos.**
+
+## 21. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
