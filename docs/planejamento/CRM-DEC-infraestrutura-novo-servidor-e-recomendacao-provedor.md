@@ -1,5 +1,7 @@
 # CRM-DEC — Novo servidor para o CRM e recomendação de hospedagem
 
+> **ATUALIZAÇÃO DE PRECEDÊNCIA EM 03/11/2026:** a [estratégia econômica escalável com prioridade de estudo da Leaseweb](CRM-DEC-estrategia-infra-economica-escalavel-leaseweb-2026-11-03.md) foi aprovada posteriormente. **A indicação Vultr São Paulo abaixo é referência técnica histórica, não mais a opção preferencial vigente.** Segue válida a decisão de CRM em servidor independente e novo. Não há fornecedor, SKU, preço ou contratação homologados.
+
 **Registro:** 2026-11-03.
 **Manifestação literal do responsável:** “iremos colocar o projeto em outro servidor. iremos colocar no que voce recomendar”.
 **Contexto:** resposta ao inventário ARQ01-F01 que mencionava a VPS histórica Leaseweb dedicada ao n8n. O objetivo é não vincular a nova aplicação **CRM Imagine SaaS** à infraestrutura antiga do n8n.
