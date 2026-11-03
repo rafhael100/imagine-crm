@@ -1,7 +1,7 @@
 # P0-ARQ01-F02 — Alocação física por fases, custos, riscos e contingência | CRM Imagine
 
 **Data:** 03/11/2026
-**Estado:** **MINUTA TÉCNICA PARA REVISÃO — NÃO APROVADA NEM HOMOLOGADA**.
+**Estado:** **APROVADA COMO BASE DOCUMENTAL** em 03/11/2026, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-ARQ01-F02-base-2026-11-03.md); **sem homologar escolhas físicas, região, fornecedor definitivo, preço ou produção**.
 **Decisão de origem aprovada:** [CRM-DEC — estratégia de infraestrutura econômica e escalável Leaseweb](CRM-DEC-estrategia-infra-economica-escalavel-leaseweb-2026-11-03.md).
 **Instrumentos de controle:** [P0-ARQ-01](P0-ARQ-01-topologia-fronteiras-plano-fechamento.md), [ARQ01-F01](P0-ARQ01-F01-inventario-factual-ativos-e-servicos.md), [IN-168](IN-168-matriz-pendencias-fechamento-arquitetura.md) e [CRM-REV-09](CRM-REV-09-infraestrutura-seguranca-auditoria-operacoes-centrais.md).
 **Limite:** sem programação, contratação, provisionamento, SSH, mudanças de infraestrutura, testes reais ou início do CRM. F02 propõe distribuição e critérios para decisões posteriores; **ARQ-01 permanece P0 PARCIAL**.
@@ -123,9 +123,9 @@ Monitorar depois do lançamento autorizado: p95/p99 da API, CPU/RAM sustentados,
 
 ## 10. Resultado deste documento
 
-- **Aprovada previamente:** estratégia econômica em fases e preservação de separações e políticas já existentes.
-- **Proposta agora, sem aprovação presumida:** alocação lógica/física dos serviços, responsabilidades, gates de segurança e matriz de orçamento.
+- **Aprovada:** estratégia econômica em fases e **aceite desta F02 como base documental** para organizar a alocação lógica/física, responsabilidades, gates de segurança e orçamento.
+- **Ainda propostas, sem homologação física:** porte de VPS, região, custo, arquitetura de banco/rede/backup e níveis de disponibilidade.
 - **Não concluídos:** fornecedor e localidade finais, SKU/precificação, isolamento físico comprovado, contingência, riscos, RTO/RPO, homologação de produção e demais bloqueios.
 - **Não realizado:** compra, código, deploy, teste real, acesso ao servidor, mudança de DNS ou configuração Cloudflare.
 
-**Próximo encaminhamento recomendado:** revisar e eventualmente aceitar F02 **como base documental**, sem declarar ARQ-01 resolvida; depois preparar comparativo de orçamento F02-P02..P05, F02-P07..P09 e submeter decisões específicas para fechamento P0.
+**Próximo encaminhamento:** aprofundar PostgreSQL e backups em [ARQ01-F03](P0-ARQ01-F03-postgresql-backups-dimensionamento.md), com custos, região, durabilidade, restauração e decisões específicas ainda submetidas a aceite; **ARQ-01 continua P0 parcial**.
