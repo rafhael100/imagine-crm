@@ -188,3 +188,10 @@ Todos os cartões precisam trazer **texto explicativo, botão “Realizar integr
 - Google Tag Consent Mode https://developers.google.com/tag-platform/security/concepts/consent-mode
 
 **Estado: escopo de cinco conectores APROVADO para o lançamento do Portal. Não significa que contas, tokens, projetos Google, tags ou integrações já tenham sido configurados. Nenhuma programação iniciada.**
+
+
+## 12. Decisão vigente — GA4 apenas conexão, nunca importação de métricas Imagine (03/11/2026)
+
+**Decisão expressa posterior do responsável:** o GA4 será **somente uma integração opcional solicitada pelo cliente**, para o cliente usar sua própria conta/propriedade e consultar dados na **plataforma Google Analytics**. **A Imagine não lerá, armazenará, processará nem apresentará relatórios GA4** no Portal, mesmo quando a integração estiver conectada. O Portal pode apresentar apenas status da conexão, configuração/instalação técnica da medição e eventuais falhas. As seções anteriores que mencionam indicadores GA4 no painel Imagine ou coleta agendada pela Google Analytics Data API são **histórico superado**; não implementar.
+
+**DNS também foi esclarecido:** a Imagine **não manterá DNS próprio nem administrará continuamente os DNS dos clientes**; cliente mantém registro e DNS no registrador ou, preferencialmente, usa Cloudflare DNS, com Imagine orientando e verificando a configuração autorizada. O estudo de custos, 100–700 sites e alternativas Cloudflare for SaaS/Workers for Platforms foi registrado em [PORTAL-CF-01](PORTAL-CF-01-estudo-custos-cloudflare-100-a-700-sites-PROPOSTA.md). A infraestrutura final ainda não foi aprovada; o catálogo Google permanece restrito a GA4, Search Console e Tag Manager conforme a decisão de três integrações vigente. Nenhuma programação.
