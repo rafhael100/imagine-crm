@@ -317,7 +317,14 @@
 - [CRM-REV-06](CRM-REV-06-vendas-funis-propostas-catalogo.md): **minuta para revisão**, com 33 itens funcionais de cotejo, 14 riscos, 16 pendências e 18 cenários futuros; 22 seções históricas incorporadas para confronto. **Sem aprovação própria**.
 - Próximo pacote depois da REV-06: Agenda e Agendamentos. O fechamento técnico/global e a revisão comercial final permanecem necessários antes do Codex.
 
-## 11. Próximo pacote de revisão proposto
+## 11. Aceite CRM-REV-06 e minuta CRM-REV-07 (03/11/2026)
+
+- [CRM-REV-06](CRM-REV-06-vendas-funis-propostas-catalogo.md): **aceita como base documental**, conforme [CRM-DEC](CRM-DEC-aprovacao-REV-06-base.md); contratos VEN/CAT e 16 lacunas permanecem abertos.
+- [CRM-REV-07](CRM-REV-07-agenda-profissionais-unidades-agendamentos.md): **minuta de revisão**, com 42 regras de Agenda, seis exclusões/rejeições expressas, 16 divergências, 18 pendências e 22 cenários futuros; **sem aceite específico**.
+- O documento da Agenda preserva o Básico estritamente manual/interno, pagamentos de serviços fora do escopo, check-in somente por equipe e fila de espera FIFO sem exceção prioritária. Preços e parâmetros de agenda ainda pendentes.
+- Próxima revisão após aprovação da Agenda: IA comercial, créditos, conhecimento e supervisão. Sem Codex até aprovação global.
+
+## 12. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
