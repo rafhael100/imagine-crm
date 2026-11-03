@@ -104,6 +104,12 @@ Campos: ID (TR-INTxx-###), origem da decisão e sua versão, descrição, escopo
 - [Matriz de requisitos identificados](INT-P0-rastreabilidade-requisitos.md)
 - [Matriz de autoridades e contratos](INT-P0-autoridades-contratos.md)
 
-## 11. Referências cruzadas e precedência
+## 11. Planejamento documental de homologação (03/11/2026)
+
+- [P0-ACC — Planos de homologação HT-01 a HT-18](P0-ACC-planos-homologacao-HT01-HT18.md) aprofunda os 18 cenários já aprovados nesta INT-R02. Os procedimentos pormenorizados são **minutas para revisão**, não aprovados definitivamente nem executados.
+- [P0-ACC — Controle de evidências e aceite](P0-ACC-matriz-controle-evidencias-HT01-HT18.md) registra função responsável e evidência exigível, sem declarações de PASS/FAIL.
+- [P0-SEC e P0-VER](P0-DEC-aprovacao-SEC-VER-base.md) foram aprovadas **como bases documentais**, sem determinar os parâmetros ainda em aberto.
+
+## 12. Referências cruzadas e precedência
 - [INT-R01](INT-R01-governanca-contratos-homologacao.md), [Matriz P0](INT-P0-fechamento-documental.md), [Origem e precedência](DECISOES-origem-precedencia.md).
 - [IN-167](../IN-167-consolidacao-arquitetura-agentes-tecnicos.md) e [IN-168](../IN-168-matriz-pendencias-fechamento-arquitetura.md) detalham agentes técnicos e pendências adjacentes: não presumir conclusão de suas especificações pelo fechamento da INT-R02.
