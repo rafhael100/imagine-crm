@@ -1,7 +1,7 @@
 # P0-OP24-SEC-STATE-PARAM — Autorizações, estados e parâmetros por operação
 
 **Data:** 2026-11-03.
-**Estado:** **MINUTA DOCUMENTAL PARA REVISÃO** elaborada após [aceite contextual das 24 fichas especializadas como bases documentais](P0-DEC-aprovacao-OP15-OP09-bases.md). A nova matriz **não foi aprovada individualmente**.
+**Estado atualizado:** **APROVADA COMO INSTRUMENTO DOCUMENTAL DE REVISÃO** em 2026-11-03, conforme [decisão contextual](P0-DEC-aprovacao-OP24-SEC-STATE-PARAM-instrumento.md). A aprovação **não define permissões, alçadas, MFA, enums ou parâmetros técnicos executáveis**. A [nova matriz de propriedade, recursos e campos](P0-OWN-SEC-matriz-recursos-campos-OP24.md) permanece **minuta para revisão**.
 **Escopo:** 24 casos de referência OP-01..12, [OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) + [OP09](P0-CON-OP09-contratos-operacoes-complementares.md). **Não constitui catálogo completo de todas as operações originalmente aprovadas**; isso depende de P0-DOC-01/P0-TR-01.
 **Fontes:** [CT-02](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md), [P0-SEC](P0-SEC-politicas-autorizacao-CT02.md), [CT-03/04](P0-CON-CT03-CT04-comandos-resultados-transicoes.md), [P0-VER](P0-VER-matriz-compatibilidade-evolucao-versoes.md), [CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md), [INT-R01](INT-R01-governanca-contratos-homologacao.md) e [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md).
 **Restrição:** nenhum código, automação nova, homologação executada, migração, credencial/conta de teste criada, alteração de ambiente real, contratação ou despesa.
@@ -515,7 +515,7 @@ Princípios que a revisão **não pode alterar**:
 ## 6. Situação P0 e próxima decisão
 
 - **24/24 fichas especializadas anteriores aceitas como bases documentais** em [P0-DEC](P0-DEC-aprovacao-OP15-OP09-bases.md).
-- **24/24 registros desta matriz novos e propostos para revisão**, sem aprovação dos parâmetros, estados físicos ou alçadas.
+- **24/24 registros desta matriz aceitos como instrumento de revisão documental**, sem aprovação de parâmetros, estados físicos, perfis ou alçadas.
 - **P0-CON-01, P0-SEC-01, P0-OWN-01, P0-VER-01, P0-DEP-01, P0-TR-01, P0-DOC-01/02, P0-ACC-01, P0-XREF-01, P0-GIT-01 e G01–G06 continuam abertos/parciais.**
-- Próxima decisão recomendada: aceitar este documento **como instrumento de decisão documental**, mantendo pendências reais em aberto, e continuar a matriz de proprietários/recursos/campos e parâmetros por operação/provedor antes de fechar P0-CON-01.
+- A aprovação desta matriz **como instrumento documental já foi registrada**; [P0-OWN-SEC](P0-OWN-SEC-matriz-recursos-campos-OP24.md) detalha recursos/campos e direitos candidatos **em proposta**, mantendo parâmetros por operação/provedor pendentes antes de fechar P0-CON-01.
 - **0/18 testes executados; nenhuma programação iniciada.**
