@@ -1,6 +1,6 @@
 # CRM-REV-01 — Núcleo multiempresa, identidade, usuários, permissões e isolamento
 
-**Data:** 2026-11-03. **Status:** **CONFRONTO DOCUMENTAL INICIAL / PROPOSTA PARA REVISÃO**.
+**Data:** 2026-11-03. **Status atualizado:** **ACEITA COMO BASE DOCUMENTAL**, conforme [aprovação explícita](CRM-DEC-aprovacao-REV-01-base.md). Os princípios funcionais N-01..13 são referências de revisão; as lacunas CORE-P0-01..10 e as políticas executáveis continuam pendentes. [CRM-REV-02](CRM-REV-02-planos-trial-assinaturas-cobrancas-basico.md) preparada como **minuta não aprovada**.
 **Objetivo:** primeira revisão dos módulos CRM-01/02/03 e interseção com CRM-17. Não cria decisões novas nem altera aprovações funcionais existentes. **Nenhum schema, permissão ou autorização é aprovado por este documento**.
 **Origem:** capítulos históricos da branch `docs/integracao-site-crm-basico` e documentos `main` listados adiante. Uma seção histórica rotulada APROVADO indica decisão documentada, mas seu cotejo com texto original e decisões posteriores ainda é necessário.
 **Restrições:** terminar todo planejamento, obter revisão/aceite final versionado e **só depois programar**. Sem testes, provisionamentos, usuários reais, credenciais, mudanças em produção ou custo.
@@ -97,10 +97,10 @@
 - **Auditoria:** administrativa Imagine (histórico de 5 anos) e comercial tenant (histórico de 12 meses) são categorias distintas; técnicos IN-162 têm prazos próprios, e tudo depende de conformidade legal. Não generalizar um prazo.
 - **Sites/Portal:** novo contrato elegível pode permitir nova organização Básico mesmo mesmo CNPJ, separada do trial; não significa gerar várias organizações por pagamento repetido.
 
-## 7. Próxima aprovação proposta
+## 7. Aprovação da base e continuidade para CRM-REV-02 (03/11/2026)
 
-**Aceitar CRM-REV-01 como BASE DOCUMENTAL DE REVISÃO** dos 13 princípios localizados (N-01..13), dos sete tipos conceituais de atores e das dez lacunas CORE-P0-01..10, **sem aprovar schema físico, perfis, MFA adicional, alçadas, fornecedores ou parâmetros numéricos não decididos**.
+**CRM-REV-01 foi aceita como BASE DOCUMENTAL DE REVISÃO** dos 13 princípios localizados (N-01..13), dos sete tipos conceituais de atores e das dez lacunas CORE-P0-01..10, **sem aprovar schema físico, perfis, MFA adicional, alçadas, fornecedores ou parâmetros numéricos não decididos**. [Decisão](CRM-DEC-aprovacao-REV-01-base.md).
 
-Depois do aceite de base, a ordem sugerida é **CRM-REV-02: planos, trial, cobranças e cortesia**, preparando a matriz comercial que poderá ser revisada em conjunto no final, como já foi acordado. Não abrir programação sem revisão final global.
+A [CRM-REV-02 — planos, trial, cobranças e cortesia](CRM-REV-02-planos-trial-assinaturas-cobrancas-basico.md) foi **redigida como proposta para revisão**, com preços de referência preservados e diferenças históricas registradas. Não abrir programação sem revisão final global.
 
 **Situação:** a revisão de fontes do núcleo evoluiu documentalmente; **não fecha** os P0 globais, IN-168, INT G01..G06 nem concede autorização de implementação.
