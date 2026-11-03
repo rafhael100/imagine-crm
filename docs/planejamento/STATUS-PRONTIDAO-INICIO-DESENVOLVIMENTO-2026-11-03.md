@@ -168,3 +168,11 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 Em seguida, fechar primeiro os P0 que realmente bloqueiam a arquitetura e a programação do núcleo e então submeter a **revisão global do CRM**.
 
 **Status final desta avaliação:** **NÃO LIBERADO para programação**. Trata-se de controle de prontidão documental, não adiamento por tempo, recusa de trabalho ou exigência de execução antecipada de testes.
+
+
+## 23. Aprovação posterior — estratégia progressiva Leaseweb (03/11/2026)
+
+- O responsável aprovou a [CRM-DEC de hospedagem econômica escalável](CRM-DEC-estrategia-infra-economica-escalavel-leaseweb-2026-11-03.md) para o período de **zero clientes**: **sem contratação no planejamento**; Leaseweb VPS 1 como candidato de desenvolvimento após autorização de código; Leaseweb VPS 2 para Laravel e banco em máquina independente como hipótese econômica de produção inicial, **não homologada**.
+- Cloudflare na camada de proteção e entrega; arquivos privados fora do disco da aplicação, backups externos, n8n/Portal/agentes separados. Crescimento futuro avalia Public Cloud/dedicado/híbrido conforme medições.
+- O documento substitui **a preferência técnica de estudo anterior por Vultr**, não a decisão de CRM independente, e não altera módulos funcionais.
+- ARQ-01 continua **P0 parcial**, demais P0 e gates INT permanecem abertos. **Sem contratação, provisionamento, testes reais ou programação.**
