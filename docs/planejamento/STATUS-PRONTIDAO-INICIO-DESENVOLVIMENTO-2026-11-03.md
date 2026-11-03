@@ -62,7 +62,13 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - Exemplo confirmado de precedência interna: o capítulo histórico 01 inicialmente diz que `tenant_id` + RLS era proposta, **mas uma seção posterior do mesmo capítulo registra aprovação explícita**. Essa aprovação deve ser preservada, sujeita ao cotejo de eventuais decisões ainda posteriores.
 - **Sem nova data de início nem autorização de programação.** O índice mestre é mapa de trabalho, não atestado de fechamento.
 
-## 7. Próxima recomendação objetiva
+## 7. Aceite do núcleo e revisão comercial em andamento (03/11/2026)
+
+- [CRM-REV-01](CRM-REV-01-nucleo-identidade-multitenant-permissoes.md) foi aceita como **base documental**, segundo [CRM-DEC](CRM-DEC-aprovacao-REV-01-base.md). Os CORE-P0 continuam pendentes de solução concreta.
+- [CRM-REV-02](CRM-REV-02-planos-trial-assinaturas-cobrancas-basico.md) foi preparada **em minuta para revisão**, sem aprovar novos preços ou modificar benefícios. As decisões comerciais finais permanecem sujeitas à revisão conjunta ao fim do planejamento, como acordado.
+- Não há mudança no gate global: **desenvolvimento ainda não autorizado**; nenhum teste ou implementação executados.
+
+## 8. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
