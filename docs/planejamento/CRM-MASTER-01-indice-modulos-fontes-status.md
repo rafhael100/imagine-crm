@@ -324,7 +324,15 @@
 - O documento da Agenda preserva o Básico estritamente manual/interno, pagamentos de serviços fora do escopo, check-in somente por equipe e fila de espera FIFO sem exceção prioritária. Preços e parâmetros de agenda ainda pendentes.
 - Próxima revisão após aprovação da Agenda: IA comercial, créditos, conhecimento e supervisão. Sem Codex até aprovação global.
 
-## 12. Próximo pacote de revisão proposto
+## 12. Agenda aprovada e nova gratuidade administrativa (03/11/2026)
+
+- [CRM-REV-07](CRM-REV-07-agenda-profissionais-unidades-agendamentos.md) foi **aprovada como base documental**, conforme [CRM-DEC REV-07](CRM-DEC-aprovacao-REV-07-base.md). As 42 regras e seis rejeições foram preservadas, mantendo AGD-P01..18 em aberto.
+- **Nova decisão expressa do responsável:** o **Administrador Geral Imagine** pode habilitar gratuitamente **qualquer plano do CRM** para uma empresa cliente específica, inclusive planos superiores. [CRM-DEC — Gratuidade administrativa](CRM-DEC-gratuidade-administrativa-qualquer-plano.md).
+- Essa concessão **não depende do Site Imagine**, **não consome trial**, não altera o preço público do plano e é **separada da cortesia Básico por site**. Recursos incluídos seguem o plano escolhido; cobertura de extras e detalhes de vigência, revogação, concessão a cliente pagante, segurança e fiscal/financeiro dependem de GRAT-P01..08.
+- Impactos documentais: **CRM-02 Administração Geral**, **CRM-03 Identidade/Permissões**, **CRM-04 Planos/Cortesia** e **CRM-05 Faturamento**, além de comunicação no painel central. Não gerar quinto plano “grátis” nem cobrança recorrente sem aceite do cliente.
+- Próxima frente: CRM-REV-08 — agentes de IA e consumo; nenhuma programação até aprovação final global.
+
+## 13. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
