@@ -1,6 +1,6 @@
 # CRM-REV-07 — Agenda, Profissionais, Unidades e Agendamentos
 
-**Data:** 2026-11-03. **Estado:** **MINUTA DOCUMENTAL PARA REVISÃO — NÃO APROVADA**. Preparada após a [aprovação limitada da CRM-REV-06 como base documental](CRM-DEC-aprovacao-REV-06-base.md). Não houve aceite antecipado desta REV-07.
+**Data:** 2026-11-03. **Estado atualizado:** **APROVADA COMO BASE DOCUMENTAL DE REVISÃO**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-REV-07-base.md). Mantidos AGD-P01..18, AGD-D01..16 e as seis rejeições expressas. Não aprova schemas, contratos, provedores, preços nem implementação.
 **Escopo:** AGD, serviços, profissionais, equipe, unidades, disponibilidade, reservas, notificações, agenda Básico e integrações; fronteiras com CRM-01/02/03/04/05/06 e INT.
 **Restrições:** exclusivamente planejamento e documentação GitHub; sem programação, testes reais, integrações externas, cadastramento de clientes reais, cobrança, novas automações, implantação, criação de contas ou despesas.
 
@@ -181,8 +181,8 @@ Esses 22 cenários são critérios documentais candidatos; **não representam te
 
 ## 9. Aprovação recomendada e próxima etapa
 
-**Proposta:** aprovar a CRM-REV-07 **como base documental de revisão**, preservando as 42 regras funcionais cotejadas e as **seis exclusões expressas**, mantendo AGD-P01..18 abertos. Esse aceite não aprova provedores externos, políticas numéricas finais, tabelas, APIs, alçadas, planos de preço, novas funcionalidades ou execução.
+**CRM-REV-07 foi aprovada como base documental de revisão**, conforme [decisão](CRM-DEC-aprovacao-REV-07-base.md), preservando as 42 regras funcionais cotejadas e as **seis exclusões expressas**, com AGD-P01..18 ainda abertos. Esse aceite não aprova provedores externos, políticas numéricas finais, tabelas, APIs, alçadas, planos de preço, novas funcionalidades ou execução.
 
-Depois continuar a **CRM-REV-08 — Agentes de IA, Consumo, Base de Conhecimento e Supervisão**, conforme inventário mestre, confrontando os módulos técnicos IN e agentes comerciais sem duplicação.
+A próxima revisão indicada permanece **CRM-REV-08 — Agentes de IA, Consumo, Base de Conhecimento e Supervisão**. A [nova decisão de gratuidade administrativa em qualquer plano](CRM-DEC-gratuidade-administrativa-qualquer-plano.md) altera a elegibilidade comercial por empresa, **não** as regras de Agenda nem os benefícios do plano Básico.
 
-**Situação global:** CRM-REV-01..06 aceitas como bases documentais; REV-07 **minuta não aprovada**, gates CORE-P0/INT-P0/IN-168/G01–G06 permanecem abertos. Nenhuma programação, teste, automação nova ou implantação iniciada.
+**Situação global atualizada:** CRM-REV-01..07 aceitas como bases documentais, gates CORE-P0/INT-P0/IN-168/G01–G06 permanecem abertos. Nenhuma programação, teste, automação nova ou implantação iniciada.
