@@ -152,6 +152,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - [P0-OP24 SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md): 24 avaliações documentais de solicitante/competência, estados separados, bloqueios, confirmação oficial e decisões pendentes, **em minuta para revisão**.
 - **P0-CON-01, P0-SEC-01, P0-OWN-01, P0-VER-01 e demais P0 seguem abertos/parciais**; G01–G06 não concluídos, nenhum teste executado ou programação iniciada.
 
+## Aprovação da matriz operacional e análise de recursos/campos (03/11/2026)
+
+- [P0-DEC — aceite OP24 SEC/STATE/PARAM](P0-DEC-aprovacao-OP24-SEC-STATE-PARAM-instrumento.md): instrumento documental aprovado, **sem aprovar direitos, alçadas, MFA, estados ou parâmetros físicos**.
+- [P0-OWN-SEC — matriz de recursos/campos](P0-OWN-SEC-matriz-recursos-campos-OP24.md): 13 grupos de recursos e 24 OP classificados; **minuta para revisão**, não tabela de permissões reais. Direitos de leitura, escrita, exportação, execução e aprovação permanecem distintos.
+- **P0-OWN-01, P0-SEC-01 e P0-CON-01 continuam abertos/parciais**; origem literal, políticas reais, proprietários por campo e G01–G06 seguem pendentes. Zero testes/programação.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
