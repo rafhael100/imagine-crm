@@ -31,6 +31,7 @@
 - [P0-ARQ-01 — Topologia, isolamento e plano de fechamento](docs/planejamento/P0-ARQ-01-topologia-fronteiras-plano-fechamento.md) — **instrumento documental aprovado**, sem fechar ARQ-01.
 - [CRM-DEC — Aceite do instrumento P0-ARQ-01](docs/planejamento/CRM-DEC-aprovacao-P0-ARQ-01-instrumento.md).
 - [ARQ01-F01 — Inventário preliminar de infraestrutura](docs/planejamento/P0-ARQ01-F01-inventario-factual-ativos-e-servicos.md) — **minuta não homologada**; 13 ativos/domínios, declarações históricas e lacunas de verificação real.
+- [CRM-DEC — Novo servidor para CRM e recomendação Vultr São Paulo](docs/planejamento/CRM-DEC-infraestrutura-novo-servidor-e-recomendacao-provedor.md) — **decidido servidor CRM independente**; Vultr High Performance 4 vCPU/8 GB/180 GB NVMe é preferência técnica a cotar/homologar, sem contratação.
 - [Infraestrutura e agentes técnicos: pendências IN-168](docs/planejamento/IN-168-matriz-pendencias-fechamento-arquitetura.md).
 - [Integrações INT-01 a INT-12: índice de documentação](docs/planejamento/integracoes/README.md).
 - [Integrações: painel de pendências e gates G01–G06](docs/planejamento/integracoes/P0-GATE-painel-fechamento-rastreabilidade-dependencias.md).
