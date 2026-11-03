@@ -73,5 +73,11 @@ Novas sugestões, interpretações da IA, exemplos e alternativas não são deci
 - [P0-DEC — CT-01](P0-DEC-aprovacao-CT01-base.md) documenta a resposta “ok” à recomendação de aprovar CT-01 **como base documental**, com parâmetros e schemas ainda em revisão.
 - [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) é **consolidação proposta**, que não suplanta as aprovações dos módulos nem presume encerramento da P0-CON-01.
 
+## Aceite CON-MASTER e consolidação das 24 OP de referência (03/11/2026)
+
+- [P0-DEC CON-MASTER](P0-DEC-aprovacao-CON-MASTER-base.md) registra a resposta “ok” como aceitação de **instrumento documental** e autorização para detalhar contratos por operação.
+- [OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) e [OP09](P0-CON-OP09-contratos-operacoes-complementares.md), reunidas no [índice OP24](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md), são **propostas de especialização documental**, ainda sem aceite específico. O aceite anterior da base OP24 não aprova automaticamente essas fichas nem novos perfis, alçadas, ferramentas ou parâmetros.
+- Não houve alterações das decisões funcionais originárias, programação ou execução de testes.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
