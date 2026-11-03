@@ -77,3 +77,10 @@ Estrutura exata das seis áreas; indicadores obrigatórios por produto e plano; 
 - CrUX: https://developer.chrome.com/docs/crux/guides/crux-api
 
 **Status:** PROPOSTA PARA DISCUSSÃO. Sem programação ou conexão real.
+
+
+## Decisão posterior vinculante — excluir métricas GA4 do Portal Imagine (03/11/2026)
+
+**REQUISITO FUNCIONAL APROVADO pelo responsável, posterior à proposta MON-01:** o **Google Analytics 4 será instalado/conectado facultativamente** ao site apenas a pedido do cliente, depois de autenticação, configuração e requisitos de privacidade, **mas o Portal Imagine não coletará nem exibirá métricas do GA4**. Os relatórios serão consultados **diretamente no painel Google Analytics pelo próprio cliente**. **Ficam superadas todas as referências anteriores deste documento a GA4 Data API, sessões, usuários, fontes, eventos ou conversões GA4 como métricas nativas do Portal**, inclusive tabelas, abas e cadências propostas. A Integrações pode exibir **somente estado técnico da conexão GA4** (p.ex. configurado/desconectado), sem consumir a API de relatórios.
+
+**Permanecem em análise:** monitoramento próprio Cloudflare/Web Analytics, disponibilidade, SSL, erros, métricas de SEO pelo Search Console se autorizado, leads confirmados pela infraestrutura Imagine/CRM sob permissões, recomendações de agentes. As métricas “Acessos” da proposta deverão ser redefinidas **sem GA4**, exigindo aprovação específica de fonte, definição e apresentação. A decisão posterior do cliente sobre DNS não interfere na titularidade do domínio; preferência Cloudflare DNS ou do registrador, sem DNS próprio Imagine. [GOO-01](PORTAL-GOO-01-DECISAO-VIGENTE-03-11-2026-catalogo-tres-integracoes.md), [CF-01](PORTAL-CF-01-estudo-custos-cloudflare-100-a-700-sites-PROPOSTA.md). Somente planejamento.
