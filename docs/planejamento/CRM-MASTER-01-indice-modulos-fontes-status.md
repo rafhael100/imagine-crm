@@ -292,7 +292,13 @@
 - [CRM-REV-02](CRM-REV-02-planos-trial-assinaturas-cobrancas-basico.md): planos, trial, cobrança e cortesia **redigidos em minuta**, reunindo 20 regras funcionais, 12 pontos de precedência e 12 pendências propostas; preços atuais de planejamento preservados. **Ainda não recebeu aceite específico**.
 - O índice mestre permanece ferramenta de reconciliação, não aprovação global de prontidão ou autorização de desenvolvimento.
 
-## 7. Próximo pacote de revisão proposto
+## 7. CRM-REV-02 aceita e CRM-REV-03 preparada (03/11/2026)
+
+- [CRM-REV-02](CRM-REV-02-planos-trial-assinaturas-cobrancas-basico.md) foi **aceita como base documental**, conforme [CRM-DEC](CRM-DEC-aprovacao-REV-02-base.md). Preservar todos os preços de referência atuais e manter diferenças/pontos técnicos para revisão final.
+- [CRM-REV-03](CRM-REV-03-leads-contatos-campos-historicos-portabilidade.md) foi preparada **como minuta para revisão**, com 26 regras funcionais localizadas, 12 diferenças/riscos, 12 pendências e 14 cenários futuros. **Não está aprovada**.
+- O Índice Mestre continua instrumento de reconciliação; nada autoriza iniciar programação.
+
+## 8. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
