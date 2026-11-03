@@ -3,6 +3,12 @@
 **Estado:** transcrição de mensagens do responsável disponíveis no contexto deste trabalho. **Sem ID de mensagem do ChatGPT, URL permanente ou timestamp individual verificável.** Data deste registro documental: 2026-11-02.
 **Objetivo:** melhorar a proveniência; NÃO substituir propostas completas previamente aprovadas, nem concluir P0-DOC-01/G01. Sem programação.
 
+## Observação de fidelidade da fonte (verificação em 03/11/2026)
+
+As transcrições exibidas abaixo **já estavam registradas neste arquivo no GitHub**. Nesta etapa, foi verificada a existência do registro, **não** foi obtido o corpo original da mensagem com identificador/versão verificável para cotejo independente de cada palavra. Portanto a expressão “transcrição disponível” descreve **texto preservado no arquivo**, não um certificado de autenticidade literal frente ao histórico original. Até recuperar as propostas e aceites diretamente, manter **P0-DOC-01 / P0-DOC-02 abertos**.
+
+A [matriz de lacunas candidatas](P0-DOC-TR-deltas-candidatos-fonte-original.md) lista 28 temas de granularidade para futura confrontação, sem tratar resumos e metadados de buscas históricas como fonte primária.
+
 ## INT-10 — aceite disponível
 > Aprovo a opção 1: INT-10 Monitoramento Inteligente, Diagnóstico, Contingência e Recuperação de Integrações completa, conforme planejamento apresentado, preservando os módulos proprietários, os motores e serviços centrais, as confirmações oficiais, a segurança multiempresa, a recuperação automática controlada, as aprovações humanas e a auditoria. Vamos continuar com a INT-11, sem iniciar programação.
 
