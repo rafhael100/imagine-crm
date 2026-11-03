@@ -1,6 +1,6 @@
 # P0-ARQ-01 — Instrumento de fechamento da topologia e dos limites de infraestrutura
 
-**Data:** 2026-11-03. **Status:** **MINUTA DOCUMENTAL PARA REVISÃO — NÃO APROVADA**.
+**Data:** 2026-11-03. **Status atualizado:** **APROVADA COMO INSTRUMENTO DOCUMENTAL DE FECHAMENTO**, conforme [CRM-DEC específica](CRM-DEC-aprovacao-P0-ARQ-01-instrumento.md). **ARQ-01 permanece P0 PARCIAL**, sem topologia física, fornecedor, custos ou execução homologados. O [inventário F01](P0-ARQ01-F01-inventario-factual-ativos-e-servicos.md) está **em minuta de conferência, ainda não homologado**.
 **Objetivo operacional do planejamento:** **avançar para a decisão efetiva** de ARQ-01, que continua **P0 PARCIAL** no [IN-168](IN-168-matriz-pendencias-fechamento-arquitetura.md), depois de [CRM-REV-09 aceita como base](CRM-DEC-aprovacao-REV-09-base.md).
 **Regra:** este instrumento documenta topologia lógica já aprovada, decisões que faltam e critérios de evidência. **Não fecha ARQ-01 por si só** e não aprova fornecedor, dimensionamento, produto ou despesa; nada é provisionado.
 
@@ -112,7 +112,7 @@ Não são testes executados, não adicionam gates globais novos e não exigem pr
 
 ## 7. O que uma aprovação deste instrumento significaria
 
-**Proposta de aceite, ainda não decidida:** aceitar **P0-ARQ-01 como matriz/instrumento documental de fechamento** de topologia lógica, domínios de falha, inventário e evidências **sem marcar ARQ-01 como resolvido**. Depois iniciar **ARQ01-F01 — inventário factual** e o primeiro bloco de decisão física/orçamentária com fontes verificáveis, sem contratar nem provisionar.
+**Aceite registrado:** a [P0-ARQ-01 foi aprovada como instrumento documental](CRM-DEC-aprovacao-P0-ARQ-01-instrumento.md) de topologia lógica e evidências **sem marcar ARQ-01 como resolvida**. O [ARQ01-F01 — inventário preliminar](P0-ARQ01-F01-inventario-factual-ativos-e-servicos.md) foi **preparado como levantamento documental não homologado**, separando informações históricas e dados confirmados. A escolha física/orçamentária ainda exige fontes atualizadas e aprovação específica.
 
 **ARQ-01 permanece P0 parcial**, e **ARQ-02, ARQ-03, SEG-01, SEG-02, AGT-01**, CORE-P0, INT-P0 e G01–G06 continuam abertos. **Nenhuma implementação foi autorizada.**
 
