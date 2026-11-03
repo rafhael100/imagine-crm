@@ -51,7 +51,9 @@
 - [P0-CON CT-05 a CT-11 — Eventos, sync, lotes, processos, recuperação, compensação e auditoria](P0-CON-CT05-CT11-contratos-integracoes-minuta.md) — sete contratos aceitos como bases documentais, sem homologação
 - [P0-DEC — Aceite contextual CT-05 a CT-11](P0-DEC-aprovacao-CT05-CT11-base.md)
 - [P0-CON — Revisão cruzada CT-01 a CT-11](P0-CON-revisao-cruzada-CT01-CT11.md) — 11 famílias e 13 pontos de atenção
-- [P0-CON CT-01 — Conectores, conexões e capacidades](P0-CON-CT01-conectores-conexoes-capacidades-minuta.md) — especificação especializada em minuta, ainda não aprovada
+- [P0-CON CT-01 — Conectores, conexões e capacidades](P0-CON-CT01-conectores-conexoes-capacidades-minuta.md) — aceita como base documental, schemas pendentes
+- [P0-DEC — Aceite contextual CT-01 como base](P0-DEC-aprovacao-CT01-base.md)
+- [P0-CON-MASTER — Matriz CT-01..11 e critérios de fechamento P0-CON-01](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) — consolidação proposta, P0 ainda aberta
 - [P0-DEP — Dependências e fronteiras críticas](P0-DEP-dependencias-criticas-e-fronteiras.md)
 - [P0-GATE — Situação dos 11 P0 e G01–G06](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md)
 
