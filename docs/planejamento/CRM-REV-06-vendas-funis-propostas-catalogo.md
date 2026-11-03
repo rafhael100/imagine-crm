@@ -1,6 +1,6 @@
 # CRM-REV-06 — Vendas, Funis, Propostas e Catálogo Comercial
 
-**Data:** 2026-11-03. **Estado:** **MINUTA DOCUMENTAL PARA REVISÃO — NÃO APROVADA**.
+**Data:** 2026-11-03. **Estado atualizado:** **APROVADA COMO BASE DOCUMENTAL**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-REV-06-base.md). VEN-P01..16, diferenças e requisitos de implementação continuam abertos. [CRM-REV-07](CRM-REV-07-agenda-profissionais-unidades-agendamentos.md) foi preparada **como minuta ainda não aprovada**.
 **Origem da etapa:** [aceite da CRM-REV-05 como base](CRM-DEC-aprovacao-REV-05-base.md), que **não antecipa** a aprovação desta nova revisão.
 **Âmbito:** VEN, CAT e fronteiras com dados comerciais, atividades, tarefas, relatórios, ATD/IA, FIN/CON e INT. **Controle de estoque fora do escopo inicial**, segundo capítulo histórico.
 **Fase:** exclusivamente documentação GitHub; **sem programação, testes executados, criação de proposta real, aceite externo, envio, assinatura, faturamento ou produção**.
@@ -395,8 +395,8 @@ As seções abaixo são transcrições **do próprio repositório privado** para
 
 ## 9. Decisão proposta e sequência
 
-Recomendo aprovar CRM-REV-06 **como base documental de reconciliação**, preservando os 33 itens e distinções entre VEN/CAT/FIN/CON, sem aprovar schemas, perfis, alçadas, valores finais, assinatura eletrônica, dinheiro, automações executáveis ou programação. **VEN-P01..16 continuam abertos**.
+**CRM-REV-06 foi aprovada como base documental de reconciliação** conforme [registro de aceite](CRM-DEC-aprovacao-REV-06-base.md), preservando os 33 itens e distinções VEN/CAT/FIN/CON, sem aprovar schemas, perfis, alçadas, valores finais, assinatura eletrônica, dinheiro, automações executáveis ou programação. **VEN-P01..16 continuam abertos**.
 
-Próxima revisão sugerida: **CRM-REV-07 — Agenda, Profissionais, Unidades e Agendamentos**, com regras próprias do Básico manual/interno e páginas públicas apenas em planos elegíveis.
+A [CRM-REV-07 — Agenda, Profissionais, Unidades e Agendamentos](CRM-REV-07-agenda-profissionais-unidades-agendamentos.md) foi preparada **como minuta ainda não aprovada**, preservando o Básico manual/interno e as páginas públicas dos planos elegíveis.
 
-**Situação global:** CRM-REV-01..05 bases aceitas, REV-06 ainda **minuta não aprovada**, CORE-P0/INT-P0/IN-168 e G01–G06 continuam abertos. Nenhum código iniciado.
+**Situação global atualizada:** CRM-REV-01..06 bases aceitas, REV-07 ainda **minuta não aprovada**, CORE-P0/INT-P0/IN-168 e G01–G06 continuam abertos. Nenhum código iniciado.
