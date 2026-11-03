@@ -45,7 +45,12 @@
 | INT-12 | P0-GAP-027 | Auditoria de auditoria, consultas e exportações com perfis, finalidade e trilhas oficiais | TR-INT12-001/003/004 | Parcial: matrizes de acesso/retenção por categoria pendentes | INT-12.md |
 | INT-12 | P0-GAP-028 | Proveniência, integridade, evidência desconhecida e distinção entre auditoria de negócio e log técnico | TR-INT12-001/002/005 | Parcial: política de retenção/ classificação por negócio não concluída | INT-12.md + IN-162 |
 
-## 3. Regras para tratar cada linha sem inventar decisões
+## 3. Conferência focal registrada para oito investigações
+
+- [P0-FOCO-INT08-09 — 11 requisitos iniciais / 8 lacunas candidatas](P0-FOCO-INT08-09-confronto-11TR-8lacunas.md) detalha **P0-GAP-015..018** (INT-08) e **P0-GAP-019..022** (INT-09), com fontes secundárias e decisões IN aprovadas relacionadas.
+- **Status das oito:** comparadas documentalmente; **nenhuma encerrada mediante cotejo literal de proposta/aceite original**. Não gerar novos TR estáveis sem recuperar as fontes primárias.
+
+## 4. Regras para tratar cada linha sem inventar decisões
 
 | Resultado possível do cotejo futuro | Tratamento previsto |
 |---|---|
