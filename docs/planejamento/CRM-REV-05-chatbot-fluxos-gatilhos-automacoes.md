@@ -1,6 +1,6 @@
 # CRM-REV-05 — Chatbot, Fluxos, Gatilhos, Condições e Automações
 
-**Data:** 2026-11-03. **Estado:** **MINUTA DOCUMENTAL PARA REVISÃO — NÃO APROVADA**. Produzida após [aceite documental da CRM-REV-04](CRM-DEC-aprovacao-REV-04-base.md). **Esse aceite não aprova automaticamente esta nova revisão.**
+**Data:** 2026-11-03. **Estado atualizado:** **APROVADA COMO BASE DOCUMENTAL**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-REV-05-base.md). Mantidas 14 pendências AUT-P01..14, 12 riscos AUT-D01..12, parâmetros, perfis e quotas finais a revisar. [CRM-REV-06](CRM-REV-06-vendas-funis-propostas-catalogo.md) está **em minuta, ainda não aprovada**.
 **Escopo:** CRM-11, interfaces ATD/VEN/AGD/IA, motor central, canais, direitos por plano. A especificação **não** cria nova execução n8n nem substitui serviços oficiais existentes.
 **Restrições:** somente documentação no GitHub; **sem programação, teste executado, simulação real, automação instalada, canal ativado, cobrança ou mudança em produção**.
 
@@ -156,8 +156,8 @@ As enumerações são **descrições para revisão**, não contrato executável 
 
 ## 10. Situação e próxima decisão
 
-A REV-05 coteja **28 regras**, separa as três camadas operacionais e registra **12 diferenças**, **14 pendências** e **14 cenários futuros**. É **minuta para revisão**, ainda sem aprovação específica. O catálogo definitivo de modelos, direitos e limites por plano depende da revisão conjunta após inventariar os módulos comerciais.
+A REV-05 coteja **28 regras**, separa as três camadas operacionais e registra **12 diferenças**, **14 pendências** e **14 cenários futuros**. Foi **aprovada como base documental de revisão**, mas os contratos, quotas finais, políticas e pendências continuam sem homologação executável. O catálogo definitivo de modelos, direitos e limites por plano depende da revisão conjunta após inventariar os módulos comerciais.
 
-**Proposta de aceite:** aprovar CRM-REV-05 **como base documental**, preservando a diferenciação entre slots comerciais, sistema interno, chatbot/canais/IA, e mantendo AUT-P01..14 abertos. Não aprovar agora novos preços, schemas, quotas finais, canal Meta/BSP, automações executáveis ou datas de programação.
+**Aceite registrado:** CRM-REV-05 foi **aprovada como base documental**, conforme [CRM-DEC](CRM-DEC-aprovacao-REV-05-base.md), preservando a diferenciação entre slots comerciais, sistema interno, chatbot/canais/IA, e mantendo AUT-P01..14 abertos. Não aprovar agora novos preços, schemas, quotas finais, canal Meta/BSP, automações executáveis ou datas de programação.
 
-**Etapa posterior sugerida:** CRM-REV-06 — Vendas, Funis, Propostas e Catálogo, para completar o inventário de gatilhos comerciais e depois voltar ao catálogo final de modelos. **CORE-P0, INT-P0, IN-168 e G01–G06 continuam abertos; não iniciar desenvolvimento.**
+**Etapa posterior preparada:** [CRM-REV-06 — Vendas, Funis, Propostas e Catálogo](CRM-REV-06-vendas-funis-propostas-catalogo.md), em **minuta para revisão**, para completar o inventário de gatilhos comerciais e depois voltar ao catálogo final de modelos. **CORE-P0, INT-P0, IN-168 e G01–G06 continuam abertos; não iniciar desenvolvimento.**
