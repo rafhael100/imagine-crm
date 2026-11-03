@@ -139,7 +139,7 @@ P0-CON-01 **somente poderá ser declarada documentalmente encerrada** quando:
 
 ## 9. Próximos passos documentais sugeridos
 
-1. [Primeiro lote OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) já detalhado **em proposta**, cobrindo 15 operações de maior impacto sobre dados, autorizações e efeitos. Restam 9 OP24 para a segunda rodada, além de outras operações que surgirem do cotejo das aprovações integrais.
+1. [Os dois lotes OP15/OP09](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md) agora cobrem **24/24 operações de referência em propostas documentais** (15 de maior impacto e nove complementares). Revisar as fichas e identificar outras operações que eventualmente surjam do cotejo das aprovações integrais.
 2. Desdobrar os 13 pontos de fronteira e suas dependências por tipo de aresta, sem assumir erro arquitetural comprovado.
 3. Recuperar aprovação original por cláusula (INT-01..12, INT-R01/R02) e corrigir/confirmar vínculos TR→CT/INV/HT apenas quando fundamentados.
 4. O **aceite desta matriz como instrumento documental já está registrado** em [P0-DEC](P0-DEC-aprovacao-CON-MASTER-base.md). Ainda é necessário obter aceite específico das fichas de operação e das decisões concretas, sem declarar P0-CON-01 concluída.
