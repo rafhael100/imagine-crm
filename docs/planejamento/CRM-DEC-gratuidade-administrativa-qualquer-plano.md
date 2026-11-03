@@ -29,7 +29,7 @@ O cancelamento/inadimplência do site **não revoga automaticamente** uma gratui
 1. **Ação no painel central:** escolher empresa por identificador seguro, exibir plano atual e situação de assinatura, selecionar plano do benefício, pré-visualizar o efeito e confirmar. Não oferecer controle de concessão no painel da empresa.
 2. **Segurança:** MFA obrigatório ao Administrador Geral Imagine, autenticação recente/step-up para alteração comercial sensível conforme política real, permissão explícita, confirmação de impacto e auditoria imutável.
 3. **Rastreabilidade:** registrar administrador, empresa, plano anterior/novo, motivo interno, início, eventual término, tipo de concessão, versões/alterações e o impacto financeiro previsto. **A definição do campo motivo e da política de justificativa ainda precisa de aprovação técnica/comercial.**
-4. **Prazo e vigência:** permitir estudo de concessões com prazo determinado ou indeterminado, agendamento de aviso, revisão/renovação e revogação. **O usuário ainda não definiu se o prazo será obrigatório, qual será o padrão ou se haverá aprovação extra**; não supor validade vitalícia nem prazo padrão.
+4. **Prazo e vigência — APROVADO EM DECISÃO POSTERIOR:** o responsável aprovou **ambas as modalidades**, por **prazo determinado** (data final definida) ou **prazo indeterminado** (sem data final pré-definida, até encerramento autorizado), conforme [CRM-DEC — Modalidades de vigência](CRM-DEC-gratuidade-vigencia-modalidades.md). **Seis meses é apenas exemplo**, não prazo padrão ou máximo. Continuam pendentes aviso, início de vigência, prorrogação, alçadas e transição; **nunca iniciar cobrança automaticamente** após término.
 5. **Cliente já pagante:** se concedido a uma assinatura em andamento, tratar mês pago, crédito, estorno e data de início de isenção pelo contrato de FIN/CON; **não cancelar cobrança capturada nem reembolsar automaticamente** sem decisão.
 6. **Fim da gratuidade:** informar antes, permitir contratação expressa do plano escolhido ou seleção de outra alternativa elegível. **Não converter automaticamente gratuidade em mensalidade recorrente cobrada** nem usar falha de pagamento inexistente como inadimplência; preservação de dados e quotas de downgrade conforme políticas vigentes.
 7. **Adicionais e uso variável:** a isenção aprovada se refere à **mensalidade base do plano**. **Ainda falta decidir** se inclui usuários extras, armazenamento adicional, créditos de IA, números de WhatsApp, custos de provedores, consumo variável e outros adicionais. **Não presumir cobertura** desses itens.
@@ -52,14 +52,18 @@ Esses itens **orientam revisão de produto/segurança/financeiro** e não altera
 | Plano Empresarial grátis tenta consumir extra de WhatsApp/IA sem direito definido | Não presumir que gratuidade cubra adicional ou custo variável |
 | Repetição de evento administrativo | Não criar duas isenções ou alterar registros financeiros retroativamente |
 
-## 5. Pendências específicas abertas antes de implementar
+## 5. Decisão complementar aprovada: modalidade da gratuidade
+
+A [CRM-DEC de vigência](CRM-DEC-gratuidade-vigencia-modalidades.md) registra o **aceite contextual explícito** de duas opções — gratuidade por prazo determinado e por prazo indeterminado. Ambas mantêm a regra de **não ativar mensalidade recorrente sem nova contratação expressa**. Não há prazo padrão fixado nem decisão sobre extras, retroatividade ou aprovação adicional.
+
+## 6. Pendências específicas abertas antes de implementar
 
 | ID | Pergunta / decisão ainda necessária | Competência proposta |
 |---|---|---|
-| GRAT-P01 | Concessão por prazo determinado, indeterminado ou ambos? Existe padrão ou validade máxima? | Comercial / Administração Geral |
+| GRAT-P01 — **PARCIAL** | **Ambas modalidades aprovadas**: prazo determinado e indeterminado. Ainda decidir data inicial, padrão, eventual prazo máximo, renovação e avisos. | Comercial / Administração Geral |
 | GRAT-P02 | Quais administradores gerais podem conceder, alterar, renovar e revogar? Exigir segunda aprovação ou apenas MFA/ação auditada? | Segurança / Administração |
 | GRAT-P03 | É possível iniciar imediatamente ou agendar concessão futura? Como tratar ciclo já pago? | FIN/CON |
-| GRAT-P04 | Qual a regra para revogação/expiração e avisos; qual é a transição sem ativação automática de cobranças? | Comercial / FIN/CON / LGPD |
+| GRAT-P04 — **PARCIAL** | **Vedada cobrança automática** após expiração/encerramento. Faltam avisos, transição operacional, direitos e prazos para contratação expressa ou portabilidade. | Comercial / FIN/CON / LGPD |
 | GRAT-P05 | Quais extras ou custos variáveis estão cobertos ou excluídos do benefício? | Comercial / Financeiro / donos de produtos |
 | GRAT-P06 | Qual precedência entre plano pago, trial, cortesia Básico do site, promoção e gratuidade administrativa? | Planos / FIN/CON / Portal |
 | GRAT-P07 | Como distinguir desconto 100% sobre mensalidade, benefício manual e registro fiscal/contábil sem criar fatura cobrável? | FIN/CON / Fiscal |
