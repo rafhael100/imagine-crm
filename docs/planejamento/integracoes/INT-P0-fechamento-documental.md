@@ -146,6 +146,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - [Índice operacional OP24](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md) consolida CT/TR/HT e competências de autorização **candidatas**, distingue base de especificação por operação e registra as lacunas.
 - **P0-CON-01/OWN-01/SEC-01/TR-01/ACC-01 e G01..G06 permanecem abertos/parciais**, porque documentação especializada não equivale a aceite final ou contrato físico por provedor. **0/18 HT executados; sem programação.**
 
+## Aceite das 24 fichas e matriz SEC/STATE/PARAM (03/11/2026)
+
+- [P0-DEC OP15/OP09](P0-DEC-aprovacao-OP15-OP09-bases.md): 24 fichas especializadas aceitas **como bases documentais**, não como contratos técnicos físicos ou permissões novas.
+- [P0-OP24 SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md): 24 avaliações documentais de solicitante/competência, estados separados, bloqueios, confirmação oficial e decisões pendentes, **em minuta para revisão**.
+- **P0-CON-01, P0-SEC-01, P0-OWN-01, P0-VER-01 e demais P0 seguem abertos/parciais**; G01–G06 não concluídos, nenhum teste executado ou programação iniciada.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
