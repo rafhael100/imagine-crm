@@ -123,7 +123,13 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - **Não há gratuidade automática de todos os extras** quando plano é gratuito; ao encerrar adicional gratuito não gerar cobrança recorrente sem contratação expressa. **GRAT-P05 parcialmente resolvido** e **GRAT-EX-P01..08 pendentes** sobre vigência, quantidades, cobrança, alçadas, preços e limites.
 - [CRM-REV-08](CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md) continua **minuta não aprovada**. Nenhuma programação/teste/implantação foi autorizada.
 
-## 17. Próxima recomendação objetiva
+## 17. Condições de prazo dos adicionais e pacote IA quantificado (03/11/2026)
+
+- [CRM-DEC — Vigência dos extras](CRM-DEC-gratuidade-adicionais-vigencia-e-pacotes-ia.md): **usuários extras e armazenamento adicional** gratuitos com vigência determinada ou indeterminada, e **créditos adicionais de IA** concedidos em pacote de **quantidade definida**, respeitando validade própria ainda pendente de cotejo.
+- **GRAT-EX-P02/P03/P05 parcialmente resolvidas**; não se encerraram contratos de planos/FIN/CON, créditos, quotas de dados nem os P0 transversais. **Sem cobrança automática ao término de concessões**, implementação ou testes.
+- A [CRM-REV-08](CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md) permanece **minuta não aprovada**; o aceite desta regra funcional independente não a aprovou.
+
+## 18. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
