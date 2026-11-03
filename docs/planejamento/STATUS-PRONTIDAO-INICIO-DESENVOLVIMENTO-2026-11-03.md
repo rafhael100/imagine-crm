@@ -104,7 +104,14 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - [CRM-DEC — Gratuidade administrativa de qualquer plano](CRM-DEC-gratuidade-administrativa-qualquer-plano.md): requisito funcional **aprovado** para Administrador Geral Imagine conceder plano Básico, Essencial, Profissional ou Empresarial a empresa cliente específica sem mensalidade base. Distinto da cortesia Básico por site, com **oito decisões GRAT-P pendentes** sobre implementação e cobranças.
 - A nova aprovação **não encerra CORE-P0, regras de FIN/CON, INT/IN-168/G01..G06 nem libera código, testes ou mudanças em produção**. Continuar revisão global.
 
-## 14. Próxima recomendação objetiva
+## 14. Minuta de IA comercial e separação dos agentes técnicos (03/11/2026)
+
+- [CRM-REV-08](CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md) foi documentada **como minuta não aprovada** sobre agentes comerciais, créditos, consumo, Base de Conhecimento, modelos, supervisão e limites de ferramentas, com 15 pendências IA-P01..15.
+- Identificada divergência de vigência dos créditos adicionais (saldo até consumo versus apontamento posterior de **90 dias**); exige cotejo da decisão original antes de faturamento/implementação.
+- A [decisão de gratuidade administrativa de qualquer plano](CRM-DEC-gratuidade-administrativa-qualquer-plano.md) **não autoriza compras extras ou gastos ilimitados de IA**. Direitos comerciais, limites de segurança e custos internos Imagine continuam separados.
+- CORE-P0, INT-P0, IN-168 e G01–G06 ainda abertos; **sem programação ou testes executados**.
+
+## 15. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
