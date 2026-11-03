@@ -58,5 +58,10 @@ Novas sugestões, interpretações da IA, exemplos e alternativas não são deci
 - [P0-TR-AUD](P0-TR-AUD-auditoria-proveniencia-requisitos.md) diferencia aceites transcritos, sínteses funcionais e propostas integrais não cotejadas. Os 53 IDs iniciais não são cobertura exaustiva certificada.
 - [P0-DEP](P0-DEP-dependencias-criticas-e-fronteiras.md) e [P0-GATE](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md) registram dependências e bloqueios sem reabrir decisões aprovadas, nem declarar os critérios G01–G06 cumpridos.
 
+## Lacunas de fonte primária e escopo (03/11/2026)
+
+- [P0-DOC-TR](P0-DOC-TR-deltas-candidatos-fonte-original.md) inclui 28 investigações candidatas de granularidade; são perguntas documentais sobre as sínteses, não novas decisões funcionais.
+- [P0-ORIGEM](P0-ORIGEM-aprovacoes-dialogo.md) informa que os aceites preservados nesse arquivo ainda precisam ser confrontados contra o registro primário de mensagem para certificação literal. Não utilizar metadados históricos como transcrição.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
