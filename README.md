@@ -28,7 +28,9 @@
 - [CRM-DEC — Aprovação da CRM-REV-08](docs/planejamento/CRM-DEC-aprovacao-REV-08-base.md).
 - [CRM-REV-09 — Infraestrutura, segurança, auditoria e operações](docs/planejamento/CRM-REV-09-infraestrutura-seguranca-auditoria-operacoes-centrais.md) — **base documental aprovada**, com bloqueios P0 ainda abertos.
 - [CRM-DEC — Aprovação da CRM-REV-09](docs/planejamento/CRM-DEC-aprovacao-REV-09-base.md).
-- [P0-ARQ-01 — Topologia, isolamento e plano de fechamento](docs/planejamento/P0-ARQ-01-topologia-fronteiras-plano-fechamento.md) — **minuta não aprovada**, organiza 12 domínios, 10 relações e 12 decisões/evidências pendentes, sem fechar ARQ-01.
+- [P0-ARQ-01 — Topologia, isolamento e plano de fechamento](docs/planejamento/P0-ARQ-01-topologia-fronteiras-plano-fechamento.md) — **instrumento documental aprovado**, sem fechar ARQ-01.
+- [CRM-DEC — Aceite do instrumento P0-ARQ-01](docs/planejamento/CRM-DEC-aprovacao-P0-ARQ-01-instrumento.md).
+- [ARQ01-F01 — Inventário preliminar de infraestrutura](docs/planejamento/P0-ARQ01-F01-inventario-factual-ativos-e-servicos.md) — **minuta não homologada**; 13 ativos/domínios, declarações históricas e lacunas de verificação real.
 - [Infraestrutura e agentes técnicos: pendências IN-168](docs/planejamento/IN-168-matriz-pendencias-fechamento-arquitetura.md).
 - [Integrações INT-01 a INT-12: índice de documentação](docs/planejamento/integracoes/README.md).
 - [Integrações: painel de pendências e gates G01–G06](docs/planejamento/integracoes/P0-GATE-painel-fechamento-rastreabilidade-dependencias.md).
