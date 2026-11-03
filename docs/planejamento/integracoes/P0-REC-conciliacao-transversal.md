@@ -143,5 +143,10 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - [P0-ORIGEM](P0-ORIGEM-aprovacoes-dialogo.md) passa a distinguir texto preservado no GitHub de transcrição verificada contra mensagem original, que permanece pendente.
 - G01, G02, P0-DOC-01, P0-DOC-02 e P0-TR-01 **não foram fechados** pela nova análise.
 
-## 16. Restrição permanente
+## 16. Minutas CT-05 a CT-11 (03/11/2026)
+
+- [P0-CON-CT05-CT11](P0-CON-CT05-CT11-contratos-integracoes-minuta.md) formaliza sete fichas documentais de interoperabilidade, com autoridades dos módulos proprietários, serviços centrais, controles de idempotência, estados por domínio, reconciliação e cenários negativos vinculados aos HT existentes.
+- As sete fichas **não foram aprovadas como parâmetros executáveis ou base documental final**; P0-CON-01, P0-SEC-01, P0-VER-01, P0-TR-01, P0-DOC-01, P0-ACC-01 e os gates G01..G06 seguem abertos/parciais.
+
+## 17. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
