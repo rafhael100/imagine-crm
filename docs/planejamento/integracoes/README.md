@@ -60,7 +60,9 @@
 - [P0-DEC — Aceite de 24 fichas especializadas como bases](P0-DEC-aprovacao-OP15-OP09-bases.md)
 - [P0-OP24 SEC/STATE/PARAM — Matriz de decisão por operação](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md) — instrumento documental aprovado, sem parâmetros executáveis
 - [P0-DEC — Aprovação da matriz SEC/STATE/PARAM](P0-DEC-aprovacao-OP24-SEC-STATE-PARAM-instrumento.md)
-- [P0-OWN-SEC — Recursos, classes de campos e direitos por operação](P0-OWN-SEC-matriz-recursos-campos-OP24.md) — 13 grupos e 24 OP em minuta, sem novas permissões
+- [P0-OWN-SEC — Recursos, classes de campos e direitos por operação](P0-OWN-SEC-matriz-recursos-campos-OP24.md) — aprovada como base documental, sem novas permissões
+- [P0-DEC — Aceite contextual da base P0-OWN-SEC](P0-DEC-aprovacao-OWN-SEC-base.md)
+- [Diagnóstico da prontidão global do CRM para programação](../STATUS-PRONTIDAO-INICIO-DESENVOLVIMENTO-2026-11-03.md) — INT avançada, planejamento global ainda em conciliação
 - [P0-CON-OP24 — Índice consolidado das 24 operações](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md) — 24/24 fichas aceitas como bases, nenhuma homologada
 - [P0-DEP — Dependências e fronteiras críticas](P0-DEP-dependencias-criticas-e-fronteiras.md)
 - [P0-GATE — Situação dos 11 P0 e G01–G06](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md)
