@@ -149,7 +149,13 @@
 4. Só depois decidir se a lacuna é **já coberta**, **subitem a desdobrar**, **parâmetro pendente**, **contradição real a resolver** ou **fonte indisponível**. Registrar decisões sem reescrever silenciosamente o aprovado.
 5. Se um texto aprovado impuser condição especial, preservá-la no domínio correto; não transformar prazos específicos de leads, cotas de anexos ou política de trial em regras globais das INTs.
 
-## 6. Resultado e status P0
+## 6. Localizadores históricos e proveniência (03/11/2026)
+
+- [P0-ORIGEM-INT08-09](P0-ORIGEM-INT08-09-localizadores-historicos.md) registra os indícios contextuais da proposta INT-08, seu aceite e a apresentação da INT-09 no dia 02/11/2026, além da cronologia comprovada dos commits de síntese no GitHub.
+- Os marcadores de conversa indicam propostas extensas, mas **não são os respectivos textos completos**. O GitHub registra arquivos de consolidação, sem cópia integral verificável das propostas.
+- Nenhuma das 8 lacunas candidatas foi certificada por cotejo literal; os 11 IDs TR iniciais permanecem preservados.
+
+## 7. Resultado e status P0
 
 - **INT-08:** 4/4 lacunas candidatas analisadas em relação às fontes secundárias e decisões IN correlatas; **5/5 IDs TR existentes preservados**, sem desdobramento prematuro.
 - **INT-09:** 4/4 lacunas candidatas analisadas contra as sínteses e arquitetura posterior; **6/6 IDs TR existentes preservados**, sem desdobramento prematuro.
