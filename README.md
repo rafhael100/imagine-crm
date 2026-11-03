@@ -12,7 +12,9 @@
 - [CRM-DEC — Aprovação da CRM-REV-02](docs/planejamento/CRM-DEC-aprovacao-REV-02-base.md).
 - [CRM-REV-03 — Leads, contatos, campos e portabilidade](docs/planejamento/CRM-REV-03-leads-contatos-campos-historicos-portabilidade.md) — base documental aprovada; pendências DAT-P01..12 abertas.
 - [CRM-DEC — Aprovação da CRM-REV-03](docs/planejamento/CRM-DEC-aprovacao-REV-03-base.md).
-- [CRM-REV-04 — Atendimento, WhatsApp e gestão de conversas](docs/planejamento/CRM-REV-04-atendimento-whatsapp-conversas.md) — minuta para revisão, não aprovada.
+- [CRM-REV-04 — Atendimento, WhatsApp e gestão de conversas](docs/planejamento/CRM-REV-04-atendimento-whatsapp-conversas.md) — base documental aprovada, pendências ATD-P01..14 abertas.
+- [CRM-DEC — Aprovação CRM-REV-04](docs/planejamento/CRM-DEC-aprovacao-REV-04-base.md).
+- [CRM-REV-05 — Chatbot, fluxos, gatilhos e automações](docs/planejamento/CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md) — minuta para revisão, sem aprovação específica.
 - [Infraestrutura e agentes técnicos: pendências IN-168](docs/planejamento/IN-168-matriz-pendencias-fechamento-arquitetura.md).
 - [Integrações INT-01 a INT-12: índice de documentação](docs/planejamento/integracoes/README.md).
 - [Integrações: painel de pendências e gates G01–G06](docs/planejamento/integracoes/P0-GATE-painel-fechamento-rastreabilidade-dependencias.md).
