@@ -26,7 +26,9 @@
 - [CRM-DEC — Vigência de extras e créditos IA quantificados](docs/planejamento/CRM-DEC-gratuidade-adicionais-vigencia-e-pacotes-ia.md) — **aprovado** prazo determinado/indeterminado para usuários e armazenamento; pacote gratuito de IA com quantidade definida e validade ainda a fechar.
 - [CRM-REV-08 — Agentes de IA, créditos, conhecimento e supervisão](docs/planejamento/CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md) — **base documental aprovada**, 15 pendências IA e validade dos créditos ainda abertas.
 - [CRM-DEC — Aprovação da CRM-REV-08](docs/planejamento/CRM-DEC-aprovacao-REV-08-base.md).
-- [CRM-REV-09 — Infraestrutura, segurança, auditoria e operações](docs/planejamento/CRM-REV-09-infraestrutura-seguranca-auditoria-operacoes-centrais.md) — **minuta para revisão** dos bloqueios reais P0 antes de programar.
+- [CRM-REV-09 — Infraestrutura, segurança, auditoria e operações](docs/planejamento/CRM-REV-09-infraestrutura-seguranca-auditoria-operacoes-centrais.md) — **base documental aprovada**, com bloqueios P0 ainda abertos.
+- [CRM-DEC — Aprovação da CRM-REV-09](docs/planejamento/CRM-DEC-aprovacao-REV-09-base.md).
+- [P0-ARQ-01 — Topologia, isolamento e plano de fechamento](docs/planejamento/P0-ARQ-01-topologia-fronteiras-plano-fechamento.md) — **minuta não aprovada**, organiza 12 domínios, 10 relações e 12 decisões/evidências pendentes, sem fechar ARQ-01.
 - [Infraestrutura e agentes técnicos: pendências IN-168](docs/planejamento/IN-168-matriz-pendencias-fechamento-arquitetura.md).
 - [Integrações INT-01 a INT-12: índice de documentação](docs/planejamento/integracoes/README.md).
 - [Integrações: painel de pendências e gates G01–G06](docs/planejamento/integracoes/P0-GATE-painel-fechamento-rastreabilidade-dependencias.md).
