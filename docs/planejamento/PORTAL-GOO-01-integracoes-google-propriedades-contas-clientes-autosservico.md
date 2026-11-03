@@ -1,6 +1,7 @@
 # PORTAL-GOO-01 — Integrações Google no Portal Imagine: conectividade, provisionamento assistido e autonomia do cliente
 
 **Status (02/11/2026): DIRETRIZ FUNCIONAL DE INTEGRAÇÃO SOLICITADA PELO RESPONSÁVEL.** No debate sobre métricas de acesso, SEO e Google Analytics/Search Console, o responsável determinou incluir no relatório/planejamento a **possibilidade de o cliente conectar essas ferramentas pelo sistema de integrações do Portal Imagine**, enquanto a **Imagine cria e mantém o modelo técnico/padrão de integração e realiza configuração e integração quando necessário**. A interpretação operacional adotada é conexão de **contas/propriedades Google do cliente** ou provisionamento orientado pela Imagine, sem criar uma identidade Google em nome de alguém sem autorização. Os três blocos MON-01 / SEO-01 / GOO-01 sugeridos ainda dependem de fechamento formal de escopo; esta especificação cobre inicialmente o **GOO-01** e suas interfaces com métricas/SEO.
+**CLAREZA OPERACIONAL POSTERIOR (03/11/2026): cliente escolhe a conta Google, cria a conta Google se não tiver e autoriza todos os acessos/escopos pertinentes; Imagine disponibiliza o conector e automatiza o que for tecnicamente possível DEPOIS das autorizações. O botão de entrada é “Realizar integração” dentro de uma área de Integrações com explicação de cada serviço. Esta regra prevalece sobre interpretações anteriores de que Imagine criaria contas de usuário Google para clientes ou poderia selecionar/autorizá-las em nome deles.**
 **Fase:** PLANEJAMENTO — sem programação, provisionamento real de propriedades, acesso a contas Google, coleta de dados, instalação de tags, publicações ou contratação.
 **Conexões:** [PORTAL-01 — Matriz do Portal](PORTAL-01-matriz-pendencias-plataforma-sites.md), [PORTAL-COM-13 — Checklist IA de entrega](PORTAL-COM-13-entrega-automatica-checklist-qualidade-agente-ia.md), [PORTAL-COM-14 — LGPD](PORTAL-COM-14-lgpd-aceites-privacidade-consentimentos-checklist.md), [PORTAL-COM-15 — Política padrão de privacidade](PORTAL-COM-15-central-documentos-legais-consentimentos.md), [IN-095/096/097 — Produção/Cloudflare/Central de Sites no histórico de decisões], [IN-125 — Formulários](IN-125-gestao-inteligente-formularios.md).
 
@@ -87,3 +88,46 @@ A escolha de usar uma propriedade administrada pela Imagine, criar propriedade v
 - Search Console API — overview: https://developers.google.com/webmaster-tools/about
 
 **Resultado:** requisito funcional de **conectores Google e associação pelo cliente via Portal**, com infraestrutura e configuração mantidas pela Imagine, foi incluído no planejamento. **Nenhuma programação ou integração efetiva iniciada.**
+
+
+## 9. REGRA VIGENTE — Área de integrações no Portal, contas Google escolhidas/criadas pelo cliente (03/11/2026)
+
+**Definição expressa do responsável:** “A ideia e termos uma parte no portal para integração e nessa parte tenha Google Analytics um texto explicando e o botao realziar integração. Realizaremos o que for possivel de forma automatica mas a parte de definir qual vai ser a conta do goole ou criar a conta no google e dar as permissoes todas serao o cliente”. **REGRA FUNCIONAL APROVADA COMO ESCLARECIMENTO.**
+
+### 9.1 Interface por serviço de integração
+
+Criar no **Portal Imagine → Integrações** catálogo de serviços disponíveis por site/empresa, começando por **Google Analytics** e expandindo a Google Search Console e demais conectores após aprovação/homologação. Cada serviço deverá mostrar:
+
+- **Nome e descrição curta**: o que é a ferramenta, quais informações serão acessadas e qual a utilidade dos relatórios no Portal.
+- **Condições de uso**: necessidade de conta Google, propriedade correspondente ao site, autorizações solicitadas, possíveis requisitos de verificação de domínio, custos/limites externos quando aplicáveis e regras de privacidade/consentimento.
+- **Botão principal: “Realizar integração”**, quando ainda não conectado; depois, estado claro de **Conectado / Aguardando autorização / Erro ou permissão insuficiente / Desconectado**, com opções para ver detalhes, reconectar ou desconectar se permitido.
+- **Associação explícita ao site**: se cliente possuir múltiplos sites e contas, indicar em qual site e em qual empresa a conexão será usada; não presumir vínculo automático a todas as propriedades Google.
+
+O texto de explicação e ajuda deve ser administrável/atualizável pela equipe Imagine conforme documentação e mudanças oficiais do provedor. Não substituir as autorizações oficiais Google por checkboxes meramente internos.
+
+### 9.2 Responsabilidades e sequência do botão “Realizar integração”
+
+1. **Cliente inicia no Portal:** escolhe o serviço (por exemplo, Google Analytics) e site, lê as explicações e clica em **Realizar integração**.
+2. **Conta Google é responsabilidade do cliente:** o sistema redireciona para o fluxo oficial Google; o **cliente escolhe qual conta Google existente utilizar ou cria ele mesmo uma conta Google**, se ainda não tiver. A **Imagine NÃO cria contas Google pessoais dos clientes, NÃO escolhe a conta por eles e NÃO recolhe credenciais/senhas**.
+3. **Permissões também são responsabilidade do cliente:** o cliente analisa e **concede/nega explicitamente** permissões apresentadas pelo Google, inclusive requisitos para acesso aos produtos e a propriedades. Se recusar ou não possuir permissão suficiente, integração fica **pendente de autorização**, sem simular sucesso.
+4. **Imagine automatiza a configuração subsequente:** depois de obter autorização legítima e escopos necessários, o conector descobre contas/propriedades acessíveis, **orienta o cliente a selecionar a propriedade relevante quando necessário** e configura, associa, verifica, testa e sincroniza o máximo que APIs/limites/termos permitirem; agentes IA poderão auxiliar nas rotinas seguras homologadas. A eventual **criação técnica de uma propriedade GA4, de fluxo web, verificação Search Console ou configuração de tag** poderá ser automatizada **dentro da conta escolhida/autorizada pelo cliente**, conforme possibilidades reais das APIs, escopos e exigências Google. **Criar propriedade/stream NÃO equivale a criar conta Google do cliente**. Se Google exigir passos manuais, mostrá-los ao cliente com instrução clara e retomar o fluxo.
+5. **Conferência e comunicação:** verificar conexão e escopos, identificar eventos/tags duplicados, garantir LGPD e autorização para coleta antes de ativar scripts de tracking, exibir resultado e último status de sincronização. A conexão OAuth **não é consentimento dos visitantes**; análise pode permanecer configurada, porém sem coleta ativa, caso controles de privacidade ainda estejam pendentes.
+6. **Administração posterior:** cliente poderá consultar status, reautorizar ou desconectar via Portal dentro das regras aprovadas; mudanças críticas (por exemplo, mudança da propriedade vinculada) exigem confirmação segura, auditoria e tratamento de consequências. O cliente deve continuar controlando sua conta Google e permissões externas.
+
+### 9.3 Exemplo de conteúdo na área de integrações (texto de referência, não tela implementada)
+
+**Google Analytics** — “Acompanhe visitas, origem dos acessos e interações no seu site. Conecte sua conta Google para disponibilizar os indicadores compatíveis no Portal Imagine. Se você ainda não possui conta Google ou acesso ao Analytics, o processo indicará os passos necessários.”
+
+**Botão:** **Realizar integração**
+
+**Nota de privacidade:** “A medição de acessos depende das configurações do seu site e dos requisitos de privacidade aplicáveis. A autorização de conexão não ativa automaticamente cookies/tags não essenciais.”
+
+**Google Search Console** — “Acompanhe como seu site aparece na Pesquisa Google, incluindo consultas, impressões, cliques e indexação. Conecte uma conta Google com acesso à propriedade do domínio ou siga as etapas oficiais para confirmar a titularidade.”
+
+**Botão:** **Realizar integração**
+
+### 9.4 Decisão vigente e limites
+
+**APROVADO NESTE ESCLARECIMENTO:** criar **área de integrações no Portal**, com **cartão/explicação por ferramenta e botão “Realizar integração”**, **cliente responsável por escolher ou criar sua conta Google, fazer login no provedor e conceder permissões**, enquanto a **Imagine automatiza todas as etapas técnicas possíveis depois dessas autorizações**, sem pedir senhas.
+
+**PENDENTE DE FECHAMENTO:** lista inicial de integrações expostas, textos definitivos, fluxos específicos por serviço, política de titularidade/acesso das **propriedades** Google e portabilidade, aprovação OAuth do aplicativo pela Google se exigida, escopos, relação de permissão administrativa Google, o que cada plano inclui, limite de sites/propriedades, verificações LGPD e homologação. Nenhuma programação nem conexão real.
