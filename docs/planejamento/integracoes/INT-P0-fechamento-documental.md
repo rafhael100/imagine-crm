@@ -97,6 +97,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - [P0-GATE](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md): 11 bloqueios P0 e G01–G06 com evidências faltantes, sem encerramento de gates.
 - P0-DOC-01/02, P0-TR-01, P0-DEP-01 e demais P0 continuam abertos ou parciais; programação proibida.
 
+## Investigação de lacunas entre sínteses e 53 TR (03/11/2026)
+
+- [P0-DOC-TR](P0-DOC-TR-deltas-candidatos-fonte-original.md): **28 temas candidatos** a cotejo de granularidade, especialmente INT-08 (4) e INT-09 (4); **não** são novas funcionalidades aprovadas nem inconsistências comprovadas.
+- A conferência da origem literal ainda depende das propostas/aceites integrais INT-01..12 e INT-R01/R02. Registros de texto preservado no GitHub e resumos de histórico não substituem verificação primária.
+- **P0-DOC-01 e P0-TR-01 seguem ABERTOS/PARCIAIS**. Não emitir novos TR definitivos sem evidência de requisito efetivamente aprovado e revisão de sua relação CT/INV/HT.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
