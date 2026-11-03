@@ -92,7 +92,13 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - [CRM-REV-06](CRM-REV-06-vendas-funis-propostas-catalogo.md) foi preparada **em minuta**, para vendas, funis, propostas, catálogo e relatórios, preservando a fronteira FIN/CON. O levantamento não encerra os blocos VEN originais ou especificação final.
 - Nenhuma programação foi autorizada, e P0 transversais/INT e G01–G06 continuam abertos.
 
-## 12. Próxima recomendação objetiva
+## 12. Aceite VEN e revisão de Agenda (03/11/2026)
+
+- [CRM-REV-06](CRM-REV-06-vendas-funis-propostas-catalogo.md): **aceita como base documental**, com [registro CRM-DEC](CRM-DEC-aprovacao-REV-06-base.md). São 16 lacunas VEN para especificação posterior, não homologação de contratos financeiros.
+- [CRM-REV-07](CRM-REV-07-agenda-profissionais-unidades-agendamentos.md): **minuta preparada**, com 42 itens funcionais de referência, seis exclusões expressas, 18 lacunas, sem iniciar integrações de calendário ou agenda pública.
+- O CRM global ainda não tem fechamento P0 de identidade, segurança, contratos e infraestrutura; nenhum teste executado ou programação iniciada.
+
+## 13. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
