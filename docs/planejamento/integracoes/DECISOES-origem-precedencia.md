@@ -68,5 +68,10 @@ Novas sugestões, interpretações da IA, exemplos e alternativas não são deci
 - [P0-DEC CT-05..11](P0-DEC-aprovacao-CT05-CT11-base.md): resposta “ok” à recomendação de aceitar sete minutas como **bases documentais**, sem homologar schemas ou execução.
 - [P0-CON CT-01..11](P0-CON-revisao-cruzada-CT01-CT11.md): matriz de fronteiras e 13 riscos documentais; CT-01 permanece apenas família conceitual, e vínculos TR/CT são hipóteses rastreáveis até cotejo literal.
 
+## Aceite contextual CT-01 e matriz mestre de contratos (03/11/2026)
+
+- [P0-DEC — CT-01](P0-DEC-aprovacao-CT01-base.md) documenta a resposta “ok” à recomendação de aprovar CT-01 **como base documental**, com parâmetros e schemas ainda em revisão.
+- [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) é **consolidação proposta**, que não suplanta as aprovações dos módulos nem presume encerramento da P0-CON-01.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
