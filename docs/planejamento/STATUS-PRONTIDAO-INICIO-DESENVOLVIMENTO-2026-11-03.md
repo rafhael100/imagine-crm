@@ -111,7 +111,13 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - A [decisão de gratuidade administrativa de qualquer plano](CRM-DEC-gratuidade-administrativa-qualquer-plano.md) **não autoriza compras extras ou gastos ilimitados de IA**. Direitos comerciais, limites de segurança e custos internos Imagine continuam separados.
 - CORE-P0, INT-P0, IN-168 e G01–G06 ainda abertos; **sem programação ou testes executados**.
 
-## 15. Próxima recomendação objetiva
+## 15. Vigência da gratuidade administrativa (03/11/2026)
+
+- [CRM-DEC — Modalidades](CRM-DEC-gratuidade-vigencia-modalidades.md): **aprovadas as concessões por prazo determinado ou indeterminado**, sem prazo padrão, máximo ou modelo financeiro executável.
+- **Não converter o término da gratuidade em cobrança recorrente sem contratação expressa do cliente**. GRAT-P01/P04 permanecem parcialmente abertos; GRAT-P02/P03/P05..08 abertos.
+- A nova decisão não é aprovação da [CRM-REV-08](CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md) e **não libera programação**.
+
+## 16. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
