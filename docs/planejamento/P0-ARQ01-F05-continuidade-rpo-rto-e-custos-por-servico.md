@@ -1,7 +1,7 @@
 # P0-ARQ01-F05 — Continuidade operacional: metas RPO/RTO, riscos e orçamento por serviço
 
 **Data:** 03/11/2026.
-**Estado:** MINUTA PARA REVISÃO — **NÃO APROVADA**.
+**Estado:** **APROVADA COMO BASE DOCUMENTAL** em 03/11/2026, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-ARQ01-F05-base-2026-11-03.md). **RPO/RTO numéricos, níveis E1/E2, custo, configuração física e riscos ainda não homologados.**
 **Referências:** [F04 aceita como base](CRM-DEC-aprovacao-ARQ01-F04-base-2026-11-03.md), [IN-143](IN-143-continuidade-operacional-recuperacao-inteligente-desastres.md), [IN-168](IN-168-matriz-pendencias-fechamento-arquitetura.md), [P0-ARQ-01](P0-ARQ-01-topologia-fronteiras-plano-fechamento.md).
 **Limites:** não iniciar programação, provisionamento, contratação, migração, testes reais nem mudar infraestrutura.
 
@@ -66,4 +66,4 @@ Não usar referências promocionais de VPS nem tarifas por GB como **TCO complet
 - **F05-P06**: confirmar orçamento/plantão/monitoramento, dependências e testes de restauração documentados.
 - **F05-P07**: aprovar plano de contingência por falha de host, banco, storage, rede, região e segurança.
 
-**Status final:** F05 é minuta; **ARQ-01 permanece P0 parcial**, com CON-01, ARQ-02/03 e SEG-01/02 não encerrados. Sem programação, contratação, configuração ou testes reais.
+**Status final:** F05 aceita **somente como base documental**. ARQ-01 permanece P0 parcial, CON-01 e os demais bloqueios seguem abertos. A minuta seguinte [ARQ01-F06](P0-ARQ01-F06-proposta-metas-rpo-rto-custos-e-riscos.md) discute metas candidatas sem aprovação automática. Sem programação, contratação, configuração ou testes reais.
