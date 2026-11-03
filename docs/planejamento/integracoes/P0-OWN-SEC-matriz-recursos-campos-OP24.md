@@ -1,7 +1,7 @@
 # P0-OWN-SEC — Propriedade de recursos, classes de campos e direitos por operação
 
 **Data:** 2026-11-03.
-**Estado:** **MINUTA DOCUMENTAL PARA REVISÃO — NÃO APROVADA**. Criada depois do aceite explícito da [P0-OP24-SEC-STATE-PARAM como instrumento de revisão](P0-DEC-aprovacao-OP24-SEC-STATE-PARAM-instrumento.md). **Não** houve aprovação antecipada desta matriz.
+**Estado atualizado:** **APROVADA COMO BASE DOCUMENTAL DE REVISÃO**, conforme o [aceite contextual P0-DEC](P0-DEC-aprovacao-OWN-SEC-base.md) de 2026-11-03. A aprovação **não concede** direitos reais por perfil/recurso/campo, alçadas, MFA, schemas nem execução. O detalhamento de parâmetros e decisões concretas permanece pendente.
 **Âmbito:** [24 operações de referência](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md) do bloco INT-01..12, com [CT-02](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md), [P0-SEC](P0-SEC-politicas-autorizacao-CT02.md), [CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md), [INT-R01](INT-R01-governanca-contratos-homologacao.md) e [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md) como fundamentos.
 **Limite:** o material classifica **recursos e campos conceituais**; não institui novas tabelas, schemas, papéis IAM, permissões executáveis, direitos de colaboradores, alçadas, MFA universal, serviços ou autoridades. Propostas originais integrais INT-01..12 ainda precisam de cotejo literal em P0-DOC-01/P0-TR-01.
 **Fase:** planejamento/versionamento apenas; não programar, executar teste, automatizar de novo, criar contas/credenciais reais, migrar dados, publicar conector, alterar produção ou contratar serviços.
