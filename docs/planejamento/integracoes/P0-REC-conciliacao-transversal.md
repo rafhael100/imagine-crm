@@ -130,5 +130,12 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - [Controle das evidências HT](P0-ACC-matriz-controle-evidencias-HT01-HT18.md): matriz de responsáveis funcionais, dependências e campos a completar, sem resultados de teste.
 - **P0-ACC-01 continua parcial/aberto e G01–G06 permanecem pendentes**; aceite funcional de cenários não é homologação técnica ou liberação da implementação.
 
-## 14. Restrição permanente
+## 14. Revisão de rastreabilidade e dependências — 03/11/2026
+
+- [P0-DEC-ACC](P0-DEC-aprovacao-ACC-HT01-HT18-base.md): 18 procedimentos HT aceitos como base documental; 0 testes executados.
+- [P0-TR-AUD](P0-TR-AUD-auditoria-proveniencia-requisitos.md): 53 IDs reconciliados entre duas matrizes iniciais, com 18 HT e 16 INV citados, sem conferência literal integral das propostas originais.
+- [P0-DEP](P0-DEP-dependencias-criticas-e-fronteiras.md): 12 INTs e 11 riscos de circularidade/sobreposição em aberto.
+- [P0-GATE](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md): 11 pendências P0 e critérios G01–G06, nenhum encerrado integralmente.
+
+## 15. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
