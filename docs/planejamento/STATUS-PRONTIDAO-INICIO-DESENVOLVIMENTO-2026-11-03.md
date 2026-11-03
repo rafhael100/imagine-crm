@@ -86,7 +86,13 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - [CRM-REV-05](CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md) está **em minuta**, separando operação obrigatória, automações comerciais e chatbots/IA/canais; limites de planos permanecem sujeitos à revisão final.
 - Os documentos são avanços de consolidação, não liberação de programação. Gates P0 de identidade/segurança/integrações/arquitetura continuam abertos.
 
-## 11. Próxima recomendação objetiva
+## 11. CRM-REV-05 aprovada e REV-06 em revisão documental (03/11/2026)
+
+- [CRM-REV-05](CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md) foi [aprovada como base documental](CRM-DEC-aprovacao-REV-05-base.md); a biblioteca de modelos, quotas finais e o motor físico ainda não estão finalizados.
+- [CRM-REV-06](CRM-REV-06-vendas-funis-propostas-catalogo.md) foi preparada **em minuta**, para vendas, funis, propostas, catálogo e relatórios, preservando a fronteira FIN/CON. O levantamento não encerra os blocos VEN originais ou especificação final.
+- Nenhuma programação foi autorizada, e P0 transversais/INT e G01–G06 continuam abertos.
+
+## 12. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
