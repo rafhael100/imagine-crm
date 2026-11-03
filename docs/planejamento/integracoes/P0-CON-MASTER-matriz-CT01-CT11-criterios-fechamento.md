@@ -139,7 +139,7 @@ P0-CON-01 **somente poderá ser declarada documentalmente encerrada** quando:
 
 ## 9. Próximos passos documentais sugeridos
 
-1. Preparar uma **matriz granular de contrato por operação**, a partir das 24 OP de referência e do catálogo de requisitos que vier a ser recuperado, começando pelas operações com efeito de negócio, compensação e alterações de conexão.
+1. [Primeiro lote OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) já detalhado **em proposta**, cobrindo 15 operações de maior impacto sobre dados, autorizações e efeitos. Restam 9 OP24 para a segunda rodada, além de outras operações que surgirem do cotejo das aprovações integrais.
 2. Desdobrar os 13 pontos de fronteira e suas dependências por tipo de aresta, sem assumir erro arquitetural comprovado.
 3. Recuperar aprovação original por cláusula (INT-01..12, INT-R01/R02) e corrigir/confirmar vínculos TR→CT/INV/HT apenas quando fundamentados.
 4. Obter aceite expresso desta matriz e das decisões concretas antes de declarar P0-CON-01 concluída.
