@@ -64,7 +64,13 @@ O fato de uma necessidade estar documentada não altera a prioridade original. I
 - [P0-ORIGEM-INT08-09](P0-ORIGEM-INT08-09-localizadores-historicos.md) aponta referências contextuais de mensagens históricas e os commits de consolidação da INT-08/09, distinguindo fonte primária de síntese.
 - **P0-DOC-01 e P0-TR-01 seguem abertos:** proposta e aceite integrais de INT-08 e INT-09 ainda não foram recuperados para comparação cláusula a cláusula. Localizadores não equivalem à origem literal.
 
-## 8. Controle de aprovação e execução
+## 8. Avanço de minutas CT-05..11 — 03/11/2026
+
+- [P0-CON CT-05 a CT-11](P0-CON-CT05-CT11-contratos-integracoes-minuta.md) detalha sete famílias já previstas na governança, sem criar nova automação, motor ou infraestrutura. Inclui referências a OP24, TR, INV e HT e critérios de revisão contratual.
+- **Evidência acrescentada em P0-CON-01:** representação conceitual dos objetos, marcos, falhas e reconciliação para CT-05..11. **Ainda falta:** schemas/estados definitivos, contratos por provedor/operação, alçadas, compatibilidade, parâmetros, evidências técnicas e aceite dos proprietários.
+- **P0-DOC-01 e P0-TR-01 permanecem abertos** até cotejo integral das fontes originais. Nenhuma nova HT, programação, teste ou gate concluído.
+
+## 9. Controle de aprovação e execução
 
 - **P0-SEC e P0-VER:** aprovados como **bases documentais**, com políticas específicas pendentes.
 - **CT-03 e CT-04:** aprovados como **base documental**, sem esquema final de implementação.
