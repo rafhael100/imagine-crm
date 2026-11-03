@@ -350,7 +350,13 @@
 - O plano gratuito não torna extras automaticamente gratuitos; extras gratuitos não dão direitos ilimitados, não se estendem a outro tenant e não geram cobrança automática no encerramento. O catálogo final, as quantidades, vigência própria, regras para adicionais já pagos e custos de terceiros permanecem pendentes **GRAT-EX-P01..08**.
 - Impacta **CRM-02/03 (autoridade administrativa)**, **CRM-04/05 (planos/FIN/CON)**, **CRM-13 (IA)** e **CRM-16 (armazenamento)**. **GRAT-P05 parcialmente resolvido**. CRM-REV-08 ainda **minuta não aprovada**.
 
-## 16. Próximo pacote de revisão proposto
+## 16. Decisão sobre prazos dos extras e quantidade de créditos IA (03/11/2026)
+
+- [CRM-DEC — Vigência dos adicionais e créditos IA](CRM-DEC-gratuidade-adicionais-vigencia-e-pacotes-ia.md): aprovado **prazo determinado ou indeterminado para usuários adicionais e armazenamento** gratuitos; aprovado **pacote de IA com quantidade definida**, sem fixar validade ou volume padrão.
+- Direitos são **independentes por organização e por concessão**; não gerar isenção global dos adicionais ao conceder plano. Ao encerrar, **não iniciar cobrança automática** sem nova contratação expressa.
+- **GRAT-EX-P02/P03/P05 parcialmente resolvidas**, não fechadas. Prazos padrão, quantidades, acumulação, regras de inadimplência/retorno ao limite, pacotes IA e custo continuam pendentes. **CRM-REV-08 permanece minuta não aprovada**.
+
+## 17. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
