@@ -163,4 +163,4 @@ Os 18 procedimentos foram aceitos como **base documental** em [P0-DEC P0-ACC](P0
 - **Fidelidade da enumeração e escopo real de cada TR:** **NÃO CERTIFICADA**.
 - **G01/G02/G03/G05/G06:** **não encerrados**; G04 parcial, dependente de responsáveis/impactos e fechamento.
 
-Próximo documento complementar: [P0-DEP — análise de dependências e fronteiras](P0-DEP-dependencias-criticas-e-fronteiras.md), sem iniciar qualquer implementação.
+**Complementos documentais (03/11/2026):** [P0-DEP — dependências e fronteiras](P0-DEP-dependencias-criticas-e-fronteiras.md), [P0-DOC-TR — 28 verificações candidatas por módulo](P0-DOC-TR-deltas-candidatos-fonte-original.md) e [P0-GATE — bloqueios e critérios](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md). Nenhum constitui cotejo literal da fonte primária nem autoriza implementar.
