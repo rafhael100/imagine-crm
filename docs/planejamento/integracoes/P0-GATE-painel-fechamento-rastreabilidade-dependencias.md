@@ -100,6 +100,12 @@ O fato de uma necessidade estar documentada não altera a prioridade original. I
 - **24/24 operações de referência cobertas** por detalhamento documental e CT-02 por operação, sem aprovar schemas físicos, perfis, alçadas, versões, parâmetros de provedor ou resultados de negócio; pode haver outros atos nas aprovações originais não recuperadas.
 - **P0-CON-01 continua parcial/aberto**, assim como P0-DOC/TR, OWN/SEC/DEP/VER/XREF/ACC e G01–G06. **Nenhum teste HT realizado, nenhuma programação.**
 
+## 14. Bases OP24 aceitas e detalhamento de segurança/estados (03/11/2026)
+
+- [P0-DEC OP15/OP09](P0-DEC-aprovacao-OP15-OP09-bases.md): aceite das 24 fichas especializadas **como bases documentais**, sem parâmetros executáveis aprovados.
+- [P0-OP24 SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md): minuta com 24 controles por operação; permissões, alçadas, estados físicos, versionamento e parâmetros por provedor **pendentes de decisão**.
+- **P0-CON/OWN/SEC/VER/DEP/DOC/TR/ACC continuam abertos**, G01–G06 ainda não encerrados; zero testes e nenhuma programação.
+
 ## 14. Controle de aprovação e execução
 
 - **P0-SEC e P0-VER:** aprovados como **bases documentais**, com políticas específicas pendentes.
