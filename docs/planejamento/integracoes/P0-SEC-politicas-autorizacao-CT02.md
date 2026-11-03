@@ -95,7 +95,13 @@ A sequência abaixo é uma **lista de verificação documental** a ser incorpora
 | SEC-V07 | Agente IA sugere operação de alta criticidade | Sugestão registrada; ausência de aprovação impede execução crítica | HT-15 |
 | SEC-V08 | Conector suspenso quando execução estava pendente | Bloqueio de novo despacho incompatível; reconciliação das tentativas anteriores | HT-18 |
 
-## 7. Pendências para fechamento P0-SEC-01 / P0-OWN-01
+## 7. Revisão operacional SEC/STATE/PARAM (03/11/2026)
+
+- [P0-DEC OP15/OP09](P0-DEC-aprovacao-OP15-OP09-bases.md): 24 fichas especializadas aceitas **como bases documentais** sem atribuir novos perfis, MFA ou alçadas.
+- [P0-OP24 SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md): detalhamento **proposto** por operação, dependente de revisão por Identidade e Segurança, Central de Aprovações e módulos proprietários.
+- **P0-SEC-01 e P0-OWN-01 continuam abertos/parciais**, sem autorização implícita da IA ou execução.
+
+## 8. Pendências para fechamento P0-SEC-01 / P0-OWN-01
 
 | ID | Definição ainda necessária | Situação |
 |---|---|---|
