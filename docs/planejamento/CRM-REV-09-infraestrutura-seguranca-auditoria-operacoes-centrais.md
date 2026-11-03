@@ -1,6 +1,6 @@
 # CRM-REV-09 — Infraestrutura, Segurança, Auditoria e Operações Centrais
 
-**Data:** 2026-11-03. **Estado:** **MINUTA DOCUMENTAL PARA REVISÃO — NÃO APROVADA**. Preparada após o [aceite da CRM-REV-08 como base documental](CRM-DEC-aprovacao-REV-08-base.md). Esse aceite **não aprova a CRM-REV-09 antecipadamente**.
+**Data:** 2026-11-03. **Estado atualizado:** **APROVADA COMO BASE DOCUMENTAL**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-REV-09-base.md). OPS-P01..18 e os P0 transversais **continuam abertos**. A [P0-ARQ-01 — matriz de fechamento lógico/físico](P0-ARQ-01-topologia-fronteiras-plano-fechamento.md) foi produzida como **minuta para revisão, ainda não aprovada**, sem encerrar ARQ-01.
 **Objetivo:** fechar a ponte entre módulos funcionais CRM e o **gate real de prontidão para programar**, sem prolongar aprovações genéricas nem ignorar os seis bloqueios P0 de IN-168. O CRM completo ainda não foi declarado pronto.
 **Fase:** somente análise e documentação; **não programar, executar testes físicos, instalar, criar contas, migrar, contratar ou alterar produção**.
 **Método:** registrar diretrizes já aprovadas, fatos distintos e lacunas de especificação com fonte. Não criar papéis, alçadas, provedores, SLAs ou orçamento por suposição.
@@ -168,10 +168,10 @@
 
 **G01–G06 INT permanecem todos incompletos** segundo [painel P0](integracoes/P0-GATE-painel-fechamento-rastreabilidade-dependencias.md). Aceites de fichas/instrumentos documentais não encerram P0-OWN-01, P0-SEC-01, P0-CON-01 ou auditoria de fonte.
 
-## 9. Próxima aprovação recomendada
+## 9. Aceite registrado e início do fechamento ARQ-01
 
-**Proposta:** aprovar CRM-REV-09 **como base documental de revisão da arquitetura e dos bloqueios reais**, reconhecendo 34 diretrizes/fatos, 14 riscos, 18 questões de fechamento e 16 cenários futuros. **Não** homologar topologia física, orçamento, cofre, permissões, metas numéricas por serviço, infraestrutura, implantação, testes ou início de Codex.
+**CRM-REV-09 foi aprovada como base documental de revisão da arquitetura e dos bloqueios reais**, conforme [decisão](CRM-DEC-aprovacao-REV-09-base.md), reconhecendo 34 diretrizes/fatos, 14 riscos, 18 questões de fechamento e 16 cenários futuros. **Não foram homologados** topologia física, orçamento, cofre, permissões, metas numéricas por serviço, infraestrutura, implantação, testes ou início de Codex.
 
-Depois, o próximo trabalho deve priorizar **fechamento transversal dos P0** em vez de manter revisões funcionais genéricas em cascata, acompanhado da consolidação final por módulo e revisão global de valores/recursos que o responsável programou para o final.
+**Primeiro instrumento preparado:** [P0-ARQ-01 — topologia, fronteiras, inventário e plano de fechamento](P0-ARQ-01-topologia-fronteiras-plano-fechamento.md), **MINUTA NÃO APROVADA**. Ele preserva a Opção B, Portal/CRM separados, Cloudflare Workers e APIs independentes, e organiza o inventário factual e as decisões físicas/custos que faltam. **ARQ-01 permanece P0 parcial**. Continuar fechamento transversal dos P0 e, após isso, revisão final de valores/recursos do CRM.
 
-**Status:** CRM-REV-01..08 aceitas como **bases documentais**, CRM-REV-09 **minuta não aprovada**, planejamento global ainda sem liberação de desenvolvimento.
+**Status atualizado:** CRM-REV-01..09 aceitas como **bases documentais**; P0-ARQ-01 **minuta não aprovada**. P0 de IN-168 e gates INT continuam abertos; planejamento global ainda sem liberação de desenvolvimento.
