@@ -277,7 +277,7 @@ As nove operações abaixo já estavam catalogadas entre as 24 OP de referência
 
 ## 5. Situação de fechamento
 
-- O **segundo lote de nove operações** está documentado **como proposta**; as **15 do primeiro lote** permanecem igualmente propostas, embora as OP24 e CT-01..11 tenham aceites anteriores como bases documentais.
+- O **segundo lote de nove operações** e as **15 do primeiro lote** foram **aceitos como bases documentais** no [P0-DEC](P0-DEC-aprovacao-OP15-OP09-bases.md), embora os detalhes físicos, parâmetros e regras de acesso permaneçam em proposta, embora as OP24 e CT-01..11 tenham aceites anteriores como bases documentais.
 - A soma das fichas de especialização é **24/24 OP de referência**, ainda **não** o catálogo exaustivo de todas as operações originais INT-01..12.
 - Ainda não foram decididos schemas/autorizações definitivos por operação, valores de timeout/TTL/quotas/retries, migrações por provedor, assinatura/retention detalhados, alçadas, rastreabilidade integral ou aceite das fichas.
 - **P0-CON-01, P0-TR-01, P0-DOC-01/02, P0-OWN-01, P0-SEC-01, P0-DEP-01, P0-VER-01, P0-ACC-01 e G01..G06 seguem abertos/parciais.**
