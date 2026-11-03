@@ -93,7 +93,15 @@
 
 **ARQ-01 continua P0 PARCIAL**. ARQ-02, ARQ-03, SEG-01, SEG-02, AGT-01, CORE-P0, INT-P0 e G01–G06 continuam abertos. Não iniciar programação nem contratar/provisionar nenhum serviço antes do planejamento global aprovado.
 
-## 7. Fontes documentais de apoio
+## 7. Diretriz posterior — CRM em servidor novo e provedor recomendado (03/11/2026)
+
+O responsável decidiu **hospedar o projeto CRM Imagine em um servidor novo, separado da VPS histórica do n8n**, solicitando a recomendação técnica da Imagine/assistente. Foi documentada a [CRM-DEC — novo servidor e recomendação de provedor](CRM-DEC-infraestrutura-novo-servidor-e-recomendacao-provedor.md).
+
+**Recomendação técnica preferencial, ainda sem contratação:** **Vultr São Paulo, High Performance AMD, 4 vCPU compartilhadas, 8 GB RAM, 180 GB NVMe**, com preço de catálogo de referência **US$ 48/mês somente da VPS de aplicação** (cotação e disponibilidade a confirmar). **PostgreSQL deverá ficar separado da aplicação**, preferencialmente gerenciado e na mesma região, a confirmar, com armazenamento de anexos e backups externos e custos próprios.
+
+**Atualização do estado INV-03:** a **destinação a novo servidor CRM é decisão do projeto**, enquanto **provedor, plano, carga, banco, operação e orçamento ainda são proposta de homologação**, não ativo implantado. A informação histórica INV-02 sobre Leaseweb/n8n não se converte em capacidade disponível para o CRM. **ARQ-01 segue P0 parcial**.
+
+## 8. Fontes documentais de apoio
 
 | Documento | Relação |
 |---|---|
