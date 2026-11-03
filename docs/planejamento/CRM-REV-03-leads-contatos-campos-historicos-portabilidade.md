@@ -148,7 +148,11 @@ As prioridades são de análise, **não** uma aprovação de novos parâmetros d
 
 Esses DAT-T01..14 são **casos propostos de revisão**, não uma nova família executada de testes HT nem software criado.
 
-## 8. Status da CRM-REV-03 e recomendação de próxima aprovação
+## 8. Complemento posterior: capacidade de armazenamento adicional concedida gratuitamente (03/11/2026)
+
+A [CRM-DEC — Gratuidade de adicionais específicos](CRM-DEC-gratuidade-administrativa-adicionais-especificos.md) registra aprovação funcional para o Administrador Geral Imagine **conceder uma capacidade/pacote de armazenamento adicional gratuito a uma organização específica, como ação separada da gratuidade de plano**. Não altera quotas incluídas nem regras de anexos (avisos 80%/95%, bloqueio de novos uploads a 100%); quantidades, duração, unidades, transição e custos permanecem pendentes em GRAT-EX-P01..08. A concessão não deve remover arquivos existentes ao expirar nem gerar cobrança automática sem contratação expressa.
+
+## 9. Status da CRM-REV-03 e recomendação de próxima aprovação
 
 - **26 regras funcionais cotejadas**, com fontes históricas/currentes indicadas, sem declarar que cada detalhe de implementação esteja integralmente aprovado.
 - **12 divergências/riscos**, **12 pendências técnicas/funcionais** e **14 casos negativos para aceite futuro** organizados.
