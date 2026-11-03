@@ -109,6 +109,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - **Fonte primária ainda pendente:** a íntegra das propostas/aceites originais de INT-08/09 não foi obtida para cotejo literal. O relatório **não fecha** essas 8 verificações por literalidade e **não altera P0-DOC-01/P0-TR-01** para concluído.
 - Fronteiras confirmadas em documentos aprovados independentes: INT-08 não substitui IN-118; mudança de vínculo CRM por chamado não migra dados automaticamente; INT-09 não substitui proprietários na confirmação de negócios, não realiza compensação livre nem contorna autorizações.
 
+## CT-05 a CT-11 — Minutas de contratos de interoperabilidade (03/11/2026)
+
+- [P0-CON CT-05 a CT-11](P0-CON-CT05-CT11-contratos-integracoes-minuta.md): sete fichas conceituais para webhooks/eventos, sync/checkpoint, lote/portabilidade, processo/instância, incidente/recuperação, compensação e auditoria, com estados **propostos**, falhas, reconciliação e referências a requisitos/invariantes/testes existentes.
+- **Não houve aceite desta minuta**, criação de automação nem implementação. CT-02 e CT-03/04 continuam bases documentais aceitas; P0-SEC/P0-VER/ACC seguem bases documentais aprovadas nos respectivos limites.
+- **P0-CON-01 permanece parcial/aberto**: detalhamento físico, semântica por operação/provedor, propriedades, políticas de erro, parâmetros, riscos/alçadas e cotejo literal de decisões ainda pendentes. G01–G06 e demais P0 não foram encerrados.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
