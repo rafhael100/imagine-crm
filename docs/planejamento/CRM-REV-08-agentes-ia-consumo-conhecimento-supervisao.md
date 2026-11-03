@@ -146,7 +146,13 @@
 - A divergência entre validade de 90 dias e saldo até consumo continua **pendente de cotejo da fonte original**. A concessão administrativa do pacote não resolve esse prazo por inferência.
 - A CRM-REV-08 **continua minuta não aprovada**, embora a **capacidade funcional de concessão gratuita de extras esteja aprovada** em decisão própria.
 
-## 9. Próxima aprovação e continuidade
+## 9. Nova decisão aprovada: pacote gratuito de IA com quantidade definida (03/11/2026)
+
+[CRM-DEC — Vigência dos adicionais e créditos IA quantificados](CRM-DEC-gratuidade-adicionais-vigencia-e-pacotes-ia.md): o Administrador Geral Imagine poderá conceder **um pacote de créditos IA com quantidade definida**, como ato de gratuidade específico. **Não** criar crédito ilimitado, reposição mensal automática, compartilhamento entre empresas ou alteração do plano base. Prazo/expiração/ordem de consumo permanecem sujeitos à decisão original e às pendências **IA-P02..06**. O conflito documental **90 dias versus até consumo** ainda precisa ser resolvido; a aprovação de quantidade fixa **não escolheu nenhum dos prazos**.
+
+A CRM-REV-08 **continua minuta não aprovada**, embora a regra funcional independente esteja registrada como aprovada.
+
+## 10. Próxima aprovação e continuidade
 
 **Proposta:** aprovar CRM-REV-08 **como base documental de reconciliação**, reconhecendo 28 itens, 12 divergências, 15 pendências e 16 cenários futuros, sem homologar modelos, preços, prazos de créditos, permissões, perfis, dados de treinamento, APIs, custos ou programação.
 
