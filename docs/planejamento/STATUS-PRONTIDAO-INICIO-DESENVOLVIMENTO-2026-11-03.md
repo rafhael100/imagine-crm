@@ -137,7 +137,14 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - Próxima frente recomendada é **decidir e fechar P0 concretos e produzir revisão global versionada**, mantendo a decisão de não iniciar código até aprovação final expressa.
 - Seções anteriores que dizem “REV-08 minuta” registram o estado **histórico à época**, substituído agora pela decisão explícita.
 
-## 19. Próxima recomendação objetiva
+## 19. CRM-REV-09 aceita e ARQ-01 em fechamento proposto (03/11/2026)
+
+- [CRM-REV-09](CRM-REV-09-infraestrutura-seguranca-auditoria-operacoes-centrais.md) **aceita como base documental** por [CRM-DEC](CRM-DEC-aprovacao-REV-09-base.md); as 18 pendências de segurança/infra permanecem abertas, sem aprovação de serviços físicos ou preços.
+- [P0-ARQ-01](P0-ARQ-01-topologia-fronteiras-plano-fechamento.md) **minuta de instrumento de fechamento não aprovada**: representa a separação Portal↔CRM, n8n↔agentes técnicos (Opção B), Sites Cloudflare Workers e APIs principal/contingência com persistência independente. **Não** obriga 12 servidores nem encerra ARQ-01.
+- Próxima evidência: **ARQ01-F01 inventário factual**, depois alocação física, custo e riscos comuns; só decisões explícitas fecham os P0. **ARQ-01, ARQ-02, ARQ-03, SEG-01, SEG-02 e AGT-01 continuam P0 parciais/abertos; G01–G06 não concluídos**.
+- Continuamos sem autorização de programação, implantação, contratação ou testes executados; critérios de validação já estão planejados para etapa de desenvolvimento/homologação posterior.
+
+## 20. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
