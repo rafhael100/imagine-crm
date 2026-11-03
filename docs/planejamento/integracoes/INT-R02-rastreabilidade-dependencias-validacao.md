@@ -110,6 +110,13 @@ Campos: ID (TR-INTxx-###), origem da decisão e sua versão, descrição, escopo
 - [P0-ACC — Controle de evidências e aceite](P0-ACC-matriz-controle-evidencias-HT01-HT18.md) registra função responsável e evidência exigível, sem declarações de PASS/FAIL.
 - [P0-SEC e P0-VER](P0-DEC-aprovacao-SEC-VER-base.md) foram aprovadas **como bases documentais**, sem determinar os parâmetros ainda em aberto.
 
-## 12. Referências cruzadas e precedência
+## 12. Auditoria P0 de requisitos, dependências e critérios (03/11/2026)
+
+- [P0-DEC-ACC](P0-DEC-aprovacao-ACC-HT01-HT18-base.md): 18 planos HT aceitos como base documental, sem homologação ou execução.
+- [P0-TR-AUD](P0-TR-AUD-auditoria-proveniencia-requisitos.md): 53 requisitos iniciais correspondentes entre dois inventários, com referência aos 18 HT e 16 INV; texto integral original ainda pendente.
+- [P0-DEP](P0-DEP-dependencias-criticas-e-fronteiras.md): fronteiras das 12 INTs e riscos de circularidade/duplicação a especificar por contrato e fase.
+- [P0-GATE](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md): matriz dos 11 P0 e G01–G06, sem fechamento final presumido.
+
+## 13. Referências cruzadas e precedência
 - [INT-R01](INT-R01-governanca-contratos-homologacao.md), [Matriz P0](INT-P0-fechamento-documental.md), [Origem e precedência](DECISOES-origem-precedencia.md).
 - [IN-167](../IN-167-consolidacao-arquitetura-agentes-tecnicos.md) e [IN-168](../IN-168-matriz-pendencias-fechamento-arquitetura.md) detalham agentes técnicos e pendências adjacentes: não presumir conclusão de suas especificações pelo fechamento da INT-R02.
