@@ -68,7 +68,13 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - [CRM-REV-02](CRM-REV-02-planos-trial-assinaturas-cobrancas-basico.md) foi preparada **em minuta para revisão**, sem aprovar novos preços ou modificar benefícios. As decisões comerciais finais permanecem sujeitas à revisão conjunta ao fim do planejamento, como acordado.
 - Não há mudança no gate global: **desenvolvimento ainda não autorizado**; nenhum teste ou implementação executados.
 
-## 8. Próxima recomendação objetiva
+## 8. Continuidade do fechamento global: CRM-REV-02 e CRM-REV-03 (03/11/2026)
+
+- [CRM-REV-02](CRM-REV-02-planos-trial-assinaturas-cobrancas-basico.md) recebeu [aceite como base documental](CRM-DEC-aprovacao-REV-02-base.md) sem fechar preços, assinaturas executáveis ou 12 pendências.
+- [CRM-REV-03](CRM-REV-03-leads-contatos-campos-historicos-portabilidade.md) reúne dados de leads/contatos, campos, históricos e portabilidade **em minuta**, não aceita automaticamente.
+- A conclusão das minutas não substitui fechamento P0 ou aceite global. **Não iniciado desenvolvimento, testes ou implantação.**
+
+## 9. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
