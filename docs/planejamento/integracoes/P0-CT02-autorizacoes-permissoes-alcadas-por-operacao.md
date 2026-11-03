@@ -1,7 +1,7 @@
 # P0-CT02 — Matriz de autorização contextual, permissões e alçadas por operação
 
 **Data de registro:** 2026-11-02.
-**Estado:** **MINUTA PARA REVISÃO**, construída sobre regras transversais já aprovadas e sobre as [24 fichas aceitas como base documental](P0-DEC-aprovacao-OP24-base.md). Este documento **não aprova** novos perfis, políticas de risco, MFA obrigatório universal, papéis privilegiados, limites numéricos ou alçadas por operação. A aceitação das 24 fichas não é aprovação automática desta nova matriz.
+**Estado:** **ACEITA COMO BASE DOCUMENTAL DE ARQUITETURA** em 2026-11-03, conforme [decisão contextual](P0-DEC-aprovacao-CT02-base.md), construída sobre diretrizes já aprovadas e as [24 fichas aceitas como base](P0-DEC-aprovacao-OP24-base.md). **Não aprova** novos perfis, políticas definitivas de risco, MFA obrigatório universal, papéis privilegiados, limites numéricos, alçadas por operação ou esquemas técnicos executáveis. O detalhamento de [políticas CT-02](P0-SEC-politicas-autorizacao-CT02.md) está **em proposta para revisão**, assim como a [matriz de versões](P0-VER-matriz-compatibilidade-evolucao-versoes.md).
 **Fase:** exclusivamente planejamento/documentação; nenhuma programação, alteração de produção, teste real, contratação, despesa ou novo serviço/automação.
 **Autoridade existente:** Identidade e Segurança, INT-02 para autorizações externas, cofre central de segredos IN-151, Central de Aprovações, módulos proprietários por efeito, Auditoria Geral como fonte oficial. Não criar mecanismo paralelo de autorização.
 
