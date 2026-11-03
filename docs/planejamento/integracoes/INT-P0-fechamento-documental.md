@@ -103,6 +103,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - A conferência da origem literal ainda depende das propostas/aceites integrais INT-01..12 e INT-R01/R02. Registros de texto preservado no GitHub e resumos de histórico não substituem verificação primária.
 - **P0-DOC-01 e P0-TR-01 seguem ABERTOS/PARCIAIS**. Não emitir novos TR definitivos sem evidência de requisito efetivamente aprovado e revisão de sua relação CT/INV/HT.
 
+## Conferência focal INT-08/INT-09 — 03/11/2026
+
+- [P0-FOCO-INT08-09](P0-FOCO-INT08-09-confronto-11TR-8lacunas.md) verificou **8/8 lacunas candidatas** contra sínteses e decisões IN correlatas e preservou **11/11 TR existentes** (INT-08 5; INT-09 6) sem transformar perguntas de granularidade em requisitos novos.
+- **Fonte primária ainda pendente:** a íntegra das propostas/aceites originais de INT-08/09 não foi obtida para cotejo literal. O relatório **não fecha** essas 8 verificações por literalidade e **não altera P0-DOC-01/P0-TR-01** para concluído.
+- Fronteiras confirmadas em documentos aprovados independentes: INT-08 não substitui IN-118; mudança de vínculo CRM por chamado não migra dados automaticamente; INT-09 não substitui proprietários na confirmação de negócios, não realiza compensação livre nem contorna autorizações.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
