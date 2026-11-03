@@ -172,5 +172,11 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - [OP15](P0-CON-OP15-contratos-operacoes-impacto-elevado.md), [OP09](P0-CON-OP09-contratos-operacoes-complementares.md) e [índice OP24](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md) cobrem os **24 IDs de referência**, todos com detalhamentos **propostos e ainda não aceitos como regras físicas definitivas**.
 - O catálogo não é exaustivo; fontes originais e decisões sobre direitos, contratos técnicos por provedor, estados, parâmetros, compatibilidade e aceites ainda pendentes. **G01–G06 e P0-CON-01 seguem abertos.**
 
-## 21. Restrição permanente
+## 21. Fichas OP15/OP09 aceitas e nova minuta operacional (03/11/2026)
+
+- [P0-DEC OP15/OP09](P0-DEC-aprovacao-OP15-OP09-bases.md) registra aceite **como bases documentais** das 24 fichas especializadas.
+- [P0-OP24 SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md) é **proposta de decisão** sobre autorizações, estados e parâmetros, não política de implementação aprovada.
+- P0-CON/SEC/OWN/VER/DEP/DOC/TR/ACC e G01..G06 não concluídos, 0 HT realizados e sem código.
+
+## 22. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
