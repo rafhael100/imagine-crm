@@ -155,5 +155,10 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - **CT-01 especializada pendente**, CT-02..11 aceitas como bases, fonte literal INT e especificações executáveis não encerradas.
 - P0-CON-01/SEC-01/OWN-01/VER-01/DEP-01/TR-01/DOC-01/ACC-01 e G01–G06 continuam pendentes/parciais.
 
-## 18. Restrição permanente
+## 18. Minuta especializada CT-01 — 03/11/2026
+
+- [P0-CON CT-01](P0-CON-CT01-conectores-conexoes-capacidades-minuta.md): separação de nove classes de objetos, conexão/versão/autoridade, transições propostas e efeitos pendentes, preservando INT-01/02/04/11 e serviços centrais.
+- **A CT-01 foi redigida, não aprovada como base.** As onze famílias CT agora dispõem de detalhamento documental (CT-01 em minuta; CT-02..11 aceitas como bases), ainda sem contratos executáveis ou homologação. P0-CON-01 e G01–G06 continuam abertos.
+
+## 19. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
