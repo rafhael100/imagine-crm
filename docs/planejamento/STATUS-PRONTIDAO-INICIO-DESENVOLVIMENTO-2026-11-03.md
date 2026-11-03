@@ -129,7 +129,15 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - **GRAT-EX-P02/P03/P05 parcialmente resolvidas**; não se encerraram contratos de planos/FIN/CON, créditos, quotas de dados nem os P0 transversais. **Sem cobrança automática ao término de concessões**, implementação ou testes.
 - A [CRM-REV-08](CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md) permanece **minuta não aprovada**; o aceite desta regra funcional independente não a aprovou.
 
-## 18. Próxima recomendação objetiva
+## 18. Atualização de prontidão — CRM-REV-08 aceita, CRM-REV-09 minuta (03/11/2026)
+
+- [CRM-REV-08](CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md) **aceita como base documental**, conforme [CRM-DEC REV-08](CRM-DEC-aprovacao-REV-08-base.md), sem encerrar IA-P01..15 ou definir 90 dias versus “até consumo” dos créditos adicionais.
+- [CRM-REV-09](CRM-REV-09-infraestrutura-seguranca-auditoria-operacoes-centrais.md) **minuta para revisão, não aprovada**. Confronta IN-168, CRM-REV01, segurança, observabilidade, backups, operação, Auditoria e INT. Traz 18 questões de fechamento vinculadas a P0 existentes, sem multiplicar pendências artificialmente.
+- **Seis P0 IN-168 continuam estruturalmente abertos:** ARQ-01/02/03, SEG-01/02, AGT-01. INT-P0/CORE-P0 e G01..06 não encerrados. 0 testes HT executados; execução pertence à fase de implementação/homologação autorizada, não à fase de documentos.
+- Próxima frente recomendada é **decidir e fechar P0 concretos e produzir revisão global versionada**, mantendo a decisão de não iniciar código até aprovação final expressa.
+- Seções anteriores que dizem “REV-08 minuta” registram o estado **histórico à época**, substituído agora pela decisão explícita.
+
+## 19. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
