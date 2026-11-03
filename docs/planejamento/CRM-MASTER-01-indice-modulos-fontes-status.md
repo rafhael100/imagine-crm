@@ -356,7 +356,14 @@
 - Direitos são **independentes por organização e por concessão**; não gerar isenção global dos adicionais ao conceder plano. Ao encerrar, **não iniciar cobrança automática** sem nova contratação expressa.
 - **GRAT-EX-P02/P03/P05 parcialmente resolvidas**, não fechadas. Prazos padrão, quantidades, acumulação, regras de inadimplência/retorno ao limite, pacotes IA e custo continuam pendentes. **CRM-REV-08 permanece minuta não aprovada**.
 
-## 17. Próximo pacote de revisão proposto
+## 17. Situação mais recente — IA aprovada e segurança/infraestrutura em revisão (03/11/2026)
+
+- [CRM-REV-08](CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md) **aprovada como base documental**, conforme [CRM-DEC](CRM-DEC-aprovacao-REV-08-base.md). **IA-P01..15 e a validade dos pacotes de créditos continuam em aberto**.
+- [CRM-REV-09](CRM-REV-09-infraestrutura-seguranca-auditoria-operacoes-centrais.md) **elaborada como minuta não aprovada**, com 34 regras cotejadas, 14 riscos, 18 questões para especificação/decisão e 16 cenários futuros. A revisão reconcilia os seis P0 IN-168 (ARQ-01/02/03, SEG-01/02, AGT-01), **sem duplicá-los**.
+- Priorizar o **fechamento real dos contratos, permissões e arquitetura P0**, não aprovações infinitas de novas minutas; preservar revisão comercial final de valores e recursos já combinada. A CRM-REV-09 não libera Codex.
+- Trechos cronológicos anteriores deste índice que descrevem REV-08 como “minuta” retratam **o estado da época em que foram redigidos**, e foram superados pelo aceite específico atual.
+
+## 18. Próximo pacote de revisão proposto
 
 **CRM-REV-01: núcleo de identidade multiempresa e permissões.** Confrontar [01](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/01-visao-geral-e-arquitetura.md), [03](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/03-administracao-geral.md), [04](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/04-empresas-e-usuarios.md), [13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md) e IN-151/167/168 de `main`; preservar `tenant_id` + RLS já aprovado no capítulo posterior, contextualizar administração Imagine vs administração da empresa, convites, MFA, auditores, poderes de suporte e contratos de autorização em filas/APIs/IA.
 
