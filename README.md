@@ -22,6 +22,7 @@
 - [CRM-DEC — Aprovação da CRM-REV-07](docs/planejamento/CRM-DEC-aprovacao-REV-07-base.md).
 - [CRM-DEC — Gratuidade administrativa de qualquer plano CRM](docs/planejamento/CRM-DEC-gratuidade-administrativa-qualquer-plano.md) — **requisito funcional aprovado** para qualquer plano de empresa específica, sem site.
 - [CRM-DEC — Gratuidade por prazo determinado ou indeterminado](docs/planejamento/CRM-DEC-gratuidade-vigencia-modalidades.md) — **ambas modalidades aprovadas**; sem cobrança automática no término, outras regras de vigência pendentes.
+- [CRM-DEC — Gratuidade de adicionais específicos](docs/planejamento/CRM-DEC-gratuidade-administrativa-adicionais-especificos.md) — **requisito funcional aprovado** para concessão separada de usuários extras, armazenamento e pacotes de créditos de IA, sem liberar todos os adicionais automaticamente.
 - [CRM-REV-08 — Agentes de IA, créditos, conhecimento e supervisão](docs/planejamento/CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md) — **minuta para revisão**, diferenciando IA comercial dos agentes técnicos Imagine, com prazo dos créditos ainda a conciliar.
 - [Infraestrutura e agentes técnicos: pendências IN-168](docs/planejamento/IN-168-matriz-pendencias-fechamento-arquitetura.md).
 - [Integrações INT-01 a INT-12: índice de documentação](docs/planejamento/integracoes/README.md).
