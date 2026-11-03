@@ -178,5 +178,11 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - [P0-OP24 SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md) é **proposta de decisão** sobre autorizações, estados e parâmetros, não política de implementação aprovada.
 - P0-CON/SEC/OWN/VER/DEP/DOC/TR/ACC e G01..G06 não concluídos, 0 HT realizados e sem código.
 
-## 22. Restrição permanente
+## 22. Aprovação instrumental e matriz de propriedade por campo (03/11/2026)
+
+- [P0-DEC SEC/STATE/PARAM](P0-DEC-aprovacao-OP24-SEC-STATE-PARAM-instrumento.md): instrumento documental aprovado; políticas específicas de acesso permanecem pendentes.
+- [P0-OWN-SEC](P0-OWN-SEC-matriz-recursos-campos-OP24.md): matriz **proposta** de 13 grupos de recursos e direitos candidatos nas 24 OP, sem alterar a propriedade de dados ou conceder acessos.
+- P0-OWN-01/P0-SEC-01 e G01–G06 continuam abertos, sem testes ou programação.
+
+## 23. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
