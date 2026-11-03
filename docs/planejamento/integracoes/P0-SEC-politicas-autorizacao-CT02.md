@@ -101,7 +101,13 @@ A sequência abaixo é uma **lista de verificação documental** a ser incorpora
 - [P0-OP24 SEC/STATE/PARAM](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md): detalhamento **proposto** por operação, dependente de revisão por Identidade e Segurança, Central de Aprovações e módulos proprietários.
 - **P0-SEC-01 e P0-OWN-01 continuam abertos/parciais**, sem autorização implícita da IA ou execução.
 
-## 8. Pendências para fechamento P0-SEC-01 / P0-OWN-01
+## 8. Aceite instrumental OP24 e detalhamento de recursos/campos (03/11/2026)
+
+- [P0-DEC SEC/STATE/PARAM](P0-DEC-aprovacao-OP24-SEC-STATE-PARAM-instrumento.md) registra aprovação **como instrumento de revisão**, sem concessão de perfis, MFA ou alçadas.
+- [P0-OWN-SEC](P0-OWN-SEC-matriz-recursos-campos-OP24.md) propõe mapeamento de **13 grupos de recursos e 24 ações de referência**, com direitos candidatos e decisões de proprietário ainda pendentes. **É minuta não aprovada**.
+- P0-SEC-01 e P0-OWN-01 seguem abertos; revalidar autorizador existente e não duplicar Central de Aprovações.
+
+## 9. Pendências para fechamento P0-SEC-01 / P0-OWN-01
 
 | ID | Definição ainda necessária | Situação |
 |---|---|---|
