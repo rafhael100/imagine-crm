@@ -128,6 +128,12 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - **Cobertura nominal CT-01..11:** agora há ficha especializada para CT-01 em **minuta**, CT-02/03/04 e CT-05..11 aceitas como bases documentais; **sem schema final por operação, sem parâmetros aprovados e sem teste**.
 - **P0-CON-01 continua parcial/aberto**, assim como P0-OWN/SEC/DEP/VER/DOC/TR/ACC e G01–G06. A apresentação da ficha não é homologação nem cria sistemas.
 
+## CT-01 aceita como base e matriz mestre dos 11 contratos (03/11/2026)
+
+- [P0-DEC CT-01](P0-DEC-aprovacao-CT01-base.md): CT-01 aceita como **base documental**, junto às CT-02..11 anteriormente aceitas. Nenhum contrato físico completo ou nova automação foi aprovado.
+- [P0-CON-MASTER](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md): consolida 11 famílias, 53 TR iniciais, 105 associações propostas, critérios de consistência e evidências E-CON01..09; documento **proposto para revisão**.
+- **P0-CON-01 permanece aberto/parcial**: fonte primária, contratos por operação, permissão/alçada, versão/retentativas, dependências e aceite documental final ainda faltam. **G01–G06 não encerrados; nenhum teste executado ou programação iniciada.**
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
