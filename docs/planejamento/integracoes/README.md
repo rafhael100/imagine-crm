@@ -55,11 +55,11 @@
 - [P0-DEC — Aceite contextual CT-01 como base](P0-DEC-aprovacao-CT01-base.md)
 - [P0-CON-MASTER — Matriz CT-01..11 e critérios de fechamento P0-CON-01](P0-CON-MASTER-matriz-CT01-CT11-criterios-fechamento.md) — instrumento documental aceito; P0 continua aberta
 - [P0-DEC — Aceite contextual CON-MASTER](P0-DEC-aprovacao-CON-MASTER-base.md)
-- [P0-CON-OP15 — 15 operações de maior impacto](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) — propostas especializadas para revisão
-- [P0-CON-OP09 — 9 operações complementares](P0-CON-OP09-contratos-operacoes-complementares.md) — propostas especializadas para revisão
+- [P0-CON-OP15 — 15 operações de maior impacto](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) — aceitas como bases documentais, regras físicas pendentes
+- [P0-CON-OP09 — 9 operações complementares](P0-CON-OP09-contratos-operacoes-complementares.md) — aceitas como bases documentais, regras físicas pendentes
 - [P0-DEC — Aceite de 24 fichas especializadas como bases](P0-DEC-aprovacao-OP15-OP09-bases.md)
 - [P0-OP24 SEC/STATE/PARAM — Matriz de decisão por operação](P0-OP24-SEC-STATE-PARAM-matriz-decisao.md) — minuta para revisão, sem parâmetros aprovados
-- [P0-CON-OP24 — Índice consolidado das 24 operações](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md) — 24/24 fichas elaboradas, nenhuma homologada
+- [P0-CON-OP24 — Índice consolidado das 24 operações](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md) — 24/24 fichas aceitas como bases, nenhuma homologada
 - [P0-DEP — Dependências e fronteiras críticas](P0-DEP-dependencias-criticas-e-fronteiras.md)
 - [P0-GATE — Situação dos 11 P0 e G01–G06](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md)
 
