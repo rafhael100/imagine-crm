@@ -137,5 +137,11 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - [P0-DEP](P0-DEP-dependencias-criticas-e-fronteiras.md): 12 INTs e 11 riscos de circularidade/sobreposição em aberto.
 - [P0-GATE](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md): 11 pendências P0 e critérios G01–G06, nenhum encerrado integralmente.
 
-## 15. Restrição permanente
+## 15. Revisão detalhada de escopo dos requisitos (03/11/2026)
+
+- [P0-DOC-TR](P0-DOC-TR-deltas-candidatos-fonte-original.md) registra **28 verificações candidatas** de granularidade dos 53 TR iniciais frente às sínteses INT-01..12, sem presumir 28 requisitos novos ou conflitos comprovados.
+- [P0-ORIGEM](P0-ORIGEM-aprovacoes-dialogo.md) passa a distinguir texto preservado no GitHub de transcrição verificada contra mensagem original, que permanece pendente.
+- G01, G02, P0-DOC-01, P0-DOC-02 e P0-TR-01 **não foram fechados** pela nova análise.
+
+## 16. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
