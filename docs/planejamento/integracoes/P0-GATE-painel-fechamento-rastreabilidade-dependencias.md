@@ -47,7 +47,13 @@
 
 O fato de uma necessidade estar documentada não altera a prioridade original. INT-R02 considera em **P1** parâmetros de quota, concorrência, dimensionamento, monitoramento/recuperação, versionamento, retenção especializada e custos; em **P2** distribuição comercial avançada e documentação complementar. Elementos P1/P2 que bloqueiem segurança, contrato ou arquitetura para implementação deverão ser encaminhados à revisão competente; **não** reclassificar ou aprovar por inferência.
 
-## 5. Controle de aprovação e execução
+## 5. Investigações candidatas de escopo e requisito (03/11/2026)
+
+- [P0-DOC-TR — 28 lacunas candidatas](P0-DOC-TR-deltas-candidatos-fonte-original.md): comparação com os arquivos de síntese INT-01..12, sem inventar 28 requisitos novos nem declarar 28 contradições.
+- [P0-ORIGEM — texto de aceites preservados](P0-ORIGEM-aprovacoes-dialogo.md): a autenticidade literal de cada transcrição frente ao registro original ainda requer fonte primária verificável.
+- **Bloqueios P0-DOC-01 / P0-TR-01:** não encerrados; a ação seguinte é recuperar e cotejar textos originais, registrar versões e corrigir somente diferenças comprovadas mediante decisão.
+
+## 6. Controle de aprovação e execução
 
 - **P0-SEC e P0-VER:** aprovados como **bases documentais**, com políticas específicas pendentes.
 - **CT-03 e CT-04:** aprovados como **base documental**, sem esquema final de implementação.
