@@ -89,6 +89,14 @@ Esses documentos **não concluem automaticamente** as pendências, que permanece
 - [P0-ACC — Matriz de evidências e aceite](P0-ACC-matriz-controle-evidencias-HT01-HT18.md): status individual dos 18 planos, responsabilidades funcionais e evidências futuras, sem preenchimento de PASS/FAIL.
 - **P0-ACC-01 passa a possuir documentação inicial estruturada, mas continua ABERTO/PARCIAL**, até conferir integralmente requisitos e aprovar os procedimentos finais. P0-DOC/TR/CON/SEC/OWN/DEP/VER/XREF/GIT e G01..G06 ainda exigem suas comprovações.
 
+## Aceite dos planos HT e auditoria de rastreabilidade/dependências (03/11/2026)
+
+- [P0-DEC — HT como base](P0-DEC-aprovacao-ACC-HT01-HT18-base.md): 18 roteiros aceitos enquanto base, **nenhum teste executado**, P0-ACC-01 ainda aberto.
+- [P0-TR-AUD](P0-TR-AUD-auditoria-proveniencia-requisitos.md): 53/53 IDs reconciliados entre inventários iniciais, 18 HT e 16 INV citados, sem comprovar exaustividade das aprovações originais.
+- [P0-DEP](P0-DEP-dependencias-criticas-e-fronteiras.md): 12 INTs e 11 pontos de contratos/circularidade em revisão, sem afirmar falhas reais.
+- [P0-GATE](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md): 11 bloqueios P0 e G01–G06 com evidências faltantes, sem encerramento de gates.
+- P0-DOC-01/02, P0-TR-01, P0-DEP-01 e demais P0 continuam abertos ou parciais; programação proibida.
+
 ## Regra para tratar divergências
 Registrar ID, seção, fonte da aprovação, versão documental, conflito, impacto, decisão expressa necessária, responsável, situação e resolução. Não escolher silenciosamente entre decisões conflitantes.
 
