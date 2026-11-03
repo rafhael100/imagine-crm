@@ -112,7 +112,13 @@ O fato de uma necessidade estar documentada não altera a prioridade original. I
 - [P0-OWN-SEC](P0-OWN-SEC-matriz-recursos-campos-OP24.md) identifica 13 classes de recursos e direitos candidatos em 24 operações, com 12 perguntas OWN-Q01..12 e critérios de fechamento; **minuta não aprovada**, sem concessão de poderes.
 - **P0-OWN-01/P0-SEC-01 seguem ABERTOS/PARCIAIS** até catálogo verdadeiro de perfil/recurso/campo, revisão pelos proprietários, alçadas e fonte literal. G01–G06 não foram encerrados.
 
-## 15. Controle de aprovação e execução
+## 15. Aprovação de P0-OWN-SEC como base e avaliação da prontidão global (03/11/2026)
+
+- [P0-DEC — OWN-SEC como base documental](P0-DEC-aprovacao-OWN-SEC-base.md): 13 grupos de recurso/24 operações aceitos como **base de revisão**, sem concessão de direitos reais, perfis ou alçadas.
+- [Diagnóstico de prontidão do CRM](../STATUS-PRONTIDAO-INICIO-DESENVOLVIMENTO-2026-11-03.md): o módulo INT tem documentação avançada, mas **P0-OWN-01, P0-SEC-01 e os demais P0/G01..G06 não foram encerrados**, e a especificação global do CRM permanece distribuída por branches e documentos de planejamento.
+- A avaliação recomenda reconciliar o produto completo antes da implementação, **sem prometer data ou autorizar Codex**.
+
+## 16. Controle de aprovação e execução
 
 - **P0-SEC e P0-VER:** aprovados como **bases documentais**, com políticas específicas pendentes.
 - **CT-03 e CT-04:** aprovados como **base documental**, sem esquema final de implementação.
