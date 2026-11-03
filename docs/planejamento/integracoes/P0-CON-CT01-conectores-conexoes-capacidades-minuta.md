@@ -156,6 +156,6 @@ Os vínculos abaixo já constam de [P0-TR53](P0-TR53-vinculo-contratos-aceite.md
 ## 10. Conclusão desta etapa
 
 - A **11ª família CT** recebeu ficha especializada em **minuta**, permitindo confrontar as CT-01..11 sem que a CT-01 permaneça apenas um título no índice.
-- **O escopo documental da CT-01 ainda não está aprovado especificamente**; nem os campos físicos, transições, políticas de provedor, custos, direitos ou compatibilidade de migração.
+- **O escopo da CT-01 foi aceito como base documental**, conforme [P0-DEC CT-01](P0-DEC-aprovacao-CT01-base.md); **não** houve aprovação de campos físicos, transições executáveis, políticas por provedor, custos, direitos ou compatibilidade de migração.
 - **P0-CON-01, P0-OWN-01, P0-SEC-01, P0-VER-01, P0-DEP-01, P0-DOC-01/02, P0-TR-01, P0-ACC-01, P0-XREF-01 e P0-GIT-01 continuam abertos/parciais. G01–G06 não concluídos.**
 - **Nenhuma implementação, teste, homologação técnica, criação de automação ou alteração de produção foi iniciada.**
