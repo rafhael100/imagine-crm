@@ -32,7 +32,7 @@ O cancelamento/inadimplência do site **não revoga automaticamente** uma gratui
 4. **Prazo e vigência — APROVADO EM DECISÃO POSTERIOR:** o responsável aprovou **ambas as modalidades**, por **prazo determinado** (data final definida) ou **prazo indeterminado** (sem data final pré-definida, até encerramento autorizado), conforme [CRM-DEC — Modalidades de vigência](CRM-DEC-gratuidade-vigencia-modalidades.md). **Seis meses é apenas exemplo**, não prazo padrão ou máximo. Continuam pendentes aviso, início de vigência, prorrogação, alçadas e transição; **nunca iniciar cobrança automaticamente** após término.
 5. **Cliente já pagante:** se concedido a uma assinatura em andamento, tratar mês pago, crédito, estorno e data de início de isenção pelo contrato de FIN/CON; **não cancelar cobrança capturada nem reembolsar automaticamente** sem decisão.
 6. **Fim da gratuidade:** informar antes, permitir contratação expressa do plano escolhido ou seleção de outra alternativa elegível. **Não converter automaticamente gratuidade em mensalidade recorrente cobrada** nem usar falha de pagamento inexistente como inadimplência; preservação de dados e quotas de downgrade conforme políticas vigentes.
-7. **Adicionais e uso variável:** a isenção aprovada se refere à **mensalidade base do plano**. **Ainda falta decidir** se inclui usuários extras, armazenamento adicional, créditos de IA, números de WhatsApp, custos de provedores, consumo variável e outros adicionais. **Não presumir cobertura** desses itens.
+7. **Adicionais — DECISÃO POSTERIOR APROVADA:** além da mensalidade base, o Administrador Geral Imagine poderá **conceder gratuitamente adicionais específicos mediante ato administrativo separado**, conforme [CRM-DEC — adicionais gratuitos](CRM-DEC-gratuidade-administrativa-adicionais-especificos.md). Exemplos abrangidos: usuários extras, armazenamento adicional e pacotes de créditos de IA. **A concessão do plano não cobre extras automaticamente**; catálogo exato, quantidade, prazo, compatibilidade e custos de terceiros permanecem em aberto.
 8. **Conflitos de benefícios:** distinguir benefício administrativo, promoção, Pix Automático, cortesia Básico por site, trial e plano pago; definir se são cumulativos ou não, o plano efetivo e a política para mudança sem perda de dados. **Não criar gratuidade acumulável como saldo ou reembolso.**
 9. **Reversão segura e falhas:** concessão/alteração/revogação idempotentes por organização, confirmação oficial de benefício e faturamento, rastreio de solicitações conflitantes, sem mudar contrato/site/tenant indevidamente.
 10. **Relatórios e governança:** painel central com concessões ativas/encerradas, plano concedido, responsabilidade, data, justificativa e visibilidade financeira controlada, sem exposição ao público de políticas promocionais internas.
@@ -64,12 +64,16 @@ A [CRM-DEC de vigência](CRM-DEC-gratuidade-vigencia-modalidades.md) registra o 
 | GRAT-P02 | Quais administradores gerais podem conceder, alterar, renovar e revogar? Exigir segunda aprovação ou apenas MFA/ação auditada? | Segurança / Administração |
 | GRAT-P03 | É possível iniciar imediatamente ou agendar concessão futura? Como tratar ciclo já pago? | FIN/CON |
 | GRAT-P04 — **PARCIAL** | **Vedada cobrança automática** após expiração/encerramento. Faltam avisos, transição operacional, direitos e prazos para contratação expressa ou portabilidade. | Comercial / FIN/CON / LGPD |
-| GRAT-P05 | Quais extras ou custos variáveis estão cobertos ou excluídos do benefício? | Comercial / Financeiro / donos de produtos |
+| GRAT-P05 — **PARCIAL** | **Aprovada a concessão administrativa gratuita de adicionais específicos, separada do plano**. Ainda definir catálogo elegível, unidades/quantidade, vigência, créditos IA, extras/custos de terceiros e regra financeira. [Detalhe](CRM-DEC-gratuidade-administrativa-adicionais-especificos.md). | Comercial / Financeiro / donos de produtos |
 | GRAT-P06 | Qual precedência entre plano pago, trial, cortesia Básico do site, promoção e gratuidade administrativa? | Planos / FIN/CON / Portal |
 | GRAT-P07 | Como distinguir desconto 100% sobre mensalidade, benefício manual e registro fiscal/contábil sem criar fatura cobrável? | FIN/CON / Fiscal |
 | GRAT-P08 | Quais limites para uso interno, relatórios, justificativas, auditoria, antiabuso e alteração de tenant/mesmo CNPJ? | Administração Geral / Segurança / Auditoria |
 
-## 6. Relações e controle de planejamento
+## 6. Nova aprovação: adicionais gratuitos por decisão separada
+
+O [registro próprio de gratuidade de adicionais](CRM-DEC-gratuidade-administrativa-adicionais-especificos.md) confirma a possibilidade funcional de conceder individualmente usuários extras, armazenamento e pacotes de IA sem cobrança do adicional escolhido. A gratuidade base do plano **não é uma gratuidade automática de todos os extras**. Os detalhes GRAT-EX-P01..08 ainda dependem de aprovação, inclusive vigência própria de pacotes de consumo e possíveis custos de terceiros.
+
+## 7. Relações e controle de planejamento
 
 - [CRM-REV-02 — Planos, Trial, Assinaturas e Cobranças](CRM-REV-02-planos-trial-assinaturas-cobrancas-basico.md): **nova modalidade aprovada** de concessão de mensalidade sem valor devido.
 - [CRM-REV-01 — Administração e Segurança](CRM-REV-01-nucleo-identidade-multitenant-permissoes.md): ato reservado ao Administrador Geral Imagine e permissões separadas do Admin da Empresa.
