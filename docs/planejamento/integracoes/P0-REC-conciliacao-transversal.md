@@ -123,5 +123,12 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - [P0-VER](P0-VER-matriz-compatibilidade-evolucao-versoes.md): comparação de CT-01..11 e das 24 fichas, sem migrações implícitas nem publicação autônoma.
 - **Estados preservados:** P0-SEC-01/P0-OWN-01/P0-VER-01 seguem abertos/parciais; G01..G06 inalterados. Nenhum código e nenhum teste técnico realizado.
 
-## 13. Restrição permanente
+## 13. Aceite SEC/VER e avanço de P0-ACC (03/11/2026)
+
+- [Aprovação expressa SEC/VER como bases](P0-DEC-aprovacao-SEC-VER-base.md), mantendo escolhas específicas de segurança/versionamento pendentes.
+- [18 planos HT](P0-ACC-planos-homologacao-HT01-HT18.md): procedimentos em minuta, **não executados** e ainda não validados como roteiros finais.
+- [Controle das evidências HT](P0-ACC-matriz-controle-evidencias-HT01-HT18.md): matriz de responsáveis funcionais, dependências e campos a completar, sem resultados de teste.
+- **P0-ACC-01 continua parcial/aberto e G01–G06 permanecem pendentes**; aceite funcional de cenários não é homologação técnica ou liberação da implementação.
+
+## 14. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
