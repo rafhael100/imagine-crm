@@ -98,7 +98,13 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - [CRM-REV-07](CRM-REV-07-agenda-profissionais-unidades-agendamentos.md): **minuta preparada**, com 42 itens funcionais de referência, seis exclusões expressas, 18 lacunas, sem iniciar integrações de calendário ou agenda pública.
 - O CRM global ainda não tem fechamento P0 de identidade, segurança, contratos e infraestrutura; nenhum teste executado ou programação iniciada.
 
-## 13. Próxima recomendação objetiva
+## 13. Aprovação da Agenda e gratuidade administrativa (03/11/2026)
+
+- [CRM-REV-07](CRM-REV-07-agenda-profissionais-unidades-agendamentos.md) foi [aprovada como base documental](CRM-DEC-aprovacao-REV-07-base.md), mantendo 18 lacunas AGD e seis rejeições expressas.
+- [CRM-DEC — Gratuidade administrativa de qualquer plano](CRM-DEC-gratuidade-administrativa-qualquer-plano.md): requisito funcional **aprovado** para Administrador Geral Imagine conceder plano Básico, Essencial, Profissional ou Empresarial a empresa cliente específica sem mensalidade base. Distinto da cortesia Básico por site, com **oito decisões GRAT-P pendentes** sobre implementação e cobranças.
+- A nova aprovação **não encerra CORE-P0, regras de FIN/CON, INT/IN-168/G01..G06 nem libera código, testes ou mudanças em produção**. Continuar revisão global.
+
+## 14. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
