@@ -1,7 +1,7 @@
 # CRM-REV-03 — Leads, contatos, campos personalizados, histórico e portabilidade
 
 **Data:** 2026-11-03.
-**Status:** **MINUTA DOCUMENTAL PARA REVISÃO — NÃO APROVADA**. Elaborada depois do [aceite da CRM-REV-02 como base documental](CRM-DEC-aprovacao-REV-02-base.md). Essa decisão **não aprova antecipadamente** a CRM-REV-03.
+**Status atualizado:** **APROVADA COMO BASE DOCUMENTAL**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-REV-03-base.md) em 03/11/2026. As 12 diferenças DAT-D01..12 e 12 pendências DAT-P01..12 **continuam abertas**, sem schemas nem direitos executáveis. [CRM-REV-04](CRM-REV-04-atendimento-whatsapp-conversas.md) foi elaborada **como minuta não aprovada**.
 **Âmbito:** CRM-06/07/16 e fronteiras com CRM-08/10/14/15/17. Consolidar direitos por entidade e fonte de dados, sem duplicar motores INT, Central IN-118, APIs dos Sites Imagine, Auditoria Geral ou IAM.
 **Restrições:** planejamento GitHub somente; não programar, executar testes, migrar dados, criar integrações/contas reais, alterar produção, aprovar custos, capturar leads reais ou contratar serviços.
 **Método:** comparar documentos históricos etiquetados como aprovados com regras mais específicas IN e decisões mais recentes. Sínteses históricas ainda não substituem verificação literal completa das propostas e aceites originais; P0-DOC/TR permanece aberto.
@@ -152,6 +152,6 @@ Esses DAT-T01..14 são **casos propostos de revisão**, não uma nova família e
 
 - **26 regras funcionais cotejadas**, com fontes históricas/currentes indicadas, sem declarar que cada detalhe de implementação esteja integralmente aprovado.
 - **12 divergências/riscos**, **12 pendências técnicas/funcionais** e **14 casos negativos para aceite futuro** organizados.
-- O aceite da [CRM-REV-02](CRM-DEC-aprovacao-REV-02-base.md) não se estende a este novo documento.
-- Se o responsável concordar, **aprovar CRM-REV-03 como BASE DOCUMENTAL DE REVISÃO**, mantendo não aprovados os parâmetros, schemas e direitos por campo ainda pendentes. Depois seguir à **CRM-REV-04 — Atendimento, WhatsApp e gestão de conversas**, com eventual conexão à área VEN a depender da estrutura histórica.
+- A [CRM-REV-03 foi aceita como base documental](CRM-DEC-aprovacao-REV-03-base.md), mas **não** foram aprovados schemas, parâmetros ou contratos executáveis, nem encerradas as pendências.
+- A CRM-REV-03 **já recebeu aceite como base documental**. A [CRM-REV-04 — Atendimento, WhatsApp e gestão de conversas](CRM-REV-04-atendimento-whatsapp-conversas.md) foi **preparada como minuta para revisão**, mantendo interfaces com VEN e os motores já existentes.
 - CORE-P0, IN-168, INT P0, G01..G06 e os P0 comerciais continuam em aberto. Nenhuma implementação ou execução de teste foi iniciada.
