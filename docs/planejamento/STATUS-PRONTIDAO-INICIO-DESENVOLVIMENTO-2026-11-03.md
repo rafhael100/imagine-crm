@@ -80,7 +80,13 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - [CRM-REV-04](CRM-REV-04-atendimento-whatsapp-conversas.md) está **em minuta para revisão**, a partir de fontes históricas do WhatsApp oficial, IA, posse, distribuição, transferência e fila FIFO.
 - Não concluir que o MVP inteiro está especificado, nem executar testes ou iniciar desenvolvimento até aprovação global.
 
-## 10. Próxima recomendação objetiva
+## 10. Continuidade CRM-REV-04/05 (03/11/2026)
+
+- [CRM-REV-04](CRM-REV-04-atendimento-whatsapp-conversas.md) recebeu [aprovação como base documental](CRM-DEC-aprovacao-REV-04-base.md); ATD-P01..14 permanecem pendentes.
+- [CRM-REV-05](CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md) está **em minuta**, separando operação obrigatória, automações comerciais e chatbots/IA/canais; limites de planos permanecem sujeitos à revisão final.
+- Os documentos são avanços de consolidação, não liberação de programação. Gates P0 de identidade/segurança/integrações/arquitetura continuam abertos.
+
+## 11. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
