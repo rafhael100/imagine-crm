@@ -117,7 +117,13 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - **Não converter o término da gratuidade em cobrança recorrente sem contratação expressa do cliente**. GRAT-P01/P04 permanecem parcialmente abertos; GRAT-P02/P03/P05..08 abertos.
 - A nova decisão não é aprovação da [CRM-REV-08](CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md) e **não libera programação**.
 
-## 16. Próxima recomendação objetiva
+## 16. Adicionais gratuitos com concessão administrativa independente (03/11/2026)
+
+- A [CRM-DEC — Gratuidade de adicionais específicos](CRM-DEC-gratuidade-administrativa-adicionais-especificos.md) registra **aprovação funcional** para o Administrador Geral Imagine conceder separadamente adicionais elegíveis (usuários extras, armazenamento e pacotes IA) gratuitamente por organização.
+- **Não há gratuidade automática de todos os extras** quando plano é gratuito; ao encerrar adicional gratuito não gerar cobrança recorrente sem contratação expressa. **GRAT-P05 parcialmente resolvido** e **GRAT-EX-P01..08 pendentes** sobre vigência, quantidades, cobrança, alçadas, preços e limites.
+- [CRM-REV-08](CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md) continua **minuta não aprovada**. Nenhuma programação/teste/implantação foi autorizada.
+
+## 17. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
