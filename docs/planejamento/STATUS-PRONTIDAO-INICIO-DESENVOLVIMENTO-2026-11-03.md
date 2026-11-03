@@ -74,7 +74,13 @@ Se o responsável posteriormente quiser **alterar expressamente o processo** e a
 - [CRM-REV-03](CRM-REV-03-leads-contatos-campos-historicos-portabilidade.md) reúne dados de leads/contatos, campos, históricos e portabilidade **em minuta**, não aceita automaticamente.
 - A conclusão das minutas não substitui fechamento P0 ou aceite global. **Não iniciado desenvolvimento, testes ou implantação.**
 
-## 9. Próxima recomendação objetiva
+## 9. Revisões funcionais CRM-REV-03/04 (03/11/2026)
+
+- [CRM-REV-03](CRM-REV-03-leads-contatos-campos-historicos-portabilidade.md) está **aceita como base documental**, sem fechar especificação física de lead, campo, exclusão, backup ou portabilidade.
+- [CRM-REV-04](CRM-REV-04-atendimento-whatsapp-conversas.md) está **em minuta para revisão**, a partir de fontes históricas do WhatsApp oficial, IA, posse, distribuição, transferência e fila FIFO.
+- Não concluir que o MVP inteiro está especificado, nem executar testes ou iniciar desenvolvimento até aprovação global.
+
+## 10. Próxima recomendação objetiva
 
 **Interromper por ora o aprofundamento indefinido de minutas INT em cascata** e priorizar um **Índice Mestre de Prontidão do CRM**, que compare `main` com as duas branches históricas e decisões conversacionais, classificando cada módulo em:
 - **Aprovado e consolidado**
