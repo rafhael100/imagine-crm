@@ -139,7 +139,14 @@
 | IA-T15 | Agente IA tenta cancelar serviço financeiro por texto: exigir dono FIN/CON e alçada |
 | IA-T16 | Credencial revogada enquanto comando está na fila: negar nova ação e reconciliar efeito anterior |
 
-## 8. Próxima aprovação e continuidade
+## 8. Complemento comercial aprovado: pacote de créditos IA gratuito por ato separado (03/11/2026)
+
+- A [CRM-DEC — Gratuidade de adicionais específicos](CRM-DEC-gratuidade-administrativa-adicionais-especificos.md) aprova que o Administrador Geral Imagine possa **conceder individualmente um pacote elegível de créditos de IA gratuitamente**, independentemente da mensalidade de um plano gratuito ou pago.
+- Esta **não** é autorização de IA ilimitada, nem aumento automático dos créditos incluídos do plano: o pacote, volume, validade, fonte, operação, saldo, idempotência, tratamento de consumo/cobranças e limites dependem de **GRAT-EX-P01..08** e **IA-P02..06**.
+- A divergência entre validade de 90 dias e saldo até consumo continua **pendente de cotejo da fonte original**. A concessão administrativa do pacote não resolve esse prazo por inferência.
+- A CRM-REV-08 **continua minuta não aprovada**, embora a **capacidade funcional de concessão gratuita de extras esteja aprovada** em decisão própria.
+
+## 9. Próxima aprovação e continuidade
 
 **Proposta:** aprovar CRM-REV-08 **como base documental de reconciliação**, reconhecendo 28 itens, 12 divergências, 15 pendências e 16 cenários futuros, sem homologar modelos, preços, prazos de créditos, permissões, perfis, dados de treinamento, APIs, custos ou programação.
 
