@@ -9,6 +9,11 @@ As transcrições exibidas abaixo **já estavam registradas neste arquivo no Git
 
 A [matriz de lacunas candidatas](P0-DOC-TR-deltas-candidatos-fonte-original.md) lista 28 temas de granularidade para futura confrontação, sem tratar resumos e metadados de buscas históricas como fonte primária.
 
+## Investigação histórica INT-08/INT-09 (03/11/2026)
+
+- [P0-ORIGEM-INT08-09](P0-ORIGEM-INT08-09-localizadores-historicos.md) registra indícios de mensagens de 02/11/2026 sobre propostas e aceite, e evidencia que os arquivos INT-08/09 no GitHub são sínteses posteriores.
+- A localização contextual **não reproduziu integralmente** as mensagens originais. Não transcrever como texto certificado nem encerrar P0-DOC-01/P0-TR-01.
+
 ## INT-10 — aceite disponível
 > Aprovo a opção 1: INT-10 Monitoramento Inteligente, Diagnóstico, Contingência e Recuperação de Integrações completa, conforme planejamento apresentado, preservando os módulos proprietários, os motores e serviços centrais, as confirmações oficiais, a segurança multiempresa, a recuperação automática controlada, as aprovações humanas e a auditoria. Vamos continuar com a INT-11, sem iniciar programação.
 
