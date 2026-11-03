@@ -1,7 +1,7 @@
 # P0-CON-MASTER — Matriz consolidada CT-01 a CT-11 e critérios de fechamento
 
 **Data:** 2026-11-03.
-**Situação:** **MATRIZ DE CONSOLIDAÇÃO DOCUMENTAL PROPOSTA PARA REVISÃO**. As **11 famílias CT-01..11 estão aceitas como BASES DOCUMENTAIS**, cada uma conforme seu próprio aceite, mas **esta nova matriz, seus critérios candidatos e seus detalhes por operação não foram aprovados individualmente**.
+**Situação:** **ACEITA COMO INSTRUMENTO DE ACOMPANHAMENTO DOCUMENTAL** em 2026-11-03, conforme [decisão contextual](P0-DEC-aprovacao-CON-MASTER-base.md). As **11 famílias CT-01..11 estão aceitas como BASES DOCUMENTAIS**, mas **os critérios candidatos desta matriz, direitos, parâmetros e detalhes de cada operação não foram aprovados individualmente como especificação executável**. [Primeiro lote de 15 operações](P0-CON-OP15-contratos-operacoes-impacto-elevado.md) permanece **proposta para revisão**.
 **Decisões de base:** [CT-01](P0-DEC-aprovacao-CT01-base.md), [CT-02](P0-DEC-aprovacao-CT02-base.md), [CT-03/04](P0-DEC-aprovacao-CT03-CT04.md), [CT-05..11](P0-DEC-aprovacao-CT05-CT11-base.md). Respeitam [INT-R01](INT-R01-governanca-contratos-homologacao.md) e [INT-R02](INT-R02-rastreabilidade-dependencias-validacao.md).
 **Fase e proibições:** só planejamento/documentação. Não programar, executar testes, criar novas automações, publicar conectores, criar serviços, migrar dados, contratar, gerar custo ou alterar produção.
 **Limite de proveniência:** [53 TR iniciais](P0-TR53-vinculo-contratos-aceite.md) referenciam contratos por hipótese documental, **sem cotejo integral** com as aprovações originais INT-01..12; [P0-DOC/TR](P0-TR-AUD-auditoria-proveniencia-requisitos.md) continuam abertos.
