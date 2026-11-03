@@ -154,7 +154,13 @@ Os 14 casos são **cenários documentais candidatos** a futuros critérios de ac
 - A concessão exige **ato administrativo separado da gratuidade do plano** e vale para a organização escolhida; **não** concede todos os extras automaticamente, não modifica tabela pública, nem aprova quantidade, prazo, preços, custo de provedor ou benefícios ilimitados.
 - A expiração/revogação **não ativa automaticamente cobrança recorrente**; qualquer continuidade paga exige aceite expresso. **GRAT-P05 parcialmente resolvido** e GRAT-EX-P01..08 abertos para contratos de FIN/CON e regras de entitlements.
 
-## 10. Aceite documental contextual e limites mantidos
+## 10. Decisão adicional: vigência de usuários/armazenamento e pacote quantificado de IA (03/11/2026)
+
+A [CRM-DEC — Vigência dos adicionais e créditos IA](CRM-DEC-gratuidade-adicionais-vigencia-e-pacotes-ia.md) **aprovou expressamente** que concessões administrativas gratuitas de **usuários extras** e **armazenamento adicional** possam ter **prazo determinado ou indeterminado**. A concessão gratuita de **créditos de IA** será em **pacotes de quantidade definida**, com **validade e consumo regidos pela política específica ainda a fechar**. As opções de vigência dos usuários/GB **não se aplicam automaticamente aos créditos IA**.
+
+A quantidade de unidades em cada ato, sem default inventado; limites e acumulação, catálogo, início/avisos/encerramento, regras de assinaturas já pagas e fiscal seguem pendentes. **Não cobrar automaticamente** quando acabar concessão gratuita. **GRAT-EX-P02/P03/P05 parcialmente resolvidas**, não concluídas.
+
+## 11. Aceite documental contextual e limites mantidos
 
 **CRM-REV-02 foi aceita como base documental de reconciliação funcional** no [CRM-DEC correspondente](CRM-DEC-aprovacao-REV-02-base.md), reconhecendo COM-R01..20, os regimes distintos de trial/assinatura/site e o registro de divergências REV02-D01..12. O aceite **não homologou** preços finais, pacotes de IA, alçadas de cobrança, provedores, prazos físicos, campanhas ou contratos de API.
 
