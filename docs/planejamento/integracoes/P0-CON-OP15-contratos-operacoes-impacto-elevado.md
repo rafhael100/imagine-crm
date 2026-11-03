@@ -444,7 +444,11 @@
 **Status da ficha:** **DETALHAMENTO PROPOSTO PARA REVISÃO**. Aprovação das CT/OP24 é base de arquitetura, não homologação das regras físicas acima.
 
 
-## 4. Nove operações de referência restantes — segundo lote documental
+## 4. Nove operações complementares do segundo lote (já documentadas posteriormente)
+
+**Atualização de 03/11/2026:** as nove fichas listadas abaixo foram **redigidas em proposta documental** em [P0-CON-OP09](P0-CON-OP09-contratos-operacoes-complementares.md). O status histórico 'pendente de especialização' na tabela abaixo corresponde ao momento em que este primeiro lote foi produzido. Consulte o [índice consolidado dos 24 casos](P0-CON-OP24-indice-consolidado-contratos-por-operacao.md) para a situação atual. Nenhuma das 24 fichas especializadas recebeu aceite definitivo.
+
+
 
 | OP | Por que ficou no segundo lote | Status |
 |---|---|---|
