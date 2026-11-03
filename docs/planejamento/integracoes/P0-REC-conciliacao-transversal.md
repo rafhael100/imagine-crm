@@ -116,5 +116,12 @@ O estado permanece **parcial/aberto** para P0-DOC-01, P0-TR-01, P0-OWN-01, P0-CO
 - [CT-02](P0-CT02-autorizacoes-permissoes-alcadas-por-operacao.md): proposta de permissões/alçadas contextuais para 24 operações, com casos candidatos de validação negativa, não testados.
 - P0-OWN-01, P0-SEC-01, P0-CON-01, P0-TR-01, P0-DOC-01, P0-ACC-01 e G01–G06 **não** se tornam concluídos por existir a matriz.
 
-## 12. Restrição permanente
+## 12. CT-02 aceita como base e matrizes complementares (03/11/2026)
+
+- [Decisão contextual CT-02](P0-DEC-aprovacao-CT02-base.md): princípios aceitos como base, parâmetros de segurança/alçadas ainda sujeitos a decisão.
+- [P0-SEC](P0-SEC-politicas-autorizacao-CT02.md): 24 casos de revisão contextual, revalidação de atos protegidos e cenários candidatos, **sem conceder novas permissões**.
+- [P0-VER](P0-VER-matriz-compatibilidade-evolucao-versoes.md): comparação de CT-01..11 e das 24 fichas, sem migrações implícitas nem publicação autônoma.
+- **Estados preservados:** P0-SEC-01/P0-OWN-01/P0-VER-01 seguem abertos/parciais; G01..G06 inalterados. Nenhum código e nenhum teste técnico realizado.
+
+## 13. Restrição permanente
 **Esta conciliação é trabalho documental, não nova INT, motor ou serviço.** Sem alteração de regras comerciais, automações, módulos proprietários, infraestrutura ou dados de produção.
