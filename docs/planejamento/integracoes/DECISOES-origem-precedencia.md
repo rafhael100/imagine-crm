@@ -63,5 +63,10 @@ Novas sugestões, interpretações da IA, exemplos e alternativas não são deci
 - [P0-DOC-TR](P0-DOC-TR-deltas-candidatos-fonte-original.md) inclui 28 investigações candidatas de granularidade; são perguntas documentais sobre as sínteses, não novas decisões funcionais.
 - [P0-ORIGEM](P0-ORIGEM-aprovacoes-dialogo.md) informa que os aceites preservados nesse arquivo ainda precisam ser confrontados contra o registro primário de mensagem para certificação literal. Não utilizar metadados históricos como transcrição.
 
+## Aceite CT-05 a CT-11 e revisão cruzada (03/11/2026)
+
+- [P0-DEC CT-05..11](P0-DEC-aprovacao-CT05-CT11-base.md): resposta “ok” à recomendação de aceitar sete minutas como **bases documentais**, sem homologar schemas ou execução.
+- [P0-CON CT-01..11](P0-CON-revisao-cruzada-CT01-CT11.md): matriz de fronteiras e 13 riscos documentais; CT-01 permanece apenas família conceitual, e vínculos TR/CT são hipóteses rastreáveis até cotejo literal.
+
 ## Regra de mudança
 Toda divergência deve registrar: ID do requisito, texto/referência original, texto divergente, impacto, decisão expressa requerida, estado e histórico de resolução. Sem correção silenciosa da decisão de negócio.
