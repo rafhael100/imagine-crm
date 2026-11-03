@@ -48,6 +48,7 @@
 - [P0-DOC-TR — 28 lacunas candidatas de granularidade por fonte](P0-DOC-TR-deltas-candidatos-fonte-original.md) — revisão contra sínteses, fonte literal pendente
 - [P0-FOCO-INT08-09 — Confronto de 11 TR e 8 lacunas candidatas](P0-FOCO-INT08-09-confronto-11TR-8lacunas.md) — decisões correlatas verificadas, origem literal pendente
 - [P0-ORIGEM INT08/09 — Localizadores históricos e limites da fonte](P0-ORIGEM-INT08-09-localizadores-historicos.md) — cronologia parcial, sem transcrição original
+- [P0-CON CT-05 a CT-11 — Eventos, sync, lotes, processos, recuperação, compensação e auditoria](P0-CON-CT05-CT11-contratos-integracoes-minuta.md) — sete contratos em minuta para revisão, sem homologação
 - [P0-DEP — Dependências e fronteiras críticas](P0-DEP-dependencias-criticas-e-fronteiras.md)
 - [P0-GATE — Situação dos 11 P0 e G01–G06](P0-GATE-painel-fechamento-rastreabilidade-dependencias.md)
 
