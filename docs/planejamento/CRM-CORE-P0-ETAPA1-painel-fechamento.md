@@ -49,10 +49,17 @@
 
 ## Etapa 2 — CORE01-D06 preliminar e CORE01-D07 em proposta (04/11/2026)
 
-O responsável [aceitou **CORE01-D06-A/B/C/D como diretrizes documentais preliminares**](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md) (fonte de autoridade, ciclos independentes, titularidade e vínculo idempotente, portabilidade/retentão). **CORE01-D06 continua aberta**, pendente CORE08, FIN/CON, Portal/Sites, INT e Segurança. [**CORE01-D07 v0.1**](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md) foi preparada para avaliação: A/B/C/D **não aprovadas**, sem schema/role/SQL físicos.
+O responsável [aceitou **CORE01-D06-A/B/C/D como diretrizes documentais preliminares**](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md) (fonte de autoridade, ciclos independentes, titularidade e vínculo idempotente, portabilidade/retentão). **CORE01-D06 continua aberta**, pendente CORE08, FIN/CON, Portal/Sites, INT e Segurança. [**CORE01-D07 v0.1**](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md) foi preparada para avaliação: A/B/C/D **aprovadas somente preliminarmente** [CRM-DEC](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md), mantendo CORE01-D07 aberta e sem schema/role/SQL físicos.
 
 **CORE01-D04/D05/D06/D07 e os 67 IDs técnicos continuam em aberto**, com SEG-01/02, ARQ, AGT, INT G01..G06 e fechamento global. **Não iniciar programação, testes executáveis ou implantação.**
 
 ## DEV-GATE-00 — Checklist unificado de prontidão (04/11/2026)
 
 Foi criada a [**minuta de checklist único de liberação para desenvolvimento**](CRM-DEV-GATE-00-checklist-unico-liberacao-desenvolvimento-v0.1.md), para consolidar CORE, IN-168, INT G01..G06, REV/FIN/CON, LGPD e escopo de fases sem criar gates ou motores novos. **Estado atual: NO-GO**. O checklist tem oito grupos de evidência e sequência de fechamento documental; não encerra os **67 IDs CORE abertos**, não aprova CORE01-D07, SEG-01/SEG-02, ARQ/AGT ou INT P0, e não modifica preços/contratos. **Qualquer GO para programar depende de aceite final expresso em baseline GitHub identificada**. Nenhum teste ou implementação foi autorizado.
+
+
+## Etapa 2 — D07 preliminar aprovado e R01 consolidada (04/11/2026)
+
+[**CORE01-D07-A/B/C/D**](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md) aprovadas somente como **diretrizes documentais preliminares**. A [**proposta CORE01-D07**](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md) foi aditada, mas **CORE01-D07 continua ABERTA** até os contratos CORE02..09, SEG-01/02, INT e Segurança. CORE01-D04/D05/D06 seguem abertas.
+
+Publicada a [**consolidação transversal da Etapa 2 — R01**](CRM-CORE-P0-ETAPA2-R01-consolidacao-contratos-e-dependencias-tecnicas-v0.1.md): 12 contratos compartilhados com competências, dependências e critério documental de saída; **não** cria nova série de P0 ou motores, não resolve os **67 IDs CORE abertos** e mantém IN-168, INT, G01..G06, FIN/CON e gate global. Próxima análise sugerida: **CORE02-D04 — campos e acesso**. Estado geral **NO-GO para programação, testes e implantação**.
