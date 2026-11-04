@@ -1,7 +1,7 @@
 # CRM-AUT-MAT01 — Matriz de elegibilidade de automações por plano (v0.1)
 
 **Data:** 04/11/2026.  
-**Status:** **PROPOSTA COMERCIAL-FUNCIONAL PARA REVISÃO, AINDA NÃO APROVADA.**  
+**Status atualizado:** **ACEITA COMO BASE DOCUMENTAL DE REVISÃO** em 04/11/2026 ([registro de aceite](CRM-DEC-aceite-base-AUT-MAT01-2026-11-04.md)); **as elegibilidades candidatas, os números finais e os contratos por plano não foram homologados nem aprovados individualmente**.  
 **Fato já aprovado:** [CRM-AUT-CAT01 aceito como referência funcional](CRM-DEC-aceite-referencia-CAT01-2026-11-04.md), não como catálogo de produtos nem permissão executável; [motor próprio CRM](CRM-DEC-motor-proprio-automacoes-crm-n8n-interno-2026-11-04.md).  
 **Objetivo:** avançar a elegibilidade de **Básico, Essencial, Profissional, Empresarial e Trial** por capacidades de gatilho/condição/ação, separando **direitos já documentados, referências numéricas pendentes e sugestões comerciais que exigem novo aceite**.
 
@@ -153,7 +153,7 @@ Recomenda-se aceitar **esta matriz como base de segmentação comercial e técni
 - declarar concluídos AUT-P01..14, CORE/INT-P0/SEG/G01..G06,
 - contratar serviços nem iniciar programação.
 
-**Status após emissão:** AUT-CAT01 é **referência funcional aceita**; AUT-MAT01 é **proposta sujeita a aceite específico**. A especificação documental não autoriza provisionamento, testes reais, desenvolvimento ou cobrança.
+**Status atualizado após aceite documental de 04/11/2026:** AUT-CAT01 é **inventário funcional de referência aceito**; AUT-MAT01 é **base de revisão comercial aceita**, mas toda marcação **P/C/—**, quotas finais, templates habilitados, contratos, direitos e permissões aguardam deliberação específica. A especificação documental não autoriza provisionamento, testes reais, desenvolvimento ou cobrança.
 
 ## Fontes
 
@@ -164,3 +164,8 @@ Recomenda-se aceitar **esta matriz como base de segmentação comercial e técni
 - [CRM-REV-07 e agenda](CRM-REV-07-agenda-profissionais-unidades-agendamentos.md)
 - [CRM-AUT-P0 v0.1 e contrato seguro](CRM-AUT-P0-execucao-segura-motor-proprio-automacoes-v0.1.md)
 - [CRM-DEC motor próprio / n8n interno](CRM-DEC-motor-proprio-automacoes-crm-n8n-interno-2026-11-04.md)
+
+
+## 11. Registro de aceite limitado (04/11/2026)
+
+O responsável respondeu “ok” ao avanço da **matriz por plano**, registrado na [CRM-DEC AUT-MAT01](CRM-DEC-aceite-base-AUT-MAT01-2026-11-04.md). **A aprovação refere-se à utilização desta matriz como base de revisão**, não à contratação ou habilitação automática de modelos, ações, canais ou editor. Mantêm-se **AUT-MAT-P01..P10, AUT-P01..14, CORE/INT/SEG e demais P0**. Nenhum código, teste, gasto ou ativação autorizados.
