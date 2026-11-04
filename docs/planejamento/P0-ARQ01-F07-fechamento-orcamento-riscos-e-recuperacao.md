@@ -72,10 +72,15 @@ Sem preços verificáveis e cotação total não há TCO oficial para aprovar. C
 
 ## 6. Deliberações pendentes para a próxima aprovação
 
-- **F07-D01**: adotar E1B como **alvo de projeto para primeira produção**, sujeito aos critérios de qualidade/recuperação, ou escolher E2 de imediato?
+- **F07-D01 — DECIDIDO (03/11/2026):** **E1B aprovado como arquitetura-alvo do primeiro lançamento**, sujeito à homologação de segurança, custo, recuperação, aceitação de risco e disponibilidade. **Se o E1B não cumprir os requisitos, reavaliar e elevar para E2 antes de clientes reais.** [Registro expresso](CRM-DEC-aprovacao-E1B-alvo-primeiro-lancamento-2026-11-03.md).
 - **F07-D02**: estabelecer limite mensal de investimento para a **infraestrutura do CRM** e outro limite distinto para o **ecossistema completo** (Portal, n8n, agentes, duas APIs e segurança).
 - **F07-D03**: confirmar região preferencial após cotação e latência, sem assumir que Washington é mais rápida.
 - **F07-D04**: definir orçamento e metas condicionais de reposição/recuperação; se requisitos de RPO/RTO não forem cumpridos, revisar para E2 antes de admitir clientes.
 - **F07-D05**: aceitar esta ficha como guia de fechamento documental ARQ-01 após conciliação com F01 e decisões específicas, sem declarar pronta a produção.
 
-**Resultado:** F07 aceita como **guia documental** de fechamento; as deliberações F07-D01..D04 permanecem pendentes de decisão específica, orçamento, evidência e homologação. **ARQ-01, CON-01 e demais gates P0 permanecem abertos.** Não há software, contrato, instalação ou testes iniciados. Evitar criação de novas fichas sucessivas sem resolução de pendências concretas.
+**Resultado:** F07 aceita como **guia documental** de fechamento; F07-D01 está decidido como direção arquitetural; F07-D02..D04 permanecem pendentes de decisão específica, orçamento, evidência e homologação. **ARQ-01, CON-01 e demais gates P0 permanecem abertos.** Não há software, contrato, instalação ou testes iniciados. Evitar criação de novas fichas sucessivas sem resolução de pendências concretas.
+
+
+## Atualização 03/11/2026 — decisão de arquitetura-alvo E1B
+
+O responsável aprovou expressamente o **E1B como modelo inicial de referência**, sujeito à homologação. [CRM-DEC específica](CRM-DEC-aprovacao-E1B-alvo-primeiro-lancamento-2026-11-03.md). Isso fecha **somente F07-D01** em nível de **direção de projeto**, não a infraestrutura real. E1B não permite clientes reais sem validações e aceite de riscos; quando inviável técnica ou financeiramente, avaliar E2. F07-D02 orçamento, D03 região e D04 metas/risco ficam abertos. ARQ-01 continua P0 parcial e não há liberação de programação.
