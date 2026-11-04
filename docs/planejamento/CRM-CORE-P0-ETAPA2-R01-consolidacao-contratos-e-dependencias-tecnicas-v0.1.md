@@ -75,3 +75,7 @@ Para cada decisão de cada pacote, manter **fonte e link/commit**, texto normati
 **Status preservados:** CORE01-D04..D07 e CORE02..CORE10-D04..D10 — **67 ABERTOS**. ARQ-01/02/03, SEG-01/02, AGT-01, FIN/CON, INT P0, G01..G06, LGPD, licenças, preços finais, custos e revisão global — **ABERTOS**. DEV-GATE-00 — **NO-GO**.
 
 **Nenhuma programação, teste executável, SQL/migração, provisionamento, alterações em produção, tratamento de dados reais, mudança de contrato, despesa ou implantação foi autorizada ou realizada.**
+
+## 6. Avanço documental CORE02-D04 — inventário, classificação e exposição de campos (04/11/2026)
+
+A [**minuta CORE02-D04 de classificação de campos e visibilidade por operação**](CRM-CORE-P0-ETAPA2-CORE02-D04-classificacao-campos-visibilidade-proposta-v0.1.md) detalha o contrato E2-X02 em quatro propostas **D04-A/B/C/D ainda NÃO APROVADAS**: dicionário/proprietário/classificação; exposição por ação/canal/escopo; campos personalizados/derivados/exportação; evidências negativas/segregação. **CORE02-D04..D10 permanecem ABERTAS** e nenhuma política física ou permissão nova foi autorizada. A continuação documental foi autorizada; não houve homologação, teste ou programação. CORE01-D04..D07, 67 IDs CORE, SEG-01/02, INT P0/G01..G06 e DEV-GATE-00 NO-GO permanecem inalterados.
