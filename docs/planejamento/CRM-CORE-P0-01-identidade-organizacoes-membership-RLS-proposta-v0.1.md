@@ -1,7 +1,7 @@
 # CRM-CORE-P0-01 — Identidade, organizações, memberships e isolamento RLS (v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL PARA DELIBERAÇÃO — NÃO APROVADA COMO NOVA DECISÃO. CORE-P0-01 EM REVISÃO, NÃO ENCERRADO.**  
+**Estado atualizado em 04/11/2026:** **CORE01-D01, D02 e D03 APROVADAS COMO BASE LÓGICA DOCUMENTAL**, conforme [CRM-DEC — aprovação CORE-P0-01 D01–D03](CRM-DEC-aprovacao-CORE-P0-01-D01-D03-base-logica-2026-11-04.md). **CORE-P0-01 permanece PARCIAL/ABERTO** para D04–D07 e especificação executável. As passagens abaixo que indicam pendência de voto D01–D03 são a redação histórica anterior ao aceite.  
 **Fase:** planejamento exclusivo. Sem programação, alteração de infraestrutura, execução de testes, contratação ou implantação.  
 **Escopo:** primeiro dos dez CORE-P0 do [CRM-REV-01](CRM-REV-01-nucleo-identidade-multitenant-permissoes.md). Não reabre o que foi aprovado anteriormente nem substitui CORE-P0-02..10, SEG, INT, FIN/CON e IN-168.
 
@@ -98,3 +98,9 @@ Estes cenários devem ser reunidos aos critérios S01..S10 do CRM-REV-01 e INT/S
 - `CRM-REV-01` permanece base documental aprovada; este arquivo é uma proposta derivada, **sem voto adicional** até manifestação expressa do responsável.
 - Outras pendências CORE-P0-02..10, INT P0, SEG-01/02, ARQ-01/02/03, AGT-01 e G01..G06 permanecem abertas.
 - Este registro não concede permissões, não altera assinaturas, não muda infraestrutura, não libera programação, não executa teste e não substitui a autorização final global.
+
+## 8. Aditamento de decisão expressa (04/11/2026)
+
+O responsável **aprovou CORE01-D01, CORE01-D02 e CORE01-D03 como base documental do modelo lógico** conforme [CRM-DEC — aprovação CORE-P0-01 D01–D03](CRM-DEC-aprovacao-CORE-P0-01-D01-D03-base-logica-2026-11-04.md). Os modelos lógicos e invariantes I01–I10 na seção 4 são aceitos apenas como referência de especificação, **não** como schema, política física RLS, novo privilégio, prova de segurança ou implantação.
+
+**D04–D07 permanecem abertas**, como também CORE-P0-02 a 10, INT P0, IN-168 e gates G01–G06. **Próximo bloco: CORE-P0-02**, sem programação. Esta seção prevalece sobre os rótulos históricos anteriores que solicitavam aprovação D01–D03.
