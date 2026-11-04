@@ -162,3 +162,8 @@ Por resposta “ok” à recomendação de **Alternativa A — avisos internos**
 **Efeito escolhido:** aviso **interno comercial** ao administrador autorizado, sujeito ao contrato oficial de notificações A03 e à validação de direitos, estado e tenant. **Não criar tarefas automaticamente A01** nesses dois modelos da primeira versão; a hipótese TAR-B/TAR-C não foi aprovada. **A escolha de tipo de efeito não equivale à aprovação individual dos modelos.**
 
 Continuam pendentes: eventos canônicos, fontes, prazo/interação válida do LEA-02, contenção de avisos repetidos, autorização técnica A03 e política de retenção, slots finais, casos de teste e homologação CORE/SEG/INT. Os lembretes operacionais da Agenda permanecem **SO fora das vagas comerciais**. Nenhuma programação, implantação, compra ou ativação autorizada.
+
+
+## 10. Complemento de critérios LIB04: interação, prazos e antiduplicidade (04/11/2026)
+
+A [AUT-LIB04 v0.1](CRM-AUT-LIB04-criterios-interacao-prazos-antiduplicidade-LEA01-LEA02-v0.1.md) foi preparada como **proposta sujeita a deliberação específica**. Recomenda LEA-02 com semântica de **primeiro atendimento pendente pela empresa**, separada de "cliente não respondeu"; sugere marcar interação válida somente por fato oficial auditável, **24h corridas como prazo padrão candidato** e opções guiadas 4/12/24/48/72h. Prevê um aviso por evento/ciclo, sem reiniciar por leitura ou por mudança de versão. **Nada disso está aprovado como parâmetro final**, salvo a diretriz TAR-A já vigente. Preservar LIB04-P01..P09, AUT-P01..14, LIB02-P01..P08 e gates P0; sem implementação.
