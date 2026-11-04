@@ -1,7 +1,7 @@
 # CRM-CORE-P0-01 — Etapa 2 / CORE01-D04 a D07: memberships, contexto de tenant, ciclos e RLS (proposta v0.1)
 
 **Data:** 04/11/2026.  
-**Estado atualizado em 04/11/2026:** **CORE01-D04-A/B/C aprovadas apenas como diretrizes técnicas documentais preliminares** [decisão](CRM-DEC-aprovacao-CORE01-D04-ABC-diretrizes-preliminares-2026-11-04.md); **CORE01-D04 (item integral), D05, D06 e D07 continuam ABERTAS** e não homologadas. A redação histórica posterior que indica D04-A/B/C ainda não aprovadas foi superada pelo aceite parcial.  
+**Estado atualizado em 04/11/2026:** **CORE01-D04-A/B/C**, **D05-A/B/C/D** e **D06-A/B/C/D** aprovadas **somente como diretrizes técnicas documentais preliminares** conforme registros de decisão; **CORE01-D04, D05, D06 e D07 permanecem ABERTAS**. [D06 — aceite expresso](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md); [D07 — nova proposta não aprovada](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md). Menções históricas a D04–D06 como propostas não aprovadas ficam superadas apenas quanto às subdiretrizes aceitas, não quanto ao fechamento técnico.  
 **Finalidade:** desdobrar quatro dependências técnicas da [base lógica CORE-P0-01 D01–D03 aprovada](CRM-CORE-P0-01-identidade-organizacoes-membership-RLS-proposta-v0.1.md) em contratos verificáveis e opções de decisão.  
 **Vínculo:** [Etapa 2 — matriz de pendências](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md) e [registro de aprovação metodológica CORE10](CRM-DEC-aprovacao-CORE-P0-10-D01-D03-base-homologacao-2026-11-04.md).  
 **Fase:** estritamente planejamento. **Não criar schema, migração, RLS real, endpoint, ambiente de teste, conta de usuário, job, credencial, provisionamento, programação nem executar qualquer teste**.
@@ -183,3 +183,10 @@ O responsável aprovou [CORE01-D05-A/B/C/D](CRM-DEC-aprovacao-CORE01-D05-ABCD-di
 ## 11. CORE01-D06 — proposta única para deliberação
 
 A proposta [CORE01-D06 — ciclos organizacionais e comerciais](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-tenants-vinculos-comerciais-proposta-v0.1.md) organiza D06-A/B/C/D como **diretrizes ainda não aprovadas** e detalha os casos futuros. Não há anexo concorrente. D04/D05 permanecem abertas com princípios preliminares aceitos; D06/D07 e demais bloqueios técnicos seguem abertos, sem programação ou testes.
+
+
+## 12. Aditamento — CORE01-D06 aprovado preliminarmente e proposta CORE01-D07 (04/11/2026)
+
+[**CORE01-D06-A/B/C/D**](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md) foram aprovadas exclusivamente como diretrizes técnicas documentais preliminares; **D06 integral permanece ABERTA** até contratos CORE08, FIN/CON, Portal/Sites, INT e Segurança. CORE01-D04/D05 continuam abertas, exigindo conciliações com CORE02/03/04/05/07/08/09 e SEG-01/02. Publicada [**CORE01-D07 — proposta documental de modelo físico, integridade, RLS e contratos**](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md); D07-A/B/C/D **aguardam decisão**, e mesmo eventual aceite preliminar não selecionará schema, roles, policies ou condições executáveis.
+
+Nenhum CORE01-D04..D07 ou CORE-P0 foi fechado. Mantidos os **67 IDs técnicos**, IN-168 ARQ/SEG/AGT, INT P0/G01..G06, FIN/CON, LGPD e aprovação final. **Sem programação, testes ou implantação.**
