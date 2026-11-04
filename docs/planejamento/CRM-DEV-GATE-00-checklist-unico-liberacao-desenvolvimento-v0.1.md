@@ -89,3 +89,8 @@ O desenvolvimento **poderá ser organizado** por entregas, após **o planejament
 ## 7. Consolidação Etapa 2 R01 e aprovação preliminar D07 — 04/11/2026
 
 [**CORE01-D07-A/B/C/D**](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md) foram **aprovadas somente como diretrizes técnicas documentais preliminares**, sem especificação física aprovada. A [**Etapa 2 — R01**](CRM-CORE-P0-ETAPA2-R01-consolidacao-contratos-e-dependencias-tecnicas-v0.1.md) consolida doze interfaces de contrato, responsáveis por competência e caminho documental de fechamento, sem criar novos P0, gates ou serviços. Todos **67 IDs CORE técnicos permanecem abertos** e IN-168 ARQ/SEG/AGT, INT P0/G01..G06, FIN/CON, LGPD, custeio/licenças e revisão global continuam pendentes. **DEV-GATE-00 permanece NO-GO**, sem programação, testes executáveis, implantação ou autorização de produção.
+
+
+## 8. CORE02-D04 aceito preliminarmente e D05 pendente (04/11/2026)
+
+[**CORE02-D04-A/B/C/D**](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md) foram aprovadas apenas como diretrizes documentais preliminares. **CORE02-D04 permanece ABERTA** por catálogo concreto e direitos por módulo. [**CORE02-D05**](CRM-CORE-P0-ETAPA2-CORE02-D05-combinacao-perfis-negacoes-delegacao-proposta-v0.1.md) foi apenas proposta, sem aceite. Os 67 IDs CORE, SEG-01/02, ARQ/AGT, INT P0/G01..G06 e demais blocos continuam abertos. **DEV-GATE-00 continua NO-GO para iniciar programação, testes executáveis ou implantação**.
