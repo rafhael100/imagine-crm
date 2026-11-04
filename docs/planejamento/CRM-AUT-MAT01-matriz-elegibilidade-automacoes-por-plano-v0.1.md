@@ -179,3 +179,8 @@ Foi elaborada a [CRM-AUT-LIB01 v0.1](CRM-AUT-LIB01-biblioteca-modelos-basico-edi
 ## 13. Aceite LIB01 e estudo individual LIB02 (04/11/2026)
 
 A [AUT-LIB01](CRM-AUT-LIB01-biblioteca-modelos-basico-editores-por-plano-v0.1.md) foi **aceita como base documental**, conforme [CRM-DEC](CRM-DEC-aceite-base-AUT-LIB01-2026-11-04.md). A [AUT-LIB02](CRM-AUT-LIB02-revisao-individual-modelos-basico-v0.1.md) examina, **ainda como proposta não aprovada**, LEA-01/02, TSK-01, AGD-01/02/03 e a divergência OPP-01. **Ações de criar tarefa comercial A01 no Básico não estão comprovadas pela aprovação de notas e histórico manual IN-023**; revisar direito específico antes de homologar modelos. Avisos SO da Agenda não contam slot. Manter AUT-MAT-P01..P10, AUT-P01..14 e LIB-P01..P12 abertos. Sem código, gasto ou ativação.
+
+
+## Atualização de 04/11/2026 — escolha TAR-A nos modelos LEA-01/LEA-02
+
+A [decisão TAR-A](CRM-DEC-escolha-TAR-A-avisos-internos-LEA01-LEA02-2026-11-04.md) **aprovou avisos comerciais internos como tipo de efeito para a primeira versão pretendida de LEA-01 e LEA-02**, **sem tarefas comerciais automáticas**. A **aprovação individual dos modelos**, o contrato de notificação A03, fontes oficiais T01/T13, direito executável, prazo de inatividade, retenção e testes **continuam pendentes**. Essa escolha **não muda o catálogo geral ou os limites por plano** e não confunde avisos comerciais opcionais (com slot, após aprovação individual) com avisos operacionais obrigatórios da Agenda (sem slot). Somente planejamento.
