@@ -79,3 +79,10 @@ O responsável [aprovou **CORE02-D04-A/B/C/D como diretrizes documentais prelimi
 ## Etapa 2 — CORE02-D05 preliminarmente aprovado, CORE02-D06 em proposta (04/11/2026)
 
 [**CORE02-D05-A/B/C/D**](CRM-DEC-aprovacao-CORE02-D05-ABCD-diretrizes-preliminares-2026-11-04.md) **aprovadas somente como diretrizes técnicas documentais preliminares**, sem escolher combinação final P1..P4/precedência de negações. **CORE02-D04 e D05 continuam abertas**. Foi preparada a [**minuta CORE02-D06 — catálogo de ações e permissões por módulo**](CRM-CORE-P0-ETAPA2-CORE02-D06-catalogo-acoes-por-modulo-proposta-v0.1.md), com D06-A/B/C/D **NÃO APROVADAS** e dependências CORE02-D04/D05/D07..D10, CORE01-D04..D07, SEG-01/02, INT/FIN/CON, segurança e proprietários. Todos os **67 IDs técnicos CORE permanecem ABERTOS**, IN-168 e G01..G06 abertos e DEV-GATE-00 **NO-GO**. Nenhuma programação, teste executável ou implantação autorizada.
+
+
+## Fast-track — autorização posterior de F0 (04/11/2026)
+
+O responsável autorizou [**desenvolvimento inicial F0 do CRM Imagine em branch isolada**](CRM-DEC-FASTTRACK-autorizacao-desenvolvimento-controlado-2026-11-04.md), sem declarar fechamento técnico dos **67 identificadores CORE** ou dos bloqueios SEG/ARQ/INT. [**Branch de código F0**](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04), restrita a estrutura sem dados reais e classes de negação por padrão.
+
+**GO F0:** implementação inicial controlada. **NO-GO:** produção, integração/financeiro/segredos com efeitos reais, merge de funções sensíveis, testes não realizados e qualquer implantação sem gates específicos. A documentação de CORE-P0-02 a CORE-P0-10 continua com status técnico parcial; linhas históricas de NO-GO absoluto devem ser lidas com a exceção expressa F0.
