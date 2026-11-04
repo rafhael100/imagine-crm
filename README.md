@@ -23,6 +23,7 @@
 - [CRM-AUT-LIB01 v0.1 — Biblioteca de modelos Básico e editores por plano](docs/planejamento/CRM-AUT-LIB01-biblioteca-modelos-basico-editores-por-plano-v0.1.md) — **base documental aceita**, candidatos B1/B2 e proposta de editores diferenciados; modelos específicos, quotas e LIB-P01..P12 ainda pendentes.
 - [CRM-DEC — Aceite AUT-LIB01 como base documental](docs/planejamento/CRM-DEC-aceite-base-AUT-LIB01-2026-11-04.md) — aceite limitado da estrutura da biblioteca, não dos modelos nem da habilitação de recursos.
 - [CRM-AUT-LIB02 v0.1 — Revisão individual de modelos Básico](docs/planejamento/CRM-AUT-LIB02-revisao-individual-modelos-basico-v0.1.md) — **estudo para revisão**, LEA-01/02, TSK-01, AGD-01/02/03; atenção: tarefas comerciais avançadas não comprovadas no Básico, LIB02-P01..P08 abertos.
+- [CRM-DEC — TAR-A avisos internos no Básico](docs/planejamento/CRM-DEC-escolha-TAR-A-avisos-internos-LEA01-LEA02-2026-11-04.md) — **diretriz funcional aprovada** para LEA-01/LEA-02; sem tarefas automáticas, modelos ainda sem homologação.
 - [CRM-DEC — Aceite da AUT-MAT01 como base documental](docs/planejamento/CRM-DEC-aceite-base-AUT-MAT01-2026-11-04.md) — aceite sem homologação de quotas, contratos, preços nem autorização de programação.
 - [CRM-DEC — Aceite da base AUT-P0 de execução segura](docs/planejamento/CRM-DEC-aceite-base-AUT-P0-execucao-segura-2026-11-04.md) — aceite das diretrizes apresentadas, **sem homologar schemas, números, infraestrutura nem programação**.
 - [CRM-DEC — Aprovação da CRM-REV-05](docs/planejamento/CRM-DEC-aprovacao-REV-05-base.md).
