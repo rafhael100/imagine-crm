@@ -106,6 +106,39 @@ final class PostgresMembershipRlsTest extends TestCase
         }
     }
 
+    public function test_cross_tenant_update_is_rejected_by_with_check(): void
+    {
+        $probe = DB::connection('pgsql_rls_probe');
+        $probe->beginTransaction();
+
+        try {
+            $probe->selectOne("SELECT set_config('app.tenant_id', ?, true)", [self::ORG_A]);
+
+            try {
+                $probe->table('crm_memberships')
+                    ->where('organization_id', self::ORG_A)
+                    ->update(['organization_id' => self::ORG_B]);
+                $this->fail('A cross-tenant UPDATE must not succeed.');
+            } catch (QueryException $exception) {
+                $this->assertSame('42501', $exception->errorInfo[0] ?? null);
+            }
+        } finally {
+            $probe->rollBack();
+        }
+    }
+
+    public function test_app_role_cannot_read_global_identity_catalog(): void
+    {
+        $probe = DB::connection('pgsql_rls_probe');
+
+        try {
+            $probe->table('crm_global_identities')->count();
+            $this->fail('Application role should have no access to global identities.');
+        } catch (QueryException $exception) {
+            $this->assertSame('42501', $exception->errorInfo[0] ?? null);
+        }
+    }
+
     public function test_app_role_does_not_bypass_rls_or_own_membership_table(): void
     {
         $probe = DB::connection('pgsql_rls_probe');
