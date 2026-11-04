@@ -4,6 +4,7 @@
 **Status:** **APROVADA COMO BASE DOCUMENTAL DE FECHAMENTO** em 03/11/2026, conforme [registro de aceite](CRM-DEC-aprovacao-ARQ01-F07-base-2026-11-03.md). **Não** homologa E1B para produção, preços, infraestrutura física ou RPO/RTO.
 **Origem:** [ARQ01-F06 aprovada como base documental](CRM-DEC-aprovacao-ARQ01-F06-base-2026-11-03.md), F01-F05, [P0-ARQ-01](P0-ARQ-01-topologia-fronteiras-plano-fechamento.md), [IN-168](IN-168-matriz-pendencias-fechamento-arquitetura.md).
 **Escopo:** consolidar escolhas mínimas e evidências faltantes para selecionar o modelo de início da produção. Não substitui ARQ-02, ARQ-03, SEG-01/02, CON-01 ou outros P0; não autoriza contratar nem programar.
+**Atualização posterior (03/11/2026):** [decisão de três VPS independentes e possibilidade de Cloudflare Pro](CRM-DEC-cloudflare-pro-condicional-tres-vps-independentes-2026-11-03.md) **substitui a hipótese anterior de converter a VPS de desenvolvimento em PostgreSQL produtivo**. Pro será considerado quando seus diferenciais forem relevantes; nenhuma contratação está autorizada.
 
 ## 1. Proposta de decisão econômica
 
@@ -168,8 +169,8 @@ Hipótese ilustrativa, **não projetada a partir de clientes reais**: 50 GB-mês
 - **Meta revisada de estudo:** US$40–60/mes **somente para nova infraestrutura tecnica incremental do CRM E1B**, sem constituir teto aprovado, SLA ou cotacao. A meta anterior US$120/mes era **provisao gerencial nao aprovada**, e nao limite obrigatorio.
 - **F0 planejamento:** zero gasto novo com servidores.
 - **F1 desenvolvimento aprovado futuramente:** VPS de teste sob demanda, infraestrutura propria do desenvolvimento, com dados sinteticos.
-- **F2 lancamento:** ao fim de F1, **considerar reaproveitar a VPS de desenvolvimento como nova VPS de banco**, apenas apos desalocacao formal do ambiente de dev, reinstalacao limpa, descarte de dados/volumes de teste, rotacao de chaves e segredos, validacao de isolamento/IOPS e nova homologacao. Uma VPS 2 separada para aplicacao. **Nunca reaproveitar diretamente um banco de testes como producao**, nem manter desenvolvimento e producao no mesmo host.
-- Se testes/homologacao recorrentes exigirem ambiente isolado permanente, provisionar outro ambiente de homologacao quando necessario; **nao ocultar esse custo**. Dev/testes locais e CI efemero podem reduzir a necessidade de uma terceira VPS permanente, mas nao podem utilizar dados de clientes nem acesso root de producao.
+- **F2 lancamento (decisão mais recente):** preservar a VPS 1 de desenvolvimento/homologacao e contratar, quando autorizado, **duas VPS adicionais e independentes para producao**: VPS 2 candidata para Laravel e outra VPS candidata para PostgreSQL. **Nao converter a VPS de desenvolvimento em host produtivo**. Validar capacidade, seguranca e custos antes da homologacao. Ver [CRM-DEC posterior](CRM-DEC-cloudflare-pro-condicional-tres-vps-independentes-2026-11-03.md).
+- **Desenvolvimento e homologacao permanecem em VPS separada**, com dados e credenciais independentes. Testes locais e CI efemero podem complementar esse ambiente, mas nao substituem a segregacao decidida e nunca podem usar dados reais ou acesso root de producao.
 - **Separar o custo integral do ecossistema:** Portal, n8n, agentes tecnicos, Sites e APIs principal/contingencia com filas independentes continuam fora deste valor de US$40–60. Nao combinar domínios fisicamente para cumprir a meta.
 
 ### B.2 Compromissos indispensaveis e como obter menor custo
@@ -214,6 +215,17 @@ A **meta US$40–60/mes** representa uma **reserva financeira de estudo**, e nao
 
 ### B.5 Deliberacao
 
-**Proposto para avaliacao posterior:** usar US$40–60/mes **apenas como referencia financeira incremental de estudo** do CRM E1B, aplicar reutilizacao segura da VPS dev como DB de producao depois de reinstalacao, manter ferramentas open-source e free elegiveis, e pagar obrigatoriamente por qualquer requisito de seguranca/recuperacao que a variante gratuita nao atender.
+**Atualizado pela decisão posterior:** o modelo de **três VPS independentes** substitui a reutilizacao da VPS dev. Cloudflare **Pro** pode ser preferido quando suas protecoes adicionais forem relevantes; Free nao e uma obrigacao de economia. A antiga meta US$40–60/mes e somente referencia historica de estudo, sem teto aprovado, e deve ser reavaliada com VPS dev + app + banco, Pro, storage e backups.
 
 **Ainda pendentes:** F07-D02 (orcamento CRM e ecossistema), D03 (regiao), D04 (metas/RPO/RTO/risco). Nao homologar nem provisionar. Esta otimizacao nao fecha ARQ-01 ou outros P0.
+
+
+## Anexo C — Atualizacao aprovada: Cloudflare Pro e tres VPS independentes
+
+**Data:** 03/11/2026. **Fonte de decisão:** [CRM-DEC Cloudflare Pro e tres VPS](CRM-DEC-cloudflare-pro-condicional-tres-vps-independentes-2026-11-03.md).
+
+- **Tres VPS independentes planejadas** (dev/homologação, produção Laravel, produção PostgreSQL), sem reutilizar a VPS de desenvolvimento como banco produtivo. Os tamanhos VPS 1/2 continuam apenas candidatos.
+- **Cloudflare Pro permitido e recomendado para avaliação de lançamento** quando Cloudflare Managed Ruleset, OWASP Core Ruleset, maior quantidade de regras customizadas e Super Bot Fight Mode/excecoes de integrações justificarem o custo. Cloudflare Free nao e uma regra fixa; tambem nao existe compra automatica do Pro.
+- **Computação ilustrativa em preços de terceiros:** 2 x VPS 1 US$6,29 + 1 x VPS 2 US$9,89 = **US$22,47/mês**; Cloudflare Pro mensal US$25 implica **US$47,47/mês antes de storage, backups, monitoramento, seguranca e operacao**. Confirmar preco/planos/região e moeda.
+- A antiga meta US$40–60/mês fica **sob revisão** e nao pode fundamentar corte de controles essenciais. F07-D02 continua pendente de cotacao TCO, tanto CRM como ecossistema.
+- **Nao ha contratacao, despesa, programacao ou provisionamento autorizados.** E1B continua arquitetura-alvo condicionada a homologacao, com ARQ-01 P0 parcial.
