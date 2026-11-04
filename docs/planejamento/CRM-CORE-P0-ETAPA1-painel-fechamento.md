@@ -42,6 +42,13 @@
 ## Etapa 2 — CORE01-D05 preliminar aprovado, CORE01-D06 em proposta (04/11/2026)
 
 - [**Aceite CORE01-D05-A/B/C/D**](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md): diretrizes documentais preliminares aceitas, **CORE01-D05 integralmente ABERTA**; CORE01-D04 igualmente aberta e CORE01-D07 não aprovada.
-- [**CORE01-D06 — proposta canônica de ciclos de tenant, vínculo Site↔CRM, cortesia, trial e contratos**](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-organizacoes-vinculos-comerciais-proposta-v0.1.md): diretrizes candidatas A/B/C/D **NÃO APROVADAS**. [Matriz Etapa 2](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md) mantida.
+- [**CORE01-D06 — proposta canônica de ciclos de tenant, vínculo Site↔CRM, cortesia, trial e contratos**](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-tenants-vinculos-comerciais-proposta-v0.1.md): diretrizes A/B/C/D **aprovadas apenas preliminarmente** [CRM-DEC](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md); CORE01-D06 ABERTA. [Matriz Etapa 2](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md) mantida.
 - **CORE01-D04..D07, CORE02..CORE10-D04..D10 e 67 decisões pendentes não foram encerradas**. IN-168 **SEG-01 e SEG-02**, ARQ-01/02/03, AGT-01, INT P0 e G01..G06 continuam abertos. Proibidos programação, testes, credenciais, operações reais, contratos e despesas.
 
+
+
+## Etapa 2 — CORE01-D06 preliminar e CORE01-D07 em proposta (04/11/2026)
+
+O responsável [aceitou **CORE01-D06-A/B/C/D como diretrizes documentais preliminares**](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md) (fonte de autoridade, ciclos independentes, titularidade e vínculo idempotente, portabilidade/retentão). **CORE01-D06 continua aberta**, pendente CORE08, FIN/CON, Portal/Sites, INT e Segurança. [**CORE01-D07 v0.1**](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md) foi preparada para avaliação: A/B/C/D **não aprovadas**, sem schema/role/SQL físicos.
+
+**CORE01-D04/D05/D06/D07 e os 67 IDs técnicos continuam em aberto**, com SEG-01/02, ARQ, AGT, INT G01..G06 e fechamento global. **Não iniciar programação, testes executáveis ou implantação.**
