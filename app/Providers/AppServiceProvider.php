@@ -16,9 +16,10 @@ class AppServiceProvider extends ServiceProvider
         // F0: politica de autorizacao sempre nega ate contratos CORE/SEG.
         $this->app->bind(Authorizer::class, DenyByDefaultAuthorizer::class);
         // Resolve per operation; never retain a principal/tenant across worker requests.
-        // The existing scaffold User provider is deliberately not a CRM identity provider.
+        // Only a dedicated, explicitly mapped CRM session guard may be resolved.
+        // It is deliberately absent until the CORE04/SEG provider contract is reviewed.
         $this->app->bind(GuardPrincipalSource::class, fn ($app) =>
-            new GuardPrincipalSource($app['auth']->guard('web')));
+            GuardPrincipalSource::fromConfiguration($app['auth'], $app['config']));
         $this->app->bind(ActiveMembershipStore::class, fn ($app) =>
             new PostgresActiveMembershipStore($app['db']->connection()));
     }
