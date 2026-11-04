@@ -2,6 +2,8 @@
 
 > **Situação em 03/11/2026:** planejamento do CRM Imagine em consolidação. **Não iniciar programação** antes de revisão global e aprovação expressa da documentação final. Este README é um índice de navegação, não uma declaração de conclusão.
 
+**Infraestrutura de desenvolvimento (diretriz transversal, 04/11/2026):** a direção selecionou **Leaseweb em princípio para uma VPS central compartilhada apenas para desenvolvimento** de Portal, CRM, Sites, Performance AI e Universidade, com isolamento de aplicações, bancos e segredos e servidores de produção/n8n separados. [Registro central INF-DEV-01 no Portal Imagine](https://github.com/rafhael100/imagine-portal/blob/main/docs/infraestrutura/INF-DEV-01-VPS-CENTRAL-LEASEWEB-2026-11-04.md). VPS 3 (8 vCPU, 24 GB RAM e 300 GB NVMe) **recomendada, não contratada**, sujeita a aprovação de valor/compromisso; não autoriza iniciar programação do CRM.
+
 ## Ponto de partida para acompanhar o projeto
 
 - [Diagnóstico de prontidão para iniciar desenvolvimento](docs/planejamento/STATUS-PRONTIDAO-INICIO-DESENVOLVIMENTO-2026-11-03.md) — fontes verificadas, lacunas do CRM completo, critérios de início.
