@@ -76,3 +76,7 @@ O desenvolvimento **poderá ser organizado** por entregas, após **o planejament
 - **Para diferir item**: apenas decisão expressa de escopo/fase e avaliação de segurança, integrações, custos e impacto; P0 que bloqueia o núcleo não pode ser implicitamente reclassificado.
 - **Para autorizar programação**: submeter baseline final, escopo da Fase 1, matriz de não-bloqueios, evidências de G05/G06 e solicitar **GO textual e expresso** do responsável. Depois, durante implementação, executar testes previstos e produzir evidência; produção exige outro aceite.
 - **Proibições vigentes:** não iniciar programação/Codex, SQL, testes, provisionamento, compra, credenciais, integrações, alteração de dados, implantação ou pagamento.
+
+## 7. Anexo de conciliação CORE01-D07 (04/11/2026)
+
+[**CORE01-D07 — matriz de conciliação de entidades, integridade, RLS e contratos**](CRM-CORE-P0-ETAPA2-CORE01-D07-matriz-conciliacao-dependencias-v0.1.md) foi preparada apenas como **anexo técnico documental**, com rastreamento de dependências CORE02/03/04/05/06/07/08/09, SEG-01/02, INT/FIN/CON e critérios de verificação futura. O documento **não aprova** CORE01-D07-A/B/C/D nem reduz os 67 IDs em aberto. DEV-GATE-00 continua **MINUTA e NO-GO**; não há autorização de programação, testes, migrações ou implantação.
