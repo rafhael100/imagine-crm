@@ -1,7 +1,7 @@
 # CRM-CORE-P0 — Etapa 2 / CORE01-D05: Contexto confiável de tenant, Laravel, PostgreSQL RLS, workers e suporte (v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA TÉCNICA DOCUMENTAL NÃO APROVADA — CORE01-D05 ABERTA.**  
+**Estado atualizado em 04/11/2026:** **CORE01-D05-A, B, C e D APROVADAS SOMENTE COMO DIRETRIZES TÉCNICAS DOCUMENTAIS PRELIMINARES**, conforme [decisão expressa](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md). **CORE01-D05 permanece ABERTA**; D04, D06, D07, SEG-01/02, demais CORE/INT/ARQ/AGT e G01–G06 seguem abertos. As passagens abaixo que chamam A/B/C/D de “não aprovadas” retratam a minuta anterior ao aceite e são superadas exclusivamente nesse alcance.  
 **Natureza:** alternativas, invariantes, riscos e decisões futuras, **não** aprovação de schema, SQL, role de banco, tecnologia, mecanismo de autenticação ou implantação.  
 **Fase:** exclusivamente documentação. **Não programar, executar SQL ou testes, provisionar contas/servidores, conceder acessos, rotacionar segredos, implantar ou contratar**.
 
@@ -101,3 +101,7 @@ Esses casos são **referências documentais** a reconciliar com CORE01-T, CORE03
 **Seguem ABERTAS:** CORE02..CORE10-D04..D10, SEG-01/02, ARQ-01/02/03, AGT-01, INT P0/CTs/OP24/G01..G06, FIN/CON, LGPD, licenciamento n8n, budgets, infraestrutura, aceite global. A matriz da [Etapa 2](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md) mantém **67 IDs técnicos abertos**.
 
 **Sem programação, testes, scripts, SQL real, credenciais, contorno de RLS, compras ou implantação**. Próxima revisão após eventual aceite: CORE01-D06 sem encerrar D04/D05 por inferência.
+
+## 8. Aditamento — decisão preliminar CORE01-D05-A/B/C/D (04/11/2026)
+
+O responsável aprovou expressamente como **diretrizes técnicas documentais preliminares**: (A) contexto e autorização por operação; (B) delimitação transacional e reset seguro de conexões, com Laravel+PostgreSQL RLS; (C) identidades técnicas, agentes, n8n e suporte sem bypass amplo; (D) revalidação de autoridade e resultado oficial pelo proprietário. [Registro literal](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md). **Não** se selecionou SQL/SET LOCAL, roles, esquema, token, pool, mecanismo de autenticação ou provedor. CORE01-D04..D07 seguem ABERTAS, incluindo D05 integralmente, assim como SEG-01/02 e todos os gates. Continuidade autorizada: criar **proposta documental CORE01-D06** sobre ciclo de tenant, titularidade, contratos e benefícios; **sem programação nem testes**.
