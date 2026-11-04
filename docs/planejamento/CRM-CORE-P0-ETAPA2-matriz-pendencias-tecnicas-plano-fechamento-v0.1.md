@@ -98,14 +98,6 @@ A primeira proposta de deliberação concreta foi registrada em [**CORE01-D04 �
 - **CORE01-D05 — [nova proposta de contexto seguro, transação, Laravel/PostgreSQL RLS e service principals](CRM-CORE-P0-ETAPA2-CORE01-D05-contexto-tenant-RLS-proposta-v0.1.md)**: quatro diretrizes D05-A/B/C/D **aprovadas apenas preliminarmente** [CRM-DEC](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md), mantendo **CORE01-D05 aberta**, preservando necessidade de definir autenticação de contexto no banco, RLS por tabela, papéis/ownership, pool de conexão, workers, mandatos e auditoria.
 - **Contagem inalterada: 67 itens técnicos abertos**; nenhum CORE-P0, SEG-01/02, INT P0 ou G01..G06 foi concluído por esses documentos. Nenhum teste, código, conta ou infraestrutura real criado.
 
-## 10. CORE01-D05 — aceite preliminar e continuidade CORE01-D06 (04/11/2026)
-
-- **CORE01-D05-A/B/C/D aceitas como diretrizes técnicas documentais preliminares**, conforme [CRM-DEC expressa](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md): (A) contexto autorizado por operação, (B) isolamento transacional/reset de conexão, (C) identidades técnicas/mandatos sem bypass, (D) revalidação e confirmação oficial por módulo proprietário. **CORE01-D05 permanece aberta**, sem SQL/RLS/roles/provedor físico homologado.
-- **CORE01-D04 permanece aberta**, apesar do aceite preliminar A/B/C; CORE01-D06 e D07 continuam ABERTAS. **Não alterar contagem de 67 IDs abertos.**
-- Foi elaborada a [**proposta CORE01-D06 — ciclo de organizações, titularidade, contratos Sites, benefícios, trial e CRM pago**](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-organizacoes-vinculos-comerciais-proposta-v0.1.md), com diretrizes **D06-A/B/C/D ainda NÃO APROVADAS** e contratos físicos/precedência/FIN/CON pendentes.
-- Permanecem **SEG-01, SEG-02**, ARQ-01/02/03, AGT-01, INT P0, G01–G06, CORE02..10-D04..D10, FIN/CON, gratuidade administrativa, LGPD, licenciamento e aceite global. **Sem programação, testes, credenciais, cobrança, criação de tenant ou implantação.**
-
-
 ## 10. CORE01-D05 preliminar e próxima proposta CORE01-D06 — 04/11/2026
 
 - **CORE01-D05-A/B/C/D**: [aceitas expressamente como diretrizes técnicas documentais preliminares](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md), **D05 continua ABERTA** até fechar CORE02/03/04/05/09 e SEG-01/SEG-02, incluindo RLS físico/roles, transações, workers, suporte, serviço e auditoria. Não presumir conformidade física pela aprovação dos princípios.
