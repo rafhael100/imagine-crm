@@ -24,7 +24,7 @@
 
 ## 3. Continuidade documental
 
-Produzir [AUT-LIB03 — ficha funcional de LEA-01/LEA-02 e alternativas para tarefas](CRM-AUT-LIB03-LEA01-LEA02-avisos-tarefas-basico-v0.1.md), como **proposta** com cenários verificáveis e escolha comercial separada; posteriormente submeter **LIB02-P01** e, se resolvida, os modelos individualmente para decisão expressa. Preservar o inventário histórico e as rejeições já documentadas.
+Produzir [AUT-LIB02 — seção 8: prioridade LEA-01/LEA-02 e alternativas para tarefas](CRM-AUT-LIB02-revisao-individual-modelos-basico-v0.1.md), como **proposta** com cenários verificáveis e escolha comercial separada; posteriormente submeter **LIB02-P01** e, se resolvida, os modelos individualmente para decisão expressa. Preservar o inventário histórico e as rejeições já documentadas.
 
 **Fontes:** [AUT-LIB02](CRM-AUT-LIB02-revisao-individual-modelos-basico-v0.1.md), [AUT-LIB01](CRM-AUT-LIB01-biblioteca-modelos-basico-editores-por-plano-v0.1.md), [MAT01](CRM-AUT-MAT01-matriz-elegibilidade-automacoes-por-plano-v0.1.md), [LEG-08](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/08-plano-basico-cortesia.md), [LEG-13](https://github.com/rafhael100/imagine-crm/blob/docs/integracao-site-crm-basico/docs/13-matriz-permissoes-basico-cortesia.md), [REV-03](CRM-REV-03-leads-contatos-campos-historicos-portabilidade.md).
 
