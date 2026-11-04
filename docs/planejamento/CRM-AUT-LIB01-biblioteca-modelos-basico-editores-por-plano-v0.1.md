@@ -1,7 +1,7 @@
 # CRM-AUT-LIB01 — Biblioteca de modelos prontos do Básico e capacidades dos editores por plano (v0.1)
 
 **Data:** 04/11/2026.  
-**Status:** **PROPOSTA FUNCIONAL/COMERCIAL PARA REVISÃO; NÃO APROVADA.** O responsável respondeu “ok” à proposta anterior de **detalhar** a biblioteca e os níveis de edição. Isso **autoriza somente produzir a minuta**, não publicar modelos, fixar quotas/preços ou homologar funcionalidades.
+**Status atualizado:** **ACEITA COMO BASE DOCUMENTAL DE REVISÃO EM 04/11/2026**, conforme [registro de aceite](CRM-DEC-aceite-base-AUT-LIB01-2026-11-04.md). **Modelos B1/B2, capacidade dos editores E1/P1/M1, quotas finais, direitos por plano e contratos NÃO foram aprovados individualmente.**
 
 **Fase:** exclusivamente planejamento e documentação. **Não programar, executar testes reais, ativar modelos, comprar licenças/canais, provisionar servidores ou alterar produção.**
 
@@ -172,4 +172,9 @@ Para próxima deliberação:
 2. **Aprovar ou ajustar a proposta de diferenciação editorial** E1/P1/M1: editor simples tipado no Essencial; ramificação e múltiplas ações no Profissional; governança/escopos no Empresarial, todos sem código livre e com n8n fora do executor comercial.
 3. Depois fechar **LIB-P01..P12** com CAT01/MAT01/REV-05, sem alterar quotas ou criar novas ofertas por suposição.
 
-**Fase continua estritamente documental; programação não iniciada; nenhuma licença, contrato, servidor, canal, preço, limite ou implementação foi aprovado.**
+**Fase continua estritamente documental; programação não iniciada; nenhuma licença, contrato, servidor, canal, preço, limite ou implementação foi aprovado por este aceite.**
+
+
+## 10. Aceite de base e revisão individual LIB02 (04/11/2026)
+
+A AUT-LIB01 foi **aceita como base documental**, conforme [CRM-DEC](CRM-DEC-aceite-base-AUT-LIB01-2026-11-04.md), sem homologação dos modelos ou níveis de editor. A [AUT-LIB02 v0.1](CRM-AUT-LIB02-revisao-individual-modelos-basico-v0.1.md) iniciou a revisão de LEA-01/02, TSK-01 e AGD-01/02/03, apontando possível falta de direito do Básico a **tarefas comerciais avançadas A01**: a matriz Básico comprova **observações manuais**, não automaticamente acesso a tarefas. Priorizar análise de avisos internos permitidos, sem duplicar notificações SO da Agenda. LIB02 ainda é **proposta, sem aprovação individual**. Preservar AUT-P01..14, LIB-P01..P12, LIB02-P01..P08, CORE/INT/SEG e demais gates P0.
