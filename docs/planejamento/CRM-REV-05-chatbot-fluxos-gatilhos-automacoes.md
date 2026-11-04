@@ -182,3 +182,8 @@ A [minuta CRM-AUT-CAT01 v0.1](CRM-AUT-CAT01-catalogo-gatilhos-condicoes-acoes-po
 ## Fechamento parcial AUT-CAT01 e proposta de direitos AUT-MAT01 (04/11/2026)
 
 A [AUT-CAT01 v0.1](CRM-AUT-CAT01-catalogo-gatilhos-condicoes-acoes-por-modulo-v0.1.md) foi **aceita como inventário de referência funcional**, conforme [CRM-DEC](CRM-DEC-aceite-referencia-CAT01-2026-11-04.md); isso não homologa itens nem implica liberação por plano. A [CRM-AUT-MAT01 v0.1](CRM-AUT-MAT01-matriz-elegibilidade-automacoes-por-plano-v0.1.md) apresenta **proposta para revisão** com critérios de Básico (somente modelos autorizados), Essencial, Profissional, Empresarial e Trial; slots 3/5/20/50 e trial 2 continuam **referências a ratificar**. Chatbot 3/10/30 e canais são direitos separados; ações protegidas não entram no editor. **AUT-P01..14 continuam abertos** e não há programação, contratação ou publicação de workflows.
+
+
+## Aceite limitado da matriz de elegibilidade AUT-MAT01 (04/11/2026)
+
+[CRM-AUT-MAT01 v0.1](CRM-AUT-MAT01-matriz-elegibilidade-automacoes-por-plano-v0.1.md) e [registro de aceite](CRM-DEC-aceite-base-AUT-MAT01-2026-11-04.md): **base documental aceita para comparação dos planos**, mantendo Básico com modelos homologados, separação SO/AC/CE e bloqueio das ações protegidas no editor. **Referências de slots 3/5/20/50 e 2 trial; chatbot 3/10/30 permanecem sujeitas à ratificação comercial final**; não foi aprovado catálogo de modelos ou acesso a canais/IA/agenda pública adicionais. AUT-P01..14 e AUT-MAT-P01..P10 abertos; sem código, contratação ou implantação.
