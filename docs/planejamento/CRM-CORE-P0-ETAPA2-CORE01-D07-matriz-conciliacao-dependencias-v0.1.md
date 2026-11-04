@@ -1,20 +1,20 @@
 # CRM Imagine — CORE01-D07: Matriz de conciliação e critérios de aceite documental (v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **ANEXO DE REVISÃO DOCUMENTAL, NÃO APROVADO, NÃO DELIBERATIVO.** O documento canônico de pauta continua sendo [CORE01-D07 — modelo físico, integridade e RLS (v0.1)](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md).  
-**Autorização:** o “ok” do responsável deu continuidade à organização documental, mas **NÃO** aprovou CORE01-D07-A/B/C/D, o checklist DEV-GATE-00 ou o GO para programação.  
+**Estado atualizado:** **ANEXO DOCUMENTAL NÃO DELIBERATIVO**. CORE01-D07-A/B/C/D agora possuem [aceite expresso SOMENTE COMO DIRETRIZES TÉCNICAS DOCUMENTAIS PRELIMINARES](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md); **CORE01-D07 integral permanece ABERTA**. Este anexo não constitui aprovação nem fecha contratos físicos. O documento canônico de pauta continua sendo [CORE01-D07 — modelo físico, integridade e RLS (v0.1)](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md).  
+**Autorização:** este “ok” deu continuidade à organização documental e não constituiu voto. Foi verificado **um registro separado de aprovação expressa preliminar D07-A/B/C/D**, que prevalece sobre qualquer menção histórica de “ainda não aprovado”. **Nenhum GO de programação ou homologação física foi concedido**.  
 **Vedações:** sem Codex, código, SQL, migrations, credenciais, banco de teste, casos executados, operações sobre dados reais, alterações de infraestrutura, contratação, cobrança ou implantação.
 
-## 1. Escopo de conciliação — quatro diretrizes ainda pendentes
+## 1. Escopo de conciliação — quatro diretrizes preliminares aceitas, com contratos físicos ainda pendentes
 
-| Código | Proposta canônica a avaliar, SEM aprovação nesta matriz | Contrato/evidência documental a produzir no fechamento | Dependência que não pode ser marcada resolvida |
+| Código | Proposta canônica a avaliar, ACEITA APENAS PRELIMINARMENTE por decisão separada | Contrato/evidência documental a produzir no fechamento | Dependência que não pode ser marcada resolvida |
 |---|---|---|---|
 | **CORE01-D07-A** | Inventário de entidades globais, tenant-bound e de integração; dicionário por proprietário/finalidade | Matriz entidade×dono×tenancy×sensibilidade×operação×retenção×fonte oficial; exceções globais explícitas | CORE01-D04/D06, CORE02-D04, CORE06, CORE08, FIN/CON, LGPD |
 | **CORE01-D07-B** | Integridade relacional e unicidade multiempresa; sem vínculos cross-tenant indevidos | Cardinalidades, chaves candidatas, relações entre tenant e entidade, integridade em gravação/restore, exceções, histórico e efeitos de concorrência documentados | CORE01-D04/D06, CORE07-D04/D05/D06, CORE03-D07, CORE08/INT |
 | **CORE01-D07-C** | Matrizes coerentes de autorizador Laravel + RLS PostgreSQL por classe/role/ação | Fronteiras request/worker/service, direitos por objeto/campo, WITH CHECK/USING, role ownership/bypass, pool/transação/reset, exportação/arquivos e falha segura (sem SQL escolhido) | CORE01-D05, CORE02-D05/D06/D08, CORE03-D05/D06, CORE04, CORE05, CORE09, SEG-01/SEG-02 |
 | **CORE01-D07-D** | Contratos de versionamento/evolução, auditoria, restauração e critérios de aceitação futura | Matriz fonte×operação×versão, backward compatibility, restore sem ressuscitar grants, evidências por proprietário, referência a casos canônicos não executados | CORE03/06/09/10, INT P0-CON/SEC/ACC/VER, ARQ-02/03, FIN/CON, G01..G06 |
 
-**Importante:** aprovar A–D futuramente aceitaria somente a necessidade e o formato de completar esses artefatos; **não** decidiria nomes de tabela, PK/FK física, SQL de RLS, grants, token, provedor/cofre, pooler ou tecnologia extra, que exigem decisão e evidência próprias.
+**Importante:** a aprovação preliminar A–D já registrada aceitou somente a necessidade e o formato de completar esses artefatos; **não** decidiria nomes de tabela, PK/FK física, SQL de RLS, grants, token, provedor/cofre, pooler ou tecnologia extra, que exigem decisão e evidência próprias.
 
 ## 2. Inventário de classes a harmonizar — SEM definições físicas
 
@@ -79,8 +79,12 @@ Uma deliberação preliminar sobre D07-A/B/C/D **não significa fechamento**. A 
 
 ## 6. Pauta recomendada para próxima manifestação
 
-Submeter ao responsável a **proposta original CORE01-D07-A/B/C/D como diretrizes técnicas documentais preliminares**, nos significados da [proposta canônica](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md), com aceitação **expressa e restrita**. Não reinterpretar “ok” como voto.
+**A proposta original CORE01-D07-A/B/C/D já recebeu aceite expresso preliminar** conforme [CRM-DEC](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md). A próxima ação é consolidar e deliberar os contratos físicos e dependências CORE02/03/04/05/06/07/08/09, SEG-01/02, INT, FIN/CON e Segurança. Não reinterpretar “ok” como aprovação técnica.
 
-Após eventual aprovação, manter **CORE01-D04/D05/D06/D07 ABERTAS**, todos os **67 IDs CORE**, **SEG-01/02**, ARQ-01/02/03, AGT-01, INT P0, G01..G06, FIN/CON, revisão comercial e liberação global **não resolvidos**. Próximo eixo recomendado: fechar contratos de **CORE02 (direitos/escopos/campos)** e **CORE07 (convites/assentos)** em consonância com o modelo de dados, sem programar.
+Após esse aceite preliminar, manter **CORE01-D04/D05/D06/D07 ABERTAS**, todos os **67 IDs CORE**, **SEG-01/02**, ARQ-01/02/03, AGT-01, INT P0, G01..G06, FIN/CON, revisão comercial e liberação global **não resolvidos**. Próximo eixo recomendado: fechar contratos de **CORE02 (direitos/escopos/campos)** e **CORE07 (convites/assentos)** em consonância com o modelo de dados, sem programar.
 
 **Estado final:** anexo de revisão criado, nenhuma pendência baixada e nenhuma implementação/teste executado.
+
+## 7. Reconciliação de estado após atualização paralela de repositório
+
+O [registro expresso CORE01-D07-A/B/C/D](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md) foi identificado após a criação inicial deste anexo. Onde houver texto histórico sugerindo ausência de aceite das quatro subdiretrizes, **prevalece a decisão preliminar expressa**. **CORE01-D04/D05/D06/D07 integrais permanecem abertas**, assim como os **67 IDs CORE**, SEG-01/02, INT G01..G06 e o checklist DEV-GATE-00 **NO-GO**. Não houve programação ou testes.
