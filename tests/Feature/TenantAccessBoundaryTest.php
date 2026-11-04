@@ -17,7 +17,9 @@ use App\Models\User;
 use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Auth\EloquentUserProvider;
+use Illuminate\Auth\SessionGuard as Guard;
+use Illuminate\Contracts\Auth\Factory;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -34,7 +36,7 @@ final class TenantAccessBoundaryTest extends TestCase
         $request->headers->set('X-Tenant-Id', self::A);
         $request->merge(['user_id' => self::ID, 'tenant_id' => self::A]);
         $request->setUserResolver(fn () => $this->identity());
-        $guard = Mockery::mock(Guard::class);
+        $guard = $this->crmGuard();
         $guard->shouldReceive('user')->once()->andReturnNull();
         $store = Mockery::mock(ActiveMembershipStore::class);
         $store->shouldNotReceive('within');
@@ -46,7 +48,7 @@ final class TenantAccessBoundaryTest extends TestCase
 
     public function test_scaffold_user_id_is_not_a_global_identity_mapping(): void
     {
-        $guard = Mockery::mock(Guard::class);
+        $guard = $this->crmGuard();
         $guard->shouldReceive('user')->andReturn((new User())->forceFill(['id' => self::ID]));
         $this->expectException(AuthenticationException::class);
         (new GuardPrincipalSource($guard))->current();
@@ -54,7 +56,7 @@ final class TenantAccessBoundaryTest extends TestCase
 
     public function test_guard_is_read_again_instead_of_caching_a_principal(): void
     {
-        $guard = Mockery::mock(Guard::class);
+        $guard = $this->crmGuard();
         $guard->shouldReceive('user')->twice()->andReturn($this->identity(), null);
         $source = new GuardPrincipalSource($guard);
         $this->assertSame(self::ID, $source->current()->principalId);
@@ -75,7 +77,7 @@ final class TenantAccessBoundaryTest extends TestCase
     #[DataProvider('untrustedFacts')]
     public function test_inconsistent_repository_facts_are_denied(string $tenant, string $id, MembershipStatus $status): void
     {
-        $guard = Mockery::mock(Guard::class);
+        $guard = $this->crmGuard();
         $guard->shouldReceive('user')->andReturn($this->identity());
         $store = Mockery::mock(ActiveMembershipStore::class);
         $store->shouldReceive('within')->once()->andReturnUsing(
@@ -91,7 +93,7 @@ final class TenantAccessBoundaryTest extends TestCase
 
     public function test_active_membership_never_overrides_business_deny(): void
     {
-        $guard = Mockery::mock(Guard::class);
+        $guard = $this->crmGuard();
         $guard->shouldReceive('user')->andReturn($this->identity());
         $store = Mockery::mock(ActiveMembershipStore::class);
         $store->shouldReceive('within')->andReturnUsing(
@@ -109,6 +111,103 @@ final class TenantAccessBoundaryTest extends TestCase
         foreach (['/login', '/register', '/leads', '/export', '/files'] as $path) {
             $this->get($path)->assertNotFound();
         }
+    }
+
+    public static function invalidConfigurations(): array
+    {
+        return [
+            'missing dedicated guard' => [null, null],
+            'request driver' => [['driver' => 'token', 'provider' => 'crm'], ['driver' => 'eloquent', 'model' => GlobalIdentity::class]],
+            'missing provider' => [['driver' => 'session'], null],
+            'scaffold model' => [['driver' => 'session', 'provider' => 'crm'], ['driver' => 'eloquent', 'model' => User::class]],
+            'unreviewed provider driver' => [['driver' => 'session', 'provider' => 'crm'], ['driver' => 'database', 'model' => GlobalIdentity::class]],
+        ];
+    }
+
+    #[DataProvider('invalidConfigurations')]
+    public function test_invalid_crm_guard_configuration_never_falls_back_to_web(?array $guardConfig, ?array $providerConfig): void
+    {
+        config(['auth.guards.crm_identity' => $guardConfig, 'auth.providers.crm' => $providerConfig]);
+        $auth = Mockery::mock(Factory::class);
+        $auth->shouldNotReceive('guard');
+        $source = GuardPrincipalSource::fromConfiguration($auth, $this->app['config']);
+        $this->expectException(AuthenticationException::class);
+        $source->current();
+    }
+
+    public function test_default_container_does_not_consume_even_a_global_identity_set_on_web(): void
+    {
+        $this->app['auth']->guard('web')->setUser($this->identity());
+        $store = Mockery::mock(ActiveMembershipStore::class);
+        $store->shouldNotReceive('within');
+        $this->app->instance(ActiveMembershipStore::class, $store);
+        $this->expectException(AuthenticationException::class);
+        $this->app->make(TenantAccessBoundary::class)->execute(self::A, 'lead', 'read', fn () => $this->fail('Must not run.'));
+    }
+
+    public function test_explicit_crm_session_mapping_can_resolve_synthetic_identity_only(): void
+    {
+        $this->configureCrmGuard();
+        $guard = $this->app['auth']->guard('crm_identity');
+        $guard->setUser($this->identity()); // Trusted fixture, not a login endpoint.
+        $source = $this->app->make(GuardPrincipalSource::class);
+        $this->assertSame(self::ID, $source->current()->principalId);
+        $guard->forgetUser();
+        $this->expectException(AuthenticationException::class);
+        $source->current();
+    }
+
+    public function test_runtime_provider_mismatch_is_denied_despite_valid_configuration(): void
+    {
+        $this->configureCrmGuard();
+        $guard = $this->app['auth']->guard('crm_identity');
+        $guard->setUser($this->identity());
+        $source = $this->app->make(GuardPrincipalSource::class);
+        $guard->setProvider(new EloquentUserProvider($this->app['hash'], User::class));
+        $this->expectException(AuthenticationException::class);
+        $source->current();
+    }
+
+    public function test_request_guard_cannot_replace_configured_session_driver(): void
+    {
+        $this->configureCrmGuard();
+        $requestGuard = Mockery::mock(\Illuminate\Contracts\Auth\Guard::class);
+        $requestGuard->shouldNotReceive('user');
+        $auth = Mockery::mock(Factory::class);
+        $auth->shouldReceive('guard')->once()->with('crm_identity')->andReturn($requestGuard);
+        $source = GuardPrincipalSource::fromConfiguration($auth, $this->app['config']);
+        $this->expectException(AuthenticationException::class);
+        $source->current();
+    }
+
+    public static function invalidIdentifiers(): array
+    {
+        return [[''], ['not-a-uuid'], [null], [123]];
+    }
+
+    #[DataProvider('invalidIdentifiers')]
+    public function test_invalid_identity_id_fails_with_authentication_error(mixed $id): void
+    {
+        $guard = $this->crmGuard();
+        $guard->shouldReceive('user')->once()->andReturn((new GlobalIdentity())->forceFill(['id' => $id]));
+        $this->expectException(AuthenticationException::class);
+        (new GuardPrincipalSource($guard))->current();
+    }
+
+    private function configureCrmGuard(): void
+    {
+        config([
+            'auth.guards.crm_identity' => ['driver' => 'session', 'provider' => 'crm'],
+            'auth.providers.crm' => ['driver' => 'eloquent', 'model' => GlobalIdentity::class],
+        ]);
+    }
+
+    private function crmGuard(): Guard
+    {
+        $guard = Mockery::mock(Guard::class);
+        $guard->shouldReceive('getProvider')->andReturn(new EloquentUserProvider($this->app['hash'], GlobalIdentity::class));
+
+        return $guard;
     }
 
     private function identity(): GlobalIdentity

@@ -11,7 +11,8 @@ use App\Core\Identity\PrincipalReference;
 use App\Core\Tenancy\PostgresActiveMembershipStore;
 use App\Core\Tenancy\TenantAccessBoundary;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Auth\EloquentUserProvider;
+use Illuminate\Auth\SessionGuard as Guard;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use LogicException;
@@ -273,6 +274,7 @@ final class PostgresMembershipRlsTest extends TestCase
     public function test_real_membership_does_not_grant_a_business_effect(): void
     {
         $guard = Mockery::mock(Guard::class);
+        $guard->shouldReceive('getProvider')->andReturn(new EloquentUserProvider($this->app['hash'], GlobalIdentity::class));
         $guard->shouldReceive('user')->once()->andReturn(
             (new GlobalIdentity())->forceFill(['id' => self::PRINCIPAL])
         );
@@ -293,6 +295,36 @@ final class PostgresMembershipRlsTest extends TestCase
             $this->assertSame(0, (clone $table)->delete());
         });
         $this->assertSame(1, (int) DB::table('crm_memberships')->where('organization_id', self::ORG_B)->value('version'));
+    }
+
+    public function test_custom_guc_is_mutable_and_does_not_prove_active_membership(): void
+    {
+        $probe = DB::connection('pgsql_rls_probe');
+        $status = $probe->transaction(function () use ($probe): string {
+            // Deliberate counterexample: the runtime role can choose this marker.
+            $probe->selectOne("SELECT set_config('app.tenant_id', ?, true)", [self::ORG_B]);
+            return $probe->table('crm_memberships')->where('global_identity_id', self::PRINCIPAL)->value('status');
+        });
+        $this->assertSame('suspended', $status);
+        $this->assertSame(0, $probe->table('crm_memberships')->count());
+        $this->expectException(AuthorizationException::class);
+        $this->store()->within(new PrincipalReference(self::PRINCIPAL), self::ORG_B,
+            fn () => $this->fail('A mutable GUC does not establish membership authority.'));
+    }
+
+    public function test_missing_or_malformed_tenant_is_denied_without_residual_context(): void
+    {
+        $probe = DB::connection('pgsql_rls_probe');
+        foreach (['', 'not-a-uuid', "'; SELECT 1; --"] as $tenant) {
+            try {
+                $this->store()->within(new PrincipalReference(self::PRINCIPAL), $tenant,
+                    fn () => $this->fail('Unvalidated tenant must not run.'));
+                $this->fail('Expected denial.');
+            } catch (AuthorizationException) {
+                $this->assertSame(0, $probe->transactionLevel());
+                $this->assertSame(0, $probe->table('crm_memberships')->count());
+            }
+        }
     }
 
     private function store(): PostgresActiveMembershipStore
