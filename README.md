@@ -15,6 +15,7 @@
 - [CRM-REV-04 — Atendimento, WhatsApp e gestão de conversas](docs/planejamento/CRM-REV-04-atendimento-whatsapp-conversas.md) — base documental aprovada, pendências ATD-P01..14 abertas.
 - [CRM-DEC — Aprovação CRM-REV-04](docs/planejamento/CRM-DEC-aprovacao-REV-04-base.md).
 - [CRM-REV-05 — Chatbot, fluxos, gatilhos e automações](docs/planejamento/CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md) — base documental aprovada; pendências AUT-P01..14 abertas.
+- [CRM-DEC — Motor próprio de automações do CRM e n8n interno](docs/planejamento/CRM-DEC-motor-proprio-automacoes-crm-n8n-interno-2026-11-04.md) — **decisão arquitetural aprovada em 04/11/2026**, automações de clientes no motor próprio e n8n para operações internas sujeitas à validação da licença; sem programação.
 - [CRM-DEC — Aprovação da CRM-REV-05](docs/planejamento/CRM-DEC-aprovacao-REV-05-base.md).
 - [CRM-REV-06 — Vendas, funis, propostas e catálogo](docs/planejamento/CRM-REV-06-vendas-funis-propostas-catalogo.md) — base documental aprovada; VEN-P01..16 abertos.
 - [CRM-DEC — Aprovação da CRM-REV-06](docs/planejamento/CRM-DEC-aprovacao-REV-06-base.md).
