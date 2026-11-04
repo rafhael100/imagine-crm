@@ -40,10 +40,17 @@ sequenceDiagram
 ```
 
 - `GuardPrincipalSource` recebe um guard de infraestrutura. Usa exclusivamente
-  `guard->user()`, exige o mapeamento explícito `GlobalIdentity` e UUID. Não
+  `guard->user()`, exige o mapeamento explícito `GlobalIdentity` e UUID. Na
+  composição do container, somente o guard dedicado `crm_identity`, driver
+  `session` e provider `eloquent` do modelo exato são elegíveis. Driver,
+  provider e modelo efetivos também são conferidos; não há fallback ao `web`
+  ou ao guard padrão. Sem esse contrato configurado, a fonte nega autenticação.
+  Não
   aceita principal de header/body, resolver de Request, e-mail ou CNPJ.
 - `GlobalIdentity` mapeia o catálogo global experimental. A configuração do
-  provider `web` ainda aponta ao `User` do scaffold, que é recusado. Não há
+  provider `web` ainda aponta ao `User` do scaffold; ele não é consumido pela
+  fronteira, mesmo se receber uma fixture `GlobalIdentity`. O guard
+  `crm_identity` não é configurado/habilitado nesta entrega. Não há
   cadastro, login, MFA ou autenticação funcional habilitados. Integração de
   provider/sessão real depende de CORE04/SEG e revisão posterior; nos testes
   apenas o guard sintético entrega essa identidade. Criar esse objeto por si
@@ -132,3 +139,11 @@ O commit posterior deste registro altera somente documentação; os resultados
 acima identificam explicitamente a revisão de código efetivamente testada.
 
 Sem merge, deploy/VPS, dados reais, mensagens externas ou alteração de dependências.
+
+## Acompanhamento da revisão
+
+O tratamento dos quatro comentários, a conciliação com fontes imutáveis da
+main e as dependências ainda abertas estão no
+[registro de revisão F1-02](F1-02-revisao-tecnica-e-conciliacao.md).
+As evidências acima descrevem a implementação anterior à revisão; não são
+apresentadas como execução das alterações posteriores.
