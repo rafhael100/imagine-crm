@@ -187,7 +187,7 @@ Fontes e links originais:
 
 - VPS n8n historica: Leaseweb 6 vCPU/16 GB/200 GB, Ubuntu 24.04/Docker/PostgreSQL; inventario e consumo ainda nao confirmados. **Nao instalar agentes nessa mesma VPS**.
 - VPS de agentes: independente do n8n. Se contratar futuramente VPS2 6/16/200, isso pode oferecer margem para picos e scanners, mas CPU compartilhada e IOPS precisam ser medidos; **mais RAM nao garante disponibilidade ou throughput**.
-- **Montreal/Canada:** nao confirmar disponibilidade da mesma linha VPS sem evidencias do configurador regional. Comparar Washington, localidade da VPS n8n e Brasil, com LGPD, latencia e transferencia internacional. Oferta por pais e plano pode diferir.
+- **Montreal/Canadá:** catálogo externo HostingCompass de 03/11/2026 passou a listar VPS 2 de 6 vCPU/16 GB/200 GB por CA$13,49/mês, com referência de contrato de 12 meses e renovação desconhecida; portanto, existe **evidência de oferta publicada por terceiro**, mas **não comprovação da disponibilidade/valor final no checkout oficial**. Comparar Washington e Montreal com cotação, tributação, LGPD, latência e suporte.
 - A Leaseweb informa **protecao DDoS padrao, firewall basico e um snapshot gratuito**, alem de expansao **somente para cima**, conforme pagina oficial. Snapshot do host **nao substitui** backup externo, restauracao isolada, auditoria e monitoring externo.
 - Verificar se as tarefas exigem navegadores headless, ingestao pesada de documentos, processamento local ou varias ferramentas concorrentes; se exigirem, dimensionar por medições e alocar recursos independentemente do custo baixo da VPS.
 
@@ -201,3 +201,17 @@ Fontes e links originais:
 6. Resolver licenciamento do n8n para qualquer automacao do CRM configurada por clientes antes de integracao SaaS efetiva.
 
 **ARQ-01 P0 parcial; IA-01/SEG-01/SEG-02/AGT-01 e demais gates tecnicos ainda pendentes.** Somente pesquisa/documentacao; **nenhum servidor foi contratado, nenhum teste real autorizado, nenhuma programacao iniciada**.
+
+
+### 9.3. Atualização 03/11/2026 — priorizar proposta Leaseweb VPS 2 (aceite "ok")
+
+**Decisão de pesquisa:** responsável respondeu "ok" à recomendação de **priorizar a cotação da Leaseweb VPS 2** para os agentes técnicos. **Aprovação restrita à prioridade da avaliação comercial; não constitui seleção definitiva, pedido de compra, aceitação de prazo contratual, homologação de custo ou instalação.**
+
+- **Candidato principal:** Leaseweb VPS 2 **6 vCPU compartilhadas / 16 GB RAM / 200 GB NVMe**, superior à **referência mínima já aprovada 4 vCPU / 8 GB / aproximadamente 160 GB**.
+- **Washington, EUA:** comparador Kuraberu registra **US$9,89/mês, sem tributos, verificado em 01/11/2026**; não é cotação oficial no checkout e pode exigir prazo/condições específicas.
+- **Montreal, Canadá:** catálogo HostingCompass atualizado em 03/11/2026 lista a VPS 2 por **CA$13,49/mês**, apontando compromisso de 12 meses, mas detalhes completos de contratação, valor à vista, disponibilidade final e renovação não comprovados no site oficial; as comparações de médias de 24 meses **não equivalem a pagamento mensal sem fidelidade**.
+- **Site oficial Leaseweb:** descreve características da linha VPS, porém a consulta pública não confirmou um checkout completo na conta/mercado do projeto. Fonte: https://www.leaseweb.com/products-services/cloud/virtual-private-server .
+- Fontes de preços **não vinculantes**: https://kuraberu.app/vps/offer/leaseweb-vps-2-us e https://hostingcompass.com/providers/leaseweb/vps .
+- **Pendências para avançar:** preço final em Washington e Montreal (mensal sem fidelidade, 12/24 meses, impostos, taxas e renovação); NVMe/IOPS efetivos, limites CPU compartilhada, snapshots/backups externos, disponibilidade, suporte e condições de saída; latência real ao Brasil e aos demais serviços; inventário e carga da VPS n8n já existente; orçamento separado para consumo API de IA, segurança, alerta externo, redes e operação.
+- **Critério de decisão:** só escolher SKU físico depois de cotação verificável e confirmação técnica; se a oferta for inadequada ou indisponível, DigitalOcean/Hetzner continuam opções. Manter a VPS dos agentes isolada da VPS n8n, do CRM e dos motores próprios dos produtos Imagine.
+- **Regra geral:** nenhuma contratação, acesso ao painel, provisionamento, alteração de infraestrutura, programação ou testes reais foi autorizada. ARQ-01 continua P0 parcial.
