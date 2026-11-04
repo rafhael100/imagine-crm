@@ -113,5 +113,12 @@ A primeira proposta de deliberação concreta foi registrada em [**CORE01-D04 �
 ## 12. Aceite preliminar CORE01-D06 e proposta CORE01-D07 — 04/11/2026
 
 - [**CORE01-D06-A/B/C/D aprovadas somente como diretrizes técnicas documentais preliminares**](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md); **CORE01-D06 permanece ABERTA** até contratos e dependências com CORE08, FIN/CON, Portal/Sites, INT e Segurança. Não houve fechamento de estados físicos, cobrança, titularidade nem reconciliação executável.
-- [**CORE01-D07 — proposta de classes de dados, integridade, RLS, roles e contratos técnicos**](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md): D07-A/B/C/D **NÃO APROVADAS**, pendentes de manifestação expressa. Não se trata de criação de tabelas, SQL ou testes.
+- [**CORE01-D07 — proposta de classes de dados, integridade, RLS, roles e contratos técnicos**](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md): D07-A/B/C/D **APROVADAS SOMENTE PRELIMINARMENTE**, conforme [CRM-DEC](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md), mantendo CORE01-D07 ABERTA. Não se trata de criação de tabelas, SQL ou testes.
 - **CORE01-D04 e D05 continuam abertas**, apesar de A/B/C e A/B/C/D preliminarmente aceitas. Todos os **67 IDs CORE da Etapa 2**, SEG-01/02, ARQ-01/02/03, AGT-01, INT P0 e G01..G06 estão abertos. **Nenhuma programação, teste, implantação ou contratação.**
+
+
+## 13. CORE01-D07 preliminar aprovado e consolidação transversal R01 (04/11/2026)
+
+- [**CORE01-D07-A/B/C/D**](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md) **aprovadas somente como diretrizes técnicas documentais preliminares**; **CORE01-D07 permanece ABERTA** até fechar esquemas físicos, contratos e dependências com CORE02/03/04/05/06/07/08/09, SEG-01/02, INT e Segurança. CORE01-D04/D05/D06 igualmente abertas.
+- [**Etapa 2 — R01, mapa de 12 contratos compartilhados e ordem documental de fechamento**](CRM-CORE-P0-ETAPA2-R01-consolidacao-contratos-e-dependencias-tecnicas-v0.1.md) organiza interfaces e owners por competência. Os localizadores E2-X01..12 **não são novas decisões ou módulos**. Próxima prioridade técnica proposta: CORE02-D04, ainda aberta e não aprovada.
+- A lista de **67 identificadores técnicos abertos** permanece inteira, além de IN-168, INT P0, G01..G06, FIN/CON, LGPD, fornecedores/licenças e aceite global. **Sem programação, testes, compras ou implantação.**
