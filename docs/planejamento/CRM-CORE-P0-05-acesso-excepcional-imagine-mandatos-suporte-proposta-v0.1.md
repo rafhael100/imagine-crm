@@ -1,7 +1,7 @@
 # CRM-CORE-P0-05 — Acesso excepcional da equipe Imagine a organizações de clientes (v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL PARA DELIBERAÇÃO; CORE-P0-05 ABERTO, D01–D03 NÃO APROVADAS.**  
+**Estado atualizado em 04/11/2026:** **CORE05-D01, D02 e D03 APROVADAS COMO BASE DOCUMENTAL**, conforme [registro de aceite](CRM-DEC-aprovacao-CORE-P0-05-D01-D03-base-suporte-excepcional-2026-11-04.md). **CORE-P0-05 permanece PARCIAL/ABERTO**; D04–D10 e demais bloqueios não foram aprovados. Referências a D01–D03 como “PROPOSTA/NÃO APROVADA” descrevem a versão histórica anterior ao aceite.  
 **Fase:** exclusivamente análise e documentação no GitHub. Sem programação, testes reais, contas/credenciais, instalação, contratação, acesso efetivo a clientes ou mudanças de produção.  
 **Objetivo:** permitir diagnóstico, assistência e recuperação legítimos sem transformar Administração Geral, suporte, IA ou serviço técnico em acesso irrestrito aos dados comerciais e pessoais dos clientes. Diferenciar telemetria da operação, acesso ao dado, mutação em nome de cliente e contenção emergencial. Não criar motor IAM, Central de Aprovações, Auditoria Geral ou perfis privilegiados paralelos.
 
@@ -142,3 +142,7 @@ Reconciliar com S02/S09 REV-01, CORE01/02/03/04, OPS-T02, INT OWN-Q05/Q06 e crit
 Esta proposta **não habilita acesso a qualquer cliente**, nem altera a regra de 30 min da Administração Geral, nem substitui self-service de dados IN-118, autorizações dos proprietários, LGPD/contrato ou a Central de Incidentes/Aprovações existente. Ações de suporte e agentes técnicos continuam restritas à autoridade que já possuem, sem "impersonation" invisível nem cadastro de superusuário universal.
 
 **Proibido programar, criar recursos, testar em ambientes reais, provisionar, comprar ou implantar.** Somente documentação, revisão e decisões expressamente aprovadas. A programação depende do fechamento integral do planejamento do CRM Imagine e do gate final global.
+
+## 11. Aditamento — aprovação expressa de CORE05-D01–D03 (04/11/2026)
+
+O responsável aprovou expressamente **CORE05-D01, D02 e D03 como base documental**, conforme [CRM-DEC](CRM-DEC-aprovacao-CORE-P0-05-D01-D03-base-suporte-excepcional-2026-11-04.md). Ficam preservadas a separação entre operação central e dados dos clientes, a referência de mandato excepcional restrito e a revogação/auditoria de acessos. **D04–D10 permanecem abertos**, especialmente titularidade do aceite, fundamento contratual/LGPD, mecanismo de isolamento físico, emergência, transparência e política de auditoria. O CORE-P0-05 **não foi encerrado** e só foi autorizado avançar ao planejamento CORE-P0-06, sem programação, testes ou alterações reais.
