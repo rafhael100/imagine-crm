@@ -1,7 +1,7 @@
 # CRM Imagine — Etapa 2 / CORE01-D07: Modelo físico, integridade multiempresa, RLS e contratos técnicos (proposta v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL PARA DELIBERAÇÃO — CORE01-D07 ABERTA; D07-A/B/C/D AINDA NÃO APROVADAS.**  
+**Estado atualizado em 04/11/2026:** **CORE01-D07-A/B/C/D APROVADAS SOMENTE COMO DIRETRIZES TÉCNICAS DOCUMENTAIS PRELIMINARES**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md). **CORE01-D07 PERMANECE ABERTA** até especificações físicas, contratos e dependências com CORE02..09, SEG-01/02, INT e Segurança. Rótulos abaixo de A/B/C/D como “NÃO APROVADAS” constituem texto histórico anterior ao aceite e ficam superados exclusivamente quanto às diretrizes preliminares.  
 **Objeto:** organizar os artefatos, invariantes e critérios para especificar futuramente um modelo físico executável de Laravel + PostgreSQL RLS, **sem escolher nem aplicar um schema SQL neste momento**.  
 **Ordem vigente:** concluir a documentação técnica do CRM Imagine antes da programação. **Não criar código, migrations, scripts, políticas de banco, infraestrutura, dados reais, testes executáveis, contas, credenciais, pagamentos ou deploy.**
 
@@ -139,3 +139,12 @@ Organizar um **pacote de documentos técnicos a fechar**, com uma versão autori
 **Continuidade recomendada após eventual aceite:** reconciliar especialmente CORE01-D04..D07 com CORE02/03/07/08/09/SEG, começando por contrato de permissões/escopos e integridade de tenant antes de marcar qualquer item como fechado; escolher soluções físicas só com documentação e aprovação específica do responsável.
 
 **Vedado:** programação/Codex, SQL/migration, testes reais, deploy, troca de permissões, uso de dados reais, implantação, provisionamento, contratação ou despesas. **Estado global: NÃO LIBERADO PARA PROGRAMAR.**
+
+
+## 8. Aditamento de aceite preliminar CORE01-D07-A/B/C/D — 04/11/2026
+
+Por [manifestação expressa](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md), foram aprovadas **como diretrizes técnicas documentais preliminares**: (A) dicionário e classificação global/tenant/integração; (B) integridade de relações, constraints e prevenção de cruzamento entre empresas; (C) necessidade de matriz por família/operação, Laravel+PostgreSQL RLS, roles e proteção de execução/serviços; (D) pacote versionado de contratos, auditoria, migração/recuperação planejadas e critérios de homologação futura.
+
+**CORE01-D07 integralmente ABERTA**: esquemas/PK/FK/constraints, RLS e roles reais, owners de módulos, contratos CORE02/03/04/05/06/07/08/09, **SEG-01, SEG-02, INT e Segurança** não foram fechados. **CORE01-D04/D05/D06 permanecem ABERTAS** apesar de aceites preliminares de suas subdiretrizes. **67 IDs CORE permanecem abertos** e demais IN-168, FIN/CON, ARQ/AGT, G01..G06 e aceite global não foram resolvidos.
+
+Continuidade autorizada: **consolidação documental transversal das pendências técnicas da Etapa 2**, com critérios/owners e dependências, sem aprovação automática de outras decisões nem execução de código, SQL, testes, infraestrutura ou implantação.
