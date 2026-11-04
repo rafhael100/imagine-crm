@@ -66,6 +66,8 @@ O maior contrato compartilhado imediato é **E2-X02 (classificação de campos e
 
 Uma futura aprovação de princípios CORE02-D04 não encerrará D04 sem catálogo real por módulo, classificação de campos e contratos CORE01/SEG/INT, e nem fechará CORE01-D04/D07.
 
+**Minuta especializada preparada:** [**CORE02-D04 — classificação de campos e direitos por operação (v0.1)**](CRM-CORE-P0-ETAPA2-CORE02-D04-classificacao-campos-direitos-proposta-v0.1.md), com propostas A/B/C/D **ainda não aprovadas**. Essa publicação **não fecha CORE02-D04** e não aprova direitos de acesso, campos físicos, políticas RLS ou execução.
+
 ## 5. Registro de evidências e política de status
 
 Para cada decisão de cada pacote, manter **fonte e link/commit**, texto normativo/precedência, dono por competência, estado **subdiretriz preliminar → especificação pendente → decisão técnica aprovada por owner → fechamento documental auditável**, dependências bloqueantes, condições negativas, versões, custos e lacunas. **Não** atribuir “homologado” a documento sem execução permitida. INT HT-01..18 **0 executados**.
