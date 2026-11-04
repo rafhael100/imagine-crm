@@ -129,3 +129,10 @@ A primeira proposta de deliberação concreta foi registrada em [**CORE01-D04 �
 - [**CORE02-D04-A/B/C/D**](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md) **aprovadas como diretrizes técnicas documentais preliminares**: classes de campos, autorizações distintas por operação/canal, proteção de F-SEC/F-EVID/F-ART e classificação de campos customizados. **CORE02-D04 integral permanece ABERTA**, pois não há catálogo real por módulo nem contratos de permissão/RLS.
 - [**CORE02-D05 — proposta de combinação de perfis, negações, herança, delegação e escopos**](CRM-CORE-P0-ETAPA2-CORE02-D05-combinacao-perfis-negacoes-delegacao-proposta-v0.1.md): D05-A/B/C/D **NÃO APROVADAS**. D05 continua ABERTA até escolha de precedência válida, owners e contratos CORE/SEG/INT; não atribuir privilégios por publicar minuta.
 - **67 IDs CORE ainda ABERTOS** (CORE01-D04..D07 + CORE02..CORE10-D04..D10), IN-168 ARQ/SEG/AGT, INT P0/G01..G06, FIN/CON, LGPD, licenciamento e custos pendentes. Sem programação, testes, roles reais, infraestrutura ou implantação.
+
+
+## 15. Autorizar desenvolvimento F0 sem baixa automática de P0 (04/11/2026)
+
+O responsável pediu aprovação ampla das pendências para acelerar o desenvolvimento; a [**DEC-FASTTRACK-01**](CRM-DEC-FASTTRACK-autorizacao-desenvolvimento-controlado-2026-11-04.md) registra **autorização executiva para tratamento das 67 pendências em desenvolvimento controlado** sem repetir aprovações individuais de minutas antes de iniciar o scaffold. **Isto não transforma 67 itens em “fechados tecnicamente”**, porque SQL/RLS, perfis, contratos, cofre, financeiros e evidências ainda não existem. Um item somente muda para fechado com solução concreta, owners, verificação e trilha.
+
+**GO:** F0 em branch isolada e código deny-by-default sem acesso real. **NO-GO:** funcionalidades sensíveis, produção, dados reais, pagamentos, integração externa, privilégio ampliado ou gasto não autorizado. SEG-01/02, ARQ/AGT, INT G01..G06, FIN/CON, LGPD e aprovação de release permanecem condicionantes por fase.
