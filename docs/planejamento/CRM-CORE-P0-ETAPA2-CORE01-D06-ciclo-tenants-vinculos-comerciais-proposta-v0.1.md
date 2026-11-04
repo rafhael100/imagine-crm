@@ -1,7 +1,7 @@
-# CRM Imagine — Etapa 2: CORE01-D06 — Ciclo de vida das organizações, titularidade, Sites↔CRM e direitos comerciais (proposta v0.1)
+# CRM Imagine — Etapa 2: CORE01-D06 — Anexo de exemplos e critérios de vínculos comerciais (não canônico)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA TÉCNICA DOCUMENTAL — CORE01-D06 ABERTA; D06-A/B/C/D AINDA NÃO APROVADAS**.  
+**Estado:** **ANEXO DOCUMENTAL COMPLEMENTAR, NÃO DELIBERATIVO — CORE01-D06 ABERTA; D06-A/B/C/D AINDA NÃO APROVADAS**. A única proposta canônica para deliberação A/B/C/D é [CORE01-D06 — ciclo de organizações e vínculos comerciais](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-organizacoes-vinculos-comerciais-proposta-v0.1.md); as seções a seguir apenas aprofundam casos e condições, sem competir com os quatro códigos.  
 **Escopo:** especificação conceitual de contratos de autoridade, vínculo, estado e reconciliação. **Não aprova esquema físico, fornecedor/gateway, operações reais, valor definitivo, grants, eventos executáveis nem código.**
 **Continuidade autorizada:** [aceite preliminar CORE01-D05-A/B/C/D](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md), mantendo **CORE01-D05 aberta** com CORE02/03/04/05/09/SEG-01/02. CORE01-D04 A/B/C foram preliminarmente aceitas, mas D04 inteira continua aberta.
 
@@ -37,7 +37,7 @@
 
 **Camadas que não devem ser fundidas:** estado do tenant, membership, Site, contrato Site, destino CRM, cortesia, trial, assinatura CRM paga, gratuidade administrativa, entitlement efetivo e elegibilidade de anexos/IA. Uma falha de transporte ou suspeita de evento não pode indiscriminadamente colocar todas as camadas no mesmo estado.
 
-## 3. CORE01-D06-A — Fontes oficiais, entidades independentes e escolha do destino (PROPOSTA)
+## 3. Subtema complementar — fontes oficiais, entidades independentes e escolha do destino
 
 Diretriz preliminar candidata:
 
@@ -49,7 +49,7 @@ Diretriz preliminar candidata:
 
 **Não decidido em D06-A:** esquema, campos/chaves, entidades físicas, migração, limitação de novas organizações, comprovação exata de titularidade, política antifraude, análise legal de representação e versão de contrato.
 
-## 4. CORE01-D06-B — Ciclo de benefício, trial e assinatura por organização (PROPOSTA)
+## 4. Subtema complementar — ciclo de benefício, trial e assinatura por organização
 
 Diretriz preliminar candidata:
 
@@ -67,7 +67,7 @@ Diretriz preliminar candidata:
 
 **Ainda depende de decisão:** precedência entre isenção administrativa, benefício de site, assinatura paga, descontos e adicionais, planos superiores, mudanças no meio do ciclo, créditos/estornos, casos conflitantes e estados físicos (CORE08-D05/D07/D09, GRAT-P, FIN/CON). **Nenhuma prioridade normativa de desconto está sendo aprovada aqui.**
 
-## 5. CORE01-D06-C — Estados independentes, marcos formais e transições (PROPOSTA)
+## 5. Subtema complementar — estados independentes, marcos formais e transições
 
 A separação de estados deve obedecer aos **efeitos já aprovados**, sem inventar máquina física:
 
@@ -87,7 +87,7 @@ A separação de estados deve obedecer aos **efeitos já aprovados**, sem invent
 
 **Não decididos em D06-C:** relógio exato, fuso, granularidade, estados de exceção/contestação, provedor de avisos, forma de cobrança, retry de pagamentos, condições de reativação de contrato CRM formalmente cancelado, tratamento de concorrência e eventos tardios.
 
-## 6. CORE01-D06-D — Reconciliação, idempotência e auditoria (PROPOSTA)
+## 6. Subtema complementar — reconciliação, idempotência e auditoria
 
 Diretriz preliminar candidata para os futuros contratos tipados Portal/CRM/FIN/CON/INT:
 
@@ -124,14 +124,16 @@ Diretriz preliminar candidata para os futuros contratos tipados Portal/CRM/FIN/C
 
 Esses casos são **roteiros textuais** a reconciliar com CORE08-T, CORE01-T, REV01 S01..10 e INT HT01..18; não criam uma suíte redundante ou testes a executar agora.
 
-## 8. Decisões para manifestação expressa — AINDA NÃO APROVADAS
+## 8. Referência única para eventual deliberação CORE01-D06 — PROPOSTA CANÔNICA NÃO APROVADA
 
-- **CORE01-D06-A — PROPOSTA:** aceitar a separação de organização/tenant, titularidade/CNPJ, contrato/campanha Sites, vínculo autorizado Site↔CRM e resultado oficial de cada proprietário, incluindo escolha explícita do destino e migração somente por iniciativa do cliente.
-- **CORE01-D06-B — PROPOSTA:** aceitar a segregação de fontes de direito (Básico público, cortesia, trial único por CNPJ, CRM pago, gratuidade administrativa e adicionais) por organização, sem cumular cortesias ou cobrar automaticamente.
-- **CORE01-D06-C — PROPOSTA:** aceitar as transições lógico-contratuais distintas para suspensão por dívida do Site e cancelamentos comuns/por inadimplência, transições de 30 dias normais/restritas, avisos, acesso restrito e retenções em marcos próprios, sem implementar máquinas de estados.
-- **CORE01-D06-D — PROPOSTA:** aceitar confirmação oficial, idempotência/reconciliação, preservação de origem/destino de leads em trânsito e auditoria por contrato, sem admitir eventos técnicos como autorização ou efeito definitivo.
+O documento de referência para votação é exclusivamente [**CORE01-D06 — ciclo de organizações, titularidade e vínculos comerciais**](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-organizacoes-vinculos-comerciais-proposta-v0.1.md), que utiliza a seguinte classificação de quatro diretrizes:
 
-**O aceite futuro dessas quatro diretrizes seria somente documental preliminar: não concluiria CORE01-D06**, que depende do fechamento das regras/contratos CORE08-D04..D10, FIN/CON, Portal/Sites, IN-117..122, INT/SEG/ARQ, SEG-01/02 e decisões dos proprietários.
+- **CORE01-D06-A — fontes de autoridade e vínculos explícitos:** distinguir CNPJ, tenant, contrato Site, destino, assinatura, cortesia, trial e gratuidade; apenas dono do domínio confirma resultado.
+- **CORE01-D06-B — ciclo independente e preservação de direitos:** separar estados desses objetos, transições comuns/restritas, avisos, independência do pago e proibição de cobrança automática.
+- **CORE01-D06-C — titularidade, concorrência e vínculo idempotente:** pedido autenticado, autoridade sobre origem/destino, antifraude, idempotência, reordenação e troca por chamado, sem migração automática.
+- **CORE01-D06-D — retenção, restrição e portabilidade sem efeitos colaterais:** separar suspensão de cortesia, expiração de trial e cancelamento formal CRM; conservar portabilidade, retenções e vedação de cobrança tácita.
+
+**Todas essas quatro diretrizes permanecem NÃO APROVADAS**. Este anexo tem valor apenas explicativo para casos e critérios e não cria um segundo conjunto conflitante de propostas. O futuro aceite de qualquer diretriz não encerrará CORE01-D06 nem as dependências CORE08/FIN/CON/SEG/INT.
 
 ## 9. Pendências e gates mantidos ABERTOS
 
