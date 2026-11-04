@@ -1,7 +1,7 @@
 # CRM-CORE-P0-02 — Matriz canônica de autorização por ator × recurso × ação × campo (v0.1)
 
 **Data:** 04/11/2026.  
-**Estado atualizado em 04/11/2026:** **CORE02-D01–D03 APROVADAS COMO BASE DOCUMENTAL** conforme [decisão de aceite CORE02-D01 a D03](CRM-DEC-aprovacao-CORE-P0-02-D01-D03-base-permissoes-2026-11-04.md); **CORE-P0-02 PARCIAL/ABERTO**. D04–D10 seguem pendentes. Não é matriz executável homologada, não ativa permissões, não altera planos e não autoriza programação. Seções com rótulo "PROPOSTA D01–D03" registram o estado histórico anterior ao aceite.  
+**Estado atualizado em 04/11/2026:** **CORE02-D01–D03 APROVADAS COMO BASE DOCUMENTAL** conforme [decisão de aceite CORE02-D01 a D03](CRM-DEC-aprovacao-CORE-P0-02-D01-D03-base-permissoes-2026-11-04.md); **CORE-P0-02 PARCIAL/ABERTO**. CORE02-D04-A/B/C/D [aprovadas **somente preliminarmente**](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md), mantendo **D04 integral ABERTA** e D05..D10 pendentes. Não é matriz executável homologada, não ativa permissões, não altera planos e não autoriza programação. Seções com rótulo "PROPOSTA D01–D03" registram o estado histórico anterior ao aceite.  
 **Sequência:** CORE-P0-01 D01–D03 aceitas como base lógica em [CRM-DEC](CRM-DEC-aprovacao-CORE-P0-01-D01-D03-base-logica-2026-11-04.md), preservando D04–D07. Esta proposta inicia CORE-P0-02, sem antecipar aceite do responsável.  
 **Objetivo:** reconciliar identidade global / memberships por tenant e direitos existentes, para posteriormente fechar contratos por módulo, campos, planos, agentes e operações externas sem criar motor IAM adicional.
 
@@ -171,3 +171,10 @@ Esta proposta **não modifica os documentos históricos**, não concede permiss�
 ## 12. Aditamento — aceite expresso D01 a D03 (04/11/2026)
 
 O responsável **aprovou CORE02-D01, D02 e D03 como base documental**, conforme [decisão de aceite CORE02-D01 a D03](CRM-DEC-aprovacao-CORE-P0-02-D01-D03-base-permissoes-2026-11-04.md). A validade do aceite limita-se ao modelo cumulativo de autorização, catálogo semântico de ações e matriz conceitual de atores/fronteiras; não transforma exemplos em permissões concedidas. **CORE02-D04 a D10 permanecem abertos**, inclusive classificação física de campos, direitos efetivos, regras de papéis, alçadas, contratos e cenários de aceite. Sem programação ou testes. Autorizado iniciar a documentação CORE-P0-03. Esta seção prevalece sobre a formulação histórica que solicitava votação D01–D03.
+
+
+## 13. CORE02-D04 preliminar aprovada e CORE02-D05 em proposta (04/11/2026)
+
+- O responsável [aprovou CORE02-D04-A/B/C/D](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md) como **diretrizes técnicas documentais preliminares**, preservando **CORE02-D04 ABERTA** por catálogo real, permissões por módulo, dependências CORE01, CORE02-D05..D10, SEG-01/02, INT e Segurança. As antigas expressões de “CORE02-D04 PENDENTE” devem ser lidas como **pendência integral de fechamento técnico**, não pendência do aceite A/B/C/D.
+- Preparada [**CORE02-D05 — proposta de composição de perfis, grants/denies e delegação**](CRM-CORE-P0-ETAPA2-CORE02-D05-combinacao-perfis-negacoes-delegacao-proposta-v0.1.md), com D05-A/B/C/D **NÃO APROVADAS**. A política final de precedência de perfis, negações e herança continua por decidir; não presumir que qualquer deny sempre prevalece, nem autorizar autoelevação.
+- **CORE01-D04..D07, CORE02-D04..D10, CORE03..10-D04..D10 e 67 IDs técnicos** seguem ABERTOS, assim como IN-168 SEG-01/02, ARQ/AGT, INT P0/G01..G06 e gate global. Nenhuma programação, teste, grant real, operação de banco ou implantação.
