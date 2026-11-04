@@ -1,7 +1,7 @@
 # CRM Imagine — Etapa 2 / CORE02-D05: combinação de perfis, negações, herança, delegação e escopo (proposta v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL AINDA NÃO APROVADA — CORE02-D05 ABERTA. CORE02-D05-A, B, C e D aguardam aceite expresso.**  
+**Estado atualizado em 04/11/2026:** **CORE02-D05-A/B/C/D APROVADAS SOMENTE COMO DIRETRIZES TÉCNICAS DOCUMENTAIS PRELIMINARES**, conforme [decisão expressa](CRM-DEC-aprovacao-CORE02-D05-ABCD-diretrizes-preliminares-2026-11-04.md). **CORE02-D05 integral permanece ABERTA**, assim como CORE02-D04, D06..D10, CORE01-D04..D07, SEG-01/02 e demais bloqueios. Textos históricos abaixo que indiquem ausência de aceite A–D foram superados somente neste alcance; **P1–P4 e a precedência concreta de grants/denies NÃO foram escolhidas**.  
 **Objetivo:** propor uma base de governança para conciliar múltiplos perfis, direitos positivos, bloqueios explícitos, funções customizadas, equipes/unidades, delegação e revogação **sem conceder permissões reais nem criar motor IAM independente**. Não decidir SQL, schema, papéis reais, política definitiva de prioridades ou funções de produtos por analogia.
 
 ## 1. Precedência das decisões existentes
@@ -139,3 +139,7 @@ Mesmo se todas aprovadas como diretrizes preliminares, **CORE02-D05 permanecerá
 Somente após aceite expresso A/B/C/D, registrar CRM-DEC de CORE02-D05, atualizar matriz, preservar D05 e todos os gates abertos, prosseguir com CORE02-D06 exclusivamente documental. **Não tratar a aprovação como escolha de política de deny/grant, não atribuir papéis reais, nem ativar permissões.**
 
 **VEDADO:** programação, Codex, testes executáveis, SQL/RLS, grants, criar/alterar perfis em contas reais, credenciais, implantação, serviços, migração, produção, compras, custos/contratações, processamento de dados de clientes.
+
+## 10. Aditamento de aceite parcial CORE02-D05 A/B/C/D — 04/11/2026
+
+O responsável [aprovou expressamente](CRM-DEC-aprovacao-CORE02-D05-ABCD-diretrizes-preliminares-2026-11-04.md) como **diretrizes técnicas documentais preliminares**: (A) limites cumulativos por tenant/plano/recursos; (B) necessidade de política determinística de composição, **sem escolher P1/P2/P3/P4**; (C) governança de perfis e delegação sem autoelevação; (D) escopos próprios/equipe/unidade/posse, revogação e auditabilidade. **CORE02-D05 continua ABERTA**, dependente de contrato efetivo e escolhas de precedência, owners, autorização e integração com CORE01/03/04/05/07/08/09, SEG-01/02, INT P0 e Segurança. Próximo trabalho autorizado: **proposta documental CORE02-D06** de direitos por módulo, sem código nem testes. CORE02-D04/D06..D10, CORE01-D04..D07 e demais P0 continuam abertos; DEV-GATE-00 mantém NO-GO.
