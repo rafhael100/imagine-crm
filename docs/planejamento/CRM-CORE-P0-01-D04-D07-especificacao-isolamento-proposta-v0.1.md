@@ -173,3 +173,8 @@ O documento registra hipóteses para **futuras escolhas**, não escolhe produto,
 ## 9. Aceite preliminar de CORE01-D04-A/B/C e continuidade CORE01-D05 — 04/11/2026
 
 [CRM-DEC de aceite parcial](CRM-DEC-aprovacao-CORE01-D04-ABC-diretrizes-preliminares-2026-11-04.md): aprovadas somente como diretrizes técnicas documentais preliminares **unicidade de membership identidade×tenant**, **convite separado de concessão** e **revogação por organização**. A decisão exige manter **CORE01-D04 ABERTA** até conciliação CORE02/04/07/08, e preserva D05–D07/SEG/INT/G01–G06. Próxima [proposta técnica CORE01-D05 sobre contexto de tenant, Laravel e PostgreSQL RLS](CRM-CORE-P0-ETAPA2-CORE01-D05-contexto-tenant-RLS-proposta-v0.1.md), cujas diretrizes A/B/C/D **ainda não foram aprovadas**. Nenhuma programação, teste ou implantação.
+
+
+## 10. CORE01-D05-A/B/C/D preliminares e D06 em revisão (04/11/2026)
+
+O responsável aprovou [CORE01-D05-A/B/C/D](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md) **apenas como diretrizes técnicas documentais preliminares**, sem encerrar **CORE01-D05**, que exige contratos CORE02/03/04/05/09 e SEG-01/02, políticas RLS, roles, sessão e validação dos proprietários. **CORE01-D04 também está aberta**, apesar de seus princípios preliminares aceitos; D07 continua aberta. Próxima [**proposta CORE01-D06 de ciclo organizacional e comercial**](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-tenants-vinculos-comerciais-proposta-v0.1.md) foi preparada **sem aceite ainda de D06-A/B/C/D**. Permanecem os 67 itens CORE abertos, demais P0 e G01..G06. Sem programação, testes, implantação ou contratação.
