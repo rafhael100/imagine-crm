@@ -1,7 +1,7 @@
 # CRM-DEC — Aprovação preliminar de CORE01-D05-A, B, C e D
 
 **Data:** 04/11/2026.  
-**Declaração literal do responsável:** “Aprovo CORE01-D05-A, B, C e D como diretrizes técnicas documentais preliminares do CRM Imagine. Registre no GitHub, mantenha CORE01-D05 aberta até fechar seus contratos e dependências com CORE02, CORE03, CORE04, CORE05, CORE09, SEG-01 e SEG-02. Preserve todos os demais bloqueios e prossiga com CORE01-D06, sem programação, testes ou implantação.”
+**Declaração literal do responsável:** “Aprovo CORE01-D05-A, B, C e D como diretrizes técnicas documentais preliminares do CRM Imagine. Registre no GitHub, mantenha CORE01-D04 e D05 abertas, preserve CORE01-D06/D07, SEG-01, SEG-02 e todos os demais bloqueios técnicos. Prossiga com CORE01-D06, sem iniciar programação nem executar testes.”
 
 **Escopo de aprovação:** somente **diretrizes técnicas documentais preliminares**. CORE01-D05 permanece **ABERTA**. Não aprova modelo de banco, política SQL/RLS, papel/role, esquema, serviço, contrato executivo, despesas, programação ou testes.  
 **Fonte:** [CORE01-D05 — contexto do tenant, RLS, workers e suporte](CRM-CORE-P0-ETAPA2-CORE01-D05-contexto-tenant-RLS-proposta-v0.1.md).
