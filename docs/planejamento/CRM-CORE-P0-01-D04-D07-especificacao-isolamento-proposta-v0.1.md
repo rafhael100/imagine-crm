@@ -1,7 +1,7 @@
 # CRM-CORE-P0-01 — Etapa 2 / CORE01-D04 a D07: memberships, contexto de tenant, ciclos e RLS (proposta v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **MINUTA DOCUMENTAL — CORE01-D04, D05, D06 e D07 PERMANECEM ABERTAS E NÃO APROVADAS**.  
+**Estado atualizado em 04/11/2026:** **CORE01-D04-A/B/C aprovadas apenas como diretrizes técnicas documentais preliminares** [decisão](CRM-DEC-aprovacao-CORE01-D04-ABC-diretrizes-preliminares-2026-11-04.md); **CORE01-D04 (item integral), D05, D06 e D07 continuam ABERTAS** e não homologadas. A redação histórica posterior que indica D04-A/B/C ainda não aprovadas foi superada pelo aceite parcial.  
 **Finalidade:** desdobrar quatro dependências técnicas da [base lógica CORE-P0-01 D01–D03 aprovada](CRM-CORE-P0-01-identidade-organizacoes-membership-RLS-proposta-v0.1.md) em contratos verificáveis e opções de decisão.  
 **Vínculo:** [Etapa 2 — matriz de pendências](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md) e [registro de aprovação metodológica CORE10](CRM-DEC-aprovacao-CORE-P0-10-D01-D03-base-homologacao-2026-11-04.md).  
 **Fase:** estritamente planejamento. **Não criar schema, migração, RLS real, endpoint, ambiente de teste, conta de usuário, job, credencial, provisionamento, programação nem executar qualquer teste**.
@@ -168,3 +168,8 @@ Cada família terá em etapa própria: objetos concretos, campos/classificação
 O documento registra hipóteses para **futuras escolhas**, não escolhe produto, fornecedor, schema, políticas executáveis, provedor de autenticação ou permissões novas; não realiza operação e não é instrução de programar. A continuidade exige aceite específico do responsável quando as opções forem fechadas.
 
 **SEM PROGRAMAR OU EXECUTAR TESTES.**
+
+
+## 9. Aceite preliminar de CORE01-D04-A/B/C e continuidade CORE01-D05 — 04/11/2026
+
+[CRM-DEC de aceite parcial](CRM-DEC-aprovacao-CORE01-D04-ABC-diretrizes-preliminares-2026-11-04.md): aprovadas somente como diretrizes técnicas documentais preliminares **unicidade de membership identidade×tenant**, **convite separado de concessão** e **revogação por organização**. A decisão exige manter **CORE01-D04 ABERTA** até conciliação CORE02/04/07/08, e preserva D05–D07/SEG/INT/G01–G06. Próxima [proposta técnica CORE01-D05 sobre contexto de tenant, Laravel e PostgreSQL RLS](CRM-CORE-P0-ETAPA2-CORE01-D05-contexto-tenant-RLS-proposta-v0.1.md), cujas diretrizes A/B/C/D **ainda não foram aprovadas**. Nenhuma programação, teste ou implantação.
