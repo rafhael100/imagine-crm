@@ -27,7 +27,7 @@ A tabela acima **não autoriza criar novos endpoints, tabelas, enum de banco, au
 ## 3. Pendências preservadas
 
 - **LIB04-P02 parcialmente resolvida**: ligação não atendida é tentativa, não atendimento. Ainda falta definir a classificação exata de interações válidas (ex.: contato telefônico atendido, atendimento presencial, conversa no canal contratado, marcação manual e prova) e o controle de tentativas.
-- **LIB04-P04 continua pendente:** proposta de prazo padrão de 24h e opções 4/12/24/48/72h **não aprovada**; horas úteis/corridas, repetição, escala e fuso por decidir.
+- **LIB04-P04 parcialmente resolvida por decisão posterior:** o prazo padrão de **24 horas corridas** e opções **4/12/24/48/72 horas corridas** já foram **aprovados funcionalmente** na [CRM-DEC abrangente](CRM-DEC-aprovacao-regras-funcionais-LEA01-LEA02-2026-11-04.md). **Continuam pendentes** relógio técnico, fuso, mudança de prazo durante execução, capacidade, retenção, exceções e homologação individual dos modelos.
 - **LIB04-P03/P05..P09** continuam sujeitos a aceite, assim como a homologação individual LEA-01/LEA-02, seus gatilhos T01/T13, comando A03, retenção das notificações, contratos e testes.
 - **AUT-P01..P14, LIB02-P01..P08, CORE/SEG/INT e gates P0** permanecem abertos.
 - Não foi autorizada programação, testes reais, provisionamento, contratação, custo, envio de mensagens, ativação de automação ou mudança de direitos comerciais.
@@ -40,3 +40,8 @@ A tabela acima **não autoriza criar novos endpoints, tabelas, enum de banco, au
 - [CRM-REV-03 — Leads, contatos e histórico](CRM-REV-03-leads-contatos-campos-historicos-portabilidade.md)
 
 **Somente documentação; sem programação ou implantação.**
+
+
+## 5. Conciliação posterior com a aprovação funcional abrangente
+
+A [CRM-DEC de regras funcionais LEA-01/LEA-02](CRM-DEC-aprovacao-regras-funcionais-LEA01-LEA02-2026-11-04.md) já aprovou **24h corridas como padrão**, opções guiadas **4/12/24/48/72h**, os avisos internos por ciclo e a distinção de tentativa sem atendimento. A [LIB05](CRM-AUT-LIB05-registro-classificacao-contato-evidencias-LEA02-v0.1.md) documenta a **proposta não aprovada** de como registrar, validar e corrigir os fatos em histórico existente. Esta conciliação não amplia direitos, não homologa contratos nem autoriza programação.
