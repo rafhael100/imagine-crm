@@ -15,8 +15,8 @@
 | CORE-P0-06 | Auditoria e retenções | **Base D01–D03 APROVADA; P0 PARCIAL/ABERTO** | [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-06-D01-D03-base-auditoria-2026-11-04.md); [base documental](CRM-CORE-P0-06-auditoria-categorias-retencao-acesso-proposta-v0.1.md); D04–D10 abertos, prazos já aprovados preservados |
 | CORE-P0-07 | Convites, assentos, equipes, desligamento | **Base D01–D03 APROVADA; P0 PARCIAL/ABERTO** | [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-07-D01-D03-base-convites-assentos-equipes-2026-11-04.md); [modelo lógico](CRM-CORE-P0-07-convites-assentos-equipes-desligamento-proposta-v0.1.md); D04–D10 técnicos abertos, sem convites ou assentos reais |
 | CORE-P0-08 | Básico público/cortesia, organizações e trial | **Base D01–D03 APROVADA; P0 PARCIAL/ABERTO** | [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-08-D01-D03-base-basico-trial-2026-11-04.md); [proposta atualizada](CRM-CORE-P0-08-basico-publico-cortesia-organizacoes-trial-proposta-v0.1.md); D04–D10 abertos, sem criação de contas ou benefícios reais |
-| CORE-P0-09 | Cofre e identidade de serviço | **Proposta v0.1 registrada; D01–D03 aguardam aceite; P0 ABERTO** | [CORE-P0-09 — cofre, segredos, identidades e ferramentas](CRM-CORE-P0-09-cofre-segredos-identidades-servico-proposta-v0.1.md); D04–D10 abertos, IN-168 SEG-01/02 não encerrados |
-| CORE-P0-10 | Pacote de homologação do núcleo | **A iniciar** | Casos negativos, evidências e responsáveis; executar testes somente em fase autorizada |
+| CORE-P0-09 | Cofre e identidade de serviço | **Base D01–D03 APROVADA; P0 PARCIAL/ABERTO** | [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-09-D01-D03-base-cofre-identidades-2026-11-04.md); [modelo lógico](CRM-CORE-P0-09-cofre-segredos-identidades-servico-proposta-v0.1.md); D04–D10 abertos, IN-168 SEG-01/02 não encerrados |
+| CORE-P0-10 | Pacote de homologação documental do núcleo | **Proposta v0.1 publicada; D01–D03 AGUARDAM ACEITE; P0 ABERTO** | [CORE-P0-10 — rastreabilidade, cenários e gates](CRM-CORE-P0-10-pacote-homologacao-documental-nucleo-proposta-v0.1.md); D04–D10 abertos; não houve execução de testes nem fechamento de P0/G01–G06 |
 
 ## Gates preservados
 
