@@ -18,7 +18,7 @@ O modelo não deve declarar que houve atendimento por leitura da ficha, atualiza
 | Alterar responsável, etiqueta, campo, prioridade, score ou mover funil | **Não, por si só** | Administração interna não equivale a atendimento |
 | Criar observação genérica sem classificação de contato | **Não automaticamente** | Texto livre não é prova inequívoca |
 | Registrar atendimento realizado e seu resultado por usuário autorizado | **Sim, candidato prioritário** | Confirmar se a ação estruturada existe no Básico; se necessário, estender metadados de observação aprovada sem criar módulo de tarefas |
-| Registrar tentativa legítima sem resposta | **A decidir** | Distinguir esforço da equipe de contato efetivo; não presumir resposta do cliente |
+| Registrar tentativa legítima sem resposta (ex.: ligação não atendida) | **Não — aprovado funcionalmente** | Registrar a tentativa com resultado próprio; não encerrar o primeiro atendimento pendente; [decisão específica](CRM-DEC-LEA02-tentativa-nao-atendida-nao-e-atendimento-2026-11-04.md) |
 | Cliente envia mensagem por canal integrado | **Não por si só** | Contato inbound sem atendimento humano não encerra SLA do responsável |
 | Envio de mensagem externa com ack de provedor | **Não por si só** | Status técnico não prova conversa; canal não incluído automaticamente no Básico |
 | Nota ou interação criada por IA/robô sem validação humana | **Não** | Sugestão não equivale a atendimento registrado |
@@ -50,7 +50,7 @@ O modelo não deve declarar que houve atendimento por leitura da ficha, atualiza
 
 A validação final deve selecionar entre **prazos livres dentro de mínimo/máximo homologados** versus **lista de opções discretas**. Para Básico com modelos prontos, lista fechada facilita suporte, capacidade e previsibilidade. Não confundir esse relógio com fechamento de conversas ATD (24/12/72h) ou com os lembretes da Agenda (24h/1h), que possuem objetivos diferentes.
 
-**P0/pendente:** intervalo mínimo seguro, capacidade por tenant, política de uso justo sem limitar número de leads, retenção dos avisos comerciais, horário comercial versus corrido e semântica de tentativa sem resposta.
+**P0/pendente:** homologação técnica da capacidade por tenant, política de uso justo sem limitar leads, retenção de avisos comerciais, implementação de prazos corridos aprovados (24h padrão; 4/12/24/48/72h opções), gestão de tentativas, prova de atendimento, fuso e eventual política adicional de horas úteis. **Decisão já aprovada:** tentativa sem resposta não encerra primeiro atendimento.
 
 ## 5. Antiduplicidade, isolamento e estados
 
@@ -86,7 +86,7 @@ A validação final deve selecionar entre **prazos livres dentro de mínimo/máx
 ## 7. Pendências para decisão (LIB04-P01..P09)
 
 - **P01 — RESOLVIDA QUANTO AO SIGNIFICADO:** LEA-02 significa **primeiro atendimento efetivo pendente pela empresa**, não silêncio do cliente, conforme [CRM-DEC](CRM-DEC-semantica-LEA02-primeiro-atendimento-2026-11-04.md). **Subdecisões sobre tentativas sem sucesso e prova de atendimento permanecem abertas em P02**.
-- **P02:** o que é interação válida e qual o estado/trilha que prova contato? Tentativa não atendida encerra ou não SLA?
+- **P02 — PARCIALMENTE RESOLVIDA:** ligação não atendida **não** é atendimento e não encerra a condição de primeiro atendimento pendente, conforme [decisão específica](CRM-DEC-LEA02-tentativa-nao-atendida-nao-e-atendimento-2026-11-04.md) e [aprovação funcional mais ampla](CRM-DEC-aprovacao-regras-funcionais-LEA01-LEA02-2026-11-04.md). **Ainda pendente** o contrato de prova e classificação dos demais tipos de interação, identidade, auditoria e política de tentativas/escalonamento.
 - **P03:** LEA-01 pode acionar cadastro manual e de Sites? Como tratar importação em lote?
 - **P04:** aprovar ou rever opções **4/12/24/48/72 h**, default **24h**, horas corridas versus horas úteis e política de mudança do prazo.
 - **P05:** política de um aviso por ciclo, dedupe entre versões, pausa e retomada de modelo/tenant.
@@ -105,3 +105,8 @@ O responsável respondeu **“ok”** à aprovação expressa da tabela de regra
 **Aprovado funcionalmente:** (a) LEA-01 para leads oficialmente confirmados no CRM, originados de cadastro manual e formulário/site integrado; (b) sem avalanche de avisos unitários em importação de planilha; (c) LEA-02 para primeiro atendimento efetivo pendente, com 24h corridas como padrão e configuração guiada 4/12/24/48/72h; (d) atendimento efetivo registrado por usuário autorizado como encerramento, enquanto ligação não atendida é apenas tentativa; (e) um aviso por ciclo lógico; (f) notificação interna, sem e-mail, WhatsApp ou tarefa comercial automática; (g) uso do motor próprio CRM e preservação de limites/slots vigentes sujeitos à revisão final.
 
 **Ainda não aprovado:** os modelos individuais para ativação/publicação; schemas T01/T13/A03 e contratos técnicos; forma exata do registro auditável de atendimento; política de agregação de importação; implementação de relógios, migrações e rearmamento; retenção e consulta de notificações; limites finais de volume, direitos por plano e critérios de homologação P0. Os tickets LIB04-P02..P09 permanecem **parcialmente abertos somente para essas especificações e demais detalhes não definidos**; LIB04-P01 já se encontrava resolvida quanto ao significado. Não converter a aprovação de parâmetros em autorização de programação ou gasto.
+
+
+## 9. Registro específico sobre ligações não atendidas (04/11/2026)
+
+A [CRM-DEC — tentativa sem sucesso](CRM-DEC-LEA02-tentativa-nao-atendida-nao-e-atendimento-2026-11-04.md) reafirma a regra incluída na [aprovação funcional geral](CRM-DEC-aprovacao-regras-funcionais-LEA01-LEA02-2026-11-04.md): ligação não atendida é tentativa, **não** atendimento efetivo, e **não encerra** LEA-02 por si só. O default de **24h corridas** e opções **4/12/24/48/72h** **já constam aprovados funcionalmente** na decisão geral; permanecem pendentes provas estruturadas de contato, controle técnico, retenção, homologação individual dos modelos e implementação. Nenhum código ou ativação.
