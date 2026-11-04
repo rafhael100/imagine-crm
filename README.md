@@ -16,6 +16,8 @@
 - [CRM-DEC — Aprovação CRM-REV-04](docs/planejamento/CRM-DEC-aprovacao-REV-04-base.md).
 - [CRM-REV-05 — Chatbot, fluxos, gatilhos e automações](docs/planejamento/CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md) — base documental aprovada; pendências AUT-P01..14 abertas.
 - [CRM-DEC — Motor próprio de automações do CRM e n8n interno](docs/planejamento/CRM-DEC-motor-proprio-automacoes-crm-n8n-interno-2026-11-04.md) — **decisão arquitetural aprovada em 04/11/2026**, automações de clientes no motor próprio e n8n para operações internas sujeitas à validação da licença; sem programação.
+- [CRM-AUT-P0 v0.1 — Execução segura do motor próprio de automações](docs/planejamento/CRM-AUT-P0-execucao-segura-motor-proprio-automacoes-v0.1.md) — **base documental aceita**; isolamento por tenant, filas duráveis, idempotência, confirmação oficial, recuperação, 18 critérios futuros; detalhes e AUT-P01..14 pendentes.
+- [CRM-DEC — Aceite da base AUT-P0 de execução segura](docs/planejamento/CRM-DEC-aceite-base-AUT-P0-execucao-segura-2026-11-04.md) — aceite das diretrizes apresentadas, **sem homologar schemas, números, infraestrutura nem programação**.
 - [CRM-DEC — Aprovação da CRM-REV-05](docs/planejamento/CRM-DEC-aprovacao-REV-05-base.md).
 - [CRM-REV-06 — Vendas, funis, propostas e catálogo](docs/planejamento/CRM-REV-06-vendas-funis-propostas-catalogo.md) — base documental aprovada; VEN-P01..16 abertos.
 - [CRM-DEC — Aprovação da CRM-REV-06](docs/planejamento/CRM-DEC-aprovacao-REV-06-base.md).
