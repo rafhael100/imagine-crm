@@ -1,7 +1,7 @@
 # CRM-AUT-P0 — Execução segura do motor próprio de automações (v0.1)
 
 **Data:** 04/11/2026.  
-**Status:** **PROPOSTA TÉCNICO-FUNCIONAL PARA REVISÃO E DELIBERAÇÃO — NÃO APROVADA NESTA ETAPA.**  
+**Status atualizado:** **ACEITA COMO BASE DOCUMENTAL DE EXECUÇÃO SEGURA EM 04/11/2026**, conforme [registro de aceite](CRM-DEC-aceite-base-AUT-P0-execucao-segura-2026-11-04.md). **Contratos detalhados, esquemas, números, limites e P0 ainda são propostas sujeitas a revisão/homologação; não há autorização de programação.**  
 **Origem:** avanço do planejamento autorizado pela resposta “ok” à etapa de detalhamento; decisão já **aprovada** de [motor próprio do CRM e n8n apenas para operações internas licenciadas](CRM-DEC-motor-proprio-automacoes-crm-n8n-interno-2026-11-04.md).  
 **Limites:** exclusivamente documentação. Nenhuma programação, migração, configuração, teste real, contratação, ativação ou gasto autorizado.
 
@@ -161,13 +161,13 @@ Um worker que reinicia pode retomar a partir de checkpoint confirmado; cada tent
 
 ## 13. Deliberação solicitada e gates
 
-**Para análise posterior, sem aprovação por silêncio:**
+**Para deliberação específica posterior, mesmo com esta base documental aceita:**
 1. Ratificar o **contrato de execução proposto**: outbox/inbox quando aplicável, checkpoints, confirmação oficial de efeitos e revalidação no momento da ação, sem motores paralelos.
 2. Ratificar **separação entre operações obrigatórias / comerciais / canais** e regra de que fila do CRM não equivale à fila técnica independente de captação de leads.
 3. Definir em etapas específicas, com responsáveis por negócio/segurança: catálogo de gatilhos/ações por módulo, política de prioridades, contadores técnicos, limites numéricos, retenção de execuções, versões/migrações e direitos finais.
 4. Reconciliar CORE/INT, REV-01/02/04/05, SEG-01/02, AUT-P01..14 e gates G01..G06 antes de fechar P0. **Esta minuta não resolve nenhum deles automaticamente**.
 
-**Nenhum código, teste real, infraestrutura contratada, migração de n8n ou provisionamento autorizado.** A decisão aprovada de *motor próprio do CRM* permanece; o detalhamento v0.1 é apenas **proposta** para avaliação.
+**Nenhum código, teste real, infraestrutura contratada, migração de n8n ou provisionamento autorizado.** A decisão aprovada de *motor próprio do CRM* permanece; esta v0.1 foi **aceita como base documental**, enquanto o detalhamento executável, a arquitetura física e os parâmetros continuam propostas para aprovação específica.
 
 ## Fontes de planejamento
 
@@ -177,3 +177,7 @@ Um worker que reinicia pode retomar a partir de checkpoint confirmado; cada tent
 - [CRM-REV-09 — Infraestrutura e operações](CRM-REV-09-infraestrutura-seguranca-auditoria-operacoes-centrais.md)
 - [INT-R01 — Governança e contratos técnicos](integracoes/INT-R01-governanca-contratos-homologacao.md)
 - [IN-168 — Pendências de arquitetura](IN-168-matriz-pendencias-fechamento-arquitetura.md)
+
+## 14. Registro de aceite limitado (04/11/2026)
+
+O responsável aceitou as diretrizes de execução segura apresentadas, conforme [CRM-DEC de aceite AUT-P0](CRM-DEC-aceite-base-AUT-P0-execucao-segura-2026-11-04.md). Isso **não é a ratificação individual dos contratos e números ainda pendentes**. Preservar AUT-P01..14, CORE/INT e todos os gates P0 até conciliação/homologação, sem custos ou implementação.
