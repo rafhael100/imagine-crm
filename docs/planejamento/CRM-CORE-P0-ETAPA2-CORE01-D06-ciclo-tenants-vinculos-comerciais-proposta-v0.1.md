@@ -1,7 +1,7 @@
 # CRM Imagine — Etapa 2: CORE01-D06 — Ciclo de tenants, titularidade e vínculos comerciais (proposta v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL ÚNICA PARA DELIBERAÇÃO — CORE01-D06 ABERTA; CORE01-D06-A/B/C/D AINDA NÃO APROVADAS**. A divisão A/B/C/D da seção 8 é a única pauta proposta; as seções 3–6 detalham requisitos e cenários sem criar aprovações independentes.  
+**Estado atualizado em 04/11/2026:** **CORE01-D06-A/B/C/D APROVADAS SOMENTE COMO DIRETRIZES TÉCNICAS DOCUMENTAIS PRELIMINARES** conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md). **CORE01-D06 permanece ABERTA**, dependente de CORE08, FIN/CON, Portal/Sites, INT e Segurança; D04/D05/D07 e demais gates seguem abertos. A redação histórica de D06-A/B/C/D como não aprovadas descreve a minuta anterior ao aceite e fica superada apenas neste alcance. As seções de exemplos não criam decisões independentes.  
 **Escopo:** especificação conceitual de contratos de autoridade, vínculo, estado e reconciliação. **Não aprova esquema físico, fornecedor/gateway, operações reais, valor definitivo, grants, eventos executáveis nem código.**
 **Continuidade autorizada:** [aceite preliminar CORE01-D05-A/B/C/D](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md), mantendo **CORE01-D05 aberta** com CORE02/03/04/05/09/SEG-01/02. CORE01-D04 A/B/C foram preliminarmente aceitas, mas D04 inteira continua aberta.
 
@@ -143,3 +143,12 @@ Este documento apresenta exclusivamente a seguinte classificação das quatro di
 - **NO-GO**: nenhuma programação, Codex, teste, cobrança, criação de tenant, vínculo real, credencial, mudança de plano, implantação, compra ou contrato até aprovação futura expressa do planejamento global e das especificações necessárias.
 
 **Próximo passo condicionado a deliberação:** registrar aceite preliminar D06-A/B/C/D, se expresso pelo responsável, e prosseguir a CORE01-D07 somente como proposta técnica documental, preservando bloqueios e gates.
+
+
+## 10. Aditamento de aprovação preliminar — CORE01-D06-A/B/C/D (04/11/2026)
+
+O responsável [aprovou expressamente A/B/C/D](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md), nos limites de diretrizes técnicas documentais preliminares: (A) fontes de autoridade e vínculo Site↔CRM explícito; (B) ciclos de assinatura, cortesia, trial, gratuidade e tenant independentes, sem cobrança automática; (C) comprovação de titularidade/concorrência/vínculos idempotentes e mudanças por chamado; (D) portabilidade, restrição operacional e retenção próprias, sem apagar fatos indevidamente.
+
+**CORE01-D06 permanece ABERTA**, exigindo contratos e reconciliação com **CORE08, FIN/CON, Portal/Sites, INT e Segurança**. Não se aprovaram estados físicos, fórmulas financeiras, preço, prioridades de benefício, migrações, esquemas, criação de tenant ou execução. **CORE01-D04 e D05 permanecem abertas**, apesar de seus aceites preliminares; **CORE01-D07 não aprovada**, e **67 IDs técnicos + SEG-01/02/ARQ/AGT/G01..G06** seguem abertos.
+
+**Continuidade:** somente [CORE01-D07 — proposta documental sobre entidades, integridade, RLS e contratos físicos](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md), ainda não aprovada. Sem programação, testes ou implantação.
