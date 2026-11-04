@@ -1,5 +1,7 @@
 # PORTAL-COM-03 — Motor de preços, promoções e contadores de ofertas do Portal Imagine
 
+> **ATENÇÃO — POLÍTICA COMERCIAL POSTERIOR (03/11/2026):** os percentuais históricos de **20% para Pix à vista de implantação** e **10% para Pix Automático** foram substituídos, nas matérias correspondentes, por **5% no Pix à vista** e **5% no Pix Automático**. Cartão de implantação: até **3x** sem desconto Pix; Pix parcelado não é ofertado. Ver [registro vigente](PORTAL-COM-POLITICA-VIGENTE-PIX-05-CARTAO-3X-2026-11-03.md). Preservam-se os fundamentos do motor de preços e campanhas, sujeitos à revisão de cumulatividade e preços finais. Conteúdo abaixo é histórico e não pode ser lido isoladamente como política atual.
+
 **Status (02/11/2026): DIRETRIZES FUNCIONAIS APROVADAS pelo responsável para planejamento: (a) preço de tabela configurável por produto, (b) campanhas promocionais configuráveis, (c) DESCONTO ADICIONAL DE 20% PARA PIX À VISTA NA IMPLANTAÇÃO, INDEPENDENTEMENTE DA PROMOÇÃO, (d) DESCONTO DE 10% EM MENSALIDADES COM PIX AUTOMÁTICO, (e) campanhas com limite REAL de quantidade, prazo ou ambos, vencendo ao ocorrer o PRIMEIRO LIMITE.**  
 **Não aprovados:** R$ 2.500 como preço definitivo por produto, descontos/promoções específicos de R$ 1.200 ou R$ 600 para lançamento real, número de vagas, data final, margem mínima, regra financeira de adicional, ativação de oferta ou programação.  
 **Fase:** somente planejamento/documentação; sem código, publicação de valores, contratos, pagamentos ou consumo de serviços.  
