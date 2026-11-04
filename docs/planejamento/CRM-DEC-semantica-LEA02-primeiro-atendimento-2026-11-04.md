@@ -31,3 +31,8 @@ A aceitação do conceito **não define** se **tentativa comprovada, mas sem suc
 **Próximo estudo:** propor uma classificação mínima verificável dos registros `atendimento efetivo`, `tentativa de contato sem sucesso`, `resposta do cliente` e `nota administrativa`, com direitos do Básico, sem criar código ou estados definitivos por presunção.
 
 **Restrição:** somente planejamento e GitHub; nenhuma programação, ativação de automação, implantação, compra, teste real ou alteração comercial autorizada.
+
+
+## 4. Decisões posteriores compatíveis (04/11/2026)
+
+A [aprovação funcional geral](CRM-DEC-aprovacao-regras-funcionais-LEA01-LEA02-2026-11-04.md) aprovou prazo padrão **24 horas corridas**, opções **4/12/24/48/72 horas**, fontes de LEA-01 e aviso por ciclo. O [registro específico sobre tentativa](CRM-DEC-LEA02-tentativa-nao-atendida-nao-e-atendimento-2026-11-04.md) reafirma que **ligação não atendida não comprova atendimento e não encerra LEA-02**. As frases anteriores de “prazo não aprovado” e “tentativa pendente” refletem o estado antes dessas deliberações. O esquema de prova, contratos técnicos e publicação de modelos permanecem pendentes. Sem programação.
