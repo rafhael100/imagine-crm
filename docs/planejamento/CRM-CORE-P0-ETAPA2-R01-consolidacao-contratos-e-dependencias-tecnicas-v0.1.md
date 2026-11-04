@@ -66,7 +66,7 @@ O maior contrato compartilhado imediato é **E2-X02 (classificação de campos e
 
 Uma futura aprovação de princípios CORE02-D04 não encerrará D04 sem catálogo real por módulo, classificação de campos e contratos CORE01/SEG/INT, e nem fechará CORE01-D04/D07.
 
-**Minuta especializada preparada:** [**CORE02-D04 — classificação de campos e direitos por operação (v0.1)**](CRM-CORE-P0-ETAPA2-CORE02-D04-classificacao-campos-direitos-proposta-v0.1.md), com propostas A/B/C/D **ainda não aprovadas**. Essa publicação **não fecha CORE02-D04** e não aprova direitos de acesso, campos físicos, políticas RLS ou execução.
+**Minuta especializada preparada:** [**CORE02-D04 — classificação de campos e direitos por operação (v0.1)**](CRM-CORE-P0-ETAPA2-CORE02-D04-classificacao-campos-direitos-proposta-v0.1.md), cujas A/B/C/D foram [**aceitas somente preliminarmente**](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md); CORE02-D04 integral permanece **ABERTA**. Essa publicação **não fecha CORE02-D04** e não aprova direitos de acesso, campos físicos, políticas RLS ou execução.
 
 ## 5. Registro de evidências e política de status
 
@@ -81,3 +81,10 @@ Para cada decisão de cada pacote, manter **fonte e link/commit**, texto normati
 - A [**proposta canônica CORE02-D04 — classificação de campos e direitos por operação**](CRM-CORE-P0-ETAPA2-CORE02-D04-classificacao-campos-direitos-proposta-v0.1.md) foi [**aceita somente como diretrizes documentais preliminares D04-A/B/C/D**](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md), por registro expresso separado; **CORE02-D04 integral segue ABERTA** até catálogo efetivo de campos/ações por módulo, Security/CORE01, SEG-01/02 e INT. Não é concessão de direitos nem política física.
 - Próxima [**proposta CORE02-D05 — combinação de perfis, negações e delegação**](CRM-CORE-P0-ETAPA2-CORE02-D05-combinacao-perfis-negacoes-delegacao-proposta-v0.1.md), **ainda não aprovada**, sob dependências CORE02/04/05/07/08 e segurança. Esta continuidade do planejamento não ratifica A–D da D05.
 - **67 IDs CORE abertos**, CORE01-D04..D07, CORE02-D04..D10, SEG-01/02, ARQ/AGT, INT P0/G01..G06 e DEV-GATE-00 NO-GO mantidos. **Sem programação, testes executáveis, credenciais, grants, implantação ou despesas.**
+
+
+## 6. Estado atualizado CORE02-D04 e proposta CORE02-D05 (04/11/2026)
+
+[**CORE02-D04-A/B/C/D**](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md) aceitas **somente como diretrizes técnicas documentais preliminares**. **CORE02-D04 continua ABERTA** até classificação real dos campos por módulo e dependências CORE01, CORE02-D05..D10, SEG-01/02, INT e Segurança. [**CORE02-D05**](CRM-CORE-P0-ETAPA2-CORE02-D05-combinacao-perfis-negacoes-delegacao-proposta-v0.1.md) é proposta A/B/C/D **ainda não aprovada**, incluindo alternativas de precedência de grants/denies, delegação e escopos. Não escolher política efetiva por inferência.
+
+**E2-X01/X02/X04/X09 e os outros E2-X permanecem índices de dependências, não motores/gates novos. Os 67 IDs técnicos continuam abertos.** INT G01..G06 e DEV-GATE-00 seguem NO-GO para programação/testes/implantação.
