@@ -80,3 +80,7 @@ O desenvolvimento **poderá ser organizado** por entregas, após **o planejament
 ## 7. Anexo de conciliação CORE01-D07 (04/11/2026)
 
 [**CORE01-D07 — matriz de conciliação de entidades, integridade, RLS e contratos**](CRM-CORE-P0-ETAPA2-CORE01-D07-matriz-conciliacao-dependencias-v0.1.md) foi preparada apenas como **anexo técnico documental**, com rastreamento de dependências CORE02/03/04/05/06/07/08/09, SEG-01/02, INT/FIN/CON e critérios de verificação futura. O documento **não aprova** CORE01-D07-A/B/C/D nem reduz os 67 IDs em aberto. DEV-GATE-00 continua **MINUTA e NO-GO**; não há autorização de programação, testes, migrações ou implantação.
+
+## 8. Atualização de estado CORE01-D07 — 04/11/2026
+
+[**CORE01-D07-A/B/C/D aceitas preliminarmente**](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md). **CORE01-D07 ainda aberta** até especificações físicas, contratos, segurança, fontes e owners. Este checklist continua **NO-GO**, os **67 IDs CORE estão abertos**, SEG-01/02, IN-168, INT P0/G01..G06 e decisão final global permanecem pendentes. O “ok” de continuidade documental não é aprovação de código; nenhum teste ou programação foi autorizado.
