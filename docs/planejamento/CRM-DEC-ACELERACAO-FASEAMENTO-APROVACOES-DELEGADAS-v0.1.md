@@ -19,6 +19,8 @@
 |---|---|---|
 | **CORE02-D06-A/B/C/D** | [Aceite delegado preliminar documentado](CRM-DEC-aprovacao-delegada-CORE02-D06-ABCD-preliminar-2026-11-04.md) após análise de [proposta concreta](CRM-CORE-P0-ETAPA2-CORE02-D06-catalogo-acoes-por-modulo-proposta-v0.1.md); catálogo tipado, efeitos separados, direitos contextualizados e confirmação por proprietário | **D06 ABERTA**: ação/campo efetivos, donos, políticas finais, planos, segurança e provas pendentes |
 
+| **CORE02-D05 — escolha de composição de perfis** | [Política técnica delegada P1 + P2 escopada](CRM-DEC-TECNICA-DELEGADA-CORE02-D05-precedencia-P1-P2-escopada-v0.1.md) seleciona união de grants válidos sob bloqueios mandatórios e negações explícitas só no escopo correspondente; P3/P4 não são padrão | **D05 ABERTA**: owners, esquema de papéis, herança/precedência por módulo, segurança, cache/revogação, provas ainda pendentes |
+
 Nenhuma aprovação genérica de CORE02-D07..D10, CORE03..CORE10-D04..D10, SEG-01/SEG-02 ou INT-G01..G06 foi emitida. **As propostas documentais ainda podem ser examinadas em lote**, mas é obrigatório discriminar os itens tecnicamente decididos dos ainda sem especificação.
 
 ## 3. Desdobramento em faixas de liberação — alternativas sem ativação automática
