@@ -1,7 +1,7 @@
 # CRM-AUT-LIB04 v0.1 — Interação válida, prazos e antiduplicidade de LEA-01/LEA-02
 
 **Data:** 04/11/2026.
-**Status atualizado:** **SEMÂNTICA DE LEA-02 APROVADA** em 04/11/2026, conforme [CRM-DEC](CRM-DEC-semantica-LEA02-primeiro-atendimento-2026-11-04.md): primeiro atendimento efetivo pendente pela empresa. **Demais critérios, prazos, interações, contratos e publicação dos modelos continuam NÃO APROVADOS.**
+**Status atualizado:** **SEMÂNTICA E REGRAS FUNCIONAIS DE LEA-01/LEA-02 APROVADAS** em 04/11/2026, conforme [decisão específica](CRM-DEC-aprovacao-regras-funcionais-LEA01-LEA02-2026-11-04.md), incluindo fontes manual/site, padrão 24 horas corridas, opções 4/12/24/48/72 horas, aviso interno por ciclo e tentativa sem resposta sem conclusão do atendimento. **Contratos técnicos, prova auditável de atendimento, retenção, direitos executáveis e publicação individual dos modelos permanecem pendentes.** As passagens abaixo que indicam “proposta sem aprovação” representam o estado histórico anterior ao aditamento da seção 8.
 **Decisões já aprovadas:** [TAR-A — avisos internos sem tarefas comerciais automáticas](CRM-DEC-escolha-TAR-A-avisos-internos-LEA01-LEA02-2026-11-04.md); [priorização de LEA-01/LEA-02](CRM-DEC-prioridade-LEA01-LEA02-2026-11-04.md); [motor próprio CRM](CRM-DEC-motor-proprio-automacoes-crm-n8n-interno-2026-11-04.md). Fontes complementares: [AUT-LIB02](CRM-AUT-LIB02-revisao-individual-modelos-basico-v0.1.md), [CRM-REV03](CRM-REV-03-leads-contatos-campos-historicos-portabilidade.md), [CRM-REV05](CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md), [AUT-P0](CRM-AUT-P0-execucao-segura-motor-proprio-automacoes-v0.1.md).
 
 ## 1. Definição comercial aprovada: LEA-02 significa primeiro atendimento pendente
@@ -44,7 +44,7 @@ O modelo não deve declarar que houve atendimento por leitura da ficha, atualiza
 - **Finalização/rearme:** interação válida reconhecida ou encerramento/arquivamento elegível cancela aviso pendente; se contato futuro legitimamente reabrir ciclo, o Motor de Datas registra nova identidade causal. Nenhum aviso anterior pode ser "ressuscitado" por retry.
 - **Fronteira:** notificações são apenas internas, sem WhatsApp, e-mail, IA, tarefas comerciais, distribuição automática ou autoagendamento. Avisos da Agenda (SO) continuam sem consumir slot.
 
-### 4.1. Prazos: proposta concreta, sem aprovação
+### 4.1. Prazos: proposta histórica, ratificada funcionalmente no aditamento da seção 8
 
 **Recomendação para decisão:** usar **24 horas corridas como padrão candidato** do modelo, com opções de configuração guiada **4 h, 12 h, 24 h, 48 h ou 72 h**, se a medição de custo e as regras comerciais sustentarem. Considerar **horas úteis** somente quando houver calendário de expediente da empresa e semântica de feriados/fuso homologados; não presumir esse direito no Básico. Horas de atraso devido à fila, DST e mudanças de prazo requerem contrato específico.
 
@@ -95,4 +95,13 @@ A validação final deve selecionar entre **prazos livres dentro de mínimo/máx
 - **P08:** contrato oficial de evento e comando com CORE/DAT/Notificações/Datas, isolamento, quotas técnicas e reconciliação.
 - **P09:** critérios de homologação e aprovação individual de LEA-01/LEA-02, preservando AUT-P01..14, LIB02-P01..08, LIB-P01..12, AUT-MAT-P01..10, SEG/INT e gates P0.
 
-**Resumo de status atualizado:** **TAR-A aprovada como direção funcional** e **semântica de LEA-02 aprovada**: primeiro atendimento efetivo pendente. Os **prazos, critérios de interação/tentativa, contratos, versões, dedupe e aprovação individual dos modelos** continuam propostas ainda não aprovadas. Não liberar recursos em planos, não alterar cobrança nem iniciar programação, contratação, deploy ou testes reais.
+**Resumo histórico desta versão antes do aditamento:** TAR-A e semântica de LEA-02 já estavam aprovadas. **A seção 8 prevalece para prazos, fontes, tentativas e regra funcional de avisos**, mantendo contratos, detalhes de versão, implementação técnica da deduplicação e aprovação individual dos modelos pendentes. Não liberar recursos em planos, não alterar cobrança nem iniciar programação, contratação, deploy ou testes reais.
+
+
+## 8. Aditamento — aprovação funcional de LEA-01 e LEA-02 em 04/11/2026
+
+O responsável respondeu **“ok”** à aprovação expressa da tabela de regras funcionais; ver [CRM-DEC de aprovação](CRM-DEC-aprovacao-regras-funcionais-LEA01-LEA02-2026-11-04.md). **Esta seção prevalece sobre a caracterização como “propostas ainda não aprovadas” dos itens funcionais nas seções anteriores.**
+
+**Aprovado funcionalmente:** (a) LEA-01 para leads oficialmente confirmados no CRM, originados de cadastro manual e formulário/site integrado; (b) sem avalanche de avisos unitários em importação de planilha; (c) LEA-02 para primeiro atendimento efetivo pendente, com 24h corridas como padrão e configuração guiada 4/12/24/48/72h; (d) atendimento efetivo registrado por usuário autorizado como encerramento, enquanto ligação não atendida é apenas tentativa; (e) um aviso por ciclo lógico; (f) notificação interna, sem e-mail, WhatsApp ou tarefa comercial automática; (g) uso do motor próprio CRM e preservação de limites/slots vigentes sujeitos à revisão final.
+
+**Ainda não aprovado:** os modelos individuais para ativação/publicação; schemas T01/T13/A03 e contratos técnicos; forma exata do registro auditável de atendimento; política de agregação de importação; implementação de relógios, migrações e rearmamento; retenção e consulta de notificações; limites finais de volume, direitos por plano e critérios de homologação P0. Os tickets LIB04-P02..P09 permanecem **parcialmente abertos somente para essas especificações e demais detalhes não definidos**; LIB04-P01 já se encontrava resolvida quanto ao significado. Não converter a aprovação de parâmetros em autorização de programação ou gasto.
