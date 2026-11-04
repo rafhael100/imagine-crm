@@ -157,3 +157,63 @@ Hipótese ilustrativa, **não projetada a partir de clientes reais**: 50 GB-mês
 - Preencher **duas colunas financeiras distintas**: novo investimento mensal CRM e gasto mensal incremental do ecossistema mais custo já existente.
 - Com preços e latência real, concluir **F07-D03 (região)** e **F07-D04 (RPO/RTO, reposição e aceite de riscos)**; não declará-los resolvidos antecipadamente.
 - Nenhuma compra, configuração, programação, teste real ou implantação autorizada.
+
+
+## Anexo B — Proposta de otimizacao do lancamento sem reduzir seguranca (03/11/2026)
+
+**Estado:** ESTUDO NOVO DO RESPONSAVEL PARA REVISAO, **NAO APROVADO COMO ORCAMENTO**. Solicitacao: reduzir custo de lancamento, preservando qualidade e seguranca como requisitos indispensaveis. **E1B continua arquitetura-alvo**; nao substituir decisoes de rede, DB separado, dois receptores de leads, copia de anexos, backup e seguranca por atalhos baratos.
+
+### B.1 Meta financeira e fronteiras
+
+- **Meta revisada de estudo:** US$40–60/mes **somente para nova infraestrutura tecnica incremental do CRM E1B**, sem constituir teto aprovado, SLA ou cotacao. A meta anterior US$120/mes era **provisao gerencial nao aprovada**, e nao limite obrigatorio.
+- **F0 planejamento:** zero gasto novo com servidores.
+- **F1 desenvolvimento aprovado futuramente:** VPS de teste sob demanda, infraestrutura propria do desenvolvimento, com dados sinteticos.
+- **F2 lancamento:** ao fim de F1, **considerar reaproveitar a VPS de desenvolvimento como nova VPS de banco**, apenas apos desalocacao formal do ambiente de dev, reinstalacao limpa, descarte de dados/volumes de teste, rotacao de chaves e segredos, validacao de isolamento/IOPS e nova homologacao. Uma VPS 2 separada para aplicacao. **Nunca reaproveitar diretamente um banco de testes como producao**, nem manter desenvolvimento e producao no mesmo host.
+- Se testes/homologacao recorrentes exigirem ambiente isolado permanente, provisionar outro ambiente de homologacao quando necessario; **nao ocultar esse custo**. Dev/testes locais e CI efemero podem reduzir a necessidade de uma terceira VPS permanente, mas nao podem utilizar dados de clientes nem acesso root de producao.
+- **Separar o custo integral do ecossistema:** Portal, n8n, agentes tecnicos, Sites e APIs principal/contingencia com filas independentes continuam fora deste valor de US$40–60. Nao combinar domínios fisicamente para cumprir a meta.
+
+### B.2 Compromissos indispensaveis e como obter menor custo
+
+| Elemento | Estrategia de baixo custo candidata | Condicao inegociavel antes de clientes reais |
+|---|---|---|
+| Backend Laravel | 1 VPS 2 sob carga homologada; PHP-FPM e workers/cron com limites; Redis/Valkey cache no host app se validado | Monitoramento e limites; filas **duraveis**, nao apenas cache volátil |
+| Banco | VPS independente com PostgreSQL e tunel WireGuard + TLS/firewall | Sem exposicao publica DB; RLS/tenant_id, segregacao contas, restore e desempenho comprovados |
+| Entrada publica | Cloudflare Free e WAF basico; avaliar Tunnel/origin restriction | Nao abrir origem para bypass nem usar cache para dados pessoais ou sessao; Free WAF nao cobre tudo |
+| Arquivos | R2 Standard privado sob demanda | Quota, autorizacao por tenant, antimalware, quarentena, URLs controladas |
+| Replica anexos | Leaseweb Object Storage On Demand, segunda copia e retencao conforme regras ja aprovadas | Meta de replicacao 15min, 30 dias tecnicos, integridade e independencia de credenciais |
+| Backup DB | pgBackRest base+WAL/PITR em destino offsite | Retencao a decidir, verificacao automatica, criptografia, restauracao ensaiada |
+| Antimalware | ClamAV ou equivalente gratuito, possivelmente em worker limitado do host app | Inspecao obrigatoria de uploads, fail-closed se indisponivel, consumo RAM/CPU homologado; se nao suportar, destinar recursos pagos |
+| Monitor | Sondas externas baratas/gratuitas + checks internos e alerta fora do CRM | Alertas de DB/WAL/fila/backup/storage, canal independente e cobertura capaz de cumprir metas de assuncao; plano free com checagem a cada 5min pode nao bastar para criticos |
+| Segredos | Ferramenta self-hosted/criptografia de configuracoes com chaves fora do repo; MFA e menor privilegio | Cofre/SEG-02, rotacao, recuperacao e auditabilidade devem ser homologados; nada em .env publicado ou Git |
+| Operacao | CI/CD com ferramentas abertas, logs limitados pela retencao aprovada | Evidencia de backup/restore, auditoria e atualizacoes regulares; nao remover controles para baixar custo |
+
+**Nao cortar:** separacao DB app, controles multiempresa, MFA administrativo, criptografia, offsite backup + replica anexo, testes de recuperacao antes de dados reais, anti-malware, durabilidade/idempotencia de filas, alerta externo e fluxo duplo independente de leads. Se uma ferramenta gratuita nao cumprir o requisito, **o custo pago vira indispensavel**.
+
+### B.3 Custo ilustrativo por faixa, sem cotacao integral
+
+| Categoria | Fonte/valor referencial | Escolha |
+|---|---|---|
+| VPS de aplicacao (Leaseweb VPS 2) | US$9,89/mes em comparador de oferta US, **nao oficial** | Cotar regiao, prazo e renovacao |
+| VPS de banco (Leaseweb VPS 1) | US$6,29/mes em comparador de oferta US, **nao oficial** | Cotar; validar RAM/IOPS e exigir servidor independente |
+| Computacao combinada | US$16,18/mes de referencia, sem IVA/extra | Nao equivale a infraestrutura pronta |
+| R2 Standard | US$0,015/GB-mes apos franquia mensal 10 GB; requests sujeitos a limites | Uso sob demanda |
+| Leaseweb Object Storage | €0,01733/GB-mes + requests/egress | Replica anexos e/ou backups conforme independencias |
+| Cloudflare Free / Turnstile Free | Sem mensalidade em limites publicados | Protecao basica, nao substitui seguranca no app |
+| Monitoramento externo | UptimeRobot Free com checagens 5min; 1min em plano pago segundo tabela de 2026 | Criticos podem exigir plano melhor/segunda sonda; nao considerar free suficiente sem validar |
+| Backup e rede | pgBackRest/WireGuard sem licenca | Operacao, armazenamento, incidentes e volume custam |
+
+A **meta US$40–60/mes** representa uma **reserva financeira de estudo**, e nao projecao verificavel do custo total. **Nao inclui** equipe/plantao, Portal, n8n, agentes, duas APIs externas de captacao, mensalidades de terceiros, IA, mensageria nem contabiliza os riscos de escalar para E2. Se a soma necessaria exceder US$60, **submeter o custo real**, nao eliminar o controle.
+
+### B.4 Trigger para pagar mais sem atrasar seguranca
+
+1. **Antes de cliente real:** se RPO/RTO propostos nao forem demonstrados ou risco de indisponibilidade for alto para o contrato, revisar E1B e subir para E2, sem prometer SLA de 15min/4h.
+2. **Quando carga subir:** priorizar aumento de RAM/IOPS do DB ou VPS backend, apos benchmark e provas de consumo; nao automatizar upgrade por contagem de clientes.
+3. **Quando alertas gratuitos falharem:** contratar monitor externo com frequencia/canais necessarios, conservando caminhos independentes e metas de assuncao humana.
+4. **Quando scanner/backup causar saturacao:** deslocar worker/av para host isolado ou plano adequado, sem deixar uploads sem scanner ou WAL atrasado.
+5. **Quando incidentes revelarem SPOF inaceitavel:** adicionar replica DB/failover, segunda instancia Laravel e balanceamento (E2), validado em projeto separado.
+
+### B.5 Deliberacao
+
+**Proposto para avaliacao posterior:** usar US$40–60/mes **apenas como referencia financeira incremental de estudo** do CRM E1B, aplicar reutilizacao segura da VPS dev como DB de producao depois de reinstalacao, manter ferramentas open-source e free elegiveis, e pagar obrigatoriamente por qualquer requisito de seguranca/recuperacao que a variante gratuita nao atender.
+
+**Ainda pendentes:** F07-D02 (orcamento CRM e ecossistema), D03 (regiao), D04 (metas/RPO/RTO/risco). Nao homologar nem provisionar. Esta otimizacao nao fecha ARQ-01 ou outros P0.
