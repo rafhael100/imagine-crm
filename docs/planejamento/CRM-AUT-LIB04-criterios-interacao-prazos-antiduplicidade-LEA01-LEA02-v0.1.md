@@ -1,12 +1,12 @@
 # CRM-AUT-LIB04 v0.1 — Interação válida, prazos e antiduplicidade de LEA-01/LEA-02
 
 **Data:** 04/11/2026.
-**Status:** **PROPOSTA PARA REVISÃO E DECISÕES ESPECÍFICAS**, NÃO aprovação individual/publicação de LEA-01 ou LEA-02, prazo padrão, catálogo de interações ou contratos.
+**Status atualizado:** **SEMÂNTICA DE LEA-02 APROVADA** em 04/11/2026, conforme [CRM-DEC](CRM-DEC-semantica-LEA02-primeiro-atendimento-2026-11-04.md): primeiro atendimento efetivo pendente pela empresa. **Demais critérios, prazos, interações, contratos e publicação dos modelos continuam NÃO APROVADOS.**
 **Decisões já aprovadas:** [TAR-A — avisos internos sem tarefas comerciais automáticas](CRM-DEC-escolha-TAR-A-avisos-internos-LEA01-LEA02-2026-11-04.md); [priorização de LEA-01/LEA-02](CRM-DEC-prioridade-LEA01-LEA02-2026-11-04.md); [motor próprio CRM](CRM-DEC-motor-proprio-automacoes-crm-n8n-interno-2026-11-04.md). Fontes complementares: [AUT-LIB02](CRM-AUT-LIB02-revisao-individual-modelos-basico-v0.1.md), [CRM-REV03](CRM-REV-03-leads-contatos-campos-historicos-portabilidade.md), [CRM-REV05](CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md), [AUT-P0](CRM-AUT-P0-execucao-segura-motor-proprio-automacoes-v0.1.md).
 
-## 1. Definição comercial a decidir: o que significa "lead sem retorno"?
+## 1. Definição comercial aprovada: LEA-02 significa primeiro atendimento pendente
 
-A expressão é ambígua. **Recomendação de primeira versão:** LEA-02 acompanha **ausência de atendimento humano válido registrado pela empresa**, não o silêncio do cliente após contato. A **ausência de resposta do cliente** depois de uma tentativa ou mensagem enviada configura outro ciclo/família de follow-up, a decidir separadamente, sem inserção automática no Básico.
+**Decisão aprovada em 04/11/2026:** LEA-02 acompanha **ausência de primeiro atendimento efetivo registrado pela empresa**, conforme [CRM-DEC](CRM-DEC-semantica-LEA02-primeiro-atendimento-2026-11-04.md), e **não** o silêncio do cliente após contato. A **ausência de resposta do cliente** depois de tentativa ou mensagem deverá ser tratada separadamente, sem inclusão automática de novo modelo no Básico. A caracterização de atendimento efetivo e o tratamento das tentativas sem sucesso **continuam pendentes**.
 
 O modelo não deve declarar que houve atendimento por leitura da ficha, atualização de etiqueta ou status técnico. Uma mensagem recebida do cliente, sem ação efetiva da equipe, **não deve encerrar o prazo de primeiro atendimento**. Registrar tentativas fracassadas e contatos efetivos como fatos distintos; decidir comercialmente se uma tentativa comprovada (ex.: ligação não atendida) basta para encerrar a janela de atendimento ou apenas para marcar "tentativa" e iniciar outro ciclo.
 
@@ -85,7 +85,7 @@ A validação final deve selecionar entre **prazos livres dentro de mínimo/máx
 
 ## 7. Pendências para decisão (LIB04-P01..P09)
 
-- **P01:** LEA-02 significa primeiro atendimento pela empresa ou silêncio do cliente após contato? **Recomendação: primeiro atendimento** nesta versão.
+- **P01 — RESOLVIDA QUANTO AO SIGNIFICADO:** LEA-02 significa **primeiro atendimento efetivo pendente pela empresa**, não silêncio do cliente, conforme [CRM-DEC](CRM-DEC-semantica-LEA02-primeiro-atendimento-2026-11-04.md). **Subdecisões sobre tentativas sem sucesso e prova de atendimento permanecem abertas em P02**.
 - **P02:** o que é interação válida e qual o estado/trilha que prova contato? Tentativa não atendida encerra ou não SLA?
 - **P03:** LEA-01 pode acionar cadastro manual e de Sites? Como tratar importação em lote?
 - **P04:** aprovar ou rever opções **4/12/24/48/72 h**, default **24h**, horas corridas versus horas úteis e política de mudança do prazo.
@@ -95,4 +95,4 @@ A validação final deve selecionar entre **prazos livres dentro de mínimo/máx
 - **P08:** contrato oficial de evento e comando com CORE/DAT/Notificações/Datas, isolamento, quotas técnicas e reconciliação.
 - **P09:** critérios de homologação e aprovação individual de LEA-01/LEA-02, preservando AUT-P01..14, LIB02-P01..08, LIB-P01..12, AUT-MAT-P01..10, SEG/INT e gates P0.
 
-**Resumo de status:** **TAR-A aprovada como direção funcional**; esta LIB04 apresenta recomendações **não aprovadas** de semântica, prazos, interações, versões e dedupe. Não liberar recursos em planos, não alterar cobrança nem iniciar programação, contratação, deploy ou testes reais.
+**Resumo de status atualizado:** **TAR-A aprovada como direção funcional** e **semântica de LEA-02 aprovada**: primeiro atendimento efetivo pendente. Os **prazos, critérios de interação/tentativa, contratos, versões, dedupe e aprovação individual dos modelos** continuam propostas ainda não aprovadas. Não liberar recursos em planos, não alterar cobrança nem iniciar programação, contratação, deploy ou testes reais.
