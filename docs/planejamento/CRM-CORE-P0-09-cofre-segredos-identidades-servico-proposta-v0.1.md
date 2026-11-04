@@ -1,7 +1,7 @@
 # CRM-CORE-P0-09 — Cofre, segredos, identidades de serviço e autorização de ferramentas (proposta v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL — CORE-P0-09 ABERTO. CORE09-D01, D02 e D03 NÃO APROVADAS por esta publicação; D04–D10 permanecem abertas.**  
+**Estado atualizado em 04/11/2026:** **CORE09-D01, D02 e D03 APROVADAS COMO BASE DOCUMENTAL**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-09-D01-D03-base-cofre-identidades-2026-11-04.md). **CORE-P0-09 PARCIAL/ABERTO**, com CORE09-D04..D10 e demais gates ainda pendentes. Qualquer referência abaixo a D01–D03 como NÃO APROVADAS é redação histórica anterior ao aceite, superada por esta decisão.  
 **Natureza:** fechamento lógico de fronteiras de segurança do CRM Imagine e integrações, **não novo cofre, identidade digital emitida, motor IAM, compra de produto, implantação ou autorização de desenvolvimento**.  
 **Fase:** documentação GitHub exclusivamente. Sem códigos, testes reais, provisionamento, criação de credenciais, acesso a contas, rotacionar segredos reais, contratar provedores ou executar alterações de infraestrutura.
 
@@ -177,3 +177,8 @@ Esses critérios são **somente planejamento** para CORE-P0-10, INT HT-01..18, I
 Somente após aceite expresso de CORE09-D01, D02 e D03 registrar decisão de aprovação e seguir **CORE-P0-10 — pacote documental de homologação do núcleo**, sem testes físicos. Todos os custos, infra e contratos físicos deverão ser aprovados antes de implementação.
 
 **Nenhuma programação, Codex, testes reais, rotação real, geração/exposição de credenciais, acesso a cliente, provisionamento, compra ou contratação foi autorizada.**
+
+
+## 11. Aditamento de aprovação CORE09-D01–D03 — 04/11/2026
+
+Por [aceite expresso](CRM-DEC-aprovacao-CORE-P0-09-D01-D03-base-cofre-identidades-2026-11-04.md), o responsável aprovou **CORE09-D01, D02 e D03 como base documental**: inventário lógico de credenciais e identidades técnicas; cofre protegido com autorização independente de IA e menor privilégio; ciclo lógico de rotação/revogação/contingência e auditoria. **CORE09-D04 a D10, SEG-01/02, INT P0, ARQ/AGT, G01–G06 e todos os demais bloqueios continuam abertos**, sem provedor, arquitetura física, permissão real, licenciamento n8n, custos ou implementação aprovados. Continuidade permitida: elaborar **CORE-P0-10 documental**, sem testes executáveis ou Codex.
