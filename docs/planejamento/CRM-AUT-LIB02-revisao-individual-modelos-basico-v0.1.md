@@ -134,3 +134,22 @@
 **Próxima deliberação recomendada:** ratificar o critério de **priorizar LEA-01/02 como estudos candidatos para avisos internos**, sem presumir que criação automática de tarefa avançada está liberada no Básico; resolver **LIB02-P01** antes de aprovar cada modelo. O restante do catálogo pode ser trabalhado em bloco por categoria.
 
 **Somente documentação no GitHub; sem programação, contratação, testes reais ou despesas.**
+
+
+## 8. Prioridade LEA-01/02 e alternativa de tarefas (04/11/2026)
+
+A [decisão formal](CRM-DEC-prioridade-LEA01-LEA02-2026-11-04.md) aprovou **priorizar o estudo** de LEA-01 e LEA-02 na biblioteca do CRM Básico, usando notificações internas quando autorizadas, **sem aprovar individualmente os modelos** nem criação de tarefas comerciais. O modelo de dados e regras de acesso ainda dependem de validação CORE/DAT.
+
+**LEA-01:** evento oficial de lead confirmado no CRM/DAT, após persistência; mero recebimento HTTP 202 na API de Sites não gera aviso. Propor um aviso interno ao administrador, condicionado a autorização A03. Diferenciar origens site, manual e importação; repetição do mesmo evento de origem não produz duplicidade, mas envios legítimos distintos não devem ser mesclados.
+
+**LEA-02:** detectar inatividade pelo Motor de Datas, com prazo a homologar. Definir qual interação realmente conta como retorno; abrir a ficha do lead ou ler a notificação não demonstra contato. Propor um aviso por ciclo de inatividade, rearmando somente após interação legítima; revalidar estado e permissões na execução.
+
+**Tarefas comerciais no Básico — decisão separada e pendente:**
+
+| Alternativa | Efeito | Avaliação |
+|---|---|---|
+| TAR-A | Somente aviso interno comercial, sem tarefa | Preferência para primeira avaliação; exige direito próprio de aviso A03 |
+| TAR-B | Pendência/tarefa básica limitada para o único administrador e ligada ao lead | Maior utilidade, mas exige autorização expressa e reaproveitamento do serviço de tarefas existente |
+| TAR-C | Tarefa comercial avançada com equipes, SLA e recorrência | Não recomendada no Básico; preservá-la nos planos pagos elegíveis |
+
+**Ainda pendente:** escolha TAR-A/B/C, autorização do aviso comercial distinto dos avisos obrigatórios da Agenda, contratos oficiais T01/T13/A03 e A01 se aplicável, prazos, retenção, limites de execução e aprovação individual dos modelos. Preservar LIB02-P01..08, LIB-P01..12, AUT-P01..14, CORE/SEG/INT e gates P0. Sem programação, custos ou execução real.
