@@ -68,3 +68,10 @@ Publicada a [**consolidação transversal da Etapa 2 — R01**](CRM-CORE-P0-ETAP
 ## Etapa 2 — Primeira frente após a consolidação R01 (04/11/2026)
 
 Preparada [**CORE02-D04 — proposta documental de classificação de campos e direitos por operação**](CRM-CORE-P0-ETAPA2-CORE02-D04-classificacao-campos-direitos-proposta-v0.1.md), vinculada à [Etapa 2 R01](CRM-CORE-P0-ETAPA2-R01-consolidacao-contratos-e-dependencias-tecnicas-v0.1.md), com D04-A/B/C/D **ainda não aprovadas** e CORE02-D04 **ABERTA**. Essa frente não concede grants nem decide CORE02-D05..D10; CORE01-D04..D07, demais 67 IDs, SEG-01/02, INT P0/G01..G06 e DEV-GATE-00 continuam **ABERTOS/NO-GO**, sem testes, programação ou implantação.
+
+
+## Etapa 2 — CORE02-D04 preliminar e CORE02-D05 pendente (04/11/2026)
+
+O responsável [aprovou **CORE02-D04-A/B/C/D como diretrizes documentais preliminares**](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md); **CORE02-D04 não foi fechada** e continua dependente do catálogo real por módulo e CORE01, CORE02-D05..D10, SEG-01/02, INT e Segurança. A [**proposta CORE02-D05 A/B/C/D**](CRM-CORE-P0-ETAPA2-CORE02-D05-combinacao-perfis-negacoes-delegacao-proposta-v0.1.md) foi preparada, **sem aprovação ainda**. Composição de perfis, negações e delegação permanece por decidir, sem grants reais.
+
+[**Matriz Etapa 2**](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md) e [**R01 transversal**](CRM-CORE-P0-ETAPA2-R01-consolidacao-contratos-e-dependencias-tecnicas-v0.1.md) preservam os **67 IDs técnicos abertos**, SEG-01/02, IN-168, INT P0/G01..G06 e FIN/CON. **DEV-GATE-00 mantém NO-GO**, sem programação, testes ou implantação.
