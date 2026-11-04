@@ -1,7 +1,7 @@
 # CRM-AUT-CAT01 — Catálogo de Gatilhos, Condições e Ações por Módulo (v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DE ESPECIFICAÇÃO FUNCIONAL PARA REVISÃO — NÃO APROVADA.** O “ok” do responsável autorizou **avançar o planejamento e preparar este catálogo**, não ratificou seus itens individualmente.  
+**Estado atualizado:** **ACEITO COMO INVENTÁRIO DE REFERÊNCIA FUNCIONAL EM 04/11/2026**, conforme [CRM-DEC de aceite](CRM-DEC-aceite-referencia-CAT01-2026-11-04.md), **sem homologação de itens, gatilhos técnicos, contratos, habilitações por plano ou disponibilidade comercial**. Os IDs T01–T25/C01–C15/A01–A22 permanecem candidatos sujeitos a detalhamento e regras de autorização.  
 **Escopo:** automações configuráveis por clientes dentro do **motor próprio CRM Imagine**, e fronteiras com operações obrigatórias, IA, atendimento, agenda, vendas, dados, canais, FIN/CON/INT.  
 **Regra:** exclusivamente documentação; não executar automação, configurar VPS, comprar licenças, alterar repositórios de código de aplicação nem iniciar programação.  
 **Fontes:** [CRM-REV-05](CRM-REV-05-chatbot-fluxos-gatilhos-automacoes.md), [AUT-P0 v0.1 — execução segura, base documental aceita](CRM-AUT-P0-execucao-segura-motor-proprio-automacoes-v0.1.md), [CRM-DEC motor próprio](CRM-DEC-motor-proprio-automacoes-crm-n8n-interno-2026-11-04.md), [CRM-REV-03](CRM-REV-03-leads-contatos-campos-historicos-portabilidade.md), [CRM-REV-04](CRM-REV-04-atendimento-whatsapp-conversas.md), [CRM-REV-06](CRM-REV-06-vendas-funis-propostas-catalogo.md), [CRM-REV-07](CRM-REV-07-agenda-profissionais-unidades-agendamentos.md), [CRM-REV-08](CRM-REV-08-agentes-ia-consumo-conhecimento-supervisao.md), [CRM-REV-01](CRM-REV-01-nucleo-identidade-multitenant-permissoes.md), [INT-R01](integracoes/INT-R01-governanca-contratos-homologacao.md).
@@ -194,3 +194,8 @@ Estes são **testes futuros não executados**; devem ser conciliados com AUT-T01
 3. Mandatar a matriz exata produtor do evento → condição elegível → comando tipado → módulo dono do resultado → permissão/entitlement → fonte de auditoria, **sem inventar endpoints, schemas, SLAs ou números agora**.
 
 **Não marcar AUT-P01..14 concluídos com esta minuta.** É estudo funcional, não autorização de software. Nenhum contrato, teste real, infraestrutura ou pagamento aprovado.
+
+
+## 11. Registro de aceite como referência e matriz por plano (04/11/2026)
+
+O responsável aceitou este inventário **como referência funcional**, documentado em [CRM-DEC](CRM-DEC-aceite-referencia-CAT01-2026-11-04.md). **Não** aprovou individualmente eventos, condições, ações, templates, permissões executáveis ou slots definitivos. Foi preparada a [CRM-AUT-MAT01 v0.1](CRM-AUT-MAT01-matriz-elegibilidade-automacoes-por-plano-v0.1.md) como **proposta de segmentação por Básico, Essencial, Profissional, Empresarial e Trial**, ainda sem aceite. Preservar AUT-P01..14, CORE/INT, SEG e demais P0. Sem programação, contratação ou implantação.
