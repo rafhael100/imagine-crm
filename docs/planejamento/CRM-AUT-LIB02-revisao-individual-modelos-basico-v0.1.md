@@ -153,3 +153,12 @@ A [decisão formal](CRM-DEC-prioridade-LEA01-LEA02-2026-11-04.md) aprovou **prio
 | TAR-C | Tarefa comercial avançada com equipes, SLA e recorrência | Não recomendada no Básico; preservá-la nos planos pagos elegíveis |
 
 **Ainda pendente:** escolha TAR-A/B/C, autorização do aviso comercial distinto dos avisos obrigatórios da Agenda, contratos oficiais T01/T13/A03 e A01 se aplicável, prazos, retenção, limites de execução e aprovação individual dos modelos. Preservar LIB02-P01..08, LIB-P01..12, AUT-P01..14, CORE/SEG/INT e gates P0. Sem programação, custos ou execução real.
+
+
+## 9. Escolha TAR-A aprovada em 04/11/2026
+
+Por resposta “ok” à recomendação de **Alternativa A — avisos internos**, o responsável **aprovou a diretriz funcional TAR-A** para a primeira versão dos candidatos LEA-01 (lead confirmado pelo CRM) e LEA-02 (inatividade validada), conforme [CRM-DEC TAR-A](CRM-DEC-escolha-TAR-A-avisos-internos-LEA01-LEA02-2026-11-04.md).
+
+**Efeito escolhido:** aviso **interno comercial** ao administrador autorizado, sujeito ao contrato oficial de notificações A03 e à validação de direitos, estado e tenant. **Não criar tarefas automaticamente A01** nesses dois modelos da primeira versão; a hipótese TAR-B/TAR-C não foi aprovada. **A escolha de tipo de efeito não equivale à aprovação individual dos modelos.**
+
+Continuam pendentes: eventos canônicos, fontes, prazo/interação válida do LEA-02, contenção de avisos repetidos, autorização técnica A03 e política de retenção, slots finais, casos de teste e homologação CORE/SEG/INT. Os lembretes operacionais da Agenda permanecem **SO fora das vagas comerciais**. Nenhuma programação, implantação, compra ou ativação autorizada.
