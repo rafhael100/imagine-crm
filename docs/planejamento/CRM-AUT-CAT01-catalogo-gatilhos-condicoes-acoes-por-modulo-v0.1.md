@@ -199,3 +199,8 @@ Estes são **testes futuros não executados**; devem ser conciliados com AUT-T01
 ## 11. Registro de aceite como referência e matriz por plano (04/11/2026)
 
 O responsável aceitou este inventário **como referência funcional**, documentado em [CRM-DEC](CRM-DEC-aceite-referencia-CAT01-2026-11-04.md). **Não** aprovou individualmente eventos, condições, ações, templates, permissões executáveis ou slots definitivos. Foi preparada a [CRM-AUT-MAT01 v0.1](CRM-AUT-MAT01-matriz-elegibilidade-automacoes-por-plano-v0.1.md) como **proposta de segmentação por Básico, Essencial, Profissional, Empresarial e Trial**, ainda sem aceite. Preservar AUT-P01..14, CORE/INT, SEG e demais P0. Sem programação, contratação ou implantação.
+
+
+## 12. Matriz comercial AUT-MAT01 aceita como base (04/11/2026)
+
+A [AUT-MAT01 v0.1](CRM-AUT-MAT01-matriz-elegibilidade-automacoes-por-plano-v0.1.md) foi **aceita como base de revisão**, conforme [CRM-DEC AUT-MAT01](CRM-DEC-aceite-base-AUT-MAT01-2026-11-04.md). Este aceite não homologa os itens T/C/A nem converte elegibilidades candidatas em direitos habilitados. Mantidas AUT-P01..14, AUT-MAT-P01..P10 e gates P0. Sem execução/programação.
