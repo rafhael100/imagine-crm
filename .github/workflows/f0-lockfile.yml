@@ -32,7 +32,7 @@ jobs:
       - name: Gerar lock se ausente
         run: |
           if test ! -f composer.lock; then
-            composer update --no-install --no-interaction --no-progress --prefer-dist
+            composer update --no-install --no-scripts --no-interaction --no-progress --prefer-dist
           fi
           composer validate --no-check-publish
       - name: Versionar lock exclusivamente na branch isolada
