@@ -1,5 +1,7 @@
 # PORTAL-D04 — Cobranças Recorrentes dos Sites Imagine
 
+> **ATENÇÃO — POLÍTICA POSTERIOR (03/11/2026):** a diretriz anterior de **10% de desconto no Pix Automático** foi substituída por **5%**; cartão recorrente permanece sem o desconto Pix. Para implantação, Pix à vista **5%** ou cartão até **3x** sem desconto; sem Pix parcelado. Ver [registro vigente](PORTAL-COM-POLITICA-VIGENTE-PIX-05-CARTAO-3X-2026-11-03.md). As condições históricas do fluxo financeiro permanecem preservadas para reconciliação e não representam homologação nem autorização de cobrança.
+
 **Status:** **10% DE DESCONTO PARA MENSALIDADES PAGAS POR PIX AUTOMÁTICO APROVADO COMO DIRETRIZ COMERCIAL em 02/11/2026**. O preço-base R$ 87 por produto, ativação das modalidades recorrentes, provedores e parâmetros financeiros continuam pendentes. Proposta de Pix Automático + cartão recorrente sujeita a homologação/contratação específica.  
 **Origem:** pergunta do responsável "E nos pagamentos recorrentes?" após decidir que **serviços adicionais só parcelam por cartão de crédito** ([PORTAL-D02](PORTAL-D02-pagamento-servicos-adicionais.md)).
 **Escopo:** mensalidades recorrentes de **Onepage e Landing Page** contratados pelo **Portal Imagine**, não parcelamento de orçamento de adicional, nem mensalidade/upgrade do CRM Imagine.
