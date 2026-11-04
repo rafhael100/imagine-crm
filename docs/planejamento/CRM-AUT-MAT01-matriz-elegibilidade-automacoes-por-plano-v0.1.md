@@ -174,3 +174,8 @@ O responsável respondeu “ok” ao avanço da **matriz por plano**, registrado
 ## 12. Complemento AUT-LIB01 — biblioteca Básico e níveis de editor (04/11/2026)
 
 Foi elaborada a [CRM-AUT-LIB01 v0.1](CRM-AUT-LIB01-biblioteca-modelos-basico-editores-por-plano-v0.1.md) **como proposta para revisão**, a partir do inventário histórico LEG-10. Reúne candidatos **LEA-01, LEA-02, TSK-01, AGD-01/02/03** (B1/B2), ressalva a incompatibilidade não resolvida de **OPP-01 com os direitos do Básico**, e separa **avisos obrigatórios da Agenda (SO)** de automações comerciais que consomem slots. Propõe níveis de **configuração guiada no Básico**, **editor tipado simples no Essencial**, **ramificações no Profissional** e **governança multiunidade no Empresarial**, todos **pendentes de aprovação individual**. Não ratifica modelos, entitlements, quotas, preços nem autoriza implementação. Acrescenta LIB-P01..P12 sem encerrar AUT-MAT-P01..P10 nem AUT-P01..14.
+
+
+## 13. Aceite LIB01 e estudo individual LIB02 (04/11/2026)
+
+A [AUT-LIB01](CRM-AUT-LIB01-biblioteca-modelos-basico-editores-por-plano-v0.1.md) foi **aceita como base documental**, conforme [CRM-DEC](CRM-DEC-aceite-base-AUT-LIB01-2026-11-04.md). A [AUT-LIB02](CRM-AUT-LIB02-revisao-individual-modelos-basico-v0.1.md) examina, **ainda como proposta não aprovada**, LEA-01/02, TSK-01, AGD-01/02/03 e a divergência OPP-01. **Ações de criar tarefa comercial A01 no Básico não estão comprovadas pela aprovação de notas e histórico manual IN-023**; revisar direito específico antes de homologar modelos. Avisos SO da Agenda não contam slot. Manter AUT-MAT-P01..P10, AUT-P01..14 e LIB-P01..P12 abertos. Sem código, gasto ou ativação.
