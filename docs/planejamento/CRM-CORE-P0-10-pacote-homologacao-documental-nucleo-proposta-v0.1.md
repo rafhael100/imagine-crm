@@ -1,7 +1,7 @@
 # CRM-CORE-P0-10 — Pacote documental de homologação do núcleo (proposta v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **MINUTA DOCUMENTAL NÃO APROVADA — CORE-P0-10 ABERTO. CORE10-D01, D02 e D03 submetidas a decisão; D04–D10 ficam abertas.**  
+**Estado atualizado em 04/11/2026:** **CORE10-D01, D02 e D03 APROVADAS COMO BASE DOCUMENTAL**, conforme [decisão expressa](CRM-DEC-aprovacao-CORE-P0-10-D01-D03-base-homologacao-2026-11-04.md). **CORE-P0-10 PARCIAL/ABERTO**; CORE10-D04..D10 e todos os D04..D10 anteriores (CORE01 D04..D07) permanecem abertos, em especial **SEG-01 e SEG-02**. Menções históricas abaixo a D01–D03 como “PROPOSTAS/NÃO APROVADAS” antecedem e são superadas pelo aceite.  
 **Escopo:** consolidação de critérios e dependências da Etapa 1 do CORE Imagine, não encerramento dos P0 anteriores e não criação de um módulo novo de execução de testes.  
 **Fase:** somente planejamento/documentação GitHub, rastreabilidade e preparação de evidências. **Nenhuma programação, Codex, infraestrutura, teste real, schema, credencial, conta, contratação, alteração de dados de clientes, pagamento, deploy, compra ou homologação física está autorizada.**
 
@@ -163,3 +163,7 @@ Propor a distinção entre quatro estágios, que **não substituem** G01..G06 da
 4. **Não começar código, testes executáveis, aquisição, provisionamento ou operações reais** sem aprovação final expressa de planejamento e autorizações específicas.
 
 A preparação deste arquivo não cria testes de produção recorrentes, não amplia autonomia da IA nem altera nenhuma política funcional já aceita.
+
+## 11. Aditamento de aceite documental — 04/11/2026
+
+O responsável aprovou expressamente **CORE10-D01, D02 e D03**, conforme [registro da decisão](CRM-DEC-aprovacao-CORE-P0-10-D01-D03-base-homologacao-2026-11-04.md). Foi aprovado **o método de rastrear o fechamento, organizar cenários futuros e distinguir gates**, não a conclusão de contratos, o encerramento técnico de P0 ou a execução dos testes. **CORE10-D04..D10, CORE01-D04..D07, CORE02..09-D04..D10, SEG-01/SEG-02 e todos os demais P0 e G01..G06 permanecem ABERTOS.** Continuidade documental autorizada: [Matriz da Etapa 2 — fechamento das pendências](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md). Nenhuma programação ou execução de testes autorizada.
