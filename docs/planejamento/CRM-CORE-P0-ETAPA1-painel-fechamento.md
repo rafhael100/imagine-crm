@@ -16,7 +16,15 @@
 | CORE-P0-07 | Convites, assentos, equipes, desligamento | **Base D01–D03 APROVADA; P0 PARCIAL/ABERTO** | [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-07-D01-D03-base-convites-assentos-equipes-2026-11-04.md); [modelo lógico](CRM-CORE-P0-07-convites-assentos-equipes-desligamento-proposta-v0.1.md); D04–D10 técnicos abertos, sem convites ou assentos reais |
 | CORE-P0-08 | Básico público/cortesia, organizações e trial | **Base D01–D03 APROVADA; P0 PARCIAL/ABERTO** | [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-08-D01-D03-base-basico-trial-2026-11-04.md); [proposta atualizada](CRM-CORE-P0-08-basico-publico-cortesia-organizacoes-trial-proposta-v0.1.md); D04–D10 abertos, sem criação de contas ou benefícios reais |
 | CORE-P0-09 | Cofre e identidade de serviço | **Base D01–D03 APROVADA; P0 PARCIAL/ABERTO** | [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-09-D01-D03-base-cofre-identidades-2026-11-04.md); [modelo lógico](CRM-CORE-P0-09-cofre-segredos-identidades-servico-proposta-v0.1.md); D04–D10 abertos, IN-168 SEG-01/02 não encerrados |
-| CORE-P0-10 | Pacote de homologação documental do núcleo | **Proposta v0.1 publicada; D01–D03 AGUARDAM ACEITE; P0 ABERTO** | [CORE-P0-10 — rastreabilidade, cenários e gates](CRM-CORE-P0-10-pacote-homologacao-documental-nucleo-proposta-v0.1.md); D04–D10 abertos; não houve execução de testes nem fechamento de P0/G01–G06 |
+| CORE-P0-10 | Pacote de homologação documental do núcleo | **Base D01–D03 APROVADA; P0 PARCIAL/ABERTO** | [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-10-D01-D03-base-homologacao-2026-11-04.md); [base e critérios](CRM-CORE-P0-10-pacote-homologacao-documental-nucleo-proposta-v0.1.md); D04–D10 ABERTAS, testes NÃO EXECUTADOS, G01–G06 abertos |
+
+
+## Continuidade — Etapa 2 de fechamento documental (04/11/2026)
+
+**Situação:** as 10 bases CORE D01–D03 foram aceitas, mas **todos os 10 blocos CORE-P0 continuam PARCIAIS/ABERTOS**. Para a Etapa 2 foi criada a [matriz das pendências e dependências](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md): **67 IDs pendentes** (CORE01 D04..D07 e CORE02..10 D04..D10), alguns sobrepostos aos mesmos bloqueios transversais; não converter contagem em riscos independentes nem fechar itens por criação de minuta.
+
+**Primeiro aprofundamento documental (não aprovado):** [CORE01-D04..D07 — proposta de isolamento, memberships, tenant/RLS e vínculos](CRM-CORE-P0-01-D04-D07-especificacao-isolamento-proposta-v0.1.md). Os quatro IDs **continuam abertos** e requerem decisões futuras explícitas. Preservar **SEG-01, SEG-02**, ARQ-01/02/03, AGT-01, INT P0, FIN/CON, LGPD, licenças e G01–G06. **Nenhuma programação, teste executável, infraestrutura, credencial ou compra autorizada**.
+
 
 ## Gates preservados
 
