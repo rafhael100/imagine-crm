@@ -177,3 +177,8 @@ A [CRM-AUT-P0 v0.1 — Execução segura do motor próprio](CRM-AUT-P0-execucao-
 ## Catálogo AUT-CAT01 — Proposta de gatilhos, condições e ações por módulo (04/11/2026)
 
 A [minuta CRM-AUT-CAT01 v0.1](CRM-AUT-CAT01-catalogo-gatilhos-condicoes-acoes-por-modulo-v0.1.md) foi preparada **para revisão**, após o responsável autorizar o próximo passo do planejamento. Inventaria **25 gatilhos candidatos**, **15 famílias de condições** e **22 ações (incluindo atos protegidos proibidos no editor comercial)**, com competência dos módulos DAT, VEN, ATD, AGD, IA, FIN/CON, COM/INT e IAM, além de critérios de permissões, quotas e falhas. **Não foi aprovada como catálogo definitivo**; IDs CAT não são schemas/contratos executáveis; **AUT-P01..14 permanecem abertos**. Respeita motor próprio aprovado e decisão de não usar n8n como backend das automações de clientes; sem programação, implementação nem despesas.
+
+
+## Fechamento parcial AUT-CAT01 e proposta de direitos AUT-MAT01 (04/11/2026)
+
+A [AUT-CAT01 v0.1](CRM-AUT-CAT01-catalogo-gatilhos-condicoes-acoes-por-modulo-v0.1.md) foi **aceita como inventário de referência funcional**, conforme [CRM-DEC](CRM-DEC-aceite-referencia-CAT01-2026-11-04.md); isso não homologa itens nem implica liberação por plano. A [CRM-AUT-MAT01 v0.1](CRM-AUT-MAT01-matriz-elegibilidade-automacoes-por-plano-v0.1.md) apresenta **proposta para revisão** com critérios de Básico (somente modelos autorizados), Essencial, Profissional, Empresarial e Trial; slots 3/5/20/50 e trial 2 continuam **referências a ratificar**. Chatbot 3/10/30 e canais são direitos separados; ações protegidas não entram no editor. **AUT-P01..14 continuam abertos** e não há programação, contratação ou publicação de workflows.
