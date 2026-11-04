@@ -1,7 +1,7 @@
 # CRM Imagine — Etapa 2 / CORE02-D04: classificação de campos e direitos por operação (proposta v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL NÃO APROVADA — CORE02-D04 ABERTA; D04-A/B/C/D aguardam deliberação.**
+**Estado atualizado em 04/11/2026:** **CORE02-D04-A/B/C/D APROVADAS SOMENTE COMO DIRETRIZES TÉCNICAS DOCUMENTAIS PRELIMINARES**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md). **CORE02-D04 permanece ABERTA** até catálogo real de campos, permissões por módulo, CORE01, CORE02-D05..D10, SEG-01/02, INT e Segurança. Trechos abaixo que dizem “NÃO APROVADAS” são históricos anteriores ao aceite e ficam superados somente para essas subdiretrizes.
 **Relação:** [Etapa 2 R01 — contratos compartilhados](CRM-CORE-P0-ETAPA2-R01-consolidacao-contratos-e-dependencias-tecnicas-v0.1.md), especialmente E2-X02; [CORE02 matriz canônica seção 6](CRM-CORE-P0-02-matriz-permissoes-recursos-acoes-campos-proposta-v0.1.md); [CORE01-D07 aceite preliminar](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md); [SEG-01/02](IN-168-matriz-pendencias-fechamento-arquitetura.md).
 
 **Propósito:** começar o fechamento **documental por decisão técnica**, sem atribuir nova permissão a usuário ou serviço e sem confundir classificação de campo com autorização efetiva, controle de linha RLS ou entitlement. Não criar motor paralelo de autorização, esquema físico, configuração, endpoints, SQL, automações, testes ou implantação.
@@ -93,3 +93,10 @@ Reutilizar casos CORE02-T, CORE01-D07-T, REV01-S, INT HT e CORE10; **não criar 
 **Todas as 67 decisões técnicas CORE da Etapa 2 continuam ABERTAS.** A proposta deste arquivo não aprova D04-A/B/C/D por silêncio, não cria permissão, não valida schema, não executa testes e não altera a regra de **NO-GO para programação**.
 
 **Vedações:** programação, migrations, SQL de RLS, criar/alterar roles, scripts, testes de software, provisionamento, gastos, mudanças produtivas, uso de credenciais/dados de clientes ou implantação.
+
+
+## 8. Aditamento do aceite preliminar CORE02-D04-A/B/C/D — 04/11/2026
+
+O responsável [aprovou expressamente CORE02-D04-A/B/C/D](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md) **apenas como diretrizes técnicas documentais preliminares**: categorias de dados F-ID..F-ART, direitos separados por operação/canal, proteção de segredos/evidências/arquivos e classificação/versionamento de campos personalizados e derivados. **Não foram concedidas permissões, escolhidos mecanismos físicos ou homologado catálogo real por módulo.** Preserva-se a permissão **única** de visualizar/baixar anexos.
+
+**CORE02-D04 integralmente ABERTA**, dependente de catálogo concreto dos módulos, CORE01, CORE02-D05..D10, SEG-01, SEG-02, INT e Segurança, além de LGPD e contratos proprietários. [**Próxima proposta CORE02-D05 — combinação de perfis, negações e delegação**](CRM-CORE-P0-ETAPA2-CORE02-D05-combinacao-perfis-negacoes-delegacao-proposta-v0.1.md) ainda **não aprovada**. Os **67 IDs CORE da Etapa 2**, IN-168, INT P0 e G01..G06 permanecem abertos. Sem programação, testes ou implantação.
