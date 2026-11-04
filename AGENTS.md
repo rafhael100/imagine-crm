@@ -19,13 +19,17 @@ Este repositório é o **CRM Imagine**, SaaS multiempresa Laravel 13 / PostgreSQ
 - Segredos somente por mecanismos apropriados e variáveis protegidas em ambiente autorizado; **nunca** versionar segredos, dumps reais nem tokens.
 
 ## Fonte e pendências obrigatórias
-- [DEC-FASTTRACK-01](docs/planejamento/CRM-DEC-FASTTRACK-autorizacao-desenvolvimento-controlado-2026-11-04.md) autoriza **desenvolvimento controlado em branch isolada**, não entrega aos clientes nem implantação.
+- [DEC-FASTTRACK-01](https://github.com/rafhael100/imagine-crm/blob/main/docs/planejamento/CRM-DEC-FASTTRACK-autorizacao-desenvolvimento-controlado-2026-11-04.md) autoriza **desenvolvimento controlado em branch isolada**, não entrega aos clientes nem implantação.
 - [F1-01](docs/desenvolvimento/F1-01-modelo-IAM-RLS-evidencias-CI-2026-11-04.md) registra a prova de conceito de identities/organizations/memberships e RLS, com limitações explícitas.
 - [F0-03](docs/desenvolvimento/F0-03-CONTRATOS-IAM-E-MULTITENANCY.md), [CORE01-D04..D07](docs/planejamento/CRM-CORE-P0-01-D04-D07-especificacao-isolamento-proposta-v0.1.md), [CORE02-D05](docs/planejamento/CRM-CORE-P0-ETAPA2-CORE02-D05-combinacao-perfis-negacoes-delegacao-proposta-v0.1.md), [DEV-GATE-00](docs/planejamento/CRM-DEV-GATE-00-checklist-unico-liberacao-desenvolvimento-v0.1.md) e SEG-01/02 regem as dependências.
 - **67 pendências técnicas CORE** e gates SEG/ARQ/INT/FIN/CON permanecem em aberto quanto a implementação, revisão e aceite. Não marcar como fechados por CI verde em prova parcial.
 
-## Próximo incremento prioritário
-**F1-02 — fronteira de autenticação confiável → membership → tenant transacional → autorização que nega por padrão**. Primeiro especificar contratos mínimos e testes de spoofing/revogação/isolamento; não habilitar APIs de clientes. Consulte a issue F1-02 vinculada ao PR #2.
+## Último incremento integrado e próxima etapa prioritária
+**F1-02 foi integrado APENAS na branch `dev/fast-track-crm-2026-11-04` via [PR #4](https://github.com/rafhael100/imagine-crm/pull/4), commit `3ec4cfa0621140056eab274826a639aba125e0a6`.** Trata-se de código experimental, sem login operacional, MFA, ACL de negócio, API de cliente ou produção. `DenyByDefaultAuthorizer` permanece obrigatório; a GUC `app.tenant_id` não autentica. O PR #2 permanece rascunho para `main`.
+
+**F1-03 — identidade global, sessões seguras e MFA em ambiente de desenvolvimento isolado:** seguir [Issue #5](https://github.com/rafhael100/imagine-crm/issues/5). Partir da branch `dev/fast-track-crm-2026-11-04` já atualizada, criar `codex/f1-03-auth-mfa-sessions`, elaborar código e testes com dados sintéticos e abrir **PR DRAFT com base na branch de desenvolvimento**. Não alterar `main`, não efetuar merge automático, não implantar na VPS, não expor autenticação pública real.
+
+**Gates antes de merge/release:** revisão de CORE04, SEG-01/02, e avaliação de modelo de identidade e MFA; não habilitar grants genéricos nem acesso comercial.
 
 ## Provas de execução
-A base chegou a **14 testes aprovados/21 asserções** na CI sintética em 04/11/2026, incluindo PostgreSQL 16 para a tabela experimental de memberships. Isso **não valida o IAM completo** nem libera produção.
+A F1-02 alcançou **48 testes aprovados/111 asserções** na suíte PostgreSQL sintética e **30 aprovados/18 ignorados** (PostgreSQL intencionalmente) na suíte SQLite da revisão `29e50b7`. Esse resultado comprova apenas o recorte experimental e **não** valida IAM completo, autenticação real ou produção. Após cada merge, confirmar novamente os checks da branch de destino.
