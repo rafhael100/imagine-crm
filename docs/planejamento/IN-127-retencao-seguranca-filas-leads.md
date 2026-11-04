@@ -1,5 +1,7 @@
 # IN-127 — Retenção, Reenvio e Diagnóstico das Filas de Leads
 
+> **ATUALIZAÇÃO DOCUMENTAL — ratificações posteriores (03/11/2026):** as decisões IN127-R01 a R06 foram ratificadas individualmente e estão consolidadas em [IN-127-R01-R06 — Ratificações normativas](IN-127-R01-R06-ratificacoes-2026-11-03.md). A regra de 3+15 dias significa **72h + 360h = 432h contínuas a partir da recepção durável T0**. Este documento histórico permanece preservado; em matérias modificadas, consultar a ratificação posterior. **RF-PEND-01 e homologação técnica continuam pendentes.**
+
 **Estado:** APROVADA a retenção máxima de **18 dias totais (3 + 15 dias consecutivos)**, o reenvio e o diagnóstico automático. **Complementos posteriores:** IN-128 define limpeza/auditoria e IN-147 autoriza exclusão automática de payload não entregue após os 18 dias.  
 **Data:** 01/11/2026.  
 **Etapa:** planejamento/documentação; **não autoriza implementação**.  
