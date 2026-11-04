@@ -1,7 +1,7 @@
 # CRM-DEC — Aprovação preliminar CORE02-D05-A/B/C/D — perfis, negações, delegação e escopo
 
 **Data:** 04/11/2026.  
-**Manifestação literal do responsável:** “Aprovo CORE02-D05-A, B, C e D como diretrizes técnicas documentais preliminares do CRM Imagine. Registre no GitHub, mantenha CORE02-D04 e D05 abertas, preserve CORE02-D06 a D10, CORE01-D04 a D07, SEG-01, SEG-02 e todos os demais bloqueios técnicos. Prossiga com o planejamento documental de CORE02-D06, sem programação nem execução de testes.”
+**Manifestação literal do responsável:** “Aprovo CORE02-D05-A, B, C e D como diretrizes técnicas documentais preliminares do CRM Imagine. Registre no GitHub, mantenha CORE02-D05 aberta até o fechamento da precedência definitiva entre perfis, permissões e negações, delegações, escopos e dependências com CORE01, CORE03, CORE04, CORE05, CORE07, CORE08, CORE09, SEG-01, SEG-02, INT e Segurança. Preserve CORE02-D04, D06 a D10 e todos os demais bloqueios e prossiga com CORE02-D06, sem programação, testes ou implantação.”
 
 **Estado:** **CORE02-D05-A/B/C/D APROVADAS EXCLUSIVAMENTE COMO DIRETRIZES TÉCNICAS DOCUMENTAIS PRELIMINARES. CORE02-D05 PERMANECE ABERTA**, juntamente com CORE02-D04, D06..D10; CORE01-D04..D07; SEG-01/02 e todos os bloqueios restantes.  
 **Pauta de referência:** [CORE02-D05 — combinação de perfis, negações, herança, delegação e escopo](CRM-CORE-P0-ETAPA2-CORE02-D05-combinacao-perfis-negacoes-delegacao-proposta-v0.1.md). Esta decisão tem precedência quanto ao **status** das subdiretrizes aprovadas sobre textos históricos do documento que ainda digam “NÃO APROVADAS”. **Não** aprova regras executáveis, grants, papéis físicos, SQL/RLS, precificação, vagas, licenciamento, programação ou testes.
