@@ -105,3 +105,10 @@ Esses casos são **referências documentais** a reconciliar com CORE01-T, CORE03
 ## 8. Aditamento — decisão preliminar CORE01-D05-A/B/C/D (04/11/2026)
 
 O responsável aprovou expressamente como **diretrizes técnicas documentais preliminares**: (A) contexto e autorização por operação; (B) delimitação transacional e reset seguro de conexões, com Laravel+PostgreSQL RLS; (C) identidades técnicas, agentes, n8n e suporte sem bypass amplo; (D) revalidação de autoridade e resultado oficial pelo proprietário. [Registro literal](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md). **Não** se selecionou SQL/SET LOCAL, roles, esquema, token, pool, mecanismo de autenticação ou provedor. CORE01-D04..D07 seguem ABERTAS, incluindo D05 integralmente, assim como SEG-01/02 e todos os gates. Continuidade autorizada: criar **proposta documental CORE01-D06** sobre ciclo de tenant, titularidade, contratos e benefícios; **sem programação nem testes**.
+
+
+## 8. Aditamento de aceite preliminar CORE01-D05-A/B/C/D — 04/11/2026
+
+O responsável [aprovou expressamente](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md) as diretrizes **A** (contexto confiável por operação), **B** (escopo delimitado por transação e reuso seguro), **C** (identidades técnicas, suporte e manutenção sem bypass geral) e **D** (revalidação de autorização e resultado oficial por proprietário). O aceite **não selecionou política RLS física, SQL, roles de banco, GUC, `SET LOCAL`, pool, filas, meios de autenticação nem tecnologia do cofre**. **CORE01-D05 permanece ABERTA**, dependente especificamente de CORE02, CORE03, CORE04, CORE05, CORE09, SEG-01, SEG-02 e da especificação CORE01-D07. **CORE01-D04, D06, D07 e todas as demais pendências seguem abertas.**
+
+**Continuidade autorizada:** somente [CORE01-D06 — proposta documental de ciclo de organizações/tenants e vínculos comerciais](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-tenants-vinculos-comerciais-proposta-v0.1.md), ainda não aprovada. Sem programação, testes ou implantação.
