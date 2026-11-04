@@ -169,3 +169,8 @@ Recomenda-se aceitar **esta matriz como base de segmentação comercial e técni
 ## 11. Registro de aceite limitado (04/11/2026)
 
 O responsável respondeu “ok” ao avanço da **matriz por plano**, registrado na [CRM-DEC AUT-MAT01](CRM-DEC-aceite-base-AUT-MAT01-2026-11-04.md). **A aprovação refere-se à utilização desta matriz como base de revisão**, não à contratação ou habilitação automática de modelos, ações, canais ou editor. Mantêm-se **AUT-MAT-P01..P10, AUT-P01..14, CORE/INT/SEG e demais P0**. Nenhum código, teste, gasto ou ativação autorizados.
+
+
+## 12. Complemento AUT-LIB01 — biblioteca Básico e níveis de editor (04/11/2026)
+
+Foi elaborada a [CRM-AUT-LIB01 v0.1](CRM-AUT-LIB01-biblioteca-modelos-basico-editores-por-plano-v0.1.md) **como proposta para revisão**, a partir do inventário histórico LEG-10. Reúne candidatos **LEA-01, LEA-02, TSK-01, AGD-01/02/03** (B1/B2), ressalva a incompatibilidade não resolvida de **OPP-01 com os direitos do Básico**, e separa **avisos obrigatórios da Agenda (SO)** de automações comerciais que consomem slots. Propõe níveis de **configuração guiada no Básico**, **editor tipado simples no Essencial**, **ramificações no Profissional** e **governança multiunidade no Empresarial**, todos **pendentes de aprovação individual**. Não ratifica modelos, entitlements, quotas, preços nem autoriza implementação. Acrescenta LIB-P01..P12 sem encerrar AUT-MAT-P01..P10 nem AUT-P01..14.
