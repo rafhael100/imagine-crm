@@ -1,7 +1,7 @@
 # CRM-CORE-P0-06 — Auditoria, rastreabilidade, acesso e retenção por categoria (v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL AINDA NÃO APROVADA — CORE-P0-06 ABERTO. CORE06-D01, D02 e D03 submetidas à decisão; D04–D10 pendentes.**  
+**Estado atualizado em 04/11/2026:** **CORE06-D01, D02 e D03 APROVADAS COMO BASE DOCUMENTAL**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-06-D01-D03-base-auditoria-2026-11-04.md). **CORE-P0-06 PARCIAL/ABERTO**; CORE06-D04..D10 e demais dependências técnicas permanecem pendentes. Menções históricas a “PROPOSTA/NÃO APROVADAS” quanto a D01–D03 antecedem a aprovação e são superadas por este aditamento.  
 **Escopo:** organizar as autoridades e regras já aprovadas de auditoria administrativa da Imagine, auditoria comercial por tenant, evidências oficiais de integrações, telemetria e logs técnicos, trilha de recepção e entrega de leads, fatos de negócio, backups e histórico de agentes, sem equiparar categorias diferentes.  
 **Fase:** planejamento, referência e versionamento; **sem código, execução de testes, descarte real, produção, contratação, alteração de política física ou de valores**.
 
@@ -175,3 +175,7 @@ Confrontar estes casos com INT HT-01..18, CORE01..05, CRM-REV09 OPS-T e IN-162; 
 Próximo após eventual aceite expresso de CORE06-D01..D03: **CORE-P0-07 — convites, assentos, equipes e desligamento**. Não antecipar a decisão nem abrir direitos sem aprovação. O gate global do planejamento e o aceite final continuam obrigatórios antes de Codex/implementação.
 
 **Proibições:** nenhuma programação, teste executável, limpeza de logs reais, exclusão de dados, migração, acesso a credenciais, provisionamento, contratação ou configuração operacional. Somente documentação e decisões expressamente aprovadas.
+
+## 11. Aditamento de aprovação parcial — 04/11/2026
+
+O responsável aprovou expressamente **CORE06-D01, D02 e D03 como base documental** no [registro oficial de decisão](CRM-DEC-aprovacao-CORE-P0-06-D01-D03-base-auditoria-2026-11-04.md). Foram aceitas a taxonomia lógica de auditoria e fontes oficiais, o envelope proporcional de rastreabilidade com direitos distintos de consulta/exportação e a separação dos prazos de retenção **já aprovados**, sem fixar prazos novos. A aprovação preserva IN-040, IN-162, IN127-R01..R06 e LGPD. **CORE06-D04 a D10 ainda estão abertas**, assim como P0 CORE/INT/SEG/ARQ e G01..G06. Próxima fase autorizada: **planejamento CORE-P0-07**, sem programação nem testes reais.
