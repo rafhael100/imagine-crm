@@ -1,7 +1,7 @@
 # CRM-CORE-P0-02 — Matriz canônica de autorização por ator × recurso × ação × campo (v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL PARA DELIBERAÇÃO; CORE-P0-02 ABERTO.** Não é matriz executável homologada, não ativa permissões, não altera planos e não autoriza programação.  
+**Estado atualizado em 04/11/2026:** **CORE02-D01–D03 APROVADAS COMO BASE DOCUMENTAL** conforme [decisão de aceite CORE02-D01 a D03](CRM-DEC-aprovacao-CORE-P0-02-D01-D03-base-permissoes-2026-11-04.md); **CORE-P0-02 PARCIAL/ABERTO**. D04–D10 seguem pendentes. Não é matriz executável homologada, não ativa permissões, não altera planos e não autoriza programação. Seções com rótulo "PROPOSTA D01–D03" registram o estado histórico anterior ao aceite.  
 **Sequência:** CORE-P0-01 D01–D03 aceitas como base lógica em [CRM-DEC](CRM-DEC-aprovacao-CORE-P0-01-D01-D03-base-logica-2026-11-04.md), preservando D04–D07. Esta proposta inicia CORE-P0-02, sem antecipar aceite do responsável.  
 **Objetivo:** reconciliar identidade global / memberships por tenant e direitos existentes, para posteriormente fechar contratos por módulo, campos, planos, agentes e operações externas sem criar motor IAM adicional.
 
@@ -167,3 +167,7 @@ Reaproveitar S01..S10 de CRM-REV-01 e planos HT/INT quando equivalentes: **não 
 ## 11. Regra de processo
 
 Esta proposta **não modifica os documentos históricos**, não concede permissões novas, não altera preço/cota, não cria novo motor IAM, não habilita n8n/IA para uso personalizado do cliente e não libera Codex. Somente após o responsável aprovar D01–D03 registrar decisão expressa e continuar o fechamento das dependências em sequência.
+
+## 12. Aditamento — aceite expresso D01 a D03 (04/11/2026)
+
+O responsável **aprovou CORE02-D01, D02 e D03 como base documental**, conforme [decisão de aceite CORE02-D01 a D03](CRM-DEC-aprovacao-CORE-P0-02-D01-D03-base-permissoes-2026-11-04.md). A validade do aceite limita-se ao modelo cumulativo de autorização, catálogo semântico de ações e matriz conceitual de atores/fronteiras; não transforma exemplos em permissões concedidas. **CORE02-D04 a D10 permanecem abertos**, inclusive classificação física de campos, direitos efetivos, regras de papéis, alçadas, contratos e cenários de aceite. Sem programação ou testes. Autorizado iniciar a documentação CORE-P0-03. Esta seção prevalece sobre a formulação histórica que solicitava votação D01–D03.
