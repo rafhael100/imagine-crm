@@ -1,7 +1,7 @@
-# CRM Imagine — Etapa 2: CORE01-D06 — Anexo de exemplos e critérios de vínculos comerciais (não canônico)
+# CRM Imagine — Etapa 2: CORE01-D06 — Ciclo de tenants, titularidade e vínculos comerciais (proposta v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **ANEXO DOCUMENTAL COMPLEMENTAR, NÃO DELIBERATIVO — CORE01-D06 ABERTA; D06-A/B/C/D AINDA NÃO APROVADAS**. A única proposta canônica para deliberação A/B/C/D é [CORE01-D06 — ciclo de organizações e vínculos comerciais](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-organizacoes-vinculos-comerciais-proposta-v0.1.md); as seções a seguir apenas aprofundam casos e condições, sem competir com os quatro códigos.  
+**Estado:** **PROPOSTA DOCUMENTAL ÚNICA PARA DELIBERAÇÃO — CORE01-D06 ABERTA; CORE01-D06-A/B/C/D AINDA NÃO APROVADAS**. A divisão A/B/C/D da seção 8 é a única pauta proposta; as seções 3–6 detalham requisitos e cenários sem criar aprovações independentes.  
 **Escopo:** especificação conceitual de contratos de autoridade, vínculo, estado e reconciliação. **Não aprova esquema físico, fornecedor/gateway, operações reais, valor definitivo, grants, eventos executáveis nem código.**
 **Continuidade autorizada:** [aceite preliminar CORE01-D05-A/B/C/D](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md), mantendo **CORE01-D05 aberta** com CORE02/03/04/05/09/SEG-01/02. CORE01-D04 A/B/C foram preliminarmente aceitas, mas D04 inteira continua aberta.
 
@@ -124,16 +124,16 @@ Diretriz preliminar candidata para os futuros contratos tipados Portal/CRM/FIN/C
 
 Esses casos são **roteiros textuais** a reconciliar com CORE08-T, CORE01-T, REV01 S01..10 e INT HT01..18; não criam uma suíte redundante ou testes a executar agora.
 
-## 8. Referência única para eventual deliberação CORE01-D06 — PROPOSTA CANÔNICA NÃO APROVADA
+## 8. Diretrizes CORE01-D06-A/B/C/D para eventual deliberação — AINDA NÃO APROVADAS
 
-O documento de referência para votação é exclusivamente [**CORE01-D06 — ciclo de organizações, titularidade e vínculos comerciais**](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-organizacoes-vinculos-comerciais-proposta-v0.1.md), que utiliza a seguinte classificação de quatro diretrizes:
+Este documento apresenta exclusivamente a seguinte classificação das quatro diretrizes para análise:
 
 - **CORE01-D06-A — fontes de autoridade e vínculos explícitos:** distinguir CNPJ, tenant, contrato Site, destino, assinatura, cortesia, trial e gratuidade; apenas dono do domínio confirma resultado.
 - **CORE01-D06-B — ciclo independente e preservação de direitos:** separar estados desses objetos, transições comuns/restritas, avisos, independência do pago e proibição de cobrança automática.
 - **CORE01-D06-C — titularidade, concorrência e vínculo idempotente:** pedido autenticado, autoridade sobre origem/destino, antifraude, idempotência, reordenação e troca por chamado, sem migração automática.
 - **CORE01-D06-D — retenção, restrição e portabilidade sem efeitos colaterais:** separar suspensão de cortesia, expiração de trial e cancelamento formal CRM; conservar portabilidade, retenções e vedação de cobrança tácita.
 
-**Todas essas quatro diretrizes permanecem NÃO APROVADAS**. Este anexo tem valor apenas explicativo para casos e critérios e não cria um segundo conjunto conflitante de propostas. O futuro aceite de qualquer diretriz não encerrará CORE01-D06 nem as dependências CORE08/FIN/CON/SEG/INT.
+**Todas essas quatro diretrizes permanecem NÃO APROVADAS**. As seções de exemplos e critérios aprofundam essas quatro propostas, sem criar um segundo conjunto de decisões. O futuro aceite de qualquer diretriz não encerrará CORE01-D06 nem as dependências CORE08/FIN/CON/SEG/INT.
 
 ## 9. Pendências e gates mantidos ABERTOS
 
