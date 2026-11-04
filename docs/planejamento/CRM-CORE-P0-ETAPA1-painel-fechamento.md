@@ -26,6 +26,12 @@
 **Primeiro aprofundamento documental (não aprovado):** [CORE01-D04..D07 — proposta de isolamento, memberships, tenant/RLS e vínculos](CRM-CORE-P0-01-D04-D07-especificacao-isolamento-proposta-v0.1.md). Os quatro IDs **continuam abertos** e requerem decisões futuras explícitas. Preservar **SEG-01, SEG-02**, ARQ-01/02/03, AGT-01, INT P0, FIN/CON, LGPD, licenças e G01–G06. **Nenhuma programação, teste executável, infraestrutura, credencial ou compra autorizada**.
 
 
+## Etapa 2 — Diretrizes CORE01-D04 preliminares e CORE01-D05 em proposta (04/11/2026)
+
+- [**CRM-DEC CORE01-D04-A/B/C**](CRM-DEC-aprovacao-CORE01-D04-ABC-diretrizes-preliminares-2026-11-04.md): aceita como **diretriz técnica documental preliminar**, **não** como fechamento integral de CORE01-D04, que continua dependente de CORE02, CORE04, CORE07 e CORE08.
+- [**CORE01-D05 — contexto confiável e RLS**](CRM-CORE-P0-ETAPA2-CORE01-D05-contexto-tenant-RLS-proposta-v0.1.md): nova **proposta** D05-A/B/C/D aguardando manifestação; mecanismos de banco, role, transação, workers e suporte não homologados.
+- [Matriz Etapa 2](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md): **67 identificadores técnicos permanecem abertos**. IN-168 SEG-01/SEG-02, ARQ-01/02/03, AGT-01, INT P0 e G01..G06 também não foram encerrados. **Sem programação, testes ou implantação**.
+
 ## Gates preservados
 
 - CORE-P0-01..10 não constituem dez novos módulos; são lacunas de especificação e fechamento de CORE.
