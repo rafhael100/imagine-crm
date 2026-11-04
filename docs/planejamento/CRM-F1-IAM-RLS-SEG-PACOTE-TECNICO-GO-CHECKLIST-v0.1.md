@@ -1,7 +1,7 @@
 # CRM Imagine — F1-P0: pacote consolidado de identidade, isolamento, RLS e segurança (v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **ESPECIFICAÇÃO TÉCNICA CANDIDATA + MATRIZ DE GO/NO-GO, AINDA NÃO HOMOLOGADA PARA F1**.  
+**Estado atualizado em 04/11/2026:** **APROVADO COMO BASE DOCUMENTAL DE PLANEJAMENTO**, conforme [DEC-F1-P0-01](CRM-DEC-aceite-base-documental-F1-IAM-RLS-SEG-2026-11-04.md). **Especificações físicas e GO técnico F1 permanecem NÃO HOMOLOGADOS**; ver [CT-F1-01](CRM-F1-CT01-especificacao-fisica-IAM-RLS-MFA-SEG-proposta-v0.1.md), ainda proposta. F0 possui autorização própria restrita; não se autoriza IAM/RLS privilegiado, teste, clientes nem produção por este aceite.  
 **Autorização:** pedido "ok vamos fazer isso" para **fechar em um único pacote** os aspectos críticos de IAM, tenant, RLS e Segurança; há uma [decisão distinta de GO F0](CRM-DEC-FASTTRACK-autorizacao-desenvolvimento-controlado-2026-11-04.md) permitindo scaffold/código não privilegiado **somente** em branch isolada. O pedido atual não aprova automaticamente dados de clientes, acesso real, grants, ambiente pago, integração, release ou produção.  
 **Branch F0:** `dev/fast-track-crm-2026-11-04`. **F1:** planejamento de contratos físicos e segurança, **ainda não liberada** para implementar/ativar recursos privilegiados com dados reais.  
 **Repositório:** `rafhael100/imagine-crm`. Documento canônico de coordenação **sem criar novos motores, P0, gates ou serviços**. A matriz [E2-R01](CRM-CORE-P0-ETAPA2-R01-consolidacao-contratos-e-dependencias-tecnicas-v0.1.md) continua sendo índice transversal dos 67 itens CORE.  
@@ -163,3 +163,7 @@ O primeiro incremento **F0** já pode continuar apenas no seu escopo previamente
 Reconciliar em **um único ato técnico** os itens do backlog 1–4 (ER, RLS e contexto DB, IAM/grants, MFA/sessões), apresentando alternativas físicas concretas e riscos, depois SEG-01/02 e ARQ mínimos. Quando documentação suficiente existir, submeter a **GO F1** por escopo à autoridade competente.
 
 **Não registrar neste momento** uma aprovação final F1, um fechamento P0 ou resultado positivo de testes. **Não alterar a branch F0 nem o código já criado** por outro fluxo apenas para "acompanhar" este documento.
+
+## 12. Aceite do pacote-base e sequência de especificação física — 04/11/2026
+
+O responsável manifestou “aprovado” ao [pacote F1-P0](CRM-F1-IAM-RLS-SEG-PACOTE-TECNICO-GO-CHECKLIST-v0.1.md). A [**decisão DEC-F1-P0-01**](CRM-DEC-aceite-base-documental-F1-IAM-RLS-SEG-2026-11-04.md) registra o aceite **como base documental de planejamento**, sem aceitar alternativas não definidas, homologar P0 ou liberar F1 privilegiada. Foi preparada [**CT-F1-01 — especificação física candidata IAM/RLS/MFA/SEG**](CRM-F1-CT01-especificacao-fisica-IAM-RLS-MFA-SEG-proposta-v0.1.md) para revisão de DBA, Segurança, IAM, Arquitetura e owners; chaves, FK compostas, roles de banco, origem confiável de contexto, recovery/MFA e cofre ainda requerem evidência. F0 segue GO restrito pela [DEC-FASTTRACK-01](CRM-DEC-FASTTRACK-autorizacao-desenvolvimento-controlado-2026-11-04.md); F1 continua NO-GO para funcionalidades sensíveis e produção.
