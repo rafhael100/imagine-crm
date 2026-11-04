@@ -159,3 +159,45 @@ Fonte oficial: https://support.n8n.io/article/can-i-use-your-license-for-my-use-
 - n8n security: https://docs.n8n.io/hosting/securing/overview/
 - n8n pruning: https://docs.n8n.io/hosting/scaling/execution-data/
 - n8n licenca: https://support.n8n.io/article/can-i-use-your-license-for-my-use-case
+
+
+## 9. Comparativo atualizado de ofertas — 03/11/2026
+
+**Natureza:** pesquisa de mercado, NAO cotacao comercial, decisao de contratacao, escolha definitiva de SKU, fornecedor ou regiao. **Referência anteriormente aprovada continua 4 vCPU/8 GB/~160 GB SSD**; uma oferta superior pode ser candidata por melhor custo/beneficio, mas exige homologacao. [Registro da referencia](CRM-DEC-aprovacao-dimensionamento-vps-agentes-4vCPU-8GB-160GB-2026-11-03.md).
+
+| Opcao para agentes tecnicos | CPU e RAM | Disco | Preco mensal de referencia | Evidencia / ressalva |
+|---|---|---|---|---|
+| **Leaseweb VPS 1 — EUA** | 4 vCPU **6 GB** | **100 GB NVMe** | **US$6,29** | Fonte comparadora; **nao atende** a referencia de 8 GB/160 GB; nao comparar como equivalencia |
+| **Leaseweb VPS 2 — EUA** | **6 vCPU, 16 GB** | **200 GB NVMe** | **US$9,89** | Fonte comparadora consultada, referencia verificada 01/11/2026; **mais recursos** que referencia aprovada; **sem proposta oficial em checkout e sem comprovacao de prazo/renovacao** |
+| **DigitalOcean Basic Regular** | **4 vCPU, 8 GB** | **160 GB SSD** | **US$48** | Valor publicado em pagina oficial, CPU compartilhada, preco mensal base |
+| **Hetzner CPX32 — Europa** | **4 vCPU, 8 GB** | **160 GB NVMe** | **US$41,99** | Tabela oficial de reajuste junho/2026; sem IPv4 e impostos, disponibilidade a confirmar |
+| **Hetzner CPX31 — EUA** | **4 vCPU, 8 GB** | **160 GB NVMe** | **US$73,49** | Tabela oficial EUA, sem IPv4/impostos, disponibilidade a confirmar |
+
+Fontes e links originais:
+- Leaseweb pagina oficial (caracteristicas/seguranca, mas preco final no portal): https://www.leaseweb.com/products-services/cloud/virtual-private-server
+- Leaseweb VPS2, **comparador nao vinculante**: https://kuraberu.app/vps/offer/leaseweb-vps-2-us (01/11/2026; EUA, inclusive Washington D.C.)
+- Leaseweb VPS1, **comparador nao vinculante**: https://kuraberu.app/vps/providers/leaseweb
+- DigitalOcean oficial: https://www.digitalocean.com/pricing/droplets
+- Hetzner oficial: https://docs.hetzner.com/general/infrastructure-and-availability/price-adjustment/
+- Hetzner planilha de recursos (EU e EUA): https://www.hetzner.com/european-cloud/
+
+**Recomendacao de estudo:** solicitar/verificar **Leaseweb VPS 2** na regiao US/Washington, porque a tabela de terceiro sugere **6 vCPU/16 GB/200 GB** a preço reduzido. **Nao presumir US$9,89 contratavel**: capturar oferta oficial, modalidade mensal/12/24 meses, pagamento inicial, reajustes, NVMe e IOPS, disponibilidade, impostos e seguro/suporte. A VPS2 e **nova candidata de SKU, nao decisao homologada**, e as 4vCPU/8GB/160GB continuam referencia minima de estudo.
+
+### 9.1. Compatibilidade com a infraestrutura ja declarada
+
+- VPS n8n historica: Leaseweb 6 vCPU/16 GB/200 GB, Ubuntu 24.04/Docker/PostgreSQL; inventario e consumo ainda nao confirmados. **Nao instalar agentes nessa mesma VPS**.
+- VPS de agentes: independente do n8n. Se contratar futuramente VPS2 6/16/200, isso pode oferecer margem para picos e scanners, mas CPU compartilhada e IOPS precisam ser medidos; **mais RAM nao garante disponibilidade ou throughput**.
+- **Montreal/Canada:** nao confirmar disponibilidade da mesma linha VPS sem evidencias do configurador regional. Comparar Washington, localidade da VPS n8n e Brasil, com LGPD, latencia e transferencia internacional. Oferta por pais e plano pode diferir.
+- A Leaseweb informa **protecao DDoS padrao, firewall basico e um snapshot gratuito**, alem de expansao **somente para cima**, conforme pagina oficial. Snapshot do host **nao substitui** backup externo, restauracao isolada, auditoria e monitoring externo.
+- Verificar se as tarefas exigem navegadores headless, ingestao pesada de documentos, processamento local ou varias ferramentas concorrentes; se exigirem, dimensionar por medições e alocar recursos independentemente do custo baixo da VPS.
+
+### 9.2. Checklist antes de autorizar gasto
+
+1. Confirmar **cotacao oficial** Leaseweb VPS 2: Washington e eventual alternativa com baixa latencia Brasil; mensal sem fidelidade vs 12/24 meses, setup, impostos, reajuste e limite de CPU.
+2. Confirmar de fato a VPS n8n existente, inclusive se os recursos atuais sao 6vCPU/16GB/200GB, faturamento, backups e ocupacao; separar custo **existente** e **incremental**.
+3. Confirmar tecnologia de isolamento, cofre de segredos e autorizacoes de ferramentas dos agentes, incluido plano de reversao e procedimentos de falha.
+4. Orçar backup externo, monitor externo, rede segura, logging, operacao, suporte, tarifas de modelos de IA/tokens/ferramentas e reserva de crescimento.
+5. Preservar independência do CRM, Portal, Sites, Performance AI e universidade futura: o servidor tecnico transversal **nao aloja todos os runtimes funcionais**.
+6. Resolver licenciamento do n8n para qualquer automacao do CRM configurada por clientes antes de integracao SaaS efetiva.
+
+**ARQ-01 P0 parcial; IA-01/SEG-01/SEG-02/AGT-01 e demais gates tecnicos ainda pendentes.** Somente pesquisa/documentacao; **nenhum servidor foi contratado, nenhum teste real autorizado, nenhuma programacao iniciada**.
