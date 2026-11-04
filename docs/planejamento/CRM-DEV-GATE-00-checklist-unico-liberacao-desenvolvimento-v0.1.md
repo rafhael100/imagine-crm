@@ -11,7 +11,7 @@
 
 - O planejamento funcional/arquitetural está avançado, mas **o fechamento técnico e a reconciliação global ainda não ocorreram**.
 - Em [CORE Etapa 2](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md), existem **67 identificadores de decisão técnica abertos**: CORE01-D04..D07 (**4**) e CORE02..CORE10-D04..D10 (**63**). Alguns são sobrepostos e devem ser fechados por pacote com rastreabilidade **individual**, sem contá-los como 67 riscos independentes.
-- **CORE01-D04-A/B/C**, **D05-A/B/C/D** e **D06-A/B/C/D** têm apenas diretrizes preliminares aceitas; **CORE01-D04, D05 e D06 integrais permanecem abertos**. [CORE01-D07-A/B/C/D](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md) são **propostas ainda não aprovadas**.
+- **CORE01-D04-A/B/C**, **D05-A/B/C/D** e **D06-A/B/C/D** têm apenas diretrizes preliminares aceitas; **CORE01-D04, D05 e D06 integrais permanecem abertos**. [CORE01-D07-A/B/C/D](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md) foram [**aceitas apenas como diretrizes preliminares**](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md); **CORE01-D07 permanece ABERTA**, sem schema/roles/policies homologados.
 - [IN-168](IN-168-matriz-pendencias-fechamento-arquitetura.md) mantém **ARQ-01, ARQ-02, ARQ-03, SEG-01, SEG-02 e AGT-01** P0; P1/P2 devem ser avaliados por impacto, sem fechamento ou adiamento tácito de riscos críticos.
 - O [painel INT](integracoes/P0-GATE-painel-fechamento-rastreabilidade-dependencias.md) mantém **P0-DOC/TR/OWN/CON/SEC/DEP/VER/ACC/XREF/GIT** abertos/parciais e **G01..G06 não concluídos**. Os roteiros **HT01..18** estão documentados, com **0/18 executados**; execução de testes só após autorização de programação/homologação em ambiente apropriado.
 - [REV-02](CRM-REV-02-planos-trial-assinaturas-cobrancas-basico.md) ainda requer conciliação FIN/CON e decisão de valores/recursos finais; [REV-09](CRM-REV-09-infraestrutura-seguranca-auditoria-operacoes-centrais.md) mantém OPS-P01..P18; demais CRM-REV também registram diferenças/P0 próprios.
@@ -84,3 +84,8 @@ O desenvolvimento **poderá ser organizado** por entregas, após **o planejament
 ## 8. Atualização de estado CORE01-D07 — 04/11/2026
 
 [**CORE01-D07-A/B/C/D aceitas preliminarmente**](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md). **CORE01-D07 ainda aberta** até especificações físicas, contratos, segurança, fontes e owners. Este checklist continua **NO-GO**, os **67 IDs CORE estão abertos**, SEG-01/02, IN-168, INT P0/G01..G06 e decisão final global permanecem pendentes. O “ok” de continuidade documental não é aprovação de código; nenhum teste ou programação foi autorizado.
+
+
+## 7. Consolidação Etapa 2 R01 e aprovação preliminar D07 — 04/11/2026
+
+[**CORE01-D07-A/B/C/D**](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md) foram **aprovadas somente como diretrizes técnicas documentais preliminares**, sem especificação física aprovada. A [**Etapa 2 — R01**](CRM-CORE-P0-ETAPA2-R01-consolidacao-contratos-e-dependencias-tecnicas-v0.1.md) consolida doze interfaces de contrato, responsáveis por competência e caminho documental de fechamento, sem criar novos P0, gates ou serviços. Todos **67 IDs CORE técnicos permanecem abertos** e IN-168 ARQ/SEG/AGT, INT P0/G01..G06, FIN/CON, LGPD, custeio/licenças e revisão global continuam pendentes. **DEV-GATE-00 permanece NO-GO**, sem programação, testes executáveis, implantação ou autorização de produção.
