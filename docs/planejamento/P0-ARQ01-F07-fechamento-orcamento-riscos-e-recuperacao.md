@@ -84,3 +84,76 @@ Sem preços verificáveis e cotação total não há TCO oficial para aprovar. C
 ## Atualização 03/11/2026 — decisão de arquitetura-alvo E1B
 
 O responsável aprovou expressamente o **E1B como modelo inicial de referência**, sujeito à homologação. [CRM-DEC específica](CRM-DEC-aprovacao-E1B-alvo-primeiro-lancamento-2026-11-03.md). Isso fecha **somente F07-D01** em nível de **direção de projeto**, não a infraestrutura real. E1B não permite clientes reais sem validações e aceite de riscos; quando inviável técnica ou financeiramente, avaliar E2. F07-D02 orçamento, D03 região e D04 metas/risco ficam abertos. ARQ-01 continua P0 parcial e não há liberação de programação.
+
+
+## Anexo A — Estimativa financeira incremental preliminar (03/11/2026)
+
+**Estado:** estudo/cotação referencial, **não é orçamento aprovado nem custo completo homologado**. Não altera F07-D01 (E1B como arquitetura-alvo), não encerra F07-D02, D03 ou D04. Os valores abaixo são referências públicas de terceiros ou fornecedores, sujeitos a confirmação no checkout/contrato, localização, renovação, impostos e câmbio.
+
+### A.1. Computação por etapa
+
+| Etapa | Cenário de computação | Preço-base de referência |
+|---|---|---|
+| F0 planejamento | Não contratar servidores novos | US$0 de incremento |
+| F1 desenvolvimento autorizado | Leaseweb VPS 1, 4 vCPU compartilhadas, 6 GiB, 100 GB NVMe | US$6,29/mês nos EUA em comparador; precisa confirmar contrato |
+| F2 primeiro lançamento E1B | Leaseweb VPS 2 para Laravel, 6 vCPU/16 GiB/200 GB + VPS 1 independente para PostgreSQL, sujeita a sizing | US$9,89 + US$6,29 = **US$16,18/mês apenas computação** em referências dos EUA |
+| F2 E2 redundante | Duplicar app, replicar/failover PostgreSQL, balanceamento | Não cotado; **não inferir preço** por multiplicar servidores |
+
+A VPS não inclui Private Network nativa; proteger aplicação↔banco com solução homologada, possivelmente túnel/VPN+TLS e políticas de firewall. Public Cloud/dedicado são alternativas se requisitos de isolamento, disponibilidade ou tempo de recuperação do E1B não couberem no preço. As referências de preço podem exigir fidelidade; não contratar VPS de 12 meses enquanto não houver necessidade real de uso.
+
+### A.2. Componentes variáveis publicados
+
+| Serviço | Preço de referência | Observação |
+|---|---|---|
+| Cloudflare Free | US$0/mês | DNS, SSL, mitigação e WAF básico; não presume suficiência para todos os riscos |
+| Cloudflare Pro opcional | US$20/mês faturado anualmente OU US$25/mês pagamento mensal | Só se requisitos comprovados justificarem |
+| Cloudflare R2 Standard | US$0,015/GB-mês acima de franquia de 10 GB-mês; operações conforme volume; sem cobrança de saída | Franquia é por conta e compartilhada; não necessariamente por bucket |
+| Leaseweb Object Storage On Demand | €0,01733/GB-mês + PUT/GET e transferência de saída | Disponibilidade e localidade concretas a cotar |
+| UptimeRobot Free | US$0, até 50 sondas, checagem a cada 5 min | Não substitui alertas críticos de PostgreSQL, filas, backup e rota independente; avaliar serviço pago/combinação |
+| UptimeRobot Solo | A partir de US$144/ano (equiv. US$12/mês) | Plano opcional com checagens mais frequentes; pagamento anual |
+| pgBackRest | Sem licença de software; custo de storage/operação/rede permanece | Backup base, incremental/diferencial, WAL, PITR e S3 |
+
+Fontes consultadas: 
+- https://kuraberu.app/vps/offer/leaseweb-vps-1-us
+- https://kuraberu.app/vps/providers/leaseweb
+- https://www.leaseweb.com/products-services/cloud/virtual-private-server
+- https://www.cloudflare.com/plans/
+- https://developers.cloudflare.com/r2/pricing/
+- https://www.leaseweb.com/products-services/object-storage
+- https://uptimerobot.com/pricing/
+- https://pgbackrest.org/index.html
+
+### A.3. Simulação de objeto/backup para carga pequena
+
+Hipótese ilustrativa, **não projetada a partir de clientes reais**: 50 GB-mês de anexos vivos no R2; 100 GB-mês ocupados pela réplica histórica de anexos em Leaseweb (retenções/versões podem ampliar), mais 30 GB-mês de backup PostgreSQL em Leaseweb. Supõe-se que a franquia de R2 de 10 GB-mês esteja disponível integralmente.
+
+- R2 Standard, apenas anexos: (50-10)×US$0,015 = **US$0,60/mês** de espaço.
+- Leaseweb, replica de anexos + banco: (100+30)×€0,01733 = **€2,25/mês** de espaço.
+- VPS aplicação e VPS banco: **US$16,18/mês**, referência de terceiros para US.
+- **Subtotal mínimo de itens quantificados: US$16,78 + €2,25/mês**, moedas separadas, **não** custo total ou orçamento contratável. Exclui operações/egress, contingência adicional para PostgreSQL, rede/VPN, monitoramento interno/externo, antimalware, cofre, backup imutável, restore, impostos, suporte, plantão e operações humanas.
+
+### A.4. Provisões gerenciais (sem cotação ou aprovação)
+
+| Uso | Meta provisória de reserva, sem compromisso | O que não cobre automaticamente |
+|---|---|---|
+| Planejamento F0 | **US$0** de novas contratações | Custos de infraestrutura legada já ativa |
+| Desenvolvimento F1 | **Até US$30/mês** para nova infraestrutura dev após autorização | Horas de trabalho, IA, serviços legados, contratação anual obrigatória |
+| Primeira produção E1B do CRM | **Teto de estudo US$120/mês equivalente**, a refinar após cotação em USD/CAD/EUR | Custos humanos, Portal, n8n, agentes, duas APIs de leads, provedores de mensageria/IA; não garante todos os requisitos nesse teto |
+| E2 | Sem meta definida | Exige cotação de HA, balanceador, réplica e suporte |
+
+**US$120 não foi aprovado como limite financeiro**; serve de referência para avaliar se E1B oferece recuperação com custo razoável. Se segurança/durabilidade/recuperação exigirem ultrapassar esta meta, **não eliminar controles**: documentar o custo necessário e submeter a aprovação. Não presumir que baixo custo de disco equivale a baixo custo de operação.
+
+### A.5. Separar o custo do CRM do custo de toda a Imagine
+
+**Custo CRM E1B:** VPS Laravel, host PostgreSQL, filas/cache CRM, anexos, backup DB/anexos, observabilidade, rede, suporte, incidentes e segurança.
+
+**Custo do ecossistema adicional a medir:** Portal Imagine com infraestrutura própria, Sites/Workers/versões, API de recepção de leads principal, API independente de contingência, filas com persistências independentes, n8n em host próprio, sete agentes técnicos + Supervisor em servidor próprio, monitoramento transversal e cofre, IA/LLM, WhatsApp/mensageria, gateways, domínio/DNS e serviços legados. **Não afirmar custo total do ecossistema sem inventário real e faturas.**
+
+### A.6. Pendências de cotação e fechamento, vinculadas à F07
+
+- **F07-D02:** obter preços oficiais Leaseweb VPS 1/VPS 2 em WDC-02 e MTL-02 (mensal, anual, descontos, renovação e moeda), além de opções Public Cloud e demais custos para caso de escalada.
+- Confirmar se recursos VPS 1 são adequados a PostgreSQL em produção sob IOPS/latência/carga; VPS 2 e gerenciado são alternativas e podem aumentar TCO.
+- Modelar armazenamento com versões reais, backups WAL, 30 dias de cópia técnica de anexos, requests/egress e recuperação fora da VPS; definir retenção PostgreSQL separadamente.
+- Preencher **duas colunas financeiras distintas**: novo investimento mensal CRM e gasto mensal incremental do ecossistema mais custo já existente.
+- Com preços e latência real, concluir **F07-D03 (região)** e **F07-D04 (RPO/RTO, reposição e aceite de riscos)**; não declará-los resolvidos antecipadamente.
+- Nenhuma compra, configuração, programação, teste real ou implantação autorizada.
