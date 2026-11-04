@@ -172,3 +172,8 @@ O n8n continua ferramenta **de orquestração de processos internos Imagine** pe
 ## Complemento de execução segura — AUT-P0 v0.1 (04/11/2026)
 
 A [CRM-AUT-P0 v0.1 — Execução segura do motor próprio](CRM-AUT-P0-execucao-segura-motor-proprio-automacoes-v0.1.md) foi **aceita somente como base documental**, conforme [CRM-DEC de aceite](CRM-DEC-aceite-base-AUT-P0-execucao-segura-2026-11-04.md). O escopo aceito é: reutilizar os motores centrais, separar operações obrigatórias/comerciais, proteger isolamento entre empresas, deduplicação, confirmação oficial de efeitos e recuperação auditável. A hipótese de workers do CRM E1B evita uma VPS exclusiva **apenas se os testes de capacidade e segurança homologarem**. Detalhes de contratos, schemas, quotas, prazos, tecnologia de fila, homologação e **AUT-P01..14 continuam abertos**, sem implementação ou compra autorizada.
+
+
+## Catálogo AUT-CAT01 — Proposta de gatilhos, condições e ações por módulo (04/11/2026)
+
+A [minuta CRM-AUT-CAT01 v0.1](CRM-AUT-CAT01-catalogo-gatilhos-condicoes-acoes-por-modulo-v0.1.md) foi preparada **para revisão**, após o responsável autorizar o próximo passo do planejamento. Inventaria **25 gatilhos candidatos**, **15 famílias de condições** e **22 ações (incluindo atos protegidos proibidos no editor comercial)**, com competência dos módulos DAT, VEN, ATD, AGD, IA, FIN/CON, COM/INT e IAM, além de critérios de permissões, quotas e falhas. **Não foi aprovada como catálogo definitivo**; IDs CAT não são schemas/contratos executáveis; **AUT-P01..14 permanecem abertos**. Respeita motor próprio aprovado e decisão de não usar n8n como backend das automações de clientes; sem programação, implementação nem despesas.
