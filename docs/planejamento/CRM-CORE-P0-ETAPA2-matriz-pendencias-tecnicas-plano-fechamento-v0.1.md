@@ -85,3 +85,8 @@
 Elaborar e submeter primeiro a [**CORE01-D04..D07 — isolamento, memberships e contratos executáveis**](CRM-CORE-P0-01-D04-D07-especificacao-isolamento-proposta-v0.1.md). É **minuta para avaliação**, não aprovação tácita dos quatro itens. Em seguida, continuar o bloco E2-B de direitos, sessões e convites sem mudar funcionalidades já aceitas.
 
 **Estado final desta matriz:** plano de trabalho documentado; todos os D04..D10, CORE01-D04..D07, SEG-01/02, ARQ/AGT, INT P0/G01..G06 e autorização global continuam **ABERTOS**.
+
+
+## 8. Primeira decisão técnica preparada — CORE01-D04
+
+A primeira proposta de deliberação concreta foi registrada em [**CORE01-D04 — membership, estados, unicidade, convite e revogação**](CRM-CORE-P0-ETAPA2-CORE01-D04-decisao-membership-estados-unicidade-proposta-v0.1.md): recomenda unicidade lógica identidade×tenant, convite como intenção distinta de membership e desligamento/reativação estritamente por organização, com histórico oficial. **CORE01-D04 ainda ABERTA; A/B/C são propostas e não decisões aprovadas.** As políticas de assentos, MFA, perfis e admin único permanecem em CORE02/04/07/08; D05..D07 não mudam de estado. **Sem testes e sem programação.**
