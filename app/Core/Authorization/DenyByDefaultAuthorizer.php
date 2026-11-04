@@ -4,14 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Authorization;
 
-/**
- * F0: nao autoriza NENHUMA operacao.
- *
- * Substituicao futura exige modulo proprietario, tenant validado,
- * entitlement, finalidade, politica por recurso/acao/campo, auditoria,
- * RLS efetivo e testes negativos documentados. Nao usar em producao.
- */
-final class DenyByDefaultAuthorizer
+/** F0: nunca concede acesso. RLS e politica real ainda nao homologadas. */
+final class DenyByDefaultAuthorizer implements Authorizer
 {
     public function decide(AccessRequest $request): AuthorizationDecision
     {
