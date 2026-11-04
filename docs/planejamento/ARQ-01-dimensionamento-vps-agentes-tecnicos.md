@@ -268,3 +268,54 @@ A referência de **€3,75 por 25 GB** não autoriza concluir que 25 GB bastam o
 6. Submeter **tabela financeira completa e decisão expressa** antes de ativar serviços. Os preços de fontes externas não podem ser tratados como mensalidade contratada.
 
 **Estado após diligência:** Leaseweb VPS 2 segue **candidata prioritária de cotação**, mas **sem preço final oficial, escolha de região, aprovação financeira, homologação de produção ou liberação de programação.**
+
+
+## 10. Revisão de licenciamento e fronteira do motor de automações do CRM (04/11/2026)
+
+**Estado:** **análise técnica e de licenciamento para decisão posterior, NÃO aprovada como nova decisão comercial**. Continuidade da pesquisa autorizada pelo "ok" do responsável. Não há compra, comunicação enviada ao fornecedor, programação ou implantação.
+
+### 10.1. Critérios verificados em fontes oficiais
+
+A página oficial de ajuda do n8n, **atualizada em 06/10/2026**, diferencia:
+1. **Workflows criadas e mantidas internamente pela equipe Imagine**, sem que clientes possam alterar sua lógica ou acessar o editor, podem se enquadrar na **Community Edition / Sustainable Use License**; avaliar limites específicos, especialmente credenciais e processamento por conta de clientes.
+2. **Clientes do SaaS construindo ou configurando automações em n8n**, por interface própria do CRM, API, MCP ou agente atuando a pedido deles: **licença comercial necessária**; a ajuda oficial menciona **Enterprise** para esses cenários.
+3. A oferta **OEM** é distinta: expõe/incorpora o editor n8n ao cliente; o uso como backend de produto com editor invisível tem condições específicas e pode exigir **Enterprise**.
+4. A licença Community **não deve ser considerada autorização automática** para processar credenciais de tenants ou embutir o n8n como infraestrutura de recurso vendido. Consultar o fornecedor por escrito sobre o caso concreto.
+
+Fontes:
+- FAQ oficial (atualizada 06/10/2026): https://support.n8n.io/article/can-i-use-your-license-for-my-use-case
+- Modalidades Enterprise vs OEM: https://n8n.io/oem/
+- Termos EULA: https://n8n.io/legal/eula/
+
+### 10.2. Matriz de funções e diretriz de menor risco
+
+| Caso Imagine | Fronteira recomendada para estudo | Status de licença |
+|---|---|---|
+| Atualização de sites feita internamente pela Imagine (publicação, integridade, backups) | n8n para fluxos internos, com ferramentas tipadas, autorização e auditoria | **Community POSSÍVEL**, requer confirmação para os casos reais |
+| Gerenciamento técnico transversal (alertas, tarefas administrativas) | n8n e agentes técnicos em VPS separadas; privilégios restritos | **Community POSSÍVEL** para operações genuinamente internas |
+| Cliente CRM configura Gatilhos, Condições, Ações e Fluxos | **Motor próprio do CRM**, reutilizando as estruturas planejadas; não gerar/configurar workflows n8n em nome do cliente | **Não transferir a obrigação comercial ao n8n** |
+| Agente de IA do CRM edita uma automação solicitada pelo cliente | Motor de configuração e autorização **do CRM**, sem editar workflows n8n indiretamente | Se afetar workflows n8n, consultar licenciamento comercial |
+| Cliente vincula sua conta externa/OAuth e pede ação automatizada | Ação autenticada por motor/backend próprio com credenciais do cliente sob cofre e escopo por tenant; n8n apenas se licença autorizar o processamento concreto | **Avaliação jurídica com o fornecedor obrigatória** antes de uso produtivo |
+| Performance AI executa campanhas de clientes | **Motor independente** (PERF-ARQ-01); n8n apenas para fluxos internos permitidos | Não presumir licença gratuita para embed SaaS |
+| Futuro tutor Universidade Imagine | Motor tutor do produto, sem acesso irrestrito a n8n ou CRM | Verificar licença se novos workflows forem expostos/embutidos |
+
+**Recomendação de desenho (ainda para aprovar):** adotar **L1 — motor de automações de clientes no próprio CRM**, obedecendo decisões aprovadas de motores de Fluxos, Gatilhos, Condições e Ações, e **n8n restrito a workflows internos cuja licença seja validada**. Não duplicar os motores centrais do CRM; manter n8n como ferramenta secundária de orquestração. Isso reduz dependência de licença Enterprise/OEM e melhora separação por tenant, mas **não é parecer jurídico nem dispensa confirmação por escrito**.
+
+### 10.3. Consulta escrita necessária ao n8n antes de homologação
+
+Contatos do próprio n8n: **license@n8n.io** para uso da SUL, e **sales@n8n.io** para Enterprise ou outros acordos. **Ainda não enviadas**.
+
+Submeter cenários concretos:
+- A Imagine opera uma VPS n8n autogerida para workflows criadas e alteradas **apenas por empregados Imagine**, gerenciando sites, suporte técnico e saúde dos sistemas. O usuário final apenas consome resultados. Esse uso está coberto pela Community?
+- O CRM permite que clientes criem automações em motor **próprio**, mas processos internos Imagine às vezes são disparados por eventos relacionados a clientes: em quais condições o n8n Community poderia executar ações? Como afeta autenticação por credenciais de terceiros?
+- É permitida uma API interna que chama serviço próprio para manipular integrações e credenciais de tenants, sem que o n8n receba credenciais, configure workflows ou forneça o motor principal dessas integrações?
+- Em quais circunstâncias os usos descritos exigem **Enterprise**, **OEM** ou outra modalidade? Há exigência de licença por instância, empresa, tenant, workflow ou volume de execuções?
+- Confirmar por escrito possibilidades de automação administrada pela Imagine e de agente de IA operando apenas em nome da Imagine; pedir termos e preços atualizados.
+
+### 10.4. Efeito no fechamento e próximo passo
+
+- **Nenhuma alteração das decisões aprovadas**: n8n e agentes técnicos em VPS separadas; runtime Performance AI separado; APIs de leads independentes; servidor de agentes referência 4 vCPU/8 GB/~160 GB.
+- **Gate de licença n8n** deve aparecer no orçamento global como risco de custo. Não considerar n8n comercial gratuito para SaaS até responder à consulta.
+- Antes da programação, decidir expressamente se **L1 (CRM motor próprio; n8n somente operações internas compatíveis)** passa a ser regra definitiva do projeto. L2 (licença comercial para uso embutido) permanece alternativa de avaliação se requisito funcional exigir.
+- Confirmar que a VPS n8n existente realmente está ativa e possui contrato, backups e capacidade; a atualização da licença não substitui a cotação Leaseweb e o inventário.
+- **ARQ-01 continua P0 parcial**; nenhuma implementação/compra/deploy autorizados.
