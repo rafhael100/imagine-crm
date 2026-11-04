@@ -1,6 +1,6 @@
 # CORE01-D04 — Proposta técnica de decisão: contrato de membership, estados e unicidade
 
-**Data:** 04/11/2026. **Estado:** **PROPOSTA TÉCNICA NÃO APROVADA; CORE01-D04 permanece ABERTA**. Documento de apoio à [Etapa 2](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md) e à [especificação CORE01-D04..D07](CRM-CORE-P0-01-D04-D07-especificacao-isolamento-proposta-v0.1.md). Não implementar, testar, alterar usuários ou dados reais.
+**Data:** 04/11/2026. **Estado atualizado:** **CORE01-D04-A, B e C APROVADAS COMO DIRETRIZES TÉCNICAS DOCUMENTAIS PRELIMINARES**, conforme [CRM-DEC](CRM-DEC-aprovacao-CORE01-D04-ABC-diretrizes-preliminares-2026-11-04.md); **CORE01-D04 permanece ABERTA** até conciliação formal com CORE02/04/07/08 e especificação técnica. As menções posteriores a A/B/C como propostas não aprovadas documentam a versão anterior ao aceite. Documento de apoio à [Etapa 2](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md) e à [especificação CORE01-D04..D07](CRM-CORE-P0-01-D04-D07-especificacao-isolamento-proposta-v0.1.md). Não implementar, testar, alterar usuários ou dados reais.
 
 ## 1. Problema a resolver
 
@@ -61,3 +61,8 @@ As definições de **preço/quantidade de assentos pagos, reserva no convite, re
 - Histórico comercial e trilhas ficam preservados após desligamento.
 
 **Controle de gate:** INT G01–G06, IN-168 SEG-01/02, CORE02/03/04/07/08 e fechamento global continuam abertos. Sem programação, testes reais, provisionamento nem contratação.
+
+
+## 7. Aditamento do aceite preliminar — 04/11/2026
+
+O responsável aprovou **CORE01-D04-A/B/C somente como diretrizes técnicas documentais preliminares** [registradas neste aceite](CRM-DEC-aprovacao-CORE01-D04-ABC-diretrizes-preliminares-2026-11-04.md): unicidade lógica identidade×tenant com histórico, convite separado de grant (validade já aprovada de 7 dias) e desligamento/revalidação por organização. **CORE01-D04 não foi fechada**: especificação de permissões CORE02, MFA/sessões CORE04, convite/assentos/admin único CORE07 e entitlements CORE08 continuam necessários, assim como esquemas/RLS e critérios futuros. **CORE01-D05/D06/D07 e todos os demais bloqueios intactos.** Próximo documento apenas proposto: [CORE01-D05 — contexto seguro de tenant e RLS](CRM-CORE-P0-ETAPA2-CORE01-D05-contexto-tenant-RLS-proposta-v0.1.md), ainda não aprovado. Sem programação ou testes.
