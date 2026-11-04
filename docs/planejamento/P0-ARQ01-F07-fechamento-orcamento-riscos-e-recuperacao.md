@@ -1,7 +1,7 @@
 # P0-ARQ01-F07 — Ficha de fechamento: investimento, disponibilidade e riscos do CRM Imagine
 
 **Data:** 03/11/2026.
-**Status:** MINUTA DE DECISÃO FINAL DO BLOCO ARQ01 (NÃO APROVADA).
+**Status:** **APROVADA COMO BASE DOCUMENTAL DE FECHAMENTO** em 03/11/2026, conforme [registro de aceite](CRM-DEC-aprovacao-ARQ01-F07-base-2026-11-03.md). **Não** homologa E1B para produção, preços, infraestrutura física ou RPO/RTO.
 **Origem:** [ARQ01-F06 aprovada como base documental](CRM-DEC-aprovacao-ARQ01-F06-base-2026-11-03.md), F01-F05, [P0-ARQ-01](P0-ARQ-01-topologia-fronteiras-plano-fechamento.md), [IN-168](IN-168-matriz-pendencias-fechamento-arquitetura.md).
 **Escopo:** consolidar escolhas mínimas e evidências faltantes para selecionar o modelo de início da produção. Não substitui ARQ-02, ARQ-03, SEG-01/02, CON-01 ou outros P0; não autoriza contratar nem programar.
 
@@ -78,4 +78,4 @@ Sem preços verificáveis e cotação total não há TCO oficial para aprovar. C
 - **F07-D04**: definir orçamento e metas condicionais de reposição/recuperação; se requisitos de RPO/RTO não forem cumpridos, revisar para E2 antes de admitir clientes.
 - **F07-D05**: aceitar esta ficha como guia de fechamento documental ARQ-01 após conciliação com F01 e decisões específicas, sem declarar pronta a produção.
 
-**Resultado:** a aprovação documental da F06 permitiu preparar esta ficha única de fechamento. **F07 não foi aprovada**, e ARQ-01, CON-01 e demais gates P0 ainda não estão encerrados. Não há software, contrato, instalação ou testes iniciados.
+**Resultado:** F07 aceita como **guia documental** de fechamento; as deliberações F07-D01..D04 permanecem pendentes de decisão específica, orçamento, evidência e homologação. **ARQ-01, CON-01 e demais gates P0 permanecem abertos.** Não há software, contrato, instalação ou testes iniciados. Evitar criação de novas fichas sucessivas sem resolução de pendências concretas.
