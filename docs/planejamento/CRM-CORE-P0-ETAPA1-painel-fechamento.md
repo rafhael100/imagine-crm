@@ -63,3 +63,8 @@ Foi criada a [**minuta de checklist único de liberação para desenvolvimento**
 [**CORE01-D07-A/B/C/D**](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md) aprovadas somente como **diretrizes documentais preliminares**. A [**proposta CORE01-D07**](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md) foi aditada, mas **CORE01-D07 continua ABERTA** até os contratos CORE02..09, SEG-01/02, INT e Segurança. CORE01-D04/D05/D06 seguem abertas.
 
 Publicada a [**consolidação transversal da Etapa 2 — R01**](CRM-CORE-P0-ETAPA2-R01-consolidacao-contratos-e-dependencias-tecnicas-v0.1.md): 12 contratos compartilhados com competências, dependências e critério documental de saída; **não** cria nova série de P0 ou motores, não resolve os **67 IDs CORE abertos** e mantém IN-168, INT, G01..G06, FIN/CON e gate global. Próxima análise sugerida: **CORE02-D04 — campos e acesso**. Estado geral **NO-GO para programação, testes e implantação**.
+
+
+## Etapa 2 — Primeira frente após a consolidação R01 (04/11/2026)
+
+Preparada [**CORE02-D04 — proposta documental de classificação de campos e direitos por operação**](CRM-CORE-P0-ETAPA2-CORE02-D04-classificacao-campos-direitos-proposta-v0.1.md), vinculada à [Etapa 2 R01](CRM-CORE-P0-ETAPA2-R01-consolidacao-contratos-e-dependencias-tecnicas-v0.1.md), com D04-A/B/C/D **ainda não aprovadas** e CORE02-D04 **ABERTA**. Essa frente não concede grants nem decide CORE02-D05..D10; CORE01-D04..D07, demais 67 IDs, SEG-01/02, INT P0/G01..G06 e DEV-GATE-00 continuam **ABERTOS/NO-GO**, sem testes, programação ou implantação.
