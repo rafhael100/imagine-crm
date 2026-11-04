@@ -2,7 +2,7 @@
 
 **Data de referência:** 04/11/2026.  
 **Estado:** **MINUTA DOCUMENTAL DE GOVERNANÇA; NÃO APROVADA COMO GATE.**  
-**Resultado atual:** **NO-GO — programação do CRM Imagine não autorizada.**  
+**Resultado atualizado após a decisão de 04/11/2026:** **GO RESTRITO PARA F0 — desenvolvimento inicial isolado na branch `dev/fast-track-crm-2026-11-04`; NO-GO para produção, clientes, integrações e funções sensíveis não homologadas.** [Decisão executiva posterior](CRM-DEC-FASTTRACK-autorizacao-desenvolvimento-controlado-2026-11-04.md). Qualquer indicação posterior ou histórica de NO-GO absoluto para programação foi parcialmente superada **somente na F0**.  
 **Origem da iniciativa:** continuidade do planejamento autorizada com “ok”, após discussão dos bloqueios necessários para iniciar o desenvolvimento. **Esse aceite de continuidade não equivale a aprovação dos itens técnicos, do cronograma, de gastos ou da autorização de programação.**
 
 > Este documento é **um índice executivo de fechamento**: não cria novos requisitos, serviços, agentes, motores, gates obrigatórios, preços ou títulos de P0; organiza as fontes já existentes e a evidência necessária para futura decisão do responsável.
@@ -94,3 +94,12 @@ O desenvolvimento **poderá ser organizado** por entregas, após **o planejament
 ## 8. CORE02-D04 aceito preliminarmente e D05 pendente (04/11/2026)
 
 [**CORE02-D04-A/B/C/D**](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md) foram aprovadas apenas como diretrizes documentais preliminares. **CORE02-D04 permanece ABERTA** por catálogo concreto e direitos por módulo. [**CORE02-D05**](CRM-CORE-P0-ETAPA2-CORE02-D05-combinacao-perfis-negacoes-delegacao-proposta-v0.1.md) foi apenas proposta, sem aceite. Os 67 IDs CORE, SEG-01/02, ARQ/AGT, INT P0/G01..G06 e demais blocos continuam abertos. **DEV-GATE-00 continua NO-GO para iniciar programação, testes executáveis ou implantação**.
+
+
+## 9. Decisão posterior — GO restrito F0 e retenção dos gates críticos (04/11/2026)
+
+Por [**DEC-FASTTRACK-01**](CRM-DEC-FASTTRACK-autorizacao-desenvolvimento-controlado-2026-11-04.md), a ordem anterior de não programar fica **superada exclusivamente para desenvolvimento inicial F0 isolado**. Criada a branch [**dev/fast-track-crm-2026-11-04**](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04) com esqueleto PHP, dependência Laravel 13 e contratos seguros que **negam todas as operações por padrão**.
+
+**O checklist técnico A–H NÃO foi declarado fechado.** Os **67 IDs CORE técnicos**, SEG-01/02, ARQ-01/02/03, AGT-01, INT P0/G01..G06, FIN/CON, LGPD, custos e demais riscos permanecem abertos **quanto à solução/evidência**. O responsável autorizou seu **tratamento por engenharia e PRs revisáveis**, sem exigir rodada de aprovação de cada minuta antes de escrever qualquer código.
+
+**GO apenas F0:** estrutura de projeto, classes sem privilégio, protótipos em branch isolada e revisão de contratos. **NO-GO:** produção, uso de dados reais, migrações em ambiente real, concessão de permissões, pagamentos, envios externos, provisionamento, compras, merge de funcionalidades sensíveis e liberação ao cliente sem especificações verificadas, testes documentados e autorização própria. 
