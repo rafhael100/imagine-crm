@@ -1,7 +1,7 @@
 # CRM-DEC — Aprovação CORE09-D01, D02 e D03 — Cofre, segredos e identidades de serviço
 
 **Data:** 04/11/2026.  
-**Manifestação literal do responsável:** “Aprovo CORE09-D01, D02 e D03 como base documental do CRM Imagine. Registre a aprovação no GitHub, mantenha CORE09-D04 a D10 e todos os demais bloqueios técnicos abertos e prossiga para o CORE-P0-10, sem iniciar programação.”  
+**Manifestação literal do responsável:** “Aprovo CORE09-D01, D02 e D03 como base documental do CRM Imagine. Registre a aprovação no GitHub, mantenha CORE09-D04 a D10, SEG-01, SEG-02 e todos os demais bloqueios técnicos abertos e prossiga para o CORE-P0-10, sem iniciar programação nem executar testes.”  
 **Situação:** **CORE09-D01–D03 APROVADAS COMO BASE DOCUMENTAL**; **CORE-P0-09 PARCIAL/ABERTO**, não homologado fisicamente nem pronto para implantação.  
 **Documento deliberado:** [CORE-P0-09 v0.1](CRM-CORE-P0-09-cofre-segredos-identidades-servico-proposta-v0.1.md).
 
