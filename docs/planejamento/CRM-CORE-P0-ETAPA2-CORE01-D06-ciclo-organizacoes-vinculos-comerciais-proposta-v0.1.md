@@ -1,7 +1,7 @@
 # CRM-CORE-P0 — Etapa 2 / CORE01-D06: ciclo de organizações, titularidade e vínculos comerciais Sites↔CRM (proposta canônica v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL NÃO APROVADA — CORE01-D06 ABERTA; D06-A/B/C/D ainda não aprovadas.**  
+**Estado atualizado em 04/11/2026:** **CORE01-D06-A/B/C/D APROVADAS SOMENTE COMO DIRETRIZES TÉCNICAS DOCUMENTAIS PRELIMINARES**, conforme [aceite literal](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md). **CORE01-D06 PERMANECE ABERTA** (assim como D04/D05/D07, SEG-01/02, INT, G01–G06 e demais bloqueios). Passagens históricas abaixo que tratam A/B/C/D como “não aprovadas” antecedem o aceite e são superadas apenas no escopo preliminar.  
 **Natureza:** única pauta canônica para deliberação de CORE01-D06. [Anexo de exemplos, riscos e critérios ](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-tenants-vinculos-comerciais-proposta-v0.1.md) para leitura complementar sem votos independentes.  
 **Autorização:** apenas continuidade do planejamento após [aceite preliminar CORE01-D05-A/B/C/D](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md). **CORE01-D04 e D05 permanecem abertas**; CORE01-D07, SEG-01/02 e demais bloqueios igualmente abertos.  
 **Vedado:** programação, Codex, scripts, SQL, execução de testes, uso ou criação de tenants/planos/benefícios reais, emissão de cobranças/avisos, migração de dados, provisionamento, contratos ou despesas.
@@ -103,3 +103,7 @@ Esses roteiros não foram executados, não criam conjunto redundante de testes e
 - **CORE01-D06-D:** confirmação pelo dono, idempotência, reconciliação e auditoria.
 
 **Propostas não aprovadas** até manifestação literal do responsável. Após eventual aceite preliminar, preparar somente a pauta documental **CORE01-D07** (esquemas/constraints/RLS e homologação futura). Nenhum teste/SQL/código/contratação/alteração operacional autorizado.
+
+## 10. Aditamento de aprovação preliminar — 04/11/2026
+
+O responsável aprovou **CORE01-D06-A/B/C/D como diretrizes técnicas documentais preliminares**, segundo [manifestação expressa integral](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md), com a classificação adotada neste documento: A fontes oficiais/vínculos explícitos; B direitos comerciais distintos e não cumulativos; C marcos de suspensão/cancelamento/retencão próprios; D idempotência, confirmação e reconciliação oficiais. **D06 não foi encerrada.** CORE01-D04/D05/D07 e os 67 IDs da Etapa 2 permanecem abertos, além de SEG-01/02 e INT/G01–G06. Continuar somente com minuta documental CORE01-D07, sem SQL, testes ou código.
