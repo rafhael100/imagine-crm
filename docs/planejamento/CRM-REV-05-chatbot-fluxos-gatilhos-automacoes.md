@@ -207,3 +207,8 @@ A [CRM-AUT-LIB01 v0.1](CRM-AUT-LIB01-biblioteca-modelos-basico-editores-por-plan
 ## Aprovação específica do conceito LEA-02 (04/11/2026)
 
 O responsável **aprovou** que LEA-02 identifique **ausência de primeiro atendimento efetivo registrado pela empresa**, e **não** a falta de resposta do cliente após uma tentativa, conforme [CRM-DEC](CRM-DEC-semantica-LEA02-primeiro-atendimento-2026-11-04.md). O acompanhamento posterior a contato é família distinta ainda não habilitada. O **prazo padrão sugerido de 24h** e opções 4/12/24/48/72h da [AUT-LIB04](CRM-AUT-LIB04-criterios-interacao-prazos-antiduplicidade-LEA01-LEA02-v0.1.md) permanecem **propostas**, tal como o que constitui contato válido, tentativas sem sucesso, contratos, quotas, notificação A03 e catálogo final; LEA-02 ainda não é modelo homologado/ativado. TAR-A mantém avisos internos sem tarefas comerciais automáticas; sem programação.
+
+
+## Classificação de interações LEA-02 — LIB05 em proposta (04/11/2026)
+
+[CRM-AUT-LIB05 v0.1](CRM-AUT-LIB05-registro-classificacao-contato-evidencias-LEA02-v0.1.md) propõe usar histórico de lead autorizado para distinguir tentativa de contato não atendida, atendimento efetivo validado, resposta do cliente e nota administrativa, com autor e auditoria; **não cria novo motor de Tarefas**. **Os prazos funcionais 24h corridas padrão e 4/12/24/48/72h já foram aprovados** em [CRM-DEC](CRM-DEC-aprovacao-regras-funcionais-LEA01-LEA02-2026-11-04.md). Esquema, direitos de execução, política de correção/retificação e modelo individual permanecem sem homologação. Preservar AUT-P01..14, LIB05-P01..P09, CORE/SEG/INT e gates P0; sem programação.
