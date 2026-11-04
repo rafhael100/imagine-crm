@@ -1,6 +1,6 @@
 # ARQ-01 — Estudo de Dimensionamento e Custos da VPS dos Agentes Técnicos
 
-**Estado:** ESTUDO TÉCNICO E FINANCEIRO PRELIMINAR — cenários comparados em **02/11/2026**, **sem escolha definitiva de capacidade ou provedor**.  
+**Estado:** REFERÊNCIA INICIAL DE DIMENSIONAMENTO **4 vCPU/8 GB/~160 GB SSD APROVADA PARA PLANEJAMENTO** em 03/11/2026 ([registro de decisão](CRM-DEC-aprovacao-dimensionamento-vps-agentes-4vCPU-8GB-160GB-2026-11-03.md)); cenários, fornecedor, SKU, custo e desempenho efetivo permanecem em estudo, **sem compra ou homologação técnica**.  
 **Autorização recebida:** responsável respondeu "ok" para prosseguir à etapa de **dimensionamento comparativo** após aprovar, no ARQ-01, **VPS/servidor exclusivo para os sete agentes técnicos, o Supervisor e o orquestrador, separado do n8n**.  
 **Fase:** **planejamento e documentação**; não iniciar programação, configurar ambientes de produção, contratar VPS, alterar serviços existentes ou criar despesas.  
 **Referências:** [ARQ-01 — Escolha da arquitetura](ARQ-01-comparativo-infraestrutura-agentes-tecnicos.md), [IN-168 — Matriz de pendências](IN-168-matriz-pendencias-fechamento-arquitetura.md), [IN-167 — Arquitetura consolidada](IN-167-consolidacao-arquitetura-agentes-tecnicos.md), IN-132/137/138/142/151/153/155/156/157/158/159/160/162/165/166 e IN-096.
@@ -92,12 +92,12 @@ Os serviços das APIs principal/contingência, do CRM SaaS, do Portal Imagine e 
 
 **Próximo ponto de decisão proposto:** aprovar, se desejado, **4 vCPU, 8 GB RAM e aproximadamente 160 GB SSD como referência de dimensionamento da VPS exclusiva dos agentes**, sem decidir provedor/compra. Depois comparar **cotações reais** da Leaseweb e de alternativas, conforme região e custos globais. Não confundir aprovação dessa referência com implantação ou garantia de desempenho.
 
-**Encerramento do estudo:** comparação e **recomendação preliminar** concluídas; dimensionamento final, provedor, custos totais, contratação, RTO/RPO e implementação **não aprovados**. **Programação não iniciada.**
+**Encerramento do estudo (atualização 03/11/2026):** referência inicial **4 vCPU/8 GB/~160 GB aprovada para planejamento**; dimensionamento físico/SKU, provedor, custos totais, contratação, RTO/RPO e implementação **não aprovados**. **Programação não iniciada.**
 
 
 ## 8. Atualizacao transversal — dimensionamento n8n e agentes para todos os produtos (03/11/2026)
 
-**Estado desta secao:** PROPOSTA PARA REVISAO, **NAO APROVADA**, sem alterar a Opção B (agentes tecnicos separados do n8n) e a [decisao transversal aprovada para os cinco produtos](CRM-DEC-arquitetura-central-agentes-n8n-ecossistema-imagine-2026-11-03.md).
+**Estado desta seção:** aprovada **somente** a referência de VPS de agentes **4 vCPU/8 GB/~160 GB** ([registro](CRM-DEC-aprovacao-dimensionamento-vps-agentes-4vCPU-8GB-160GB-2026-11-03.md)); os demais itens de dimensionamento, custos, licença n8n, configuração, retenção e homologação seguem **proposta para revisão**, sem alterar a Opção B ou a [arquitetura transversal aprovada](CRM-DEC-arquitetura-central-agentes-n8n-ecossistema-imagine-2026-11-03.md).
 
 ### 8.1. Confronto com inventario e fronteiras
 
