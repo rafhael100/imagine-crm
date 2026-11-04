@@ -202,3 +202,8 @@ A [CRM-AUT-LIB01 v0.1](CRM-AUT-LIB01-biblioteca-modelos-basico-editores-por-plan
 ## Complemento LEA-01/02 — critérios de contato e inatividade (04/11/2026)
 
 [CRM-AUT-LIB04 v0.1](CRM-AUT-LIB04-criterios-interacao-prazos-antiduplicidade-LEA01-LEA02-v0.1.md): **proposta para revisão**, contendo distinção entre "sem atendimento pela empresa" e "sem resposta do cliente", matriz de interação válida, prazos candidatos (4/12/24/48/72h, default sugerido 24h), idempotência de avisos e 14 cenários futuros de teste. **Não aprova** esses tempos, gatilhos oficiais ou publicação dos modelos. A [TAR-A](CRM-DEC-escolha-TAR-A-avisos-internos-LEA01-LEA02-2026-11-04.md) permanece aprovada para **avisos internos sem tarefas automáticas**. Preservar AUT-P01..P14 e LIB04-P01..P09, com sem implementação/custo.
+
+
+## Aprovação específica do conceito LEA-02 (04/11/2026)
+
+O responsável **aprovou** que LEA-02 identifique **ausência de primeiro atendimento efetivo registrado pela empresa**, e **não** a falta de resposta do cliente após uma tentativa, conforme [CRM-DEC](CRM-DEC-semantica-LEA02-primeiro-atendimento-2026-11-04.md). O acompanhamento posterior a contato é família distinta ainda não habilitada. O **prazo padrão sugerido de 24h** e opções 4/12/24/48/72h da [AUT-LIB04](CRM-AUT-LIB04-criterios-interacao-prazos-antiduplicidade-LEA01-LEA02-v0.1.md) permanecem **propostas**, tal como o que constitui contato válido, tentativas sem sucesso, contratos, quotas, notificação A03 e catálogo final; LEA-02 ainda não é modelo homologado/ativado. TAR-A mantém avisos internos sem tarefas comerciais automáticas; sem programação.
