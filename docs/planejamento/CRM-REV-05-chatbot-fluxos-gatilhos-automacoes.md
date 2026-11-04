@@ -197,3 +197,8 @@ A [CRM-AUT-LIB01 v0.1](CRM-AUT-LIB01-biblioteca-modelos-basico-editores-por-plan
 ## AUT-LIB01 aceita como base e AUT-LIB02 em conferência individual (04/11/2026)
 
 [CRM-DEC de aceite LIB01](CRM-DEC-aceite-base-AUT-LIB01-2026-11-04.md) e [CRM-AUT-LIB02 v0.1](CRM-AUT-LIB02-revisao-individual-modelos-basico-v0.1.md): **a estrutura da biblioteca foi aceita como base de planejamento**, mas nenhum modelo pronto específico, efeito A01 ou nível de editor pago ganhou aprovação automática. A revisão individual evidencia que **notas/histórico manual** do Básico não comprovam direito genérico a **tarefas comerciais automatizadas**; priorizar LEA-01/02 como candidatos de aviso interno **sob autorização e contrato específicos**, sem duplicar notificações da Agenda já incluídas como SO. Preservar AUT-P01..14, LIB-P01..P12, LIB02-P01..P08 e demais gates P0; sem programação ou contratos.
+
+
+## Complemento LEA-01/02 — critérios de contato e inatividade (04/11/2026)
+
+[CRM-AUT-LIB04 v0.1](CRM-AUT-LIB04-criterios-interacao-prazos-antiduplicidade-LEA01-LEA02-v0.1.md): **proposta para revisão**, contendo distinção entre "sem atendimento pela empresa" e "sem resposta do cliente", matriz de interação válida, prazos candidatos (4/12/24/48/72h, default sugerido 24h), idempotência de avisos e 14 cenários futuros de teste. **Não aprova** esses tempos, gatilhos oficiais ou publicação dos modelos. A [TAR-A](CRM-DEC-escolha-TAR-A-avisos-internos-LEA01-LEA02-2026-11-04.md) permanece aprovada para **avisos internos sem tarefas automáticas**. Preservar AUT-P01..P14 e LIB04-P01..P09, com sem implementação/custo.
