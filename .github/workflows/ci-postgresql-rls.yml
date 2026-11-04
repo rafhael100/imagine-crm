@@ -1,0 +1,88 @@
+name: CRM Imagine - PostgreSQL RLS F1
+
+on:
+  push:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-postgres-rls-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  postgres-rls:
+    name: PostgreSQL 16 / RLS / PHP 8.4
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_crm_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d imagine_crm_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      APP_URL: http://127.0.0.1
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: imagine_crm_ci
+      DB_USERNAME: postgres
+      DB_PASSWORD: ci-only-password
+      RLS_TEST_USERNAME: crm_app_ci
+      RLS_TEST_PASSWORD: ephemeral-role-only
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+      PGPASSWORD: ci-only-password
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup PHP / extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, curl, zip, pdo_pgsql, pgsql
+          tools: composer:v2
+          coverage: none
+      - name: Install locked dependencies
+        run: |
+          test -f composer.lock
+          composer validate --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+      - name: Prepare temporary app key
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+      - name: Migrate tenant schema in temporary PostgreSQL
+        run: php artisan migrate --force --no-interaction
+      - name: Create non-bypass application role
+        run: |
+          psql -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE ROLE crm_app_ci LOGIN PASSWORD 'ephemeral-role-only'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_app_ci;
+          GRANT USAGE ON SCHEMA public TO crm_app_ci;
+          GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE crm_memberships TO crm_app_ci;
+          SQL
+      - name: Run isolated PostgreSQL RLS tests
+        run: php artisan test --filter=PostgresMembershipRlsTest --no-ansi
+      - name: Run full synthetic test suite
+        run: php artisan test --no-ansi
