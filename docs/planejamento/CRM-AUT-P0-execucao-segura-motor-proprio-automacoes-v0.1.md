@@ -181,3 +181,8 @@ Um worker que reinicia pode retomar a partir de checkpoint confirmado; cada tent
 ## 14. Registro de aceite limitado (04/11/2026)
 
 O responsável aceitou as diretrizes de execução segura apresentadas, conforme [CRM-DEC de aceite AUT-P0](CRM-DEC-aceite-base-AUT-P0-execucao-segura-2026-11-04.md). Isso **não é a ratificação individual dos contratos e números ainda pendentes**. Preservar AUT-P01..14, CORE/INT e todos os gates P0 até conciliação/homologação, sem custos ou implementação.
+
+
+## 15. Vinculação com catálogo funcional candidato AUT-CAT01 (04/11/2026)
+
+O [CRM-AUT-CAT01 v0.1](CRM-AUT-CAT01-catalogo-gatilhos-condicoes-acoes-por-modulo-v0.1.md) detalha, **ainda como proposta não aprovada**, 25 gatilhos, 15 famílias de condições e 22 ações/proibições por módulo; integra regras de permissão/entitlement, donos dos efeitos e casos de falha. **Este vínculo não altera o aceite limitado de AUT-P0 como base documental nem encerra AUT-P01..14**. Os contratos técnicos, schemas, capacidades, número de execuções, retenção e homologação continuam pendentes; sem programação ou gastos.
