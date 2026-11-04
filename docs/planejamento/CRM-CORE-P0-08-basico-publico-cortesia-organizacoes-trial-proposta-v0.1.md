@@ -156,3 +156,8 @@ Após eventual aceite expresso de CORE08-D01..D03, elaborar registro de aprovaç
 ## 11. Aditamento de aprovação parcial — 04/11/2026
 
 O responsável aprovou **CORE08-D01, D02 e D03 como base documental**, nos limites de [CRM-DEC](CRM-DEC-aprovacao-CORE-P0-08-D01-D03-base-basico-trial-2026-11-04.md). Separações entre trial único por CNPJ, Básico público, cortesia de Site, múltiplas organizações, assinatura paga e gratuidade administrativa foram preservadas; vínculos de Site e transições de cancelamento/suspensão continuam sujeitos à fonte oficial de cada contrato, sem cobrança automática, perda indevida de dados ou abertura de segundo trial. **D04–D10 não foram aprovadas**, assim como todas as dependências técnicas CORE/INT/FIN/SEG/ARQ/G01..G06. Seguir somente a documentação CORE-P0-09, sem implementação ou testes reais.
+
+
+## 11. Aditamento da aprovação parcial — 04/11/2026
+
+O responsável **aprovou CORE08-D01, D02 e D03 como base documental** na [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-08-D01-D03-base-basico-cortesia-trial-2026-11-04.md). Mantidas a distinção entre CNPJ/tenant/plano/benefício/trial, a cortesia por contrato elegível e destino expressamente selecionado e os ciclos de trial/cortesia/assinatura, com transições diferenciadas e sem cobrança automática. **CORE08-D04..D10 continuam integralmente abertas**, assim como bloqueios CORE01..07, CORE09/10, INT, SEG, ARQ, FIN, LGPD e G01–G06. A continuidade autorizada é somente **CORE-P0-09 documental**, sem programação, testes ou produção.
