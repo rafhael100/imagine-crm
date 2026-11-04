@@ -1,7 +1,7 @@
 # CRM-CORE-P0-07 — Convites, assentos, equipes, movimentação e desligamento de usuários (v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL PARA DELIBERAÇÃO; CORE-P0-07 ABERTO. CORE07-D01, D02 e D03 NÃO APROVADAS.**  
+**Estado atualizado em 04/11/2026:** **CORE07-D01, D02 e D03 APROVADAS COMO BASE DOCUMENTAL**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-07-D01-D03-base-convites-assentos-equipes-2026-11-04.md). **CORE-P0-07 permanece PARCIAL/ABERTO; D04–D10 pendentes.** As menções abaixo a D01–D03 como propostas não aprovadas refletem a redação anterior ao aceite, superada pela decisão expressa.  
 **Objetivo:** consolidar o ciclo da participação de uma identidade global em organizações independentes (tenant), os convites de 7 dias, os limites de usuários, equipes, atribuições e efeitos do desligamento, com prevenção de ocupação dupla de assentos, vazamento entre empresas, elevação de privilégios e perda de histórico.  
 **Fase:** somente planejamento, GitHub e aprovação expressa. **Não programar, testar em ambiente real, criar credenciais, ativar convites, contratar, alterar dados de clientes ou iniciar desenvolvimento.**
 
@@ -166,3 +166,10 @@ Confrontar CORE01..06, REV-01 S01..S10, REV09 e INT HT sem testes redundantes; n
 Após eventual aprovação documental expressa de CORE07-D01..D03, seguir **CORE-P0-08 — Básico, múltiplas organizações e trial por CNPJ**, sem programar. Nenhuma das propostas altera preço, limites finais de planos, direito a segundo usuário, benefício do site, livre migração entre contas ou capacidade de suporte.
 
 **Proibições mantidas:** Codex/programação, Laravel/SQL, criação ou envio real de convites, alteração de contas e memberships de clientes, testes em ambiente real, licenças, contratações, infraestrutura e qualquer despesa. Somente documentação e aprovação específica do responsável.
+
+
+## 11. Aditamento de aprovação documental — 04/11/2026
+
+O responsável aprovou expressamente **CORE07-D01, D02 e D03 como base documental**, nos exatos limites da [decisão](CRM-DEC-aprovacao-CORE-P0-07-D01-D03-base-convites-assentos-equipes-2026-11-04.md): convites de 7 dias e membership por tenant; assentos humanos e planos segregados; equipes e desligamento da organização preservando identidade/históricos. **Não houve autorização de concessão de vagas, troca de titulares, convites reais ou implementação.**
+
+**CORE07-D04 a D10 continuam abertas**, assim como todas as dependências CORE/INT/SEG/ARQ/G01–G06 e a revisão comercial final. Próximo passo restrito ao **planejamento CORE-P0-08**, sem programação, testes, contas ou contratações.
