@@ -122,3 +122,10 @@ A primeira proposta de deliberação concreta foi registrada em [**CORE01-D04 �
 - [**CORE01-D07-A/B/C/D**](CRM-DEC-aprovacao-CORE01-D07-ABCD-diretrizes-preliminares-2026-11-04.md) **aprovadas somente como diretrizes técnicas documentais preliminares**; **CORE01-D07 permanece ABERTA** até fechar esquemas físicos, contratos e dependências com CORE02/03/04/05/06/07/08/09, SEG-01/02, INT e Segurança. CORE01-D04/D05/D06 igualmente abertas.
 - [**Etapa 2 — R01, mapa de 12 contratos compartilhados e ordem documental de fechamento**](CRM-CORE-P0-ETAPA2-R01-consolidacao-contratos-e-dependencias-tecnicas-v0.1.md) organiza interfaces e owners por competência. Os localizadores E2-X01..12 **não são novas decisões ou módulos**. Próxima prioridade técnica proposta: CORE02-D04, ainda aberta e não aprovada.
 - A lista de **67 identificadores técnicos abertos** permanece inteira, além de IN-168, INT P0, G01..G06, FIN/CON, LGPD, fornecedores/licenças e aceite global. **Sem programação, testes, compras ou implantação.**
+
+
+## 14. CORE02-D04 aceito preliminarmente e CORE02-D05 em proposta (04/11/2026)
+
+- [**CORE02-D04-A/B/C/D**](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md) **aprovadas como diretrizes técnicas documentais preliminares**: classes de campos, autorizações distintas por operação/canal, proteção de F-SEC/F-EVID/F-ART e classificação de campos customizados. **CORE02-D04 integral permanece ABERTA**, pois não há catálogo real por módulo nem contratos de permissão/RLS.
+- [**CORE02-D05 — proposta de combinação de perfis, negações, herança, delegação e escopos**](CRM-CORE-P0-ETAPA2-CORE02-D05-combinacao-perfis-negacoes-delegacao-proposta-v0.1.md): D05-A/B/C/D **NÃO APROVADAS**. D05 continua ABERTA até escolha de precedência válida, owners e contratos CORE/SEG/INT; não atribuir privilégios por publicar minuta.
+- **67 IDs CORE ainda ABERTOS** (CORE01-D04..D07 + CORE02..CORE10-D04..D10), IN-168 ARQ/SEG/AGT, INT P0/G01..G06, FIN/CON, LGPD, licenciamento e custos pendentes. Sem programação, testes, roles reais, infraestrutura ou implantação.
