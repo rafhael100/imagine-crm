@@ -215,3 +215,56 @@ Fontes e links originais:
 - **Pendências para avançar:** preço final em Washington e Montreal (mensal sem fidelidade, 12/24 meses, impostos, taxas e renovação); NVMe/IOPS efetivos, limites CPU compartilhada, snapshots/backups externos, disponibilidade, suporte e condições de saída; latência real ao Brasil e aos demais serviços; inventário e carga da VPS n8n já existente; orçamento separado para consumo API de IA, segurança, alerta externo, redes e operação.
 - **Critério de decisão:** só escolher SKU físico depois de cotação verificável e confirmação técnica; se a oferta for inadequada ou indisponível, DigitalOcean/Hetzner continuam opções. Manter a VPS dos agentes isolada da VPS n8n, do CRM e dos motores próprios dos produtos Imagine.
 - **Regra geral:** nenhuma contratação, acesso ao painel, provisionamento, alteração de infraestrutura, programação ou testes reais foi autorizada. ARQ-01 continua P0 parcial.
+
+
+### 9.4. Diligência de preços e custos obrigatórios (03/11/2026)
+
+**Natureza:** evolução do estudo anterior após aceite para **prosseguir com verificação comercial**, sem aprovar plano, prazo, fatura, provedor ou despesa. O checkout **não foi acessado como cliente**, portanto **nenhuma oferta foi validada como cotação contratável**.
+
+#### Preços observados em fontes externas e períodos diferentes
+
+| Região / referência | Valor publicado | Escopo e restrição |
+|---|---:|---|
+| **Washington DC, EUA — HostingCompass** | **US$8,79 por mês equivalente** | Referência de período **24 meses**, com compromisso indicado; preço final de renovação, cobrança inicial e disponibilidade desconhecidos |
+| **Washington DC, EUA — Kuraberu** | **US$9,89/mês** | Comparador verificado em outubro/novembro de 2026; **prazo e checkout oficial desconhecidos**, não equivale automaticamente a mensal sem fidelidade |
+| **Montreal, Canadá — HostingCompass** | **CA$13,49/mês anunciado** | Catalogado com compromisso **de 12 meses**; preço final de renovação e cobrança inicial desconhecidos. A conversão USD de comparador não substitui a cotação original em CAD |
+
+As três referências correspondem à **Leaseweb VPS 2 — 6 vCPU compartilhadas, 16 GB RAM, 200 GB NVMe**. A **VPS 1 — 4 vCPU/6 GB/100 GB** não é equivalente à referência de dimensionamento **4 vCPU/8 GB/~160 GB** aprovada.
+
+Fontes (preços de terceiros, **não vinculantes**):
+- https://hostingcompass.com/providers/leaseweb/vps
+- https://kuraberu.app/vps/offer/leaseweb-vps-2-us
+
+A **página oficial da Leaseweb** confirma características da **linha VPS**, não estes preços regionais de checkout: 30 TB de tráfego de saída incluído por VPS (sujeito a contrato final), entrada grátis, 10 Gbps de uplink, proteção DDoS padrão, firewall de rede, **um snapshot incluído**, Basic SLA e possibilidade de **upgrade sem downgrade**. Snapshot isolado não substitui cópia offsite/restauração. A Leaseweb pode operar recursos de CPU compartilhados; o número de vCPU não determina sozinho throughput. Fonte: https://www.leaseweb.com/products-services/cloud/virtual-private-server
+
+**Conclusão intermediária:** usar Washington e Montreal **como alternativas abertas** e **priorizar cotação de preço mensal sem fidelidade**. Só avaliar desconto de 12/24 meses quando a permanência, riscos, renovação e penalidades forem justificados. Não há elementos suficientes para escolher a região apenas pelo menor preço em moedas diferentes; a latência para o Brasil/serviços integrados e LGPD devem ser avaliadas.
+
+#### Custos obrigatórios e facultativos do subsistema de agentes (sem orçamento aprovado)
+
+| Item | Referência oficial / custo | Necessidade para a produção |
+|---|---|---|
+| VPS dos agentes técnicos | Preço Leaseweb **pendente do checkout** | Obrigatória, separada da VPS n8n |
+| Snapshot incluído | 1 por VPS segundo Leaseweb | Útil para ponto de manutenção, mas **não** satisfaz backup offsite |
+| Backup offsite das configurações/estado/auditoria protegidos | Leaseweb Acronis lista **25 GB por €3,75/mês, 50 GB €5,50, 100 GB €10,00**, incluindo licença, capacidade e workloads; preço regional/contrato a confirmar | **Obrigatório ter estratégia de restauração comprovada**, mas a escolha **Acronis não está aprovada**; quota depende de dados e retenção reais |
+| Object Storage alternativo/complementar | Leaseweb Object Storage On Demand **€0,01733/GB-mês** + PUT/GET/egress, sem pacote mínimo contratado, segundo página oficial | Pode armazenar backup de dados e artefatos com credenciais dedicadas; **não é sozinho um produto de backup** nem garante restauração/snapshot |
+| Monitoramento e alerta fora do subsistema | Reutilização de observabilidade transversal se homologada; preços extras pendentes | Alertas críticos **não dependentes** de n8n, agentes ou Portal; frequência, canal e operador a definir |
+| Segredos, VPN/TLS, auditoria, logs e antimalware quando aplicável | Software gratuito possível, mas horas, custos e capacidade não nulos | Controles de segurança **não podem ser eliminados** para caber em teto |
+| IA por API, execução de ferramentas e tokens | Tarifa de provedor/modelo e consumo **a definir separadamente** | Limites por projeto/operação, orçamento, rastreabilidade e segregação de custo das franquias IA dos clientes |
+| n8n existente | Sem nova contratação apenas **se o inventário comprovar a VPS ativa e adequada** | **Mensalidade legada deve aparecer no TCO**, nunca assumir custo operacional zero |
+
+**Fontes oficiais adicionais:**
+- https://www.leaseweb.com/en/products-services/back-up/acronis
+- https://www.leaseweb.com/products-services/object-storage
+
+A referência de **€3,75 por 25 GB** não autoriza concluir que 25 GB bastam ou que o Acronis sozinho assegura todas as exigências de recuperação, imutabilidade, trilha de auditoria e isolamento. Escolher armazenamento por **capacidade protegida, frequência, retenção, independência de credenciais, testes de restore e RPO/RTO**. Separar orçamento dos **agentes técnicos transversais** daquele do **CRM E1B**, Portal, Performance AI e das **APIs de captação**.
+
+#### Portas documentais para decisão posterior
+
+1. **Cotação Leaseweb efetiva** com conta/entidade de cobrança: US/Washington WDC-02 e CA/Montreal MTL-02; preço **1 mês, 12 meses e 24 meses**, entrada, impostos, egress extra, renovação, SLA/suporte e possibilidade de cancelamento; não há autorização para contratar.
+2. **Inventário n8n:** servidor ativo realmente 6 vCPU/16 GB/200 GB? mensalidade atual, RAM/CPU/disco usados, backups, versão n8n, Postgres, credenciais e segurança. Sem acesso técnico operacional na fase de planejamento.
+3. **Restauração e capacidade:** estimar GB protegidos, backups de configuração, retenção, testes e tempo de reposição; concorrência real dos agentes e tolerância à indisponibilidade, sem confundir modelos via API com execução local.
+4. **Critérios de região:** comparar distância de API/modelo, CRM, n8n e público, jurisdição/LGPD, latência aferida em fase homologada, disponibilidade regional e custo completo, não apenas convertendo CAD para USD.
+5. **Licenciamento n8n:** avaliar Community/SUL para workflows internos e licença comercial se clientes do CRM puderem criar/configurar workflows baseados no n8n, ainda que por tela própria; não instalar fluxo SaaS sem essa definição.
+6. Submeter **tabela financeira completa e decisão expressa** antes de ativar serviços. Os preços de fontes externas não podem ser tratados como mensalidade contratada.
+
+**Estado após diligência:** Leaseweb VPS 2 segue **candidata prioritária de cotação**, mas **sem preço final oficial, escolha de região, aprovação financeira, homologação de produção ou liberação de programação.**
