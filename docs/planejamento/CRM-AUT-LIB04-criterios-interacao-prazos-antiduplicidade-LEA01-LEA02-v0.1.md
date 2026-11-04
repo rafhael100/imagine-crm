@@ -110,3 +110,8 @@ O responsável respondeu **“ok”** à aprovação expressa da tabela de regra
 ## 9. Registro específico sobre ligações não atendidas (04/11/2026)
 
 A [CRM-DEC — tentativa sem sucesso](CRM-DEC-LEA02-tentativa-nao-atendida-nao-e-atendimento-2026-11-04.md) reafirma a regra incluída na [aprovação funcional geral](CRM-DEC-aprovacao-regras-funcionais-LEA01-LEA02-2026-11-04.md): ligação não atendida é tentativa, **não** atendimento efetivo, e **não encerra** LEA-02 por si só. O default de **24h corridas** e opções **4/12/24/48/72h** **já constam aprovados funcionalmente** na decisão geral; permanecem pendentes provas estruturadas de contato, controle técnico, retenção, homologação individual dos modelos e implementação. Nenhum código ou ativação.
+
+
+## 10. Proposta de registro estruturado LIB05 (04/11/2026)
+
+A [CRM-AUT-LIB05 v0.1](CRM-AUT-LIB05-registro-classificacao-contato-evidencias-LEA02-v0.1.md) apresenta **proposta para revisão** de classificação de tentativa sem sucesso, atendimento efetivo validado, resposta do cliente e nota administrativa **sobre o histórico de leads já permitido no Básico**, sem criar tarefas comerciais. Reafirma decisões aprovadas: tentativa não atendida não encerra LEA-02; prazos funcionais **24 horas corridas padrão** e **4/12/24/48/72h**; efeito somente aviso interno. **Taxonomia, campos, prova do atendimento, correção, esquema/eventos, direitos executáveis e homologação individual ainda NÃO aprovados**. LIB05-P01..P09 e demais gates P0 permanecem abertos; sem programação.
