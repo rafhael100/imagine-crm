@@ -83,3 +83,7 @@
 - Branch `main`: consolidação recente de INT, IN, Portal e agentes. **Não presumir** que a ausência de documento na main significa ausência de decisão em conversa ou branch histórica.
 
 **Regra de precedência:** decisões aprovadas mais recentes devem ser conciliadas documentalmente antes de unificar versões. Não copiar propostas históricas como se fossem decisões vigentes.
+
+## Caminho de fechamento técnico da Fase F1 — 04/11/2026
+
+[**F1-P0: pacote consolidado de identidade, isolamento multiempresa, PostgreSQL RLS e Segurança**](docs/planejamento/CRM-F1-IAM-RLS-SEG-PACOTE-TECNICO-GO-CHECKLIST-v0.1.md) organiza contratos candidatos, riscos e checklist de liberação por evidência. **F0 já está autorizado somente na branch de fast-track**, conforme [DEC-FASTTRACK-01](docs/planejamento/CRM-DEC-FASTTRACK-autorizacao-desenvolvimento-controlado-2026-11-04.md); **F1 segue pendente de contratos físicos, revisão técnica/SEG-01/02 e GO específico**. Este link não autoriza merge, produção ou testes não documentados.
