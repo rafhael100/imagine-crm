@@ -7,8 +7,8 @@
 
 | Ordem | Lacuna do CRM-REV-01 | Estado 04/11 | Registro / próximo passo |
 |---|---|---|---|
-| CORE-P0-01 | Modelo canônico identidade/usuário/membership/tenant/organização/RLS | **Em revisão — proposta v0.1 registrada, não aprovada** | [Proposta de arquitetura lógica](CRM-CORE-P0-01-identidade-organizacoes-membership-RLS-proposta-v0.1.md); obter decisão sobre D01–D03; dependências D04–D07 em aberto |
-| CORE-P0-02 | Perfis × recursos × ações × campos | **A iniciar** | Conciliar papéis admin Imagine/empresa/equipes/Básico, identidade técnica, suporte e auditoria; fonte INT P0-OWN/SEC |
+| CORE-P0-01 | Modelo canônico identidade/usuário/membership/tenant/organização/RLS | **Base lógica D01–D03 APROVADA; P0 ainda PARCIAL** | [CRM-DEC D01–D03](CRM-DEC-aprovacao-CORE-P0-01-D01-D03-base-logica-2026-11-04.md); [modelo lógico](CRM-CORE-P0-01-identidade-organizacoes-membership-RLS-proposta-v0.1.md); D04–D07 técnicos abertos |
+| CORE-P0-02 | Perfis × recursos × ações × campos | **Em revisão documental — sem aceite de matriz** | Conciliar papéis admin Imagine/empresa/equipes/Básico, identidade técnica, suporte e auditoria; fonte INT P0-OWN/SEC |
 | CORE-P0-03 | Autoridade em jobs/eventos/webhooks | **A iniciar** | Contratos contexto/tenant/revalidação, idempotência e revogação; integração Filas/Eventos/INT |
 | CORE-P0-04 | Autenticação, MFA e recuperação por papel | **A iniciar** | Respeitar MFA admin e política opcional funcionários, sessão 30 min admin central; detalhar step-up/recuperação |
 | CORE-P0-05 | Acesso excepcional da Imagine | **A iniciar** | Finalidade, autorização por caso, escopo, expiração e auditoria; sem bypass amplo |
