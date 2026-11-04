@@ -1,0 +1,58 @@
+name: CRM Imagine - F0 CI
+
+on:
+  push:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-f0-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php-tests:
+    name: PHP 8.4 / Laravel 13 / PHPUnit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Setup PHP and Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, curl, zip, pdo_sqlite, sqlite3
+          tools: composer:v2
+          coverage: none
+
+      - name: Validate Composer definition
+        run: composer validate --no-check-publish
+
+      - name: Install PHP dependencies (no database migrations)
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare ephemeral test environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+          php artisan --version
+
+      - name: Run tests with synthetic data only
+        run: php artisan test --no-ansi
