@@ -55,9 +55,27 @@ clientes, conexão à VPS ou implantação.
 
 ## Evidência desta revisão
 
-Testes adicionais foram escritos para configuração dedicada, recusa de fallback,
+Testes adicionais para configuração dedicada, recusa de fallback,
 provider/guard efetivo incompatível, ausência de sessão e UUID inválido, além
-dos casos PostgreSQL acima. Execução local indisponível: PHP/Composer/Docker
-continuam ausentes do PATH. Os resultados novos serão registrados após os
-workflows existentes; os 33 testes da revisão anterior não são evidência
-de execução destas alterações.
+dos casos PostgreSQL acima, **executados e aprovados em CI** no head
+`0f43a1ae6b3cb6391df4907fedd3ba9ae0fb5e7a` em 04/11/2026, 19:10
+(America/Sao_Paulo). Logs dos dois workflows existentes foram conferidos:
+
+| Comando / ambiente | Resultado real | Log |
+|---|---|---|
+| `php artisan test --no-ansi` / Laravel 13, PHP 8.4, SQLite | **30 passed, 18 skipped, 62 assertions; success** | [Run 41922803814 / job 126899373891](https://github.com/rafhael100/imagine-crm/actions/runs/41922803814/job/126899373891) |
+| `php artisan test --filter=PostgresMembershipRlsTest --no-ansi` / PostgreSQL 16 | **18 passed, 49 assertions** | [Run 41922804070 / job 126899514978](https://github.com/rafhael100/imagine-crm/actions/runs/41922804070/job/126899514978) |
+| `php artisan test --no-ansi` / suíte completa PostgreSQL 16 | **48 passed, 111 assertions, 0 falhas; success** | [Mesmo job PostgreSQL](https://github.com/rafhael100/imagine-crm/actions/runs/41922804070/job/126899514978) |
+
+Os 18 skips SQLite são exclusivamente os casos PostgreSQL; não significam
+RLS validada em SQLite. Fixtures sintéticas e role runtime `crm_app_ci`
+sem SUPERUSER/BYPASSRLS/ownership, separada da preparação privilegiada da CI.
+Os erros PostgreSQL 42501 nos casos negativos de INSERT/UPDATE/leitura do
+catálogo são recusas esperadas e verificadas, não falhas da suíte.
+
+`git diff --check` local sem erros. A tentativa local de `php artisan test`
+não executou: PHP não encontrado; PHP/Composer/Docker continuam ausentes do
+PATH. Os 33 testes da revisão anterior são evidência histórica apenas.
+O commit de registro destes resultados modifica somente documentação;
+as URLs acima identificam explicitamente a revisão efetivamente testada.
+Nenhum aceite de Segurança, merge, release ou implantação foi realizado.
