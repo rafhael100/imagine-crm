@@ -1,7 +1,7 @@
 # P0-ARQ01-F06 — Metas candidatas de RPO/RTO, níveis de proteção, custos e aceite de riscos
 
 **Data:** 03/11/2026.
-**Estado:** **MINUTA PARA REVISÃO; NÃO APROVADA.**
+**Estado:** **APROVADA COMO BASE DOCUMENTAL** em 03/11/2026, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-ARQ01-F06-base-2026-11-03.md). **Níveis de produção, metas RPO/RTO, riscos e custos não homologados.**
 **Origem:** [F05 aceita como base](CRM-DEC-aprovacao-ARQ01-F05-base-2026-11-03.md), [IN-143](IN-143-continuidade-operacional-recuperacao-inteligente-desastres.md), [IN-168](IN-168-matriz-pendencias-fechamento-arquitetura.md), [F04](P0-ARQ01-F04-orcamento-object-storage-backup-recuperacao.md).
 **Objetivo:** converter o diagnóstico de E0/E1/E2 em opções verificáveis para recuperação, considerando ausência de clientes e caixa limitado.
 **Proibição:** nenhum número abaixo é objetivo/SLA aprovado; sem implantação, programação, contratação, configuração nem teste real.
@@ -59,4 +59,4 @@ Não atribuir percentual de disponibilidade fictício, nem prometer que E2 tem f
 - **F06-P07:** submeter política de recepção de leads e filas ao ARQ-02; não herdar indisponibilidade do CRM.
 - **F06-P08:** homologar localização/LGPD, contratos, ferramentas e riscos após aprovação do plano global.
 
-**ARQ-01 e CON-01 permanecem abertos.** Esta minuta não altera a estratégia econômica já aprovada, nem libera código/infra/compra.
+**ARQ-01 e CON-01 permanecem abertos.** O aceite documental não escolhe E1B, não fixa metas numéricas nem autoriza operação. Próxima ficha consolidada de decisão: [ARQ01-F07](P0-ARQ01-F07-fechamento-orcamento-riscos-e-recuperacao.md). Não libera código/infra/compra.
