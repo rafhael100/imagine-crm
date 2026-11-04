@@ -112,9 +112,23 @@ sessão autenticada do GitHub. O snapshot Git local é somente ferramenta de
 diff, não foi publicado como histórico do repositório. A branch remota foi
 criada diretamente da base indicada, preservando sua ancestralidade.
 
-CI: resultados serão registrados após execução dos dois workflows existentes.
-Até então, os novos testes são **escritos, ainda não executados**. CI SQLite
-não comprova RLS; o job PostgreSQL 16 usa role `crm_app_ci` restrita e fixtures
-sintéticas. Nenhum resultado da base é apresentado como aprovação deste incremento.
+CI executada e verificada em 04/11/2026, 17:15 (America/Sao_Paulo), no head
+`15d9680c3a5a8a420938ae3ad30023324704544b` do [PR #4 em rascunho](https://github.com/rafhael100/imagine-crm/pull/4).
+
+| Workflow / comando | Resultado real | Evidência |
+|---|---|---|
+| F0 CI — `php artisan test --no-ansi` / SQLite | **success; 17 passed, 16 skipped, 36 assertions** | [Run 41904769912 / job 126836364698](https://github.com/rafhael100/imagine-crm/actions/runs/41904769912/job/126836364698) |
+| PostgreSQL RLS — `php artisan test --filter=PostgresMembershipRlsTest --no-ansi` | **16 passed, 40 assertions** | [Run 41904769561 / job 126836364159](https://github.com/rafhael100/imagine-crm/actions/runs/41904769561/job/126836364159) |
+| PostgreSQL RLS — `php artisan test --no-ansi` / suíte completa | **success; 33 passed, 76 assertions, 0 falhas** | [Mesmo job PostgreSQL](https://github.com/rafhael100/imagine-crm/actions/runs/41904769561/job/126836364159) |
+
+Logs confirmam PHP 8.4.27, dependências instaladas do lockfile e PostgreSQL
+16.15 efêmero. O role de consulta é `crm_app_ci`, sem SUPERUSER/BYPASSRLS ou
+ownership. O role privilegiado do runner é usado apenas para migration e
+fixtures sintéticas; teste específico comprova sua recusa pelo adaptador runtime.
+Os 16 skips SQLite são intencionais: **SQLite não comprova RLS**.
+Os novos testes passaram em CI; não houve execução local. CI verde comprova
+apenas este recorte experimental e não fecha CORE/SEG nem homologa produção.
+O commit posterior deste registro altera somente documentação; os resultados
+acima identificam explicitamente a revisão de código efetivamente testada.
 
 Sem merge, deploy/VPS, dados reais, mensagens externas ou alteração de dependências.
