@@ -101,10 +101,17 @@ A primeira proposta de deliberação concreta foi registrada em [**CORE01-D04 �
 ## 10. CORE01-D05 preliminar e próxima proposta CORE01-D06 — 04/11/2026
 
 - **CORE01-D05-A/B/C/D**: [aceitas expressamente como diretrizes técnicas documentais preliminares](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md), **D05 continua ABERTA** até fechar CORE02/03/04/05/09 e SEG-01/SEG-02, incluindo RLS físico/roles, transações, workers, suporte, serviço e auditoria. Não presumir conformidade física pela aprovação dos princípios.
-- [**CORE01-D06 — proposta v0.1 de ciclo de tenants, vínculo Sites↔CRM e direitos comerciais**](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-tenants-vinculos-comerciais-proposta-v0.1.md): diretrizes D06-A/B/C/D **NÃO APROVADAS**. Dependências FIN/CON, CORE08, IN-117..122, COM-08/09, INT, segurança e LGPD.
+- [**CORE01-D06 — proposta v0.1 de ciclo de tenants, vínculo Sites↔CRM e direitos comerciais**](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-tenants-vinculos-comerciais-proposta-v0.1.md): diretrizes D06-A/B/C/D **APROVADAS SOMENTE PRELIMINARMENTE** [CRM-DEC](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md), mantendo D06 aberta. Dependências FIN/CON, CORE08, IN-117..122, COM-08/09, INT, segurança e LGPD.
 - **Contagem de 67 IDs técnicos ABERTOS inalterada**, incluindo D04 e D05 que receberam só princípios preliminares; D06/D07 e demais P0/SEG/G01..G06 seguem abertos. Nenhum teste, programação, cobrança, alteração de tenant ou implantação foi executado.
 
 
 ## 11. Referência única para deliberação CORE01-D06
 
-[**CORE01-D06 — ciclo de tenants, vínculos e direitos comerciais**](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-tenants-vinculos-comerciais-proposta-v0.1.md) é a proposta única D06-A/B/C/D, **ainda não aprovada**. A divisão por subtemas do documento fornece casos e critérios, sem multiplicar decisões. CORE01-D04 e D05 continuam abertas com princípios preliminares aceitos. **67 IDs técnicos abertos**, além de SEG-01/02, ARQ, INT e G01..G06. Nenhuma execução.
+[**CORE01-D06 — ciclo de tenants, vínculos e direitos comerciais**](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-tenants-vinculos-comerciais-proposta-v0.1.md) é a fonte única D06-A/B/C/D, **aprovadas só preliminarmente** [CRM-DEC](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md); D06 integral aberta. A divisão por subtemas do documento fornece casos e critérios, sem multiplicar decisões. CORE01-D04 e D05 continuam abertas com princípios preliminares aceitos. **67 IDs técnicos abertos**, além de SEG-01/02, ARQ, INT e G01..G06. Nenhuma execução.
+
+
+## 12. Aceite preliminar CORE01-D06 e proposta CORE01-D07 — 04/11/2026
+
+- [**CORE01-D06-A/B/C/D aprovadas somente como diretrizes técnicas documentais preliminares**](CRM-DEC-aprovacao-CORE01-D06-ABCD-diretrizes-preliminares-2026-11-04.md); **CORE01-D06 permanece ABERTA** até contratos e dependências com CORE08, FIN/CON, Portal/Sites, INT e Segurança. Não houve fechamento de estados físicos, cobrança, titularidade nem reconciliação executável.
+- [**CORE01-D07 — proposta de classes de dados, integridade, RLS, roles e contratos técnicos**](CRM-CORE-P0-ETAPA2-CORE01-D07-modelo-fisico-integridade-RLS-proposta-v0.1.md): D07-A/B/C/D **NÃO APROVADAS**, pendentes de manifestação expressa. Não se trata de criação de tabelas, SQL ou testes.
+- **CORE01-D04 e D05 continuam abertas**, apesar de A/B/C e A/B/C/D preliminarmente aceitas. Todos os **67 IDs CORE da Etapa 2**, SEG-01/02, ARQ-01/02/03, AGT-01, INT P0 e G01..G06 estão abertos. **Nenhuma programação, teste, implantação ou contratação.**
