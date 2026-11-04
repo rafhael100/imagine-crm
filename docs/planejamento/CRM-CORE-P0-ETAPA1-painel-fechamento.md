@@ -42,8 +42,6 @@
 ## Etapa 2 — CORE01-D05 preliminar aprovado, CORE01-D06 em proposta (04/11/2026)
 
 - [**Aceite CORE01-D05-A/B/C/D**](CRM-DEC-aprovacao-CORE01-D05-ABCD-diretrizes-preliminares-2026-11-04.md): diretrizes documentais preliminares aceitas, **CORE01-D05 integralmente ABERTA**; CORE01-D04 igualmente aberta e CORE01-D07 não aprovada.
-- [**CORE01-D06 — minuta de ciclos de tenant, vínculo Site↔CRM, cortesia, trial e contratos**](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-organizacoes-vinculos-comerciais-proposta-v0.1.md): diretrizes candidatas A/B/C/D **NÃO APROVADAS**. [Matriz Etapa 2](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md) mantida.
+- [**CORE01-D06 — minuta de ciclos de tenant, vínculo Site↔CRM, cortesia, trial e contratos**](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-tenants-vinculos-comerciais-proposta-v0.1.md): diretrizes candidatas A/B/C/D **NÃO APROVADAS**. [Matriz Etapa 2](CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md) mantida.
 - **CORE01-D04..D07, CORE02..CORE10-D04..D10 e 67 decisões pendentes não foram encerradas**. IN-168 **SEG-01 e SEG-02**, ARQ-01/02/03, AGT-01, INT P0 e G01..G06 continuam abertos. Proibidos programação, testes, credenciais, operações reais, contratos e despesas.
 
-
-**Anexo D06 de critérios:** [exemplos e detalhamento complementar](CRM-CORE-P0-ETAPA2-CORE01-D06-ciclo-tenants-vinculos-comerciais-proposta-v0.1.md), não deliberativo, vinculado à proposta canônica. **D06-A/B/C/D não aprovadas** e nenhum bloqueio fechado.
