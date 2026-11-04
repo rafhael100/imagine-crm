@@ -1,7 +1,7 @@
 # CRM-CORE-P0-08 — Básico público/cortesia, múltiplas organizações, trial e direitos comerciais (proposta v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL AINDA NÃO APROVADA — CORE-P0-08 ABERTO.** CORE08-D01, D02 e D03 sujeitos a aceite expresso; CORE08-D04 a D10 e bloqueios transversais permanecem abertos.  
+**Estado atualizado em 04/11/2026:** **CORE08-D01, D02 e D03 APROVADAS COMO BASE DOCUMENTAL**, conforme [registro expresso de decisão](CRM-DEC-aprovacao-CORE-P0-08-D01-D03-base-basico-trial-2026-11-04.md). **CORE-P0-08 PARCIAL/ABERTO**, CORE08-D04 a D10 e demais bloqueios técnicos permanecem abertos. As referências abaixo a “PROPOSTA/AINDA NÃO APROVADAS” para D01–D03 descrevem a redação histórica anterior ao aceite e são superadas pela decisão posterior.  
 **Fase:** somente planejamento, redação e versionamento GitHub. **Sem programação/Codex, testes executáveis, criação de tenants/contas/assinaturas, cobranças, emissão fiscal, pagamentos reais, disparos de avisos, provisionamento ou contratação.**  
 **Objetivo:** reconciliar a organização CRM/tenant, contratos Sites, seleção de conta CRM, plano Básico público e benefício condicional, gratuidade administrativa, trial por CNPJ e ciclos distintos de pagamento/suspensão/cancelamento sem conceder quotas, acesso ou descontos por inferência.
 
@@ -152,3 +152,7 @@ Propor **separação inequívoca dos estados de cada domínio**:
 Após eventual aceite expresso de CORE08-D01..D03, elaborar registro de aprovação e prosseguir para **CORE-P0-09 — cofre, segredos e identidades de serviço** sem iniciar implementação. Mesmo quando a base documental D01–D03 for aceita, **D04..D10 e gates permanecem abertos**.
 
 **Proibido:** programação/Codex, testes reais, provisionamento de contas e assinaturas, alterações em Portal/CRM/provedor, pagamentos, emissão fiscal, compra de licenças, limpeza de dados, disparo de notificações e criação de credenciais reais. Apenas planejamento documental versionado.
+
+## 11. Aditamento de aprovação parcial — 04/11/2026
+
+O responsável aprovou **CORE08-D01, D02 e D03 como base documental**, nos limites de [CRM-DEC](CRM-DEC-aprovacao-CORE-P0-08-D01-D03-base-basico-trial-2026-11-04.md). Separações entre trial único por CNPJ, Básico público, cortesia de Site, múltiplas organizações, assinatura paga e gratuidade administrativa foram preservadas; vínculos de Site e transições de cancelamento/suspensão continuam sujeitos à fonte oficial de cada contrato, sem cobrança automática, perda indevida de dados ou abertura de segundo trial. **D04–D10 não foram aprovadas**, assim como todas as dependências técnicas CORE/INT/FIN/SEG/ARQ/G01..G06. Seguir somente a documentação CORE-P0-09, sem implementação ou testes reais.
