@@ -76,6 +76,8 @@ Para cada decisão de cada pacote, manter **fonte e link/commit**, texto normati
 
 **Nenhuma programação, teste executável, SQL/migração, provisionamento, alterações em produção, tratamento de dados reais, mudança de contrato, despesa ou implantação foi autorizada ou realizada.**
 
-## 6. Avanço documental CORE02-D04 — inventário, classificação e exposição de campos (04/11/2026)
+## 6. CORE02-D04 preliminar aprovado e continuação CORE02-D05 — 04/11/2026
 
-A [**minuta CORE02-D04 de classificação de campos e visibilidade por operação**](CRM-CORE-P0-ETAPA2-CORE02-D04-classificacao-campos-visibilidade-proposta-v0.1.md) detalha o contrato E2-X02 em quatro propostas **D04-A/B/C/D ainda NÃO APROVADAS**: dicionário/proprietário/classificação; exposição por ação/canal/escopo; campos personalizados/derivados/exportação; evidências negativas/segregação. **CORE02-D04..D10 permanecem ABERTAS** e nenhuma política física ou permissão nova foi autorizada. A continuação documental foi autorizada; não houve homologação, teste ou programação. CORE01-D04..D07, 67 IDs CORE, SEG-01/02, INT P0/G01..G06 e DEV-GATE-00 NO-GO permanecem inalterados.
+- A [**proposta canônica CORE02-D04 — classificação de campos e direitos por operação**](CRM-CORE-P0-ETAPA2-CORE02-D04-classificacao-campos-direitos-proposta-v0.1.md) foi [**aceita somente como diretrizes documentais preliminares D04-A/B/C/D**](CRM-DEC-aprovacao-CORE02-D04-ABCD-diretrizes-preliminares-2026-11-04.md), por registro expresso separado; **CORE02-D04 integral segue ABERTA** até catálogo efetivo de campos/ações por módulo, Security/CORE01, SEG-01/02 e INT. Não é concessão de direitos nem política física.
+- Próxima [**proposta CORE02-D05 — combinação de perfis, negações e delegação**](CRM-CORE-P0-ETAPA2-CORE02-D05-combinacao-perfis-negacoes-delegacao-proposta-v0.1.md), **ainda não aprovada**, sob dependências CORE02/04/05/07/08 e segurança. Esta continuidade do planejamento não ratifica A–D da D05.
+- **67 IDs CORE abertos**, CORE01-D04..D07, CORE02-D04..D10, SEG-01/02, ARQ/AGT, INT P0/G01..G06 e DEV-GATE-00 NO-GO mantidos. **Sem programação, testes executáveis, credenciais, grants, implantação ou despesas.**
