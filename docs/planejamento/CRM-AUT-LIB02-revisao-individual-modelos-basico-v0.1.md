@@ -167,3 +167,8 @@ Continuam pendentes: eventos canônicos, fontes, prazo/interação válida do LE
 ## 10. Complemento de critérios LIB04: interação, prazos e antiduplicidade (04/11/2026)
 
 A [AUT-LIB04 v0.1](CRM-AUT-LIB04-criterios-interacao-prazos-antiduplicidade-LEA01-LEA02-v0.1.md) foi preparada como **proposta sujeita a deliberação específica**. Recomenda LEA-02 com semântica de **primeiro atendimento pendente pela empresa**, separada de "cliente não respondeu"; sugere marcar interação válida somente por fato oficial auditável, **24h corridas como prazo padrão candidato** e opções guiadas 4/12/24/48/72h. Prevê um aviso por evento/ciclo, sem reiniciar por leitura ou por mudança de versão. **Nada disso está aprovado como parâmetro final**, salvo a diretriz TAR-A já vigente. Preservar LIB04-P01..P09, AUT-P01..14, LIB02-P01..P08 e gates P0; sem implementação.
+
+
+## 11. Semântica de LEA-02 aprovada, parâmetros ainda pendentes (04/11/2026)
+
+[CRM-DEC](CRM-DEC-semantica-LEA02-primeiro-atendimento-2026-11-04.md): LEA-02 = **lead sem primeiro atendimento efetivo registrado pela empresa**, não cliente que deixou de responder após contato. **Somente essa definição funcional foi aprovada**. Tentativa não atendida, prova de atendimento, regra para observações manuais do Básico, horários, prazo padrão, idempotência, retenção, fontes e homologação do próprio modelo LEA-02 continuam por decidir. Não misturar eventos ATD com clock DAT/primeiro atendimento. Continuidade documental apenas, sem ativação de avisos, tarefas ou código.
