@@ -1,7 +1,7 @@
 # CRM-CORE-P0-04 — Autenticação, MFA, recuperação e sessões — proposta v0.1
 
 **Data:** 04/11/2026.  
-**Estado:** **MINUTA PARA REVISÃO — nenhuma decisão CORE04-D01–D10 foi aprovada por este documento.**  
+**Estado atualizado em 04/11/2026:** **CORE04-D01, D02 e D03 APROVADAS COMO BASE DOCUMENTAL** conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-04-D01-D03-base-autenticacao-2026-11-04.md); **CORE-P0-04 ainda PARCIAL/ABERTO**. CORE04-D04 a D10 seguem abertas. Rótulos de PROPOSTA nas seções D01–D03 documentam a redação anterior ao aceite, agora superada pelo registro posterior.  
 **Natureza:** fechamento documental do núcleo CRM Imagine, não implementação.  
 **Precedência:** preservar os capítulos funcionais e aprovações posteriores. Qualquer mudança material necessita aceite expresso do responsável.  
 **Restrições:** sem código, testes executáveis, credenciais, contas reais, provisionamento, custos ou mudanças de produção.
@@ -84,3 +84,7 @@
 Submeter **CORE04-D01, CORE04-D02 e CORE04-D03** à aprovação **como base conceitual e documental**, mantendo **CORE04-D04 a D10** e todas as dependências abertas. Só após aceite expresso criar registro de decisão de aprovação. Próximo passo da sequência: **CORE-P0-05 — acesso excepcional da Imagine**, não iniciar automaticamente nem considerar CORE-P0-04 encerrado. 
 
 **Proibição vigente:** sem programação, Codex, testes reais, ambientes, credenciais, migração, contratação ou produção até fechamento global aprovado.
+
+## 6. Aditamento de aprovação expressa em 04/11/2026
+
+O responsável aprovou **CORE04-D01, D02 e D03 como base documental**, conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-04-D01-D03-base-autenticacao-2026-11-04.md). São diretrizes lógicas de MFA por papel/tenant, recuperação diferenciada e sessões/step-up conceitual, **não** escolha de fatores/providers ou regras físicas. D04–D10 e todos os bloqueios CORE/INT/SEG/ARQ permanecem abertos; CORE-P0-04 não está encerrado. Próximo: planejamento CORE-P0-05, sem programação, testes, credenciais ou infraestrutura.
