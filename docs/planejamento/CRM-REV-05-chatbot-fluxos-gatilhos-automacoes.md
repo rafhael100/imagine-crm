@@ -192,3 +192,8 @@ A [AUT-CAT01 v0.1](CRM-AUT-CAT01-catalogo-gatilhos-condicoes-acoes-por-modulo-v0
 ## Biblioteca e diferenciação por plano — AUT-LIB01 em proposta (04/11/2026)
 
 A [CRM-AUT-LIB01 v0.1](CRM-AUT-LIB01-biblioteca-modelos-basico-editores-por-plano-v0.1.md) foi elaborada para **revisão**, sem aceite nem homologação. O planejamento distingue **Básico com modelos prontos parametrizados** dos editores comerciais tipados de planos pagos, cuja diferenciação de complexidade ainda depende de decisão. **O editor visual de chatbot WhatsApp já previsto é distinto do editor de automações comerciais**, com quotas/canais separados. O modelo histórico **OPP-01 não será presumido no Básico** sem confirmar direito ao VEN; avisos internos obrigatórios da Agenda seguem SO fora de slots. Preservar AUT-P01..14 e LIB-P01..P12; sem programação, contratação ou automações ativadas.
+
+
+## AUT-LIB01 aceita como base e AUT-LIB02 em conferência individual (04/11/2026)
+
+[CRM-DEC de aceite LIB01](CRM-DEC-aceite-base-AUT-LIB01-2026-11-04.md) e [CRM-AUT-LIB02 v0.1](CRM-AUT-LIB02-revisao-individual-modelos-basico-v0.1.md): **a estrutura da biblioteca foi aceita como base de planejamento**, mas nenhum modelo pronto específico, efeito A01 ou nível de editor pago ganhou aprovação automática. A revisão individual evidencia que **notas/histórico manual** do Básico não comprovam direito genérico a **tarefas comerciais automatizadas**; priorizar LEA-01/02 como candidatos de aviso interno **sob autorização e contrato específicos**, sem duplicar notificações da Agenda já incluídas como SO. Preservar AUT-P01..14, LIB-P01..P12, LIB02-P01..P08 e demais gates P0; sem programação ou contratos.
