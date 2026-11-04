@@ -163,3 +163,8 @@ A [decisão complementar de gratuidades](CRM-DEC-gratuidade-adicionais-vigencia-
 - A [CRM-REV-03 foi aceita como base documental](CRM-DEC-aprovacao-REV-03-base.md), mas **não** foram aprovados schemas, parâmetros ou contratos executáveis, nem encerradas as pendências.
 - A CRM-REV-03 **já recebeu aceite como base documental**. A [CRM-REV-04 — Atendimento, WhatsApp e gestão de conversas](CRM-REV-04-atendimento-whatsapp-conversas.md) foi **preparada como minuta para revisão**, mantendo interfaces com VEN e os motores já existentes.
 - CORE-P0, IN-168, INT P0, G01..G06 e os P0 comerciais continuam em aberto. Nenhuma implementação ou execução de teste foi iniciada.
+
+
+## Integração documental com LIB05 — registro de primeiro atendimento (04/11/2026)
+
+A [CRM-AUT-LIB05 v0.1](CRM-AUT-LIB05-registro-classificacao-contato-evidencias-LEA02-v0.1.md) propõe categorizar **tentativa sem sucesso, atendimento efetivo, resposta do cliente e nota administrativa** no histórico de leads, aproveitando as observações manuais aprovadas por IN-023. **Não é autorização para criar novos dados ou schema**, nem concede Tarefas avançadas no Básico. Só atendimento efetivo, validado por fonte oficial, poderá encerrar LEA-02. Registro manual fornece prova documental e auditável, sem alegar comprovação externa automática. LIB05-P01..P09 e DAT-P01..P12 seguem pendentes. O prazo funcional LEA-02 já aprovado é **24 horas corridas padrão**, com opções **4/12/24/48/72h**, sem implementação.
