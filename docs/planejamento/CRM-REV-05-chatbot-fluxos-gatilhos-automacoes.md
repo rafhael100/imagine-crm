@@ -187,3 +187,8 @@ A [AUT-CAT01 v0.1](CRM-AUT-CAT01-catalogo-gatilhos-condicoes-acoes-por-modulo-v0
 ## Aceite limitado da matriz de elegibilidade AUT-MAT01 (04/11/2026)
 
 [CRM-AUT-MAT01 v0.1](CRM-AUT-MAT01-matriz-elegibilidade-automacoes-por-plano-v0.1.md) e [registro de aceite](CRM-DEC-aceite-base-AUT-MAT01-2026-11-04.md): **base documental aceita para comparação dos planos**, mantendo Básico com modelos homologados, separação SO/AC/CE e bloqueio das ações protegidas no editor. **Referências de slots 3/5/20/50 e 2 trial; chatbot 3/10/30 permanecem sujeitas à ratificação comercial final**; não foi aprovado catálogo de modelos ou acesso a canais/IA/agenda pública adicionais. AUT-P01..14 e AUT-MAT-P01..P10 abertos; sem código, contratação ou implantação.
+
+
+## Biblioteca e diferenciação por plano — AUT-LIB01 em proposta (04/11/2026)
+
+A [CRM-AUT-LIB01 v0.1](CRM-AUT-LIB01-biblioteca-modelos-basico-editores-por-plano-v0.1.md) foi elaborada para **revisão**, sem aceite nem homologação. O planejamento distingue **Básico com modelos prontos parametrizados** dos editores comerciais tipados de planos pagos, cuja diferenciação de complexidade ainda depende de decisão. **O editor visual de chatbot WhatsApp já previsto é distinto do editor de automações comerciais**, com quotas/canais separados. O modelo histórico **OPP-01 não será presumido no Básico** sem confirmar direito ao VEN; avisos internos obrigatórios da Agenda seguem SO fora de slots. Preservar AUT-P01..14 e LIB-P01..P12; sem programação, contratação ou automações ativadas.
