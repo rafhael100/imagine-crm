@@ -1,7 +1,7 @@
 # CRM Imagine — Etapa 2 / CORE02-D06: catálogo de ações por módulo e contratos de autorização (proposta v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL NÃO APROVADA — CORE02-D06 ABERTA, D06-A/B/C/D AINDA NÃO APROVADAS.**  
+**Estado atualizado em 04/11/2026:** **CORE02-D06-A/B/C/D ACEITAS SOMENTE COMO DIRETRIZES TÉCNICAS DOCUMENTAIS PRELIMINARES EM AVALIAÇÃO DELEGADA**, conforme [decisão técnica registrada](CRM-DEC-aprovacao-delegada-CORE02-D06-ABCD-preliminar-2026-11-04.md). **CORE02-D06 integral permanece ABERTA**. Nenhum direito foi concedido, catálogo real por módulo aprovado ou teste executado. Rótulos históricos de A/B/C/D como não aprovadas precedem a decisão delegada.  
 **Origem e autorização:** aceite expresso **apenas preliminar** de [CORE02-D05-A/B/C/D](CRM-DEC-aprovacao-CORE02-D05-ABCD-diretrizes-preliminares-2026-11-04.md) com ordem para seguir planejando D06, **sem programação nem execução de testes**.  
 **Limite:** proposta semântica de contratos de recurso, ação, campo, escopo, titularidade e fonte de resultado; **não** concede permissão a usuário/IA/suporte, nem cria rotas, policies, tabelas, colunas, filas, tokens, papéis físicos, novos serviços ou preços.
 
@@ -116,3 +116,7 @@ Reutilizar CORE02-T, CORE01-T, REV01-S, ATD/VEN/AGD/AUT-T, OPS-T e INT-HT, sem c
 **Próxima pauta se o responsável aprovar preliminarmente D06-A/B/C/D:** elaborar somente proposta **CORE02-D07** sobre ações sensíveis, MFA/step-up, aprovações e alçadas por operação, sem inventar duas aprovações obrigatórias para tudo nem autorização de programação.
 
 **Nenhuma programação, código, SQL/RLS, teste executável, credencial, pagamento, contrato, ativação de permissões, operação de cliente ou implantação foi realizada ou autorizada.**
+
+## 8. Aditamento — aceite técnico delegado preliminar CORE02-D06 (04/11/2026)
+
+Conforme [CRM-DEC delegada](CRM-DEC-aprovacao-delegada-CORE02-D06-ABCD-preliminar-2026-11-04.md), D06-A/B/C/D foram avaliadas e aceitas **somente como diretrizes técnicas documentais preliminares**, sem atribuir ao responsável uma manifestação literal específica que ele não deu. Elas exigem catálogo por proprietário, ações distintas, matriz contextual de direitos e validação por módulos, **não** provam catálogo real/owners, planos, grants, políticas RLS, política P1–P4 de perfis ou homologação. **CORE02-D04/D05/D06/D07..D10 seguem ABERTAS**, CORE01-D04..D07, SEG-01/02, ARQ/AGT, INT P0/G01..G06, FIN/CON e os 67 IDs técnicos CORE em aberto. DEV-GATE-00 permanece NO-GO para liberação global.
