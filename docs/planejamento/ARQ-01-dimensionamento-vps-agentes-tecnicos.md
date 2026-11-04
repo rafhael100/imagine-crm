@@ -316,6 +316,10 @@ Submeter cenários concretos:
 
 - **Nenhuma alteração das decisões aprovadas**: n8n e agentes técnicos em VPS separadas; runtime Performance AI separado; APIs de leads independentes; servidor de agentes referência 4 vCPU/8 GB/~160 GB.
 - **Gate de licença n8n** deve aparecer no orçamento global como risco de custo. Não considerar n8n comercial gratuito para SaaS até responder à consulta.
-- Antes da programação, decidir expressamente se **L1 (CRM motor próprio; n8n somente operações internas compatíveis)** passa a ser regra definitiva do projeto. L2 (licença comercial para uso embutido) permanece alternativa de avaliação se requisito funcional exigir.
+- **Decisão posterior aprovada em 04/11/2026:** **L1 passou a ser diretriz arquitetural do CRM**, com **motor próprio** para automações comerciais configuradas por clientes e n8n limitado a operações internas permitidas pela licença aplicável, conforme [CRM-DEC](CRM-DEC-motor-proprio-automacoes-crm-n8n-interno-2026-11-04.md). **Não** equivale à aprovação jurídica/contratual da licença Community; qualquer exceção que demande Enterprise/OEM exige justificativa, revisão e aprovação explícita antes da implementação.
 - Confirmar que a VPS n8n existente realmente está ativa e possui contrato, backups e capacidade; a atualização da licença não substitui a cotação Leaseweb e o inventário.
 - **ARQ-01 continua P0 parcial**; nenhuma implementação/compra/deploy autorizados.
+
+### 10.5. Registro de decisão L1 aprovado em 04/11/2026
+
+O responsável respondeu **“ok”** à pergunta expressa de aprovação do **motor próprio de automações do CRM**, mantendo o n8n para **operações internas compatíveis com sua licença** e validação formal antes da implantação. [Registro de aprovação](CRM-DEC-motor-proprio-automacoes-crm-n8n-interno-2026-11-04.md). **L1 está aprovado como arquitetura de referência**; apenas os termos da implementação e do licenciamento permanecem pendentes. Proibir interpretação de que Community permite qualquer execução para clientes ou que n8n configurará workflows por clientes sem contrato comercial. Sem compra, configuração ou programação.
