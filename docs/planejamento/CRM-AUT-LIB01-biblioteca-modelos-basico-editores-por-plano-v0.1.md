@@ -178,3 +178,8 @@ Para próxima deliberação:
 ## 10. Aceite de base e revisão individual LIB02 (04/11/2026)
 
 A AUT-LIB01 foi **aceita como base documental**, conforme [CRM-DEC](CRM-DEC-aceite-base-AUT-LIB01-2026-11-04.md), sem homologação dos modelos ou níveis de editor. A [AUT-LIB02 v0.1](CRM-AUT-LIB02-revisao-individual-modelos-basico-v0.1.md) iniciou a revisão de LEA-01/02, TSK-01 e AGD-01/02/03, apontando possível falta de direito do Básico a **tarefas comerciais avançadas A01**: a matriz Básico comprova **observações manuais**, não automaticamente acesso a tarefas. Priorizar análise de avisos internos permitidos, sem duplicar notificações SO da Agenda. LIB02 ainda é **proposta, sem aprovação individual**. Preservar AUT-P01..14, LIB-P01..P12, LIB02-P01..P08, CORE/INT/SEG e demais gates P0.
+
+
+## Atualização de 04/11/2026 — escolha TAR-A nos modelos LEA-01/LEA-02
+
+A [decisão TAR-A](CRM-DEC-escolha-TAR-A-avisos-internos-LEA01-LEA02-2026-11-04.md) **aprovou avisos comerciais internos como tipo de efeito para a primeira versão pretendida de LEA-01 e LEA-02**, **sem tarefas comerciais automáticas**. A **aprovação individual dos modelos**, o contrato de notificação A03, fontes oficiais T01/T13, direito executável, prazo de inatividade, retenção e testes **continuam pendentes**. Essa escolha **não muda o catálogo geral ou os limites por plano** e não confunde avisos comerciais opcionais (com slot, após aprovação individual) com avisos operacionais obrigatórios da Agenda (sem slot). Somente planejamento.
