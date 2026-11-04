@@ -1,7 +1,7 @@
 # CRM-CORE-P0-03 — Ponte de autoridade em jobs, eventos, webhooks e filas (v0.1)
 
 **Data:** 04/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL PARA DELIBERAÇÃO — NÃO APROVADA. CORE-P0-03 ABERTO.**  
+**Estado atualizado em 04/11/2026:** **CORE03-D01, D02 e D03 APROVADAS COMO BASE DOCUMENTAL** conforme [CRM-DEC de aceite](CRM-DEC-aprovacao-CORE-P0-03-D01-D03-base-operacoes-assincronas-2026-11-04.md); **CORE-P0-03 PARCIAL/ABERTO**. CORE03-D04 a D10 permanecem abertas. As passagens com “PROPOSTA” e “NÃO APROVADA” para D01–D03 são histórico anterior ao aceite, agora superado pelo aditamento.  
 **Fase:** planejamento e versionamento exclusivamente; sem código, testes reais, credenciais/integrações ativadas, provisionamento ou contratação.  
 **Objetivo:** proteger a identidade, o contexto de tenant, a legitimidade de uma operação, seus efeitos e o retorno de resultado quando há processamento assíncrono ou comunicação entre sistemas, sem criar IAM, filas, motores ou auditorias paralelos.
 
@@ -152,3 +152,7 @@ Os testes reais serão executados **somente na fase autorizada de desenvolviment
 - **CORE-P0-03:** esta v0.1 é apenas proposta para apreciação; D01–D03 **NÃO aprovadas**, D04–D10 abertas.
 - **Demais CORE-P0, INT P0, ARQ/SEG/AGT e G01..06:** não modificados por este documento.
 - **Nenhuma programação, execução real, homologação física, contratação ou autorização final do Codex.**
+
+## 11. Aditamento de aprovação expressa (04/11/2026)
+
+O responsável aprovou **CORE03-D01, D02 e D03 como base documental**, conforme [decisão explícita](CRM-DEC-aprovacao-CORE-P0-03-D01-D03-base-operacoes-assincronas-2026-11-04.md). Permanecem abertas D04–D10, contratos físicos e integração aos demais P0. **CORE-P0-03 não está encerrado**, nenhuma autorização para Codex, contratação, testes ou implantação foi concedida. A revisão autorizada seguinte é CORE-P0-04 (MFA, autenticação, sessões e recuperação). Esta seção prevalece sobre os textos históricos que aguardavam a votação D01–D03.
