@@ -30,11 +30,12 @@ final readonly class PostgresLedgerReader
                 $tableState = $this->db->selectOne("SELECT relrowsecurity, relforcerowsecurity,
                     pg_has_role(current_user, relowner, 'MEMBER') AS owns_table,
                     has_table_privilege(current_user, oid, 'SELECT') AS can_read,
-                    has_table_privilege(current_user, oid, 'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') AS can_mutate
+                    has_table_privilege(current_user, oid, 'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') AS can_mutate,
+                    has_any_column_privilege(current_user, oid, 'INSERT,UPDATE,REFERENCES') AS can_mutate_columns
                     FROM pg_class WHERE oid = to_regclass(?)", [$table]);
                 if (!$tableState) { throw new LedgerReadFailure(LedgerGap::SchemaUnavailable); }
                 if ($tableState->owns_table || !$tableState->relrowsecurity || !$tableState->relforcerowsecurity
-                    || !$tableState->can_read || $tableState->can_mutate) { throw new LedgerReadFailure(LedgerGap::UnsafeReader); }
+                    || !$tableState->can_read || $tableState->can_mutate || $tableState->can_mutate_columns) { throw new LedgerReadFailure(LedgerGap::UnsafeReader); }
             }
             $this->db->selectOne("SELECT set_config('app.tenant_id', ?, true)", [$this->fixtureTenant]);
             $sample = [];
