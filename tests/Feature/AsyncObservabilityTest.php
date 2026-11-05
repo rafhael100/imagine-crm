@@ -162,14 +162,18 @@ final class AsyncObservabilityTest extends TestCase
         $settings = config('database.redis.default');
         $settings['url'] = null; $settings['host'] = '127.0.0.1'; $settings['port'] = 1;
         $settings['timeout'] = 0.1; $settings['read_timeout'] = 0.1; $settings['max_retries'] = 0;
-        config(['database.redis.crm_async_offline' => $settings]);
+        // The shared manager already captured its configuration at construction.
+        // Use a separate manager, not a late config() alias invisible to it.
+        $probeRedis = new \Illuminate\Redis\RedisManager($this->app, 'phpredis', [
+            'options' => config('database.redis.options'), 'crm_async_offline' => $settings,
+        ]);
         $driverFailureType = null;
-        $store = $this->membership(static function () use (&$driverFailureType): void {
+        $store = $this->membership(static function () use ($probeRedis, &$driverFailureType): void {
             try {
                 // Only this expected, synthetic connection-refusal warning is
                 // silenced so phpredis can emit its typed RedisException.
                 // No runtime error handler or classifier is broadened.
-                @Redis::connection('crm_async_offline')->get('synthetic-only');
+                @$probeRedis->connection('crm_async_offline')->get('synthetic-only');
             } catch (\Throwable $failure) {
                 $driverFailureType = $failure::class;
                 throw $failure;
@@ -181,7 +185,7 @@ final class AsyncObservabilityTest extends TestCase
             $this->assertSame(Kind::InfrastructureUnavailable, $result->diagnostic->kind);
             $this->assertSame('redis_driver', $result->diagnostic->source);
             $this->assertFalse($result->decision->allowed); $this->assertSame(0, $this->db->transactionLevel());
-        } finally { Redis::purge('crm_async_offline'); }
+        } finally { $probeRedis->purge('crm_async_offline'); }
     }
 
     public function test_disabled_profile_and_production_do_not_invoke_even_a_failing_observer(): void
