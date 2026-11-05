@@ -60,6 +60,8 @@ jobs:
       IAM_TEST_PASSWORD: ephemeral-iam-role-only
       PROVISION_TEST_USERNAME: crm_provision_ci
       PROVISION_TEST_PASSWORD: ephemeral-provision-role-only
+      ASYNC_TEST_USERNAME: crm_async_ci
+      ASYNC_TEST_PASSWORD: ephemeral-async-role-only
       IAM_ABUSE_REDIS_TEST: 'true'
       REDIS_CLIENT: phpredis
       REDIS_HOST: 127.0.0.1
@@ -123,6 +125,19 @@ jobs:
           GRANT SELECT, INSERT, UPDATE ON TABLE crm_auth_operations TO crm_provision_ci;
           GRANT SELECT, UPDATE (revoked_at) ON TABLE crm_auth_mandates TO crm_provision_ci;
           GRANT INSERT ON TABLE crm_iam_audit_events TO crm_provision_ci;
+          SQL
+      - name: Explicitly migrate inert async laboratory and create isolated role
+        env:
+          CRM_AUTH_EXPERIMENTAL: 'true'
+        run: |
+          php artisan migrate --path=database/experimental-migrations/async --force --no-interaction
+          psql -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE ROLE crm_async_ci LOGIN PASSWORD 'ephemeral-async-role-only'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_async_ci;
+          GRANT USAGE ON SCHEMA public TO crm_async_ci;
+          GRANT SELECT, INSERT ON TABLE crm_lab_async_ledger, crm_lab_async_attempts,
+            crm_lab_async_inbox, crm_lab_async_outbox TO crm_async_ci;
           SQL
       - name: Run isolated PostgreSQL RLS tests
         run: php artisan test --filter=PostgresMembershipRlsTest --no-ansi
