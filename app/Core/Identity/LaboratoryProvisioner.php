@@ -36,7 +36,8 @@ final readonly class LaboratoryProvisioner
             if ($step === null) { $this->deny(); }
             $db = $this->registry->db;
             $existing = $db->table('crm_auth_credentials')->where('identity_id', $target)->lockForUpdate()->first();
-            if (($expectedVersion === 0 && $existing) || ($expectedVersion > 0 && (!$existing || (int) $existing->version !== $expectedVersion))) { $this->deny(); }
+            if (($expectedVersion === 0 && $existing) || ($expectedVersion > 0
+                && (!$existing || !$this->registry->validCredential($existing) || (int) $existing->version !== $expectedVersion))) { $this->deny(); }
             $version = $expectedVersion + 1;
             $values = [
                 'login_key' => hash('sha256', $login), 'password_hash' => $this->hasher->make($password),
