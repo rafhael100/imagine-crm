@@ -45,11 +45,13 @@ final readonly class GuardPrincipalSource
     }
 
     /** The short-lived current() snapshot alone never authorizes an effect. */
-    public function withinCurrent(Closure $operation): mixed
+    public function withinCurrent(Closure $operation, bool $recent = false): mixed
     {
         $id = $this->identityId();
 
-        return $this->sessions->withinCurrent($id, fn () => $operation(new PrincipalReference($id)));
+        $callback = fn () => $operation(new PrincipalReference($id));
+        return $recent ? $this->sessions->withinCurrent($id, $callback, true)
+            : $this->sessions->withinCurrent($id, $callback);
     }
 
     private function identityId(): string
