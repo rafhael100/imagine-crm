@@ -32,25 +32,32 @@ Este repositório é o **CRM Imagine**, SaaS multiempresa Laravel 13 / PostgreSQ
 
 ## Incrementos integrados e próxima etapa prioritária
 
-**Conferir [STATUS-ATUAL.md](STATUS-ATUAL.md) e GitHub diretamente antes de iniciar tarefas**: o STATUS é histórico, não homologação nem autorização permanente.
+**Consultar [STATUS-ATUAL.md](STATUS-ATUAL.md), Issues, PRs e Actions atuais antes de agir.** O STATUS é um registro datado; o GitHub prevalece.
 
-- **F1-02**: [PR #4](https://github.com/rafhael100/imagine-crm/pull/4), merge apenas na DEV `3ec4cfa0621140056eab274826a639aba125e0a6`.
-- **F1-03**: [PR #6](https://github.com/rafhael100/imagine-crm/pull/6), merge apenas na DEV `3a3a5b816843ca1fd7d329fa6f0d467406a3ff10`.
-- **F1-04**: [PR #8](https://github.com/rafhael100/imagine-crm/pull/8), merge apenas na DEV `407a2ead654864cd457436080999736a1186e219`.
-- **F1-05**: [PR #10](https://github.com/rafhael100/imagine-crm/pull/10), merge apenas na DEV `9cc5ae4214e07903b2b69d9d40541c61f395d4bf`. Contratos `AuthorizationIntent`/`AuthorizationEnvelope`, campos/escopos e testes negativos; **autorização de negócio segue negada por padrão**.
-- **`main`**: separada, [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) ainda DRAFT, sem merge nem deploy.
+- **F1-02**: [PR #4](https://github.com/rafhael100/imagine-crm/pull/4), DEV merge `3ec4cfa0621140056eab274826a639aba125e0a6`.
+- **F1-03**: [PR #6](https://github.com/rafhael100/imagine-crm/pull/6), DEV merge `3a3a5b816843ca1fd7d329fa6f0d467406a3ff10`.
+- **F1-04**: [PR #8](https://github.com/rafhael100/imagine-crm/pull/8), DEV merge `407a2ead654864cd457436080999736a1186e219`.
+- **F1-05**: [PR #10](https://github.com/rafhael100/imagine-crm/pull/10), DEV merge `9cc5ae4214e07903b2b69d9d40541c61f395d4bf`. Contratos de intenção e autorização de negócio somente **deny-by-default**.
+- **F1-06**: [PR #12](https://github.com/rafhael100/imagine-crm/pull/12), DEV merge **`691f8c0e508fabae5d3560cca044bf280d2fcfb5`**. Contratos assíncronos por classe A–E para laboratório, sem execução de jobs/webhooks, grants, efeitos, filas ou credenciais reais.
+- **`main`** não foi alterada por esses merges; [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) continua **DRAFT**, não realizar merge para `main` sem autorização específica.
 
-**Próxima tarefa: [Issue #11 — F1-06](https://github.com/rafhael100/imagine-crm/issues/11), contratos de autoridade assíncrona, jobs, eventos e webhooks (DENY-ONLY).** Ler CORE03, CORE09, INT, `docs/desenvolvimento/F1-05-authorization-contracts.md`, F1-04 e esta issue. Criar `codex/f1-06-async-authority-contracts` a partir da **HEAD atual de `dev/fast-track-crm-2026-11-04`**, abrir **PR DRAFT contra a DEV**, executar CI, sem merge automático, sem alterar `main` e sem acessar VPS.
+**Próximo incremento de Codex:** [Issue #13 — F1-07](https://github.com/rafhael100/imagine-crm/issues/13): **observabilidade segura, classificação das falhas e reconciliação inerte da ponte assíncrona**, sempre em laboratório e deny-only.
 
-### Restrições de F1-06
-- As cinco classes semânticas CORE03 (A humano diferido, B processo oficial CRM, C automação nativa configurável do cliente, D ingresso externo, E operação técnica Imagine) têm **autoridades diferentes**. Não tratar ausência de sessão humana como liberdade de acesso; não transformar ator causal em principal técnico.
-- `DenyByDefaultAuthorizer` é a política única em runtime; **nenhum `ALLOW`, grant comercial, role produtivo, autorização de suporte, rota pública, fila real, webhook real, emissão de token ou segredo/identidade técnica operacional**.
-- Motor próprio Laravel/PostgreSQL/filas para automações do CRM, quando homologado; **n8n reservado para serviços internos controlados da Imagine**, sob avaliação de licenciamento. Não conectar nenhum dos dois nesta fase.
-- Tipos/versionamento, correlação, idempotência, autorização por tenant/escopo e estado do módulo são requisitos; mensagens 2xx, sucesso técnico e GUC `app.tenant_id` não comprovam negócio, login ou permissão.
-- Não copiar prazos comerciais de IN-127 (Sites↔CRM) como regras globais de jobs; requisitos de recepção de leads seguem próprios e pendentes de homologação.
-- Todos os 67 IDs CORE, CORE01..CORE09, SEG-01/02, ARQ/INT/FIN/CON/LGPD e os critérios de homologação de serviços/cofre/mandatos **continuam abertos**. CORE03/CORE09-D01..D03 são somente base documental; D04..D10 abertas.
+Ao iniciar F1-07:
+1. Usar a **HEAD atual** de `dev/fast-track-crm-2026-11-04` (nunca `main`); verificar checks da branch. Criar `codex/f1-07-async-observability-reconciliation` e abrir **PR DRAFT dirigido somente à DEV**.
+2. Ler Issue #13, ADR F1-06, CORE03/06/09, INT-10/12, SEG-01/02, LGPD e documentação normativa. Preservar F1-02..F1-06.
+3. Criar apenas contratos candidatos de telemetria/diagnóstico **sem vazamento de input, token, stack trace ou PII**, e testes sintéticos de negação, exceção técnica, rollback, reuso de pool, contextos A–E, idempotência e reconciliação. Qualquer sink permanece em **fixture de tests/**; nenhuma gravação/rota pública/worker ativo.
+4. Não transformar `catch(Throwable)` em sucesso, nem inferir que sinal de auditoria significa comprovação de autoridade. Nenhum `ALLOW`, sem segundo autorizador, sem identidade técnica emitida, sem mensagem externa ou execução real.
+5. Executar CI Laravel/SQLite e PostgreSQL 16/Redis no SHA final; incluir links, aprovados, skipped, asserts e riscos. Solicitar revisão humana antes de merge, **sem merge automático ou deploy na VPS**.
+
+### Gates obrigatórios
+- **67 IDs técnicos CORE**, CORE01..CORE09 (incluindo CORE03/09-D04..D10), SEG-01/02, ARQ/INT/FIN/CON/LGPD continuam abertos. CORE03/09-D01..D03 são apenas base documental.
+- `DenyByDefaultAuthorizer` permanece o único autorizador runtime, sem `ALLOW` para cliente, suporte, IA, jobs, integrações, leads, exportações ou qualquer dado de negócio.
+- n8n é reservado às operações internas controladas Imagine (dependente de avaliação de licenciamento); motor nativo CRM é planejamento independente, **não implementar nesta issue**.
+- Não criar identidade técnica produtiva, cofre, credencial real, autenticação pública, conexão de cliente, autorização por cabeçalho/prompt, webhook, fila, outbox/inbox real, custo ou deploy.
+- `app.tenant_id` (GUC de PostgreSQL) não é prova de autenticação e contexto contaminado em pool/worker deve falhar fechado.
 
 ## Provas de execução
-- Antes de integrar F1-05, SHA `312f2933`: [Laravel/SQLite](https://github.com/rafhael100/imagine-crm/actions/runs/42042627062) — **229 passed, 32 skipped**; [PostgreSQL/Redis](https://github.com/rafhael100/imagine-crm/actions/runs/42042626980) — **260 passed, 1 skipped**.
-- Após merge F1-05 na DEV, SHA `9cc5ae4214e07903b2b69d9d40541c61f395d4bf`: [Laravel](https://github.com/rafhael100/imagine-crm/actions/runs/42052640678) e [PostgreSQL/RLS/Redis](https://github.com/rafhael100/imagine-crm/actions/runs/42052641333), ambos **success**.
-- CI sintética verifica somente o recorte automatizado. Novos commits documentais exigem conferir checks da HEAD de novo; não encerram CORE/SEG ou liberam produção.
+- F1-06 head pré-merge `fd08a9212a43c01d9b8a66f1188a361e66b14774`: [Laravel/SQLite run 42070845197](https://github.com/rafhael100/imagine-crm/actions/runs/42070845197) **307 passed / 33 skipped** e [PostgreSQL/Redis run 42070845055](https://github.com/rafhael100/imagine-crm/actions/runs/42070845055) **339 passed / 1 skipped**.
+- F1-06 após merge na DEV, `691f8c0e508fabae5d3560cca044bf280d2fcfb5`: [Laravel run 42073457091](https://github.com/rafhael100/imagine-crm/actions/runs/42073457091) e [PostgreSQL/Redis run 42073457093](https://github.com/rafhael100/imagine-crm/actions/runs/42073457093), ambos `success`.
+- Todas as CI são sintéticas e limitadas; não significam aceites CORE/SEG ou release. Verificar novos checks após commits documentais.
