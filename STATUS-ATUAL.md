@@ -7,7 +7,7 @@
 ## 1. Resumo executivo
 
 - **Fase:** desenvolvimento técnico controlado e **experimental** do núcleo Laravel 13 / PostgreSQL 16, com dados sintéticos e bloqueios de segurança preservados.
-- **Branch autorizada de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04) — HEAD observada `360dfc068d5eeb181d8c9da40ce0665696601482`.
+- **Branch autorizada de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04) — base de código observada antes desta atualização documental: `360dfc068d5eeb181d8c9da40ce0665696601482` (a HEAD pode avançar com commits de documentação).
 - **`main`:** permanece separada; [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) segue **DRAFT**, sem integração à `main`.
 - **Em revisão:** [Issue #7 — F1-04](https://github.com/rafhael100/imagine-crm/issues/7) e [PR #8 — F1-04](https://github.com/rafhael100/imagine-crm/pull/8), **DRAFT, aberta, sem merge**.
 - **Infraestrutura:** nenhuma implantação na VPS ou produção foi comprovada ou autorizada por este registro. A VPS central compartilhada é a preferência arquitetural, com contrato/configuração/operação sujeitos a decisões separadas.
