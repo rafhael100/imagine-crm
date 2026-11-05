@@ -45,6 +45,8 @@ São contratos candidatos para teste, não evidência de titularidade de pessoas
 - `recovery`: emite seis códigos de 192 bits por `random_bytes`, somente hashes
   persistidos. Incrementa epoch e revoga sessões anteriores, sem remover MFA.
 - Substituição de credencial/fator também incrementa epoch e revoga sessões.
+  Rotação só aceita credencial ativa/verificada; não reativa identidade
+  desabilitada nem verifica retroativamente uma identidade não verificada.
   Nenhum método cria membership, assento, perfil ou acesso comercial.
 - UUID de operação serve à idempotência por ator/mandato/alvo/ação. Replay só
   informa `already_completed`, sem reemitir códigos ou aplicar novos parâmetros.
@@ -172,9 +174,32 @@ Referência de cache: [Laravel 13 atomic locks](https://laravel.com/framework/do
 
 ## Evidências e pendências
 
-Testes escritos; aguardam execução real em Laravel/SQLite e PostgreSQL 16/Redis.
-PHP/Composer/Docker indisponíveis no terminal local; não declarar execução local.
-Registrar links e números após os workflows. CORE04-D04..D10, CORE01/02/03/05/06/09,
+Execução real em 05/11/2026, revisão de código
+`889908c57ee90f515f094557467640245ae01c38`, [PR DRAFT #8](https://github.com/rafhael100/imagine-crm/pull/8):
+
+| Ambiente/comando | Resultado observado | Evidência |
+|---|---|---|
+| Laravel 13.40.0 / PHP 8.4 / SQLite — `php artisan test --no-ansi` | 77 aprovados, 30 ignorados por exigirem PostgreSQL/Redis, 252 asserções; sucesso | [Run 42020783835 / job 127222725415](https://github.com/rafhael100/imagine-crm/actions/runs/42020783835/job/127222725415) |
+| PostgreSQL 16 / Redis efêmeros — suíte completa | 106 aprovados, 1 ignorado exclusivo de SQLite, 399 asserções; sucesso | [Run 42020783861 / job 127222924937](https://github.com/rafhael100/imagine-crm/actions/runs/42020783861/job/127222924937) |
+| Mesmo job PostgreSQL — filtro PostgresMembershipRlsTest | 18 aprovados, 49 asserções; sucesso | Mesmo log acima |
+| Local — `git diff --check` | Sucesso, sem erros de whitespace | Snapshot local da branch |
+
+Incluídos os casos de falha de cache, contenção Redis, write=false e exceção
+no armazenamento de sessão, falha de auditoria após commit, compensação e
+reconciliação, mandato inválido/revogado/expirado/escopo/epoch, fator sem prova,
+profile desligado/produção e tentativa de reativar identidade desabilitada.
+As regressões F1-02/F1-03 permanecem na suíte, sem autorizar efeito comercial.
+
+A execução inicial revelou um helper de limpeza nomeado como hook automático
+de trait do Laravel, causando recursão no teardown. Nome corrigido para
+`finishSyntheticFixture`; execução repetida e concluída nos logs acima.
+Os erros SQL 42501/55P03/RLS e 23502 dos probes negativos são recusas esperadas,
+não falhas finais. Avisos de plataforma Ubuntu/Node das actions permanecem.
+
+PHP/Composer/Docker indisponíveis no terminal local; suítes executadas na CI
+efêmera, com dados fictícios. `composer.lock` preservado, SHA256
+`08C77FE9D787BE841633DEA38461BBBDC4C3EDFA419FF676D8FADF7581636F5C`.
+CORE04-D04..D10, CORE01/02/03/05/06/09,
 SEG-01/02, ARQ/INT, FIN/CON/LGPD e revisão humana IAM/DBA/Segurança permanecem
 abertos. CI verde valida somente o protótipo sintético; não é aprovação de
 titularidade, Auditoria Geral, antiabuso produtivo, integração ou release.
