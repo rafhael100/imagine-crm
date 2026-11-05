@@ -131,3 +131,52 @@ incluindo regressões F1-02..F1-06. Registrar SHA/links/resultados após execuç
 PHP/Composer/Docker ausentes localmente; não declarar execução local dessas
 plataformas. composer.lock sem alteração: SHA256
 `08C77FE9D787BE841633DEA38461BBBDC4C3EDFA419FF676D8FADF7581636F5C`.
+
+## Evidências executadas — 05/11/2026
+
+[PR DRAFT #14](https://github.com/rafhael100/imagine-crm/pull/14), revisão
+`9ea83a3b06cde2b17accbb6980d8e542eaff8863`, ambos os checks success.
+Resumos e probes conferidos diretamente nos logs de Actions:
+
+| Plataforma/comando | Resultado observado | Log |
+|---|---|---|
+| PHP 8.4 / Laravel 13 / SQLite — `php artisan test --no-ansi` | **337 passed, 36 skipped, 1304 assertions; 0 falhas** | [42088846537 / 127461193343](https://github.com/rafhael100/imagine-crm/actions/runs/42088846537/job/127461193343) |
+| PostgreSQL 16 / Redis efêmeros — suíte completa | **372 passed, 1 skipped exclusivo SQLite, 1569 assertions; 0 falhas** | [42088846526 / 127461189115](https://github.com/rafhael100/imagine-crm/actions/runs/42088846526/job/127461189115) |
+| Mesmo job PostgreSQL — filtro PostgresMembershipRlsTest | **18 passed, 49 assertions** | Mesmo log PostgreSQL |
+| Local — `git diff --cached --check` nos arquivos F1-07 | **Sem erros de whitespace** | Snapshot local de edição |
+
+33 casos novos somados às regressões F1-02..F1-06. Os 36 skips SQLite exigem
+PostgreSQL/Redis, incluindo três probes novos: contexto/lock/reuso, conexão
+PostgreSQL indisponível e Redis real indisponível. Todos passaram no job
+PostgreSQL; skip não é validação da plataforma ausente. Confirmados também
+os casos A–E sem dispatch/HTTP/mail, sanitização, observador falhando e
+reconciliação pendente. SQLSTATE 55P03/RLS de probes negativos é esperado.
+
+### Falha inicial da fixture e correção
+
+Na revisão `8eb97bbbb83d78a5697ffc9e5a4d7f82655bbbcc`, Laravel passou, mas
+[PostgreSQL 42087788615](https://github.com/rafhael100/imagine-crm/actions/runs/42087788615/job/127457455787)
+teve **1 failed, 1 skipped, 371 passed, 1565 assertions**, no probe Redis.
+A primeira contraprova em `af0630bfe08879400d0c721c364459e669a29cfe`
+([log](https://github.com/rafhael100/imagine-crm/actions/runs/42088335602/job/127459386815))
+mostrou o tipo real: InvalidArgumentException, não RedisException. A fixture
+alterava config depois de resolver o RedisManager compartilhado, que já
+havia capturado sua configuração. O classificador manteve corretamente
+unexpected_failure para esse erro; a negação nunca foi perdida.
+
+Corrigido **somente o teste**: manager isolado criado com a conexão de falha
+desde o construtor, ping do Redis real, recusa controlada em 127.0.0.1:1,
+asserção explícita de RedisException e de rollback IAM. A advertência de
+transporte esperada é silenciada apenas nessa expressão sintética; exceções
+e tipo continuam obrigatoriamente verificados. Nenhum handler global foi
+alterado e o classificador runtime não foi ampliado para exceções genéricas.
+Conferida a [fonte oficial RedisManager 13.x](https://github.com/laravel/framework/blob/13.x/src/Illuminate/Redis/RedisManager.php)
+e PhpRedisConnector durante o diagnóstico. Após a correção ambas as suítes
+completas passaram na revisão registrada acima.
+
+Não executados localmente: Laravel/PostgreSQL/Redis, pois PHP/Composer/Docker
+estão ausentes do terminal. Execução real exclusivamente na CI sintética;
+sem VPS/dados reais. Composer lock e autorizador permanecem idênticos à
+F1-06. Este registro altera apenas documentação: conferir novamente o SHA
+final e seus checks na PR após o commit de evidências. Nenhum aceite humano,
+fechamento CORE/SEG ou liberação de merge/produção é declarado.
