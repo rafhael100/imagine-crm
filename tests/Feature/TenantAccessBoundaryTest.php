@@ -41,7 +41,7 @@ final class TenantAccessBoundaryTest extends TestCase
         $store = Mockery::mock(ActiveMembershipStore::class);
         $store->shouldNotReceive('within');
 
-        $boundary = new TenantAccessBoundary(new GuardPrincipalSource($guard), $store, new DenyByDefaultAuthorizer());
+        $boundary = new TenantAccessBoundary(new GuardPrincipalSource($guard, $this->verifiedSession()), $store, new DenyByDefaultAuthorizer());
         $this->expectException(AuthenticationException::class);
         $boundary->execute(self::A, 'lead', 'read', fn () => $this->fail('Must not run.'));
     }
@@ -51,14 +51,14 @@ final class TenantAccessBoundaryTest extends TestCase
         $guard = $this->crmGuard();
         $guard->shouldReceive('user')->andReturn((new User())->forceFill(['id' => self::ID]));
         $this->expectException(AuthenticationException::class);
-        (new GuardPrincipalSource($guard))->current();
+        (new GuardPrincipalSource($guard, $this->verifiedSession()))->current();
     }
 
     public function test_guard_is_read_again_instead_of_caching_a_principal(): void
     {
         $guard = $this->crmGuard();
         $guard->shouldReceive('user')->twice()->andReturn($this->identity(), null);
-        $source = new GuardPrincipalSource($guard);
+        $source = new GuardPrincipalSource($guard, $this->verifiedSession());
         $this->assertSame(self::ID, $source->current()->principalId);
         $this->expectException(AuthenticationException::class);
         $source->current();
@@ -87,7 +87,7 @@ final class TenantAccessBoundaryTest extends TestCase
         $authorizer = Mockery::mock(Authorizer::class);
         $authorizer->shouldNotReceive('decide');
         $this->expectException(AuthorizationException::class);
-        (new TenantAccessBoundary(new GuardPrincipalSource($guard), $store, $authorizer))
+        (new TenantAccessBoundary(new GuardPrincipalSource($guard, $this->verifiedSession()), $store, $authorizer))
             ->execute(self::A, 'lead', 'read', fn () => $this->fail('Must not run.'));
     }
 
@@ -101,7 +101,7 @@ final class TenantAccessBoundaryTest extends TestCase
                 $operation(new MembershipSnapshot($tenant, $principal->principalId, MembershipStatus::Active, 1))
         );
         $this->expectException(AuthorizationException::class);
-        (new TenantAccessBoundary(new GuardPrincipalSource($guard), $store, $this->app->make(Authorizer::class)))
+        (new TenantAccessBoundary(new GuardPrincipalSource($guard, $this->verifiedSession()), $store, $this->app->make(Authorizer::class)))
             ->execute(self::A, 'lead', 'export', fn () => $this->fail('Must not run.'));
     }
 
@@ -150,7 +150,7 @@ final class TenantAccessBoundaryTest extends TestCase
         $this->configureCrmGuard();
         $guard = $this->app['auth']->guard('crm_identity');
         $guard->setUser($this->identity()); // Trusted fixture, not a login endpoint.
-        $source = $this->app->make(GuardPrincipalSource::class);
+        $source = GuardPrincipalSource::fromConfiguration($this->app['auth'], $this->app['config'], $this->verifiedSession());
         $this->assertSame(self::ID, $source->current()->principalId);
         $guard->forgetUser();
         $this->expectException(AuthenticationException::class);
@@ -162,7 +162,7 @@ final class TenantAccessBoundaryTest extends TestCase
         $this->configureCrmGuard();
         $guard = $this->app['auth']->guard('crm_identity');
         $guard->setUser($this->identity());
-        $source = $this->app->make(GuardPrincipalSource::class);
+        $source = GuardPrincipalSource::fromConfiguration($this->app['auth'], $this->app['config'], $this->verifiedSession());
         $guard->setProvider(new EloquentUserProvider($this->app['hash'], User::class));
         $this->expectException(AuthenticationException::class);
         $source->current();
@@ -191,7 +191,7 @@ final class TenantAccessBoundaryTest extends TestCase
         $guard = $this->crmGuard();
         $guard->shouldReceive('user')->once()->andReturn((new GlobalIdentity())->forceFill(['id' => $id]));
         $this->expectException(AuthenticationException::class);
-        (new GuardPrincipalSource($guard))->current();
+        (new GuardPrincipalSource($guard, $this->verifiedSession()))->current();
     }
 
     private function configureCrmGuard(): void
@@ -213,5 +213,13 @@ final class TenantAccessBoundaryTest extends TestCase
     private function identity(): GlobalIdentity
     {
         return (new GlobalIdentity())->forceFill(['id' => self::ID]);
+    }
+
+    private function verifiedSession(): \App\Core\Identity\SessionAuthority
+    {
+        // Unit seam only; F1-03 integration tests exercise the real registry.
+        $proof = Mockery::mock(\App\Core\Identity\SessionAuthority::class);
+        $proof->shouldReceive('assertCurrent')->with(self::ID)->andReturnNull();
+        return $proof;
     }
 }

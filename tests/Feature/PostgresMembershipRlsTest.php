@@ -278,7 +278,7 @@ final class PostgresMembershipRlsTest extends TestCase
         $guard->shouldReceive('user')->once()->andReturn(
             (new GlobalIdentity())->forceFill(['id' => self::PRINCIPAL])
         );
-        $boundary = new TenantAccessBoundary(new GuardPrincipalSource($guard), $this->store(), new DenyByDefaultAuthorizer());
+        $boundary = new TenantAccessBoundary(new GuardPrincipalSource($guard, $this->verifiedSession()), $this->store(), new DenyByDefaultAuthorizer());
         try {
             $boundary->execute(self::ORG_A, 'lead', 'read', fn () => $this->fail('Business callback must never run.'));
             $this->fail('Expected deny-by-default.');
@@ -330,5 +330,12 @@ final class PostgresMembershipRlsTest extends TestCase
     private function store(): PostgresActiveMembershipStore
     {
         return new PostgresActiveMembershipStore(DB::connection('pgsql_rls_probe'));
+    }
+
+    private function verifiedSession(): \App\Core\Identity\SessionAuthority
+    {
+        $proof = Mockery::mock(\App\Core\Identity\SessionAuthority::class);
+        $proof->shouldReceive('assertCurrent')->with(self::PRINCIPAL)->andReturnNull();
+        return $proof;
     }
 }
