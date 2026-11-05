@@ -2,6 +2,12 @@
 
 Este repositório é o **CRM Imagine**, SaaS multiempresa Laravel 13 / PostgreSQL 16. As decisões normativas estão em `docs/planejamento/`; código experimental está em `dev/fast-track-crm-2026-11-04`. Consulte o PR #2 e as fontes antes de alterar regras.
 
+## Orientação e estado corrente do projeto
+- **Leia primeiro [STATUS-ATUAL.md](STATUS-ATUAL.md)** e confira, no GitHub, as Issues, Pull Requests, branches e checks citados antes de aceitar uma nova tarefa. O STATUS é um **resumo histórico datado**, sujeito a defasagem; o estado real da PR/CI prevalece.
+- **Este `AGENTS.md` define normas de trabalho**, não é autorização permanente para iniciar qualquer tarefa. As ordens de implementação são as Issues e as autorizações específicas da direção.
+- Na entrega, informe: issue/PR, branch base, SHA do commit, arquivos alterados, testes executados (com URL dos logs), testes não executados, riscos, gates ainda abertos e sugestão para o próximo passo. Não altere status para “aprovado/concluído” sem revisão ou aceite verificável.
+- Depois de uma etapa oficialmente aceita, proponha atualização do `STATUS-ATUAL.md` por commit revisável, sem modificar documentação normativa ou avançar para a etapa seguinte sem autorização. **Nunca** fazer merge/deploy automaticamente por causa dessa atualização.
+
 ## Fluxo de trabalho
 - **Branch base dos próximos incrementos:** `dev/fast-track-crm-2026-11-04`, NÃO `main`. Para tarefas de Codex, crie uma branch derivada da base e abra **PR em rascunho direcionado à branch de desenvolvimento**, com referência à issue. Não faça merge automaticamente.
 - Execute apenas desenvolvimento local/CI com **dados sintéticos**. Não provisionar VPS, conectar ambientes de clientes, pagar serviços, emitir mensagens externas ou realizar implantação.
@@ -29,7 +35,7 @@ Este repositório é o **CRM Imagine**, SaaS multiempresa Laravel 13 / PostgreSQ
 - **F1-03**: [PR #6](https://github.com/rafhael100/imagine-crm/pull/6), commit `3a3a5b816843ca1fd7d329fa6f0d467406a3ff10`, integrado somente na mesma branch. Núcleo de credenciais e sessões experimentais, MFA TOTP/recovery, controle de revogação concorrente e migrations de autenticação apenas em `database/experimental-migrations/auth`; **nenhuma autenticação pública ou produção habilitada**.
 - `main` permanece independente; [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) continua **DRAFT**. Não efetuar merge em `main`, deploy nem abrir contas reais.
 
-**F1-04 — hardening IAM para laboratório:** implementar a [Issue #7](https://github.com/rafhael100/imagine-crm/issues/7), incluindo provisionamento interno sintético e prova de autoridade, auditoria sem segredos, antifraude/rate limiting, compensação de falhas entre SQL/sessão/auditoria e ADR para MFA resistente a phishing. Criar `codex/f1-04-iam-hardening-audit` **a partir da HEAD atual de `dev/fast-track-crm-2026-11-04`**, abrir PR em rascunho contra essa branch, executar CI PostgreSQL/SQLite, **sem merge automático**.
+**F1-04 — hardening IAM para laboratório:** a [Issue #7](https://github.com/rafhael100/imagine-crm/issues/7) já possui a [PR #8](https://github.com/rafhael100/imagine-crm/pull/8) **DRAFT** na branch `codex/f1-04-iam-hardening-audit`, dirigida a `dev/fast-track-crm-2026-11-04`. O escopo abrange provisionamento interno sintético e prova de autoridade, auditoria sem segredos, antiabuso/rate limiting, compensação entre SQL/sessão/auditoria e ADR de MFA resistente a phishing. **Próximo passo é revisar a PR #8 e seus checks, não abrir outra PR ou fazer merge automático**. Os dois checks Laravel/SQLite e PostgreSQL/RLS foram concluídos com sucesso na HEAD observada `63b007f0048c09d3d794077b6ca1ae437dd89dcd`; revisão humana e autorização de merge continuam pendentes. Se o SHA mudar, revalidar checks.
 
 **Gates abertos:** CORE04-D04..D10, CORE01/02, SEG-01/02 e demais CORE/ARQ/INT/FIN/CON/LGPD. IAM real, verificação de titularidade, recovery produtivo, autorização comercial, identidade técnica, auditoria/retencão/antifraude e sessões distribuídas necessitam revisão/aceite específico. `DenyByDefaultAuthorizer` deve continuar negando todas as ações de negócio; não confiar na custom GUC `app.tenant_id` como prova de autenticação.
 
