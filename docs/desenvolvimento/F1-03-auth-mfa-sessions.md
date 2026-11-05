@@ -1,0 +1,147 @@
+# F1-03 — autenticação, sessões, MFA e revogação experimentais
+
+Data: 04/11/2026. [Issue #5](https://github.com/rafhael100/imagine-crm/issues/5).
+Base: `dev/fast-track-crm-2026-11-04` em `06ac9c37bca630948b2967003df4721960bc7304`,
+com F1-02 integrada por `3ec4cfa`. Branch: `codex/f1-03-auth-mfa-sessions`.
+Escopo: somente desenvolvimento/CI com fixtures fictícias. Sem merge/main/VPS.
+
+## Fontes e precedência
+
+Lidos AGENTS.md atualizado para F1-03, Issue #5, F1-01, os dois registros
+F1-02, CORE04 (D01..D03 documentais; D04..D10 abertos), CORE01/02/03/05/06/07/08/09,
+SEG-01/02 e a conciliação documental de F1-02. A Issue #5 autoriza este recorte
+executável sintético, sem transformar os textos candidatos em homologação.
+
+As decisões posteriores da main permanecem nas fontes imutáveis do
+[registro F1-02](F1-02-revisao-tecnica-e-conciliacao.md): DEC-FASTTRACK, pacote
+F1-P0, CT-F1-01 e P1+P2 documental. Nenhum merge documental, catálogo ACL ou
+grant comercial é produzido. DenyByDefaultAuthorizer permanece inalterado.
+
+Fontes de implementação: [Laravel 13 autenticação](https://laravel.com/framework/docs/13.x/authentication),
+[sessões](https://laravel.com/framework/docs/13.x/session),
+[RFC 6238](https://www.rfc-editor.org/rfc/rfc6238.html) e
+[PostgreSQL 16 SELECT/locking](https://www.postgresql.org/docs/16/sql-select.html).
+
+## ADR F1-03 — escolhas candidatas para o laboratório
+
+1. **Fechado por padrão:** `identity.experimental=false`. Mesmo habilitado,
+   somente ambientes Laravel `local`/`testing` podem resolver o serviço.
+   Nenhuma rota HTTP foi adicionada. O guard `web` não autentica o CRM.
+2. **Guard dedicado + prova atual:** profile explícito configura
+   `crm_identity`/SessionGuard e Eloquent/GlobalIdentity. A fonte exige também
+   SessionAuthority: registro ativo no banco, identidade correspondente,
+   credencial ativa/verificada, versão vigente, MFA, vínculo ao ID de sessão,
+   expiração absoluta e inatividade. A consulta se repete mesmo com guard
+   cacheado. Construir um modelo ou DTO não substitui a prova no registry.
+3. **Credenciais globais protegidas:** tabela candidata de hash de login
+   normalizado, hash de senha Laravel, status/verificação/versionamento e fator.
+   Não se infere identidade por e-mail/CNPJ nem se cria membership. Origem da
+   verificação inicial ainda depende do owner IAM; somente fixtures de testes
+   são provisionadas nesta entrega. Sem cadastro, verificação por e-mail,
+   redefinição de senha ou inscrição pública de fator.
+4. **MFA candidato:** TOTP RFC 6238 SHA-1, 6 dígitos, passo de 30 segundos e
+   tolerância de um passo. HMAC do PHP, sem primitiva criptográfica inventada;
+   vetores SHA-1 de 8 dígitos do RFC usados como contraprova. Último passo
+   consumido é persistido com lock por identidade para impedir replay entre
+   sessões. TOTP não resiste a phishing como WebAuthn; WebAuthn/Fortify e
+   pacote dedicado continuam alternativas para revisão antes de uso real.
+   Não foram alterados composer.json/lock ou adquiridas dependências.
+5. **Todos os perfis fictícios deste laboratório exigem MFA.** Isso é recorte
+   restritivo para demonstrar o fluxo, não regra nova de obrigatoriedade para
+   funcionários reais. Política por papel/tenant continua CORE04/CORE02.
+6. **Fatores e recuperação:** TOTP cifrado/autenticado pelo Encrypter Laravel
+   com APP_KEY efêmera de CI. Códigos de recuperação de alta entropia devem
+   ser armazenados com hash; fixtures demonstram consumo único/versionado
+   após senha válida e fator previamente confirmado. Perda de fator E códigos
+   não abre fallback por e-mail, suporte ou desligamento de MFA. Enrollment,
+   regeneração, prova de titularidade, auditoria/notificações e cofre produtivo
+   continuam abertos; não há API para gravar uma nova credencial/fator.
+7. **Sessões server-side:** token de registry aleatório de 256 bits somente
+   no armazenamento de sessão do servidor; banco guarda SHA-256 do token e
+   binding do ID da sessão. Sessão pendente não faz login no guard. MFA válido
+   revoga o desafio, invalida ID anterior e autentica sem remember-me. Logout,
+   refresh, step-up e mudança de conta rotacionam/limpam o contexto quando
+   aplicável. Refresh não estende a validade absoluta nem a janela de MFA.
+   Cookie do laboratório é Secure/HttpOnly/SameSite=Strict; sessão cifrada e
+   encerrada ao fechar navegador; driver cookie é recusado.
+8. **Prazos e limites são candidatos, não homologados:** desafio 5 min,
+   inatividade 30 min, absoluto 12 h, step-up 5 min; 5 tentativas/60 s por hash
+   de login e por identidade no MFA. Os 30 min da Administração Geral são
+   preservados como fonte; estes números NÃO são aprovação para aplicar a
+   todos os papéis/tenants. Sem refresh token longo ou dispositivo lembrado.
+9. **Revogação:** self-service somente das próprias sessões, por identidade
+   derivada do guard e prova atual. Revogar todas inclui desafios pendentes.
+   Alteração de versão/status da credencial invalida novas provas de sessões
+   antigas; desligamento de membership continua restrito ao tenant pela F1-02.
+   Não cancelar retroativamente efeitos oficiais nem dar poder a serviços/IA.
+10. **Concorrência:** locks de credencial antes do registry e códigos; consumo
+    de TOTP/recovery e ativação são transacionais, sem replay automático.
+    Um teste PostgreSQL mantém o lock em uma conexão IAM e comprova bloqueio
+    em outra. Laravel SessionGuard e armazenamento de sessão não participam
+    de commit distribuído com PostgreSQL: falha parcial é tratada fechando a
+    sessão; falta de registry válido nega acesso. Pool/worker e throttle
+    distribuído, locks de requisição e prevenção de DoS requerem revisão própria.
+
+## Persistência e roles
+
+Migration `000002` é candidata, recusada fora de local/testing; SQLite é apenas
+adaptador de teste. Em CI, schema/fixtures são preparados pelo role de setup,
+depois os serviços usam **crm_iam_ci** sem SUPERUSER/BYPASSRLS/ownership:
+
+| Role | Acesso mínimo no laboratório | Negação verificada |
+|---|---|---|
+| `crm_iam_ci` | SELECT no catálogo global mínimo de IDs e credenciais; UPDATE somente last_totp_step; SELECT/INSERT/UPDATE no registry; SELECT e UPDATE(consumed_at) em recovery | Sem acesso à tabela tenant-bound crm_memberships; sem modificar senhas/fatores/estado pelo serviço runtime |
+| `crm_app_ci` | Grants F1-02 apenas em crm_memberships com RLS | Sem SELECT em credenciais, registry, recovery e catálogo global |
+| Setup efêmero da CI | Migration e fixtures conhecidas/fictícias | Recusado como role runtime pelo adaptador IAM |
+
+A conexão `crm_iam` exige username/password próprios, sem fallback ao usuário
+do banco de negócio. Não existem credenciais reais no código. IAM global usa
+ACL de tabela/coluna e tem autoridade interna específica; não é RLS comercial
+por tenant. A proteção do catálogo depende dessa separação e de código SQL
+confiável. SQL arbitrário/credencial IAM comprometida não é resolvido por este
+registry nem pelo custom GUC. `app.tenant_id` continua alterável e não autentica.
+O serviço IAM não tem grants de negócio; o serviço tenant não recebe os hashes.
+
+## Uso e testes autorizados
+
+Não habilitar em VPS/produção. Em CI, testes ligam o profile explicitamente,
+criam credenciais/fatores/códigos sintéticos e usam o banco efêmero. APP_KEY
+transitória protege os fatores; não há dados/copias de ambiente de cliente.
+As APIs internas são `begin`, `completeMfa`, `stepUp`, `refresh`, `sessions`,
+`revoke`, `revokeAll` e `logout`. Nunca aceitar identity_id/session-token do
+body como origem de autoridade. Futuro adaptador HTTP terá de usar middleware
+web/CSRF, rate limiting e revisão de segurança; hoje só há rota temporária
+definida DENTRO DO TESTE, com CSRF efetivamente forçado (Laravel normalmente
+o ignora no PHPUnit). Cookies e resposta 419 são verificados nesse adaptador.
+
+Testes novos cobrem senha inválida/identidade inexistente com erro neutro;
+identidade não verificada/inativa; MFA ausente/incorreto/replay; recuperação
+única; cifragem/hashes; desafio e sessão expirados; refresh/ID antigo; guard
+cacheado após revogação; versão de credencial; impersonation/request; sessão
+de outra identidade ou ID; troca de conta e limpeza de tenant/CSRF; step-up;
+throttle persistente entre rotações; ausência de rotas públicas; profile
+desabilitado/produção/cookie; roles PostgreSQL e concorrência; autenticação
+sem direito comercial, membership suspensa/desligada e isolamento A/B.
+
+Os seams unitários F1-02 agora fornecem explicitamente uma SessionAuthority
+falsa de teste; os testes AuthKernel usam a prova REAL do registry em SQLite
+e PostgreSQL. Nenhum mock é configurado em runtime.
+
+## Pendências e escopo de revisão
+
+CORE04-D04..D10: provider/verificação de identidade real, enrollment/MFA por
+papel, recovery e titularidade, política de expiração, antifraude, step-up por
+ação, auditoria e revogação distribuída. CORE01-D04..D07: modelo completo,
+pool/worker/atestado e integridade. CORE02/07/08: catálogo, perfis/campos/
+entitlements e escopos. CORE03/05/06/09, SEG-01/02: jobs, mandatos, auditoria,
+cofre e identidades técnicas. INT/ARQ/G01..G06/FIN/CON/LGPD permanecem abertos.
+Nenhum dos 67 IDs CORE é encerrado. Segurança/DBA/IAM e owners precisam revisar
+este recorte antes de merge; release requer aceite separado. Sem merge/deploy.
+
+## Evidências de execução
+
+Testes escritos, ainda aguardando execução nos dois workflows existentes.
+PHP/Composer/Docker não estão disponíveis no terminal local. Publicação pela
+sessão autenticada do GitHub; snapshot Git local serve apenas ao diff e não
+será publicado como ancestralidade. Branch remota deriva diretamente da dev.
+Os resultados e links novos serão registrados após execução real de CI.
