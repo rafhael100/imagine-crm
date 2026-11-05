@@ -31,15 +31,25 @@ Este repositório é o **CRM Imagine**, SaaS multiempresa Laravel 13 / PostgreSQ
 - **67 pendências técnicas CORE** e gates SEG/ARQ/INT/FIN/CON permanecem em aberto quanto a implementação, revisão e aceite. Não marcar como fechados por CI verde em prova parcial.
 
 ## Incrementos integrados e próxima etapa prioritária
-- **F1-02**: [PR #4](https://github.com/rafhael100/imagine-crm/pull/4), commit `3ec4cfa0621140056eab274826a639aba125e0a6`, integrado somente em `dev/fast-track-crm-2026-11-04`.
-- **F1-03**: [PR #6](https://github.com/rafhael100/imagine-crm/pull/6), commit `3a3a5b816843ca1fd7d329fa6f0d467406a3ff10`, integrado somente na mesma branch. Núcleo de credenciais e sessões experimentais, MFA TOTP/recovery, controle de revogação concorrente e migrations de autenticação apenas em `database/experimental-migrations/auth`; **nenhuma autenticação pública ou produção habilitada**.
-- `main` permanece independente; [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) continua **DRAFT**. Não efetuar merge em `main`, deploy nem abrir contas reais.
 
-**F1-04 — hardening IAM para laboratório:** a [Issue #7](https://github.com/rafhael100/imagine-crm/issues/7) já possui a [PR #8](https://github.com/rafhael100/imagine-crm/pull/8) **DRAFT** na branch `codex/f1-04-iam-hardening-audit`, dirigida a `dev/fast-track-crm-2026-11-04`. O escopo abrange provisionamento interno sintético e prova de autoridade, auditoria sem segredos, antiabuso/rate limiting, compensação entre SQL/sessão/auditoria e ADR de MFA resistente a phishing. **Próximo passo é revisar a PR #8 e seus checks, não abrir outra PR ou fazer merge automático**. Os dois checks Laravel/SQLite e PostgreSQL/RLS foram concluídos com sucesso na HEAD observada `63b007f0048c09d3d794077b6ca1ae437dd89dcd`; revisão humana e autorização de merge continuam pendentes. Se o SHA mudar, revalidar checks.
+**Leia [STATUS-ATUAL.md](STATUS-ATUAL.md)** e confirme no GitHub seu estado antes de iniciar trabalhos: o resumo pode defasar.
 
-**Gates abertos:** CORE04-D04..D10, CORE01/02, SEG-01/02 e demais CORE/ARQ/INT/FIN/CON/LGPD. IAM real, verificação de titularidade, recovery produtivo, autorização comercial, identidade técnica, auditoria/retencão/antifraude e sessões distribuídas necessitam revisão/aceite específico. `DenyByDefaultAuthorizer` deve continuar negando todas as ações de negócio; não confiar na custom GUC `app.tenant_id` como prova de autenticação.
+- **F1-02** — [PR #4](https://github.com/rafhael100/imagine-crm/pull/4), merge apenas em DEV, SHA `3ec4cfa0621140056eab274826a639aba125e0a6`.
+- **F1-03** — [PR #6](https://github.com/rafhael100/imagine-crm/pull/6), merge apenas em DEV, SHA `3a3a5b816843ca1fd7d329fa6f0d467406a3ff10`.
+- **F1-04** — [PR #8](https://github.com/rafhael100/imagine-crm/pull/8), merge **somente em DEV**, SHA `407a2ead654864cd457436080999736a1186e219`. Controles experimentais de IAM, provisionamento sintético, auditoria minimizada, antiabuso Redis e compensação. Ainda sem login público, mandatos reais, autorização de dados comerciais, VPS ou produção.
+- `main` ainda é independente; [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) continua **DRAFT** e não deve ser integrado sem autorização exclusiva.
+
+**Próxima tarefa de Codex: F1-05**, conforme [Issue #9](https://github.com/rafhael100/imagine-crm/issues/9) — contratos de autorização por recurso/ação/campo/escopo e verificações negativas de efeitos protegidos. Partir da **HEAD atual de `dev/fast-track-crm-2026-11-04`**, criar branch `codex/f1-05-authorization-contracts`, abrir **PR DRAFT direcionado à DEV**, testar, não fazer merge automaticamente.
+
+### Restrições reforçadas na F1-05
+- As diretrizes CORE02-D04/D05 têm aceite documental preliminar, porém as pendências seguem abertas. CORE02-D06 permanece proposta não totalmente aprovada; conferir todas as versões e decisões mais recentes, inclusive de `main`.
+- A conciliação F1-02 menciona **P1+P2 como referência documental escopada**, não como `ALLOW`, grant, implementação final de precedência, entitlement ou direito a dados.
+- **Nunca trocar `DenyByDefaultAuthorizer` por política que permita operação real**. Não liberar rotas públicas, execução de jobs reais, exportação de clientes, lead/contact CRUD, IA, n8n ou dados pessoais sem decisões e gates próprios.
+- Nenhum campo, papel, recurso, escopo, módulo, plano ou canal criado em teste autoriza capacidades comerciais reais; os exemplos da Issue #9 são sintéticos e fechados.
+- Preservar `identity.experimental=false` por padrão, papel IAM sem privilégios de negócio, PostgreSQL RLS e provas de membership/identidade/sessão. Todos os CORE/SEG/ARQ/INT/FIN/CON/LGPD permanecem abertos.
 
 ## Provas de execução
-- F1-03, head `00c965df`: [SQLite/Laravel](https://github.com/rafhael100/imagine-crm/actions/runs/41945564965) **67 testes aprovados, 24 skips**, e [PostgreSQL/RLS](https://github.com/rafhael100/imagine-crm/actions/runs/41945564986) **90 testes aprovados, 1 skip**.
-- Pós-merge de F1-03, commit `3a3a5b816843ca1fd7d329fa6f0d467406a3ff10`: [CI SQLite](https://github.com/rafhael100/imagine-crm/actions/runs/41946853493) e [CI PostgreSQL](https://github.com/rafhael100/imagine-crm/actions/runs/41946853510) concluídas com sucesso.
-- Estas evidências cobrem **apenas o cenário sintético experimental**, e não validam produção nem encerram pendências. Após alterações em `AGENTS.md`, confirmar novamente os checks da HEAD.
+
+- F1-04 antes do merge: [Laravel/SQLite run 42027807893](https://github.com/rafhael100/imagine-crm/actions/runs/42027807893) — **77 passed / 30 skipped**; [PostgreSQL/Redis run 42027808128](https://github.com/rafhael100/imagine-crm/actions/runs/42027808128) — **106 passed / 1 skipped**.
+- Após merge F1-04 em DEV, SHA `407a2ead654864cd457436080999736a1186e219`: [Laravel run 42036309101](https://github.com/rafhael100/imagine-crm/actions/runs/42036309101) e [PostgreSQL/Redis run 42036309165](https://github.com/rafhael100/imagine-crm/actions/runs/42036309165) `success`.
+- Estas provas verificam **somente ambientes sintéticos**. Não encerram 67 IDs CORE nem liberação de produção. Reexecutar CI e conferir o SHA exato após novos commits.
