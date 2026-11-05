@@ -92,41 +92,46 @@ final readonly class LaboratoryProvisioner
     {
         if (!Str::isUuid($mandateId) || !Str::isUuid($operationId) || !Str::isUuid($target)) { $this->deny(); }
         $verifiedActor = null;
+        $origin = null;
+        $admitted = false;
         try {
-        return $this->actors->withinCurrent(function (PrincipalReference $actor) use ($mandateId, $operationId, $target, $action, $operation, &$verifiedActor): array {
-            $verifiedActor = $actor->principalId;
-            $this->abuse->admit($action, $actor->principalId, $this->origins->key());
-            // Self-grant/recovery is not a laboratory administrative authority.
-            if ($actor->principalId === $target) { $this->deny(); }
-            return $this->registry->transaction(function () use ($actor, $mandateId, $operationId, $target, $action, $operation): array {
-                $db = $this->registry->db;
-                $mandate = $db->table('crm_auth_mandates')->where('id', $mandateId)->lockForUpdate()->first();
-                $version = $db->table('crm_auth_credentials')->where('identity_id', $actor->principalId)->value('version');
-                if (!$mandate || $mandate->actor_id !== $actor->principalId || $mandate->subject_id !== $target
-                    || $mandate->action !== $action || $mandate->revoked_at !== null
-                    || (int) $mandate->expires_at <= now()->getTimestamp() || (int) $mandate->actor_version !== (int) $version) { $this->deny(); }
-                $prior = $db->table('crm_auth_operations')->where('id', $operationId)->lockForUpdate()->first();
-                if ($prior) {
-                    if ($prior->state !== 'completed' || $prior->actor_id !== $actor->principalId
-                        || $prior->subject_id !== $target || $prior->action !== $action || $prior->mandate_id !== $mandateId) { $this->deny(); }
-                    // Retries report completion; they never regenerate/reveal a secret.
-                    return ['status' => 'already_completed'];
-                }
-                $db->table('crm_auth_operations')->insert([
-                    'id' => $operationId, 'action' => $action, 'actor_id' => $actor->principalId,
-                    'subject_id' => $target, 'mandate_id' => $mandateId, 'state' => 'prepared', 'created_at' => now()->getTimestamp(),
-                ]);
-                $this->audit->append($db, $operationId, $action, 'attempted', $actor->principalId, $target);
-                $result = $operation();
-                $this->audit->append($db, $operationId, $action, 'succeeded', $actor->principalId, $target);
-                if (isset($result['recovery_codes'])) { $this->audit->append($db, $operationId, 'issue_recovery', 'succeeded', $actor->principalId, $target); }
-                $db->table('crm_auth_operations')->where('id', $operationId)->update(['state' => 'completed']);
-                return ['status' => 'completed'] + $result;
-            });
-        }, true); // Real current session + recent MFA, not an actor/role field from input.
+            return $this->actors->withinCurrent(function (PrincipalReference $actor) use ($mandateId, $operationId, $target, $action, $operation, &$verifiedActor, &$origin, &$admitted): array {
+                $verifiedActor = $actor->principalId;
+                $origin = $this->origins->key();
+                $this->abuse->admit($action, $actor->principalId, $origin);
+                $admitted = true;
+                // Self-grant/recovery is not a laboratory administrative authority.
+                if ($actor->principalId === $target) { $this->deny(); }
+                return $this->registry->transaction(function () use ($actor, $mandateId, $operationId, $target, $action, $operation): array {
+                    $db = $this->registry->db;
+                    $mandate = $db->table('crm_auth_mandates')->where('id', $mandateId)->lockForUpdate()->first();
+                    $version = $db->table('crm_auth_credentials')->where('identity_id', $actor->principalId)->value('version');
+                    if (!$mandate || $mandate->actor_id !== $actor->principalId || $mandate->subject_id !== $target
+                        || $mandate->action !== $action || $mandate->revoked_at !== null
+                        || (int) $mandate->expires_at <= now()->getTimestamp() || (int) $mandate->actor_version !== (int) $version) { $this->deny(); }
+                    $prior = $db->table('crm_auth_operations')->where('id', $operationId)->lockForUpdate()->first();
+                    if ($prior) {
+                        if ($prior->state !== 'completed' || $prior->actor_id !== $actor->principalId
+                            || $prior->subject_id !== $target || $prior->action !== $action || $prior->mandate_id !== $mandateId) { $this->deny(); }
+                        // Retries report completion; they never regenerate/reveal a secret.
+                        return ['status' => 'already_completed'];
+                    }
+                    $db->table('crm_auth_operations')->insert([
+                        'id' => $operationId, 'action' => $action, 'actor_id' => $actor->principalId,
+                        'subject_id' => $target, 'mandate_id' => $mandateId, 'state' => 'prepared', 'created_at' => now()->getTimestamp(),
+                    ]);
+                    $this->audit->append($db, $operationId, $action, 'attempted', $actor->principalId, $target);
+                    $result = $operation();
+                    $this->audit->append($db, $operationId, $action, 'succeeded', $actor->principalId, $target);
+                    if (isset($result['recovery_codes'])) { $this->audit->append($db, $operationId, 'issue_recovery', 'succeeded', $actor->principalId, $target); }
+                    $db->table('crm_auth_operations')->where('id', $operationId)->update(['state' => 'completed']);
+                    return ['status' => 'completed'] + $result;
+                });
+            }, true); // Real current session + recent MFA, not an actor/role field from input.
         } catch (\Throwable) {
             // A denial is separate evidence after rollback, never a partial provision.
             try { $this->registry->transaction(fn () => $this->audit->append($this->registry->db, $operationId, $action, 'denied', $verifiedActor, $target)); } catch (\Throwable) {}
+            if ($admitted) { try { $this->abuse->failed($action, $verifiedActor, $origin); } catch (\Throwable) {} }
             throw new AuthenticationException('CRM authentication required.');
         }
     }

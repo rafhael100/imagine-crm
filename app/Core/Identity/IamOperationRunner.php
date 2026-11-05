@@ -79,6 +79,9 @@ final readonly class IamOperationRunner
             if ($action !== 'logout') { $this->abuse->admit($action, $identityKey, $origin); $admitted = true; }
             $result = $operation();
             $this->session->save(); // Explicit failure boundary, before registry can become usable.
+            if (!$this->session instanceof \Illuminate\Session\Store) { throw new LogicException('Verifiable server session required.'); }
+            $stored = $this->session->getHandler()->read($this->session->getId());
+            if (!is_string($stored) || $stored === '') { throw new LogicException('Server session persistence not confirmed.'); }
             $this->registry->transaction(function () use ($id, $action, $subject, $origin): void {
                 $db = $this->registry->db;
                 $actor = in_array($action, ['password', 'logout'], true) ? null : $subject;

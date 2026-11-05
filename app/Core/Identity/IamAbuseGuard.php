@@ -69,7 +69,7 @@ final readonly class IamAbuseGuard
             // Only short budget updates inside this mutex; never run authentication under a lease.
             $lock = $store->lock('crm.iam.abuse.budgets', 5);
             if (!$lock->get()) { $this->deny(); }
-            try { $operation(); } finally { $lock->release(); }
+            try { $operation(); } finally { if (!$lock->release()) { $this->deny(); } }
         } catch (Throwable) {
             $this->deny();
         }
