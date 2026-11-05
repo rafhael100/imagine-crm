@@ -47,6 +47,8 @@ jobs:
       DB_PASSWORD: ci-only-password
       RLS_TEST_USERNAME: crm_app_ci
       RLS_TEST_PASSWORD: ephemeral-role-only
+      IAM_TEST_USERNAME: crm_iam_ci
+      IAM_TEST_PASSWORD: ephemeral-iam-role-only
       CACHE_STORE: array
       SESSION_DRIVER: array
       QUEUE_CONNECTION: sync
@@ -74,6 +76,10 @@ jobs:
           php artisan key:generate --force
       - name: Migrate tenant schema in temporary PostgreSQL
         run: php artisan migrate --force --no-interaction
+      - name: Explicitly migrate isolated auth laboratory
+        env:
+          CRM_AUTH_EXPERIMENTAL: 'true'
+        run: php artisan migrate --path=database/experimental-migrations/auth --force --no-interaction
       - name: Create non-bypass application role
         run: |
           psql -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 <<'SQL'
@@ -82,6 +88,14 @@ jobs:
           GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_app_ci;
           GRANT USAGE ON SCHEMA public TO crm_app_ci;
           GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE crm_memberships TO crm_app_ci;
+          CREATE ROLE crm_iam_ci LOGIN PASSWORD 'ephemeral-iam-role-only'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_iam_ci;
+          GRANT USAGE ON SCHEMA public TO crm_iam_ci;
+          GRANT SELECT ON TABLE crm_global_identities, crm_auth_credentials TO crm_iam_ci;
+          GRANT UPDATE (last_totp_step) ON TABLE crm_auth_credentials TO crm_iam_ci;
+          GRANT SELECT, INSERT, UPDATE ON TABLE crm_auth_sessions TO crm_iam_ci;
+          GRANT SELECT, UPDATE (consumed_at) ON TABLE crm_auth_recovery_codes TO crm_iam_ci;
           SQL
       - name: Run isolated PostgreSQL RLS tests
         run: php artisan test --filter=PostgresMembershipRlsTest --no-ansi

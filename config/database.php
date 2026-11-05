@@ -32,6 +32,20 @@ return [
 
     'connections' => [
 
+        // Separate IAM credentials. Never inherit the business/migration username.
+        'crm_iam' => [
+            'driver' => 'pgsql',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_DATABASE', 'imagine_crm'),
+            'username' => env('CRM_IAM_USERNAME'),
+            'password' => env('CRM_IAM_PASSWORD'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'search_path' => 'public',
+            'sslmode' => env('CRM_IAM_SSLMODE', 'require'),
+        ],
+
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),
