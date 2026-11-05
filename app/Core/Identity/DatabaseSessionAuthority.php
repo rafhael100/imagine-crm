@@ -44,26 +44,40 @@ final readonly class DatabaseSessionAuthority implements SessionAuthority
 
     public function current(string $identityId, bool $recent = false): stdClass
     {
-        return $this->transaction(function () use ($identityId, $recent): stdClass {
-            $credential = $this->db->table('crm_auth_credentials')->where('identity_id', $identityId)->lockForUpdate()->first();
-            $row = $this->sessionRow('crm.auth.token');
-            $now = now()->getTimestamp();
-            if (!$credential || !$this->validCredential($credential) || !$row
-                || $row->identity_id !== $identityId || $row->state !== 'active'
-                || (int) $row->credential_version !== (int) $credential->version
-                || !hash_equals($row->binding, hash('sha256', $this->session->getId()))
-                || (int) $row->expires_at <= $now || (int) $row->absolute_expires_at <= $now
-                || !$row->mfa_verified_at || (int) $row->created_at > $now
-                || ($recent && (int) $row->mfa_verified_at + config('identity.step_up_seconds') <= $now)) {
-                throw new AuthenticationException('CRM authentication required.');
-            }
-            $this->db->table('crm_auth_sessions')->where('id', $row->id)->update([
-                'last_seen_at' => $now,
-                'expires_at' => min($now + config('identity.idle_seconds'), (int) $row->absolute_expires_at),
-            ]);
+        return $this->transaction(fn () => $this->lockedCurrent($identityId, $recent));
+    }
 
-            return $row;
+    public function withinCurrent(string $identityId, Closure $operation): mixed
+    {
+        return $this->transaction(function () use ($identityId, $operation): mixed {
+            $this->lockedCurrent($identityId);
+
+            // IAM locks outlive the membership transaction, including its commit.
+            // Revocation committed before these locks denies; later revocation waits.
+            return $operation();
         });
+    }
+
+    private function lockedCurrent(string $identityId, bool $recent = false): stdClass
+    {
+        $credential = $this->db->table('crm_auth_credentials')->where('identity_id', $identityId)->lockForUpdate()->first();
+        $row = $this->sessionRow('crm.auth.token');
+        $now = now()->getTimestamp();
+        if (!$credential || !$this->validCredential($credential) || !$row
+            || $row->identity_id !== $identityId || $row->state !== 'active'
+            || (int) $row->credential_version !== (int) $credential->version
+            || !hash_equals($row->binding, hash('sha256', $this->session->getId()))
+            || (int) $row->expires_at <= $now || (int) $row->absolute_expires_at <= $now
+            || !$row->mfa_verified_at || (int) $row->created_at > $now
+            || ($recent && (int) $row->mfa_verified_at + config('identity.step_up_seconds') <= $now)) {
+            throw new AuthenticationException('CRM authentication required.');
+        }
+        $this->db->table('crm_auth_sessions')->where('id', $row->id)->update([
+            'last_seen_at' => $now,
+            'expires_at' => min($now + config('identity.idle_seconds'), (int) $row->absolute_expires_at),
+        ]);
+
+        return $row;
     }
 
     /** Internal registry lookup, always called inside an IAM transaction. */
