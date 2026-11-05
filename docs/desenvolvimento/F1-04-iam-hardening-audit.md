@@ -109,7 +109,9 @@ Não há transação distribuída entre PostgreSQL, sessão e auditoria.
    recebem security_hold, sem sobrescrever hold anterior. Locks de credenciais
    precedem locks de sessão. A intenção deve commitar antes de alterar sessão.
 2. Executa o núcleo F1-03; novas referências registram operation_id.
-3. Persiste explicitamente a sessão do servidor. Uma sessão nova com operação
+3. Persiste explicitamente a sessão do servidor e exige leitura não vazia do
+   handler, incluindo o caso de write=false silencioso em ID recém-rotacionado.
+   Uma sessão nova com operação
    não completed continua inútil como prova, mesmo que o guard tenha usuário.
 4. Confirma auditoria/estado completed e libera holds em transação SQL.
 5. Falha após início de mutação: revoga referências antigas e novas da operação,
@@ -121,8 +123,10 @@ Se a compensação ou auditoria também falhar, prepared/holds permanecem e a
 prova de sessão nega até reconciliação interna, com novo mandato. Se a intenção
 nem chegou a commitar, não houve nova concessão; indisponibilidade desconhecida
 não autoriza reconstruir uma sessão a partir do guard ou de parâmetros.
-O serviço de sessão deve propagar falhas de persistência; um handler que retorne
-sucesso falso não é resolvido pelo runner. Crash após commit mas antes da resposta
+O serviço de sessão deve propagar falhas de persistência; um handler que minta
+também na leitura não é resolvido pelo runner. Um futuro adaptador HTTP ainda
+precisa integrar a confirmação final do middleware e falhas depois do retorno
+do serviço; nenhuma rota pública foi ligada. Crash após commit mas antes da resposta
 é resultado inconclusivo para o chamador: inspeção/reconciliação, nunca replay
 automático de fator, código de recuperação ou efeito externo.
 
