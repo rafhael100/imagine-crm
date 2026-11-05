@@ -44,6 +44,9 @@ A usa registry/membership reais e Authorizer existente; B–E continuam sem
 autoridade técnica comprovada. O registro do ensaio negado pode persistir,
 mas **first_seen/duplicate/conflict não são autorização, admissão ou efeito**.
 O resultado contém a negação atual independente da existência da linha.
+Os locks IAM/membership terminam com a inspeção; não se estendem à escrita
+do ensaio negado. Esse registro histórico inerte não é autorização vigente
+nem cria uma janela de execução após revogação.
 Nenhum resultado do ledger vira grant, cache de autorização ou segundo motor.
 DenyByDefaultAuthorizer e todos os arquivos app/ permanecem inalterados.
 
@@ -116,7 +119,8 @@ grants mínimos, constraints de estados/FK, migração opt-in/rollback.
 Regressões completas F1-02..F1-07 incluem Redis real, budgets/contenção/pane;
 ledger não usa Redis como fonte durável nem cacheia decisões.
 
-Concorrência usa conexões realmente distintas: uma mantém INSERT sem commit,
+Concorrência usa conexões realmente distintas com a mesma role mínima:
+uma mantém INSERT sem commit,
 outra tenta registrar via adaptador e recebe lock_timeout (55P03); não é
 prova de carga distribuída, fairness, workers ou relógios independentes.
 Falhas antes/depois do commit são fault injection sintética de exceções;
@@ -145,3 +149,48 @@ Próximo passo: revisão técnica humana do PR DRAFT e aceites específicos.
 PHP/Composer/Docker ausentes do terminal local; testes de plataforma serão
 executados na CI e registrados por SHA/URL, com aprovados/skips/asserções.
 Não declarar sucesso antes dos logs. SQLite não valida RLS nem Redis.
+
+### Evidências executadas — 05/11/2026
+
+[PR #16 DRAFT](https://github.com/rafhael100/imagine-crm/pull/16), revisão
+`0228b7d7f5bd765a4480b1a71cd958fa6c85cad8`. Dois checks success; resumos
+e probes conferidos diretamente nos logs Actions:
+
+| Plataforma/comando | Resultado real | Evidência |
+|---|---|---|
+| Laravel 13 / PHP 8.4 / SQLite — php artisan test --no-ansi | **340 passed, 49 skipped, 1366 assertions; 0 falhas** | [42118579172 / 127564629930](https://github.com/rafhael100/imagine-crm/actions/runs/42118579172/job/127564629930) |
+| PostgreSQL 16 / Redis 7 efêmeros — suíte completa | **388 passed, 1 skipped, 1827 assertions; 0 falhas** | [42118578763 / 127564627427](https://github.com/rafhael100/imagine-crm/actions/runs/42118578763/job/127564627427) |
+| Mesmo job PostgreSQL — filtro PostgresMembershipRlsTest | **18 passed, 49 assertions** | Mesmo log PostgreSQL |
+| Local — git diff --cached --check, oito arquivos F1-08 | **Sem erros de whitespace** | Snapshot de edição, sem push do histórico local |
+
+16 casos novos além das regressões F1-02..F1-07. Os 49 skips SQLite são
+dependências PostgreSQL/Redis (13 novos casos persistentes incluídos); foram
+executados no job apropriado. Único skip PostgreSQL é exclusivo de SQLite.
+RLS, role restrita, concorrência, rollback, ACK perdido, revalidação e
+migração opt-in passaram. Redis real permanece coberto pela suíte de
+regressão IAM/antiabuso/pane, sem transformá-lo em fonte durável do ledger.
+
+Primeira execução em `de5d60dc0fe8d8601253122acae9ccba4a5180af`:
+[Laravel](https://github.com/rafhael100/imagine-crm/actions/runs/42118236605/job/127563469879)
+passou (340/49/1366), mas
+[PostgreSQL](https://github.com/rafhael100/imagine-crm/actions/runs/42118236573/job/127563470383)
+teve **1 failed, 1 skipped, 387 passed, 1797 assertions**. A única falha
+foi a asserção Event::assertNothingDispatched após recriar a conexão: Laravel
+emitira 20 eventos internos legítimos de conexão/query/transação. Não eram
+eventos de negócio, enqueue ou transmissão. Corrigido somente o teste com
+fakeExcept de sete tipos EXPLÍCITOS Illuminate Database (connection,
+statement/query e lifecycle da transação); qualquer outro evento continua
+capturado, e assertNothingDispatched continua exigido. Nenhuma captura
+genérica foi relaxada no app. Na mesma revisão, os probes de concorrência
+passaram a usar duas conexões com role mínima (sem setup privilegiado no
+INSERT concorrente) e foram adicionadas asserções de correlação backend.
+
+Após a correção, ambas as suítes completas passaram no SHA acima. Não houve
+execução local Laravel/PostgreSQL/Redis por ausência das ferramentas; CI é
+a evidência efetivamente executada, sempre sintética. Composer lock intacto,
+SHA256 `08C77FE9D787BE841633DEA38461BBBDC4C3EDFA419FF676D8FADF7581636F5C`;
+autorizador intacto, SHA256
+`800F5F38E0A60269CCD4A3C5E8B06E66DE5DBC72CD312F87DFE9BCCAC016E0CF`.
+Este registro altera somente documentação: conferir novamente o SHA final
+e seus checks no PR, sem confundir evidência experimental com aceite humano,
+fechamento de CORE/SEG, merge, autorização de negócio ou produção.
