@@ -6,7 +6,6 @@ namespace App\Core\Tenancy;
 
 use App\Core\Identity\PrincipalReference;
 use Closure;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Str;
 use LogicException;
@@ -19,7 +18,7 @@ final readonly class PostgresActiveMembershipStore implements ActiveMembershipSt
     public function within(PrincipalReference $principal, string $tenantId, Closure $operation): mixed
     {
         if (!Str::isUuid($tenantId) || !Str::isUuid($principal->principalId)) {
-            throw new AuthorizationException('Tenant access denied.');
+            throw new MembershipDenied();
         }
 
         $db = $this->connection;
@@ -36,7 +35,10 @@ final readonly class PostgresActiveMembershipStore implements ActiveMembershipSt
                 FROM pg_roles r CROSS JOIN pg_class c
                 WHERE r.rolname = current_user AND c.oid = 'crm_memberships'::regclass");
 
-            if (!$state || ($state->tenant !== null && $state->tenant !== '')
+            if ($state && $state->tenant !== null && $state->tenant !== '') {
+                throw new ContaminatedTenantConnection();
+            }
+            if (!$state
                 || $state->rolsuper || $state->rolbypassrls || $state->owns_table
                 || !$state->relrowsecurity || !$state->relforcerowsecurity) {
                 throw new LogicException('Unsafe tenant connection.');
@@ -53,7 +55,7 @@ final readonly class PostgresActiveMembershipStore implements ActiveMembershipSt
 
             if (!$membership || $membership->status !== MembershipStatus::Active->value
                 || (int) $membership->version < 1) {
-                throw new AuthorizationException('Tenant access denied.');
+                throw new MembershipDenied();
             }
 
             // Lock serializes revocation with this unit; every new unit re-reads.
