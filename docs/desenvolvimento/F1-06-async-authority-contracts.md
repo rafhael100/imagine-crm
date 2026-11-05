@@ -165,3 +165,32 @@ da entrega; os resultados da base acima não validam o incremento novo.
 PHP/Composer/Docker não disponíveis no terminal local. Composer lock intacto:
 `08C77FE9D787BE841633DEA38461BBBDC4C3EDFA419FF676D8FADF7581636F5C`.
 Skips SQLite que exigem PostgreSQL/Redis devem ser executados nessa plataforma.
+
+## Evidências executadas em 05/11/2026
+
+[PR DRAFT #12](https://github.com/rafhael100/imagine-crm/pull/12), revisão
+`95facbc14432434c08bc64c0f94c44d3e64b5e40`. Ambos os workflows success;
+resumos e casos relevantes conferidos nos logs GitHub Actions:
+
+| Ambiente/comando | Resultado observado | Log |
+|---|---|---|
+| PHP 8.4 / Laravel 13 / SQLite — `php artisan test --no-ansi` | **307 passed, 33 skipped, 1014 assertions; 0 falhas** | [42070162389 / 127395597651](https://github.com/rafhael100/imagine-crm/actions/runs/42070162389/job/127395597651) |
+| PostgreSQL 16 / Redis efêmeros — suíte completa | **339 passed, 1 skipped exclusivo SQLite, 1233 assertions; 0 falhas** | [42070162392 / 127395597743](https://github.com/rafhael100/imagine-crm/actions/runs/42070162392/job/127395597743) |
+| Mesmo job PostgreSQL — filtro `PostgresMembershipRlsTest` | **18 passed, 49 assertions** | Mesmo log PostgreSQL |
+| Local — `git diff --cached --check` nos arquivos F1-06 | **Sem erros de whitespace** | Snapshot de edição, não clone autenticado |
+
+79 casos novos, além das regressões F1-02..F1-05. No job PostgreSQL passaram
+`postgres reused inspector never keeps tenant context for any class`, a
+regressão `postgres shared redis budgets and contended lock fail closed` e
+os casos de negação sem jobs/eventos/mail/HTTP/exports por classe A–E.
+Os 33 skips SQLite exigem PostgreSQL/Redis, incluindo o novo caso de conexão
+reutilizada; foram executados no ambiente adequado, não validados por skip.
+O único skip PostgreSQL é exclusivo de SQLite. Erros SQL/RLS/55P03 dos probes
+negativos anteriores são esperados, não falhas finais. Não houve falha de
+suíte ou correção posterior à primeira execução deste incremento.
+
+Não executados localmente: Laravel/PostgreSQL/Redis, por ausência das
+ferramentas PHP/Composer/Docker. Resultados reais acima são da CI sintética,
+sem dados de clientes ou contato com VPS. A inclusão deste registro altera
+somente documentação; verificar novamente os checks do SHA final na PR após
+esse commit. Não é declaração de revisão humana, aceite CORE/SEG ou release.
