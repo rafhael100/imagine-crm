@@ -137,3 +137,34 @@ cada evidência verificável, ameaças/revogação/concorrência e auditoria ace
 matriz negativa por canal e autorização específica de implementação.
 PR deve permanecer DRAFT para revisão humana. Sem merge, alteração de main,
 autenticação pública, cliente real, novo serviço/custo, VPS ou implantação.
+
+## Evidências executadas em 05/11/2026
+
+[PR DRAFT #10](https://github.com/rafhael100/imagine-crm/pull/10), revisão
+`cacca5a5bc33ff709f3959b43139052b920391db`; ambos os checks success.
+Logs de testes conferidos no GitHub Actions (incluindo resumo e probes):
+
+| Plataforma/comando | Resultado observado | Log |
+|---|---|---|
+| PHP 8.4 / Laravel 13 / SQLite — `php artisan test --no-ansi` | **229 passed, 32 skipped, 753 assertions** | [Run 42041909555 / job 127294598771](https://github.com/rafhael100/imagine-crm/actions/runs/42041909555/job/127294598771) |
+| PostgreSQL 16 / Redis efêmeros — suíte completa | **260 passed, 1 skipped exclusivo SQLite, 917 assertions** | [Run 42041909537 / job 127294598174](https://github.com/rafhael100/imagine-crm/actions/runs/42041909537/job/127294598174) |
+| Mesmo job PostgreSQL — `--filter=PostgresMembershipRlsTest` | **18 passed, 49 assertions** | Mesmo log PostgreSQL |
+| Local — `git diff --cached --check` restrito aos arquivos F1-05 | **Sem erros de whitespace** | Snapshot local de edição; não é clone autenticado |
+
+154 casos novos somados às regressões anteriores. Os 32 skips SQLite são
+dependências reais PostgreSQL/Redis, incluindo os dois probes novos; não
+são validação dessas plataformas. O teste `postgres shared redis budgets
+and contended lock fail closed` efetivamente passou no job PostgreSQL.
+Também passaram os novos casos de revalidação de tenancy/membership/limpeza
+RLS e retenção dos locks de sessão e membership contra revogação concorrente.
+Não houve falhas de suíte nesta revisão. SQLSTATE 55P03/42501/RLS nos probes
+negativos são recusas esperadas, não liberação de privilégio.
+
+Não executados localmente: Laravel/PostgreSQL/Redis, pois PHP/Composer/Docker
+não estão disponíveis no terminal. Execução real acima foi exclusivamente
+na CI sintética. Os workflows e composer.json/lock não foram modificados;
+SHA256 do lock: `08C77FE9D787BE841633DEA38461BBBDC4C3EDFA419FF676D8FADF7581636F5C`.
+AGENTS.md e STATUS-ATUAL.md permanecem idênticos à base. Este registro altera
+somente documentação; conferir novamente checks e SHA final na PR depois
+do commit de evidências. Nenhum aceite humano, fechamento CORE/SEG ou GO
+de merge/release é declarado.
