@@ -268,6 +268,8 @@ final class IamHardeningTest extends TestCase
         }
         $mandate = $this->mandate(self::A, self::A, 'issue_recovery');
         $this->denied(fn () => $provisioner->recovery($mandate, (string) Str::uuid(), self::A, 1));
+        $mandate = $this->mandate(self::A, self::E, 'provision');
+        $this->denied(fn () => $provisioner->credential($mandate, (string) Str::uuid(), self::E, 'lab-new', self::PASSWORD, self::SECRET, 'invalid'));
         $this->travel(301)->seconds();
         $mandate = $this->mandate(self::A, self::B, 'issue_recovery');
         $this->denied(fn () => $provisioner->recovery($mandate, (string) Str::uuid(), self::B, 1));
@@ -325,6 +327,16 @@ final class IamHardeningTest extends TestCase
         }
         try { DB::connection('crm_provision')->table('crm_memberships')->count(); $this->fail('No business grants.'); }
         catch (QueryException $e) { $this->assertSame('42501', $e->errorInfo[0] ?? null); }
+    }
+
+    public function test_disabled_profile_and_production_cannot_resolve_provisioner(): void
+    {
+        foreach ([['testing', false], ['production', true]] as [$environment, $enabled]) {
+            config(['identity.experimental' => $enabled]); $this->app->instance('env', $environment);
+            try { $this->app->make(LaboratoryProvisioner::class); $this->fail('Provisioner must be gated.'); }
+            catch (\LogicException $e) { $this->assertSame('Isolated laboratory provisioner only.', $e->getMessage()); }
+        }
+        $this->app->instance('env', 'testing');
     }
 
     public function test_postgres_shared_redis_budgets_and_contended_lock_fail_closed(): void
