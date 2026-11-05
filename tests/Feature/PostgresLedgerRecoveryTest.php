@@ -98,7 +98,7 @@ final class PostgresLedgerRecoveryTest extends TestCase
         $input['executor']['tenant_id'] = $tenant; $input['intent']['scope']['id'] = $tenant; return $input;
     }
 
-    private function seed(string $tenant = self::C, string $class = 'B'): array
+    private function seedLedger(string $tenant = self::C, string $class = 'B'): array
     {
         $input = $this->input($tenant, $class); $receipt = (new Ledger($this->writer, $this->bridge(), $tenant))->record($input);
         $this->assertSame('first_seen', $receipt->outcome);
@@ -146,7 +146,7 @@ final class PostgresLedgerRecoveryTest extends TestCase
 
     public function test_select_only_consistent_read_never_mutates_ledger_or_dispatches_domain_effects(): void
     {
-        [$input, $manifest] = $this->seed(); $before = $this->sample();
+        [$input, $manifest] = $this->seedLedger(); $before = $this->sample();
         Bus::fake(); Queue::fake(); Http::fake(); Mail::fake();
         Event::fakeExcept([\Illuminate\Database\Events\ConnectionEstablished::class,
             \Illuminate\Database\Events\TransactionBeginning::class, \Illuminate\Database\Events\StatementPrepared::class,
@@ -168,7 +168,7 @@ final class PostgresLedgerRecoveryTest extends TestCase
 
     public function test_full_snapshot_restore_matches_invariants_and_digests_without_authorization(): void
     {
-        [$input, $manifest] = $this->seed(); $this->seed(self::D); $source = $this->sample();
+        [$input, $manifest] = $this->seedLedger(); $this->seedLedger(self::D); $source = $this->sample();
         [$setup, $audit] = $this->replica(); $this->restoreFixture($setup, $source);
         $restored = $this->sample($audit); $this->assertSame($source, $restored);
         $this->assertSame(hash('sha256', json_encode($source)), hash('sha256', json_encode($restored)));
@@ -182,7 +182,7 @@ final class PostgresLedgerRecoveryTest extends TestCase
 
     public function test_partial_restore_and_changed_digest_are_detected_without_automatic_repair(): void
     {
-        [$input, $manifest] = $this->seed(); $source = $this->sample();
+        [$input, $manifest] = $this->seedLedger(); $source = $this->sample();
         [$setup, $audit] = $this->replica(); $partial = $source; $partial['outbox'] = [];
         $this->restoreFixture($setup, $partial);
         $setup->table(Ledger::TABLES[0])->update(['digest' => str_repeat('0', 64)]);
@@ -194,7 +194,7 @@ final class PostgresLedgerRecoveryTest extends TestCase
 
     public function test_conflicting_restore_is_rejected_atomically_and_remains_missing_not_completed(): void
     {
-        [$input, $manifest] = $this->seed(); $source = $this->sample(); [$setup, $audit] = $this->replica();
+        [$input, $manifest] = $this->seedLedger(); $source = $this->sample(); [$setup, $audit] = $this->replica();
         $conflicting = $source; $copy = $source['ledger'][0]; $copy['id'] = (string) Str::uuid(); $conflicting['ledger'][] = $copy;
         try { $this->restoreFixture($setup, $conflicting); $this->fail('Duplicate restore must not be accepted.'); }
         catch (QueryException $e) { $this->assertSame('23505', $e->errorInfo[0]); }
@@ -206,7 +206,7 @@ final class PostgresLedgerRecoveryTest extends TestCase
 
     public function test_select_role_has_no_writes_iam_or_business_access_and_rls_is_tenant_bound(): void
     {
-        [, $manifest] = $this->seed(); $this->seed(self::D);
+        [, $manifest] = $this->seedLedger(); $this->seedLedger(self::D);
         $this->assertSame([Gap::CrossTenant], $this->inspector()->inspect($this->input(self::D), $manifest)->findings);
         $this->assertSame([self::C], array_unique(array_column($this->sample()['ledger'], 'tenant_id')));
         $this->assertSame([self::D], array_unique(array_column($this->sample(tenant: self::D)['ledger'], 'tenant_id')));
@@ -232,7 +232,7 @@ final class PostgresLedgerRecoveryTest extends TestCase
 
     public function test_dirty_nested_privileged_and_insert_capable_readers_fail_closed(): void
     {
-        [$input, $manifest] = $this->seed();
+        [$input, $manifest] = $this->seedLedger();
         $this->audit->selectOne("SELECT set_config('app.tenant_id', ?, false)", [self::D]);
         $report = $this->inspector()->inspect($input, $manifest);
         $this->assertSame(Kind::ContextContamination, $report->diagnostic->kind);
@@ -252,7 +252,7 @@ final class PostgresLedgerRecoveryTest extends TestCase
 
     public function test_absent_schema_unavailable_db_and_disabled_profile_never_reuse_old_success(): void
     {
-        [$input, $manifest] = $this->seed(); $this->assertSame([], $this->inspector()->inspect($input, $manifest)->findings);
+        [$input, $manifest] = $this->seedLedger(); $this->assertSame([], $this->inspector()->inspect($input, $manifest)->findings);
         [, $audit] = $this->replica(false);
         $this->assertSame([Gap::SchemaUnavailable], $this->inspector($audit)->inspect($input, $manifest)->findings);
         $settings = config('database.connections.crm_recovery_audit'); $settings['port'] = 1;
@@ -270,7 +270,7 @@ final class PostgresLedgerRecoveryTest extends TestCase
 
     public function test_force_rls_cannot_be_disabled_even_in_disposable_restore(): void
     {
-        [$input, $manifest] = $this->seed(); [$setup, $audit] = $this->replica();
+        [$input, $manifest] = $this->seedLedger(); [$setup, $audit] = $this->replica();
         $this->restoreFixture($setup, $this->sample());
         $setup->statement('ALTER TABLE crm_lab_async_outbox NO FORCE ROW LEVEL SECURITY');
         $report = $this->inspector($audit)->inspect($input, $manifest);
@@ -286,6 +286,18 @@ final class PostgresLedgerRecoveryTest extends TestCase
             try { $setup->table(Ledger::TABLES[0])->delete(); $this->fail('Read-only transaction accepted mutation.'); }
             catch (QueryException $e) { $this->assertSame('25006', $e->errorInfo[0]); }
         } finally { $setup->rollBack(); }
+    }
+
+    public function test_column_only_update_grant_is_also_refused_in_disposable_replica(): void
+    {
+        [$input, $manifest] = $this->seedLedger(); [$setup, $audit] = $this->replica();
+        $this->restoreFixture($setup, $this->sample());
+        // No source grants change. The schema and this grant disappear together at teardown.
+        $setup->statement('GRANT UPDATE (state) ON crm_lab_async_outbox TO crm_async_audit_ci');
+        $this->assertFalse($audit->selectOne("SELECT has_table_privilege(current_user, 'crm_lab_async_outbox', 'UPDATE') AS allowed")->allowed);
+        $this->assertTrue($audit->selectOne("SELECT has_any_column_privilege(current_user, 'crm_lab_async_outbox', 'UPDATE') AS allowed")->allowed);
+        $report = $this->inspector($audit)->inspect($input, $manifest);
+        $this->assertSame([Gap::UnsafeReader], $report->findings); $this->assertFalse($report->denial->decision->allowed);
     }
 
     private function pendingPeerRows(array $source): array
@@ -306,7 +318,7 @@ final class PostgresLedgerRecoveryTest extends TestCase
 
     public function test_two_connections_see_only_committed_consistent_snapshot_not_mixed_table_generations(): void
     {
-        [$input, $manifest] = $this->seed(); $source = $this->sample(); $next = $this->pendingPeerRows($source);
+        [$input, $manifest] = $this->seedLedger(); $source = $this->sample(); $next = $this->pendingPeerRows($source);
         $full = new LedgerFixtureManifest([...$manifest->cases, $next]); $armed = true;
         DB::listen(function ($event) use (&$armed): void {
             if ($armed && $event->connectionName === 'crm_recovery_audit' && str_contains($event->sql, 'from "crm_lab_async_ledger"')) {
@@ -322,7 +334,7 @@ final class PostgresLedgerRecoveryTest extends TestCase
 
     public function test_uncommitted_and_rolled_back_attempts_do_not_become_recovered_facts(): void
     {
-        [$input, $manifest] = $this->seed(); $source = $this->sample(); $next = $this->pendingPeerRows($source);
+        [$input, $manifest] = $this->seedLedger(); $source = $this->sample(); $next = $this->pendingPeerRows($source);
         $expectedButUncommitted = new LedgerFixtureManifest([...$manifest->cases, $next]);
         $this->assertSame($source, $this->sample()); $this->peer->rollBack();
         $report = $this->inspector()->inspect($input, $expectedButUncommitted);
@@ -348,7 +360,7 @@ final class PostgresLedgerRecoveryTest extends TestCase
 
     public function test_consistent_snapshot_does_not_override_revoked_membership_or_session(): void
     {
-        $this->login(); [$input, $manifest] = $this->seed(class: 'A'); $before = $this->sample(); $inspector = $this->inspector();
+        $this->login(); [$input, $manifest] = $this->seedLedger(class: 'A'); $before = $this->sample(); $inspector = $this->inspector();
         $this->assertSame([], $inspector->inspect($input, $manifest)->findings);
         $this->fixtures->table('crm_memberships')->where('organization_id', self::C)->update(['status' => 'suspended']);
         $suspended = $inspector->inspect($input, $manifest);
