@@ -220,6 +220,8 @@ final class TenantAccessBoundaryTest extends TestCase
         // Unit seam only; F1-03 integration tests exercise the real registry.
         $proof = Mockery::mock(\App\Core\Identity\SessionAuthority::class);
         $proof->shouldReceive('assertCurrent')->with(self::ID)->andReturnNull();
+        $proof->shouldReceive('withinCurrent')->with(self::ID, Mockery::type(Closure::class))
+            ->andReturnUsing(fn (string $id, Closure $operation) => $operation());
         return $proof;
     }
 }

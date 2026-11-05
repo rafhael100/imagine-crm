@@ -336,6 +336,8 @@ final class PostgresMembershipRlsTest extends TestCase
     {
         $proof = Mockery::mock(\App\Core\Identity\SessionAuthority::class);
         $proof->shouldReceive('assertCurrent')->with(self::PRINCIPAL)->andReturnNull();
+        $proof->shouldReceive('withinCurrent')->with(self::PRINCIPAL, Mockery::type(\Closure::class))
+            ->andReturnUsing(fn (string $id, \Closure $operation) => $operation());
         return $proof;
     }
 }

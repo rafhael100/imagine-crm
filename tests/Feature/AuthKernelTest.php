@@ -66,7 +66,7 @@ final class AuthKernelTest extends TestCase
             $old = DB::getDefaultConnection();
             DB::setDefaultConnection('crm_iam');
             Schema::create('crm_global_identities', function ($t): void { $t->uuid('id')->primary(); $t->timestamps(); });
-            (require database_path('migrations/2026_11_04_000002_create_candidate_crm_auth_registry.php'))->up();
+            (require database_path('experimental-migrations/auth/2026_11_04_000002_create_candidate_crm_auth_registry.php'))->up();
             DB::setDefaultConnection($old);
             $this->fixtures = $this->db;
         }
@@ -484,6 +484,101 @@ final class AuthKernelTest extends TestCase
             DB::purge('crm_iam_race');
         }
         $this->assertNull($this->db->table('crm_auth_credentials')->where('identity_id', self::A)->value('last_totp_step'));
+    }
+
+    public static function revocationKinds(): array
+    {
+        return ['session' => [false], 'credential epoch' => [true]];
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('revocationKinds')]
+    public function test_postgres_revocation_serializes_with_the_authorization_boundary(bool $credential): void
+    {
+        if ($this->db->getDriverName() !== 'pgsql') { $this->markTestSkipped('PostgreSQL revocation race proof only.'); }
+        $this->fixtures->table('crm_organizations')->insert(['id' => self::C]);
+        $this->fixtures->table('crm_memberships')->insert([
+            'id' => (string) Str::uuid(), 'organization_id' => self::C,
+            'global_identity_id' => self::A, 'status' => 'active', 'version' => 1,
+        ]);
+        $settings = config('database.connections.pgsql');
+        $settings['username'] = getenv('RLS_TEST_USERNAME');
+        $settings['password'] = getenv('RLS_TEST_PASSWORD');
+        config(['database.connections.crm_business_race_probe' => $settings]);
+        $business = DB::connection('crm_business_race_probe');
+        $realStore = new \App\Core\Tenancy\PostgresActiveMembershipStore($business);
+        config(['database.connections.crm_iam_revoke_probe' => config('database.connections.crm_iam')]);
+        $revoker = $credential ? $this->fixtures : DB::connection('crm_iam_revoke_probe');
+        $this->login();
+        $source = $this->app->make(GuardPrincipalSource::class);
+        $source->current(); // An earlier proof must never substitute for the boundary lock.
+        $visits = 0;
+        $revoke = function () use ($revoker, $credential): void {
+            $revoker->table($credential ? 'crm_auth_credentials' : 'crm_auth_sessions')
+                ->where('identity_id', self::A)->update($credential ? ['version' => 2] : ['state' => 'revoked']);
+        };
+        $probe = function () use ($business, $revoker, $revoke, &$visits): void {
+            $visits++;
+            $this->assertSame(1, $this->db->transactionLevel());
+            $this->assertSame(1, $business->transactionLevel());
+            try {
+                $revoker->transaction(function () use ($revoker, $revoke): void {
+                    $revoker->statement("SET LOCAL lock_timeout = '100ms'");
+                    $revoke();
+                });
+                $this->fail('Concurrent revocation must wait at the authorization boundary.');
+            } catch (QueryException $e) {
+                $this->assertSame('55P03', $e->errorInfo[0] ?? null);
+            }
+        };
+        // Test-only observer inside the REAL membership transaction. No ALLOW policy.
+        $observedStore = new class($realStore, $probe) implements \App\Core\Tenancy\ActiveMembershipStore {
+            public function __construct(private $store, private \Closure $probe) {}
+            public function within(\App\Core\Identity\PrincipalReference $principal, string $tenantId, \Closure $operation): mixed
+            {
+                return $this->store->within($principal, $tenantId, function ($membership) use ($operation) {
+                    ($this->probe)();
+                    return $operation($membership);
+                });
+            }
+        };
+        $boundary = new TenantAccessBoundary($source, $observedStore, new \App\Core\Authorization\DenyByDefaultAuthorizer());
+        try {
+            $boundary->execute(self::C, 'lead', 'read', fn () => $this->fail('Business effects remain denied.'));
+            $this->fail('Deny by default required.');
+        } catch (AuthorizationException) {
+            $this->assertSame(1, $visits);
+        }
+        $this->assertSame(0, $this->db->transactionLevel());
+        $this->assertSame(0, $business->transactionLevel());
+        $this->assertSame(0, $revoker->transactionLevel());
+        $this->assertTrue(in_array($business->selectOne("SELECT current_setting('app.tenant_id', true) AS tenant")->tenant, [null, ''], true));
+        // Membership lookup only, no business effect or ALLOW. Prove the IAM lock
+        // also survives a successful inner commit, not only the deny rollback.
+        $this->app->make(DatabaseSessionAuthority::class)->withinCurrent(self::A, function () use ($realStore, $business, $revoker, $revoke): void {
+            $version = $realStore->within(new \App\Core\Identity\PrincipalReference(self::A), self::C, fn ($membership) => $membership->version);
+            $this->assertSame(1, $version);
+            $this->assertSame(0, $business->transactionLevel());
+            $this->assertSame(1, $this->db->transactionLevel());
+            try {
+                $revoker->transaction(function () use ($revoker, $revoke): void {
+                    $revoker->statement("SET LOCAL lock_timeout = '100ms'");
+                    $revoke();
+                });
+                $this->fail('IAM locks must remain held after the membership commit.');
+            } catch (QueryException $e) {
+                $this->assertSame('55P03', $e->errorInfo[0] ?? null);
+            }
+        });
+        $revoke(); // After the in-flight unit ends, revocation can commit.
+        try {
+            $boundary->execute(self::C, 'lead', 'read', fn () => $this->fail('Committed revocation must deny.'));
+            $this->fail('Revocation must be re-read despite the cached guard.');
+        } catch (AuthenticationException) {
+            $this->assertSame(1, $visits); // Not even membership/authorizer reached again.
+        }
+        $this->assertSame(0, $this->db->transactionLevel());
+        DB::purge('crm_iam_revoke_probe');
+        DB::purge('crm_business_race_probe');
     }
 }
 
