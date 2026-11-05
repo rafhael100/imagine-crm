@@ -32,33 +32,35 @@ Este repositório é o **CRM Imagine**, SaaS multiempresa Laravel 13 / PostgreSQ
 
 ## Incrementos integrados e próxima etapa prioritária
 
-**Consultar [STATUS-ATUAL.md](STATUS-ATUAL.md), Issues, PRs e GitHub Actions atuais antes de agir.** STATUS é registro datado; só as autorizações expressas da direção liberam operações específicas.
+**Conferir sempre [STATUS-ATUAL.md](STATUS-ATUAL.md), Issues, PRs e checks do GitHub antes de iniciar atividades.** Esse status é uma fotografia, não aprovação dos gates nem autorização para implantar.
 
-- **F1-02**: [PR #4](https://github.com/rafhael100/imagine-crm/pull/4), DEV merge `3ec4cfa0621140056eab274826a639aba125e0a6`.
-- **F1-03**: [PR #6](https://github.com/rafhael100/imagine-crm/pull/6), DEV merge `3a3a5b816843ca1fd7d329fa6f0d467406a3ff10`.
-- **F1-04**: [PR #8](https://github.com/rafhael100/imagine-crm/pull/8), DEV merge `407a2ead654864cd457436080999736a1186e219`.
-- **F1-05**: [PR #10](https://github.com/rafhael100/imagine-crm/pull/10), DEV merge `9cc5ae4214e07903b2b69d9d40541c61f395d4bf`. Contratos de intenção e autorização **deny-only**.
-- **F1-06**: [PR #12](https://github.com/rafhael100/imagine-crm/pull/12), DEV merge `691f8c0e508fabae5d3560cca044bf280d2fcfb5`. Classes A–E assíncronas sem execução real.
-- **F1-07**: [PR #14](https://github.com/rafhael100/imagine-crm/pull/14), DEV merge **`71cecea7d53fd5f2608d4b0b96d685c696a144ed`**. Diagnósticos e observações sanitizados, reconciliação sintética sem efeito, `DenyByDefaultAuthorizer` preservado.
-- **`main` não foi alterada por esses merges**; [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) permanece **DRAFT**, sem merge, e a VPS não recebeu deploy.
+- **F1-02**: [PR #4](https://github.com/rafhael100/imagine-crm/pull/4), merge somente DEV `3ec4cfa0621140056eab274826a639aba125e0a6`.
+- **F1-03**: [PR #6](https://github.com/rafhael100/imagine-crm/pull/6), merge somente DEV `3a3a5b816843ca1fd7d329fa6f0d467406a3ff10`.
+- **F1-04**: [PR #8](https://github.com/rafhael100/imagine-crm/pull/8), merge somente DEV `407a2ead654864cd457436080999736a1186e219`.
+- **F1-05**: [PR #10](https://github.com/rafhael100/imagine-crm/pull/10), merge somente DEV `9cc5ae4214e07903b2b69d9d40541c61f395d4bf`; contratos de autorização, deny-only.
+- **F1-06**: [PR #12](https://github.com/rafhael100/imagine-crm/pull/12), merge somente DEV `691f8c0e508fabae5d3560cca044bf280d2fcfb5`; classes A–E, nenhuma execução assíncrona real.
+- **F1-07**: [PR #14](https://github.com/rafhael100/imagine-crm/pull/14), merge somente DEV `71cecea7d53fd5f2608d4b0b96d685c696a144ed`; diagnósticos sanitizados e reconciliação inerte.
+- **F1-08**: [PR #16](https://github.com/rafhael100/imagine-crm/pull/16), merge **exclusivamente na DEV** `2923cc57afe240f8aa6024d7028a75bb8f8b54ef`; ledger PostgreSQL e inbox/outbox **somente laboratório**, em migração experimental opt-in e fixtures `tests/`. Não equivale a fila, mensageria, privilégio, autorização, persistência produtiva ou efeito de negócio.
+- **`main`** continua isolada e inalterada: [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) permanece DRAFT, não integrar sem autorização própria. Sem deploy na VPS/produção.
 
-**Próximo incremento do Codex:** [Issue #15 — F1-08](https://github.com/rafhael100/imagine-crm/issues/15), **ledger experimental de idempotência e inbox/outbox inertes**. Objetivo: provar persistência local, locks/constraints e reconciliação sem enfileirar, transmitir, autenticar serviços ou autorizar negócios.
+**Próximo incremento de Codex: [Issue #17 — F1-09](https://github.com/rafhael100/imagine-crm/issues/17), integridade, recuperação e reconciliação apenas consultiva do ledger experimental.** Seu alvo é demonstrar detecção segura de lacunas e divergências após falhas/snapshots sintéticos, não restaurar ou operar clientes.
 
-### Execução permitida para F1-08
-1. Partir da **HEAD atual da `dev/fast-track-crm-2026-11-04`**, nunca de `main`. Conferir CI e ler Issue #15, ADRs F1-05/F1-06/F1-07, CORE03, AUT-P0 e INT CT-03/04. Criar `codex/f1-08-async-idempotency-ledger` e abrir **PR DRAFT exclusivamente para DEV**, sem merge automático.
-2. Se houver schema SQL, implementar **somente migrações experimentais opt-in** fora do diretório de migrações de produção (`database/experimental-migrations/async`), protegidas por `identity.experimental=true` e ambiente local/testing; PostgreSQL/RLS testado com roles mínimos, conexões sem `app.tenant_id` herdado e isolamento por tenant. Se a segurança não for demonstrável, limitar o recorte a fixtures `tests/`.
-3. Dados sintéticos e mínimos: UUIDs de laboratório, versões, digests e identificadores de tentativa, sem payload comercial, CPF, telefone, e-mail, token, segredo ou PII. Evidência de `first_seen/duplicate/conflict/reconciliation_required` **não é admissão, entrega, efeito ou confirmação oficial**.
-4. Negar efeitos mesmo com ledger persistido: sem `ALLOW`, grant de negócio, Publisher/Consumer, Queue, Job, webhook, HTTP, Mail, n8n, credencial, integração, sincronização de cliente, REST pública, cofre ou gastos. `DenyByDefaultAuthorizer` permanece o único autorizador real.
-5. Testar PostgreSQL 16/RLS e SQLite onde adequado, incluindo idempotência e versões por tenant, locks/concorrência em conexões distintas, rollback e recuperação, replay, falha de conexão, rollback de migração e guard de produção; registrar links, aprovados/skips/asserts e riscos no PR. Preservar regressões F1-02..F1-07, sem tocar `main` ou VPS.
-6. Não duplicar os contratos do motor nativo do CRM/AUT, da Central de Eventos/Filas, INT-R01/INT-09/10/12 nem os prazos da IN-127 para Sites↔CRM. Documentar dono do efeito e autorizações ainda ausentes.
+### Execução permitida para F1-09
+1. Partir **somente da HEAD atual de `dev/fast-track-crm-2026-11-04`**; validar checks; criar `codex/f1-09-async-ledger-integrity-recovery`, abrir **PR DRAFT apontando para DEV**. Não usar `main`, não fazer merge ou deploy automático.
+2. Ler Issue #17, ADRs F1-05..F1-08, CORE03/06/09, AUT-P0, INT-R01/09/10/12, CT-03/04, SEG-01/02, LGPD e decisões adicionais. CORE03-D07 e AUT-P04 são **gates abertos**: não inferir schema/filas/retentativas, owner, prazos ou confirmação oficial.
+3. Criar **somente em `tests/Fixtures` e testes/ADR** verificador consultivo read-only de invariantes do ledger F1-08, tentativas e inbox/outbox. Detectar pares ausentes, registros inconsistentes, falha/rollback, versões/ordem causal conflitantes, cross-tenant e casos que exigem validação do módulo owner. Não alterar automaticamente o estado ou produzir autorização por ter lido o ledger.
+4. Ensaiar restauração/comparação apenas em **schema descartável de CI** ou snapshot fictício seguro, sem `pg_dump`/PITR de servidor real e sem afirmar RPO/RTO. Migrações, se necessárias, ficam exclusivamente em `database/experimental-migrations/async`, opt-in por ambiente local/testing + `identity.experimental=true`, nunca no `migrate` padrão.
+5. Preservar PostgreSQL 16 com FORCE RLS, conexão de privilégio mínimo, isolamento por tenant e GUC `app.tenant_id` transacional **não autenticadora**; recusar pool contaminado. Sem efeitos mesmo se auditoria/snapshot apontar estado aparentemente concluído.
+6. Cobrir testes negativos: lacunas/inconsistências, tentativas concorrentes, rollback, host/reconexão simulados, acesso de tenant cruzado, papel privilegiado negado, expiração, credencial/membership revogados, falha de DB, sinal sanitizado e **nenhum** Bus/Queue/Event/Mail/HTTP/n8n/webhook/worker disparado.
+7. Executar as suítes completas Laravel/SQLite e PostgreSQL 16/RLS/Redis na HEAD FINAL do PR, registrar links, pass/skip/asserts e justificar a plataforma dos skips. Sem acesso a VPS ou contas reais.
 
-### Gates obrigatoriamente abertos
-- **67 IDs técnicos CORE** e CORE01..CORE09, especialmente CORE03-D04..D10, CORE09-D04..D10 e CORE02-D04..D10; SEG-01/02, ARQ/INT/FIN/CON/LGPD e G01..G06 continuam **abertos**. CORE03/09-D01..D03 são somente base documental aceita.
-- `app.tenant_id` é marcador de contexto, não credencial/autorização. A cadeia de identidade humana e técnico/serviço, membership, RLS, mandatos, consentimentos, owner e entitlements deve ser homologada antes de permitir efeitos.
-- n8n continua restrito aos serviços internos Imagine conforme avaliação de licença; motor nativo para automações do cliente é trabalho futuro separado. Nenhum worker real, fila/roteamento, ingestão real de leads, endpoint público, sessão de cliente, acesso a VPS ou dados reais.
-- Qualquer próximo merge exige nova autorização expressa; CI verde em laboratório não habilita `main`, produção ou fechamento de CORE/SEG.
+### Bloqueios obrigatoriamente abertos
+- Todos os **67 IDs técnicos CORE**, CORE01..09 (CORE03-D04..D10, CORE09-D04..D10, CORE02-D04..D10), AUT-P01..14, SEG-01/02, ARQ/INT/FIN/CON/LGPD, G01..G06. As bases CORE03/09-D01..D03 aceitas são documentais, **não autorizam trabalho produtivo**.
+- O único autorizador runtime continua `DenyByDefaultAuthorizer`; jamais implementar `ALLOW`, credencial de serviço produtiva, entrega real, customer CRUD, acesso de cliente, planos, faturamento, suporte, novos custos, processamento real, dados pessoais, fila/worker, cache de permissão ou n8n.
+- Outbox/inbox do laboratório não constituem Central de Eventos, motor nativo de automações, backup/restore produtivo, DLQ ou reconciliação oficial. **Não transplantar os prazos IN-127 Sites↔CRM para o CRM**.
+- CI verde não encerra gates. Nunca alterar `main`, integrar PR #2 ou implantar na VPS sem autorização distinta e homologações necessárias.
 
 ## Provas de execução
-- F1-07 HEAD pré-merge `c4255fd728ff29f68a8ca3668eef8861e633134d`: [Laravel/SQLite run 42089372399](https://github.com/rafhael100/imagine-crm/actions/runs/42089372399) **337 passed / 36 skipped**, [PostgreSQL 16/Redis run 42089372691](https://github.com/rafhael100/imagine-crm/actions/runs/42089372691) **372 passed / 1 skipped**.
-- F1-07 merge DEV `71cecea7d53fd5f2608d4b0b96d685c696a144ed`: [Laravel run 42092229368](https://github.com/rafhael100/imagine-crm/actions/runs/42092229368) e [PostgreSQL/RLS/Redis run 42092229274](https://github.com/rafhael100/imagine-crm/actions/runs/42092229274) **success**.
-- Documentação pode criar novos commits/checks; conferir resultados da HEAD antes de programar e em cada revisão. Nenhuma prova acima homologa política produtiva.
+- F1-08 HEAD pré-merge `49bd5b661ddee3fec434cd550530c07c1430e878`: [Laravel/SQLite 42119017856](https://github.com/rafhael100/imagine-crm/actions/runs/42119017856) **340 passed / 49 skipped, 1366 asserts**; [PostgreSQL/RLS/Redis 42119018061](https://github.com/rafhael100/imagine-crm/actions/runs/42119018061) **388 passed / 1 skipped, 1827 asserts**.
+- Merge F1-08 somente na DEV `2923cc57afe240f8aa6024d7028a75bb8f8b54ef`: [Laravel 42122175413](https://github.com/rafhael100/imagine-crm/actions/runs/42122175413) e [PostgreSQL/RLS/Redis 42122175636](https://github.com/rafhael100/imagine-crm/actions/runs/42122175636) **success**.
+- Novos commits documentais podem acionar novos workflows. Confira sempre checks do SHA atual. Nenhuma dessas provas constitui aceite de CORE/SEG ou release.
