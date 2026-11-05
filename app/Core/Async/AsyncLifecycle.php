@@ -30,4 +30,9 @@ final readonly class AsyncLifecycle
     {
         return $this->transition(AsyncState::Inconclusive);
     }
+
+    public function requireReconciliation(): self
+    {
+        return $this->transition(AsyncState::ReconciliationRequired);
+    }
 }

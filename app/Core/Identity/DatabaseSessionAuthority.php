@@ -63,6 +63,11 @@ final readonly class DatabaseSessionAuthority implements SessionAuthority
         $credential = $this->db->table('crm_auth_credentials')->where('identity_id', $identityId)->lockForUpdate()->first();
         $row = $this->sessionRow('crm.auth.token');
         $now = now()->getTimestamp();
+        if ($credential && $row && $row->identity_id === $identityId
+            && hash_equals($row->binding, hash('sha256', $this->session->getId()))
+            && $row->state === 'revoked') {
+            throw new SessionRevoked();
+        }
         if (!$credential || !$this->validCredential($credential) || !$row || !$this->usable($row)
             || $row->identity_id !== $identityId || $row->state !== 'active'
             || (int) $row->credential_version !== (int) $credential->version

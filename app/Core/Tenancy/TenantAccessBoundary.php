@@ -54,7 +54,7 @@ final readonly class TenantAccessBoundary
                     $principal, $membership, strtolower($tenantId), (string) Str::uuid(),
                 );
                 if ($context === null) {
-                    throw new AuthorizationException('Tenant access denied.');
+                    throw new MembershipDenied();
                 }
 
                 $envelope = $intent === null ? null : new AuthorizationEnvelope($context, $principal, $membership, $intent);
