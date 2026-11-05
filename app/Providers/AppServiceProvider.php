@@ -10,6 +10,12 @@ use App\Core\Identity\SessionAuthority;
 use App\Core\Identity\DatabaseSessionAuthority;
 use App\Core\Identity\ExperimentalAuthenticator;
 use App\Core\Identity\Totp;
+use App\Core\Identity\IamOperationContext;
+use App\Core\Identity\IamOperationRunner;
+use App\Core\Identity\IamAbuseGuard;
+use App\Core\Identity\IamAudit;
+use App\Core\Identity\TrustedPeerOrigin;
+use App\Core\Identity\LaboratoryProvisioner;
 use App\Core\Tenancy\ActiveMembershipStore;
 use App\Core\Tenancy\PostgresActiveMembershipStore;
 use Illuminate\Support\ServiceProvider;
@@ -29,8 +35,27 @@ class AppServiceProvider extends ServiceProvider
                 'session.same_site' => 'strict', 'session.expire_on_close' => true,
             ]);
         }
+        $this->app->scoped(IamOperationContext::class, fn () => new IamOperationContext());
         $this->app->bind(DatabaseSessionAuthority::class, fn ($app) =>
-            new DatabaseSessionAuthority($app['db']->connection('crm_iam'), $app['session.store']));
+            new DatabaseSessionAuthority($app['db']->connection('crm_iam'), $app['session.store'], $app->make(IamOperationContext::class), $app->make(IamAudit::class)));
+        $this->app->bind(TrustedPeerOrigin::class, fn ($app) => new TrustedPeerOrigin($app['request']));
+        $this->app->bind(IamAbuseGuard::class, fn ($app) => new IamAbuseGuard($app['cache']->store(config('identity.abuse_store'))));
+        $this->app->bind(IamOperationRunner::class, fn ($app) => new IamOperationRunner(
+            $app->make(DatabaseSessionAuthority::class), $app->make(IamOperationContext::class),
+            $app['session.store'], $app['auth']->guard('crm_identity'), $app->make(IamAudit::class),
+            $app->make(IamAbuseGuard::class), $app->make(TrustedPeerOrigin::class),
+        ));
+        $this->app->bind(LaboratoryProvisioner::class, function ($app) {
+            if (!config('identity.experimental') || !$app->environment('local', 'testing')) {
+                throw new \LogicException('Isolated laboratory provisioner only.');
+            }
+            return new LaboratoryProvisioner(
+                $app->make(GuardPrincipalSource::class),
+                new DatabaseSessionAuthority($app['db']->connection('crm_provision'), $app['session.store']),
+                $app['hash'], $app['encrypter'], $app->make(IamAudit::class), new Totp(),
+                $app->make(IamAbuseGuard::class), $app->make(TrustedPeerOrigin::class),
+            );
+        });
         $this->app->bind(SessionAuthority::class, DatabaseSessionAuthority::class);
         $this->app->bind(GuardPrincipalSource::class, function ($app) {
             if (!config('identity.experimental') || !$app->environment('local', 'testing')) {
@@ -47,7 +72,7 @@ class AppServiceProvider extends ServiceProvider
             return new ExperimentalAuthenticator(
                 $app->make(DatabaseSessionAuthority::class), $app['auth']->guard('crm_identity'),
                 $app['session.store'], $app['hash'], $app['encrypter'],
-                $app->make(\Illuminate\Cache\RateLimiter::class), new Totp(),
+                $app->make(\Illuminate\Cache\RateLimiter::class), new Totp(), $app->make(IamOperationRunner::class),
             );
         });
         $this->app->bind(ActiveMembershipStore::class, fn ($app) =>
