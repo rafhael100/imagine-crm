@@ -25,7 +25,8 @@ use Tests\TestCase;
 
 final class IamHardeningTest extends TestCase
 {
-    use \Tests\Concerns\SyntheticIam { tearDown as protected tearDownSyntheticIam; }
+    // Avoid Laravel's automatic tearDown{TraitName} hook naming convention.
+    use \Tests\Concerns\SyntheticIam { tearDown as protected finishSyntheticFixture; }
 
     private const E = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
     private array $failedReference = [];
@@ -38,7 +39,7 @@ final class IamHardeningTest extends TestCase
             }
             $this->fixtures->table('crm_global_identities')->where('id', self::E)->delete();
         }
-        $this->tearDownSyntheticIam();
+        $this->finishSyntheticFixture();
     }
 
     private function denied(\Closure $operation): void
@@ -194,6 +195,19 @@ final class IamHardeningTest extends TestCase
         $this->denied(fn () => $this->app->make(GuardPrincipalSource::class)->current());
     }
 
+    public function test_silent_false_session_write_cannot_finalize_a_new_reference(): void
+    {
+        $store = new Store('synthetic-false-write', new FalseWritingIamHandler(120));
+        $store->start();
+        $this->app->instance('session.store', $store);
+        $this->app['auth']->forgetGuards();
+        $this->guard = $this->app['auth']->guard('crm_identity');
+        $this->auth = $this->app->make(ExperimentalAuthenticator::class);
+        $this->denied(fn () => $this->auth->begin('fixture-a', self::PASSWORD));
+        $this->assertSame(0, $this->db->table('crm_auth_sessions')->whereIn('state', ['active', 'pending'])->count());
+        $this->assertNull($this->guard->user());
+    }
+
     private function failCompletionAudit(): FaultableIamAudit
     {
         $audit = new FaultableIamAudit();
@@ -334,6 +348,11 @@ final class FaultableIamSession extends Store
     public bool $failToken = false;
     public function save(): void { if ($this->failSave) { throw new \RuntimeException('Synthetic session save failure.'); } parent::save(); }
     public function put($key, $value = null): void { if ($this->failToken && $key === 'crm.auth.token') { throw new \RuntimeException('Synthetic token write failure.'); } parent::put($key, $value); }
+}
+
+final class FalseWritingIamHandler extends ArraySessionHandler
+{
+    public function write($sessionId, $data): bool { return false; }
 }
 
 final class FaultableIamAudit extends IamAudit
