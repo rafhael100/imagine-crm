@@ -294,6 +294,11 @@ final class IamHardeningTest extends TestCase
         $this->assertSame(3, $result['version']);
         $this->assertCount(6, $result['recovery_codes']);
         $this->denied(fn () => $provisioner->recovery($mandate, (string) Str::uuid(), self::B, 2));
+        $this->fixtures->table('crm_auth_credentials')->where('identity_id', self::B)->update(['status' => 'disabled']);
+        $mandate = $this->mandate(self::A, self::B, 'rotate');
+        $this->denied(fn () => $provisioner->credential($mandate, (string) Str::uuid(), self::B, 'lab-b', self::PASSWORD,
+            self::SECRET, (new Totp())->code(self::SECRET, now()->getTimestamp()), 3));
+        $this->assertSame('disabled', $this->fixtures->table('crm_auth_credentials')->where('identity_id', self::B)->value('status'));
     }
 
     public function test_postgres_reconciliation_only_revokes_and_is_idempotent_under_mandate(): void
