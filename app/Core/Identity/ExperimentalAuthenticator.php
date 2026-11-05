@@ -17,7 +17,8 @@ use Throwable;
 /** Internal laboratory service. No routes, registration, enrollment or external delivery. */
 final readonly class ExperimentalAuthenticator
 {
-    private const DUMMY_HASH = '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi';
+    // Syntactically valid bcrypt work factor for the missing-account path; never a credential.
+    private const DUMMY_HASH = '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.';
 
     public function __construct(
         private DatabaseSessionAuthority $registry,
