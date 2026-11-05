@@ -69,6 +69,10 @@ Antes da primeira consulta define **REPEATABLE READ, READ ONLY**. Confere
 role sem SUPERUSER/BYPASSRLS/ownership, SELECT presente e nenhum privilégio
 INSERT/UPDATE/DELETE/TRUNCATE/REFERENCES/TRIGGER nas quatro tabelas; todas
 devem ter ENABLE + FORCE RLS. Schema ausente e role imprópria são recusados.
+Também confere has_any_column_privilege: um grant UPDATE(state) pode não
+aparecer como UPDATE na ACL de tabela, mas ainda deve recusar o leitor.
+Contraprova concede esse direito somente na réplica descartável, que é
+removida com o schema; nenhum grant na origem é ampliado.
 
 Role `crm_async_audit_ci` efêmera tem USAGE no schema/CONNECT e somente SELECT
 nas quatro tabelas, sem IAM/membership/credenciais. Role escritora F1-08
@@ -158,3 +162,54 @@ preservadas. PHP/Composer/Docker ausentes no terminal; não declarar execução
 local dessas plataformas. SQLite prova os contratos puros; somente PostgreSQL
 com role restrita prova RLS, grants, snapshot e concorrência reais. Redis
 efêmero continua nas regressões IAM/antiabuso/pane; não vira fonte de ledger.
+
+### Evidências executadas em 05/11/2026
+
+[PR #18 DRAFT](https://github.com/rafhael100/imagine-crm/pull/18), revisão
+`ff7c29590f359481a06fe4f7f6736cdbd9996eb0`. Dois checks success; resumos e
+probes conferidos diretamente nos logs Actions:
+
+| Plataforma/comando | Resultado real | Log |
+|---|---|---|
+| PHP 8.4 / Laravel 13 / SQLite — php artisan test --no-ansi | **366 passed, 63 skipped, 1574 assertions; 0 falhas** | [42126020620 / 127590378232](https://github.com/rafhael100/imagine-crm/actions/runs/42126020620/job/127590378232) |
+| PostgreSQL 16 / Redis 7 efêmeros — suíte completa | **428 passed, 1 skipped, 2250 assertions; 0 falhas** | [42126020878 / 127590505624](https://github.com/rafhael100/imagine-crm/actions/runs/42126020878/job/127590505624) |
+| Mesmo job PostgreSQL — filtro PostgresMembershipRlsTest | **18 passed, 49 assertions** | Mesmo log PostgreSQL |
+| Local — git diff --cached --check, doze arquivos F1-09 | **Sem erros de whitespace** | Snapshot local de edição |
+
+40 casos novos: 26 de amostras/contratos e 14 PostgreSQL. Regressões
+F1-02..F1-08 preservadas. Os 63 skips SQLite exigem PostgreSQL/Redis,
+incluindo os 14 novos casos de restauração/roles/snapshot; foram executados
+na plataforma adequada. O único skip PostgreSQL é exclusivo de SQLite.
+O probe postgres shared redis budgets and contended lock fail closed passou
+no job PostgreSQL, assim como os probes de pane Redis existentes.
+
+Passaram leitura read-only/REPEATABLE READ, snapshot completo e parcial,
+restore conflitante com rollback, ACL/RLS e isolamento C/D, role com UPDATE
+por coluna recusada, schema ausente, DB indisponível, contexto residual,
+commit entre consultas em conexões independentes, rollback, ACK perdido e
+revalidação de membership/sessão revogadas. Não houve correção automática,
+nova tentativa, mutação pelo leitor ou dispatch de domínio.
+
+#### Falha inicial de descoberta da suíte
+
+Na revisão `765ccdaef21810179ffef84e7554c434c7010fda`, ambos os workflows
+falharam antes de executar testes:
+[Laravel 42125680479](https://github.com/rafhael100/imagine-crm/actions/runs/42125680479/job/127589125371)
+e [PostgreSQL 42125680552](https://github.com/rafhael100/imagine-crm/actions/runs/42125680552/job/127589125408).
+O helper privado seed() da nova classe de teste colidia com seed() público
+herdado do TestCase Laravel. Renomeado para seedLedger(), sem alterar o
+framework, métodos de produção ou reduzir testes. O log PostgreSQL aponta
+o erro fatal na descoberta, portanto não atribuir pass/skip/asserts àquela
+tentativa. No mesmo ciclo de revisão foi acrescentada a verificação de ACL
+por coluna e sua contraprova negativa em schema descartável. Depois dessas
+alterações as duas suítes completas passaram no SHA registrado acima.
+
+Não executados localmente: Laravel/PostgreSQL/Redis, pois PHP/Composer/Docker
+continuam ausentes. Execução efetiva foi somente na CI descartável, sem
+VPS/cliente/dados reais. Conferidos 61 arquivos anteriores de app/config/
+database, sem diferenças para F1-08. Composer lock preservado, SHA256
+`08C77FE9D787BE841633DEA38461BBBDC4C3EDFA419FF676D8FADF7581636F5C`;
+DenyByDefaultAuthorizer preservado, SHA256
+`800F5F38E0A60269CCD4A3C5E8B06E66DE5DBC72CD312F87DFE9BCCAC016E0CF`.
+Este registro altera apenas documentação: conferir novamente SHA/checks
+finais no PR após o commit, sem declarar aceite humano ou fechar gates.
