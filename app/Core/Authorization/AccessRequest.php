@@ -18,6 +18,7 @@ final readonly class AccessRequest
         public string $resource,
         public string $action,
         public ?string $field = null,
+        public ?AuthorizationEnvelope $envelope = null,
     ) {
         if (trim($resource) === '' || trim($action) === '') {
             throw new InvalidArgumentException('Resource and action are required.');
