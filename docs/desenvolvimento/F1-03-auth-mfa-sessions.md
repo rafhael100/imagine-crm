@@ -140,8 +140,25 @@ este recorte antes de merge; release requer aceite separado. Sem merge/deploy.
 
 ## Evidências de execução
 
-Testes escritos, ainda aguardando execução nos dois workflows existentes.
-PHP/Composer/Docker não estão disponíveis no terminal local. Publicação pela
-sessão autenticada do GitHub; snapshot Git local serve apenas ao diff e não
-será publicado como ancestralidade. Branch remota deriva diretamente da dev.
-Os resultados e links novos serão registrados após execução real de CI.
+Execução real em 04/11/2026 (Brasília; logs UTC 05/11), revisão de código
+`8b0bc660454a53f86f5cc67b0a2e9e74ace54cca`, no [PR DRAFT #6](https://github.com/rafhael100/imagine-crm/pull/6):
+
+| Execução | Resultado observado |
+|---|---|
+| [Laravel 13.40.0 / PHP 8.4 / SQLite](https://github.com/rafhael100/imagine-crm/actions/runs/41941045098/job/126961619144) — `php artisan test --no-ansi` | 64 aprovados, 21 ignorados por exigirem PostgreSQL, 151 asserções; sucesso |
+| [PostgreSQL 16 / RLS / PHP 8.4](https://github.com/rafhael100/imagine-crm/actions/runs/41941045307/job/126961619928) — `php artisan test` | 85 aprovados, 212 asserções; nenhum ignorado; sucesso |
+| Mesmo job PostgreSQL — filtro `PostgresMembershipRlsTest` | 18 aprovados, 49 asserções; sucesso |
+| Local — `git diff --check` | Sucesso; nenhuma falha de whitespace |
+
+A primeira execução identificou hash dummy bcrypt malformado no caminho de
+identidade inexistente. Corrigido o formato, sem desativar a verificação de
+algoritmo; o teste de erro neutro passou nos dois bancos. Permanecem avisos
+da plataforma sobre migração Ubuntu/Node das actions, sem falha dos testes.
+`composer.lock` preservado (SHA256 `08C77FE9D787BE841633DEA38461BBBDC4C3EDFA419FF676D8FADF7581636F5C`).
+
+PHP/Composer/Docker não estão disponíveis no terminal local; os resultados
+acima são da CI efêmera com fixtures sintéticas. Publicação pela sessão
+autenticada do GitHub; snapshot Git local serve apenas ao diff e não foi
+publicado como ancestralidade. Branch remota deriva diretamente da dev.
+CI verde comprova somente este recorte; não encerra CORE/SEG nem autoriza
+merge, autenticação pública ou implantação.
