@@ -29,6 +29,7 @@ final class PostgresAsyncLedgerTest extends TestCase
 {
     use \Tests\Concerns\SyntheticIam { setUp as private bootIam; tearDown as private finishIam; }
     private Connection $ledgerDb;
+    private Connection $peerDb;
     private Connection $businessDb;
 
     protected function setUp(): void
@@ -43,6 +44,8 @@ final class PostgresAsyncLedgerTest extends TestCase
         config(['database.connections.crm_async_lab' => $settings]); DB::purge('crm_async_lab');
         $this->ledgerDb = DB::connection('crm_async_lab');
         $this->ledgerDb->statement("SET lock_timeout = '150ms'");
+        config(['database.connections.crm_async_peer' => $settings]); DB::purge('crm_async_peer');
+        $this->peerDb = DB::connection('crm_async_peer');
         $settings['username'] = getenv('RLS_TEST_USERNAME'); $settings['password'] = getenv('RLS_TEST_PASSWORD');
         config(['database.connections.crm_async_membership' => $settings]); DB::purge('crm_async_membership');
         $this->businessDb = DB::connection('crm_async_membership');
@@ -57,7 +60,8 @@ final class PostgresAsyncLedgerTest extends TestCase
     {
         if (isset($this->ledgerDb)) {
             while ($this->fixtures->transactionLevel()) { $this->fixtures->rollBack(); }
-            $this->clearLedger(); DB::purge('crm_async_lab'); DB::purge('crm_async_membership');
+            while ($this->peerDb->transactionLevel()) { $this->peerDb->rollBack(); }
+            $this->clearLedger(); DB::purge('crm_async_lab'); DB::purge('crm_async_membership'); DB::purge('crm_async_peer');
         }
         $this->finishIam();
     }
@@ -85,7 +89,18 @@ final class PostgresAsyncLedgerTest extends TestCase
 
     public function test_atomic_inert_rows_deduplicate_after_new_connection_and_never_dispatch(): void
     {
-        Bus::fake(); Queue::fake(); Event::fake(); Http::fake(); Mail::fake();
+        Bus::fake(); Queue::fake(); Http::fake(); Mail::fake();
+        // A NEW connection legitimately emits database infrastructure events.
+        // Only these explicit types pass through; every domain event remains captured.
+        Event::fakeExcept([
+            \Illuminate\Database\Events\ConnectionEstablished::class,
+            \Illuminate\Database\Events\TransactionBeginning::class,
+            \Illuminate\Database\Events\StatementPrepared::class,
+            \Illuminate\Database\Events\QueryExecuted::class,
+            \Illuminate\Database\Events\TransactionCommitting::class,
+            TransactionCommitted::class,
+            \Illuminate\Database\Events\TransactionRolledBack::class,
+        ]);
         $first = $this->ledger()->record($this->input());
         $this->assertSame('first_seen', $first->outcome);
         foreach (Ledger::TABLES as $table) { $this->assertSame(1, $this->fixtures->table($table)->count()); }
@@ -95,6 +110,10 @@ final class PostgresAsyncLedgerTest extends TestCase
         $this->assertFalse($first->denial->decision->allowed); $this->assertFalse($duplicate->denial->decision->allowed);
         $this->assertSame(AsyncState::ReconciliationRequired, $duplicate->reconciliation->lifecycle->state);
         $this->assertSame(2, $this->fixtures->table(Ledger::TABLES[1])->count());
+        $attempt = $this->fixtures->table(Ledger::TABLES[1])->where('id', $first->attemptId)->first();
+        $this->assertSame($first->denial->observation->correlationId, $attempt->correlation_id);
+        $this->assertSame($first->denial->observation->id, $attempt->causation_id);
+        $this->assertNotSame($this->input()['correlation_id'], $attempt->correlation_id);
         foreach ([Ledger::TABLES[0], Ledger::TABLES[2], Ledger::TABLES[3]] as $table) {
             $this->assertSame(['registered_for_test'], $this->fixtures->table($table)->pluck('state')->all());
         }
@@ -132,14 +151,15 @@ final class PostgresAsyncLedgerTest extends TestCase
     public function test_two_connections_contend_on_unique_insert_then_replay_after_commit(): void
     {
         $this->ledger()->record($this->input()); $row = (array) $this->fixtures->table(Ledger::TABLES[0])->first();
-        $this->clearLedger(); $this->fixtures->beginTransaction();
-        $this->fixtures->table(Ledger::TABLES[0])->insert($row); // First connection's uncommitted intent.
+        $this->clearLedger(); $this->peerDb->beginTransaction();
+        $this->peerDb->selectOne("SELECT set_config('app.tenant_id', ?, true)", [self::C]);
+        $this->peerDb->table(Ledger::TABLES[0])->insert($row); // Independent, equally restricted role; uncommitted intent.
         $blocked = $this->ledger()->record($this->input());
         $this->assertSame('inconclusive', $blocked->outcome);
         $this->assertSame(Kind::ConcurrencyBlocked, $blocked->diagnostic->kind);
         $this->assertFalse($blocked->denial->decision->allowed);
         $this->assertSame('first_seen', $this->ledger(self::D)->record($this->input(self::D))->outcome);
-        $this->fixtures->commit();
+        $this->peerDb->commit();
         $this->assertSame('duplicate', $this->ledger()->record($this->input())->outcome);
         $this->assertSame(2, $this->fixtures->table(Ledger::TABLES[0])->count()); $this->assertClean();
     }
@@ -147,9 +167,11 @@ final class PostgresAsyncLedgerTest extends TestCase
     public function test_rollback_of_competing_insert_allows_later_first_seen_without_automatic_retry(): void
     {
         $this->ledger()->record($this->input()); $row = (array) $this->fixtures->table(Ledger::TABLES[0])->first();
-        $this->clearLedger(); $this->fixtures->beginTransaction(); $this->fixtures->table(Ledger::TABLES[0])->insert($row);
+        $this->clearLedger(); $this->peerDb->beginTransaction();
+        $this->peerDb->selectOne("SELECT set_config('app.tenant_id', ?, true)", [self::C]);
+        $this->peerDb->table(Ledger::TABLES[0])->insert($row);
         $this->assertSame('inconclusive', $this->ledger()->record($this->input())->outcome);
-        $this->fixtures->rollBack();
+        $this->peerDb->rollBack();
         $this->assertSame(0, $this->fixtures->table(Ledger::TABLES[0])->count());
         $this->assertSame('first_seen', $this->ledger()->record($this->input())->outcome); $this->assertClean();
     }
@@ -292,7 +314,7 @@ final class PostgresAsyncLedgerTest extends TestCase
 
     private function assertClean(): void
     {
-        foreach ([$this->ledgerDb, $this->businessDb] as $db) {
+        foreach ([$this->ledgerDb, $this->peerDb, $this->businessDb] as $db) {
             $this->assertSame(0, $db->transactionLevel());
             $this->assertContains($db->selectOne("SELECT current_setting('app.tenant_id', true) AS tenant")->tenant, [null, '']);
         }
