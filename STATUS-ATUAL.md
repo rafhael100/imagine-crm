@@ -7,10 +7,10 @@
 ## 1. Situação resumida
 
 - **Fase:** desenvolvimento técnico controlado e experimental com Laravel 13, PostgreSQL 16 e Redis em CI, sempre com fixtures sintéticas, sem autorização de negócio.
-- **Branch de trabalho:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04). **F1-02, F1-03, F1-04, F1-05, F1-06 e F1-07 integradas somente na DEV**.
-- **Último merge:** [PR #14 — F1-07](https://github.com/rafhael100/imagine-crm/pull/14) fechado como MERGED, commit `71cecea7d53fd5f2608d4b0b96d685c696a144ed`, autorização expressa para a DEV.
+- **Branch de trabalho:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04). **F1-02, F1-03, F1-04, F1-05, F1-06, F1-07 e F1-08 integradas somente na DEV**.
+- **Último merge:** [PR #16 — F1-08](https://github.com/rafhael100/imagine-crm/pull/16) fechado como MERGED, commit `2923cc57afe240f8aa6024d7028a75bb8f8b54ef`, autorização expressa para a DEV.
 - **`main`:** permanece no commit verificado `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012`. [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) continua **DRAFT** para `main`, sem merge.
-- **Próxima tarefa:** [Issue #15 — F1-08 ledger experimental de idempotência e inbox/outbox](https://github.com/rafhael100/imagine-crm/issues/15), preparada para Codex (sem programação desta etapa por esta atualização).
+- **Próxima tarefa:** [Issue #17 — F1-09 integridade, recuperação e reconciliação consultiva do ledger experimental](https://github.com/rafhael100/imagine-crm/issues/17), preparada para Codex (ainda sem PR F1-09).
 - **VPS/produção:** não foi feito deploy nesta sequência. Não foram habilitados endpoints públicos, jobs, webhooks, automações de clientes, credenciais reais ou permissões de dados comerciais.
 
 ## 2. Entregas
@@ -25,7 +25,8 @@
 | F1-05 | [PR #10](https://github.com/rafhael100/imagine-crm/pull/10) | Integrada em DEV, `9cc5ae4214e07903b2b69d9d40541c61f395d4bf` |
 | F1-06 | [PR #12](https://github.com/rafhael100/imagine-crm/pull/12) / [Issue #11](https://github.com/rafhael100/imagine-crm/issues/11) | Integrada em DEV, `691f8c0e508fabae5d3560cca044bf280d2fcfb5`. Contratos A–E de autoridade assíncrona inertes/deny-only |
 | F1-07 | [PR #14](https://github.com/rafhael100/imagine-crm/pull/14) / [Issue #13](https://github.com/rafhael100/imagine-crm/issues/13) | Integrada exclusivamente na DEV, merge `71cecea7d53fd5f2608d4b0b96d685c696a144ed`; telemetria e reconciliação sanitizadas e inertes |
-| F1-08 | [Issue #15](https://github.com/rafhael100/imagine-crm/issues/15) | Preparada para Codex; ledger e outbox/inbox experimentais, sem ativação de operação real |
+| F1-08 | [PR #16](https://github.com/rafhael100/imagine-crm/pull/16) / [Issue #15](https://github.com/rafhael100/imagine-crm/issues/15) | Integrada exclusivamente na DEV, merge `2923cc57afe240f8aa6024d7028a75bb8f8b54ef`; ledger PostgreSQL sintético e inbox/outbox inertes |
+| F1-09 | [Issue #17](https://github.com/rafhael100/imagine-crm/issues/17) | Preparada para Codex; ensaios de integridade, restauração e reconciliação consultiva, sem efeitos reais |
 
 ## 3. Testes conferidos
 
@@ -45,6 +46,14 @@
 - [Laravel — run 42092229368](https://github.com/rafhael100/imagine-crm/actions/runs/42092229368): **success**.
 - [PostgreSQL/RLS/Redis — run 42092229274](https://github.com/rafhael100/imagine-crm/actions/runs/42092229274): **success**.
 
+**F1-08 antes do merge:** SHA `49bd5b661ddee3fec434cd550530c07c1430e878`.
+- [Laravel/SQLite run 42119017856](https://github.com/rafhael100/imagine-crm/actions/runs/42119017856): **340 aprovados, 49 ignorados, 1.366 asserções**, success.
+- [PostgreSQL 16/Redis 7 run 42119018061](https://github.com/rafhael100/imagine-crm/actions/runs/42119018061): **388 aprovados, 1 ignorado, 1.827 asserções**, success.
+
+**F1-08 pós-merge na DEV:** SHA `2923cc57afe240f8aa6024d7028a75bb8f8b54ef`.
+- [Laravel run 42122175413](https://github.com/rafhael100/imagine-crm/actions/runs/42122175413): **success**.
+- [PostgreSQL/RLS/Redis run 42122175636](https://github.com/rafhael100/imagine-crm/actions/runs/42122175636): **success**.
+
 Novos commits de documentação disparam novos checks. Verificar `HEAD` e Actions atuais antes de abrir ou integrar PR. Suítes sintéticas não comprovam prontidão para produção.
 
 ## 4. Segurança e pendências preservadas
@@ -54,13 +63,13 @@ Novos commits de documentação disparam novos checks. Verificar `HEAD` e Action
 3. Um `tenant_id`/GUC `app.tenant_id` fornecido não autentica. RLS, sessão, membership, identidade técnica, dono de módulo e autorização exigem comprovação independente.
 4. F1-06 tem somente inspeção/rejeição para classes A–E; não faz dispatch, não expõe webhook nem confirma fato comercial.
 5. F1-07 acrescentou diagnóstico sanitizado e reconciliação **sintética**; nenhum sink de observação, resultado oficial ou retry produtivo está habilitado. F1-08 não poderá introduzir ALLOW nem efeitos externos. HTTP 2xx/recibo técnico não comprovam resultado de negócio.
-6. Acesso de clientes, dados pessoais, segredos, n8n, infraestrutura, fila/outbox/inbox **produtivos**, contratação e VPS não estão autorizados. A F1-08 pode estudar persistência **isolada no laboratório**, nunca criar transportador ou publicação real. CI verde não encerra gates.
+6. Acesso de clientes, dados pessoais, segredos, n8n, infraestrutura, fila/outbox/inbox **produtivos**, contratação e VPS não estão autorizados. A F1-08 contém persistência **isolada em laboratório**, sem transportador ou publicação. A F1-09 deve manter apenas leitura/validação sintética e reconciliação consultiva, nunca correção automática ou efeitos. A escrita sintética F1-08 não comprova autoridade/entrega, e o teste de restauração F1-09 não comprova RPO/RTO ou recuperação real. CI verde não encerra gates.
 
 ## 5. Próxima tarefa de desenvolvimento controlado
 
-A [Issue #15 — F1-08](https://github.com/rafhael100/imagine-crm/issues/15) restringe o escopo ao **ledger de intenções, idempotência e inbox/outbox experimentais, sem execução/dispatch**, com PostgreSQL/RLS de laboratório e migrações opt-in, ou fixtures apenas se houver risco de isolamento.
+A [Issue #17 — F1-09](https://github.com/rafhael100/imagine-crm/issues/17) restringe o escopo à **integridade, recuperação sintética, detecção de lacunas e reconciliação somente consultiva** de registros experimentais, com PostgreSQL/RLS em schemas descartáveis. Não autoriza execução, correção automática, emissão de efeitos ou backups produtivos.
 
-Codex deve iniciar a partir da HEAD atual da DEV, criar `codex/f1-08-async-idempotency-ledger` e abrir PR **DRAFT para a DEV**, sem merge. Preservar segurança deny-only. Revisão técnica/QA, CI no SHA final e aceite específico antes de nova integração.
+Codex deve iniciar a partir da HEAD atual da DEV, criar `codex/f1-09-async-ledger-integrity-recovery` e abrir PR **DRAFT para a DEV**, sem merge. Preservar segurança deny-only. Revisão técnica/QA, CI no SHA final e aceite específico antes de nova integração.
 
 ## 6. Governança
 
