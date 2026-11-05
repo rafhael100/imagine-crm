@@ -219,5 +219,19 @@ de APIs externas, filas ou workers. Nenhum desses canais está habilitado.
 O custo/contenção, prazos máximos e política de efeitos em voo precisam de
 revisão IAM/DBA/SEG. Os 67 IDs CORE e demais gates continuam abertos.
 
-Resultados desta revisão: aguardando nova execução real dos workflows Laravel
-e PostgreSQL; os resultados anteriores acima são históricos, não desta revisão.
+Resultados desta revisão, executados em CI efêmera com dados fictícios na
+revisão `a3beca70fc529344f14905eea8929d365a7c3d4f` (04/11/2026 Brasília):
+
+| Execução | Resultado dos logs |
+|---|---|
+| [Laravel/SQLite — 41945324836](https://github.com/rafhael100/imagine-crm/actions/runs/41945324836/job/126975998536) | 67 aprovados, 24 ignorados por exigirem PostgreSQL, 167 asserções; sucesso |
+| [PostgreSQL 16 — 41945324868](https://github.com/rafhael100/imagine-crm/actions/runs/41945324868/job/126976162084) | 90 aprovados, 1 ignorado exclusivo de SQLite, 260 asserções; sucesso |
+| Mesmo job PostgreSQL, filtro RLS | 18 aprovados, 49 asserções; sucesso |
+| Local — `git diff --check` | Sucesso; PHP/Composer/Docker indisponíveis, sem execução local das suítes |
+
+Os dois casos concorrentes (sessão e versão da credencial), a migração padrão
+em schema PostgreSQL vazio e o opt-in isolado passaram. Os erros 55P03/42501 e
+violações RLS registrados pelo serviço PostgreSQL são os negativos esperados
+e tratados pelos testes. `composer.lock` manteve o SHA256 registrado acima.
+Solicitada segunda revisão técnica no PR #6; manter DRAFT. Nenhum gate CORE,
+SEG ou de implantação foi encerrado por estes resultados.
