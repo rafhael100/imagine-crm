@@ -1,62 +1,53 @@
 # CRM Imagine — STATUS ATUAL
 
-**Última atualização manual:** 04/11/2026 (America/Sao_Paulo).  
-**Fonte:** repositório `rafhael100/imagine-crm`, branches, Issues, Pull Requests e checks do GitHub consultados nesta atualização.  
-**Natureza:** fotografia de acompanhamento; **não é aprovação técnica, liberação de produção, nem substitui os documentos normativos**. Para uma decisão, conferir sempre a evidência e o estado atual no GitHub.
+**Atualização de acompanhamento:** 05/11/2026 (America/Sao_Paulo).  
+**Fonte:** PRs, Issues, branches, commits e checks efetivamente consultados no GitHub.  
+**Natureza:** fotografia operacional. Não constitui aceite de contratos CORE/SEG, homologação nem autorização de deploy.
 
 ## 1. Resumo executivo
 
-- **Fase:** desenvolvimento técnico controlado e **experimental** do núcleo Laravel 13 / PostgreSQL 16, com dados sintéticos e bloqueios de segurança preservados.
-- **Branch autorizada de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04) — base de código observada antes desta atualização documental: `360dfc068d5eeb181d8c9da40ce0665696601482` (a HEAD pode avançar com commits de documentação).
-- **`main`:** permanece separada; [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) segue **DRAFT**, sem integração à `main`.
-- **Em revisão:** [Issue #7 — F1-04](https://github.com/rafhael100/imagine-crm/issues/7) e [PR #8 — F1-04](https://github.com/rafhael100/imagine-crm/pull/8), **DRAFT, aberta, sem merge**.
-- **Infraestrutura:** nenhuma implantação na VPS ou produção foi comprovada ou autorizada por este registro. A VPS central compartilhada é a preferência arquitetural, com contrato/configuração/operação sujeitos a decisões separadas.
-- **Próxima ação recomendada:** revisão técnica e de segurança da F1-04, conferência dos resultados e aceite explícito antes de eventual merge **somente em `dev/fast-track-crm-2026-11-04`**.
+- **Fase:** desenvolvimento técnico controlado em Laravel 13 / PostgreSQL 16 (Redis efêmero em CI), com fixtures sintéticas e segurança deny-by-default.
+- **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04), com F1-02, F1-03 e F1-04 integradas **apenas nela**. O merge F1-04 foi `407a2ead654864cd457436080999736a1186e219`.
+- **`main`:** conferida no SHA `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012`, sem merge novo. [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) continua DRAFT para `main`.
+- **Próxima tarefa preparada:** [Issue #9 — F1-05 contratos de autorização recurso/ação/campo/escopo](https://github.com/rafhael100/imagine-crm/issues/9); ainda **não** executada pelo Codex.
+- **Infraestrutura:** VPS e produção não sofreram implantação nesta sequência. Sem login público, credenciais reais, dados de clientes ou autorização comercial liberada.
 
 ## 2. Quadro das entregas
 
-| Marco | Evidência no GitHub | Estado comprovado | O que não significa |
-| --- | --- | --- | --- |
-| F0-02 — bootstrap Laravel e negação por padrão | [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) | DRAFT de `dev` para `main` | Não autoriza merge em `main` nem produção |
-| F1-01 — prova de conceito IAM / PostgreSQL RLS | [Evidências F1-01](docs/desenvolvimento/F1-01-modelo-IAM-RLS-evidencias-CI-2026-11-04.md) | Testes experimentais documentados | Não prova autorização real de usuários |
-| F1-02 — incremento de segurança IAM | [PR #4](https://github.com/rafhael100/imagine-crm/pull/4) | **Merge em `dev`**, commit `3ec4cfa0621140056eab274826a639aba125e0a6` | Não é release |
-| F1-03 — núcleo experimental de credenciais, MFA e sessões | [PR #6](https://github.com/rafhael100/imagine-crm/pull/6) | **Merge em `dev`**, commit `3a3a5b816843ca1fd7d329fa6f0d467406a3ff10` | Não ativa login público ou produtivo |
-| F1-04 — hardening IAM, auditoria e antiabuso | [Issue #7](https://github.com/rafhael100/imagine-crm/issues/7) / [PR #8](https://github.com/rafhael100/imagine-crm/pull/8) | **PR aberta em DRAFT**, head observado `63b007f0048c09d3d794077b6ca1ae437dd89dcd`; **não integrada** | CI verde não substitui revisão/aceite |
+| Etapa | Evidência | Estado de implementação |
+| --- | --- | --- |
+| F0-02 | [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) | Branch DEV em DRAFT para `main`, sem merge |
+| F1-01 | [Evidências](docs/desenvolvimento/F1-01-modelo-IAM-RLS-evidencias-CI-2026-11-04.md) | Prova de conceito IAM/RLS, não homologação |
+| F1-02 | [PR #4](https://github.com/rafhael100/imagine-crm/pull/4) | Integrada na DEV, commit `3ec4cfa0621140056eab274826a639aba125e0a6` |
+| F1-03 | [PR #6](https://github.com/rafhael100/imagine-crm/pull/6) | Integrada na DEV, commit `3a3a5b816843ca1fd7d329fa6f0d467406a3ff10` |
+| F1-04 | [PR #8](https://github.com/rafhael100/imagine-crm/pull/8) / [Issue #7](https://github.com/rafhael100/imagine-crm/issues/7) | Integrada na DEV, commit `407a2ead654864cd457436080999736a1186e219`; somente laboratório |
+| F1-05 | [Issue #9](https://github.com/rafhael100/imagine-crm/issues/9) | Escopo preparado; aguarda Codex abrir PR DRAFT da DEV |
 
-## 3. Testes e evidências disponíveis
+## 3. Verificações concretas
 
-**F1-03, após o merge na branch DEV:** o [CI Laravel/SQLite](https://github.com/rafhael100/imagine-crm/actions/runs/41946853493) e o [CI PostgreSQL/RLS](https://github.com/rafhael100/imagine-crm/actions/runs/41946853510) foram registrados como concluídos com sucesso. A execução anterior a esse merge contou com 67 testes aprovados/24 ignorados em SQLite e 90 aprovados/1 ignorado no PostgreSQL, conforme o [AGENTS.md](AGENTS.md) e os links do workflow.
+**F1-04 antes do merge:** SHA `228d63a2c191df8fa50e2b98cb19883a88b866bc`.
+- [Laravel/SQLite — run 42027807893](https://github.com/rafhael100/imagine-crm/actions/runs/42027807893): 77 aprovados, 30 ignorados em ambiente SQLite, 252 asserções; success.
+- [PostgreSQL/Redis — run 42027808128](https://github.com/rafhael100/imagine-crm/actions/runs/42027808128): 106 aprovados, 1 ignorado exclusivo SQLite, 399 asserções; success.
+- Antes do merge: PR #8 sem conflitos, 17 commits à frente, 0 atrás da DEV; `AGENTS.md` e `STATUS-ATUAL.md` sincronizados.
 
-**F1-04, PR #8, head `63b007f`:** dois checks do GitHub Actions consultados estavam **completed / success**:
-- [PHP 8.4 / Laravel 13 / PHPUnit](https://github.com/rafhael100/imagine-crm/actions/runs/41951441102/job/126996072497).
-- [PostgreSQL 16 / RLS / PHP 8.4](https://github.com/rafhael100/imagine-crm/actions/runs/41951441341/job/126996072746).
+**F1-04 após o merge na DEV:** commit `407a2ead654864cd457436080999736a1186e219`; [Laravel CI run 42036309101](https://github.com/rafhael100/imagine-crm/actions/runs/42036309101) e [PostgreSQL/Redis CI run 42036309165](https://github.com/rafhael100/imagine-crm/actions/runs/42036309165) **concluídos com sucesso**.
 
-**Revisão humana da PR #8:** nenhuma revisão submetida foi encontrada na consulta. Não afirmar que há aprovação, homologação ou cobertura integral de segurança. Revalidar checks caso o SHA da PR mude.
+Novos commits documentais podem iniciar novos checks; verificar sempre o SHA atual antes de integração.
 
-## 4. Bloqueios e limites preservados
+## 4. Bloqueios ainda abertos
 
-1. Todos os **67 IDs técnicos CORE** e pendências pertinentes de CORE01/02/04, SEG-01/02, ARQ/INT/FIN/CON/LGPD continuam sujeitos aos próprios critérios de revisão e aceite; CI de laboratório não os fecha.
-2. `DenyByDefaultAuthorizer` continua negando efeitos de negócio. `app.tenant_id` do PostgreSQL não é evidência autônoma de autenticação; isolamento tenant, membership e autorização exigem validação de backend confiável.
-3. **Não habilitar** autenticação pública, dados de clientes, contas reais, faturamento, integrações comerciais, funcionalidades de produção ou gastos não autorizados.
-4. Não executar merge automático em `main`, deploy, provisionamento ou mudanças na VPS por uma simples PR ou atualização deste resumo.
-5. Não divulgar senhas, tokens, segredos ou dados reais na documentação, CI e mensagens ao Codex.
+1. CORE01/02/03/04/05/06/07/08/09, os **67 IDs técnicos CORE**, SEG-01/02 e demais gates ARQ/INT/FIN/CON/LGPD continuam dependentes de revisão e aceite próprios. O encerramento de Issue de programação **não** fecha esses requisitos.
+2. `DenyByDefaultAuthorizer` ainda nega todos os efeitos comerciais. `app.tenant_id` (GUC) não é autenticação; RLS só complementa as provas de identidade/membership e autorização efetiva.
+3. F1-04 introduziu em laboratório provisão sintética por mandatos, auditoria minimizada, antiabuso Redis e compensação de falhas entre sessão/SQL. São **mecanismos experimentais**, não autenticação pública, gestão real de mandatos, recovery real, cofre produtivo ou auditoria geral homologada.
+4. Não acessar clientes, dados pessoais, n8n, VPS, APIs externas nem enviar mensagens comerciais. Não criar permissões `ALLOW` sem contratos técnicos e decisões CORE/SEG revisados.
+5. `main` e PR #2 permanecem fora do escopo de merges experimentais; merge em DEV não libera release.
 
-## 5. Próximo passo operacional
+## 5. Próxima etapa operacional
 
-**Revisar a [PR #8](https://github.com/rafhael100/imagine-crm/pull/8)**, vinculada à [Issue #7](https://github.com/rafhael100/imagine-crm/issues/7): conferir escopo autorizado, diferenças de código, evidências dos checks, testes negativos, segurança de provisionamento, auditoria, limites de abuso, concorrência/compensações, bloqueios CORE/SEG e possíveis achados.
+**F1-05:** implementar contratos verificáveis para recurso/ação/campo/escopo, identidade e tenant, apenas no recorte de teste, preservando a negação de quaisquer efeitos. A [Issue #9](https://github.com/rafhael100/imagine-crm/issues/9) especifica escopo, critérios negativos, documentação e limites; o Codex deve criar `codex/f1-05-authorization-contracts` derivada da branch DEV atual e abrir PR DRAFT para DEV.
 
-- **Se houver problemas:** devolver correções ao Codex na própria PR; rodar novamente os testes necessários e reavaliar o SHA.
-- **Se estiver tecnicamente aprovada e houver autorização do responsável:** integrar **exclusivamente na branch DEV autorizada**, respeitando revisão humana e demais gates aplicáveis.
-- **Depois:** atualizar este documento com os links, SHA, resultado da revisão, testes e próxima Issue autorizada. Não presumir automaticamente a tarefa seguinte.
+Depois de concluída, revisão técnica de segurança, checks reais no SHA final e aprovação explícita antes de outro merge. **Não iniciar produção/VPS.**
 
-## 6. Como usar e manter este arquivo
+## 6. Atualização deste registro
 
-- **`AGENTS.md`:** instruções duradouras para o Codex, válidas por tarefa e branch.
-- **`STATUS-ATUAL.md`:** resumo executivo que muda conforme as entregas.
-- **`docs/planejamento/`:** decisões e especificações de referência.
-- **GitHub Issues / Pull Requests / Actions:** tarefas, código e provas técnicas.
-- **GitHub Project “Imagine — Central de Desenvolvimento”:** quadro de acompanhamento transversal, quando configurado.
-
-**Regra de manutenção:** atualizar após marcos relevantes (aprovação, merge, mudança de bloqueios, início/conclusão de testes e definição da próxima etapa), **após conferir as fontes**. Atualizar o texto não prova execução de testes ou deploy nem muda o estado real da Issue/PR. As atualizações podem ser propostas pelo ChatGPT e registradas por commit; nenhuma rotina automática de atualização está habilitada por este documento.
-
-**Links rápidos:** [Repositório](https://github.com/rafhael100/imagine-crm) · [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) · [PR #8](https://github.com/rafhael100/imagine-crm/pull/8) · [Issue #7](https://github.com/rafhael100/imagine-crm/issues/7).
+`AGENTS.md` define instruções duradouras; `STATUS-ATUAL.md` é histórico datado; `docs/planejamento` contém decisões; Issues e PRs contêm execução. Conferir sempre o estado real de GitHub, pois atualizações documentais não mudam automaticamente status de implementação nem autorização.
