@@ -62,6 +62,8 @@ jobs:
       PROVISION_TEST_PASSWORD: ephemeral-provision-role-only
       ASYNC_TEST_USERNAME: crm_async_ci
       ASYNC_TEST_PASSWORD: ephemeral-async-role-only
+      ASYNC_AUDIT_TEST_USERNAME: crm_async_audit_ci
+      ASYNC_AUDIT_TEST_PASSWORD: ephemeral-async-audit-only
       IAM_ABUSE_REDIS_TEST: 'true'
       REDIS_CLIENT: phpredis
       REDIS_HOST: 127.0.0.1
@@ -138,6 +140,12 @@ jobs:
           GRANT USAGE ON SCHEMA public TO crm_async_ci;
           GRANT SELECT, INSERT ON TABLE crm_lab_async_ledger, crm_lab_async_attempts,
             crm_lab_async_inbox, crm_lab_async_outbox TO crm_async_ci;
+          CREATE ROLE crm_async_audit_ci LOGIN PASSWORD 'ephemeral-async-audit-only'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_async_audit_ci;
+          GRANT USAGE ON SCHEMA public TO crm_async_audit_ci;
+          GRANT SELECT ON TABLE crm_lab_async_ledger, crm_lab_async_attempts,
+            crm_lab_async_inbox, crm_lab_async_outbox TO crm_async_audit_ci;
           SQL
       - name: Run isolated PostgreSQL RLS tests
         run: php artisan test --filter=PostgresMembershipRlsTest --no-ansi
