@@ -84,8 +84,13 @@ Fontes de implementação: [Laravel 13 autenticação](https://laravel.com/frame
 
 ## Persistência e roles
 
-Migration `000002` é candidata, recusada fora de local/testing; SQLite é apenas
-adaptador de teste. Em CI, schema/fixtures são preparados pelo role de setup,
+Migration `000002` é candidata, em `database/experimental-migrations/auth`,
+fora do diretório autodescoberto e sem registro automático no provider.
+O comando padrão `php artisan migrate` não a encontra, mesmo com o profile
+ligado. A CI a aplica em passo separado com `CRM_AUTH_EXPERIMENTAL=true` e
+`php artisan migrate --path=database/experimental-migrations/auth --force`.
+Tanto up como down recusam profile desligado e ambientes fora de local/testing;
+SQLite é apenas adaptador de teste. Em CI, schema/fixtures são preparados pelo role de setup,
 depois os serviços usam **crm_iam_ci** sem SUPERUSER/BYPASSRLS/ownership:
 
 | Role | Acesso mínimo no laboratório | Negação verificada |
@@ -162,3 +167,57 @@ autenticada do GitHub; snapshot Git local serve apenas ao diff e não foi
 publicado como ancestralidade. Branch remota deriva diretamente da dev.
 CI verde comprova somente este recorte; não encerra CORE/SEG nem autoriza
 merge, autenticação pública ou implantação.
+
+## Revisão técnica do PR #6 — isolamento e revogação concorrente
+
+Atende aos dois itens da [revisão de 357e5ad](https://github.com/rafhael100/imagine-crm/pull/6#pullrequestreview-5778051021).
+
+**Migrações:** a migration auth foi retirada da trilha padrão. Os testes
+verificam a descoberta padrão em production/local/testing, o opt-in e rollback
+SQLite e a recusa explícita em production/profile desligado. Em PostgreSQL,
+um schema aleatório descartável do banco efêmero de CI executa o comando
+padrão com APP_ENV lógico production: cria apenas o schema F1-01 já existente,
+sem tabelas auth e sem registrar a migration experimental. Em seguida o mesmo
+schema testa a execução explícita autorizada em testing. Isso não é ensaio ou
+aprovação de implantação; a trilha F1-01 e os demais gates seguem candidatos.
+
+**Contrato de corte F1-03/F1-04:** `current()`/`assertCurrent()` são provas
+pontuais e não autorizam efeitos. `TenantAccessBoundary::execute()` agora usa
+`GuardPrincipalSource::withinCurrent()` e `SessionAuthority::withinCurrent()`.
+A transação IAM bloqueia credencial e depois sessão, revalida versão/status,
+MFA, binding e expiração, e só então entra na transação de membership/negócio.
+Os locks IAM permanecem até esta transação retornar, inclusive commit ou
+rollback, e a política deny-by-default permanece inalterada. Ordem obrigatória:
+credencial → sessão → membership → autorização → operação → término do negócio
+→ término IAM. Nenhuma chamada deve inverter essa ordem ou reentrar na IAM.
+
+Uma revogação de sessão ou mudança de versão/status de credencial que tenha
+commitado antes da obtenção dos locks impede a entrada em membership/autorização.
+Se a unidade obtiver primeiro ambos os locks e validar, uma revogação concorrente
+aguarda o término da unidade; a confirmação da revogação não pode preceder esse
+término. Efeitos já em voo não são cancelados retroativamente. Expiração é
+avaliada nesse corte, sem promessa de cancelar unidade que expire em execução.
+Novas unidades sempre revalidam, inclusive com guard cacheado. Timeouts, conflito
+e exceções propagam e encerram transações sem replay automático.
+
+Os testes PostgreSQL usam conexões independentes e o membership store real.
+Na fronteira de autorização, tentam UPDATE concorrente da sessão e do epoch da
+credencial com lock_timeout curto: ambos bloqueiam (55P03). Depois da negação e
+rollback, confirmam locks/contexto limpos, commitam a revogação e demonstram que
+nem membership/autorização são alcançadas novamente. Não há authorizer ALLOW
+nem callback comercial executado nos testes. A cobertura antiga de A/B e RLS
+continua obrigatória.
+Uma consulta de membership sem efeito comercial também confirma que o lock IAM
+continua bloqueando a revogação depois do commit interno do store.
+
+**Limites preservados:** são duas conexões/transações, sem commit distribuído.
+Um futuro commit de negócio seguido de falha IAM pode produzir resultado
+ambíguo e não pode ser repetido automaticamente; idempotência, outbox/auditoria,
+compensação e falhas parciais exigem contrato CORE/SEG antes de ALLOW. O lock
+IAM serializa também unidades da mesma identidade e não resolve cancelamento
+de APIs externas, filas ou workers. Nenhum desses canais está habilitado.
+O custo/contenção, prazos máximos e política de efeitos em voo precisam de
+revisão IAM/DBA/SEG. Os 67 IDs CORE e demais gates continuam abertos.
+
+Resultados desta revisão: aguardando nova execução real dos workflows Laravel
+e PostgreSQL; os resultados anteriores acima são históricos, não desta revisão.
