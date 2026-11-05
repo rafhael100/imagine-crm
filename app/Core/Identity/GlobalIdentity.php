@@ -11,6 +11,8 @@ final class GlobalIdentity extends Authenticatable
 {
     protected $table = 'crm_global_identities';
 
+    protected $connection = 'crm_iam';
+
     protected $keyType = 'string';
 
     public $incrementing = false;
