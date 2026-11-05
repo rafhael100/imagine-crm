@@ -11,7 +11,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!app()->environment('testing', 'local')) {
+        if (!config('identity.experimental') || !app()->environment('testing', 'local')) {
             throw new RuntimeException('Candidate auth schema is isolated-development only.');
         }
         if (DB::getDriverName() !== 'pgsql' && !app()->environment('testing')) {
@@ -58,6 +58,9 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (!config('identity.experimental') || !app()->environment('testing', 'local')) {
+            throw new RuntimeException('Candidate auth schema is isolated-development only.');
+        }
         Schema::dropIfExists('crm_auth_recovery_codes');
         Schema::dropIfExists('crm_auth_sessions');
         Schema::dropIfExists('crm_auth_credentials');
