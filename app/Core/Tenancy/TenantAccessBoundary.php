@@ -30,7 +30,7 @@ final readonly class TenantAccessBoundary
     }
 
     /** Strict experimental contract; input can describe an intent, never its authority. */
-    public function executeContract(string $tenantId, array $input, Closure $effect): mixed
+    public function executeContract(string $tenantId, array $input, Closure $effect, ?string $expectedPrincipalId = null): mixed
     {
         try {
             $intent = AuthorizationIntent::fromArray($input);
@@ -38,13 +38,17 @@ final readonly class TenantAccessBoundary
             throw new AuthorizationException('Protected operation denied.');
         }
 
-        return $this->within($tenantId, $intent->resource, $intent->action, $effect, null, $intent);
+        return $this->within($tenantId, $intent->resource, $intent->action, $effect, null, $intent, $expectedPrincipalId);
     }
 
-    private function within(string $tenantId, string $resource, string $action, Closure $effect, ?string $field, ?AuthorizationIntent $intent = null): mixed
+    private function within(string $tenantId, string $resource, string $action, Closure $effect, ?string $field, ?AuthorizationIntent $intent = null, ?string $expectedPrincipalId = null): mixed
     {
-        // Neither principal IDs, request user resolvers nor snapshots are arguments.
-        return $this->principals->withinCurrent(function (PrincipalReference $principal) use ($tenantId, $resource, $action, $field, $effect, $intent): mixed {
+        // Optional causal ID only RESTRICTS the actual locked principal. It
+        // never selects/authenticates a user or supplies a session proof.
+        return $this->principals->withinCurrent(function (PrincipalReference $principal) use ($tenantId, $resource, $action, $field, $effect, $intent, $expectedPrincipalId): mixed {
+            if ($expectedPrincipalId !== null && $principal->principalId !== $expectedPrincipalId) {
+                throw new AuthorizationException('Protected operation denied.');
+            }
             return $this->memberships->within($principal, $tenantId, function (MembershipSnapshot $membership) use ($principal, $tenantId, $resource, $action, $field, $effect, $intent): mixed {
                 $context = (new TenantContextSelector())->select(
                     $principal, $membership, strtolower($tenantId), (string) Str::uuid(),
