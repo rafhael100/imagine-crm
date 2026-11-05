@@ -21,7 +21,8 @@ final class AuthMigrationIsolationTest extends TestCase
             $migrator = $this->app['migrator'];
             $files = $migrator->getMigrationFiles(array_merge([database_path('migrations')], $migrator->paths()));
             $this->assertArrayNotHasKey(self::MIGRATION, $files);
-            $this->assertCount(1, $migrator->getMigrationFiles([base_path(self::PATH)]));
+            $this->assertCount(2, $migrator->getMigrationFiles([base_path(self::PATH)]));
+            $this->assertArrayNotHasKey('2026_11_04_000003_create_candidate_iam_hardening', $files);
         }
     }
 
@@ -31,7 +32,7 @@ final class AuthMigrationIsolationTest extends TestCase
         config(['identity.experimental' => true]);
         Schema::create('crm_global_identities', fn ($t) => $t->uuid('id')->primary());
         $this->artisan('migrate', ['--path' => self::PATH, '--force' => true])->assertExitCode(0);
-        foreach (['crm_auth_credentials', 'crm_auth_sessions', 'crm_auth_recovery_codes'] as $table) {
+        foreach (['crm_auth_credentials', 'crm_auth_sessions', 'crm_auth_recovery_codes', 'crm_auth_operations', 'crm_auth_mandates', 'crm_iam_audit_events'] as $table) {
             $this->assertTrue(Schema::hasTable($table));
         }
         $this->artisan('migrate:rollback', ['--path' => self::PATH, '--force' => true])->assertExitCode(0);
@@ -43,12 +44,14 @@ final class AuthMigrationIsolationTest extends TestCase
         foreach ([['production', true], ['testing', false]] as [$environment, $enabled]) {
             $this->app->instance('env', $environment);
             config(['identity.experimental' => $enabled]);
-            $migration = require base_path(self::PATH.'/'.self::MIGRATION.'.php');
+            foreach (glob(base_path(self::PATH).'/*.php') as $file) {
+            $migration = require $file;
             foreach (['up', 'down'] as $direction) {
                 try { $migration->$direction(); $this->fail('Laboratory must refuse this profile.'); }
                 catch (\RuntimeException $e) {
                     $this->assertSame('Candidate auth schema is isolated-development only.', $e->getMessage());
                 }
+            }
             }
         }
     }
@@ -71,14 +74,14 @@ final class AuthMigrationIsolationTest extends TestCase
             $this->artisan('migrate', ['--database' => 'crm_release_probe', '--force' => true])->assertExitCode(0);
             $probe = DB::connection('crm_release_probe');
             $this->assertTrue($probe->getSchemaBuilder()->hasTable('crm_memberships'));
-            foreach (['crm_auth_credentials', 'crm_auth_sessions', 'crm_auth_recovery_codes'] as $table) {
+            foreach (['crm_auth_credentials', 'crm_auth_sessions', 'crm_auth_recovery_codes', 'crm_auth_operations', 'crm_auth_mandates', 'crm_iam_audit_events'] as $table) {
                 $this->assertFalse($probe->getSchemaBuilder()->hasTable($table));
             }
             $this->assertFalse($probe->table('migrations')->where('migration', self::MIGRATION)->exists());
             $this->app->instance('env', 'testing');
             config(['identity.experimental' => true]);
             $this->artisan('migrate', ['--database' => 'crm_release_probe', '--path' => self::PATH, '--force' => true])->assertExitCode(0);
-            foreach (['crm_auth_credentials', 'crm_auth_sessions', 'crm_auth_recovery_codes'] as $table) {
+            foreach (['crm_auth_credentials', 'crm_auth_sessions', 'crm_auth_recovery_codes', 'crm_auth_operations', 'crm_auth_mandates', 'crm_iam_audit_events'] as $table) {
                 $this->assertTrue($probe->getSchemaBuilder()->hasTable($table));
             }
         } finally {

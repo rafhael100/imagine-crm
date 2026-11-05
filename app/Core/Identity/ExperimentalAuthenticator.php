@@ -28,11 +28,17 @@ final readonly class ExperimentalAuthenticator
         private Encrypter $encrypter,
         private RateLimiter $limiter,
         private Totp $totp,
+        private IamOperationRunner $security,
     ) {}
 
     public function begin(#[\SensitiveParameter] string $login, #[\SensitiveParameter] string $password): void
     {
-        $this->logout(); // Account changes never inherit tenant or prior authentication.
+        $this->security->run('password', fn () => $this->beginCore($login, $password), hash('sha256', strtolower(trim($login))));
+    }
+
+    private function beginCore(#[\SensitiveParameter] string $login, #[\SensitiveParameter] string $password): void
+    {
+        $this->logoutCore(); // Account changes never inherit tenant or prior authentication.
         $login = strtolower(trim($login));
         $key = 'crm.auth.password.'.hash('sha256', $login);
         $this->throttle($key);
@@ -52,10 +58,15 @@ final readonly class ExperimentalAuthenticator
 
     public function completeMfa(#[\SensitiveParameter] string $code, bool $recovery = false): void
     {
-        $this->complete('crm.auth.pending', 'pending', $code, $recovery);
+        $this->security->run($recovery ? 'recovery' : 'mfa', fn () => $this->complete('crm.auth.pending', 'pending', $code, $recovery));
     }
 
     public function stepUp(#[\SensitiveParameter] string $code): void
+    {
+        $this->security->run('step_up', fn () => $this->stepUpCore($code));
+    }
+
+    private function stepUpCore(#[\SensitiveParameter] string $code): void
     {
         $this->identity();
         $this->complete('crm.auth.token', 'active', $code, false);
@@ -76,6 +87,7 @@ final readonly class ExperimentalAuthenticator
                 if (!$c || !$row || !$this->validRow($row, $c, $state)) {
                     $this->deny();
                 }
+                $this->security->changing();
                 if (!$this->consumeFactor($c, $code, $recovery)) {
                     $this->deny();
                 }
@@ -91,7 +103,7 @@ final readonly class ExperimentalAuthenticator
         } catch (Throwable $e) {
             // Session storage and SQL are not one atomic resource. Partial failure fails closed.
             try {
-                $this->logout(); // Invalid challenge/reference cannot be replayed later.
+                $this->logoutCore(); // Invalid challenge/reference cannot be replayed later.
             } finally {
                 $this->resetBrowser();
             }
@@ -126,6 +138,11 @@ final readonly class ExperimentalAuthenticator
 
     public function refresh(): void
     {
+        $this->security->run('refresh', fn () => $this->refreshCore());
+    }
+
+    private function refreshCore(): void
+    {
         $id = $this->identity();
         $this->registry->transaction(function () use ($id): void {
             $c = $this->registry->db->table('crm_auth_credentials')->where('identity_id', $id)->lockForUpdate()->first();
@@ -133,6 +150,7 @@ final readonly class ExperimentalAuthenticator
             if (!$c || !$row || !$this->validRow($row, $c, 'active') || !$row->mfa_verified_at) {
                 $this->deny();
             }
+            $this->security->changing();
             $this->registry->db->table('crm_auth_sessions')->where('id', $row->id)->update(['state' => 'revoked']);
             $this->resetBrowser();
             $this->guard->login(GlobalIdentity::on('crm_iam')->findOrFail($id), false);
@@ -153,12 +171,18 @@ final readonly class ExperimentalAuthenticator
 
     public function revoke(string $sessionId): void
     {
+        $this->security->run('revoke', fn () => $this->revokeCore($sessionId));
+    }
+
+    private function revokeCore(string $sessionId): void
+    {
         $id = $this->identity(true);
         if (!Str::isUuid($sessionId)) {
             $this->deny();
         }
         $this->registry->transaction(function () use ($id, $sessionId): void {
             $this->assertLockedActor($id);
+            $this->security->changing();
             // Own sessions only. Another identity's UUID never grants authority.
             $this->registry->db->table('crm_auth_sessions')->where('identity_id', $id)->where('id', $sessionId)->update(['state' => 'revoked']);
         });
@@ -166,9 +190,15 @@ final readonly class ExperimentalAuthenticator
 
     public function revokeAll(): void
     {
+        $this->security->run('revoke_all', fn () => $this->revokeAllCore());
+    }
+
+    private function revokeAllCore(): void
+    {
         $id = $this->identity(true);
         $this->registry->transaction(function () use ($id): void {
             $this->assertLockedActor($id);
+            $this->security->changing();
             $this->registry->db->table('crm_auth_sessions')->where('identity_id', $id)->update(['state' => 'revoked']);
         });
         $this->resetBrowser();
@@ -176,6 +206,12 @@ final readonly class ExperimentalAuthenticator
 
     public function logout(): void
     {
+        $this->security->run('logout', fn () => $this->logoutCore());
+    }
+
+    private function logoutCore(): void
+    {
+        $this->security->changing();
         $this->registry->transaction(function (): void {
             foreach (['crm.auth.token', 'crm.auth.pending'] as $key) {
                 $row = $this->registry->sessionRow($key);
@@ -214,7 +250,7 @@ final readonly class ExperimentalAuthenticator
     {
         $now = now()->getTimestamp();
 
-        return $this->registry->validCredential($c) && $row->identity_id === $c->identity_id
+        return $this->registry->usable($row) && $this->registry->validCredential($c) && $row->identity_id === $c->identity_id
             && $row->state === $state && (int) $row->credential_version === (int) $c->version
             && (int) $row->expires_at > $now && (int) $row->absolute_expires_at > $now
             && hash_equals($row->binding, hash('sha256', $this->session->getId()));
@@ -236,6 +272,7 @@ final readonly class ExperimentalAuthenticator
         $now = now()->getTimestamp();
         $this->registry->db->table('crm_auth_sessions')->insert([
             'id' => (string) Str::uuid(), 'token_hash' => hash('sha256', $token),
+            'operation_id' => $this->security->id(),
             'identity_id' => $c->identity_id, 'state' => $state, 'credential_version' => $c->version,
             'binding' => hash('sha256', $this->session->getId()),
             'created_at' => $now, 'last_seen_at' => $now,

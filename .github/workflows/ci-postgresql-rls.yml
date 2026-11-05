@@ -22,6 +22,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 18
     services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
       postgres:
         image: postgres:16
         env:
@@ -49,6 +58,11 @@ jobs:
       RLS_TEST_PASSWORD: ephemeral-role-only
       IAM_TEST_USERNAME: crm_iam_ci
       IAM_TEST_PASSWORD: ephemeral-iam-role-only
+      PROVISION_TEST_USERNAME: crm_provision_ci
+      PROVISION_TEST_PASSWORD: ephemeral-provision-role-only
+      IAM_ABUSE_REDIS_TEST: 'true'
+      REDIS_CLIENT: phpredis
+      REDIS_HOST: 127.0.0.1
       CACHE_STORE: array
       SESSION_DRIVER: array
       QUEUE_CONNECTION: sync
@@ -62,7 +76,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, dom, xml, curl, zip, pdo_pgsql, pgsql
+          extensions: mbstring, dom, xml, curl, zip, pdo_pgsql, pgsql, redis
           tools: composer:v2
           coverage: none
       - name: Install locked dependencies
@@ -96,6 +110,19 @@ jobs:
           GRANT UPDATE (last_totp_step) ON TABLE crm_auth_credentials TO crm_iam_ci;
           GRANT SELECT, INSERT, UPDATE ON TABLE crm_auth_sessions TO crm_iam_ci;
           GRANT SELECT, UPDATE (consumed_at) ON TABLE crm_auth_recovery_codes TO crm_iam_ci;
+          GRANT SELECT, INSERT, UPDATE ON TABLE crm_auth_operations TO crm_iam_ci;
+          GRANT INSERT ON TABLE crm_iam_audit_events TO crm_iam_ci;
+          CREATE ROLE crm_provision_ci LOGIN PASSWORD 'ephemeral-provision-role-only'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_provision_ci;
+          GRANT USAGE ON SCHEMA public TO crm_provision_ci;
+          GRANT SELECT, INSERT ON TABLE crm_global_identities TO crm_provision_ci;
+          GRANT SELECT, INSERT, UPDATE ON TABLE crm_auth_credentials TO crm_provision_ci;
+          GRANT SELECT, INSERT ON TABLE crm_auth_recovery_codes TO crm_provision_ci;
+          GRANT SELECT, UPDATE ON TABLE crm_auth_sessions TO crm_provision_ci;
+          GRANT SELECT, INSERT, UPDATE ON TABLE crm_auth_operations TO crm_provision_ci;
+          GRANT SELECT, UPDATE (revoked_at) ON TABLE crm_auth_mandates TO crm_provision_ci;
+          GRANT INSERT ON TABLE crm_iam_audit_events TO crm_provision_ci;
           SQL
       - name: Run isolated PostgreSQL RLS tests
         run: php artisan test --filter=PostgresMembershipRlsTest --no-ansi

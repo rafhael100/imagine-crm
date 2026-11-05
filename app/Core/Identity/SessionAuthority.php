@@ -12,5 +12,5 @@ interface SessionAuthority
     public function assertCurrent(string $identityId): void;
 
     /** Revalidate and hold credential/session locks until the operation returns. */
-    public function withinCurrent(string $identityId, Closure $operation): mixed;
+    public function withinCurrent(string $identityId, Closure $operation, bool $recent = false): mixed;
 }

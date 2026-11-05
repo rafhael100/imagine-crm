@@ -9,4 +9,10 @@ return [
     'step_up_seconds' => 300,
     'attempts' => 5,
     'decay_seconds' => 60,
+    // Candidate laboratory budgets. No fallback to array/file on Redis failure.
+    'abuse_store' => env('CRM_IAM_ABUSE_STORE', 'redis'),
+    'abuse_window' => 60,
+    'abuse_identity_limit' => 10,
+    'abuse_origin_limit' => 30,
+    'abuse_backoff' => 1,
 ];
