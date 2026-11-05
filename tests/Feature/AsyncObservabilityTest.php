@@ -163,9 +163,21 @@ final class AsyncObservabilityTest extends TestCase
         $settings['url'] = null; $settings['host'] = '127.0.0.1'; $settings['port'] = 1;
         $settings['timeout'] = 0.1; $settings['read_timeout'] = 0.1; $settings['max_retries'] = 0;
         config(['database.redis.crm_async_offline' => $settings]);
-        $store = $this->membership(static fn () => Redis::connection('crm_async_offline')->get('synthetic-only'));
+        $driverFailureType = null;
+        $store = $this->membership(static function () use (&$driverFailureType): void {
+            try {
+                // Only this expected, synthetic connection-refusal warning is
+                // silenced so phpredis can emit its typed RedisException.
+                // No runtime error handler or classifier is broadened.
+                @Redis::connection('crm_async_offline')->get('synthetic-only');
+            } catch (\Throwable $failure) {
+                $driverFailureType = $failure::class;
+                throw $failure;
+            }
+        });
         try {
             $result = $this->bridge($store, new SyntheticAsyncObserver())->inspect(Cases::request());
+            $this->assertSame(\RedisException::class, $driverFailureType);
             $this->assertSame(Kind::InfrastructureUnavailable, $result->diagnostic->kind);
             $this->assertSame('redis_driver', $result->diagnostic->source);
             $this->assertFalse($result->decision->allowed); $this->assertSame(0, $this->db->transactionLevel());
