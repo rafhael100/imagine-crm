@@ -1,7 +1,7 @@
 # CRM Imagine — CORE07-D06: transferência de administrador principal e recuperação de titularidade — proposta v0.1
 
 **Data:** 06/11/2026 (America/Sao_Paulo).  
-**Estado:** **PAUTA DOCUMENTAL NÃO APROVADA — CORE07-D06 ABERTA**.  
+**Estado atualizado em 06/11/2026:** **MODELO A RATIFICADO EXPRESSAMENTE SOMENTE COMO DIRETRIZ DOCUMENTAL PRELIMINAR** conforme [decisão registrada](CRM-DEC-ratificacao-explicita-CORE07-D06-modelo-A-transferencia-admin-2026-11-06.md). **CORE07-D06 integral permanece ABERTA** até contratos, casos excepcionais, segurança e homologação. Referências seguintes a modelos não aprovados descrevem o estado histórico anterior à ratificação.  
 **Natureza:** proposta para definir a continuidade administrativa de uma organização CRM quando o responsável muda ou perde acesso, sem violar o limite de um usuário do Básico, sem novos grants, sem programação/testes e sem tornar suporte Imagine um administrador permanente.
 
 ## 1. Decisões a preservar
@@ -13,7 +13,7 @@
 - [CORE02-D05 alternativa B e M2](CRM-DEC-ratificacao-explicita-CORE02-D05-GOV01-M2-2026-11-06.md): alterar administrador/perfil, atribuir e delegar são ações distintas e requerem autoridade específica, sem autoelevação.
 - CORE04/CORE05/SEG: recuperação de MFA e de administrador titular exigem verificação apropriada, trilha, proteção de credenciais e mandato restrito; e-mail isolado é insuficiente no caso crítico de perda conjunta do fator e códigos. Não impor segundo aprovador universal; casos excepcionais podem exigir checagem independente segundo risco.
 
-## 2. Alternativas para o Básico — NÃO APROVADAS
+## 2. Alternativas avaliadas — Modelo A ratificado como diretriz preliminar
 
 | Modelo | Como transferir | Vantagem | Risco |
 |---|---|---|---|
@@ -21,7 +21,7 @@
 | **B — dois administradores temporários** | Adiciona novo administrador enquanto antigo continua ativo por prazo temporário | Facilita transição aparente | Contraria a quota 1/1 do Básico e aumenta risco de acesso simultâneo |
 | **C — cancelar conta antiga e abrir outra** | Recriar organização e migrar dados | Evita fluxo de transferência | Fragmenta históricos, assinaturas, site vinculado e dados, sendo inadequado como regra geral |
 
-**Recomendação:** **Modelo A como diretriz documental preliminar**, sem liberar login duplo no Básico, sem excluir histórico ou forçar nova assinatura. A transferência deve ser tratada como **operação sensível distinta de convite comum**; não presumir que a reserva por convite comum autorize sobreposição 2/1.
+**Modelo expressamente escolhido:** **Modelo A como diretriz documental preliminar**, sem liberar login duplo no Básico, sem excluir histórico ou forçar nova assinatura. A transferência deve ser tratada como **operação sensível distinta de convite comum**; não presumir que a reserva por convite comum autorize sobreposição 2/1.
 
 ## 3. Condições propostas para A
 
@@ -39,4 +39,4 @@
 - Contratos de API, transações, RLS, estados, locks, comportamento diante de falhas, dados pessoais e provas executadas, em CORE01/02/03/04/05/06/07/08/10, SEG, FIN/CON, LGPD e INT.
 - CORE07-D06 **permanece ABERTA** como identificador técnico; nenhuma alteração real é autorizada. CORE07-D04/D05/D07..D10 e demais 67 IDs CORE e gates transversais continuam pendentes.
 
-**Próxima deliberação proposta:** escolher explicitamente **Modelo A — transferência atômica de titularidade**, limitada às diretrizes documentais. Não programar, conceder acessos, emitir convites, alterar `main`, branch do Codex, VPS ou produção por esta pauta.
+**Decisão registrada:** **Modelo A de transferência atômica de titularidade ratificado pelo responsável** exclusivamente como diretriz documental preliminar, sem concluir CORE07-D06. Próxima pauta: CORE07-D07, equipes e redistribuição, ainda não aprovada. Não programar, conceder acessos, emitir convites, alterar `main`, branch do Codex, VPS ou produção por esta pauta.
