@@ -1,7 +1,7 @@
 # CRM Imagine — CORE07-D05: reserva de assentos e convites pendentes — proposta de decisão v0.1
 
 **Data:** 06/11/2026 (America/Sao_Paulo).  
-**Estado:** **PROPOSTA DOCUMENTAL NÃO APROVADA — CORE07-D05 INTEGRAL ABERTA**.  
+**Estado atualizado em 06/11/2026:** **MODELO A RATIFICADO EXPRESSAMENTE COMO DIRETRIZ DOCUMENTAL PRELIMINAR**, conforme [decisão registrada](CRM-DEC-ratificacao-explicita-CORE07-D05-modelo-A-reserva-assentos-2026-11-06.md). **CORE07-D05 integral continua ABERTA** até especificação física e homologação. As expressões posteriores indicando que os modelos não foram escolhidos descrevem a minuta histórica anterior à aprovação.  
 **Escopo:** definir em que momento convites de funcionários ocupam um assento do CRM, preservando os limites comerciais e de segurança existentes. Não define novas quotas, preços, política executável, cobrança, testes ou ativação.
 
 ## 1. Fontes e invariantes
@@ -11,7 +11,7 @@
 - [CORE02-D05 alternativa B e Modelo M2](CRM-DEC-ratificacao-explicita-CORE02-D05-GOV01-M2-2026-11-06.md) + [GOV02](CRM-DEC-ratificacao-explicita-CORE02-D05-GOV02-ABCD-2026-11-06.md): convite e gestão de acesso exigem autoridade específica; nenhum perfil ou convite cria autoelevação.
 - Cobrança adicional, upgrade, novo plano, concessão gratuita de assento ou trial **nunca** são efeitos automáticos de criar/aceitar convite. A identidade global pode participar de tenants independentes, com assentos contados por tenant quando efetivamente elegíveis.
 
-## 2. Alternativas — não escolhidas
+## 2. Alternativas avaliadas — Modelo A ratificado como diretriz preliminar
 
 | Modelo | O que ocupa a vaga? | Vantagem | Risco operacional |
 |---|---|---|---|
@@ -19,9 +19,9 @@
 | **B — contar só após aceite** | Convite pendente não reserva; ao aceitar, só entra se houver vaga livre naquele instante | Não bloqueia assento sem participação ativa | Pessoa pode aceitar convite ainda válido e descobrir que a última vaga já foi ocupada |
 | **C — reserva opcional por convite** | Administrador escolhe reservar ou não cada convite | Flexível | Complexidade e inconsistência comercial; difícil explicar se dois convites disputarem última vaga |
 
-**Recomendação para apreciação:** **Modelo A**, com **reserva temporária durante a validade do convite**, liberação segura ao expirar/cancelar/recusar e conversão atômica em assento ocupado ao aceitar; sem cobrança, assento extra ou direito de negócio antes da aceitação. Esta é uma **proposta** e não uma escolha ratificada.
+**Modelo escolhido expressamente:** **Modelo A**, com **reserva temporária durante a validade do convite**, liberação segura ao expirar/cancelar/recusar e conversão atômica em assento ocupado ao aceitar; sem cobrança, assento extra ou direito de negócio antes da aceitação. Esta é uma **proposta** e não uma escolha ratificada.
 
-## 3. Regras mínimas sugeridas no Modelo A
+## 3. Regras mínimas da diretriz Modelo A ratificada
 
 1. **Checar disponibilidade antes de emitir convite:** uma reserva pendente por usuário convidado e tenant, com idempotência e validação da autoridade que está convidando; não reservar assentos inexistentes ou de plano não contratado. No Básico, o administrador único já ocupa a vaga 1/1 e um convite para segundo operador deve ser impedido.
 2. **Contagem transparente na interface:** assentos **ocupados**, **reservados por convite pendente** e **livres** mostrados separadamente. A reserva não cria membership ativo nem libera acesso a dados.
@@ -41,6 +41,6 @@
 
 ## 5. Manifestação futura
 
-**Questão para aprovação:** escolher **Modelo A** como diretriz documental para convites/assentos, sem encerrar CORE07-D05, sem prometer assentos adicionais e sem autorização de programação.
+**Decisão registrada:** **Modelo A ratificado pelo responsável** como diretriz documental preliminar em 06/11/2026, sem encerrar CORE07-D05, sem prometer assentos adicionais nem autorizar programação.
 
 **Nenhuma aprovação de CORE07-D05 é inferida da aprovação GOV02.** Este documento apenas prepara a próxima deliberação. Preservar branch do Codex, `main`, VPS, produção e demais bloqueios.
