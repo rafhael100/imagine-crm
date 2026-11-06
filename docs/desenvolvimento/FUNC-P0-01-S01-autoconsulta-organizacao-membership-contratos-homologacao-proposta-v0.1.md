@@ -1,11 +1,13 @@
 # CRM Imagine — FUNC-P0-01 / S01: contratos e homologação da autoconsulta (proposta v0.1)
 
 **Data:** 06/11/2026 (America/Sao_Paulo).  
-**Situação:** **RECORTE A EXPRESSAMENTE APROVADO para DETALHAMENTO DOCUMENTAL**, conforme manifestação do responsável na [Issue #22](https://github.com/rafhael100/imagine-crm/issues/22). **S01 ainda NÃO aprovada**; as regras abaixo são propostas para nova avaliação.  
+**Situação atualizada em 06/11/2026:** recorte A aprovado para documentação; **S01-D01/D02/D03 e o propósito geral de D04..D08 APROVADOS apenas como diretrizes documentais preliminares** conforme [registro expresso](FUNC-P0-01-S01-DEC-ratificacao-diretrizes-preliminares-D01-D08-2026-11-06.md). **Detalhes físicos e operacionais da S01 NÃO homologados**. A próxima [R01 — campos, estados e segurança](FUNC-P0-01-S01-R01-campos-estados-seguranca-proposta-v0.1.md) é PROPOSTA AINDA NÃO APROVADA.  
 **Destino documental:** `dev/fast-track-crm-2026-11-04`; sem código ou alterações da branch `main`.  
 **Referências:** [FUNC-P0-01 — proposta anterior](FUNC-P0-01-contratos-primeiro-recorte-funcional-proposta-v0.1.md), [F1-10 — baseline e 67 CORE](F1-10-consolidacao-gates-seguranca.md), [PR #20](https://github.com/rafhael100/imagine-crm/pull/20), [PR documental CORE02 #21](https://github.com/rafhael100/imagine-crm/pull/21), documentos CORE01/02/04/06/07/08/09/10, SEG-01/02 e LGPD.
 
 > **Delimitação obrigatória:** a direção aprovou SOMENTE escolher o recorte A para aprofundar seus contratos e critérios. Não aprovou esta especificação, programação funcional, rotas, SQL, novos grants/`ALLOW`, login real, testes de homologação, merge de PR #2/#21, `main`, VPS ou produção. `DenyByDefaultAuthorizer` continua único e deny-only. Todos os **67 IDs técnicos CORE**, SEG-01/02, AUT-P01..14, ARQ/INT/FIN/CON/LGPD e G01..G06 ficam **ABERTOS**.
+
+**Precedência posterior:** a aprovação das diretrizes S01 não inclui aprovação de payload/DTO, campos derivados, estados comerciais, MFA/TTL, grants P1/P2, implementação de algoritmo, perfis M2, GOV02 (ainda não aprovada), nem testes executados. Referir-se à [ratificação D01..D08](FUNC-P0-01-S01-DEC-ratificacao-diretrizes-preliminares-D01-D08-2026-11-06.md) para limites exatos. [S01-R01](FUNC-P0-01-S01-R01-campos-estados-seguranca-proposta-v0.1.md) fica pendente de decisão nova da direção. 
 
 ## 1. Propósito e delimitação de produto
 
