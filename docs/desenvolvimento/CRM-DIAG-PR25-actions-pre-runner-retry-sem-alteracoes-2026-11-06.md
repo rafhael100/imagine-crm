@@ -28,3 +28,20 @@ Sem o **texto das anotações**, não é possível classificar o erro. Investiga
 ## 5. Estado e barreiras
 
 PR #25 fica **DRAFT / NO MERGE**; PRs #23 e #24 permanecem **DRAFT**, base `dev/fast-track-crm-2026-11-04` original intocada; PRs #2/#21, `main`, VPS e produção também inalteradas por esta investigação. Gates C01..C08, 67 CORE, SEG-01/02, AUT, ARQ/AGT, INT/G01..G06, FIN/CON, LGPD, CORE10/DEV-GATE seguem abertos. Revisão SEG/DBA independente permanece pendente.
+
+
+## 6. Diagnóstico confirmado pela UI do GitHub — evidência posterior
+
+O responsável forneceu **duas capturas de tela da UI autenticada do GitHub Actions**, uma da falha F0 (job `PHP 8.4 / Laravel 13 / PHPUnit`) e outra do PostgreSQL/RLS (job `PostgreSQL 16 / RLS / PHP 8.4`). Em ambas, a anotação principal é **literalmente**:
+
+> The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings
+
+**Diagnóstico confirmado:** bloqueio de **faturamento/limite de gastos da conta GitHub** impedindo o início de runners GitHub-hosted; **não houve execução dos testes**. A mensagem contém uma alternativa (`payments have failed` **OU** `spending limit needs to be increased`), portanto a situação específica (pagamento recusado, falha de pré-autorização, cota de computação inclusa exaurida, orçamento/limite de Actions) **ainda precisa ser verificada em Billing & Licensing**. Não tratar como bug do código, YAML ou PostgreSQL sem nova evidência.
+
+Há outra anotação, com nível **notice**, anunciando a mudança do rótulo `ubuntu-latest` para Ubuntu 26 a partir de 19/10/2026; **ela não é o motivo indicado da falha**.
+
+**Encaminhamento legítimo do titular da conta (sem autorizar gastos):** abrir `https://github.com/settings/billing`, conferir `Overview` e o histórico/estado do pagamento, `Payment information`, `Budgets and alerts` (inclusive escopos de Actions e orçamentos com bloqueio ao atingir limite) e uso incluído em repositórios privados. Se o pagamento falhou, regularizar/atualizar por decisão do titular; se o orçamento de Actions foi atingido, deliberar eventual valor máximo e meios para evitar sobrecusto antes de aumentá-lo. Um **bloqueio por falha de pré-autorização** também pode afetar uso gratuito; se não houver saldo ou problema visível, contactar GitHub Support para revisão. Nenhuma alteração financeira foi feita pela equipe ou pelo assistente.
+
+**Fonte pública de orientação (não exposição de dados da conta):** https://docs.github.com/pt/billing/how-tos/troubleshooting/locked-account ; https://docs.github.com/en/billing/how-tos/set-up-budgets ; https://docs.github.com/en/billing/concepts/product-billing/github-actions
+
+**Condição para retomar:** após confirmação de que o GitHub permite iniciar jobs, reexecutar F0 e PostgreSQL em PR #25 HEAD atual `ffefef6d5de1ecc1cdf7b863bd3bb2d8ad35e7d7`, observar as suítes combinadas, sem merge automático. **PRs #2/#21/#23/#24/#25 e gates continuam bloqueados para integração.**
