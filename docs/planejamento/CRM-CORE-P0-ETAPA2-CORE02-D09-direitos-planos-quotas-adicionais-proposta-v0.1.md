@@ -1,7 +1,7 @@
 # CRM Imagine — CORE02-D09: direitos por plano, franquias, adicionais e estado da assinatura — proposta v0.1
 
 **Data:** 05/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL AINDA NÃO APROVADA — CORE02-D09-A/B/C/D AGUARDAM ACEITE EXPRESSO.**  
+**Estado atualizado em 06/11/2026:** **CORE02-D09-A/B/C/D APROVADAS EXPRESSAMENTE SOMENTE COMO DIRETRIZES DOCUMENTAIS PRELIMINARES**, conforme [registro de ratificação](CRM-DEC-ratificacao-explicita-CORE02-D09-ABCD-2026-11-06.md). **CORE02-D09 integral permanece ABERTA** até revisão comercial, matriz de recursos/quotas efetiva e homologação. Referências abaixo a propostas “ainda não aprovadas” descrevem o estado histórico anterior ao aceite.  
 **Finalidade:** definir princípios para separar direitos técnicos/permissões do usuário, funcionalidades comerciais do plano, franquias, créditos e efeitos de contratação, cortesia, suspensão e migração. **Não** constitui tabela comercial final, mudança de preço, concessão real de entitlement, implementação, testes ou autorização de cobrança/implantação.
 
 ## 1. Fonte e decisões a preservar
