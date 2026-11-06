@@ -136,7 +136,7 @@ final class S01NegativeBoundaryTest extends TestCase
         return [
             'organization display name not in laboratory vocabulary' => [['organization_display_name' => 'F-BIZ']],
             'other membership identity not in laboratory vocabulary' => [['membership_identity' => 'F-ID']],
-            'legacy secret classification mismatch' => [['lab_secret' => 'F-PII']],
+            'invalid classification never reaches the membership check' => [['lab_secret' => 'F-UNREVIEWED']],
         ];
     }
 
