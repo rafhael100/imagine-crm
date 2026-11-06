@@ -1,7 +1,7 @@
 # CRM Imagine — CORE02-D10: rastreabilidade, evidências e homologação das permissões — proposta v0.1
 
 **Data da proposta:** 06/11/2026 (America/Sao_Paulo).  
-**Estado:** **PROPOSTA DOCUMENTAL NÃO APROVADA — CORE02-D10-A/B/C/D AGUARDAM DECISÃO EXPRESSA**.  
+**Estado atualizado em 06/11/2026:** **CORE02-D10-A/B/C/D APROVADAS EXPRESSAMENTE SOMENTE COMO DIRETRIZES TÉCNICAS DOCUMENTAIS PRELIMINARES**, conforme [registro da ratificação](CRM-DEC-ratificacao-explicita-CORE02-D10-ABCD-2026-11-06.md). **CORE02-D10 integral e CORE02-P0-02 permanecem ABERTOS** até especificação, evidências e homologação. Menções abaixo a “proposta não aprovada” descrevem o estado histórico da minuta antes deste aceite.  
 **Objetivo:** definir critérios verificáveis e responsabilidades para especificar, testar futuramente e homologar os contratos de autorização por recurso, ação, campo, tenant, plano e escopo. Não fecha CORE02, não concede permissões, não executa testes, não determina tecnologias físicas, e não autoriza merge ou produção.
 
 ## 1. Base aprovada e fronteiras que permanecem abertas
