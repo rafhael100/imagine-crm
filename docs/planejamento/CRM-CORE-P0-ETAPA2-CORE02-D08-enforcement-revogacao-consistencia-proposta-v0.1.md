@@ -1,7 +1,7 @@
 # CRM Imagine — CORE02-D08: aplicação efetiva, revogação e consistência de autorização — proposta v0.1
 
 **Data:** 05/11/2026.  
-**Estado:** **MINUTA DOCUMENTAL NÃO APROVADA — CORE02-D08-A/B/C/D AGUARDAM DECISÃO EXPRESSA**.  
+**Estado atualizado em 05/11/2026:** **CORE02-D08-A/B/C/D APROVADAS EXPRESSAMENTE APENAS COMO DIRETRIZES DOCUMENTAIS PRELIMINARES**, conforme [ratificação](CRM-DEC-ratificacao-explicita-CORE02-D08-ABCD-2026-11-05.md). **CORE02-D08 integral permanece ABERTA**: mecanismo real, política física, revogação verificável, segurança e homologação ainda pendentes. Menções abaixo a propostas “não aprovadas” referem-se ao estado histórico da minuta antes deste aceite.  
 **Escopo:** enforcement e revalidação das regras de autorização por operação, recurso, campo, tenant e contexto, preservando limites e dependências. Não é escolha de esquema, SQL, cache, TTL ou mecanismo final, nem autorização de programação, teste executável, deploy, grant ou credencial real.
 
 ## 1. Decisões vigentes e fronteiras
