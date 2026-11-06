@@ -16,6 +16,8 @@
 | **CORE02-D09** — plano, direitos e quotas | Ratificação expressa preliminar de 06/11 | Quotas e preços finais, matriz real de funcionalidades por plano, contagem, adicionais, FIN/CON/CORE08 e direitos em estados restritos |
 | **CORE02-D10** — rastreabilidade e homologação | Ratificação expressa preliminar de 06/11 | Casos por módulo, owners e evidência por SHA/ambiente/teste, regressão, exceções e aceite global após implementação |
 
+**Atualização de governança D05 — 06/11/2026:** [GOV01 Modelo M2](CRM-DEC-ratificacao-explicita-CORE02-D05-GOV01-M2-2026-11-06.md) e [GOV02-A/B/C/D](CRM-DEC-ratificacao-explicita-CORE02-D05-GOV02-ABCD-2026-11-06.md) foram **expressamente ratificados como diretrizes documentais preliminares**: delegação restrita, antiautoelevação, prévia de conflitos, concorrência e auditoria. **Não** homologam perfis, grants/denies ou política física; CORE02-D05 segue ABERTA.  
+
 **Atenção:** todos os sete identificadores CORE02-D04..D10 permanecem **ABERTOS** apesar de suas subdiretrizes aprovadas preliminarmente. CORE02-D01..D03 têm aceite de base documental. As dependências CORE01, CORE03..10, SEG-01/02, INT P0 G01..G06, ARQ/AGT, FIN/CON, LGPD e 67 identificadores técnicos CORE continuam sem fechamento global. Desenvolvimento experimental controlado do Codex não é homologação integral.
 
 ## 2. CORE02-D05 — escolha de precedência já ratificada
