@@ -1,7 +1,7 @@
 # CRM Imagine — CORE07-D04: reenvio, reemissão e expiração de convites — proposta v0.1
 
 **Data:** 06/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL NÃO APROVADA — CORE07-D04 integral ABERTA.**  
+**Estado atualizado em 06/11/2026:** **MODELO B DE RENOVAÇÃO DE CONVITES RATIFICADO EXPRESSAMENTE SOMENTE COMO DIRETRIZ DOCUMENTAL PRELIMINAR**, conforme [decisão formal](CRM-DEC-ratificacao-explicita-CORE07-D04-modelo-B-renovacao-2026-11-06.md). **CORE07-D04 integral permanece ABERTA**; limites antispam, token, reemissões, exceções e homologação ainda pendentes. Referências posteriores a modelos não escolhidos são históricas anteriores à ratificação.  
 **Finalidade:** decidir o comportamento de reenvio de convites de funcionários com validade de 7 dias, integrado à [reserva de assentos Modelo A aprovada preliminarmente](CRM-DEC-ratificacao-explicita-CORE07-D05-modelo-A-reserva-assentos-2026-11-06.md). Sem criação de tokens reais, código, política de senha, MFA, quotas novas, cobrança ou testes.
 
 ## 1. Invariantes já ratificados
@@ -11,7 +11,7 @@
 - Reenvio de link não pode duplicar membership, reserva de assento, entitlement ou faturamento; autenticação do destinatário e validação backend permanecem obrigatórias.
 - Mesmo e-mail/CNPJ não dá acesso a outros tenants; funcionários não compram assentos, alteram plano ou obtêm privilégios por receber um convite.
 
-## 2. Alternativas para escolha expressa — NÃO APROVADAS
+## 2. Alternativas avaliadas — Modelo B ratificado como diretriz preliminar
 
 | Modelo | Ao acionar **Reenviar convite** | Benefício | Atenção |
 |---|---|---|---|
@@ -19,7 +19,7 @@
 | **B — revogar link anterior e emitir novo convite com 7 dias** | Ação expressa do administrador invalida token anterior e gera novo token/validade de 7 dias; mantém **uma única reserva**, desde que ainda elegível | Recupera o prazo de forma clara e substitui link potencialmente perdido | Necessita impedir reenvio automático ilimitado, spam e reserva perpetuamente prolongada |
 | **C — cada reenvio cria convite independente** | Novo convite coexistiria com anterior e exigiria resolver concorrência | Nenhuma vantagem clara frente a B | Aumenta risco de duplicação e confusão de reservas, portanto não recomendado |
 
-**Recomendação para deliberação:** **Modelo B, somente quando o administrador competente solicitar expressamente a reemissão**. Não permitir renovação automática do prazo nem reenvio silencioso; distinguir na interface **“Reenviar mensagem”** (mesma validade, quando houver) e **“Renovar convite”** (revogar token anterior e emitir outro com novo prazo). Se a opção de produto for unificada em um único botão, informar claramente que a operação revoga o link antigo e reinicia 7 dias. Limites antispam e ciclos máximos de renovações precisam ser especificados e aprovados depois.
+**Modelo expressamente escolhido:** **Modelo B, somente quando o administrador competente solicitar expressamente a reemissão**. Não permitir renovação automática do prazo nem reenvio silencioso; distinguir na interface **“Reenviar mensagem”** (mesma validade, quando houver) e **“Renovar convite”** (revogar token anterior e emitir outro com novo prazo). Se a opção de produto for unificada em um único botão, informar claramente que a operação revoga o link antigo e reinicia 7 dias. Limites antispam e ciclos máximos de renovações precisam ser especificados e aprovados depois.
 
 ## 3. Diretrizes adicionais candidatas (não aprovadas)
 
