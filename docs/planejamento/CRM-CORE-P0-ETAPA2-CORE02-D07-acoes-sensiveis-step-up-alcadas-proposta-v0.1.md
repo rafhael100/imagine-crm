@@ -1,7 +1,7 @@
 # CRM Imagine — CORE02-D07: operações sensíveis, MFA/step-up, confirmações e alçadas — pauta v0.1
 
 **Data:** 05/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL NÃO APROVADA — CORE02-D07-A/B/C/D ABERTAS.**  
+**Estado atualizado em 05/11/2026:** **CORE02-D07-A/B/C/D RATIFICADAS EXPRESSAMENTE APENAS COMO DIRETRIZES DOCUMENTAIS PRELIMINARES**, conforme [registro de ratificação](CRM-DEC-ratificacao-explicita-CORE02-D07-ABCD-2026-11-05.md). **CORE02-D07 integral permanece ABERTA**, sem catálogo final, fatores/tempos de step-up ou alçadas concretas homologados. Menções posteriores a “não aprovadas” e “para decisão” descrevem o estado histórico desta minuta antes da ratificação.  
 **Origem:** continuidade da revisão documental após ratificação expressa preliminar de CORE02-D06-A/B/C/D.  
 **Natureza:** critérios funcionais e de risco para aprovação posterior; sem código, políticas executáveis, alteração de contas, dados, grants, segredos, testes, contratação ou implantação.
 
