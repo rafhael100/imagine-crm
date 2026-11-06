@@ -1,7 +1,7 @@
 # CRM Imagine — CORE02-D05-GOV02: limites da delegação, conflitos e proteção de perfis — proposta v0.1
 
 **Data:** 06/11/2026.  
-**Estado:** **PROPOSTA DOCUMENTAL NÃO APROVADA; nenhuma regra executável homologada.**  
+**Estado atualizado em 06/11/2026:** **GOV02-A/B/C/D RATIFICADAS EXPRESSAMENTE APENAS COMO DIRETRIZES DOCUMENTAIS PRELIMINARES**, conforme [registro formal](CRM-DEC-ratificacao-explicita-CORE02-D05-GOV02-ABCD-2026-11-06.md). **CORE02-D05 integral permanece ABERTA**; nenhuma regra executável foi homologada. Menções posteriores a “não aprovadas” documentam o estado histórico da proposta.  
 **Dependência:** GOV02 é uma pauta subordinada ao **CORE02-D05 ainda ABERTO**, e não novo identificador CORE. Preservar [alternativa B ratificada](CRM-DEC-ratificacao-explicita-CORE02-D05-alternativa-B-2026-11-06.md) e [M2 ratificado](CRM-DEC-ratificacao-explicita-CORE02-D05-GOV01-M2-2026-11-06.md).  
 **Objetivo:** transformar as bases B + M2 em diretrizes operacionais claras para o produto, sem antecipar implementação, direitos reais, algoritmos, escala de risco, MFA detalhado, custos ou limites por plano.
 
@@ -13,7 +13,7 @@
 - Dois administradores editam o mesmo perfil; um salva versão desatualizada. O sistema deve detectar conflito e não sobrescrever silenciosamente nem reativar direitos revogados.
 - O último administrador do Básico perde MFA. A recuperação exige processo seguro CORE04/CORE07; não abrir segundo assento ou conta permanente por perfil auxiliar.
 
-## 2. Propostas para aceite preliminar (não aprovadas)
+## 2. Diretrizes GOV02-A/B/C/D preliminarmente ratificadas
 
 ### GOV02-A — Regra de competência de delegar e hierarquia limitada
 
@@ -40,6 +40,6 @@ Exigir versionamento de perfis e alterações, verificação de conflitos entre 
 
 ## 4. Encaminhamento proposto
 
-Aprovar **GOV02-A/B/C/D somente como diretrizes documentais preliminares** para futuras especificações. Se ratificadas, registrar decisão expressa no GitHub, manter **CORE02-D05 integral aberto** e revisar conjuntamente com CORE02-D04/D06/D07/D08, CORE04, CORE07 e SEG antes de homologar qualquer política real.
+**Ratificação GOV02-A/B/C/D expressa registrada**; manter **CORE02-D05 integral aberto** e revisar conjuntamente CORE02-D04/D06/D07/D08, CORE04, CORE07 e SEG antes de homologar qualquer política real. A próxima discussão documental prioriza assentos/convites em CORE07-D05, sem nova aprovação tácita.
 
 **Sem autorização nesta pauta para alterar código, branch Codex, `main`, acesso real, concessão, testes executáveis, infraestrutura, VPS, cobrança ou produção.**
