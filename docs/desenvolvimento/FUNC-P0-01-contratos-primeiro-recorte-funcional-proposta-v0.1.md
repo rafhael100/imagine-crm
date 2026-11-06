@@ -1,11 +1,13 @@
 # FUNC-P0-01 — Primeiro recorte funcional do CRM Imagine: pacote para avaliação
 
 **Data:** 06/11/2026 (America/Sao_Paulo).  
-**Estado:** **PROPOSTA PARA DELIBERAÇÃO**, não aprovada/implementada.  
+**Estado atualizado em 06/11/2026:** **RECORTE A APROVADO EXPRESSAMENTE SOMENTE PARA DETALHAMENTO DOCUMENTAL**. Esta versão original contém histórico de alternativas e perguntas; a [especificação S01](FUNC-P0-01-S01-autoconsulta-organizacao-membership-contratos-homologacao-proposta-v0.1.md) é a pauta atual de avaliação, ainda NÃO aprovada. **Código funcional, ALLOW, SQL, login, main e VPS seguem não autorizados.**  
 **Registro de decisão:** [Issue #22](https://github.com/rafhael100/imagine-crm/issues/22).  
 **Referências técnicas:** [F1-10](F1-10-consolidacao-gates-seguranca.md), [PR #20](https://github.com/rafhael100/imagine-crm/pull/20), [PR documental #21](https://github.com/rafhael100/imagine-crm/pull/21) e [CORE Etapa 2](../planejamento/CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md).
 
 > Este documento **não concede `ALLOW`**, não é contrato executável, não autoriza codificação funcional, lançamento, mudança de `main`, uso de dados reais nem VPS. Nenhuma aprovação decorre da sua publicação. A branch DEV é apenas repositório de trabalho controlado.
+
+**Decisão posterior prevalecente:** a direção escolheu o **recorte A** (autoconsulta read-only da própria organização e do próprio vínculo do humano) para aprofundamento documental. As alternativas B e C abaixo permanecem **opções históricas não escolhidas nesta fase**, não tarefas autorizadas. O [pacote S01](FUNC-P0-01-S01-autoconsulta-organizacao-membership-contratos-homologacao-proposta-v0.1.md) define propostas de contratos e 22 testes de homologação futuros para avaliação específica; nenhum deles está aceito/executado. PR #21 continua DRAFT, com política B e GOV01/M2 ratificadas preliminarmente e GOV02 não aprovada; os 67 CORE e demais gates continuam abertos.
 
 ## 1. Por que mudar de etapa
 
