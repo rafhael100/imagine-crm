@@ -73,7 +73,7 @@ final class AuthMigrationIsolationTest extends TestCase
             try {
                 $migration->$direction();
                 $this->fail('Mismatched laboratory database was accepted.');
-            } catch (\\RuntimeException $e) {
+            } catch (\RuntimeException $e) {
                 $this->assertSame(
                     'Candidate tenant schema requires an explicitly approved loopback laboratory database.',
                     $e->getMessage()
@@ -92,7 +92,7 @@ final class AuthMigrationIsolationTest extends TestCase
                 try {
                     $migration->$direction();
                     $this->fail('Non-loopback database endpoint was accepted.');
-                } catch (\\RuntimeException $e) {
+                } catch (\RuntimeException $e) {
                     $this->assertSame(
                         'Candidate tenant schema requires an explicitly approved loopback laboratory database.',
                         $e->getMessage()
