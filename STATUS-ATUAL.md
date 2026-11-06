@@ -10,7 +10,7 @@
 - **Branch de trabalho:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04). **F1-02 a F1-10 integradas exclusivamente na DEV**.
 - **Último merge:** [PR #20 — F1-10](https://github.com/rafhael100/imagine-crm/pull/20) fechado como MERGED, commit `6e3d02f432e0e6e6e1c9322c2d286b035661c5c2`, autorização expressa para a DEV.
 - **`main`:** permanece no commit verificado `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012`. [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) continua **DRAFT** para `main`, sem merge.
-- **Próxima tarefa:** [Issue #22 — FUNC-P0-01, primeiro recorte funcional](https://github.com/rafhael100/imagine-crm/issues/22) **AGUARDANDO AVALIAÇÃO DA DIREÇÃO**, sem autorização de código, ALLOW ou ambiente real; [proposta no repositório](docs/desenvolvimento/FUNC-P0-01-contratos-primeiro-recorte-funcional-proposta-v0.1.md).
+- **Recorte escolhido:** [Issue #22 — FUNC-P0-01](https://github.com/rafhael100/imagine-crm/issues/22): **A aprovado exclusivamente para DETALHAMENTO DOCUMENTAL** da autoconsulta própria read-only. [Especificação S01](docs/desenvolvimento/FUNC-P0-01-S01-autoconsulta-organizacao-membership-contratos-homologacao-proposta-v0.1.md) **PROPOSTA PENDENTE DE AVALIAÇÃO**; nenhuma autorização de código, `ALLOW`, login/rotas reais ou ambiente de clientes.
 - **VPS/produção:** não foi feito deploy nesta sequência. Não foram habilitados endpoints públicos, jobs, webhooks, automações de clientes, credenciais reais ou permissões de dados comerciais.
 
 ## 2. Entregas
@@ -28,7 +28,8 @@
 | F1-08 | [PR #16](https://github.com/rafhael100/imagine-crm/pull/16) / [Issue #15](https://github.com/rafhael100/imagine-crm/issues/15) | Integrada exclusivamente na DEV, merge `2923cc57afe240f8aa6024d7028a75bb8f8b54ef`; ledger PostgreSQL sintético e inbox/outbox inertes |
 | F1-09 | [PR #18](https://github.com/rafhael100/imagine-crm/pull/18) / [Issue #17](https://github.com/rafhael100/imagine-crm/issues/17) | Integrada exclusivamente na DEV, merge `af4cd127655572f9ce7327b4f52dca36a5e0a864`; integridade, restauração sintética e reconciliação consultiva, sem efeitos |
 | F1-10 | [PR #20](https://github.com/rafhael100/imagine-crm/pull/20) / [Issue #19](https://github.com/rafhael100/imagine-crm/issues/19) | Integrada em DEV, merge `6e3d02f432e0e6e6e1c9322c2d286b035661c5c2`; baseline regressiva e matriz 67 CORE, sem permissão comercial |
-| FUNC-P0-01 | [Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) / [proposta](docs/desenvolvimento/FUNC-P0-01-contratos-primeiro-recorte-funcional-proposta-v0.1.md) | **PROPOSTA NÃO APROVADA** para autoconsulta mínima de organização e membership próprios, sem código funcional |
+| FUNC-P0-01 A | [Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) / [escopo](docs/desenvolvimento/FUNC-P0-01-contratos-primeiro-recorte-funcional-proposta-v0.1.md) | **APROVADO APENAS PARA ESPECIFICAÇÃO DOCUMENTAL**, autoconsulta própria sem código |
+| FUNC-P0-01 S01 | [Especificação S01](docs/desenvolvimento/FUNC-P0-01-S01-autoconsulta-organizacao-membership-contratos-homologacao-proposta-v0.1.md) | **PROPOSTA AINDA NÃO APROVADA**: 6 contratos, 22 cenários futuros, 8 decisões/owners pendentes |
 
 ## 3. Testes conferidos
 
@@ -86,9 +87,11 @@ Novos commits de documentação disparam novos checks. Verificar `HEAD` e Action
 
 ## 5. Próxima tarefa de desenvolvimento controlado
 
-A [Issue #22 — FUNC-P0-01](https://github.com/rafhael100/imagine-crm/issues/22) é **pauta de decisão humana**, não tarefa executável do Codex. O [documento de contratos](docs/desenvolvimento/FUNC-P0-01-contratos-primeiro-recorte-funcional-proposta-v0.1.md) recomenda como candidato a autoconsulta read-only da própria organização e vínculo, sem API/login público e sem acesso de staff Imagine. Direção deve escolher o recorte, designar owners, definir contratos, critérios positivos/negativos e aceitar gates incidentes **antes** de qualquer programação funcional ou mudança de ALLOW. 
+A [Issue #22 — FUNC-P0-01](https://github.com/rafhael100/imagine-crm/issues/22) registra **RECORTE A ESCOLHIDO APENAS PARA DETALHAMENTO DOCUMENTAL**. A [S01](docs/desenvolvimento/FUNC-P0-01-S01-autoconsulta-organizacao-membership-contratos-homologacao-proposta-v0.1.md) é **PROPOSTA NÃO APROVADA** para a tela de autoconsulta read-only do próprio tenant/vínculo, sem API/login público, gestão de usuários ou acesso de staff Imagine. Reúne contratos S01-C01..C06, 22 cenários de homologação futura e oito decisões S01-D01..D08. Direção e owners ainda devem aprovar campos, autorização, estados e gates antes de qualquer programação, `ALLOW` ou implementação de testes de homologação. **Não encaminhar S01 ao Codex como tarefa de código.** 
 
-[PR documental #21](https://github.com/rafhael100/imagine-crm/pull/21) continua DRAFT para `main`; seu head observado `a2395af7269eaac94504f497ab473068a57ca937` registra ratificações preliminares CORE02-D06..D10, **CORE02-D05 alternativa B (P1+P2 escopada)** e **CORE02-D05-GOV01 Modelo M2** ratificados expressamente em 06/11. **CORE02-D05-GOV02 permanece somente PROPOSTA, sem aprovação**. Não está integrado ao DEV/main por esta tarefa nem fecha CORE02-D05..D10. [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) permanece DRAFT e não foi alterado. O próximo passo é **avaliação do pacote pela direção**, não envio automático ao Codex.
+[PR documental #21](https://github.com/rafhael100/imagine-crm/pull/21) continua DRAFT para `main`; seu head observado `0e702e63acdc6c4cc3e67b19d10db10fa252be7f` registra ratificações preliminares CORE02-D06..D10, **CORE02-D05 alternativa B (P1+P2 escopada)** e **CORE02-D05-GOV01 Modelo M2** ratificados expressamente em 06/11. **CORE02-D05-GOV02 permanece somente PROPOSTA, sem aprovação**. Não está integrado ao DEV/main por esta tarefa nem fecha CORE02-D05..D10. [PR #2](https://github.com/rafhael100/imagine-crm/pull/2) permanece DRAFT e não foi alterado. O próximo passo é **avaliação do pacote pela direção**, não envio automático ao Codex.
+
+**Fronteira de aprovação S01 (06/11/2026):** a escolha A para *documentar* está aprovada; os contratos e os critérios propostos não têm aceite próprio, não são executáveis e não reduzem os 67 CORE, SEG, AUT, ARQ/INT/FIN/CON/LGPD e G01..G06. Nenhum teste positivo de autoconsulta real foi executado. A política B P1+P2 e GOV01 M2 são ratificações documentais; GOV02 permanece NÃO aprovada. 
 
 ## 6. Governança
 
