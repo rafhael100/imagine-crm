@@ -339,6 +339,48 @@ AGENTS.md/STATUS-ATUAL.md, composer.json/lock e todas as regressões anteriores.
 Próximo passo: revisão humana do DRAFT e deliberação do pacote da ordem 1–2.
 Sem merge, main, VPS, produção, dados reais, serviço pago ou novo efeito.
 
+### Evidências executadas e conferidas em 06/11/2026
+
+[PR #20 DRAFT](https://github.com/rafhael100/imagine-crm/pull/20), revisão
+`bdf7cc486dc1f2cae6cc8dc658643f9d3d7d7428`. Execuções de 05/11/2026,
+resumos/probes conferidos nos logs em 06/11/2026, America/Sao_Paulo.
+Ambos os checks **success**, sem falha de suíte ou correção de código após
+a primeira execução deste incremento.
+
+| Ambiente/comando | Resultado real | Log |
+|---|---|---|
+| PHP 8.4 / Laravel 13 / SQLite — php artisan test --no-ansi | **383 passed, 64 skipped, 2205 assertions; 0 falhas** | [42133251625 / 127614884468](https://github.com/rafhael100/imagine-crm/actions/runs/42133251625/job/127614884468) |
+| PostgreSQL 16 / Redis 7 efêmeros — suíte completa | **446 passed, 1 skipped, 2992 assertions; 0 falhas** | [42133251598 / 127614883692](https://github.com/rafhael100/imagine-crm/actions/runs/42133251598/job/127614883692) |
+| Mesmo job PostgreSQL — filtro PostgresMembershipRlsTest | **18 passed, 49 assertions** | Mesmo log PostgreSQL |
+| Local — git diff --cached --check nos quatro arquivos F1-10 | **Sem erros de whitespace** | Snapshot de edição, não histórico remoto |
+
+18 casos novos: 16 da baseline runtime/metadata/documento e dois da baseline
+ACL (um catálogo PG real e uma contraprova pura). Os 64 skips SQLite exigem
+PostgreSQL/Redis, incluindo o novo catálogo de ACL; executados na plataforma
+adequada. Único skip PostgreSQL é exclusivo de SQLite. O teste de metadata
+usa o evento real pull_request na CI destes logs; local/push sem esse evento
+terá um skip adicional explicitamente justificado, além das contraprovas puras.
+
+Confirmados os probes effective role and column acl matches the existing
+closed laboratory matrix, acl verifier rejects added business and column
+grants, e postgres shared redis budgets and contended lock fail closed.
+Permanecem as regressões reais de falha Redis, RLS C/D, GUC mutável não
+autenticadora, locks/revogação, isolamento de migrações, ledger inerte e
+restore read-only/consultivo. Nenhum teste F1 é declarado HT de homologação.
+
+Não executados localmente: Laravel/PostgreSQL/Redis, por ausência de
+PHP/Composer/Docker no terminal. Execução efetiva somente em CI sintética.
+App/config/bootstrap/routes/database/workflows comparados por hash com F1-09,
+sem diferenças. Composer lock e autorizador preservados. Publicação por
+GitHub autenticado, sem usar/pushar ancestralidade do snapshot Git local.
+O upload do documento ficou pendente e foi substituído pelo editor GitHub;
+conteúdo publicado conferido contra o arquivo local e os 67 IDs antes do PR.
+
+Este registro altera apenas documentação. Conferir novamente SHA/checks
+finais do PR após o commit; registrar os links finais na descrição do PR,
+sem criar ciclo de commits de evidência. Nenhum aceite humano, GO funcional,
+merge ou fechamento de CORE/SEG/AUT é declarado por estes resultados.
+
 [E1]: ../planejamento/CRM-CORE-P0-ETAPA1-painel-fechamento.md
 [E2]: ../planejamento/CRM-CORE-P0-ETAPA2-matriz-pendencias-tecnicas-plano-fechamento-v0.1.md
 [R01]: ../planejamento/CRM-CORE-P0-ETAPA2-R01-consolidacao-contratos-e-dependencias-tecnicas-v0.1.md
