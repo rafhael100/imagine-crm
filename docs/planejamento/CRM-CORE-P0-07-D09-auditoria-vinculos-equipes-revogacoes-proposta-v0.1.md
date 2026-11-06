@@ -1,7 +1,7 @@
 # CRM Imagine — CORE07-D09: auditoria de convites, vínculos, equipes e revogações — proposta v0.1
 
 **Data:** 06/11/2026 (America/Sao_Paulo).  
-**Estado:** **PROPOSTA DOCUMENTAL NÃO APROVADA — CORE07-D09 INTEGRAL ABERTA**.  
+**Estado atualizado em 06/11/2026:** **CORE07-D09-A/B/C/D RATIFICADAS EXPRESSAMENTE SOMENTE COMO DIRETRIZES DOCUMENTAIS PRELIMINARES**, conforme [decisão registrada](CRM-DEC-ratificacao-explicita-CORE07-D09-ABCD-2026-11-06.md). **CORE07-D09 integral permanece ABERTA**, sem mecanismo executável ou homologação. Referências abaixo a diretrizes não aprovadas descrevem a minuta histórica anterior à ratificação.  
 **Objetivo:** definir evidências auditáveis de quem iniciou, autorizou e efetivou alterações de participação e responsabilidade no CRM, aproveitando a auditoria central CORE06 e INT/SEG, **sem criar segundo motor de auditoria, executar testes ou definir retenções inventadas**.
 
 ## 1. Linha de base e decisões já ratificadas
@@ -14,7 +14,7 @@
 - [CORE07-D08 Modelo B e D08-A/B/C/D](CRM-DEC-ratificacao-explicita-CORE07-D08-modelo-B-ABCD-2026-11-06.md): efeitos pessoais que dependam de autoridade revogada são bloqueados; rotinas autônomas legítimas podem continuar com fundamento independente.
 - CORE02/CORE06, CORE03 e INT possuem catálogos e trilhas próprios. **CORE07 consome esses contratos, não replica suas tabelas de eventos/retenções.**
 
-## 2. Propostas para eventual aceite preliminar — AINDA NÃO APROVADAS
+## 2. Diretrizes CORE07-D09-A/B/C/D ratificadas preliminarmente
 
 ### D09-A — Catálogo único de eventos e causalidade de mudanças
 
@@ -51,4 +51,4 @@ Planejar verificações transversais para: reenvio de convite revoga token antig
 
 ## 5. Próxima decisão expressa solicitada
 
-Se o responsável concordar, ratificar **CORE07-D09-A/B/C/D apenas como diretrizes documentais preliminares**, preservando CORE07-D09 integral aberta. Em seguida preparar CORE07-D10, que consolidará dependências, roteiros e condições de homologação do bloco sem fechamento automático.
+**Ratificação expressa registrada:** o responsável aprovou **CORE07-D09-A/B/C/D somente como diretrizes documentais preliminares**, preservando CORE07-D09 integral aberta. Próxima etapa documental: CORE07-D10, dependências, roteiros e condições de homologação futura do bloco, sem fechamento automático.
