@@ -34,20 +34,22 @@ A [matriz F1-10](F1-10-consolidacao-gates-seguranca.md) recomenda delimitar **um
 
 ## 3. Reconciliação do PR #21 e precedência CORE02
 
-**PR #21 está DRAFT e separado, com destino `main`, NÃO integrado nesta operação**. Versão documental observada: head `a2395af7269eaac94504f497ab473068a57ca937`. As ratificações expressas registradas no próprio PR, inclusive a mais recente D05, são **fontes documentais sob integração pendente**, não grants, código homologado nem autorizações desta nova fase.
+**PR #21 está DRAFT e separado, com destino `main`, NÃO integrado nesta operação**. Versão documental observada: head `0e702e63acdc6c4cc3e67b19d10db10fa252be7f`. As ratificações expressas registradas no próprio PR, incluindo **D05 alternativa B e GOV01 Modelo M2**, são **fontes documentais sob integração pendente**, não grants, código homologado nem autorizações desta nova fase.
 
 | Bloco CORE02 | O que foi ratificado / aceito documentalmente | O que este pacote ainda exige |
 |---|---|---|
 | D01–D03 | Base geral cumulativa, deny-by-default | Casos do recorte com owners, dados e evidências |
 | D04 A–D | Classes de campo e direitos por ação/canal preliminares | Classificar **cada campo real** do resumo próprio, incluindo derivados |
 | **D05 — alternativa B** | **Expressamente ratificada em 06/11/2026**: P1, união de grants positivos válidos no mesmo tenant/escopo, + P2, deny explícito qualificado prevalente só na interseção de recurso/ação/campo/escopo; bloqueios mandatórios superiores | **Ainda falta** especificação física, proveniência/vigência de grants e denies, representação de escopo, revogação/cache, delegação, autoria/competência, UX e testes por caso. D05 integral ABERTA |
+| **D05-GOV01 — Modelo M2** | **Expressamente ratificado em 06/11/2026**: administrador principal ou delegado com competência específica para administrar perfis/grants/denies apenas dentro do tenant/plano/escopo e sem autoelevação; **Básico mantém um único administrador humano com MFA** | Não implementar edição/delegação neste primeiro recorte; capacidade concreta por operação e plano, política de autoalteração, controle de versão e evidência ainda precisam de contrato e homologação. D05 integral ABERTA |
+| **D05-GOV02 (A–D)** | **PROPOSTA NÃO APROVADA** no PR #21: limites de delegação, autoalteração, prévia de conflitos, concorrência/revogação e auditoria | Não aplicar algoritmos, grants/denies e UX derivados de GOV02 sem decisão expressa |
 | D06 A–D | Catálogo semântico de ações e owner ratificado preliminarmente | Catálogo concreto `organization.read_own_summary` / `membership.read_self` e versões, após aprovação do owner |
 | D07 A–D | Ações sensíveis, MFA/step-up e alçadas ratificados preliminarmente | Fatores/sessões/janelas e riscos próprios da leitura escolhida; não importar números dos protótipos |
 | D08 A–D | Enforcement server-side, RLS e revogação ratificados preliminarmente | Garantia ponta a ponta, SQL/roles, conexões/pool, revogação e testes de tenant B |
 | D09 A–D | Planos/entitlement/cotas/estados ratificados preliminarmente | Regra por estado de assinatura e leitura de autoatendimento; tabela comercial e quotas finais permanecem sob FIN/CON |
 | D10 A–D | Evidências, rastreabilidade e homologação ratificadas preliminarmente | Matriz executável por SHA, ambiente, principal, tenant, campo, canal e aceite competente |
 
-A decisão técnica **delegada** anterior [P1+P2 escopada](../planejamento/CRM-DEC-TECNICA-DELEGADA-CORE02-D05-precedencia-P1-P2-escopada-v0.1.md) está na base do repositório, mas os trechos mais antigos da minuta D05 que dizem “não escolhido” devem ser lidos à luz da **ratificação expressa da alternativa B no PR #21**. A ratificação não muda o fato de que D05 está ABERTA, nem transforma P1+P2 em algoritmo executável. **Não alterar/mesclar o PR #21, a `main` ou `docs/planejamento` nesta etapa.** Antes de implementar, reconciliar a versão normativa publicável com governança e aprovação independente.
+A decisão técnica **delegada** anterior [P1+P2 escopada](../planejamento/CRM-DEC-TECNICA-DELEGADA-CORE02-D05-precedencia-P1-P2-escopada-v0.1.md) está na base do repositório, mas os trechos mais antigos da minuta D05 que dizem “não escolhido” devem ser lidos à luz da **ratificação expressa da alternativa B no PR #21**. A ratificação não muda o fato de que D05 está ABERTA, nem transforma P1+P2 em algoritmo executável. **Não alterar/mesclar o PR #21, a `main` ou `docs/planejamento` nesta etapa.** As aprovações B/M2 ainda não validam o algoritmo físico; a pauta GOV02 continua sem aprovação. Se a frente documental receber novos commits, conciliar novamente o estado antes de autorizar código. Antes de implementar, reconciliar a versão normativa publicável com governança e aprovação independente.
 
 ## 4. Contratos que precisam ser decididos antes de qualquer implementação
 
@@ -55,7 +57,7 @@ A decisão técnica **delegada** anterior [P1+P2 escopada](../planejamento/CRM-D
 |---|---|---|---|
 | FUNC01-C01 | Selecionar A, B ou C; definir precisamente operação, superfície, ausência de efeitos, sujeitos, dados e exclusões | Direção/Produto/Organizações | CORE10-D04/D05; CORE02-D06 |
 | FUNC01-C02 | Identidade/membership verificada, escolha de tenant, sessões válidas, MFA apropriado, revogação e fallback fechado | IAM/Segurança | CORE01-D04..D07; CORE04-D04/D05; SEG-01 |
-| FUNC01-C03 | Catálogo de recursos/ações/campos, classificação e mascaramento, escopo próprio, política B P1+P2 contextual sem grants globais | Organização/IAM/Segurança/Privacidade | CORE02-D04..D08; LGPD |
+| FUNC01-C03 | Catálogo de recursos/ações/campos, classificação e mascaramento, escopo próprio, política B P1+P2 e M2 apenas como bases; GOV02 sem aceite e sem gestão de perfis neste primeiro recorte | Organização/IAM/Segurança/Privacidade | CORE02-D04..D08; CORE07; LGPD |
 | FUNC01-C04 | Modelo de dados mínimo, FKs tenant-bound, constraints, migrations/rollback, RLS FORCE, roles SQL, ameaça GUC/SQL/pool | DBA/Arquitetura/IAM | CORE01-D05/D07; CORE02-D08; SEG-01/02 |
 | FUNC01-C05 | Estados trial/cortesia/pago/suspenso/cancelado e direitos mínimos legítimos de autoatendimento, sem assumir número comercial | Produto/FIN/CON/CORE08 | CORE02-D09; CORE08-D04..D10 |
 | FUNC01-C06 | Eventos/sinais de auditoria minimizados, finalidade/base legal, prazo de retenção e acesso compatível; sem gravar PII desnecessária | Privacidade/Auditoria/Segurança | CORE06; LGPD; CORE10 |
