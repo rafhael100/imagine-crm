@@ -59,6 +59,108 @@ final class AuthMigrationIsolationTest extends TestCase
         }
     }
 
+
+    public function test_tenant_migration_rejects_wrong_database_or_nonloopback_host(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('Requires disposable PostgreSQL CI database.');
+        }
+        $migration = require base_path(self::TENANT_PATH.'/'.self::TENANT_MIGRATION.'.php');
+        $this->app->instance('env', 'testing');
+        config(['identity.tenant_schema_experimental' => true,
+            'identity.tenant_schema_lab_database' => 'imagine_crm_lab_wrong']);
+        foreach (['up', 'down'] as $direction) {
+            try {
+                $migration->$direction();
+                $this->fail('Mismatched laboratory database was accepted.');
+            } catch (\\RuntimeException $e) {
+                $this->assertSame(
+                    'Candidate tenant schema requires an explicitly approved loopback laboratory database.',
+                    $e->getMessage()
+                );
+            }
+        }
+        $original = DB::getDefaultConnection();
+        $settings = config('database.connections.'.$original);
+        $settings['url'] = null;
+        $settings['host'] = 'external-db.invalid';
+        config(['database.connections.crm_nonloopback_probe' => $settings,
+            'identity.tenant_schema_lab_database' => 'imagine_crm_ci']);
+        try {
+            DB::setDefaultConnection('crm_nonloopback_probe');
+            foreach (['up', 'down'] as $direction) {
+                try {
+                    $migration->$direction();
+                    $this->fail('Non-loopback database endpoint was accepted.');
+                } catch (\\RuntimeException $e) {
+                    $this->assertSame(
+                        'Candidate tenant schema requires an explicitly approved loopback laboratory database.',
+                        $e->getMessage()
+                    );
+                }
+            }
+        } finally {
+            DB::setDefaultConnection($original);
+            DB::purge('crm_nonloopback_probe');
+        }
+    }
+
+    public function test_recorded_legacy_tenant_migration_is_not_rediscovered_or_double_applied(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('Requires disposable PostgreSQL CI database.');
+        }
+        // Simulates the old migration ledger in a throwaway namespace, never a persisted environment.
+        $setup = DB::connection();
+        $schema = 'crm_legacy_probe_'.bin2hex(random_bytes(6));
+        $setup->statement('CREATE SCHEMA '.$schema);
+        $original = DB::getDefaultConnection();
+        $settings = config('database.connections.'.$original);
+        $settings['search_path'] = $schema;
+        $settings['url'] = null;
+        config(['database.connections.crm_legacy_probe' => $settings,
+            'identity.tenant_schema_lab_database' => 'imagine_crm_ci',
+            'identity.tenant_schema_experimental' => true]);
+        try {
+            DB::setDefaultConnection('crm_legacy_probe');
+            $this->app->instance('env', 'testing');
+            $this->artisan('migrate', [
+                '--database' => 'crm_legacy_probe', '--path' => self::TENANT_PATH, '--force' => true
+            ])->assertExitCode(0);
+            $db = DB::connection('crm_legacy_probe');
+            $recorded = $db->table('migrations')->where('migration', self::TENANT_MIGRATION);
+            $this->assertSame(1, $recorded->count());
+            $this->assertTrue($db->getSchemaBuilder()->hasTable('crm_memberships'));
+
+            // Default release path must not mutate or re-run the recorded tenant migration.
+            config(['identity.tenant_schema_experimental' => false]);
+            $this->artisan('migrate', [
+                '--database' => 'crm_legacy_probe', '--force' => true
+            ])->assertExitCode(0);
+            $this->assertSame(1, $recorded->count());
+            $this->assertTrue($db->getSchemaBuilder()->hasTable('crm_memberships'));
+
+            // Explicit opt-in sees the same basename in the ledger and must not duplicate DDL.
+            config(['identity.tenant_schema_experimental' => true]);
+            $this->artisan('migrate', [
+                '--database' => 'crm_legacy_probe', '--path' => self::TENANT_PATH, '--force' => true
+            ])->assertExitCode(0);
+            $this->assertSame(1, $recorded->count());
+            $this->assertTrue($db->getSchemaBuilder()->hasTable('crm_memberships'));
+
+            // Rollback is permitted only here: isolated namespace, explicit path, opt-in.
+            $this->artisan('migrate:rollback', [
+                '--database' => 'crm_legacy_probe', '--path' => self::TENANT_PATH, '--force' => true
+            ])->assertExitCode(0);
+            $this->assertFalse($db->getSchemaBuilder()->hasTable('crm_memberships'));
+        } finally {
+            $this->app->instance('env', 'testing');
+            DB::setDefaultConnection($original);
+            DB::purge('crm_legacy_probe');
+            $setup->statement('DROP SCHEMA '.$schema.' CASCADE');
+        }
+    }
+
     public function test_explicit_lab_migration_and_rollback_on_sqlite(): void
     {
         if (DB::getDriverName() !== 'sqlite') { $this->markTestSkipped('SQLite adapter proof only.'); }
@@ -101,7 +203,8 @@ final class AuthMigrationIsolationTest extends TestCase
         $settings['search_path'] = $schema;
         $settings['url'] = null;
         config(['database.connections.crm_release_probe' => $settings, 'identity.experimental' => false,
-            'identity.tenant_schema_experimental' => false]);
+            'identity.tenant_schema_experimental' => false,
+            'identity.tenant_schema_lab_database' => 'imagine_crm_ci']);
         try {
             DB::setDefaultConnection('crm_release_probe');
             $this->app->instance('env', 'production');

@@ -17,6 +17,24 @@ return new class extends Migration
         if (DB::getDriverName() !== 'pgsql') {
             throw new RuntimeException('CRM tenant/RLS schema requires PostgreSQL.');
         }
+
+        // DDL is opt-in and must target an explicitly named loopback lab DB.
+        // APP_ENV and a feature flag alone do not prove that the target is disposable.
+        $connection = DB::connection();
+        $expected = config('identity.tenant_schema_lab_database');
+        $host = $connection->getConfig('host');
+        $database = $connection->getConfig('database');
+        if (!is_string($expected)
+            || !preg_match('/^imagine_crm_(ci|f0|lab_[a-z0-9_]{1,32})$/D', $expected)
+            || !in_array($host, ['127.0.0.1', 'localhost', '::1'], true)
+            || !empty($connection->getConfig('url'))
+            || $database !== $expected) {
+            throw new RuntimeException('Candidate tenant schema requires an explicitly approved loopback laboratory database.');
+        }
+        $active = $connection->selectOne('SELECT current_database() AS name');
+        if ($active === null || $active->name !== $expected) {
+            throw new RuntimeException('Candidate tenant schema requires an explicitly approved loopback laboratory database.');
+        }
     }
 
     public function up(): void

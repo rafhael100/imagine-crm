@@ -52,6 +52,8 @@ jobs:
       DB_HOST: 127.0.0.1
       DB_PORT: 5432
       DB_DATABASE: imagine_crm_ci
+      # Laboratory DDL must match this ephemeral service DB exactly.
+      CRM_TENANT_SCHEMA_LAB_DATABASE: imagine_crm_ci
       DB_USERNAME: postgres
       DB_PASSWORD: ci-only-password
       RLS_TEST_USERNAME: crm_app_ci
