@@ -1,7 +1,7 @@
 # CRM Imagine — CORE07-D10: matriz de homologação de convites, assentos, equipes e revogações — proposta v0.1
 
 **Data:** 06/11/2026 (America/Sao_Paulo).  
-**Estado:** **PROPOSTA DOCUMENTAL NÃO APROVADA — CORE07-D10-A/B/C/D AGUARDAM MANIFESTAÇÃO EXPRESSA**.  
+**Estado atualizado em 06/11/2026:** **CORE07-D10-A/B/C/D RATIFICADAS EXPRESSAMENTE COMO DIRETRIZES DOCUMENTAIS PRELIMINARES**, conforme [decisão formal](CRM-DEC-ratificacao-explicita-CORE07-D10-ABCD-2026-11-06.md). **CORE07-D10 integral permanece ABERTA**, sem testes executados ou homologação. Menções abaixo a propostas ainda não aprovadas são históricas anteriores à ratificação.  
 **Finalidade:** converter as diretrizes preliminares D04–D09 em um roteiro de critérios, proprietários, rastreabilidade e evidências para futuras fases técnicas, sem declarar CORE07 concluído, executar testes nem criar novo gate paralelo ao CORE10/SEG/INT.
 
 ## 1. Precedências e estados
@@ -12,7 +12,7 @@
 - [D08 Modelo B e A/B/C/D](CRM-DEC-ratificacao-explicita-CORE07-D08-modelo-B-ABCD-2026-11-06.md): revogação seletiva de autoridade; [D09 A/B/C/D](CRM-DEC-ratificacao-explicita-CORE07-D09-ABCD-2026-11-06.md): eventos e evidências via auditoria central CORE06.
 - **CORE07-D04..D10 continuam integralmente ABERTAS**; nenhuma destas aprovações preliminares produz política física, testes de segurança, autorização de deploy ou fecho de gate. Reutilizar CORE01/02/03/04/05/06/08/09/10, SEG-01/02 e INT P0/G01..G06. Todos os 67 identificadores CORE continuam abertos tecnicamente.
 
-## 2. Diretrizes candidatas — AINDA NÃO APROVADAS
+## 2. Diretrizes CORE07-D10-A/B/C/D ratificadas preliminarmente
 
 ### CORE07-D10-A — Inventário de contratos, proprietários e cenários obrigatórios
 
@@ -62,4 +62,4 @@ Exigir validação por CORE01 (tenant/membership/RLS), CORE02 (permissões), COR
 
 ## 5. Próxima decisão pedida
 
-Aprovar **CORE07-D10-A/B/C/D somente como diretrizes técnicas documentais preliminares**, preservando D10 integral e todo CORE07 ABERTOS. Depois preparar **auditoria consolidada CORE07-D04..D10**, sem aceitar encerramento técnico por simples maioria de diretrizes ratificadas.
+**Aprovação expressa registrada:** **CORE07-D10-A/B/C/D ratificadas somente como diretrizes documentais preliminares**. **D10 integral e todo o CORE07 permanecem ABERTOS**. Próximo passo: **revisão consolidada CORE07-D04..D10**, sem fechamento técnico por simples acumulação de diretrizes.
