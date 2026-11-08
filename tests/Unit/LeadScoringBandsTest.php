@@ -71,7 +71,7 @@ final class LeadScoringBandsTest extends TestCase
 
     public static function invalidScores(): array
     {
-        return [['negative' => -1], ['above maximum' => 101], ['very negative' => -10000], ['very high' => 10000]];
+        return ['negative' => [-1], 'above maximum' => [101], 'very negative' => [-10000], 'very high' => [10000]];
     }
 
     #[DataProvider('invalidScores')]
