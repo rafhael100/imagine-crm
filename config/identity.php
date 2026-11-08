@@ -3,6 +3,10 @@
 return [
     // Candidate laboratory profile only. No public authentication routes.
     'experimental' => (bool) env('CRM_AUTH_EXPERIMENTAL', false),
+    // Candidate tenant DDL requires a separate, explicit laboratory opt-in.
+    'tenant_schema_experimental' => (bool) env('CRM_TENANT_SCHEMA_EXPERIMENTAL', false),
+    // Exact database name to validate against PostgreSQL current_database().
+    'tenant_schema_lab_database' => env('CRM_TENANT_SCHEMA_LAB_DATABASE', ''),
     'pending_seconds' => 300,
     'idle_seconds' => 1800,
     'absolute_seconds' => 43200,
