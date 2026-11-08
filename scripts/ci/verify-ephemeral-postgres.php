@@ -37,7 +37,8 @@ $expected = [
     'CI' => 'true',
     'GITHUB_ACTIONS' => 'true',
     'GITHUB_REPOSITORY' => 'rafhael100/imagine-crm',
-    'GITHUB_EVENT_NAME' => 'pull_request',
+    // The workflow permits PR validation and push to the named DEV branch only.
+    // Event/ref/target are checked as a separate, explicit allowlist below.
     'RUNNER_ENVIRONMENT' => 'github-hosted',
     'APP_ENV' => 'testing',
     'DB_CONNECTION' => 'pgsql',
@@ -52,6 +53,34 @@ foreach ($expected as $name => $value) {
     if (getenv($name) !== $value) {
         deny('unexpected environment or database setting: '.$name);
     }
+}
+
+// GitHub's canonical event/ref variables are validated together:
+// PRs use a refs/pull/<number>/merge ref and an allowlisted target branch.
+// Push runs must come from the *exact* development branch, never main or tags.
+// These are CI event checks only, not authentication of database credentials.
+$event = getenv('GITHUB_EVENT_NAME');
+$ref = getenv('GITHUB_REF');
+$baseRef = getenv('GITHUB_BASE_REF');
+$headRef = getenv('GITHUB_HEAD_REF');
+$isBlank = static fn (string|false $value): bool => $value === false || $value === '';
+
+if ($event === 'pull_request') {
+    if (!is_string($ref)
+        || !preg_match('/^refs\/pull\/[1-9][0-9]*\/merge$/D', $ref)
+        || !in_array($baseRef, ['main', 'dev/fast-track-crm-2026-11-04'], true)
+        || !is_string($headRef)
+        || $headRef === '') {
+        deny('pull request event, ref or target is not authorized');
+    }
+} elseif ($event === 'push') {
+    if ($ref !== 'refs/heads/dev/fast-track-crm-2026-11-04'
+        || !$isBlank($baseRef)
+        || !$isBlank($headRef)) {
+        deny('push event is not on the exact development branch');
+    }
+} else {
+    deny('GitHub event is not authorized for laboratory migrations');
 }
 
 foreach (['DB_URL', 'DATABASE_URL', 'PGHOST', 'PGSERVICE', 'PGSERVICEFILE'] as $name) {
