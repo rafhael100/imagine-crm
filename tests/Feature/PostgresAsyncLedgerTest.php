@@ -305,7 +305,10 @@ final class PostgresAsyncLedgerTest extends TestCase
             foreach (Ledger::TABLES as $table) { $this->assertTrue(DB::connection()->getSchemaBuilder()->hasTable($table)); }
             $migration->down();
             foreach (Ledger::TABLES as $table) { $this->assertFalse(DB::connection()->getSchemaBuilder()->hasTable($table)); }
-            $this->assertTrue(DB::connection()->getSchemaBuilder()->hasTable('crm_memberships'));
+            // Standard release discovery must not install any tenant laboratory.
+            foreach (['crm_global_identities', 'crm_organizations', 'crm_memberships'] as $tenantTable) {
+                $this->assertFalse(DB::connection()->getSchemaBuilder()->hasTable($tenantTable));
+            }
         } finally {
             DB::setDefaultConnection($original); DB::purge('crm_async_migration_probe');
             $this->fixtures->statement('DROP SCHEMA '.$schema.' CASCADE');
