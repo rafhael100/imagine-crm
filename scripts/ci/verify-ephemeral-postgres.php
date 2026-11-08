@@ -93,16 +93,24 @@ if (count($parts) !== 4
     deny('PostgreSQL service is unexpected, mounted persistently or lacks a container IP');
 }
 
-// SELECT only; compare the live server IP to the inspected Docker service.
-// This checks the target of the CI connection, not durable DB protection.
-$db = runReadOnly([
-    'psql', '-X', '-A', '-t', '-v', 'ON_ERROR_STOP=1',
-    '-h', '127.0.0.1', '-p', '5432',
-    '-U', 'postgres', '-d', 'imagine_crm_ci',
-    '-c', "SELECT current_database() || '|' || current_user || '|' || COALESCE(inet_server_addr()::text, '')",
+// SELECT only. Compare the PostgreSQL *cluster identity* as seen directly
+// inside the inspected service container and over the loopback client port.
+// NAT/proxy routing may legitimately change inet_server_addr(), so IP equality
+// is not a reliable test of whether both connections reach the same instance.
+$query = "SELECT current_database() || '|' || current_user || '|' || system_identifier::text FROM pg_control_system()";
+$inside = runReadOnly([
+    'docker', 'exec', $ids[0], 'psql', '-X', '-A', '-t',
+    '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', 'imagine_crm_ci',
+    '-c', $query,
 ]);
-if ($db !== 'imagine_crm_ci|postgres|'.$parts[3]) {
-    deny('connected PostgreSQL endpoint does not match the disposable CI service');
+$outside = runReadOnly([
+    'psql', '-X', '-A', '-t', '-v', 'ON_ERROR_STOP=1',
+    '-h', '127.0.0.1', '-p', '5432', '-U', 'postgres', '-d', 'imagine_crm_ci',
+    '-c', $query,
+]);
+if (!preg_match('/^imagine_crm_ci\|postgres\|[0-9]{15,22}$/D', $inside)
+    || !hash_equals($inside, $outside)) {
+    deny('connected PostgreSQL cluster does not match the disposable CI service');
 }
 
 echo "CRM-SEC-CI-01 verified GitHub-hosted PostgreSQL service (read-only).".PHP_EOL;
