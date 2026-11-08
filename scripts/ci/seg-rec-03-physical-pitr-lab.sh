@@ -106,6 +106,12 @@ wait_ready() {
 }
 wait_ready "$SOURCE"
 
+# Physical backup needs a PostgreSQL replication HBA rule. Restrict it to
+# source container's directly attached INTERNAL Docker subnet (samenet).
+# No host network, published port, external IP or persistent database.
+docker exec "$SOURCE" sh -ec 'printf "\nhost replication postgres samenet scram-sha-256\n" >> "$PGDATA/pg_hba.conf"'
+sql_source 'SELECT pg_reload_conf()' >/dev/null
+
 sql_source "CREATE TABLE seg_rec_03_proof (event text PRIMARY KEY, phase integer NOT NULL)" >/dev/null
 sql_source "INSERT INTO seg_rec_03_proof VALUES ('before_backup', 1)" >/dev/null
 
