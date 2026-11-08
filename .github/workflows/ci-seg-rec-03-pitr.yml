@@ -1,0 +1,29 @@
+name: CRM Imagine - SEG-REC-03 Disposable PITR Lab
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-seg-rec-03-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  physical-pitr-synthetic:
+    name: PostgreSQL 16 physical backup + WAL/PITR (isolated CI only)
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      RUNNER_ENVIRONMENT: github-hosted
+    steps:
+      - name: Checkout synthetic test branch
+        uses: actions/checkout@v4
+      - name: Validate bash syntax (no execution)
+        run: bash -n scripts/ci/seg-rec-03-physical-pitr-lab.sh
+      - name: Run isolated two-cluster PITR experiment (synthetic only)
+        run: bash scripts/ci/seg-rec-03-physical-pitr-lab.sh
