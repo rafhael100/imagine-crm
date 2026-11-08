@@ -95,15 +95,21 @@ jobs:
           cp .env.example .env
           php artisan key:generate --force
       - name: Verify default migration discovery does not apply candidate tenant schema
-        run: php artisan migrate --force --no-interaction
+        run: |
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          php artisan migrate --force --no-interaction
       - name: Explicitly migrate isolated tenant laboratory
         env:
           CRM_TENANT_SCHEMA_EXPERIMENTAL: 'true'
-        run: php artisan migrate --path=database/experimental-migrations/tenant --force --no-interaction
+        run: |
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          php artisan migrate --path=database/experimental-migrations/tenant --force --no-interaction
       - name: Explicitly migrate isolated auth laboratory
         env:
           CRM_AUTH_EXPERIMENTAL: 'true'
-        run: php artisan migrate --path=database/experimental-migrations/auth --force --no-interaction
+        run: |
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          php artisan migrate --path=database/experimental-migrations/auth --force --no-interaction
       - name: Create non-bypass application role
         run: |
           psql -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 <<'SQL'
@@ -138,6 +144,7 @@ jobs:
         env:
           CRM_AUTH_EXPERIMENTAL: 'true'
         run: |
+          php scripts/ci/verify-ephemeral-postgres.php --verify
           php artisan migrate --path=database/experimental-migrations/async --force --no-interaction
           psql -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 <<'SQL'
           CREATE ROLE crm_async_ci LOGIN PASSWORD 'ephemeral-async-role-only'
