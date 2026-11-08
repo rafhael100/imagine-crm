@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; font-src 'none'; connect-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'">
+  <title>Imagine CRM — Protótipo offline</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#1b2a41;background:#f3f6fa;line-height:1.52}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh}button{font:inherit}button:focus-visible{outline:3px solid #37bcb0;outline-offset:3px}
+    [hidden]{display:none!important}
+    .shell{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh}
+    .sidebar{background:#122943;color:#e7f2fb;padding:28px 18px;display:flex;flex-direction:column;gap:28px}
+    .brand{display:flex;gap:13px;align-items:center;padding:4px 12px}
+    .brand-mark{width:42px;height:42px;display:grid;place-items:center;background:#1d7e90;border-radius:14px;color:#fff;font-weight:800;font-size:23px}
+    .brand-name{font-size:19px;font-weight:750;letter-spacing:-.5px;line-height:1.15}.brand-name span{display:block;font-size:11px;font-weight:600;color:#9ab6cb;letter-spacing:1.6px;margin-top:5px}
+    .side-label{text-transform:uppercase;letter-spacing:1.8px;font-size:10px;font-weight:800;color:#8faac0;margin:0 0 9px 13px}
+    .side-nav{display:grid;gap:5px}.nav-button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:12px 13px;color:#cfdfeb;border:1px solid transparent;background:transparent;border-radius:11px;cursor:pointer;font-size:14px;font-weight:620}
+    .nav-button .dot{width:9px;height:9px;border-radius:50%;background:#7b9cb4;flex-shrink:0}
+    .nav-button:hover{background:#23425e;color:#fff}.nav-button[aria-current="page"]{background:#24556b;color:#fff;border-color:#348c95}
+    .nav-button[aria-current="page"] .dot{background:#55d7bc}
+    .side-note{margin-top:auto;padding:17px;border:1px solid #36556c;border-radius:14px;background:#193650;color:#b7d1e0;font-size:12px}
+    .side-note strong{display:block;color:#e5f5f4;font-size:13px;margin-bottom:5px}
+    .main{min-width:0}.topbar{min-height:81px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px clamp(20px,5vw,64px);background:#fff;border-bottom:1px solid #e2e8ef}
+    .crumb{color:#63748a;font-weight:700;font-size:13px}.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid #e9d7ac;border-radius:100px;padding:7px 11px;background:#fff8e8;color:#83600d;font-size:11px;font-weight:800;letter-spacing:.35px}
+    .pill:before{content:"";width:7px;height:7px;border-radius:50%;background:#e6b147}
+    .content{max-width:1140px;padding:clamp(22px,4.5vw,60px) clamp(20px,5vw,64px);margin:auto}
+    .eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:11px;font-weight:800;color:#15847e;margin:0 0 11px}
+    h1{font-size:clamp(29px,3.5vw,42px);line-height:1.14;letter-spacing:-1.1px;margin:0 0 13px;color:#172b45}
+    .lead{color:#64758b;font-size:16px;max-width:720px;margin:0 0 30px}.heading-row{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;flex-wrap:wrap}
+    .card{background:#fff;border:1px solid #e0e7ef;box-shadow:0 8px 30px rgba(16,42,72,.035);border-radius:19px;padding:clamp(20px,3vw,30px)}
+    .hero{padding:clamp(26px,4vw,42px);background:linear-gradient(110deg,#173450,#1e6575);color:#fff;border-radius:22px;position:relative;overflow:hidden;margin-bottom:20px}
+    .hero:after{content:"";position:absolute;right:-86px;top:-122px;width:350px;height:350px;border:2px solid rgba(111,227,208,.2);border-radius:50%;pointer-events:none}
+    .hero h2{margin:9px 0 12px;font-size:clamp(24px,3vw,33px);line-height:1.23;max-width:530px;letter-spacing:-.7px}.hero p{color:#c7dee7;max-width:500px;margin:0 0 20px}
+    .hero .eyebrow{color:#8de4cc}.action{border:0;border-radius:11px;background:#1b8b8c;color:#fff;font-weight:750;cursor:pointer;padding:12px 18px}
+    .hero .action{background:#fff;color:#1a4f5f}.action:hover{filter:brightness(.95)}
+    .two-col{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.caption{color:#6b7e91;font-size:12px;margin:0}
+    h2{font-size:21px;letter-spacing:-.3px;margin:0 0 12px}h3{font-size:16px;letter-spacing:-.2px;margin:0 0 6px}
+    .step{display:flex;gap:15px;align-items:flex-start;padding:14px 0;border-bottom:1px solid #edf1f5}.step:last-child{border-bottom:0}
+    .number{display:grid;place-items:center;background:#e5f5f2;color:#116e6a;width:32px;height:32px;border-radius:10px;font-weight:800;flex-shrink:0}
+    .step p{color:#687b8d;font-size:13px;margin:0}.metric{font-size:33px;font-weight:800;color:#1b5263;letter-spacing:-1px}.soft{color:#6b7e91}
+    .summary{padding:5px 0 0;display:grid;gap:18px}.summary-row{border-bottom:1px solid #edf1f5;padding-bottom:18px}.summary-row:last-child{border:0;padding-bottom:0}
+    .field-label{color:#697b8e;font-weight:650;font-size:12px;margin:0 0 7px}.field-value{font-size:25px;font-weight:780;letter-spacing:-.7px;margin:0;color:#1c3550}
+    .status-good{display:inline-flex;align-items:center;gap:7px;border-radius:100px;padding:6px 12px;background:#e8f6f0;color:#18674a;font-size:13px;font-weight:770}
+    .status-good:before{content:"";width:8px;height:8px;border-radius:50%;background:#29a87b}
+    .help{background:#edf7f7;border:1px solid #d3ebeb;border-radius:13px;padding:16px 18px;margin-top:19px;color:#315e62;font-size:13px}
+    .preview-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}.switcher{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 20px}
+    .state-button{background:#f7fafc;border:1px solid #dbe4eb;border-radius:100px;padding:9px 15px;color:#455a6e;font-weight:680;cursor:pointer;font-size:13px}
+    .state-button[aria-pressed="true"]{background:#173f52;border-color:#173f52;color:#fff}.state-button:hover{border-color:#1b8b8c}
+    .state-surface{min-height:208px;border:1px dashed #a2bdc5;border-radius:15px;background:#f8fbfc;padding:24px;display:flex;align-items:center}
+    .state-surface>div{max-width:100%}.state-surface p{margin:7px 0;color:#607488;font-size:14px}
+    .state-note{color:#56858b!important;font-size:12px!important;font-weight:700;letter-spacing:.2px}
+    .info-list{display:grid;gap:13px}.info-item{display:flex;gap:12px;color:#43576c;font-size:14px}.check{color:#168478;font-weight:800}
+    .disclaimer{margin-top:25px;font-size:12px;color:#73869b;max-width:710px}
+    .bottom{margin-top:25px;color:#8b9bad;font-size:12px;display:flex;gap:14px;flex-wrap:wrap}
+    @media(max-width:900px){.shell{grid-template-columns:1fr}.sidebar{padding:14px 20px;gap:12px}.brand{padding:0}.side-label,.side-note{display:none}.side-nav{display:flex;overflow-x:auto;padding:2px 0 4px;gap:6px}.nav-button{white-space:nowrap;width:auto;padding:9px 11px}.topbar{min-height:66px}.two-col{grid-template-columns:1fr}}
+    @media(max-width:420px){.topbar{align-items:flex-start;flex-direction:column}.pill{font-size:10px}.content{padding:23px 17px}.card{border-radius:14px}.hero{border-radius:16px}.nav-button{font-size:12px}.field-value{font-size:22px}.state-surface{padding:18px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" aria-label="Navegação do protótipo">
+    <div class="brand"><div class="brand-mark" aria-hidden="true">i</div><div class="brand-name">imagine<span>CRM</span></div></div>
+    <div>
+      <p class="side-label">Demonstração</p>
+      <nav class="side-nav" aria-label="Telas de demonstração">
+        <button class="nav-button" type="button" data-page="welcome" aria-current="page"><span class="dot" aria-hidden="true"></span>Boas-vindas</button>
+        <button class="nav-button" type="button" data-page="organization"><span class="dot" aria-hidden="true"></span>Minha organização</button>
+        <button class="nav-button" type="button" data-page="states"><span class="dot" aria-hidden="true"></span>Estados da tela</button>
+        <button class="nav-button" type="button" data-page="about"><span class="dot" aria-hidden="true"></span>Sobre o protótipo</button>
+      </nav>
+    </div>
+    <div class="side-note"><strong>Ambiente ilustrativo</strong>Sem login, conexão com servidores ou dados de clientes. As informações são inteiramente fictícias.</div>
+  </aside>
+  <main class="main" id="conteudo">
+    <header class="topbar"><span class="crumb">Imagine CRM <span aria-hidden="true">/</span> Demonstração</span><span class="pill">PROTÓTIPO — DADOS FICTÍCIOS</span></header>
+    <div class="content">
+      <div class="heading-row">
+        <div><p class="eyebrow">S01-PROT-01 · Experiência visual</p><h1 id="page-title" tabindex="-1">Boas-vindas</h1></div>
+      </div>
+      <section data-screen="welcome" aria-label="Boas-vindas">
+        <p class="lead">Conheça uma amostra da navegação do Imagine CRM. Este ambiente é exclusivamente visual e não representa uma conta real.</p>
+        <div class="hero"><p class="eyebrow">Primeiro contato</p><h2>Uma visão simples para o que vem pela frente.</h2><p>Explore o resumo da organização e os estados que a interface poderá apresentar, sem acessar informações reais.</p><button class="action" type="button" data-go="organization">Explorar minha organização</button></div>
+        <div class="two-col">
+          <div class="card"><h2>Como explorar</h2>
+            <div class="step"><span class="number" aria-hidden="true">1</span><div><h3>Minha organização</h3><p>Veja somente um nome fictício e a indicação ilustrativa de vínculo.</p></div></div>
+            <div class="step"><span class="number" aria-hidden="true">2</span><div><h3>Estados da tela</h3><p>Alterne entre carregamento, resumo demonstrativo, indisponibilidade e revalidação.</p></div></div>
+            <div class="step"><span class="number" aria-hidden="true">3</span><div><h3>Sobre o protótipo</h3><p>Conheça os limites desta demonstração offline.</p></div></div>
+          </div>
+          <div class="card"><p class="field-label">Objetivo deste lote</p><div class="metric">04 <span style="font-size:16px;font-weight:700">telas</span></div><p class="soft">Apenas navegação e experiência visual com dados fixos.</p><div class="help">Nenhuma política de acesso ou conexão com a aplicação CRM foi implementada nesta demonstração.</div></div>
+        </div>
+      </section>
+      <section data-screen="organization" aria-label="Minha organização" hidden>
+        <p class="lead">Esta é uma representação visual do futuro resumo próprio. Os dados abaixo são fixos e não foram consultados em um servidor.</p>
+        <div class="two-col">
+          <div class="card">
+            <p class="eyebrow">Resumo ilustrativo</p><h2>Minha organização</h2>
+            <div class="summary">
+              <div class="summary-row"><p class="field-label">Organização</p><p class="field-value">Empresa Exemplo</p></div>
+              <div class="summary-row"><p class="field-label">Situação do seu vínculo</p><span class="status-good">Seu vínculo: Ativo</span></div>
+            </div>
+            <div class="help"><strong>Dados fictícios.</strong> Nenhuma identidade, organização ou membership foi verificada. Isto não representa autorização de acesso.</div>
+          </div>
+          <div class="card"><h2>Escopo mínimo</h2><div class="info-list">
+            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Somente nome de apresentação da organização.</span></div>
+            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Somente indicação ilustrativa do vínculo próprio.</span></div>
+            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Sem lista de pessoas, CNPJ, plano, faturas, leads ou dados de contato.</span></div>
+          </div></div>
+        </div>
+      </section>
+      <section data-screen="states" aria-label="Estados da tela" hidden>
+        <p class="lead">Os controles abaixo alternam somente textos de demonstração. Nenhum deles consulta, concede ou revoga acesso real.</p>
+        <div class="card preview-layout">
+          <div><h2>Visualização dos estados</h2><p class="caption">Escolha um estado visual fictício para observar como a tela pode responder.</p></div>
+          <div class="switcher" role="group" aria-label="Selecionar estado ilustrativo">
+            <button type="button" class="state-button" data-demo-state="loading" aria-pressed="true">UI-01 · Carregando</button>
+            <button type="button" class="state-button" data-demo-state="sample" aria-pressed="false">UI-02 · Exemplo visual</button>
+            <button type="button" class="state-button" data-demo-state="denied" aria-pressed="false">UI-03 · Indisponível</button>
+            <button type="button" class="state-button" data-demo-state="revalidate" aria-pressed="false">UI-04 · Revalidação</button>
+          </div>
+          <div id="demo-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
+          <p class="caption">O estado “exemplo visual” não comprova autorização, autenticação, vínculo ou estado de contrato. Todos os resultados são simulados.</p>
+        </div>
+      </section>
+      <section data-screen="about" aria-label="Sobre o protótipo" hidden>
+        <p class="lead">Demonstração local e autocontida para avaliar organização visual, navegação e apresentação dos estados da primeira tela.</p>
+        <div class="two-col">
+          <div class="card"><h2>O que esta versão contém</h2><div class="info-list">
+            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Quatro telas estáticas e acessíveis por navegação.</span></div>
+            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Exemplo de nome de organização e vínculo ativo.</span></div>
+            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Quatro estados alternáveis apenas para revisão visual.</span></div>
+            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Arquivos locais, sem bibliotecas ou imagens remotas.</span></div>
+          </div></div>
+          <div class="card"><h2>O que esta versão não faz</h2><p class="soft">Não contém login, autenticação, gestão de usuários, acesso a bancos, APIs, sessões, permissões, integrações com Portal, processamento de leads ou gravação de dados.</p><div class="help">O CRM funcional exige validações separadas de IAM, multiempresa, segurança, privacidade e homologação. Este protótipo não substitui esses requisitos.</div></div>
+        </div>
+      </section>
+      <p class="disclaimer">S01-PROT-01-F1 · Material de revisão de UX. Todo o conteúdo de demonstração é fictício; não há funcionalidade comercial habilitada.</p>
+      <footer class="bottom"><span>Imagine CRM · Protótipo offline</span><span>Sem dados reais · Sem integração · Sem implantação</span></footer>
+    </div>
+  </main>
+</div>
+<script>
+(function(){
+  'use strict';
+  const names = Object.freeze({welcome:'Boas-vindas',organization:'Minha organização',states:'Estados da tela',about:'Sobre o protótipo'});
+  const screens = Array.from(document.querySelectorAll('[data-screen]'));
+  const nav = Array.from(document.querySelectorAll('[data-page]'));
+  const heading = document.getElementById('page-title');
+  const preview = document.getElementById('demo-preview');
+  const stateButtons = Array.from(document.querySelectorAll('[data-demo-state]'));
+
+  function navigate(page, moveFocus) {
+    if (!Object.prototype.hasOwnProperty.call(names,page)) return;
+    screens.forEach(function(node){node.hidden = node.getAttribute('data-screen') !== page;});
+    nav.forEach(function(node){
+      if (node.getAttribute('data-page') === page) node.setAttribute('aria-current','page');
+      else node.removeAttribute('aria-current');
+    });
+    heading.textContent=names[page];
+    if (moveFocus) heading.focus();
+  }
+
+  function addText(target,tag,text,className){
+    const el=document.createElement(tag);
+    if(className) el.className=className;
+    el.textContent=text;
+    target.appendChild(el);
+    return el;
+  }
+  function showState(name){
+    const states=['loading','sample','denied','revalidate'];
+    if(!states.includes(name)) return;
+    stateButtons.forEach(function(node){node.setAttribute('aria-pressed',String(node.getAttribute('data-demo-state') === name));});
+    preview.replaceChildren();
+    const inner=document.createElement('div');
+    if(name==='loading'){
+      addText(inner,'h3','Verificando acesso…');
+      addText(inner,'p','Exemplo de carregamento visual. Nenhuma verificação foi executada.');
+    } else if(name==='sample'){
+      addText(inner,'p','EXEMPLO VISUAL — DADOS FICTÍCIOS','state-note');
+      addText(inner,'h3','Empresa Exemplo');
+      addText(inner,'p','Seu vínculo: Ativo');
+      addText(inner,'p','Nenhum acesso foi concedido ou verificado.');
+    } else if(name==='denied'){
+      addText(inner,'h3','Informações indisponíveis');
+      addText(inner,'p','Não foi possível apresentar estas informações.');
+    } else {
+      addText(inner,'h3','Revalidação necessária');
+      addText(inner,'p','Informações precisam ser verificadas novamente.');
+    }
+    preview.appendChild(inner);
+  }
+
+  nav.forEach(function(node){node.addEventListener('click',function(){navigate(node.getAttribute('data-page'),true);});});
+  document.querySelectorAll('[data-go]').forEach(function(node){node.addEventListener('click',function(){navigate(node.getAttribute('data-go'),true);});});
+  stateButtons.forEach(function(node){node.addEventListener('click',function(){showState(node.getAttribute('data-demo-state'));});});
+  navigate('welcome',false);
+  showState('loading');
+})();
+</script>
+</body>
+</html>
