@@ -54,6 +54,20 @@
     .info-list{display:grid;gap:13px}.info-item{display:flex;gap:12px;color:#43576c;font-size:14px}.check{color:#168478;font-weight:800}
     .disclaimer{margin-top:25px;font-size:12px;color:#73869b;max-width:710px}
     .bottom{margin-top:25px;color:#8b9bad;font-size:12px;display:flex;gap:14px;flex-wrap:wrap}
+    .demo-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.demo-metrics .metric{margin:0 0 8px}
+    .table-scroll{overflow:auto;max-width:100%;border:1px solid #e3e9f0;border-radius:14px;margin:20px 0}
+    .demo-table{width:100%;min-width:620px;border-collapse:collapse;text-align:left;font-size:14px}
+    .demo-table th{font-size:12px;color:#6c8192;background:#f3f8fa;font-weight:800}
+    .demo-table td,.demo-table th{padding:15px 16px;border-bottom:1px solid #e7edf2;white-space:nowrap}
+    .demo-table tbody tr:last-child td{border-bottom:0}
+    .label-soft{display:inline-flex;border-radius:999px;padding:5px 11px;background:#e8f3f4;color:#27636c;font-weight:750;font-size:12px}
+    .demo-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:16px}
+    .demo-column{padding:18px;background:#ecf2f5;border-radius:16px;border:1px solid #dfe9ec;min-width:0}
+    .demo-column h2{font-size:16px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0}
+    .count{background:white;border:1px solid #dce5e9;border-radius:30px;font-size:12px;padding:3px 9px}
+    .demo-column .caption{margin:4px 0 18px}.demo-ticket{background:white;border:1px solid #dde6ef;padding:16px;border-radius:12px;margin:10px 0;display:grid;gap:6px;box-shadow:0 4px 10px rgba(16,42,72,.025)}
+    .demo-ticket strong{font-size:14px}.demo-ticket span{font-size:12px;color:#71869a}
+    @media(max-width:850px){.demo-metrics,.demo-board{grid-template-columns:1fr}}
     @media(max-width:900px){.shell{grid-template-columns:1fr}.sidebar{padding:14px 20px;gap:12px}.brand{padding:0}.side-label,.side-note{display:none}.side-nav{display:flex;overflow-x:auto;padding:2px 0 4px;gap:6px}.nav-button{white-space:nowrap;width:auto;padding:9px 11px}.topbar{min-height:66px}.two-col{grid-template-columns:1fr}}
     @media(max-width:420px){.topbar{align-items:flex-start;flex-direction:column}.pill{font-size:10px}.content{padding:23px 17px}.card{border-radius:14px}.hero{border-radius:16px}.nav-button{font-size:12px}.field-value{font-size:22px}.state-surface{padding:18px}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
@@ -68,6 +82,9 @@
       <nav class="side-nav" aria-label="Telas de demonstração">
         <button class="nav-button" type="button" data-page="welcome" aria-current="page"><span class="dot" aria-hidden="true"></span>Boas-vindas</button>
         <button class="nav-button" type="button" data-page="organization"><span class="dot" aria-hidden="true"></span>Minha organização</button>
+        <button class="nav-button" type="button" data-page="dashboard"><span class="dot" aria-hidden="true"></span>Visão geral</button>
+        <button class="nav-button" type="button" data-page="leads"><span class="dot" aria-hidden="true"></span>Leads fictícios</button>
+        <button class="nav-button" type="button" data-page="pipeline"><span class="dot" aria-hidden="true"></span>Funil ilustrativo</button>
         <button class="nav-button" type="button" data-page="states"><span class="dot" aria-hidden="true"></span>Estados da tela</button>
         <button class="nav-button" type="button" data-page="about"><span class="dot" aria-hidden="true"></span>Sobre o protótipo</button>
       </nav>
@@ -81,7 +98,7 @@
         <div><p class="eyebrow">S01-PROT-01 · Experiência visual</p><h1 id="page-title" tabindex="-1">Boas-vindas</h1></div>
       </div>
       <section data-screen="welcome" aria-label="Boas-vindas">
-        <p class="lead">Conheça uma amostra da navegação do Imagine CRM. Este ambiente é exclusivamente visual e não representa uma conta real.</p>
+        <p class="lead">Conheça uma amostra da navegação do Imagine CRM, incluindo indicadores, leads e funil de demonstração. Este ambiente não representa uma conta real.</p>
         <div class="hero"><p class="eyebrow">Primeiro contato</p><h2>Uma visão simples para o que vem pela frente.</h2><p>Explore o resumo da organização e os estados que a interface poderá apresentar, sem acessar informações reais.</p><button class="action" type="button" data-go="organization">Explorar minha organização</button></div>
         <div class="two-col">
           <div class="card"><h2>Como explorar</h2>
@@ -89,7 +106,7 @@
             <div class="step"><span class="number" aria-hidden="true">2</span><div><h3>Estados da tela</h3><p>Alterne entre carregamento, resumo demonstrativo, indisponibilidade e revalidação.</p></div></div>
             <div class="step"><span class="number" aria-hidden="true">3</span><div><h3>Sobre o protótipo</h3><p>Conheça os limites desta demonstração offline.</p></div></div>
           </div>
-          <div class="card"><p class="field-label">Objetivo deste lote</p><div class="metric">04 <span style="font-size:16px;font-weight:700">telas</span></div><p class="soft">Apenas navegação e experiência visual com dados fixos.</p><div class="help">Nenhuma política de acesso ou conexão com a aplicação CRM foi implementada nesta demonstração.</div></div>
+          <div class="card"><p class="field-label">Objetivo deste lote</p><div class="metric">07 <span style="font-size:16px;font-weight:700">telas</span></div><p class="soft">Apenas navegação e experiência visual com dados fixos.</p><div class="help">Nenhuma política de acesso ou conexão com a aplicação CRM foi implementada nesta demonstração.</div></div>
         </div>
       </section>
       <section data-screen="organization" aria-label="Minha organização" hidden>
@@ -110,6 +127,52 @@
           </div></div>
         </div>
       </section>
+
+      <section data-screen="dashboard" aria-label="Visão geral fictícia" hidden>
+        <p class="lead">Uma representação dos futuros indicadores do CRM. Números fixos para revisão de experiência; nenhuma operação foi realizada.</p>
+        <div class="demo-metrics" aria-label="Indicadores exclusivamente fictícios">
+          <div class="card"><p class="field-label">Leads demonstrativos</p><p class="metric">04</p><p class="caption">Registros inventados para esta interface</p></div>
+          <div class="card"><p class="field-label">Etapas ilustrativas</p><p class="metric">03</p><p class="caption">Não representam um funil configurado</p></div>
+          <div class="card"><p class="field-label">Dados de clientes</p><p class="metric">00</p><p class="caption">Nenhum acesso real ou integração</p></div>
+        </div>
+        <div class="two-col" style="margin-top:18px">
+          <div class="card"><p class="eyebrow">Acompanhamento comercial — demonstração</p><h2>Do primeiro contato à qualificação</h2><p class="soft">Explore uma tabela sintética de leads e visualize sua organização em colunas. Não há botão de salvar, edição ou envio de mensagem.</p><button class="action" type="button" data-go="leads">Ver leads fictícios</button></div>
+          <div class="card"><h2>O que vem depois</h2><p class="soft">A implementação real dependerá de autenticação, isolamento por empresa, definição dos direitos por ação e campo, privacidade e testes de segurança.</p><div class="help">Esta visão não utiliza qualquer informação de empresa ou cliente.</div></div>
+        </div>
+      </section>
+      <section data-screen="leads" aria-label="Leads fictícios" hidden>
+        <p class="lead">Tabela somente para demonstração de disposição visual. Identificadores, etapas, pontuações e classificações são inventados.</p>
+        <div class="card">
+          <div class="heading-row"><div><p class="eyebrow">Dados sintéticos</p><h2>Leads de exemplo</h2></div><span class="pill">SEM DADOS REAIS</span></div>
+          <div class="table-scroll" tabindex="0" aria-label="Tabela de leads fictícios, role para navegar horizontalmente se necessário">
+            <table class="demo-table"><thead><tr><th scope="col">Identificação fictícia</th><th scope="col">Etapa visual</th><th scope="col">Pontuação exemplo</th><th scope="col">Faixa descritiva</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Lead Exemplo A</strong></td><td>Entrada</td><td>30</td><td><span class="label-soft">Frio</span></td></tr>
+              <tr><td><strong>Lead Exemplo B</strong></td><td>Em contato</td><td>55</td><td><span class="label-soft">Morno</span></td></tr>
+              <tr><td><strong>Lead Exemplo C</strong></td><td>Qualificação</td><td>85</td><td><span class="label-soft">Quente</span></td></tr>
+              <tr><td><strong>Lead Exemplo D</strong></td><td>Entrada</td><td>70</td><td><span class="label-soft">Quente</span></td></tr>
+            </tbody></table>
+          </div>
+          <div class="help">Pontuação e faixa são valores estáticos de exemplo; não existe algoritmo executando sobre pessoas nem ligação com o componente PHP em desenvolvimento.</div>
+          <button class="action" type="button" data-go="pipeline">Visualizar funil ilustrativo</button>
+        </div>
+      </section>
+      <section data-screen="pipeline" aria-label="Funil ilustrativo" hidden>
+        <p class="lead">Três colunas meramente visuais, sem possibilidade de mover ou alterar registros. Uma etapa exibida não comprova evento comercial.</p>
+        <div class="demo-board" aria-label="Colunas fictícias do funil">
+          <div class="demo-column"><h2>Entrada <span class="count">2</span></h2><p class="caption">Exemplos sem captura real</p>
+            <div class="demo-ticket"><strong>Lead Exemplo A</strong><span>30 pontos · Frio</span></div>
+            <div class="demo-ticket"><strong>Lead Exemplo D</strong><span>70 pontos · Quente</span></div>
+          </div>
+          <div class="demo-column"><h2>Em contato <span class="count">1</span></h2><p class="caption">Contato não realizado</p>
+            <div class="demo-ticket"><strong>Lead Exemplo B</strong><span>55 pontos · Morno</span></div>
+          </div>
+          <div class="demo-column"><h2>Qualificação <span class="count">1</span></h2><p class="caption">Estado não persistido</p>
+            <div class="demo-ticket"><strong>Lead Exemplo C</strong><span>85 pontos · Quente</span></div>
+          </div>
+        </div>
+        <div class="help">Demonstração visual: nenhuma venda, proposta, contato ou qualificação efetiva foi registrada.</div>
+      </section>
       <section data-screen="states" aria-label="Estados da tela" hidden>
         <p class="lead">Os controles abaixo alternam somente textos de demonstração. Nenhum deles consulta, concede ou revoga acesso real.</p>
         <div class="card preview-layout">
@@ -128,9 +191,9 @@
         <p class="lead">Demonstração local e autocontida para avaliar organização visual, navegação e apresentação dos estados da primeira tela.</p>
         <div class="two-col">
           <div class="card"><h2>O que esta versão contém</h2><div class="info-list">
-            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Quatro telas estáticas e acessíveis por navegação.</span></div>
+            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Sete telas estáticas e acessíveis por navegação, incluindo leads e funil fictícios.</span></div>
             <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Exemplo de nome de organização e vínculo ativo.</span></div>
-            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Quatro estados alternáveis apenas para revisão visual.</span></div>
+            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Quatro estados alternáveis apenas para revisão visual, sem ações comerciais reais.</span></div>
             <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Arquivos locais, sem bibliotecas ou imagens remotas.</span></div>
           </div></div>
           <div class="card"><h2>O que esta versão não faz</h2><p class="soft">Não contém login, autenticação, gestão de usuários, acesso a bancos, APIs, sessões, permissões, integrações com Portal, processamento de leads ou gravação de dados.</p><div class="help">O CRM funcional exige validações separadas de IAM, multiempresa, segurança, privacidade e homologação. Este protótipo não substitui esses requisitos.</div></div>
@@ -144,7 +207,7 @@
 <script>
 (function(){
   'use strict';
-  const names = Object.freeze({welcome:'Boas-vindas',organization:'Minha organização',states:'Estados da tela',about:'Sobre o protótipo'});
+  const names = Object.freeze({welcome:'Boas-vindas',organization:'Minha organização',dashboard:'Visão geral',leads:'Leads fictícios',pipeline:'Funil ilustrativo',states:'Estados da tela',about:'Sobre o protótipo'});
   const screens = Array.from(document.querySelectorAll('[data-screen]'));
   const nav = Array.from(document.querySelectorAll('[data-page]'));
   const heading = document.getElementById('page-title');
