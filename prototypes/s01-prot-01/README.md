@@ -1,11 +1,11 @@
 # S01-PROT-01-F1 — Protótipo navegável offline do Imagine CRM
 
-**Natureza:** demonstração estática de UX com conteúdo 100% fictício, sem ambiente de clientes, integração ou autorização funcional. A expansão F2 acrescentou três telas de negócio; a extensão F3-04 inclui uma oitava tela ilustrativa de prévia de importação.
+**Natureza:** demonstração estática de UX com conteúdo 100% fictício, sem ambiente de clientes, integração ou autorização funcional. A expansão F2 acrescentou três telas de negócio; a extensão F3-04 incluiu a oitava tela ilustrativa de importação e a F3-10 acrescenta uma nona tela de monitoramento interativo sintético.
 
 ## Como executar
 
 1. Baixe a pasta `prototypes/s01-prot-01/` ou abra o arquivo `index.html` diretamente no navegador (protocolo `file://`).
-2. Use o menu **Boas-vindas**, **Minha organização**, **Visão geral**, **Leads fictícios**, **Funil ilustrativo**, **Prévia de importação**, **Estados da tela**, **Sobre o protótipo**.
+2. Use o menu **Boas-vindas**, **Minha organização**, **Visão geral**, **Leads fictícios**, **Funil ilustrativo**, **Monitoramento de leads**, **Prévia de importação**, **Estados da tela**, **Sobre o protótipo**.
 3. Em **Estados da tela**, experimente as opções UI-01/02/03/04, que trocam **somente texto simulado**.
 
 **Não é necessário instalar pacotes ou iniciar servidor**. A demonstração foi construída em um único HTML, com CSS e JS embutidos; há uma política CSP local de bloqueio de conexões, sem recursos remotos.
@@ -38,11 +38,21 @@
 - O aviso `PROTÓTIPO — DADOS FICTÍCIOS` permanece em toda a navegação e `canImport()` no laboratório PHP F3-03 sempre retorna falso.
 - A revisão visual em navegador real e a validação de acessibilidade continuam pendentes; testes estáticos de UI não substituem a homologação de importação IN-118/INT-08.
 
+## F3-10 — Monitoramento interativo de leads fictícios
+
+A nona tela **Monitoramento de leads** permite alternar entre quatro narrativas fixas de UX: recebimento alegado, contingência, confirmação incerta e conflito no vencimento. Os botões alteram apenas um painel local, usando `textContent`; nada é enviado ou salvo.
+
+- Nenhuma linha resulta de dados reais das APIs, filas ou CRM. Contadores **04 eventos / 00 APIs conectadas / 00 entregas comprovadas** são valores de demonstração.
+- A interface **não executa** `SyntheticLeadReconciliationInspector`, não acessa o backend Laravel e não comprova recebimento, persistência, autorização ou entrega.
+- Nenhum reenvio, reconciliação, exclusão, alerta, notificação, importação, publicação ou troca de vínculo é executado.
+- As mensagens vêm de um objeto local imutável, sem conteúdo fornecido pelo usuário e sem exibição de IDs de cliente.
+- Há controles com `aria-pressed` e painel `aria-live`; a revisão de teclado, layout em 320px e acessibilidade com navegador real continua pendente.
+
 ## Critérios de revisão UX-01..UX-08
 
 | Critério | Verificação proposta | Observação |
 | --- | --- | --- |
-| UX-01 | Oito seções alternadas com botões de navegação, sem rotas reais. | Revisão visual manual necessária. |
+| UX-01 | Nove seções alternadas com botões de navegação, sem rotas reais. | Revisão visual manual necessária. |
 | UX-02 | Aviso permanente `PROTÓTIPO — DADOS FICTÍCIOS`. | Presente no cabeçalho. |
 | UX-03 | Apenas nome e vínculo próprios **fictícios** em `Minha organização`. | Não expor planos/usuários/leads. |
 | UX-04 | UI-03/UI-04 removem o conteúdo do painel de demonstração antes de apresentar a mensagem neutra. | Validar por navegação. |
