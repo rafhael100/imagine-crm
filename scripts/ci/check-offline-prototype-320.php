@@ -107,6 +107,17 @@ $driver = <<<'HTML'
       check(doc.getElementById('lead-filter-summary').textContent.includes('2 de 4'),'filter status announces count');
       stageButtons.find(node=>node.dataset.leadStage==='all').click();
       check(count()===4,'all synthetic entries restored');
+      // Fixture-only score ordering and stage filtering must coexist at 320px.
+      const sortButtons=Array.from(doc.querySelectorAll('#screen-leads [data-lead-sort]'));
+      const order=()=>Array.from(doc.querySelectorAll('#screen-leads tbody tr')).map(node=>node.querySelector('strong').textContent);
+      check(sortButtons.length===3,'three accessible local sort buttons');
+      sortButtons.find(node=>node.dataset.leadSort==='high').click();
+      check(JSON.stringify(order())===JSON.stringify(['Lead Exemplo C','Lead Exemplo D','Lead Exemplo B','Lead Exemplo A']),'descending scores in 320px');
+      stageButtons.find(node=>node.dataset.leadStage==='entrada').click();
+      check(count()===2,'filtered count preserved after ordering');
+      stageButtons.find(node=>node.dataset.leadStage==='all').click();
+      sortButtons.find(node=>node.dataset.leadSort==='original').click();
+      check(JSON.stringify(order())===JSON.stringify(['Lead Exemplo A','Lead Exemplo B','Lead Exemplo C','Lead Exemplo D']),'original order restored in 320px');
       check(doc.documentElement.scrollWidth<=320,'no horizontal page overflow on lead screen');
 
       done=true;
