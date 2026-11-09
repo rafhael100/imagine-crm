@@ -148,19 +148,26 @@
         </div>
       </section>
       <section id="screen-leads" data-screen="leads" aria-label="Leads fictícios" hidden>
-        <p class="lead">Tabela somente para demonstração de disposição visual. Identificadores, etapas, pontuações e classificações são inventados.</p>
+        <p class="lead">Tabela fictícia com filtro visual por etapa. Identificadores, etapas, pontuações e classificações são inventados; nenhuma alteração ou registro é realizado.</p>
         <div class="card">
           <div class="heading-row"><div><p class="eyebrow">Dados sintéticos</p><h2>Leads de exemplo</h2></div><span class="pill">SEM DADOS REAIS</span></div>
+          <div class="switcher" role="group" aria-label="Filtrar leads fictícios por etapa">
+            <button type="button" class="state-button" data-lead-stage="all" aria-pressed="true">Todos</button>
+            <button type="button" class="state-button" data-lead-stage="entrada" aria-pressed="false">Entrada</button>
+            <button type="button" class="state-button" data-lead-stage="em-contato" aria-pressed="false">Em contato</button>
+            <button type="button" class="state-button" data-lead-stage="qualificacao" aria-pressed="false">Qualificação</button>
+          </div>
+          <p id="lead-filter-summary" class="caption" role="status" aria-live="polite" aria-atomic="true">Mostrando 4 de 4 leads fictícios.</p>
           <div class="table-scroll" tabindex="0" aria-label="Tabela de leads fictícios, role para navegar horizontalmente se necessário">
             <table class="demo-table"><thead><tr><th scope="col">Identificação fictícia</th><th scope="col">Etapa visual</th><th scope="col">Pontuação exemplo</th><th scope="col">Faixa descritiva</th></tr></thead>
             <tbody>
-              <tr><td><strong>Lead Exemplo A</strong></td><td>Entrada</td><td>30</td><td><span class="label-soft">Frio</span></td></tr>
-              <tr><td><strong>Lead Exemplo B</strong></td><td>Em contato</td><td>55</td><td><span class="label-soft">Morno</span></td></tr>
-              <tr><td><strong>Lead Exemplo C</strong></td><td>Qualificação</td><td>85</td><td><span class="label-soft">Quente</span></td></tr>
-              <tr><td><strong>Lead Exemplo D</strong></td><td>Entrada</td><td>70</td><td><span class="label-soft">Quente</span></td></tr>
+              <tr data-lead-fixture-stage="entrada"><td><strong>Lead Exemplo A</strong></td><td>Entrada</td><td>30</td><td><span class="label-soft">Frio</span></td></tr>
+              <tr data-lead-fixture-stage="em-contato"><td><strong>Lead Exemplo B</strong></td><td>Em contato</td><td>55</td><td><span class="label-soft">Morno</span></td></tr>
+              <tr data-lead-fixture-stage="qualificacao"><td><strong>Lead Exemplo C</strong></td><td>Qualificação</td><td>85</td><td><span class="label-soft">Quente</span></td></tr>
+              <tr data-lead-fixture-stage="entrada"><td><strong>Lead Exemplo D</strong></td><td>Entrada</td><td>70</td><td><span class="label-soft">Quente</span></td></tr>
             </tbody></table>
           </div>
-          <div class="help">Pontuação e faixa são valores estáticos de exemplo; não existe algoritmo executando sobre pessoas nem ligação com o componente PHP em desenvolvimento.</div>
+          <div class="help">Filtro e contagens são somente uma simulação local sobre quatro exemplos fictícios. Pontuação e faixa são valores estáticos; não existe algoritmo sobre pessoas nem ligação com o PHP em desenvolvimento.</div>
           <button class="action" type="button" data-go="pipeline">Visualizar funil ilustrativo</button>
         </div>
       </section>
@@ -264,6 +271,9 @@
   const stateButtons = Array.from(document.querySelectorAll('[data-demo-state]'));
   const monitorButtons = Array.from(document.querySelectorAll('[data-monitor-scenario]'));
   const monitorPreview = document.getElementById('monitor-preview');
+  const leadFilterButtons = Array.from(document.querySelectorAll('[data-lead-stage]'));
+  const leadFixtureRows = Array.from(document.querySelectorAll('#screen-leads [data-lead-fixture-stage]'));
+  const leadFilterSummary = document.getElementById('lead-filter-summary');
 
   function navigate(page, moveFocus) {
     if (!Object.prototype.hasOwnProperty.call(names,page)) return;
@@ -305,6 +315,23 @@
       addText(inner,'p','Informações precisam ser verificadas novamente.');
     }
     preview.appendChild(inner);
+  }
+
+  // Offline-only view filter. No API, user input, persistence, mutation of a
+  // lead or permission decision. Row fixtures are hard-coded in the HTML.
+  function showLeadStage(stage) {
+    const stages=['all','entrada','em-contato','qualificacao'];
+    if (!stages.includes(stage)) return;
+    leadFilterButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(node.getAttribute('data-lead-stage')===stage));
+    });
+    let displayed=0;
+    leadFixtureRows.forEach(function(node){
+      const matches=stage==='all'||node.getAttribute('data-lead-fixture-stage')===stage;
+      node.hidden=!matches;
+      if(matches) displayed++;
+    });
+    leadFilterSummary.textContent='Mostrando '+displayed+' de '+leadFixtureRows.length+' leads fictícios.';
   }
 
   function showMonitorScenario(code) {
@@ -363,7 +390,9 @@
   document.querySelectorAll('[data-go]').forEach(function(node){node.addEventListener('click',function(){navigate(node.getAttribute('data-go'),true);});});
   stateButtons.forEach(function(node){node.addEventListener('click',function(){showState(node.getAttribute('data-demo-state'));});});
   monitorButtons.forEach(function(node){node.addEventListener('click',function(){showMonitorScenario(node.getAttribute('data-monitor-scenario'));});});
+  leadFilterButtons.forEach(function(node){node.addEventListener('click',function(){showLeadStage(node.getAttribute('data-lead-stage'));});});
   navigate('welcome',false);
+  showLeadStage('all');
   showState('loading');
   showMonitorScenario('received');
 })();
