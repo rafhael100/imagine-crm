@@ -106,6 +106,24 @@ $testScript = <<<'JS'
     check(document.querySelectorAll('[data-lead-sort][aria-pressed="true"]').length===1,'one selected sort');
     check(document.querySelectorAll('[data-lead-stage][aria-pressed="true"]').length===1,'one pressed filter');
 
+    // UX-F3-29: stage + temperature are independent, intersected fake filters.
+    const temperatureButtons=Array.from(document.querySelectorAll('#screen-leads [data-lead-temperature]'));
+    check(temperatureButtons.length===4,'four static temperature filter buttons');
+    check(document.querySelectorAll('[data-lead-temperature][aria-pressed="true"]').length===1,'one temperature selected');
+    temperatureButtons.find(x=>x.dataset.leadTemperature==='hot').click();
+    check(visible()===2,'two fictional hot leads');
+    filterButtons.find(x=>x.dataset.leadStage==='entrada').click();
+    check(visible()===1&&!rows.find(x=>x.dataset.leadFixtureTemperature==='hot'&&x.dataset.leadFixtureStage==='entrada').hidden,'temperature and stage intersection');
+    filterButtons.find(x=>x.dataset.leadStage==='qualificacao').click();
+    temperatureButtons.find(x=>x.dataset.leadTemperature==='warm').click();
+    check(visible()===0,'conflicting filters yield no invented rows');
+    check(document.getElementById('lead-filter-summary').textContent.includes('0 de 4'),'empty intersection announced');
+    filterButtons.find(x=>x.dataset.leadStage==='all').click();
+    check(visible()===1,'temperature persists when stage resets');
+    temperatureButtons.find(x=>x.dataset.leadTemperature==='all').click();
+    check(visible()===4,'all synthetic records restored');
+    check(document.querySelectorAll('[data-lead-temperature][aria-pressed="true"]').length===1,'one selected temperature after reset');
+
     // UX-F3-26: fixture review follows sorting and fails closed on hidden rows.
     const detailButtons=Array.from(document.querySelectorAll('#screen-leads [data-lead-detail]'));
     const detailPanel=document.getElementById('lead-detail-preview');
