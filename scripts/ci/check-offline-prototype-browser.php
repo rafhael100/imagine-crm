@@ -7,6 +7,7 @@ declare(strict_types=1);
 // Fail CI if Google Chrome/Chromium is unavailable; do not silently fake QA.
 
 require dirname(__DIR__, 2).'/vendor/autoload.php';
+require __DIR__.'/BrowserSmokeRunner.php';
 
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -127,36 +128,15 @@ if (file_put_contents($temp, str_replace('</body>', '<script>'.$testScript.'</sc
 }
 
 try {
-    $url = 'file://'.$temp;
-    $process = new Process([
-        $browser, '--headless', '--disable-gpu', '--disable-extensions',
-        '--disable-background-networking', '--no-first-run',
-        '--no-default-browser-check', '--window-size=520,780',
-        '--virtual-time-budget=1500', '--dump-dom', $url,
-    ]);
-    $process->setTimeout(30);
-    $process->run();
-
-    $output = $process->getOutput();
-    // Match the OUTPUT ELEMENT, not an incidental string in script source.
-    $match = [];
-    $found = preg_match(
-        '/<output\b[^>]*data-imagine-browser-smoke="(PASS|FAIL)"[^>]*>(.*?)<\/output>/s',
-        $output,
-        $match,
-    ) === 1;
-
-    if (!$process->isSuccessful() || !$found || $match[1] !== 'PASS') {
-        // Synthetic demo only. No user fields or secrets in this HTML.
-        $reason = $found
-            ? html_entity_decode(strip_tags($match[2]), ENT_QUOTES | ENT_HTML5, 'UTF-8')
-            : 'no output element from executed test script';
-        $reason = mb_substr($reason, 0, 240);
-        $stderr = mb_substr(trim($process->getErrorOutput()), -420);
-        fwrite(STDERR, 'UX-F3-12 browser failure: '.$reason
-            .' (exit '.var_export($process->getExitCode(), true)
-            .'; DOM bytes '.strlen($output)
-            .'; Chrome stderr tail: '.$stderr.')'.PHP_EOL);
+    $result = BrowserSmokeRunner::run(
+        $browser,
+        ['--window-size=520,780', '--virtual-time-budget=1500'],
+        'file://'.$temp,
+        'data-imagine-browser-smoke',
+    );
+    if (!$result['passed']) {
+        fwrite(STDERR, 'UX-F3-12 browser failure: '.$result['reason']
+            .' (attempts '.$result['attempts'].')'.PHP_EOL);
         exit(1);
     }
 

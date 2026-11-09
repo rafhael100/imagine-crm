@@ -7,6 +7,7 @@ declare(strict_types=1);
 // No web server, network requests, credentials, real data or deployment.
 
 require dirname(__DIR__, 2).'/vendor/autoload.php';
+require __DIR__.'/BrowserSmokeRunner.php';
 
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -128,24 +129,15 @@ if (file_put_contents($temp, $driver) === false) {
 }
 
 try {
-    $process = new Process([
-        $browser, '--headless', '--disable-gpu', '--disable-extensions',
-        '--disable-background-networking', '--no-first-run',
-        '--no-default-browser-check', '--window-size=600,800',
-        '--virtual-time-budget=3000', '--dump-dom', 'file://'.$temp,
-    ]);
-    $process->setTimeout(30);
-    $process->run();
-
-    $output = $process->getOutput();
-    $match = [];
-    $found = preg_match('/<output\b[^>]*data-imagine-320="(PASS|FAIL)"[^>]*>(.*?)<\/output>/s', $output, $match) === 1;
-    if (!$process->isSuccessful() || !$found || $match[1] !== 'PASS') {
-        $message = $found
-            ? html_entity_decode(strip_tags($match[2]), ENT_QUOTES | ENT_HTML5, 'UTF-8')
-            : 'no completed 320px iframe test';
-        fwrite(STDERR, 'UX-F3-13 browser failure: '.mb_substr($message, 0, 290)
-            .' (exit '.var_export($process->getExitCode(), true).')'.PHP_EOL);
+    $result = BrowserSmokeRunner::run(
+        $browser,
+        ['--window-size=600,800', '--virtual-time-budget=3000'],
+        'file://'.$temp,
+        'data-imagine-320',
+    );
+    if (!$result['passed']) {
+        fwrite(STDERR, 'UX-F3-13 browser failure: '.$result['reason']
+            .' (attempts '.$result['attempts'].')'.PHP_EOL);
         exit(1);
     }
 

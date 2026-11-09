@@ -90,6 +90,20 @@ As quatro linhas, etapas e pontuações continuam **fixas e inventadas**. O cont
 
 **Testes:** `OfflinePrototypeLeadFilterTest` valida estrutura DOM, atributos acessíveis, contagens e ausência de transporte/armazenamento; os scripts Chromium 520px e 320px verificam cliques, contagens por filtro, restauração de “Todos” e ausência de overflow. A validação automatizada não substitui teste humano com leitor de tela, toque e auditoria WCAG.
 
+## UX-CI-01 — Recuperação de inicialização do Chromium na CI (09/11/2026)
+
+Em uma execução **push pós-merge** do [PR #65](https://github.com/rafhael100/imagine-crm/pull/65), as 727 verificações Laravel passaram, mas a etapa de Chromium de 520 px ultrapassou o timeout de 30 segundos e produziu uma exceção PHP não tratada ([F0 run #42611332492](https://github.com/rafhael100/imagine-crm/actions/runs/42611332492)); PostgreSQL/RLS passou. Isso é um incidente **da execução do navegador** e não evidência de falha da regra de leads ou das quotas.
+
+Para tornar o diagnóstico e execução robustos sem mascarar bugs de interface, ambos os scripts de browser usam `BrowserSmokeRunner`:
+
+- cada execução recebe **perfil de Chrome temporário e exclusivo**, com `--disable-dev-shm-usage` para ambiente CI;
+- caso o processo **trave, expire ou não produza marcador executado**, é permitida **uma única nova tentativa** com perfil distinto; se ambas falharem, o workflow falha;
+- se o **DOM executado sinalizar `FAIL`**, o resultado é **reprovação imediata**, sem repetição para esconder erro funcional;
+- `PASS` só é aceito quando o navegador conclui com código de sucesso e a saída contém o elemento `<output>` efetivamente renderizado com marcador `PASS`, **nunca** porque a string aparece no código-fonte;
+- perfis temporários são removidos em `finally`, sem escrever dados de clientes ou alterar o protótipo.
+
+**Escopo:** resiliência da CI offline exclusivamente; **não** é monitoramento permanente, homologação UX ou correção de problemas de negócio. Execuções Chromium 520/320, PHP, PostgreSQL/RLS e preflight descartável devem continuar verdes. Sem nova dependência, serviço pago, API, banco funcional, URL pública, VPS ou produção.
+
 ## Critérios de revisão UX-01..UX-08
 
 | Critério | Verificação proposta | Observação |
