@@ -38,7 +38,7 @@
 - [UX-F3-11 pré-merge](https://github.com/rafhael100/imagine-crm/actions/runs/42574575588): **699 passed / 77 skipped**, [PostgreSQL](https://github.com/rafhael100/imagine-crm/actions/runs/42574575564) **775 passed / 1 skipped**.
 - [UX-F3-12 pré-merge](https://github.com/rafhael100/imagine-crm/actions/runs/42576254355): Chromium real PASS em 520 px após corrigir overflow de 1685 px; [PostgreSQL](https://github.com/rafhael100/imagine-crm/actions/runs/42576254354) SUCCESS.
 - [UX-F3-13 pré-merge](https://github.com/rafhael100/imagine-crm/actions/runs/42577035221): Chromium real PASS em viewport CSS **320 px** e 520 px; Laravel **699 passed / 77 skipped**, [PostgreSQL](https://github.com/rafhael100/imagine-crm/actions/runs/42577035284) **775 passed / 1 skipped**. Sem screenshot/auditoria WCAG.
-- Os testes **pós-merge do PR #61** devem ser confirmados pelos Actions na SHA `56f98f1df061866fe953325a926272d752456ae2` antes de declarar regressão final combinada.
+- [UX-F3-13 push pós-merge F0 #42577253275](https://github.com/rafhael100/imagine-crm/actions/runs/42577253275) e [PostgreSQL #42577253600](https://github.com/rafhael100/imagine-crm/actions/runs/42577253600): ambos **SUCCESS** na HEAD DEV `56f98f1df061866fe953325a926272d752456ae2`; PR checks da mesma SHA [F0 #42577259661](https://github.com/rafhael100/imagine-crm/actions/runs/42577259661) e [PostgreSQL #42577259656](https://github.com/rafhael100/imagine-crm/actions/runs/42577259656) também SUCCESS. Não representa homologação de UX/segurança de produção.
 
 ## C. Bloqueios para passar de laboratório a produto
 
