@@ -25,7 +25,8 @@ final class OfflinePrototypeContractTest extends TestCase
     public function test_demo_contains_nine_distinct_navigable_sections(): void
     {
         $html = self::html();
-        preg_match_all('/<section data-screen="([^"]+)"/', $html, $screens);
+        // IDs and other accessible attributes may precede data-screen.
+        preg_match_all('/<section\b[^>]*\bdata-screen="([^"]+)"/', $html, $screens);
         preg_match_all('/<button class="nav-button"[^>]+data-page="([^"]+)"/', $html, $navigation);
 
         self::assertSame(['welcome', 'organization', 'dashboard', 'leads', 'pipeline', 'monitor', 'import', 'states', 'about'], $screens[1]);
