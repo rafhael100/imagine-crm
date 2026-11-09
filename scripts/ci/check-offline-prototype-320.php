@@ -118,6 +118,25 @@ $driver = <<<'HTML'
       stageButtons.find(node=>node.dataset.leadStage==='all').click();
       sortButtons.find(node=>node.dataset.leadSort==='original').click();
       check(JSON.stringify(order())===JSON.stringify(['Lead Exemplo A','Lead Exemplo B','Lead Exemplo C','Lead Exemplo D']),'original order restored in 320px');
+      // UX-F3-26: real 320px keyboard-friendly fixture review.
+      const detailButtons=Array.from(doc.querySelectorAll('#screen-leads [data-lead-detail]'));
+      const detailPanel=doc.getElementById('lead-detail-preview');
+      check(detailButtons.length===4&&detailPanel.hidden,'four collapsed detail buttons on mobile');
+      const first=detailButtons.find(node=>node.dataset.leadDetail==='a');
+      const third=detailButtons.find(node=>node.dataset.leadDetail==='c');
+      first.click();
+      check(!detailPanel.hidden&&detailPanel.textContent.includes('Lead Exemplo A'),'open sample detail at 320');
+      check(first.getAttribute('aria-expanded')==='true','mobile expanded flag');
+      stageButtons.find(node=>node.dataset.leadStage==='qualificacao').click();
+      check(detailPanel.hidden&&first.getAttribute('aria-expanded')==='false','mobile filter closes hidden selection');
+      third.click();
+      check(!detailPanel.hidden&&detailPanel.textContent.includes('Pontuação fixa: 85'),'qualification example opens');
+      stageButtons.find(node=>node.dataset.leadStage==='all').click();
+      sortButtons.find(node=>node.dataset.leadSort==='low').click();
+      check(detailPanel.textContent.includes('Lead Exemplo C'),'mobile sort preserves selected fixture');
+      third.click();
+      check(detailPanel.hidden,'mobile repeated click collapses');
+      check(!doc.querySelector('form,input,textarea'),'no editor or uploader on mobile');
       check(doc.documentElement.scrollWidth<=320,'no horizontal page overflow on lead screen');
       buttons.find(node=>node.dataset.page==='dashboard').click();
       const quotas=Array.from(doc.querySelectorAll('#screen-dashboard [data-quota-fixture] meter'));
