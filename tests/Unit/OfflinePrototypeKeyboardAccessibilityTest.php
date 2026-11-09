@@ -119,6 +119,9 @@ final class OfflinePrototypeKeyboardAccessibilityTest extends TestCase
 
         $html = self::html();
         self::assertStringContainsString('@media(max-width:900px)', $html);
+        self::assertStringContainsString('.shell{grid-template-columns:minmax(0,1fr)}', $html);
+        self::assertStringContainsString('.sidebar > div{min-width:0}', $html);
+        self::assertStringContainsString('.side-nav{display:flex;min-width:0;max-width:100%;overflow-x:auto', $html);
         self::assertStringContainsString('overflow-x:auto;overscroll-behavior-inline:contain', $html);
         self::assertStringContainsString('.mobile-nav-hint{display:block', $html);
         self::assertStringContainsString('@media(max-width:420px)', $html);
