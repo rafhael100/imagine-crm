@@ -3,7 +3,7 @@
 **Atualizado em:** 09/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
-**HEAD DEV no levantamento:** `0b4eb0d5ef768f33cb515510236de32df9921dd5` — UX-F3-30 [PR #108](https://github.com/rafhael100/imagine-crm/pull/108), **MERGED somente DEV**, após F3-29 [PR #104](https://github.com/rafhael100/imagine-crm/pull/104), UX-F3-29 [PR #105](https://github.com/rafhael100/imagine-crm/pull/105) e OPS [PR #107](https://github.com/rafhael100/imagine-crm/pull/107). A lista sintética agora combina etapa e faixa, mostra estado vazio explícito e oferece limpeza acessível dos dois filtros, sem alterar a ordenação; contrato PHP de listagem continua negando todos os direitos. F0 e PostgreSQL/RLS passaram antes/depois de #108 na SHA exata. **Nenhuma operação real, main, VPS ou produção foi autorizada ou implantada.**  
+**HEAD DEV no levantamento:** `1bee57b48a99dfaf9469552b76992a679c5fd3e9` — PR #116 integrado após #114/#115. F3-32 produz deltas estritamente sintéticos sem matching de leads; F3-33 verifica paridade da interface fictícia com PHP; OPS-16 registra os bloqueios funcionais. Os workflows pré-merge passaram; resultados pós-merge de #116 requerem conferência separada. Sem ALLOW, clientes, main, VPS ou produção.
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
@@ -234,3 +234,20 @@ A [Issue #22 — FUNC-P0-01](https://github.com/rafhael100/imagine-crm/issues/22
 ## 6. Governança
 
 O `AGENTS.md` é instrução de programação, `STATUS-ATUAL.md` é resumo histórico e `docs/planejamento` contém decisões normativas. GitHub PRs, Issues e checks prevalecem para situação operacional. Nenhum registro documental habilita produção.
+
+## D. Rodada DEV controlada — 09/11/2026
+
+| PR | Incremento DEV |
+|---|---|
+| [#109](https://github.com/rafhael100/imagine-crm/pull/109) | OPS-15: documentação dos filtros fictícios |
+| [#110](https://github.com/rafhael100/imagine-crm/pull/110) | SEC-UX-01: teste de recursos externos no protótipo |
+| [#111](https://github.com/rafhael100/imagine-crm/pull/111) | UX-SEC-02: teste de integridade da navegação |
+| [#112](https://github.com/rafhael100/imagine-crm/pull/112) | SEC-UX-03: bloqueio estático de sinks perigosos |
+| [#113](https://github.com/rafhael100/imagine-crm/pull/113) | F3-31: contagem sintética por etapa e faixa, sem dados reais |
+| [#114](https://github.com/rafhael100/imagine-crm/pull/114) | F3-32: comparação aritmética de snapshots fictícios, sem identidade nem conversão |
+| [#115](https://github.com/rafhael100/imagine-crm/pull/115) | OPS-16: matriz documental [GO/NO-GO](docs/desenvolvimento/CRM-GO-NOGO-matriz-primeira-funcionalidade-2026-11-09.md) |
+| [#116](https://github.com/rafhael100/imagine-crm/pull/116) | F3-33: verificação de consistência entre fixtures HTML e agregador PHP |
+
+**Estado de aprovação:** PRs acima integrados exclusivamente na DEV com testes pré-merge F0 e PostgreSQL/RLS aprovados. Para cada HEAD de DEV deve-se conferir novamente as duas CIs após merge; os números de PR não provam homologação nem release.
+
+**NO-GO funcional ainda vigente:** R01-D01..D05 sem ratificação itemizada, [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) sem revisor independente, e CORE02/IAM/CORE04/CORE07/CORE08/LGPD/QA ainda abertos. Nada de cliente real, ALLOW, migração de produto, main, VPS ou produção.
