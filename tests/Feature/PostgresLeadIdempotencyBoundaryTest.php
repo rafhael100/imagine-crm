@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Core\Leads\LeadSubmissionIdentity;
 use App\Core\Leads\SyntheticIdempotencyClaim;
+use App\Core\Leads\SyntheticLeadReceiptMacInspector;
 use Illuminate\Database\Connection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -235,6 +236,127 @@ final class PostgresLeadIdempotencyBoundaryTest extends TestCase
 
         $this->assertSame(2, $this->fixture->table(self::LEDGER)->where('tenant_id', self::A)->count());
         $this->assertSame(0, $this->primary->table(self::LEDGER)->count());
+    }
+
+    /**
+     * F3-16: repeated authentic-looking fixture bytes remain valid HMACs.
+     * Only the existing PostgreSQL unique constraint rejects a second
+     * occurrence with the same tenant-scoped nonce-as-key marker.
+     *
+     * The marker is NOT a production anti-replay schema or a CRM receipt.
+     */
+    public function test_repeated_matching_hmac_still_requires_physical_nonce_claim(): void
+    {
+        $claim = new SyntheticIdempotencyClaim(
+            new LeadSubmissionIdentity(self::A, self::KEY, self::OTHER_KEY),
+            '50505050-5050-4050-8050-505050505050',
+            '60606060-6060-4060-8060-606060606060',
+            '70707070-7070-4070-8070-707070707070',
+        );
+        $nonce = self::KEY;
+        $issuedAt = 1800000000;
+        $expiresAt = 1800000300;
+        $now = $issuedAt + 20;
+        $secret = str_repeat('fixture-only-', 4);
+
+        $mac = hash_hmac('sha256', implode("\n", [
+            'imagine.lead-intake.synthetic-receipt.v1',
+            $claim->identity->organizationReference,
+            $claim->identity->bindingReference,
+            $claim->identity->submissionReference,
+            $claim->siteReference,
+            $claim->formReference,
+            $claim->destinationReference,
+            (string) $issuedAt,
+            (string) $expiresAt,
+            $nonce,
+        ]), $secret);
+
+        $inspector = new SyntheticLeadReceiptMacInspector();
+        foreach ([1, 2] as $_attempt) {
+            $assessment = $inspector->inspect(
+                $claim, $claim, $issuedAt, $expiresAt, $now, $nonce, $mac, $secret,
+            );
+            $this->assertSame('LAB_MAC_MATCH_UNTRUSTED', $assessment->reasonCode);
+            $this->assertFalse($assessment->canAcceptLead());
+            $this->assertFalse($assessment->canTreatAsReplaySafe());
+        }
+
+        $this->begin($this->primary, self::A);
+        $this->assertSame(1, $this->primary->table(self::LEDGER)
+            ->insertOrIgnore($this->row(self::A, $nonce)));
+        $this->primary->commit();
+
+        $this->begin($this->contingency, self::A);
+        $this->assertSame(0, $this->contingency->table(self::LEDGER)
+            ->insertOrIgnore($this->row(self::A, $nonce)));
+        $this->assertSame(1, $this->contingency->table(self::LEDGER)->count());
+        $this->contingency->commit();
+
+        // Neither fixture secret nor nonce HMAC is written to a lead system.
+        $this->assertFalse($this->primary->getSchemaBuilder()
+            ->hasColumn(self::LEDGER, 'receipt_mac'));
+    }
+
+    public function test_nonce_marker_is_not_automatically_reusable_when_expiry_hint_passes(): void
+    {
+        $expired = $this->row(self::A, self::KEY);
+        $expired['created_at'] = time() - 300;
+        $expired['expires_at'] = time() - 1;
+
+        $this->begin($this->primary, self::A);
+        $this->assertSame(1, $this->primary->table(self::LEDGER)->insertOrIgnore($expired));
+        $this->primary->commit();
+
+        // A timestamp hint does not erase a committed unique-key marker.
+        // Any retention/expiry procedure requires a separate approved design.
+        $this->begin($this->contingency, self::A);
+        $this->assertSame(0, $this->contingency->table(self::LEDGER)
+            ->insertOrIgnore($this->row(self::A, self::KEY)));
+        $this->assertSame(1, $this->contingency->table(self::LEDGER)->count());
+        $this->contingency->commit();
+    }
+
+    public function test_two_different_nonces_with_same_digest_show_nonce_is_not_business_idempotency(): void
+    {
+        // Unique nonce markers alone cannot tell that the same business
+        // submission was retried under another fresh nonce. A separate
+        // trusted tenant+submission ledger is indispensable.
+        $first = $this->row(self::A, self::KEY);
+        $second = $this->row(self::A, self::OTHER_KEY);
+        $this->assertSame($first['digest'], $second['digest']);
+        $this->assertNotSame($first['operation_id'], $second['operation_id']);
+
+        $this->begin($this->primary, self::A);
+        $this->assertSame(1, $this->primary->table(self::LEDGER)->insertOrIgnore($first));
+        $this->assertSame(1, $this->primary->table(self::LEDGER)->insertOrIgnore($second));
+        $this->assertSame(2, $this->primary->table(self::LEDGER)->count());
+        $this->primary->commit();
+    }
+
+    public function test_receiver_cannot_erase_nonce_marker_to_reenable_replay(): void
+    {
+        $this->begin($this->primary, self::A);
+        $this->primary->table(self::LEDGER)->insert($this->row(self::A, self::KEY));
+        $this->primary->commit();
+
+        $this->begin($this->contingency, self::A);
+        try {
+            $this->contingency->table(self::LEDGER)
+                ->where('idempotency_key', self::KEY)->delete();
+            $this->fail('Restricted receiver unexpectedly deleted an anti-replay marker.');
+        } catch (QueryException $e) {
+            $this->assertSame('42501', $e->errorInfo[0] ?? null);
+        } finally {
+            $this->contingency->rollBack();
+        }
+
+        $this->begin($this->contingency, self::A);
+        $this->assertSame(0, $this->contingency->table(self::LEDGER)
+            ->insertOrIgnore($this->row(self::A, self::KEY)));
+        $this->contingency->commit();
+        $this->assertSame(1, $this->fixture->table(self::LEDGER)
+            ->where('tenant_id', self::A)->count());
     }
 
     public function test_existing_async_ledger_is_not_the_business_lead_delivery_system(): void
