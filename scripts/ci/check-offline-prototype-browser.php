@@ -118,11 +118,23 @@ $testScript = <<<'JS'
     temperatureButtons.find(x=>x.dataset.leadTemperature==='warm').click();
     check(visible()===0,'conflicting filters yield no invented rows');
     check(document.getElementById('lead-filter-summary').textContent.includes('0 de 4'),'empty intersection announced');
+    const emptyState=document.getElementById('lead-empty-filter-state');
+    const clearFilters=document.getElementById('lead-clear-filters');
+    check(!emptyState.hidden&&emptyState.textContent.includes('Nenhum lead fictício corresponde'),'empty result has clear explanation');
+    check(clearFilters.type==='button','reset never submits a form');
     filterButtons.find(x=>x.dataset.leadStage==='all').click();
     check(visible()===1,'temperature persists when stage resets');
     temperatureButtons.find(x=>x.dataset.leadTemperature==='all').click();
     check(visible()===4,'all synthetic records restored');
     check(document.querySelectorAll('[data-lead-temperature][aria-pressed="true"]').length===1,'one selected temperature after reset');
+    check(emptyState.hidden,'empty result is removed when examples return');
+    filterButtons.find(x=>x.dataset.leadStage==='qualificacao').click();
+    temperatureButtons.find(x=>x.dataset.leadTemperature==='warm').click();
+    check(!emptyState.hidden&&visible()===0,'reset action is available on empty combination');
+    clearFilters.click();
+    check(emptyState.hidden&&visible()===4,'reset restores all four fixtures');
+    check(document.activeElement===filterButtons.find(x=>x.dataset.leadStage==='all'),'reset restores focus to visible filter');
+    check(document.querySelectorAll('[data-lead-stage][aria-pressed="true"]').length===1&&document.querySelectorAll('[data-lead-temperature][aria-pressed="true"]').length===1,'reset preserves one active button in both groups');
 
     // UX-F3-26: fixture review follows sorting and fails closed on hidden rows.
     const detailButtons=Array.from(document.querySelectorAll('#screen-leads [data-lead-detail]'));
