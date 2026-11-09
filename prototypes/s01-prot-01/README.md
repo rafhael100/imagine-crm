@@ -74,6 +74,14 @@ A ausência de Chromium, erro de inicialização, falha de qualquer assert ou fa
 
 **Limitações:** smoke test automatizado não representa auditoria WCAG completa, leitor de tela, teste de toque, screenshot ou inspeção do layout **320 px** (a janela testada é de 520 px). Revisão visual por dispositivo e validação humana continuam pendentes. Este teste não implementa autenticação, rota pública, dados reais, backend ou produção.
 
+## UX-F3-13 — Viewport CSS real de 320 px no Chromium (09/11/2026)
+
+Complementa a execução Chromium de 520 px da UX-F3-12 com um **iframe `srcdoc` de exatamente 320 CSS pixels**, em arquivo local temporário e sem rede. O driver executa a página original com CSP intacta, confirma `contentWindow.innerWidth===320`, ausência de overflow horizontal do documento, menu scrollável, orientação mobile e eventos de navegação/foco. A etapa `php scripts/ci/check-offline-prototype-320.php` roda no mesmo workflow F0, depois do teste de 520 px.
+
+Essa técnica não depende de a janela externa do Chrome aceitar largura de 320 px e **não altera HTML original ou disponibiliza o protótipo publicamente**. A ausência de Chrome/erro de execução resulta em falha da CI, nunca em aprovação simulada.
+
+**Limitações:** smoke de DOM/layout em Chromium, sem captura de screenshot para inspeção humana, teste de toque, leitor de tela, auditoria WCAG ou teste de dispositivos físicos. Esses testes precisam de revisão adicional antes de considerar a UX homologada.
+
 ## Critérios de revisão UX-01..UX-08
 
 | Critério | Verificação proposta | Observação |

@@ -60,3 +60,6 @@ jobs:
 
       - name: Browser smoke test of offline synthetic CRM prototype
         run: php scripts/ci/check-offline-prototype-browser.php
+
+      - name: Browser smoke test at 320px CSS viewport
+        run: php scripts/ci/check-offline-prototype-320.php
