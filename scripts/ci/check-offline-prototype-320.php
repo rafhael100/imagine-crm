@@ -135,6 +135,16 @@ $driver = <<<'HTML'
       mapButtons.find(node=>node.dataset.importMapping==='complete').click();
       check(mapPanel.textContent.includes('Nenhuma importação foi autorizada ou realizada'),'mapping never imports on 320px');
       check(doc.documentElement.scrollWidth<=320,'no page overflow on mapping preview in 320px');
+      const reviewButtons=Array.from(doc.querySelectorAll('#screen-import [data-import-review]'));
+      const reviewPanel=doc.getElementById('import-review-preview');
+      check(reviewButtons.length===3&&reviewPanel!==null,'offline review modes on 320px');
+      reviewButtons.find(node=>node.dataset.importReview==='formula').click();
+      check(reviewPanel.textContent.includes('1 célula com possível fórmula'),'formula finding at 320px');
+      reviewButtons.find(node=>node.dataset.importReview==='empty').click();
+      check(reviewPanel.textContent.includes('EMPTY_DATASET'),'empty data finding at 320px');
+      reviewButtons.find(node=>node.dataset.importReview==='clear').click();
+      check(reviewPanel.textContent.includes('Nenhuma importação foi autorizada ou realizada'),'no import rights at 320px');
+      check(doc.documentElement.scrollWidth<=320,'no overflow on review cases at 320px');
 
       done=true;
       marker.setAttribute('data-imagine-320','PASS');
