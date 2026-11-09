@@ -85,6 +85,7 @@
         <button class="nav-button" type="button" data-page="dashboard"><span class="dot" aria-hidden="true"></span>Visão geral</button>
         <button class="nav-button" type="button" data-page="leads"><span class="dot" aria-hidden="true"></span>Leads fictícios</button>
         <button class="nav-button" type="button" data-page="pipeline"><span class="dot" aria-hidden="true"></span>Funil ilustrativo</button>
+        <button class="nav-button" type="button" data-page="import"><span class="dot" aria-hidden="true"></span>Prévia de importação</button>
         <button class="nav-button" type="button" data-page="states"><span class="dot" aria-hidden="true"></span>Estados da tela</button>
         <button class="nav-button" type="button" data-page="about"><span class="dot" aria-hidden="true"></span>Sobre o protótipo</button>
       </nav>
@@ -106,7 +107,7 @@
             <div class="step"><span class="number" aria-hidden="true">2</span><div><h3>Estados da tela</h3><p>Alterne entre carregamento, resumo demonstrativo, indisponibilidade e revalidação.</p></div></div>
             <div class="step"><span class="number" aria-hidden="true">3</span><div><h3>Sobre o protótipo</h3><p>Conheça os limites desta demonstração offline.</p></div></div>
           </div>
-          <div class="card"><p class="field-label">Objetivo deste lote</p><div class="metric">07 <span style="font-size:16px;font-weight:700">telas</span></div><p class="soft">Apenas navegação e experiência visual com dados fixos.</p><div class="help">Nenhuma política de acesso ou conexão com a aplicação CRM foi implementada nesta demonstração.</div></div>
+          <div class="card"><p class="field-label">Objetivo deste lote</p><div class="metric">08 <span style="font-size:16px;font-weight:700">telas</span></div><p class="soft">Apenas navegação e experiência visual com dados fixos.</p><div class="help">Nenhuma política de acesso ou conexão com a aplicação CRM foi implementada nesta demonstração.</div></div>
         </div>
       </section>
       <section data-screen="organization" aria-label="Minha organização" hidden>
@@ -173,6 +174,27 @@
         </div>
         <div class="help">Demonstração visual: nenhuma venda, proposta, contato ou qualificação efetiva foi registrada.</div>
       </section>
+
+      <section data-screen="import" aria-label="Prévia fictícia de importação" hidden>
+        <p class="lead">Visualização de uma prévia inteiramente sintética. Nenhum arquivo é recebido, nenhum registro é gravado e nenhum dado de cliente é processado.</p>
+        <div class="card">
+          <p class="eyebrow">F3-03 · Exemplo estático</p>
+          <div class="heading-row"><h2>Prévia de importação</h2><span class="pill">NÃO É POSSÍVEL IMPORTAR</span></div>
+          <p class="soft">Exemplo de como sinalizações de risco poderão ser apresentadas. Os números são fixos; esta tela não executa a inspeção PHP nem valida permissões.</p>
+          <div class="demo-metrics" aria-label="Contagens de exemplo, não calculadas">
+            <div class="card"><p class="field-label">Linhas de exemplo</p><p class="metric">03</p><p class="caption">Dados fictícios previamente definidos</p></div>
+            <div class="card"><p class="field-label">Colunas de exemplo</p><p class="metric">03</p><p class="caption">Não são campos oficiais do CRM</p></div>
+            <div class="card"><p class="field-label">Células sinalizadas</p><p class="metric">01</p><p class="caption">Posição suspeita, sem exibir conteúdo</p></div>
+          </div>
+          <div class="table-scroll" tabindex="0" aria-label="Tabela de sinalizações fictícias, horizontalmente rolável se necessário">
+            <table class="demo-table">
+              <thead><tr><th scope="col">Linha ilustrativa</th><th scope="col">Coluna ilustrativa</th><th scope="col">Sinalização</th><th scope="col">Conteúdo</th></tr></thead>
+              <tbody><tr><td>2</td><td>3</td><td><span class="label-soft">Requer revisão</span></td><td>Não exibido</td></tr></tbody>
+            </table>
+          </div>
+          <div class="help"><strong>Importação indisponível.</strong> Esta tela não possui seleção de arquivo, botão de envio, validação de tenant, processamento de planilha ou autorização para persistir registros.</div>
+        </div>
+      </section>
       <section data-screen="states" aria-label="Estados da tela" hidden>
         <p class="lead">Os controles abaixo alternam somente textos de demonstração. Nenhum deles consulta, concede ou revoga acesso real.</p>
         <div class="card preview-layout">
@@ -191,7 +213,7 @@
         <p class="lead">Demonstração local e autocontida para avaliar organização visual, navegação e apresentação dos estados da primeira tela.</p>
         <div class="two-col">
           <div class="card"><h2>O que esta versão contém</h2><div class="info-list">
-            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Sete telas estáticas e acessíveis por navegação, incluindo leads e funil fictícios.</span></div>
+            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Oito telas estáticas e acessíveis por navegação, incluindo leads, funil e prévia de importação fictícios.</span></div>
             <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Exemplo de nome de organização e vínculo ativo.</span></div>
             <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Quatro estados alternáveis apenas para revisão visual, sem ações comerciais reais.</span></div>
             <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Arquivos locais, sem bibliotecas ou imagens remotas.</span></div>
@@ -207,7 +229,7 @@
 <script>
 (function(){
   'use strict';
-  const names = Object.freeze({welcome:'Boas-vindas',organization:'Minha organização',dashboard:'Visão geral',leads:'Leads fictícios',pipeline:'Funil ilustrativo',states:'Estados da tela',about:'Sobre o protótipo'});
+  const names = Object.freeze({welcome:'Boas-vindas',organization:'Minha organização',dashboard:'Visão geral',leads:'Leads fictícios',pipeline:'Funil ilustrativo',import:'Prévia de importação',states:'Estados da tela',about:'Sobre o protótipo'});
   const screens = Array.from(document.querySelectorAll('[data-screen]'));
   const nav = Array.from(document.querySelectorAll('[data-page]'));
   const heading = document.getElementById('page-title');
