@@ -20,7 +20,7 @@ final class BrowserSmokeRunner
      * @param list<string> $args Chrome flags other than profile/dump-dom
      * @return array{passed: bool, reason: string, attempts: int}
      */
-    public static function run(string $binary, array $args, string $url, string $markerAttribute): array
+    public static function run(string $binary, array $args, string $url, string $markerAttribute, bool $logRetries = true): array
     {
         if (!str_starts_with($url, 'file://')
             || !is_file(substr($url, 7))
@@ -83,7 +83,7 @@ final class BrowserSmokeRunner
                 self::removeTemporaryProfile($profile);
             }
 
-            if ($attempt === 1) {
+            if ($attempt === 1 && $logRetries) {
                 fwrite(STDERR, "Browser smoke: no executed PASS on first attempt; retrying once with a new temporary profile.\n");
             }
         }
