@@ -4,7 +4,7 @@
 
 ## 1. Origem e autoridade
 
-O repositório Imagine AI Agents está preparando o **FT01/F1-12 — contrato sintético `SYNTHETIC_CRM_AIA_READ_V1`** em branch de desenvolvimento isolada. O contrato lógico correlaciona-se com AIA-R04 OP-01 (`crm.lead.read_minimal`), mas **não** presume que o CRM disponha dessa API ou que os campos representem o schema comercial efetivo.
+O repositório Imagine AI Agents **integrou exclusivamente à sua dev** o [PR #106 — FT01/F1-12](https://github.com/rafhael100/imagine-ai-agents/pull/106), squash `562896763f900a8a264ea46aa35e2aeacd5e0903`, com o contrato sintético `SYNTHETIC_CRM_AIA_READ_V1`. O contrato lógico correlaciona-se com AIA-R04 OP-01 (`crm.lead.read_minimal`), mas **não** presume que o CRM disponha dessa API ou que os campos representem o schema comercial efetivo.
 
 Fontes do Agents para revisão conjunta:
 - [Esquema JSON sintético proposto](https://github.com/rafhael100/imagine-ai-agents/blob/dev/ft01-f1-12-crm-read-contract-synthetic-2026-11-09/contracts/crm-aia-readonly.v1.synthetic.schema.json).
