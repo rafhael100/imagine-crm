@@ -166,6 +166,13 @@ $testScript = <<<'JS'
     check(detailPanel.hidden&&timeline().length===0,'closing detail clears timeline');
     check(!document.querySelector('form,input,textarea'),'timeline is read only');
 
+    // A changed temperature must clear details and old fictitious timeline.
+    first.click();
+    check(!detailPanel.hidden&&timeline().length===2,'reopen A before temperature change');
+    temperatureButtons.find(x=>x.dataset.leadTemperature==='hot').click();
+    check(detailPanel.hidden&&timeline().length===0&&first.getAttribute('aria-expanded')==='false','temperature filter clears hidden details');
+    check(visible()===2,'temperature filter stays applied until explicit reset');
+
     // UX-F3-28: open a static lead detail directly from a pipeline card.
     filterButtons.find(x=>x.dataset.leadStage==='entrada').click();
     nav.find(x=>x.dataset.page==='pipeline').click();
