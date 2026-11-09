@@ -67,7 +67,7 @@ final class OfflinePrototypeLeadFilterTest extends TestCase
             'function showLeadStage(stage)',
             "const stages=['all','entrada','em-contato','qualificacao']",
             "node.setAttribute('aria-pressed'",
-            "node.hidden=!matches",
+            "node.hidden=!(byStage&&byTemperature)",
             "leadFilterSummary.textContent='Mostrando '",
             "showLeadStage('all')",
         ] as $expected) {
