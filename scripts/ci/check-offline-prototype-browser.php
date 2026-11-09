@@ -106,6 +106,31 @@ $testScript = <<<'JS'
     check(document.querySelectorAll('[data-lead-sort][aria-pressed="true"]').length===1,'one selected sort');
     check(document.querySelectorAll('[data-lead-stage][aria-pressed="true"]').length===1,'one pressed filter');
 
+    // UX-F3-26: fixture review follows sorting and fails closed on hidden rows.
+    const detailButtons=Array.from(document.querySelectorAll('#screen-leads [data-lead-detail]'));
+    const detailPanel=document.getElementById('lead-detail-preview');
+    check(detailButtons.length===4&&detailPanel&&detailPanel.hidden,'four accessible detail toggles and initially hidden panel');
+    const first=detailButtons.find(x=>x.dataset.leadDetail==='a');
+    const third=detailButtons.find(x=>x.dataset.leadDetail==='c');
+    first.click();
+    check(!detailPanel.hidden&&detailPanel.textContent.includes('Lead Exemplo A'),'first fixture opens details');
+    check(first.getAttribute('aria-expanded')==='true','selected fixture aria-expanded');
+    filterButtons.find(x=>x.dataset.leadStage==='qualificacao').click();
+    check(detailPanel.hidden&&first.getAttribute('aria-expanded')==='false','hiding selected fixture closes panel');
+    filterButtons.find(x=>x.dataset.leadStage==='all').click();
+    third.focus();
+    third.click();
+    check(document.activeElement===third,'detail selection retains button focus');
+    check(detailPanel.textContent.includes('Pontuação fixa: 85'),'third fixture details');
+    sortButtons.find(x=>x.dataset.leadSort==='low').click();
+    check(!detailPanel.hidden&&detailPanel.textContent.includes('Lead Exemplo C'),'sorting keeps selected lead details');
+    third.click();
+    check(detailPanel.hidden&&document.querySelectorAll('[data-lead-detail][aria-expanded="true"]').length===0,'same control collapses details');
+    first.click();
+    check(!detailPanel.hidden,'reopen detail');
+    check(!document.querySelector('form,input,textarea'),'detail is not editable');
+    check(detailPanel.textContent.includes('não autoriza exportação'),'detail cannot authorize export');
+
     // Static quota meters are an isolated visual example, never entitlement.
     const dashboard=nav.find(x=>x.dataset.page==='dashboard');
     dashboard.click();
