@@ -90,6 +90,33 @@ final class LeadHistoryReleaseBoundaryTest extends TestCase
         }
     }
 
+    public function test_unknown_or_missing_actor_and_out_of_order_history_can_never_be_authority(): void
+    {
+        $inspector = new SyntheticLeadHistoryInspector();
+        $noActor = new SyntheticLeadHistoryClaim(
+            self::TENANT, self::LEAD, self::EVENT, null, 1, 'created',
+        );
+        $outOfOrder = new SyntheticLeadHistoryClaim(
+            self::TENANT, self::LEAD, '77777777-7777-4777-8777-777777777777',
+            self::ACTOR, 3, 'assigned',
+        );
+
+        $missing = $inspector->inspect(self::TENANT, self::LEAD, [$noActor]);
+        $sequence = $inspector->inspect(self::TENANT, self::LEAD, [
+            new SyntheticLeadHistoryClaim(self::TENANT, self::LEAD, self::EVENT, self::ACTOR, 1, 'created'),
+            $outOfOrder,
+        ]);
+
+        $this->assertSame('ACTOR_REFERENCE_MISSING', $missing->reasonCode);
+        $this->assertSame('HISTORY_ORDER_UNVERIFIED', $sequence->reasonCode);
+        foreach ([$missing, $sequence] as $assessment) {
+            $this->assertFalse($assessment->canReadHistory());
+            $this->assertFalse($assessment->canExportHistory());
+            $this->assertFalse($assessment->canProveActorOrChronology());
+            $this->assertSame(['code' => $assessment->reasonCode], $assessment->signal());
+        }
+    }
+
     public function test_lab_history_api_has_no_persistence_or_authorization_entrypoint(): void
     {
         $this->assertSame(['inspect'], get_class_methods(SyntheticLeadHistoryInspector::class));
