@@ -130,6 +130,18 @@ $testScript = <<<'JS'
     mapButtons.find(x=>x.dataset.importMapping==='complete').click();
     check(mapPanel.textContent.includes('Nenhuma importação foi autorizada ou realizada'),'mapping remains denied');
     check(!document.querySelector('form,input,textarea'),'still no upload or entry forms');
+    const reviewButtons=Array.from(document.querySelectorAll('#screen-import [data-import-review]'));
+    const reviewPanel=document.getElementById('import-review-preview');
+    check(reviewButtons.length===3&&reviewPanel!==null,'three offline review cases');
+    check(reviewPanel.textContent.includes('Nenhum aviso identificado neste exemplo'),'review initial state');
+    reviewButtons.find(x=>x.dataset.importReview==='formula').click();
+    check(reviewPanel.textContent.includes('1 célula com possível fórmula'),'formula review fixture');
+    reviewButtons.find(x=>x.dataset.importReview==='empty').click();
+    check(reviewPanel.textContent.includes('0 linhas de dados'),'empty dataset fixture');
+    reviewButtons.find(x=>x.dataset.importReview==='clear').click();
+    check(reviewPanel.textContent.includes('A ausência de alertas não comprova'),'zero findings never grants import');
+    check(reviewPanel.textContent.includes('Nenhuma importação foi autorizada ou realizada'),'denial persists');
+    check(document.querySelectorAll('[data-import-review][aria-pressed="true"]').length===1,'one selected review case');
 
     const skip=document.querySelector('.skip-link');
     check(skip&&skip.getAttribute('href')==='#conteudo','skip link exists');
