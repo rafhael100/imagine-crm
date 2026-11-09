@@ -28,13 +28,13 @@ final readonly class AttachmentCapacityAdvisory
 
     public function band(): AttachmentCapacityBand
     {
-        if ($limitBytes = $this->limitBytes) {
+        if ($this->limitBytes > 0) {
             // Existing files must not be deleted merely for being over quota.
-            if ($this->usedBytes > $limitBytes) {
+            if ($this->usedBytes > $this->limitBytes) {
                 return AttachmentCapacityBand::OverLimit;
             }
 
-            if ($this->usedBytes === $limitBytes) {
+            if ($this->usedBytes === $this->limitBytes) {
                 return AttachmentCapacityBand::AtLimit;
             }
 
