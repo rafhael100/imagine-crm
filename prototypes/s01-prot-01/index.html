@@ -435,10 +435,10 @@
   // Text-only output never reads a CSV, client field, tenant, storage or API.
   function showLeadDetail(code) {
     const fixtures=Object.freeze({
-      a:{name:'Lead Exemplo A',stage:'Entrada',score:'30',band:'Frio'},
-      b:{name:'Lead Exemplo B',stage:'Em contato',score:'55',band:'Morno'},
-      c:{name:'Lead Exemplo C',stage:'Qualificação',score:'85',band:'Quente'},
-      d:{name:'Lead Exemplo D',stage:'Entrada',score:'70',band:'Quente'}
+      a:{name:'Lead Exemplo A',stage:'Entrada',score:'30',band:'Frio',events:['Criação ilustrativa do exemplo', 'Classificação ilustrativa da etapa Entrada']},
+      b:{name:'Lead Exemplo B',stage:'Em contato',score:'55',band:'Morno',events:['Criação ilustrativa do exemplo', 'Atribuição ilustrativa', 'Classificação ilustrativa da etapa Em contato']},
+      c:{name:'Lead Exemplo C',stage:'Qualificação',score:'85',band:'Quente',events:['Criação ilustrativa do exemplo', 'Classificação ilustrativa da etapa Qualificação']},
+      d:{name:'Lead Exemplo D',stage:'Entrada',score:'70',band:'Quente',events:['Criação ilustrativa do exemplo', 'Revisão ilustrativa da etapa Entrada']}
     });
     const selected=code!==null && Object.prototype.hasOwnProperty.call(fixtures,code)
       && leadDetailButtons.some(function(button){
@@ -457,6 +457,12 @@
     addText(inner,'h3',data.name);
     addText(inner,'p','Etapa demonstrativa: '+data.stage+'.');
     addText(inner,'p','Pontuação fixa: '+data.score+'. Faixa descritiva: '+data.band+'.');
+    addText(inner,'h4','Sequência de eventos fictícios — não verificada');
+    const eventList=document.createElement('ol');
+    eventList.setAttribute('aria-label','Eventos ilustrativos, sem registros reais');
+    data.events.forEach(function(eventLabel){addText(eventList,'li',eventLabel);});
+    inner.appendChild(eventList);
+    addText(inner,'p','A ordem, os autores e os eventos desta amostra não foram comprovados nem persistidos.');
     addText(inner,'p','Nenhum contato, histórico pessoal ou permissão foi consultado.');
     addText(inner,'p','Visualização ilustrativa não autoriza exportação, alteração ou ação comercial.');
     leadDetailPreview.appendChild(inner);
