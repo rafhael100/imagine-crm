@@ -3,7 +3,7 @@
 **Atualizado em:** 09/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
-**HEAD DEV no levantamento:** `713979ee75c06abb7bddf71fc0122ad5b9d6f78a` — UX-F3-25 [PR #90](https://github.com/rafhael100/imagine-crm/pull/90), **MERGED somente DEV**. O protótipo de nove telas ganhou três estados acessíveis sobre leitura versus exportação, escopo entre organizações e revalidação após mudança de vínculo. **Somente mensagens offline e testes Chromium a 520/320 CSS px**, sem política de autorização, cliente, persistência ou exportação. F0/PostgreSQL verdes antes/depois do merge.  
+**HEAD DEV no levantamento:** `4c120d0f9b1fdf475f71649a6fc9de73b7c1c3cf` — UX-F3-26 [PR #92](https://github.com/rafhael100/imagine-crm/pull/92), **MERGED somente DEV**. A tela offline de leads recebeu ficha individual de leitura para quatro exemplos fictícios, com estado `aria-expanded` e comportamento coerente com filtros, ordenação e navegação. Testes PHPUnit/Chromium reais em 520 e 320 CSS px; sem dados de cliente, persistência, ações reais ou permissões. CI F0/PostgreSQL aprovada antes e depois do merge.  
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
@@ -43,6 +43,7 @@
 | CORE02-R02 — pacote de revisão/decisão D04..D10 | [PR #87](https://github.com/rafhael100/imagine-crm/pull/87) | Integrado DEV documental: owners e evidências para encerrar D04..D10, **sem fechar** as decisões nem escolher política P1..P4 |
 | CORE02-MX-03 — sinais mínimos em negativas | [PR #88](https://github.com/rafhael100/imagine-crm/pull/88) | Integrado DEV: 432 verificações com metadados sintéticos; não expor principal, tenant, campo, ação ou razão arbitrária no sinal; nenhum acesso real |
 | UX-F3-25 — limites de leitura, exportação e tenant no protótipo | [PR #90](https://github.com/rafhael100/imagine-crm/pull/90) | Integrado DEV: três cenários de texto fixo acessíveis e testados no Chromium a 520/320 CSS px; sem IAM, exportação, backend ou alteração de direitos |
+| UX-F3-26 — ficha individual de leads fictícios | [PR #92](https://github.com/rafhael100/imagine-crm/pull/92) | Integrado DEV: painel acessível de leitura, fechado ao ocultar item/alternar tela, acompanha ordenação; Chromium 520/320px; sem registros reais, edição, API ou permissão |
 | CORE/SEG/AUT/INT/LGPD | [Issue #27](https://github.com/rafhael100/imagine-crm/issues/27) e gates da documentação | **67 pendências CORE e gates especializados ABERTOS**, sem homologação |
 
 ## B. Evidências recentes de CI
@@ -95,6 +96,9 @@
 
 - **UX-F3-25 (PR #90):** pré-merge `de20b0ea4ed63387d96d711805d436671cfbd46f`, [F0 #42661786208](https://github.com/rafhael100/imagine-crm/actions/runs/42661786208) e [PostgreSQL #42661786212](https://github.com/rafhael100/imagine-crm/actions/runs/42661786212), ambos **SUCCESS**. Pós-merge DEV `713979ee75c06abb7bddf71fc0122ad5b9d6f78a`, [F0 #42662008250](https://github.com/rafhael100/imagine-crm/actions/runs/42662008250) e [PostgreSQL #42662008675](https://github.com/rafhael100/imagine-crm/actions/runs/42662008675), ambos **SUCCESS**. Testes PHPUnit/Chromium 520/320px dos três cenários inertes; revisão humana WCAG ainda pendente.
 - Esta UI não comprova nem concede permissão. CORE02-D04..D10, revisão independente SEG/DBA [Issue #27](https://github.com/rafhael100/imagine-crm/issues/27), CORE, AUT, INT, FIN/CON e LGPD continuam **abertos**.
+
+- **UX-F3-26 (PR #92):** pré-merge `e138c9499fef2fe0eaeabfb457ac5e5c315db5d6`, [F0 #42665269506](https://github.com/rafhael100/imagine-crm/actions/runs/42665269506) e [PostgreSQL #42665269478](https://github.com/rafhael100/imagine-crm/actions/runs/42665269478), ambos **SUCCESS**. Pós-merge DEV `4c120d0f9b1fdf475f71649a6fc9de73b7c1c3cf`, [F0 #42665534050](https://github.com/rafhael100/imagine-crm/actions/runs/42665534050) e [PostgreSQL #42665534128](https://github.com/rafhael100/imagine-crm/actions/runs/42665534128), ambos **SUCCESS**. Quatro fichas fictícias somente de leitura; smoke no navegador 520/320 CSS px; revisão humana de UX/WCAG ainda pendente.
+- Esta UX não representa autorização, scoring real nem produto funcional. CORE02-D04..D10, revisão independente SEG/DBA [Issue #27](https://github.com/rafhael100/imagine-crm/issues/27), demais gates CORE, AUT, INT, FIN/CON e LGPD permanecem **abertos**.
 
 ## C. Bloqueios para passar de laboratório a produto
 
