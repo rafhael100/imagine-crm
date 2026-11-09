@@ -82,6 +82,14 @@ Essa técnica não depende de a janela externa do Chrome aceitar largura de 320 
 
 **Limitações:** smoke de DOM/layout em Chromium, sem captura de screenshot para inspeção humana, teste de toque, leitor de tela, auditoria WCAG ou teste de dispositivos físicos. Esses testes precisam de revisão adicional antes de considerar a UX homologada.
 
+## UX-F3-14 — Filtros de leads fictícios por etapa (09/11/2026)
+
+A tabela offline de quatro leads de demonstração passa a oferecer filtros **Todos / Entrada / Em contato / Qualificação** com botões nativos, seleção `aria-pressed`, contagem atualizada em `role=status` e `aria-live=polite`. O filtro apenas alterna a propriedade `hidden` de linhas marcadas com `data-lead-fixture-stage`; não move leads entre etapas, não altera pontuações e não registra contatos.
+
+As quatro linhas, etapas e pontuações continuam **fixas e inventadas**. O controle não recebe campos de usuário, faz requisições, consulta banco, grava, atribui autorização nem usa `localStorage`. O backend real de leads permanece bloqueado pelos gates CORE/SEG/DBA/INT/LGPD.
+
+**Testes:** `OfflinePrototypeLeadFilterTest` valida estrutura DOM, atributos acessíveis, contagens e ausência de transporte/armazenamento; os scripts Chromium 520px e 320px verificam cliques, contagens por filtro, restauração de “Todos” e ausência de overflow. A validação automatizada não substitui teste humano com leitor de tela, toque e auditoria WCAG.
+
 ## Critérios de revisão UX-01..UX-08
 
 | Critério | Verificação proposta | Observação |
