@@ -85,6 +85,7 @@
         <button class="nav-button" type="button" data-page="dashboard"><span class="dot" aria-hidden="true"></span>Visão geral</button>
         <button class="nav-button" type="button" data-page="leads"><span class="dot" aria-hidden="true"></span>Leads fictícios</button>
         <button class="nav-button" type="button" data-page="pipeline"><span class="dot" aria-hidden="true"></span>Funil ilustrativo</button>
+        <button class="nav-button" type="button" data-page="monitor"><span class="dot" aria-hidden="true"></span>Monitoramento de leads</button>
         <button class="nav-button" type="button" data-page="import"><span class="dot" aria-hidden="true"></span>Prévia de importação</button>
         <button class="nav-button" type="button" data-page="states"><span class="dot" aria-hidden="true"></span>Estados da tela</button>
         <button class="nav-button" type="button" data-page="about"><span class="dot" aria-hidden="true"></span>Sobre o protótipo</button>
@@ -107,7 +108,7 @@
             <div class="step"><span class="number" aria-hidden="true">2</span><div><h3>Estados da tela</h3><p>Alterne entre carregamento, resumo demonstrativo, indisponibilidade e revalidação.</p></div></div>
             <div class="step"><span class="number" aria-hidden="true">3</span><div><h3>Sobre o protótipo</h3><p>Conheça os limites desta demonstração offline.</p></div></div>
           </div>
-          <div class="card"><p class="field-label">Objetivo deste lote</p><div class="metric">08 <span style="font-size:16px;font-weight:700">telas</span></div><p class="soft">Apenas navegação e experiência visual com dados fixos.</p><div class="help">Nenhuma política de acesso ou conexão com a aplicação CRM foi implementada nesta demonstração.</div></div>
+          <div class="card"><p class="field-label">Objetivo deste lote</p><div class="metric">09 <span style="font-size:16px;font-weight:700">telas</span></div><p class="soft">Apenas navegação e experiência visual com dados fixos.</p><div class="help">Nenhuma política de acesso ou conexão com a aplicação CRM foi implementada nesta demonstração.</div></div>
         </div>
       </section>
       <section data-screen="organization" aria-label="Minha organização" hidden>
@@ -175,6 +176,27 @@
         <div class="help">Demonstração visual: nenhuma venda, proposta, contato ou qualificação efetiva foi registrada.</div>
       </section>
 
+
+      <section data-screen="monitor" aria-label="Monitoramento sintético de leads" hidden>
+        <p class="lead">Explore como a equipe poderá identificar falhas de entrega. Estes cenários são totalmente fictícios e não consultam as APIs, filas ou o CRM.</p>
+        <div class="card">
+          <div class="heading-row"><div><p class="eyebrow">F3-09 · Demonstração visual</p><h2>Monitoramento de leads</h2></div><span class="pill">SEM CONEXÕES</span></div>
+          <div class="demo-metrics" aria-label="Contadores inteiramente fictícios">
+            <div class="card"><p class="field-label">Eventos de exemplo</p><p class="metric">04</p><p class="caption">Nenhum evento recebido de API</p></div>
+            <div class="card"><p class="field-label">APIs conectadas</p><p class="metric">00</p><p class="caption">Principal e contingência desativadas</p></div>
+            <div class="card"><p class="field-label">Entregas comprovadas</p><p class="metric">00</p><p class="caption">Sem persistência verificada</p></div>
+          </div>
+          <h3>Escolha um cenário ilustrativo</h3>
+          <div class="switcher" role="group" aria-label="Selecionar cenário fictício de monitoramento">
+            <button type="button" class="state-button" data-monitor-scenario="received" aria-pressed="true">Recebimento alegado</button>
+            <button type="button" class="state-button" data-monitor-scenario="fallback" aria-pressed="false">API de contingência</button>
+            <button type="button" class="state-button" data-monitor-scenario="uncertain" aria-pressed="false">Confirmação incerta</button>
+            <button type="button" class="state-button" data-monitor-scenario="conflict" aria-pressed="false">Conflito no vencimento</button>
+          </div>
+          <div id="monitor-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
+          <div class="help"><strong>Simulação somente visual.</strong> Selecionar um cenário não realiza busca, reenvio, confirmação, gravação, exclusão ou alteração de status no CRM.</div>
+        </div>
+      </section>
       <section data-screen="import" aria-label="Prévia fictícia de importação" hidden>
         <p class="lead">Visualização de uma prévia inteiramente sintética. Nenhum arquivo é recebido, nenhum registro é gravado e nenhum dado de cliente é processado.</p>
         <div class="card">
@@ -213,7 +235,7 @@
         <p class="lead">Demonstração local e autocontida para avaliar organização visual, navegação e apresentação dos estados da primeira tela.</p>
         <div class="two-col">
           <div class="card"><h2>O que esta versão contém</h2><div class="info-list">
-            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Oito telas estáticas e acessíveis por navegação, incluindo leads, funil e prévia de importação fictícios.</span></div>
+            <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Nove telas navegáveis com dados fictícios, incluindo monitoramento interativo de cenários, leads, funil e prévia de importação.</span></div>
             <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Exemplo de nome de organização e vínculo ativo.</span></div>
             <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Quatro estados alternáveis apenas para revisão visual, sem ações comerciais reais.</span></div>
             <div class="info-item"><span class="check" aria-hidden="true">✓</span><span>Arquivos locais, sem bibliotecas ou imagens remotas.</span></div>
@@ -229,12 +251,14 @@
 <script>
 (function(){
   'use strict';
-  const names = Object.freeze({welcome:'Boas-vindas',organization:'Minha organização',dashboard:'Visão geral',leads:'Leads fictícios',pipeline:'Funil ilustrativo',import:'Prévia de importação',states:'Estados da tela',about:'Sobre o protótipo'});
+  const names = Object.freeze({welcome:'Boas-vindas',organization:'Minha organização',dashboard:'Visão geral',leads:'Leads fictícios',pipeline:'Funil ilustrativo',monitor:'Monitoramento de leads',import:'Prévia de importação',states:'Estados da tela',about:'Sobre o protótipo'});
   const screens = Array.from(document.querySelectorAll('[data-screen]'));
   const nav = Array.from(document.querySelectorAll('[data-page]'));
   const heading = document.getElementById('page-title');
   const preview = document.getElementById('demo-preview');
   const stateButtons = Array.from(document.querySelectorAll('[data-demo-state]'));
+  const monitorButtons = Array.from(document.querySelectorAll('[data-monitor-scenario]'));
+  const monitorPreview = document.getElementById('monitor-preview');
 
   function navigate(page, moveFocus) {
     if (!Object.prototype.hasOwnProperty.call(names,page)) return;
@@ -278,11 +302,50 @@
     preview.appendChild(inner);
   }
 
+  function showMonitorScenario(code) {
+    const cases = Object.freeze({
+      received: {
+        title:'Recebimento alegado pela API principal',
+        status:'Aguardar comprovação de persistência',
+        detail:'Um retorno HTTP sozinho não comprova que o envio foi armazenado de forma durável.'
+      },
+      fallback: {
+        title:'API de contingência recebeu a mesma submissão',
+        status:'Reconciliar identidade do envio',
+        detail:'As duas rotas devem preservar a identidade lógica; não gerar um novo lead por reenvio.'
+      },
+      uncertain: {
+        title:'CRM respondeu, mas a confirmação não foi verificada',
+        status:'Confirmação em análise',
+        detail:'HTTP 202 ou resposta perdida não comprovam que o registro foi persistido no CRM.'
+      },
+      conflict: {
+        title:'Confirmação tardia no vencimento de 18 dias',
+        status:'Conflito: revisão de integridade necessária',
+        detail:'Não excluir nem reenviar dados temporários com base em estados contraditórios.'
+      }
+    });
+    if (!Object.prototype.hasOwnProperty.call(cases,code)) return;
+    monitorButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(node.getAttribute('data-monitor-scenario') === code));
+    });
+    monitorPreview.replaceChildren();
+    const inner=document.createElement('div');
+    addText(inner,'p','CENÁRIO SIMULADO — DADOS FICTÍCIOS','state-note');
+    addText(inner,'h3',cases[code].title);
+    addText(inner,'p',cases[code].status);
+    addText(inner,'p',cases[code].detail);
+    addText(inner,'p','Nenhuma operação foi autorizada ou realizada.');
+    monitorPreview.appendChild(inner);
+  }
+
   nav.forEach(function(node){node.addEventListener('click',function(){navigate(node.getAttribute('data-page'),true);});});
   document.querySelectorAll('[data-go]').forEach(function(node){node.addEventListener('click',function(){navigate(node.getAttribute('data-go'),true);});});
   stateButtons.forEach(function(node){node.addEventListener('click',function(){showState(node.getAttribute('data-demo-state'));});});
+  monitorButtons.forEach(function(node){node.addEventListener('click',function(){showMonitorScenario(node.getAttribute('data-monitor-scenario'));});});
   navigate('welcome',false);
   showState('loading');
+  showMonitorScenario('received');
 })();
 </script>
 </body>
