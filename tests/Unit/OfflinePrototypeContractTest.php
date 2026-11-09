@@ -22,13 +22,13 @@ final class OfflinePrototypeContractTest extends TestCase
         return $html;
     }
 
-    public function test_demo_contains_eight_distinct_navigable_sections(): void
+    public function test_demo_contains_nine_distinct_navigable_sections(): void
     {
         $html = self::html();
         preg_match_all('/<section data-screen="([^"]+)"/', $html, $screens);
         preg_match_all('/<button class="nav-button"[^>]+data-page="([^"]+)"/', $html, $navigation);
 
-        self::assertSame(['welcome', 'organization', 'dashboard', 'leads', 'pipeline', 'import', 'states', 'about'], $screens[1]);
+        self::assertSame(['welcome', 'organization', 'dashboard', 'leads', 'pipeline', 'monitor', 'import', 'states', 'about'], $screens[1]);
         self::assertSame($screens[1], $navigation[1]);
         self::assertStringContainsString('PROTÓTIPO — DADOS FICTÍCIOS', $html);
     }
@@ -55,6 +55,18 @@ final class OfflinePrototypeContractTest extends TestCase
         self::assertStringContainsString('Não exibido', $html);
         self::assertStringContainsString('esta tela não executa a inspeção PHP', $html);
         self::assertStringContainsString('nenhum registro é gravado', $html);
+    }
+
+    public function test_synthetic_monitoring_scenarios_only_change_local_display(): void
+    {
+        $html = self::html();
+        preg_match_all('/data-monitor-scenario="([^"]+)"/', $html, $scenarios);
+
+        self::assertSame(['received', 'fallback', 'uncertain', 'conflict'], $scenarios[1]);
+        self::assertStringContainsString('monitorPreview.replaceChildren()', $html);
+        self::assertStringContainsString('Nenhuma operação foi autorizada ou realizada.', $html);
+        self::assertStringContainsString('CENÁRIO SIMULADO — DADOS FICTÍCIOS', $html);
+        self::assertStringContainsString('Selecionar um cenário não realiza busca, reenvio', $html);
     }
 
     public function test_no_network_storage_credentials_forms_or_remote_assets_are_requested(): void
