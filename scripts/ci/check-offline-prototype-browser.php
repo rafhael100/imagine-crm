@@ -70,6 +70,25 @@ $testScript = <<<'JS'
     nav[8].dispatchEvent(new KeyboardEvent('keydown',{key:'Home',bubbles:true,cancelable:true}));
     check(document.activeElement===nav[0],'Home focuses first');
 
+    // Exercise the fixture-only stage filter in the real narrow browser.
+    leads.click();
+    check(document.getElementById('page-title').textContent==='Leads fictícios','open lead screen');
+    const filterButtons=Array.from(document.querySelectorAll('[data-lead-stage]'));
+    const rows=Array.from(document.querySelectorAll('#screen-leads [data-lead-fixture-stage]'));
+    const visible=()=>rows.filter(x=>!x.hidden).length;
+    check(filterButtons.length===4&&rows.length===4,'stage filter fixture cardinality');
+    check(visible()===4,'default stage shows all');
+    filterButtons.find(x=>x.dataset.leadStage==='entrada').click();
+    check(visible()===2,'entry stage count');
+    check(document.getElementById('lead-filter-summary').textContent.includes('2 de 4'),'live count updates');
+    filterButtons.find(x=>x.dataset.leadStage==='em-contato').click();
+    check(visible()===1,'contact stage count');
+    filterButtons.find(x=>x.dataset.leadStage==='qualificacao').click();
+    check(visible()===1,'qualification stage count');
+    filterButtons.find(x=>x.dataset.leadStage==='all').click();
+    check(visible()===4,'all stage restores every fixture');
+    check(document.querySelectorAll('[data-lead-stage][aria-pressed="true"]').length===1,'one pressed filter');
+
     const skip=document.querySelector('.skip-link');
     check(skip&&skip.getAttribute('href')==='#conteudo','skip link exists');
     skip.focus();
