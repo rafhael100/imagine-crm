@@ -24,7 +24,7 @@ final class SyntheticLeadReconciliationInspector
     ): SyntheticReconciliationAssessment {
         if (!$primary->identity->sameLogicalDeliveryAs($expected)
             || !$contingency->identity->sameLogicalDeliveryAs($expected)
-            || !$primary->identity->sameLogicalDeliveryAs($contingency)) {
+            || !$primary->identity->sameLogicalDeliveryAs($contingency->identity)) {
             return new SyntheticReconciliationAssessment('SUBMISSION_IDENTITY_CONFLICT');
         }
 
