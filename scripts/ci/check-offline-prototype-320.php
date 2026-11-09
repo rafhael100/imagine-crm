@@ -124,6 +124,17 @@ $driver = <<<'HTML'
       check(quotas.length===3,'three static quota meters on 320px');
       check(JSON.stringify(quotas.map(node=>[node.value,node.max]))===JSON.stringify([[4,20],[1,2],[0,2]]),'fictional quota readings on mobile');
       check(doc.documentElement.scrollWidth<=320,'no overflow in quota dashboard on 320px');
+      buttons.find(node=>node.dataset.page==='import').click();
+      const mapButtons=Array.from(doc.querySelectorAll('#screen-import [data-import-mapping]'));
+      const mapPanel=doc.getElementById('import-mapping-preview');
+      check(mapButtons.length===3&&mapPanel!==null,'mapping preview exists in 320px');
+      mapButtons.find(node=>node.dataset.importMapping==='partial').click();
+      check(mapPanel.textContent.includes('1 de 3 colunas fictícias'),'partial mapping on 320px');
+      mapButtons.find(node=>node.dataset.importMapping==='invalid').click();
+      check(mapPanel.textContent.includes('Estrutura de mapeamento inválida'),'invalid mapping on 320px');
+      mapButtons.find(node=>node.dataset.importMapping==='complete').click();
+      check(mapPanel.textContent.includes('Nenhuma importação foi autorizada ou realizada'),'mapping never imports on 320px');
+      check(doc.documentElement.scrollWidth<=320,'no page overflow on mapping preview in 320px');
 
       done=true;
       marker.setAttribute('data-imagine-320','PASS');
