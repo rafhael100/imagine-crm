@@ -16,7 +16,7 @@ use InvalidArgumentException;
 final class SyntheticPipelineSummary
 {
     private const STAGES = ['entrada', 'em-contato', 'qualificacao'];
-    private const TEMPERATURES = ['cold', 'warm', 'hot'];
+    private const TEMPERATURES = ['frio', 'morno', 'quente'];
 
     /**
      * @param list<array{stage: string, score: int}> $fixtures
@@ -44,7 +44,7 @@ final class SyntheticPipelineSummary
             $temperature = $bands->classify($fixture['score'])->value;
             $stages[$stage]++;
             $temperatures[$temperature]++;
-            if ($temperature === 'hot') {
+            if ($temperature === 'quente') {
                 $hotByStage[$stage]++;
             }
         }
