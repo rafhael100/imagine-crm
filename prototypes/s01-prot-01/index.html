@@ -10,6 +10,9 @@
     :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#1b2a41;background:#f3f6fa;line-height:1.52}
     *{box-sizing:border-box}body{margin:0;min-height:100vh}button{font:inherit}button:focus-visible{outline:3px solid #37bcb0;outline-offset:3px}
     [hidden]{display:none!important}
+    .skip-link{position:absolute;top:10px;left:12px;z-index:100;transform:translateY(-180%);background:#fff;color:#123952;border:2px solid #0b716f;border-radius:10px;padding:12px 16px;font-weight:800;text-decoration:none}
+    .skip-link:focus-visible{transform:translateY(0);outline:3px solid #37bcb0;outline-offset:3px}
+    .mobile-nav-hint{display:none}
     .shell{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh}
     .sidebar{background:#122943;color:#e7f2fb;padding:28px 18px;display:flex;flex-direction:column;gap:28px}
     .brand{display:flex;gap:13px;align-items:center;padding:4px 12px}
@@ -68,38 +71,40 @@
     .demo-column .caption{margin:4px 0 18px}.demo-ticket{background:white;border:1px solid #dde6ef;padding:16px;border-radius:12px;margin:10px 0;display:grid;gap:6px;box-shadow:0 4px 10px rgba(16,42,72,.025)}
     .demo-ticket strong{font-size:14px}.demo-ticket span{font-size:12px;color:#71869a}
     @media(max-width:850px){.demo-metrics,.demo-board{grid-template-columns:1fr}}
-    @media(max-width:900px){.shell{grid-template-columns:1fr}.sidebar{padding:14px 20px;gap:12px}.brand{padding:0}.side-label,.side-note{display:none}.side-nav{display:flex;overflow-x:auto;padding:2px 0 4px;gap:6px}.nav-button{white-space:nowrap;width:auto;padding:9px 11px}.topbar{min-height:66px}.two-col{grid-template-columns:1fr}}
+    @media(max-width:900px){.shell{grid-template-columns:1fr}.sidebar{padding:14px 20px;gap:12px}.brand{padding:0}.side-label,.side-note{display:none}.side-nav{display:flex;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin;padding:2px 0 8px;gap:6px}.mobile-nav-hint{display:block;margin:5px 0 0;color:#b7d1e0;font-size:11px;line-height:1.4}.nav-button{white-space:nowrap;width:auto;padding:9px 11px}.topbar{min-height:66px}.two-col{grid-template-columns:1fr}}
     @media(max-width:420px){.topbar{align-items:flex-start;flex-direction:column}.pill{font-size:10px}.content{padding:23px 17px}.card{border-radius:14px}.hero{border-radius:16px}.nav-button{font-size:12px}.field-value{font-size:22px}.state-surface{padding:18px}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
   </style>
 </head>
 <body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 <div class="shell">
   <aside class="sidebar" aria-label="Navegação do protótipo">
     <div class="brand"><div class="brand-mark" aria-hidden="true">i</div><div class="brand-name">imagine<span>CRM</span></div></div>
     <div>
       <p class="side-label">Demonstração</p>
-      <nav class="side-nav" aria-label="Telas de demonstração">
-        <button class="nav-button" type="button" data-page="welcome" aria-current="page"><span class="dot" aria-hidden="true"></span>Boas-vindas</button>
-        <button class="nav-button" type="button" data-page="organization"><span class="dot" aria-hidden="true"></span>Minha organização</button>
-        <button class="nav-button" type="button" data-page="dashboard"><span class="dot" aria-hidden="true"></span>Visão geral</button>
-        <button class="nav-button" type="button" data-page="leads"><span class="dot" aria-hidden="true"></span>Leads fictícios</button>
-        <button class="nav-button" type="button" data-page="pipeline"><span class="dot" aria-hidden="true"></span>Funil ilustrativo</button>
-        <button class="nav-button" type="button" data-page="monitor"><span class="dot" aria-hidden="true"></span>Monitoramento de leads</button>
-        <button class="nav-button" type="button" data-page="import"><span class="dot" aria-hidden="true"></span>Prévia de importação</button>
-        <button class="nav-button" type="button" data-page="states"><span class="dot" aria-hidden="true"></span>Estados da tela</button>
-        <button class="nav-button" type="button" data-page="about"><span class="dot" aria-hidden="true"></span>Sobre o protótipo</button>
+      <nav class="side-nav" id="demo-navigation" aria-label="Telas de demonstração">
+        <button class="nav-button" type="button" data-page="welcome" aria-controls="screen-welcome" aria-current="page"><span class="dot" aria-hidden="true"></span>Boas-vindas</button>
+        <button class="nav-button" type="button" data-page="organization" aria-controls="screen-organization"><span class="dot" aria-hidden="true"></span>Minha organização</button>
+        <button class="nav-button" type="button" data-page="dashboard" aria-controls="screen-dashboard"><span class="dot" aria-hidden="true"></span>Visão geral</button>
+        <button class="nav-button" type="button" data-page="leads" aria-controls="screen-leads"><span class="dot" aria-hidden="true"></span>Leads fictícios</button>
+        <button class="nav-button" type="button" data-page="pipeline" aria-controls="screen-pipeline"><span class="dot" aria-hidden="true"></span>Funil ilustrativo</button>
+        <button class="nav-button" type="button" data-page="monitor" aria-controls="screen-monitor"><span class="dot" aria-hidden="true"></span>Monitoramento de leads</button>
+        <button class="nav-button" type="button" data-page="import" aria-controls="screen-import"><span class="dot" aria-hidden="true"></span>Prévia de importação</button>
+        <button class="nav-button" type="button" data-page="states" aria-controls="screen-states"><span class="dot" aria-hidden="true"></span>Estados da tela</button>
+        <button class="nav-button" type="button" data-page="about" aria-controls="screen-about"><span class="dot" aria-hidden="true"></span>Sobre o protótipo</button>
       </nav>
+      <p class="mobile-nav-hint">Deslize horizontalmente para ver todas as telas. Use Tab ou as setas para navegar.</p>
     </div>
     <div class="side-note"><strong>Ambiente ilustrativo</strong>Sem login, conexão com servidores ou dados de clientes. As informações são inteiramente fictícias.</div>
   </aside>
-  <main class="main" id="conteudo">
+  <main class="main" id="conteudo" tabindex="-1">
     <header class="topbar"><span class="crumb">Imagine CRM <span aria-hidden="true">/</span> Demonstração</span><span class="pill">PROTÓTIPO — DADOS FICTÍCIOS</span></header>
     <div class="content">
       <div class="heading-row">
         <div><p class="eyebrow">S01-PROT-01 · Experiência visual</p><h1 id="page-title" tabindex="-1">Boas-vindas</h1></div>
       </div>
-      <section data-screen="welcome" aria-label="Boas-vindas">
+      <section id="screen-welcome" data-screen="welcome" aria-label="Boas-vindas">
         <p class="lead">Conheça uma amostra da navegação do Imagine CRM, incluindo indicadores, leads e funil de demonstração. Este ambiente não representa uma conta real.</p>
         <div class="hero"><p class="eyebrow">Primeiro contato</p><h2>Uma visão simples para o que vem pela frente.</h2><p>Explore o resumo da organização e os estados que a interface poderá apresentar, sem acessar informações reais.</p><button class="action" type="button" data-go="organization">Explorar minha organização</button></div>
         <div class="two-col">
@@ -111,7 +116,7 @@
           <div class="card"><p class="field-label">Objetivo deste lote</p><div class="metric">09 <span style="font-size:16px;font-weight:700">telas</span></div><p class="soft">Apenas navegação e experiência visual com dados fixos.</p><div class="help">Nenhuma política de acesso ou conexão com a aplicação CRM foi implementada nesta demonstração.</div></div>
         </div>
       </section>
-      <section data-screen="organization" aria-label="Minha organização" hidden>
+      <section id="screen-organization" data-screen="organization" aria-label="Minha organização" hidden>
         <p class="lead">Esta é uma representação visual do futuro resumo próprio. Os dados abaixo são fixos e não foram consultados em um servidor.</p>
         <div class="two-col">
           <div class="card">
@@ -130,7 +135,7 @@
         </div>
       </section>
 
-      <section data-screen="dashboard" aria-label="Visão geral fictícia" hidden>
+      <section id="screen-dashboard" data-screen="dashboard" aria-label="Visão geral fictícia" hidden>
         <p class="lead">Uma representação dos futuros indicadores do CRM. Números fixos para revisão de experiência; nenhuma operação foi realizada.</p>
         <div class="demo-metrics" aria-label="Indicadores exclusivamente fictícios">
           <div class="card"><p class="field-label">Leads demonstrativos</p><p class="metric">04</p><p class="caption">Registros inventados para esta interface</p></div>
@@ -142,7 +147,7 @@
           <div class="card"><h2>O que vem depois</h2><p class="soft">A implementação real dependerá de autenticação, isolamento por empresa, definição dos direitos por ação e campo, privacidade e testes de segurança.</p><div class="help">Esta visão não utiliza qualquer informação de empresa ou cliente.</div></div>
         </div>
       </section>
-      <section data-screen="leads" aria-label="Leads fictícios" hidden>
+      <section id="screen-leads" data-screen="leads" aria-label="Leads fictícios" hidden>
         <p class="lead">Tabela somente para demonstração de disposição visual. Identificadores, etapas, pontuações e classificações são inventados.</p>
         <div class="card">
           <div class="heading-row"><div><p class="eyebrow">Dados sintéticos</p><h2>Leads de exemplo</h2></div><span class="pill">SEM DADOS REAIS</span></div>
@@ -159,7 +164,7 @@
           <button class="action" type="button" data-go="pipeline">Visualizar funil ilustrativo</button>
         </div>
       </section>
-      <section data-screen="pipeline" aria-label="Funil ilustrativo" hidden>
+      <section id="screen-pipeline" data-screen="pipeline" aria-label="Funil ilustrativo" hidden>
         <p class="lead">Três colunas meramente visuais, sem possibilidade de mover ou alterar registros. Uma etapa exibida não comprova evento comercial.</p>
         <div class="demo-board" aria-label="Colunas fictícias do funil">
           <div class="demo-column"><h2>Entrada <span class="count">2</span></h2><p class="caption">Exemplos sem captura real</p>
@@ -177,7 +182,7 @@
       </section>
 
 
-      <section data-screen="monitor" aria-label="Monitoramento sintético de leads" hidden>
+      <section id="screen-monitor" data-screen="monitor" aria-label="Monitoramento sintético de leads" hidden>
         <p class="lead">Explore como a equipe poderá identificar falhas de entrega. Estes cenários são totalmente fictícios e não consultam as APIs, filas ou o CRM.</p>
         <div class="card">
           <div class="heading-row"><div><p class="eyebrow">F3-09 · Demonstração visual</p><h2>Monitoramento de leads</h2></div><span class="pill">SEM CONEXÕES</span></div>
@@ -197,7 +202,7 @@
           <div class="help"><strong>Simulação somente visual.</strong> Selecionar um cenário não realiza busca, reenvio, confirmação, gravação, exclusão ou alteração de status no CRM.</div>
         </div>
       </section>
-      <section data-screen="import" aria-label="Prévia fictícia de importação" hidden>
+      <section id="screen-import" data-screen="import" aria-label="Prévia fictícia de importação" hidden>
         <p class="lead">Visualização de uma prévia inteiramente sintética. Nenhum arquivo é recebido, nenhum registro é gravado e nenhum dado de cliente é processado.</p>
         <div class="card">
           <p class="eyebrow">F3-03 · Exemplo estático</p>
@@ -217,7 +222,7 @@
           <div class="help"><strong>Importação indisponível.</strong> Esta tela não possui seleção de arquivo, botão de envio, validação de tenant, processamento de planilha ou autorização para persistir registros.</div>
         </div>
       </section>
-      <section data-screen="states" aria-label="Estados da tela" hidden>
+      <section id="screen-states" data-screen="states" aria-label="Estados da tela" hidden>
         <p class="lead">Os controles abaixo alternam somente textos de demonstração. Nenhum deles consulta, concede ou revoga acesso real.</p>
         <div class="card preview-layout">
           <div><h2>Visualização dos estados</h2><p class="caption">Escolha um estado visual fictício para observar como a tela pode responder.</p></div>
@@ -231,7 +236,7 @@
           <p class="caption">O estado “exemplo visual” não comprova autorização, autenticação, vínculo ou estado de contrato. Todos os resultados são simulados.</p>
         </div>
       </section>
-      <section data-screen="about" aria-label="Sobre o protótipo" hidden>
+      <section id="screen-about" data-screen="about" aria-label="Sobre o protótipo" hidden>
         <p class="lead">Demonstração local e autocontida para avaliar organização visual, navegação e apresentação dos estados da primeira tela.</p>
         <div class="two-col">
           <div class="card"><h2>O que esta versão contém</h2><div class="info-list">
@@ -339,7 +344,22 @@
     monitorPreview.appendChild(inner);
   }
 
-  nav.forEach(function(node){node.addEventListener('click',function(){navigate(node.getAttribute('data-page'),true);});});
+  // The nine native buttons remain individually tabbable. Arrow/Home/End
+  // only move keyboard focus; no page switch happens without activation.
+  nav.forEach(function(node,index){
+    node.addEventListener('click',function(){navigate(node.getAttribute('data-page'),true);});
+    node.addEventListener('keydown',function(event){
+      let next = null;
+      if(event.key==='ArrowRight'||event.key==='ArrowDown') next=(index+1)%nav.length;
+      else if(event.key==='ArrowLeft'||event.key==='ArrowUp') next=(index+nav.length-1)%nav.length;
+      else if(event.key==='Home') next=0;
+      else if(event.key==='End') next=nav.length-1;
+      if(next===null) return;
+      event.preventDefault();
+      nav[next].focus();
+      nav[next].scrollIntoView({block:'nearest',inline:'nearest'});
+    });
+  });
   document.querySelectorAll('[data-go]').forEach(function(node){node.addEventListener('click',function(){navigate(node.getAttribute('data-go'),true);});});
   stateButtons.forEach(function(node){node.addEventListener('click',function(){showState(node.getAttribute('data-demo-state'));});});
   monitorButtons.forEach(function(node){node.addEventListener('click',function(){showMonitorScenario(node.getAttribute('data-monitor-scenario'));});});

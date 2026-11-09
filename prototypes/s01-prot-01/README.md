@@ -48,6 +48,20 @@ A nona tela **Monitoramento de leads** permite alternar entre quatro narrativas 
 - As mensagens vêm de um objeto local imutável, sem conteúdo fornecido pelo usuário e sem exibição de IDs de cliente.
 - Há controles com `aria-pressed` e painel `aria-live`; a revisão de teclado, layout em 320px e acessibilidade com navegador real continua pendente.
 
+## UX-F3-11 — Navegação por teclado e mobile (09/11/2026)
+
+Esta etapa melhora **somente o protótipo offline de nove telas**:
+
+- Link **“Pular para o conteúdo”**, exibido ao receber foco por teclado, apontando para a landmark `<main id="conteudo" tabindex="-1">`.
+- Cada botão de navegação possui `aria-controls` apontando para o `id` único de sua tela. A tela selecionada mantém `aria-current="page"`, enquanto as demais seções estão ocultas via `hidden`.
+- Os botões continuam utilizáveis por **Tab, Enter e Espaço** (sem modificar comportamento nativo). Como conveniência adicional, **setas, Home e End** movem somente o foco dentro da navegação; a troca efetiva de tela ocorre com ativação do botão.
+- Em largura até 900 px, menu horizontal permanece rolável e mostra orientação textual. Acessibilidade de movimento reduzido e CSP offline são preservadas.
+- `tests/Unit/OfflinePrototypeKeyboardAccessibilityTest.php` adiciona **cinco verificações DOM/estáticas**: link de pular, correspondência nove controles/telas, atalhos, responsividade declarada e política sem rede.
+
+**Limite da evidência:** esses testes analisam DOM e código, **não executam um navegador**, inspeção visual de 320 px, medição de overflow, leitor de tela nem auditoria WCAG completa. A inspeção real de desktop/mobile/teclado continua pendente antes da homologação UX.
+
+Não há mudanças em Laravel, API, autenticação, upload, banco, `ALLOW`, GitHub Pages, deploy, VPS ou produção; todo o conteúdo segue fictício.
+
 ## Critérios de revisão UX-01..UX-08
 
 | Critério | Verificação proposta | Observação |
