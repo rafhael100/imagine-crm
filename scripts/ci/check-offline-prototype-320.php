@@ -137,6 +137,19 @@ $driver = <<<'HTML'
       third.click();
       check(detailPanel.hidden,'mobile repeated click collapses');
       check(!doc.querySelector('form,input,textarea'),'no editor or uploader on mobile');
+      // UX-F3-27: no event carryover or horizontal overflow in 320px.
+      const timeline=()=>Array.from(detailPanel.querySelectorAll('ol.fixture-history li')).map(n=>n.textContent);
+      first.click();
+      check(timeline().length===2&&timeline()[1].includes('revisão visual'),'first timeline on 320px');
+      third.click();
+      check(timeline().length===3&&timeline().some(x=>x.includes('Qualificação')),'third timeline on 320px');
+      check(!timeline().some(x=>x.includes('aguardando revisão visual')),'no stale first event on 320px');
+      stageButtons.find(node=>node.dataset.leadStage==='entrada').click();
+      check(detailPanel.hidden&&timeline().length===0,'filter clears timeline in 320px');
+      stageButtons.find(node=>node.dataset.leadStage==='all').click();
+      first.click();
+      check(timeline().length===2&&!timeline().some(x=>x.includes('Qualificação')),'first event slice restored in 320px');
+      check(doc.documentElement.scrollWidth<=320,'no timeline overflow on mobile');
       check(doc.documentElement.scrollWidth<=320,'no horizontal page overflow on lead screen');
       buttons.find(node=>node.dataset.page==='dashboard').click();
       const quotas=Array.from(doc.querySelectorAll('#screen-dashboard [data-quota-fixture] meter'));

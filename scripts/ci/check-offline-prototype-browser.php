@@ -131,6 +131,23 @@ $testScript = <<<'JS'
     check(!document.querySelector('form,input,textarea'),'detail is not editable');
     check(detailPanel.textContent.includes('não autoriza exportação'),'detail cannot authorize export');
 
+    // UX-F3-27: event lists remain fixture-only and follow selected identity.
+    const timeline=()=>Array.from(detailPanel.querySelectorAll('ol.fixture-history li')).map(x=>x.textContent);
+    check(timeline().length===2,'two invented events for first fixture');
+    check(timeline()[1]==='Amostra aguardando revisão visual.','first fixture event text');
+    third.click();
+    check(timeline().length===3,'three invented events for third fixture');
+    check(timeline().some(x=>x.includes('Qualificação')),'qualification fixture timeline');
+    check(!timeline().some(x=>x.includes('aguardando revisão visual')),'no stale A events in C');
+    filterButtons.find(x=>x.dataset.leadStage==='entrada').click();
+    check(detailPanel.hidden&&detailPanel.querySelectorAll('li').length===0,'hidden fixture clears timeline');
+    filterButtons.find(x=>x.dataset.leadStage==='all').click();
+    first.click();
+    check(timeline().length===2&&!timeline().some(x=>x.includes('Qualificação')),'A timeline restored without C');
+    first.click();
+    check(detailPanel.hidden&&timeline().length===0,'closing detail clears timeline');
+    check(!document.querySelector('form,input,textarea'),'timeline is read only');
+
     // Static quota meters are an isolated visual example, never entitlement.
     const dashboard=nav.find(x=>x.dataset.page==='dashboard');
     dashboard.click();
