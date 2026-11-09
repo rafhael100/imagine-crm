@@ -118,6 +118,23 @@ $driver = <<<'HTML'
       stageButtons.find(node=>node.dataset.leadStage==='all').click();
       sortButtons.find(node=>node.dataset.leadSort==='original').click();
       check(JSON.stringify(order())===JSON.stringify(['Lead Exemplo A','Lead Exemplo B','Lead Exemplo C','Lead Exemplo D']),'original order restored in 320px');
+      // UX-F3-29: intersect fake temperature and stage without horizontal overflow.
+      const temperatureButtons=Array.from(doc.querySelectorAll('#screen-leads [data-lead-temperature]'));
+      check(temperatureButtons.length===4,'four band controls on mobile');
+      temperatureButtons.find(node=>node.dataset.leadTemperature==='hot').click();
+      check(count()===2,'two hot synthetic leads at 320px');
+      stageButtons.find(node=>node.dataset.leadStage==='entrada').click();
+      check(count()===1,'intersection of entry and hot on mobile');
+      stageButtons.find(node=>node.dataset.leadStage==='qualificacao').click();
+      temperatureButtons.find(node=>node.dataset.leadTemperature==='warm').click();
+      check(count()===0,'empty mixed filter at 320px');
+      check(doc.getElementById('lead-filter-summary').textContent.includes('0 de 4'),'screen reader count for empty intersection');
+      stageButtons.find(node=>node.dataset.leadStage==='all').click();
+      check(count()===1,'stage reset preserves temperature on mobile');
+      temperatureButtons.find(node=>node.dataset.leadTemperature==='all').click();
+      check(count()===4,'mobile filter reset shows four demo rows');
+      check(doc.documentElement.scrollWidth<=320,'combined filters do not overflow page');
+
       // UX-F3-26: real 320px keyboard-friendly fixture review.
       const detailButtons=Array.from(doc.querySelectorAll('#screen-leads [data-lead-detail]'));
       const detailPanel=doc.getElementById('lead-detail-preview');
