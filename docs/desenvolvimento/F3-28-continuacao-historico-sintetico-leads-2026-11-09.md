@@ -16,7 +16,7 @@ O `SyntheticLeadHistoryInspector` existente avalia uma única lista de até 32 *
 4. Detecta salto, repetição ou recuo de posição na fronteira: `HISTORY_ORDER_UNVERIFIED`.
 5. Mesmo com duas fatias aparentemente consistentes (até 64 alegações totais), retorna `PROVENANCE_UNVERIFIED`, com `canReadHistory()`, `canWriteHistory()`, `canExportHistory()` e `canProveActorOrChronology()` sempre **false**.
 
-O sinal de saída é `['code' => ...]` somente. Nenhuma fatia é concatenada, persistida, reparada ou exportada por este contrato. O nome `Continuaton` refere-se à **checagem de continuidade alegada**, não a um cursor de produção nem a um serviço de paginação real.
+O sinal de saída é `['code' => ...]` somente. Nenhuma fatia é concatenada, persistida, reparada ou exportada por este contrato. O nome da classe refere-se à **checagem de continuidade alegada**, não a um cursor de produção nem a um serviço de paginação real.
 
 ## Testes e bloqueios
 
