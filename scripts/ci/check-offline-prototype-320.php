@@ -146,6 +146,21 @@ $driver = <<<'HTML'
       check(reviewPanel.textContent.includes('Nenhuma importação foi autorizada ou realizada'),'no import rights at 320px');
       check(doc.documentElement.scrollWidth<=320,'no overflow on review cases at 320px');
 
+      // UX-F3-25: one status region, three fixed denial cases, no export.
+      const accessButtons=Array.from(doc.querySelectorAll('#screen-import [data-access-scenario]'));
+      const accessPanel=doc.getElementById('access-boundary-preview');
+      check(accessButtons.length===3&&accessPanel!==null,'access boundary in 320px');
+      check(accessPanel.textContent.includes('Visualizar não autoriza exportar'),'read/export separation at 320px');
+      accessButtons.find(node=>node.dataset.accessScenario==='cross-tenant').click();
+      check(accessPanel.textContent.includes('Outra organização — acesso não comprovado'),'tenant isolation example at 320px');
+      accessButtons.find(node=>node.dataset.accessScenario==='revoked').click();
+      check(accessPanel.textContent.includes('Vínculo alterado — revalidação necessária'),'revocation example at 320px');
+      accessButtons.find(node=>node.dataset.accessScenario==='read-only').click();
+      check(accessPanel.textContent.includes('Nenhuma exportação foi autorizada ou realizada'),'no export rights at 320px');
+      check(doc.querySelectorAll('[data-access-scenario][aria-pressed="true"]').length===1,'one pressed access scenario');
+      check(doc.documentElement.scrollWidth<=320,'no horizontal overflow on access boundary at 320px');
+      check(!doc.querySelector('form,input,textarea'),'no input or export controls');
+
       done=true;
       marker.setAttribute('data-imagine-320','PASS');
       marker.textContent='UX-F3-13 PASS: actual 320 CSS pixels, no page overflow, offline keyboard and nav';

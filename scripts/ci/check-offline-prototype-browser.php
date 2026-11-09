@@ -143,6 +143,20 @@ $testScript = <<<'JS'
     check(reviewPanel.textContent.includes('Nenhuma importação foi autorizada ou realizada'),'denial persists');
     check(document.querySelectorAll('[data-import-review][aria-pressed="true"]').length===1,'one selected review case');
 
+    // Access boundary scenarios are hard-coded and cannot export or authorize.
+    const accessButtons=Array.from(document.querySelectorAll('#screen-import [data-access-scenario]'));
+    const accessPanel=document.getElementById('access-boundary-preview');
+    check(accessButtons.length===3&&accessPanel!==null,'three offline access boundary cases');
+    check(accessPanel.textContent.includes('Visualizar não autoriza exportar'),'read does not imply export');
+    accessButtons.find(x=>x.dataset.accessScenario==='cross-tenant').click();
+    check(accessPanel.textContent.includes('Outra organização — acesso não comprovado'),'cross-tenant boundary fixture');
+    check(document.querySelectorAll('[data-access-scenario][aria-pressed="true"]').length===1,'one active access scenario');
+    accessButtons.find(x=>x.dataset.accessScenario==='revoked').click();
+    check(accessPanel.textContent.includes('Vínculo alterado — revalidação necessária'),'revocation boundary fixture');
+    accessButtons.find(x=>x.dataset.accessScenario==='read-only').click();
+    check(accessPanel.textContent.includes('Nenhuma exportação foi autorizada ou realizada'),'all cases deny export');
+    check(!document.querySelector('form,input,textarea'),'no export or input form');
+
     const skip=document.querySelector('.skip-link');
     check(skip&&skip.getAttribute('href')==='#conteudo','skip link exists');
     skip.focus();
