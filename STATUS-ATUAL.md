@@ -3,7 +3,7 @@
 **Atualizado em:** 09/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
-**HEAD DEV no levantamento:** `7df4466663209859d22a41b5d7011d15e61738c0` — UX-F3-14 [PR #64](https://github.com/rafhael100/imagine-crm/pull/64), **MERGED somente na DEV**, com filtro de leads fictícios testado em Chromium a 520 px e 320 px, após ENT-01 [PR #63](https://github.com/rafhael100/imagine-crm/pull/63).  
+**HEAD DEV no levantamento:** `c163961ec1aee8536fcdb28c9d191fe02764442d` — ENT-03 [PR #68](https://github.com/rafhael100/imagine-crm/pull/68), **MERGED somente DEV**, após ENT-02 [PR #67](https://github.com/rafhael100/imagine-crm/pull/67). Ambos permanecem informativos, sem autorização funcional; o histórico OPS-03 anterior tinha HEAD `7df4466663209859d22a41b5d7011d15e61738c0`.
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
@@ -26,6 +26,8 @@
 | UX | [Protótipo offline de nove telas](prototypes/s01-prot-01/index.html), [PRs #59](https://github.com/rafhael100/imagine-crm/pull/59), [#60](https://github.com/rafhael100/imagine-crm/pull/60), [#61](https://github.com/rafhael100/imagine-crm/pull/61) | Teclado e layout testados com Chromium real em 520/320 CSS px; inspeção humana/WCAG ainda pendente |
 | ENT-01 — cálculo puro de franquias por recurso | [PR #63](https://github.com/rafhael100/imagine-crm/pull/63) | Integrado DEV; saldo/excesso sem ativação de plano, cobrança ou autorização |
 | UX-F3-14 — filtro de leads fictícios por etapa | [PR #64](https://github.com/rafhael100/imagine-crm/pull/64) | Integrado DEV; filtro/contagens no navegador sem dados reais ou persistência |
+| ENT-02 — faixas informativas para anexos, sem upload | [PR #67](https://github.com/rafhael100/imagine-crm/pull/67) | Integrado DEV: limiares aritméticos de 80/95/100%, sem concessão de direitos nem cobrança |
+| ENT-03 — janela sintética informativa de trial | [PR #68](https://github.com/rafhael100/imagine-crm/pull/68) | Integrado DEV: fases/contagem de 14 dias, sem OTP/CNPJ, suspensão, retenção, entitlement, ativação ou cobrança |
 | CORE/SEG/AUT/INT/LGPD | [Issue #27](https://github.com/rafhael100/imagine-crm/issues/27) e gates da documentação | **67 pendências CORE e gates especializados ABERTOS**, sem homologação |
 
 ## B. Evidências recentes de CI
@@ -45,6 +47,10 @@
 - [ENT-01 pré-merge F0 #42609578412](https://github.com/rafhael100/imagine-crm/actions/runs/42609578412): **726 passed / 77 skipped**; [PostgreSQL #42609578448](https://github.com/rafhael100/imagine-crm/actions/runs/42609578448) **802 passed / 1 skipped**; [push pós-merge F0 #42609828289](https://github.com/rafhael100/imagine-crm/actions/runs/42609828289) **725 passed / 78 skipped**, [PostgreSQL #42609828364](https://github.com/rafhael100/imagine-crm/actions/runs/42609828364) **801 passed / 2 skipped**, ambos SUCCESS.
 - [UX-F3-14 pré-merge F0 #42610462217](https://github.com/rafhael100/imagine-crm/actions/runs/42610462217): **728 passed / 77 skipped** e Chromium real 520 px/320 px PASS, incluindo filtros; [PostgreSQL #42610462071](https://github.com/rafhael100/imagine-crm/actions/runs/42610462071): **804 passed / 1 skipped**. [Push pós-merge F0 #42610696263](https://github.com/rafhael100/imagine-crm/actions/runs/42610696263) **727 passed / 78 skipped** e [PostgreSQL #42610696197](https://github.com/rafhael100/imagine-crm/actions/runs/42610696197) **803 passed / 2 skipped**, ambos SUCCESS.
 - A CI verde não demonstra homologação de quotas/entitlements, triagem comercial real, importações ou acesso multiempresa de clientes.
+
+- **ENT-02 pré-merge** F0 [#42614485114](https://github.com/rafhael100/imagine-crm/actions/runs/42614485114) **758 passed / 77 skipped**; PostgreSQL [#42614485129](https://github.com/rafhael100/imagine-crm/actions/runs/42614485129) **834 passed / 1 skipped**. **Pós-merge** na DEV `00ee814bfed714d034624d9ccb700f5170b99be6`: [F0 #42614860559](https://github.com/rafhael100/imagine-crm/actions/runs/42614860559) e [PostgreSQL #42614860567](https://github.com/rafhael100/imagine-crm/actions/runs/42614860567), ambos **SUCCESS**.
+- **ENT-03 pré-merge** na HEAD `bbe2683775f26202df46bb9b4f32c815d6d25326`: [F0 #42617084658](https://github.com/rafhael100/imagine-crm/actions/runs/42617084658) **772 passed / 77 skipped / 3.757 assertions** e Chromium 320px PASS; [PostgreSQL #42617084590](https://github.com/rafhael100/imagine-crm/actions/runs/42617084590) **848 passed / 1 skipped / 4.808 assertions**, ambos **SUCCESS**. **Pós-merge** na DEV `c163961ec1aee8536fcdb28c9d191fe02764442d`: [F0 #42617271487](https://github.com/rafhael100/imagine-crm/actions/runs/42617271487) e [PostgreSQL #42617271556](https://github.com/rafhael100/imagine-crm/actions/runs/42617271556), ambos **SUCCESS**.
+- ENT-03 é *projeção de interface em segundos UTC*, não política contratual homologada de dias corridos. Permanecem pendentes marco confiável de início, único trial por CNPJ, consentimento/OTP, transição, restrição de acesso e retenção 60 dias. **Não confundir CI verde com autorização funcional ou de produção.**
 
 ## C. Bloqueios para passar de laboratório a produto
 
