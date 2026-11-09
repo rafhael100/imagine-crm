@@ -62,6 +62,16 @@ Esta etapa melhora **somente o protótipo offline de nove telas**:
 
 Não há mudanças em Laravel, API, autenticação, upload, banco, `ALLOW`, GitHub Pages, deploy, VPS ou produção; todo o conteúdo segue fictício.
 
+## UX-F3-12 — Smoke test em navegador Chromium (09/11/2026)
+
+O script `scripts/ci/check-offline-prototype-browser.php` executa o HTML do protótipo como arquivo local `file://` em **Chrome/Chromium headless realmente disponível** no runner GitHub-hosted. A etapa está integrada ao workflow F0, depois dos testes PHPUnit.
+
+O teste usa uma **cópia temporária** do HTML com um pequeno script de verificação anexado (o código original e o repositório não são alterados), navegador a 520 px e CSP original bloqueando conexões. As verificações executam cliques reais pelo DOM, focagem no título, movimentação de foco por setas/Home/End, o link de pular, uma única tela visível, menu horizontal `overflow-x:auto`, dica mobile visível e ausência de scroll horizontal da página.
+
+A ausência de Chromium, erro de inicialização, falha de qualquer assert ou falta de marcador PASS **falha a CI**, sem fingir execução. **Nenhum package npm, navegador remoto, servidor web, download novo, acesso a clientes, conta ou credencial** é solicitado.
+
+**Limitações:** smoke test automatizado não representa auditoria WCAG completa, leitor de tela, teste de toque, screenshot ou inspeção do layout **320 px** (a janela testada é de 520 px). Revisão visual por dispositivo e validação humana continuam pendentes. Este teste não implementa autenticação, rota pública, dados reais, backend ou produção.
+
 ## Critérios de revisão UX-01..UX-08
 
 | Critério | Verificação proposta | Observação |
