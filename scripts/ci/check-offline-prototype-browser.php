@@ -154,7 +154,7 @@ $testScript = <<<'JS'
     const pipelineReview=Array.from(document.querySelectorAll('#screen-pipeline [data-pipeline-review]'));
     check(pipelineReview.length===4,'four pipeline review buttons');
     pipelineReview.find(x=>x.dataset.pipelineReview==='c').click();
-    check(heading.textContent==='Leads fictícios','pipeline review opens leads page');
+    check(document.getElementById('page-title').textContent==='Leads fictícios','pipeline review opens leads page');
     check(document.querySelectorAll('[data-screen]:not([hidden])').length===1,'only leads page active after pipeline navigation');
     check(document.activeElement===detailButtons.find(x=>x.dataset.leadDetail==='c'),'focus moved to matching lead button');
     check(document.getElementById('lead-filter-summary').textContent.includes('4 de 4'),'pipeline review resets stage filter');
