@@ -29,6 +29,8 @@ final class LeadIntakeReleaseGateTest extends TestCase
 {
     public function test_no_public_mutating_route_is_published_before_security_review(): void
     {
+        // Private local disk route must remain OFF until signed-file access is reviewed.
+        $this->assertFalse(config('filesystems.disks.local.serve'));
         $routes = Route::getRoutes();
         $this->assertGreaterThan(0, $routes->count(), 'Expected at least the built-in /up health route.');
 
