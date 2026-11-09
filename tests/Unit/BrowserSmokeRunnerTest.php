@@ -79,7 +79,7 @@ HTML);
         self::assertStringContainsString("return ['passed' => false", $helper);
         self::assertStringContainsString("if (!$" . "timedOut && $" . "process->isSuccessful()", $helper);
         self::assertStringContainsString('for ($attempt = 1; $attempt <= 2; ++$attempt)', $helper);
-        self::assertStringContainsString("'--user-data-dir='.$profile", $helper);
+        self::assertStringContainsString("'--user-data-dir='.".'$profile', $helper);
         self::assertStringContainsString("'--disable-dev-shm-usage'", $helper);
         self::assertStringContainsString('self::removeTemporaryProfile($profile)', $helper);
     }
