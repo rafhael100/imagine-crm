@@ -106,6 +106,15 @@ $testScript = <<<'JS'
     check(document.querySelectorAll('[data-lead-sort][aria-pressed="true"]').length===1,'one selected sort');
     check(document.querySelectorAll('[data-lead-stage][aria-pressed="true"]').length===1,'one pressed filter');
 
+    // Static quota meters are an isolated visual example, never entitlement.
+    const dashboard=nav.find(x=>x.dataset.page==='dashboard');
+    dashboard.click();
+    const meters=Array.from(document.querySelectorAll('#screen-dashboard [data-quota-fixture] meter'));
+    check(meters.length===3,'three fictional quota meters');
+    check(JSON.stringify(meters.map(x=>[x.value,x.max]))===JSON.stringify([[4,20],[1,2],[0,2]]),'synthetic quota meter values');
+    check(document.getElementById('quota-demo-title').textContent==='Franquias demonstrativas','quota demo heading');
+    check(document.querySelectorAll('[data-screen]:not([hidden])').length===1,'dashboard isolated from other screens');
+    
     const skip=document.querySelector('.skip-link');
     check(skip&&skip.getAttribute('href')==='#conteudo','skip link exists');
     skip.focus();

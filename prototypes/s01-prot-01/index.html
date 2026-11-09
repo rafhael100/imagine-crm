@@ -57,7 +57,7 @@
     .info-list{display:grid;gap:13px}.info-item{display:flex;gap:12px;color:#43576c;font-size:14px}.check{color:#168478;font-weight:800}
     .disclaimer{margin-top:25px;font-size:12px;color:#73869b;max-width:710px}
     .bottom{margin-top:25px;color:#8b9bad;font-size:12px;display:flex;gap:14px;flex-wrap:wrap}
-    .demo-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.demo-metrics .metric{margin:0 0 8px}
+    .demo-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.demo-metrics .metric{margin:0 0 8px}.quota-demo-meter{display:block;width:100%;max-width:100%;margin-top:9px;accent-color:#168478}
     .table-scroll{overflow:auto;max-width:100%;border:1px solid #e3e9f0;border-radius:14px;margin:20px 0}
     .demo-table{width:100%;min-width:620px;border-collapse:collapse;text-align:left;font-size:14px}
     .demo-table th{font-size:12px;color:#6c8192;background:#f3f8fa;font-weight:800}
@@ -142,6 +142,17 @@
           <div class="card"><p class="field-label">Etapas ilustrativas</p><p class="metric">03</p><p class="caption">Não representam um funil configurado</p></div>
           <div class="card"><p class="field-label">Dados de clientes</p><p class="metric">00</p><p class="caption">Nenhum acesso real ou integração</p></div>
         </div>
+        <section class="card" data-quota-demo aria-labelledby="quota-demo-title" style="margin-top:18px">
+          <p class="eyebrow">ENT-04 · Simulação visual independente</p>
+          <h2 id="quota-demo-title">Franquias demonstrativas</h2>
+          <p class="soft">Todos os números a seguir são fictícios e não representam recursos liberados, um plano contratado ou o consumo de qualquer cliente.</p>
+          <div class="demo-metrics">
+            <div data-quota-fixture="leads"><p class="field-label">Leads fictícios</p><p class="field-value">4 de 20</p><meter class="quota-demo-meter" min="0" max="20" value="4" aria-label="Leads fictícios: 4 de 20">4 de 20</meter></div>
+            <div data-quota-fixture="users"><p class="field-label">Usuários ilustrativos</p><p class="field-value">1 de 2</p><meter class="quota-demo-meter" min="0" max="2" value="1" aria-label="Usuários ilustrativos: 1 de 2">1 de 2</meter></div>
+            <div data-quota-fixture="automations"><p class="field-label">Automações ilustrativas</p><p class="field-value">0 de 2</p><meter class="quota-demo-meter" min="0" max="2" value="0" aria-label="Automações ilustrativas: 0 de 2">0 de 2</meter></div>
+          </div>
+          <div class="help">Os medidores HTML são estáticos e não consultam o componente PHP ENT-04. Valor exibido não concede permissão, não confirma trial, não consome franquia e não gera cobrança.</div>
+        </section>
         <div class="two-col" style="margin-top:18px">
           <div class="card"><p class="eyebrow">Acompanhamento comercial — demonstração</p><h2>Do primeiro contato à qualificação</h2><p class="soft">Explore uma tabela sintética de leads e visualize sua organização em colunas. Não há botão de salvar, edição ou envio de mensagem.</p><button class="action" type="button" data-go="leads">Ver leads fictícios</button></div>
           <div class="card"><h2>O que vem depois</h2><p class="soft">A implementação real dependerá de autenticação, isolamento por empresa, definição dos direitos por ação e campo, privacidade e testes de segurança.</p><div class="help">Esta visão não utiliza qualquer informação de empresa ou cliente.</div></div>
