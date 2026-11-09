@@ -57,3 +57,6 @@ jobs:
 
       - name: Run tests with synthetic data only
         run: php artisan test --no-ansi
+
+      - name: Browser smoke test of offline synthetic CRM prototype
+        run: php scripts/ci/check-offline-prototype-browser.php
