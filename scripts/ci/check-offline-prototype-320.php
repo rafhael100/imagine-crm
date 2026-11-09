@@ -95,6 +95,18 @@ $driver = <<<'HTML'
       leads.dispatchEvent(new win.KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true}));
       check(doc.activeElement===pipeline,'arrow focus at 320');
       check(doc.getElementById('page-title').textContent==='Monitoramento de leads','no implicit activation');
+      // Stage filtering is demo-only, but its DOM behavior must work in 320px.
+      leads.click();
+      const stageButtons=Array.from(doc.querySelectorAll('#screen-leads [data-lead-stage]'));
+      const leadRows=Array.from(doc.querySelectorAll('#screen-leads [data-lead-fixture-stage]'));
+      const count=()=>leadRows.filter(node=>!node.hidden).length;
+      check(stageButtons.length===4&&leadRows.length===4,'four stage controls and demo records');
+      stageButtons.find(node=>node.dataset.leadStage==='entrada').click();
+      check(count()===2,'two synthetic entries in 320px');
+      check(doc.getElementById('lead-filter-summary').textContent.includes('2 de 4'),'filter status announces count');
+      stageButtons.find(node=>node.dataset.leadStage==='all').click();
+      check(count()===4,'all synthetic entries restored');
+      check(doc.documentElement.scrollWidth<=320,'no horizontal page overflow on lead screen');
 
       done=true;
       marker.setAttribute('data-imagine-320','PASS');
