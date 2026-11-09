@@ -111,13 +111,25 @@ try {
     $process->run();
 
     $output = $process->getOutput();
-    if (!$process->isSuccessful()
-        || !str_contains($output, 'data-imagine-browser-smoke="PASS"')) {
-        $match = [];
-        preg_match('/UX-F3-12 FAIL:[^<]*/', $output, $match);
-        fwrite(STDERR, 'UX-F3-12 failed in headless browser: '
-            .($match[0] ?? 'no PASS marker; check Chrome/sandbox or frontend errors')
-            .PHP_EOL);
+    // Match the OUTPUT ELEMENT, not an incidental string in script source.
+    $match = [];
+    $found = preg_match(
+        '/<output\b[^>]*data-imagine-browser-smoke="(PASS|FAIL)"[^>]*>(.*?)<\/output>/s',
+        $output,
+        $match,
+    ) === 1;
+
+    if (!$process->isSuccessful() || !$found || $match[1] !== 'PASS') {
+        // Synthetic demo only. No user fields or secrets in this HTML.
+        $reason = $found
+            ? html_entity_decode(strip_tags($match[2]), ENT_QUOTES | ENT_HTML5, 'UTF-8')
+            : 'no output element from executed test script';
+        $reason = mb_substr($reason, 0, 240);
+        $stderr = mb_substr(trim($process->getErrorOutput()), -420);
+        fwrite(STDERR, 'UX-F3-12 browser failure: '.$reason
+            .' (exit '.var_export($process->getExitCode(), true)
+            .'; DOM bytes '.strlen($output)
+            .'; Chrome stderr tail: '.$stderr.')'.PHP_EOL);
         exit(1);
     }
 
