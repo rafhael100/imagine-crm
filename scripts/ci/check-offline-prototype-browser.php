@@ -114,6 +114,8 @@ $testScript = <<<'JS'
     const third=detailButtons.find(x=>x.dataset.leadDetail==='c');
     first.click();
     check(!detailPanel.hidden&&detailPanel.textContent.includes('Lead Exemplo A'),'first fixture opens details');
+    check(detailPanel.querySelectorAll('ol[aria-label="Eventos ilustrativos, sem registros reais"] li').length===2,'two fictional initial events');
+    check(detailPanel.textContent.includes('não verificada'),'history does not claim provenance');
     check(first.getAttribute('aria-expanded')==='true','selected fixture aria-expanded');
     filterButtons.find(x=>x.dataset.leadStage==='qualificacao').click();
     check(detailPanel.hidden&&first.getAttribute('aria-expanded')==='false','hiding selected fixture closes panel');
@@ -122,12 +124,20 @@ $testScript = <<<'JS'
     third.click();
     check(document.activeElement===third,'detail selection retains button focus');
     check(detailPanel.textContent.includes('Pontuação fixa: 85'),'third fixture details');
+    check(detailPanel.querySelectorAll('ol li').length===2&&detailPanel.textContent.includes('Qualificação'),'qualification history is distinct');
     sortButtons.find(x=>x.dataset.leadSort==='low').click();
     check(!detailPanel.hidden&&detailPanel.textContent.includes('Lead Exemplo C'),'sorting keeps selected lead details');
     third.click();
     check(detailPanel.hidden&&document.querySelectorAll('[data-lead-detail][aria-expanded="true"]').length===0,'same control collapses details');
+    check(detailPanel.querySelectorAll('ol li').length===0,'collapsed history is removed from DOM');
     first.click();
     check(!detailPanel.hidden,'reopen detail');
+    const second=detailButtons.find(x=>x.dataset.leadDetail==='b');
+    second.click();
+    check(detailPanel.querySelectorAll('ol li').length===3,'second lead has three fictional events');
+    check(detailPanel.textContent.includes('Atribuição ilustrativa'),'second fixture does not inherit first history');
+    first.click();
+    check(detailPanel.querySelectorAll('ol li').length===2&&!detailPanel.textContent.includes('Atribuição ilustrativa'),'selection swaps history with no stale content');
     check(!document.querySelector('form,input,textarea'),'detail is not editable');
     check(detailPanel.textContent.includes('não autoriza exportação'),'detail cannot authorize export');
 
