@@ -244,6 +244,17 @@
             </table>
           </div>
           <div class="help"><strong>Importação indisponível.</strong> Esta tela não possui seleção de arquivo, botão de envio, validação de tenant, processamento de planilha ou autorização para persistir registros.</div>
+          <div style="margin-top:22px">
+            <h3>Correspondência de colunas — simulação</h3>
+            <p class="soft">Escolha um estado ilustrativo. Os rótulos e números não foram lidos de um arquivo nem do backend.</p>
+            <div class="switcher" role="group" aria-label="Estados ilustrativos do mapeamento de colunas">
+              <button type="button" class="state-button" data-import-mapping="complete" aria-pressed="true">3 de 3 mapeadas</button>
+              <button type="button" class="state-button" data-import-mapping="partial" aria-pressed="false">Mapeamento parcial</button>
+              <button type="button" class="state-button" data-import-mapping="invalid" aria-pressed="false">Estrutura inválida</button>
+            </div>
+            <div id="import-mapping-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
+            <p class="caption">Esta demonstração não executa o PHP F3-21/F3-22, não permite upload e não concede direito de importar.</p>
+          </div>
         </div>
       </section>
       <section id="screen-states" data-screen="states" aria-label="Estados da tela" hidden>
@@ -288,6 +299,8 @@
   const stateButtons = Array.from(document.querySelectorAll('[data-demo-state]'));
   const monitorButtons = Array.from(document.querySelectorAll('[data-monitor-scenario]'));
   const monitorPreview = document.getElementById('monitor-preview');
+  const importMappingButtons = Array.from(document.querySelectorAll('[data-import-mapping]'));
+  const importMappingPreview = document.getElementById('import-mapping-preview');
   const leadFilterButtons = Array.from(document.querySelectorAll('[data-lead-stage]'));
   const leadFixtureRows = Array.from(document.querySelectorAll('#screen-leads [data-lead-fixture-stage]'));
   const leadFilterSummary = document.getElementById('lead-filter-summary');
@@ -413,6 +426,40 @@
     monitorPreview.appendChild(inner);
   }
 
+  // Purely visual states based on fixed, invented descriptions.
+  // No CSV parsing, user input, requests, persistence or permission decisions.
+  function showImportMappingState(code) {
+    const cases = Object.freeze({
+      complete: {
+        title:'Três correspondências ilustrativas',
+        description:'3 de 3 colunas fictícias têm posição correspondente.',
+        detail:'Mapa completo não significa arquivo validado ou importação autorizada.'
+      },
+      partial: {
+        title:'Há colunas sem correspondência',
+        description:'1 de 3 colunas fictícias está mapeada.',
+        detail:'As duas posições restantes não foram preenchidas automaticamente.'
+      },
+      invalid: {
+        title:'Estrutura de mapeamento inválida',
+        description:'Uma posição fictícia está duplicada ou fora do intervalo.',
+        detail:'Esta situação exige revisão e não transforma dados nem cria registros.'
+      }
+    });
+    if (!Object.prototype.hasOwnProperty.call(cases,code)) return;
+    importMappingButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(node.getAttribute('data-import-mapping')===code));
+    });
+    importMappingPreview.replaceChildren();
+    const inner=document.createElement('div');
+    addText(inner,'p','CENÁRIO DE IMPORTAÇÃO — DADOS FICTÍCIOS','state-note');
+    addText(inner,'h3',cases[code].title);
+    addText(inner,'p',cases[code].description);
+    addText(inner,'p',cases[code].detail);
+    addText(inner,'p','Nenhuma importação foi autorizada ou realizada.');
+    importMappingPreview.appendChild(inner);
+  }
+
   // The nine native buttons remain individually tabbable. Arrow/Home/End
   // only move keyboard focus; no page switch happens without activation.
   nav.forEach(function(node,index){
@@ -432,6 +479,7 @@
   document.querySelectorAll('[data-go]').forEach(function(node){node.addEventListener('click',function(){navigate(node.getAttribute('data-go'),true);});});
   stateButtons.forEach(function(node){node.addEventListener('click',function(){showState(node.getAttribute('data-demo-state'));});});
   monitorButtons.forEach(function(node){node.addEventListener('click',function(){showMonitorScenario(node.getAttribute('data-monitor-scenario'));});});
+  importMappingButtons.forEach(function(node){node.addEventListener('click',function(){showImportMappingState(node.getAttribute('data-import-mapping'));});});
   leadFilterButtons.forEach(function(node){node.addEventListener('click',function(){showLeadStage(node.getAttribute('data-lead-stage'));});});
   leadSortButtons.forEach(function(node){node.addEventListener('click',function(){sortLeadFixtures(node.getAttribute('data-lead-sort'));});});
   navigate('welcome',false);
@@ -439,6 +487,7 @@
   sortLeadFixtures('original');
   showState('loading');
   showMonitorScenario('received');
+  showImportMappingState('complete');
 })();
 </script>
 </body>
