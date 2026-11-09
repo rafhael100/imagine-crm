@@ -1,5 +1,51 @@
 # CRM Imagine — STATUS ATUAL
 
+**Atualizado em:** 09/11/2026 (America/Sao_Paulo).  
+**Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
+**Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
+**HEAD DEV no levantamento:** `7e1658b157b9334c1967b9d5d5161bd6d7d00818` — F3-18 [PR #53](https://github.com/rafhael100/imagine-crm/pull/53), **MERGED apenas DEV**.  
+**HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
+**VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
+
+## A. Estado consolidado — 09/11/2026
+
+| Frente | Evidência | Situação |
+|---|---|---|
+| F1-02 a F1-10 — IAM/RLS/contratos iniciais | [PR #20](https://github.com/rafhael100/imagine-crm/pull/20) e anteriores | Experimentos DEV integrados; sem direitos reais |
+| F3-01 a F3-06 — identidade/submissões, exportação, UX e formulário mínimo | [Issue #35](https://github.com/rafhael100/imagine-crm/issues/35), PRs #36–#41 | Experimentos e protótipos integrados DEV |
+| F3-07 a F3-12 — evidências, retenção, reconciliação, envelope, idempotência CAS | PRs #42–#47 | PHP puro/contratos sintéticos DEV; **não** são APIs operacionais |
+| F3-13 — unicidade física e RLS no PostgreSQL descartável | [PR #48](https://github.com/rafhael100/imagine-crm/pull/48) | Testes de contenção CI integrados DEV; não é ledger de leads |
+| F3-14 — proposta de ledger dedicado e revisão especializada | [PR #49](https://github.com/rafhael100/imagine-crm/pull/49) | **DRAFT documental, sem merge**, aguardando parecer independente SEG/DBA |
+| F3-15 — HMAC e limites de replay | [PR #50](https://github.com/rafhael100/imagine-crm/pull/50) | Laboratório PHP integrado DEV; sem origem/chaves reais |
+| F3-16 — replay e nonce no banco descartável | [PR #51](https://github.com/rafhael100/imagine-crm/pull/51) | Testes físicos integrados DEV, sem anti-replay global |
+| F3-17 — GUC não é identidade autenticada | [PR #52](https://github.com/rafhael100/imagine-crm/pull/52) | Evidência de risco integrada DEV; RLS condicionada a contexto verificado |
+| F3-18 — bloqueio de rotas e desativação de `local.serve` | [PR #53](https://github.com/rafhael100/imagine-crm/pull/53) | Integrado DEV; nenhum endpoint de negócio publicado |
+| UX | [Protótipo offline de nove telas](prototypes/s01-prot-01/index.html) | Navegação com fixtures, sem backend; revisão visual real/320 px/teclado pendente |
+| CORE/SEG/AUT/INT/LGPD | [Issue #27](https://github.com/rafhael100/imagine-crm/issues/27) e gates da documentação | **67 pendências CORE e gates especializados ABERTOS**, sem homologação |
+
+## B. Evidências recentes de CI
+
+- [F3-17 Laravel pós-merge](https://github.com/rafhael100/imagine-crm/actions/runs/42555951350) e [PostgreSQL pós-merge](https://github.com/rafhael100/imagine-crm/actions/runs/42555951348): **SUCCESS** na HEAD `d494bc4b920ca1553addbef34419f522b8346249`.
+- [F3-18 Laravel pré-merge](https://github.com/rafhael100/imagine-crm/actions/runs/42556600454): **643 passed / 77 skipped / 3.057 assertions**. [PostgreSQL pré-merge](https://github.com/rafhael100/imagine-crm/actions/runs/42556600460): **719 passed / 1 skipped / 4.108 assertions**.
+- [F3-18 Laravel pós-merge](https://github.com/rafhael100/imagine-crm/actions/runs/42557261161) e [PostgreSQL pós-merge](https://github.com/rafhael100/imagine-crm/actions/runs/42557261201): rodadas acionadas para HEAD `7e1658b157b9334c1967b9d5d5161bd6d7d00818`; **consultar logs/estado corrente antes de declarar concluídas**.
+- A primeira CI F3-18 detectou rota `PUT storage/{path}` por `'serve' => true` no disco local; a revisão passou após `'serve' => false`. Isso **não** constitui homologação do uso futuro de anexos.
+
+## C. Bloqueios para passar de laboratório a produto
+
+1. **Revisor SEG/DBA independente NÃO DESIGNADO:** [Issue #27](https://github.com/rafhael100/imagine-crm/issues/27). O documento [F3-14-R01](https://github.com/rafhael100/imagine-crm/blob/docs/f3-14-lead-ledger-transactional-design-2026-11-08/docs/desenvolvimento/F3-14-R01-pacote-revisao-independente-seg-dba-2026-11-09.md), integrado **apenas no PR #49 DRAFT**, reúne riscos e critérios de aceite; **não é parecer**.
+2. **IAM/tenant:** `app.tenant_id` mutável precisa de origem autenticada, membership vigente, delegação, escopo por recurso/campo e limpeza em workers/pools; a RLS não é autorização autossuficiente.
+3. **Ledger/captura:** nenhum schema dedicado aprovado, confirmação final CRM, idempotência distribuída ou recepção real; necessita decisão de arquitetura e parecer SEG/DBA.
+4. **Privacidade:** finalidade/base legal, aviso/controlador, retenção/exclusão, segurança dos contatos e auditoria devem ser aceitos antes de receber dados reais.
+5. **Release:** `DenyByDefaultAuthorizer` permanece deny-only; não autorizar `ALLOW`, APIs públicas, migrations operacionais, `main`, VPS ou produção por mera CI verde.
+
+## D. Fluxo de continuidade autorizado
+
+Prosseguir com **branches independentes, PRs revisáveis, fixtures sintéticas, CI e testes de segurança** sem solicitar confirmações rotineiras. Só requerer decisão humana sobre mudanças críticas de arquitetura, contratação/designação do revisor independente, permissões, acesso a dados reais, despesas e implantação. GitHub e o estado efetivo das PRs/Actions prevalecem sobre este resumo datado.
+
+---
+
+## E. Histórico arquivado de 06/11/2026 (preservado para rastreabilidade)
+
 **Atualizado em:** 06/11/2026 (America/Sao_Paulo).  
 **Base:** GitHub Issues, PRs, commits e Actions consultados na data.  
 **Natureza:** registro operacional datado, não aprovação de gates, homologação de segurança nem autorização de produção.
