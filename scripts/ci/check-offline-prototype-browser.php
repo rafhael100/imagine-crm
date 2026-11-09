@@ -81,7 +81,15 @@ $testScript = <<<'JS'
     check(window.innerWidth<=900,'narrow viewport used');
     check(getComputedStyle(menu).overflowX==='auto','mobile navigation is scrollable');
     check(getComputedStyle(document.querySelector('.mobile-nav-hint')).display!=='none','mobile hint visible');
-    check(document.documentElement.scrollWidth<=window.innerWidth,'no page-level horizontal overflow');
+    const visibleWidth=window.innerWidth, docWidth=document.documentElement.scrollWidth;
+    if(docWidth>visibleWidth){
+      const culprits=Array.from(document.querySelectorAll('body *')).map(el=>{
+        const r=el.getBoundingClientRect();
+        return {name:el.tagName.toLowerCase()+(el.className && typeof el.className==='string'?'.'+el.className.split(' ').join('.'):''),
+          right:Math.round(r.right),width:Math.round(r.width)};
+      }).filter(x=>x.right>visibleWidth+1).slice(0,6);
+      throw new Error('horizontal overflow '+docWidth+'/'+visibleWidth+' culprits '+JSON.stringify(culprits));
+    }
 
     check(!document.querySelector('form,input,textarea'),'no data-entry form');
     output.setAttribute('data-imagine-browser-smoke','PASS');
