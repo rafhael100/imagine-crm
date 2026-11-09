@@ -63,6 +63,8 @@
     .demo-table th{font-size:12px;color:#6c8192;background:#f3f8fa;font-weight:800}
     .demo-table td,.demo-table th{padding:15px 16px;border-bottom:1px solid #e7edf2;white-space:nowrap}
     .demo-table tbody tr:last-child td{border-bottom:0}
+    .lead-detail-trigger{border:0;background:transparent;color:#1b5263;cursor:pointer;font-weight:750;text-align:left;padding:5px 2px;border-radius:4px;text-decoration:underline;text-underline-offset:3px}
+    .lead-detail-trigger:hover{color:#126f71}.lead-detail-trigger:focus-visible{outline:3px solid #37bcb0;outline-offset:3px}
     .label-soft{display:inline-flex;border-radius:999px;padding:5px 11px;background:#e8f3f4;color:#27636c;font-weight:750;font-size:12px}
     .demo-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:16px}
     .demo-column{padding:18px;background:#ecf2f5;border-radius:16px;border:1px solid #dfe9ec;min-width:0}
@@ -178,11 +180,16 @@
           <div class="table-scroll" tabindex="0" aria-label="Tabela de leads fictícios, role para navegar horizontalmente se necessário">
             <table class="demo-table"><thead><tr><th scope="col">Identificação fictícia</th><th scope="col">Etapa visual</th><th scope="col">Pontuação exemplo</th><th scope="col">Faixa descritiva</th></tr></thead>
             <tbody>
-              <tr data-lead-fixture-stage="entrada" data-lead-fixture-score="30" data-lead-fixture-order="0"><td><strong>Lead Exemplo A</strong></td><td>Entrada</td><td>30</td><td><span class="label-soft">Frio</span></td></tr>
-              <tr data-lead-fixture-stage="em-contato" data-lead-fixture-score="55" data-lead-fixture-order="1"><td><strong>Lead Exemplo B</strong></td><td>Em contato</td><td>55</td><td><span class="label-soft">Morno</span></td></tr>
-              <tr data-lead-fixture-stage="qualificacao" data-lead-fixture-score="85" data-lead-fixture-order="2"><td><strong>Lead Exemplo C</strong></td><td>Qualificação</td><td>85</td><td><span class="label-soft">Quente</span></td></tr>
-              <tr data-lead-fixture-stage="entrada" data-lead-fixture-score="70" data-lead-fixture-order="3"><td><strong>Lead Exemplo D</strong></td><td>Entrada</td><td>70</td><td><span class="label-soft">Quente</span></td></tr>
+              <tr data-lead-fixture-stage="entrada" data-lead-fixture-score="30" data-lead-fixture-order="0"><td><button type="button" class="lead-detail-trigger" data-lead-detail="a" aria-controls="lead-detail-preview" aria-expanded="false"><strong>Lead Exemplo A</strong></button></td><td>Entrada</td><td>30</td><td><span class="label-soft">Frio</span></td></tr>
+              <tr data-lead-fixture-stage="em-contato" data-lead-fixture-score="55" data-lead-fixture-order="1"><td><button type="button" class="lead-detail-trigger" data-lead-detail="b" aria-controls="lead-detail-preview" aria-expanded="false"><strong>Lead Exemplo B</strong></button></td><td>Em contato</td><td>55</td><td><span class="label-soft">Morno</span></td></tr>
+              <tr data-lead-fixture-stage="qualificacao" data-lead-fixture-score="85" data-lead-fixture-order="2"><td><button type="button" class="lead-detail-trigger" data-lead-detail="c" aria-controls="lead-detail-preview" aria-expanded="false"><strong>Lead Exemplo C</strong></button></td><td>Qualificação</td><td>85</td><td><span class="label-soft">Quente</span></td></tr>
+              <tr data-lead-fixture-stage="entrada" data-lead-fixture-score="70" data-lead-fixture-order="3"><td><button type="button" class="lead-detail-trigger" data-lead-detail="d" aria-controls="lead-detail-preview" aria-expanded="false"><strong>Lead Exemplo D</strong></button></td><td>Entrada</td><td>70</td><td><span class="label-soft">Quente</span></td></tr>
             </tbody></table>
+          </div>
+          <div style="margin:20px 0" aria-labelledby="lead-detail-heading">
+            <h3 id="lead-detail-heading">Revisão de um exemplo — somente leitura</h3>
+            <p class="caption">Selecione a identificação de um lead fictício na tabela para consultar sua ficha ilustrativa. Nenhum dado de contato, permissão ou histórico real é consultado.</p>
+            <div id="lead-detail-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true" hidden></div>
           </div>
           <div class="help">Filtros, contagens e ordenação são somente simulações locais sobre quatro exemplos fictícios. Pontuação e faixa são valores estáticos, sem qualificação automática de pessoas, gravação ou ligação com o PHP em desenvolvimento.</div>
           <button class="action" type="button" data-go="pipeline">Visualizar funil ilustrativo</button>
@@ -333,6 +340,9 @@
   const leadSortButtons = Array.from(document.querySelectorAll('#screen-leads [data-lead-sort]'));
   const leadSortSummary = document.getElementById('lead-sort-summary');
   const leadFixtureTableBody = document.querySelector('#screen-leads .demo-table tbody');
+  const leadDetailButtons = Array.from(document.querySelectorAll('#screen-leads [data-lead-detail]'));
+  const leadDetailPreview = document.getElementById('lead-detail-preview');
+  let selectedLeadFixture = null;
 
   function navigate(page, moveFocus) {
     if (!Object.prototype.hasOwnProperty.call(names,page)) return;
@@ -342,6 +352,7 @@
       else node.removeAttribute('aria-current');
     });
     heading.textContent=names[page];
+    if(page!=='leads') showLeadDetail(null);
     if (moveFocus) heading.focus();
   }
 
@@ -391,6 +402,10 @@
       if(matches) displayed++;
     });
     leadFilterSummary.textContent='Mostrando '+displayed+' de '+leadFixtureRows.length+' leads fictícios.';
+    if(selectedLeadFixture!==null){
+      const active=leadDetailButtons.find(function(button){return button.getAttribute('data-lead-detail')===selectedLeadFixture;});
+      if(!active || active.closest('tr').hidden) showLeadDetail(null);
+    }
   }
 
   // Only reorder four hard-coded HTML fixtures, never query or update leads.
@@ -413,6 +428,38 @@
     });
     const description={original:'Ordem original dos exemplos.',high:'Leads fictícios ordenados por maior pontuação.',low:'Leads fictícios ordenados por menor pontuação.'};
     leadSortSummary.textContent=description[mode];
+  }
+
+
+  // Four closed, fixed descriptors corresponding only to the existing demo rows.
+  // Text-only output never reads a CSV, client field, tenant, storage or API.
+  function showLeadDetail(code) {
+    const fixtures=Object.freeze({
+      a:{name:'Lead Exemplo A',stage:'Entrada',score:'30',band:'Frio'},
+      b:{name:'Lead Exemplo B',stage:'Em contato',score:'55',band:'Morno'},
+      c:{name:'Lead Exemplo C',stage:'Qualificação',score:'85',band:'Quente'},
+      d:{name:'Lead Exemplo D',stage:'Entrada',score:'70',band:'Quente'}
+    });
+    const selected=code!==null && Object.prototype.hasOwnProperty.call(fixtures,code)
+      && leadDetailButtons.some(function(button){
+        return button.getAttribute('data-lead-detail')===code && !button.closest('tr').hidden;
+      });
+    selectedLeadFixture=selected?code:null;
+    leadDetailButtons.forEach(function(button){
+      button.setAttribute('aria-expanded',String(button.getAttribute('data-lead-detail')===selectedLeadFixture));
+    });
+    leadDetailPreview.replaceChildren();
+    leadDetailPreview.hidden=selectedLeadFixture===null;
+    if(!selected) return;
+    const data=fixtures[selectedLeadFixture];
+    const inner=document.createElement('div');
+    addText(inner,'p','FICHA ILUSTRATIVA — DADOS FICTÍCIOS','state-note');
+    addText(inner,'h3',data.name);
+    addText(inner,'p','Etapa demonstrativa: '+data.stage+'.');
+    addText(inner,'p','Pontuação fixa: '+data.score+'. Faixa descritiva: '+data.band+'.');
+    addText(inner,'p','Nenhum contato, histórico pessoal ou permissão foi consultado.');
+    addText(inner,'p','Visualização ilustrativa não autoriza exportação, alteração ou ação comercial.');
+    leadDetailPreview.appendChild(inner);
   }
 
   function showMonitorScenario(code) {
@@ -578,6 +625,10 @@
   accessScenarioButtons.forEach(function(node){node.addEventListener('click',function(){showAccessBoundaryCase(node.getAttribute('data-access-scenario'));});});
   leadFilterButtons.forEach(function(node){node.addEventListener('click',function(){showLeadStage(node.getAttribute('data-lead-stage'));});});
   leadSortButtons.forEach(function(node){node.addEventListener('click',function(){sortLeadFixtures(node.getAttribute('data-lead-sort'));});});
+  leadDetailButtons.forEach(function(node){node.addEventListener('click',function(){
+    const code=node.getAttribute('data-lead-detail');
+    showLeadDetail(selectedLeadFixture===code?null:code);
+  });});
   navigate('welcome',false);
   showLeadStage('all');
   sortLeadFixtures('original');
