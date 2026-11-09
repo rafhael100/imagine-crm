@@ -115,6 +115,22 @@ $testScript = <<<'JS'
     check(document.getElementById('quota-demo-title').textContent==='Franquias demonstrativas','quota demo heading');
     check(document.querySelectorAll('[data-screen]:not([hidden])').length===1,'dashboard isolated from other screens');
     
+    // The three offline mapping scenarios are only hard-coded DOM text.
+    const importPage=nav.find(x=>x.dataset.page==='import');
+    importPage.click();
+    const mapButtons=Array.from(document.querySelectorAll('#screen-import [data-import-mapping]'));
+    const mapPanel=document.getElementById('import-mapping-preview');
+    check(mapButtons.length===3&&mapPanel!==null,'mapping scenarios exist');
+    check(mapPanel.textContent.includes('Três correspondências ilustrativas'),'mapping initial state');
+    mapButtons.find(x=>x.dataset.importMapping==='partial').click();
+    check(mapPanel.textContent.includes('1 de 3 colunas fictícias'),'mapping partial fixture');
+    check(document.querySelectorAll('[data-import-mapping][aria-pressed="true"]').length===1,'one mapping button selected');
+    mapButtons.find(x=>x.dataset.importMapping==='invalid').click();
+    check(mapPanel.textContent.includes('Estrutura de mapeamento inválida'),'mapping invalid fixture');
+    mapButtons.find(x=>x.dataset.importMapping==='complete').click();
+    check(mapPanel.textContent.includes('Nenhuma importação foi autorizada ou realizada'),'mapping remains denied');
+    check(!document.querySelector('form,input,textarea'),'still no upload or entry forms');
+
     const skip=document.querySelector('.skip-link');
     check(skip&&skip.getAttribute('href')==='#conteudo','skip link exists');
     skip.focus();
