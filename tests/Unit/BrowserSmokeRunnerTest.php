@@ -60,6 +60,7 @@ HTML);
                 ['--window-size=520,780'],
                 'file://'.$fixture,
                 'data-imagine-browser-smoke',
+                false, // suppress expected retry diagnostic in PHPUnit; CLI keeps it
             );
             self::assertFalse($result['passed']);
             self::assertSame(2, $result['attempts']);
