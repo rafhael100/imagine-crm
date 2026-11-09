@@ -22,6 +22,42 @@ final class SyntheticCsvPreviewDecoder
 
     public function preview(string $syntheticCsv): SyntheticImportPreviewSummary
     {
+        return $this->decode($syntheticCsv)[0];
+    }
+
+    /**
+     * Combine the EXACT header of the decoded synthetic CSV with a
+     * position-only mapping in the same bounded parse, without exposing cells.
+     *
+     * @param array<mixed> $targetLabels Synthetic technical field names
+     * @param array<mixed> $mappingPairs One-based source/target positions
+     */
+    public function previewMapped(
+        string $syntheticCsv,
+        array $targetLabels,
+        array $mappingPairs,
+    ): SyntheticImportMappedPreviewSummary {
+        [$csvPreview, $sourceLabels] = $this->decode($syntheticCsv);
+
+        try {
+            $mappingPreview = (new SyntheticColumnMappingInspector())->assess(
+                $sourceLabels,
+                $targetLabels,
+                $mappingPairs,
+            );
+        } catch (InvalidArgumentException) {
+            // The caller cannot use failures to enumerate header values.
+            self::invalid();
+        }
+
+        return new SyntheticImportMappedPreviewSummary($csvPreview, $mappingPreview);
+    }
+
+    /**
+     * @return array{SyntheticImportPreviewSummary, list<string>}
+     */
+    private function decode(string $syntheticCsv): array
+    {
         if ($syntheticCsv === ''
             || strlen($syntheticCsv) > self::MAX_CSV_BYTES
             || str_contains($syntheticCsv, "\0")
@@ -63,7 +99,8 @@ final class SyntheticCsvPreviewDecoder
             // Reuse the existing conservative cell/formula check and
             // aggregate-only result; raw contents never escape the method.
             try {
-                return (new SyntheticImportPreviewInspector())->inspect($columns, $rows);
+                $summary = (new SyntheticImportPreviewInspector())->inspect($columns, $rows);
+                return [$summary, $columns];
             } catch (InvalidArgumentException) {
                 // Maintain a single generic CSV-facing error contract;
                 // never expose headers, CSV content or validation details.
