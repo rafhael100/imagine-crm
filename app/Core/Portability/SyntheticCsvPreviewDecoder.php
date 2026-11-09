@@ -62,7 +62,13 @@ final class SyntheticCsvPreviewDecoder
 
             // Reuse the existing conservative cell/formula check and
             // aggregate-only result; raw contents never escape the method.
-            return (new SyntheticImportPreviewInspector())->inspect($columns, $rows);
+            try {
+                return (new SyntheticImportPreviewInspector())->inspect($columns, $rows);
+            } catch (InvalidArgumentException) {
+                // Maintain a single generic CSV-facing error contract;
+                // never expose headers, CSV content or validation details.
+                self::invalid();
+            }
         } finally {
             fclose($handle);
         }
