@@ -74,6 +74,8 @@
     .count{background:white;border:1px solid #dce5e9;border-radius:30px;font-size:12px;padding:3px 9px}
     .demo-column .caption{margin:4px 0 18px}.demo-ticket{background:white;border:1px solid #dde6ef;padding:16px;border-radius:12px;margin:10px 0;display:grid;gap:6px;box-shadow:0 4px 10px rgba(16,42,72,.025)}
     .demo-ticket strong{font-size:14px}.demo-ticket span{font-size:12px;color:#71869a}
+    .pipeline-review-link{justify-self:start;max-width:100%;border:1px solid #b7d4da;background:#f1fafa;color:#205568;border-radius:8px;padding:8px 10px;text-align:left;cursor:pointer;font:inherit;font-size:12px;font-weight:700}
+    .pipeline-review-link:hover{background:#e5f4f5}.pipeline-review-link:focus-visible{outline:3px solid #20a69c;outline-offset:3px}
     @media(max-width:850px){.demo-metrics,.demo-board{grid-template-columns:1fr}}
     @media(max-width:900px){.shell{grid-template-columns:minmax(0,1fr)}.sidebar{min-width:0;padding:14px 20px;gap:12px}.sidebar > div{min-width:0}.brand{padding:0}.side-label,.side-note{display:none}.side-nav{display:flex;min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin;padding:2px 0 8px;gap:6px}.mobile-nav-hint{display:block;margin:5px 0 0;color:#b7d1e0;font-size:11px;line-height:1.4}.nav-button{white-space:nowrap;width:auto;padding:9px 11px}.topbar{min-height:66px}.two-col{grid-template-columns:1fr}}
     @media(max-width:420px){.topbar{align-items:flex-start;flex-direction:column}.pill{font-size:10px}.content{padding:23px 17px}.card{border-radius:14px}.hero{border-radius:16px}.nav-button{font-size:12px}.field-value{font-size:22px}.state-surface{padding:18px}}
@@ -201,14 +203,14 @@
         <p class="lead">Três colunas meramente visuais, sem possibilidade de mover ou alterar registros. Uma etapa exibida não comprova evento comercial.</p>
         <div class="demo-board" aria-label="Colunas fictícias do funil">
           <div class="demo-column"><h2>Entrada <span class="count">2</span></h2><p class="caption">Exemplos sem captura real</p>
-            <div class="demo-ticket"><strong>Lead Exemplo A</strong><span>30 pontos · Frio</span></div>
-            <div class="demo-ticket"><strong>Lead Exemplo D</strong><span>70 pontos · Quente</span></div>
+            <div class="demo-ticket"><strong>Lead Exemplo A</strong><span>30 pontos · Frio</span><button class="pipeline-review-link" type="button" data-pipeline-review="a" aria-label="Revisar ficha fictícia de Lead Exemplo A">Revisar ficha ilustrativa</button></div>
+            <div class="demo-ticket"><strong>Lead Exemplo D</strong><span>70 pontos · Quente</span><button class="pipeline-review-link" type="button" data-pipeline-review="d" aria-label="Revisar ficha fictícia de Lead Exemplo D">Revisar ficha ilustrativa</button></div>
           </div>
           <div class="demo-column"><h2>Em contato <span class="count">1</span></h2><p class="caption">Contato não realizado</p>
-            <div class="demo-ticket"><strong>Lead Exemplo B</strong><span>55 pontos · Morno</span></div>
+            <div class="demo-ticket"><strong>Lead Exemplo B</strong><span>55 pontos · Morno</span><button class="pipeline-review-link" type="button" data-pipeline-review="b" aria-label="Revisar ficha fictícia de Lead Exemplo B">Revisar ficha ilustrativa</button></div>
           </div>
           <div class="demo-column"><h2>Qualificação <span class="count">1</span></h2><p class="caption">Estado não persistido</p>
-            <div class="demo-ticket"><strong>Lead Exemplo C</strong><span>85 pontos · Quente</span></div>
+            <div class="demo-ticket"><strong>Lead Exemplo C</strong><span>85 pontos · Quente</span><button class="pipeline-review-link" type="button" data-pipeline-review="c" aria-label="Revisar ficha fictícia de Lead Exemplo C">Revisar ficha ilustrativa</button></div>
           </div>
         </div>
         <div class="help">Demonstração visual: nenhuma venda, proposta, contato ou qualificação efetiva foi registrada.</div>
@@ -343,6 +345,7 @@
   const leadSortSummary = document.getElementById('lead-sort-summary');
   const leadFixtureTableBody = document.querySelector('#screen-leads .demo-table tbody');
   const leadDetailButtons = Array.from(document.querySelectorAll('#screen-leads [data-lead-detail]'));
+  const pipelineReviewButtons = Array.from(document.querySelectorAll('#screen-pipeline [data-pipeline-review]'));
   const leadDetailPreview = document.getElementById('lead-detail-preview');
   let selectedLeadFixture = null;
 
@@ -640,6 +643,19 @@
   accessScenarioButtons.forEach(function(node){node.addEventListener('click',function(){showAccessBoundaryCase(node.getAttribute('data-access-scenario'));});});
   leadFilterButtons.forEach(function(node){node.addEventListener('click',function(){showLeadStage(node.getAttribute('data-lead-stage'));});});
   leadSortButtons.forEach(function(node){node.addEventListener('click',function(){sortLeadFixtures(node.getAttribute('data-lead-sort'));});});
+  // Navigate between two static example views. This does NOT move leads
+  // between stages, authenticate membership, grant access or read a backend.
+  pipelineReviewButtons.forEach(function(node){node.addEventListener('click',function(){
+    const code=node.getAttribute('data-pipeline-review');
+    const destination=leadDetailButtons.find(function(button){
+      return button.getAttribute('data-lead-detail')===code;
+    });
+    if(!destination) return;
+    showLeadStage('all');
+    navigate('leads',false);
+    showLeadDetail(code);
+    destination.focus();
+  });});
   leadDetailButtons.forEach(function(node){node.addEventListener('click',function(){
     const code=node.getAttribute('data-lead-detail');
     showLeadDetail(selectedLeadFixture===code?null:code);

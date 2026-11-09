@@ -148,6 +148,24 @@ $testScript = <<<'JS'
     check(detailPanel.hidden&&timeline().length===0,'closing detail clears timeline');
     check(!document.querySelector('form,input,textarea'),'timeline is read only');
 
+    // UX-F3-28: open a static lead detail directly from a pipeline card.
+    filterButtons.find(x=>x.dataset.leadStage==='entrada').click();
+    nav.find(x=>x.dataset.page==='pipeline').click();
+    const pipelineReview=Array.from(document.querySelectorAll('#screen-pipeline [data-pipeline-review]'));
+    check(pipelineReview.length===4,'four pipeline review buttons');
+    pipelineReview.find(x=>x.dataset.pipelineReview==='c').click();
+    check(document.getElementById('page-title').textContent==='Leads fictícios','pipeline review opens leads page');
+    check(document.querySelectorAll('[data-screen]:not([hidden])').length===1,'only leads page active after pipeline navigation');
+    check(document.activeElement===detailButtons.find(x=>x.dataset.leadDetail==='c'),'focus moved to matching lead button');
+    check(document.getElementById('lead-filter-summary').textContent.includes('4 de 4'),'pipeline review resets stage filter');
+    check(detailPanel.textContent.includes('Lead Exemplo C')&&detailPanel.textContent.includes('Qualificação'),'pipeline review opens matching fixture');
+    nav.find(x=>x.dataset.page==='pipeline').click();
+    check(detailPanel.hidden,'leaving lead review hides previous detail');
+    pipelineReview.find(x=>x.dataset.pipelineReview==='a').click();
+    check(detailPanel.textContent.includes('Lead Exemplo A')&&!detailPanel.textContent.includes('Lead Exemplo C'),'pipeline review never carries stale lead');
+    check(document.querySelectorAll('[data-lead-detail][aria-expanded="true"]').length===1,'only one lead expanded after pipeline navigation');
+    check(!document.querySelector('form,input,textarea'),'pipeline review has no form or mutation');
+
     // Static quota meters are an isolated visual example, never entitlement.
     const dashboard=nav.find(x=>x.dataset.page==='dashboard');
     dashboard.click();

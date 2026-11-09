@@ -151,6 +151,22 @@ $driver = <<<'HTML'
       check(timeline().length===2&&!timeline().some(x=>x.includes('Qualificação')),'first event slice restored in 320px');
       check(doc.documentElement.scrollWidth<=320,'no timeline overflow on mobile');
       check(doc.documentElement.scrollWidth<=320,'no horizontal page overflow on lead screen');
+      // UX-F3-28: pipeline-to-detail review works with a 320px viewport.
+      stageButtons.find(node=>node.dataset.leadStage==='entrada').click();
+      pipeline.click();
+      const pipelineReview=Array.from(doc.querySelectorAll('#screen-pipeline [data-pipeline-review]'));
+      check(pipelineReview.length===4,'four pipeline review buttons on mobile');
+      check(doc.documentElement.scrollWidth<=320,'pipeline review buttons fit 320px');
+      pipelineReview.find(node=>node.dataset.pipelineReview==='c').click();
+      check(doc.getElementById('page-title').textContent==='Leads fictícios','mobile pipeline navigation to leads');
+      check(doc.activeElement===detailButtons.find(node=>node.dataset.leadDetail==='c'),'mobile review moves focus to matching lead');
+      check(doc.getElementById('lead-filter-summary').textContent.includes('4 de 4'),'mobile pipeline review restores all stage fixtures');
+      check(!detailPanel.hidden&&detailPanel.textContent.includes('Lead Exemplo C'),'mobile pipeline opens correct lead');
+      pipeline.click();
+      check(detailPanel.hidden,'mobile pipeline navigation clears previous selection');
+      pipelineReview.find(node=>node.dataset.pipelineReview==='d').click();
+      check(detailPanel.textContent.includes('Lead Exemplo D')&&!detailPanel.textContent.includes('Lead Exemplo C'),'mobile pipeline review is isolated per fixture');
+      check(doc.documentElement.scrollWidth<=320,'reviewed lead fits 320px');
       buttons.find(node=>node.dataset.page==='dashboard').click();
       const quotas=Array.from(doc.querySelectorAll('#screen-dashboard [data-quota-fixture] meter'));
       check(quotas.length===3,'three static quota meters on 320px');
