@@ -165,7 +165,7 @@
         </div>
       </section>
       <section id="screen-leads" data-screen="leads" aria-label="Leads fictícios" hidden>
-        <p class="lead">Tabela fictícia com filtro visual por etapa. Identificadores, etapas, pontuações e classificações são inventados; nenhuma alteração ou registro é realizado.</p>
+        <p class="lead">Tabela fictícia com filtros visuais combinados por etapa e faixa descritiva. Identificadores, etapas, pontuações e classificações são inventados; nenhuma alteração ou registro é realizado.</p>
         <div class="card">
           <div class="heading-row"><div><p class="eyebrow">Dados sintéticos</p><h2>Leads de exemplo</h2></div><span class="pill">SEM DADOS REAIS</span></div>
           <div class="switcher" role="group" aria-label="Filtrar leads fictícios por etapa">
@@ -173,6 +173,12 @@
             <button type="button" class="state-button" data-lead-stage="entrada" aria-pressed="false">Entrada</button>
             <button type="button" class="state-button" data-lead-stage="em-contato" aria-pressed="false">Em contato</button>
             <button type="button" class="state-button" data-lead-stage="qualificacao" aria-pressed="false">Qualificação</button>
+          </div>
+          <div class="switcher" role="group" aria-label="Filtrar leads fictícios por faixa descritiva">
+            <button type="button" class="state-button" data-lead-temperature="all" aria-pressed="true">Todas as faixas</button>
+            <button type="button" class="state-button" data-lead-temperature="cold" aria-pressed="false">Frio</button>
+            <button type="button" class="state-button" data-lead-temperature="warm" aria-pressed="false">Morno</button>
+            <button type="button" class="state-button" data-lead-temperature="hot" aria-pressed="false">Quente</button>
           </div>
           <div class="switcher" role="group" aria-label="Ordenar leads fictícios por pontuação">
              <button type="button" class="state-button" data-lead-sort="original" aria-pressed="true">Ordem original</button>
@@ -184,10 +190,10 @@
           <div class="table-scroll" tabindex="0" aria-label="Tabela de leads fictícios, role para navegar horizontalmente se necessário">
             <table class="demo-table"><thead><tr><th scope="col">Identificação fictícia</th><th scope="col">Etapa visual</th><th scope="col">Pontuação exemplo</th><th scope="col">Faixa descritiva</th></tr></thead>
             <tbody>
-              <tr data-lead-fixture-stage="entrada" data-lead-fixture-score="30" data-lead-fixture-order="0"><td><button type="button" class="lead-detail-trigger" data-lead-detail="a" aria-controls="lead-detail-preview" aria-expanded="false"><strong>Lead Exemplo A</strong></button></td><td>Entrada</td><td>30</td><td><span class="label-soft">Frio</span></td></tr>
-              <tr data-lead-fixture-stage="em-contato" data-lead-fixture-score="55" data-lead-fixture-order="1"><td><button type="button" class="lead-detail-trigger" data-lead-detail="b" aria-controls="lead-detail-preview" aria-expanded="false"><strong>Lead Exemplo B</strong></button></td><td>Em contato</td><td>55</td><td><span class="label-soft">Morno</span></td></tr>
-              <tr data-lead-fixture-stage="qualificacao" data-lead-fixture-score="85" data-lead-fixture-order="2"><td><button type="button" class="lead-detail-trigger" data-lead-detail="c" aria-controls="lead-detail-preview" aria-expanded="false"><strong>Lead Exemplo C</strong></button></td><td>Qualificação</td><td>85</td><td><span class="label-soft">Quente</span></td></tr>
-              <tr data-lead-fixture-stage="entrada" data-lead-fixture-score="70" data-lead-fixture-order="3"><td><button type="button" class="lead-detail-trigger" data-lead-detail="d" aria-controls="lead-detail-preview" aria-expanded="false"><strong>Lead Exemplo D</strong></button></td><td>Entrada</td><td>70</td><td><span class="label-soft">Quente</span></td></tr>
+              <tr data-lead-fixture-stage="entrada" data-lead-fixture-score="30" data-lead-fixture-order="0" data-lead-fixture-temperature="cold"><td><button type="button" class="lead-detail-trigger" data-lead-detail="a" aria-controls="lead-detail-preview" aria-expanded="false"><strong>Lead Exemplo A</strong></button></td><td>Entrada</td><td>30</td><td><span class="label-soft">Frio</span></td></tr>
+              <tr data-lead-fixture-stage="em-contato" data-lead-fixture-score="55" data-lead-fixture-order="1" data-lead-fixture-temperature="warm"><td><button type="button" class="lead-detail-trigger" data-lead-detail="b" aria-controls="lead-detail-preview" aria-expanded="false"><strong>Lead Exemplo B</strong></button></td><td>Em contato</td><td>55</td><td><span class="label-soft">Morno</span></td></tr>
+              <tr data-lead-fixture-stage="qualificacao" data-lead-fixture-score="85" data-lead-fixture-order="2" data-lead-fixture-temperature="hot"><td><button type="button" class="lead-detail-trigger" data-lead-detail="c" aria-controls="lead-detail-preview" aria-expanded="false"><strong>Lead Exemplo C</strong></button></td><td>Qualificação</td><td>85</td><td><span class="label-soft">Quente</span></td></tr>
+              <tr data-lead-fixture-stage="entrada" data-lead-fixture-score="70" data-lead-fixture-order="3" data-lead-fixture-temperature="hot"><td><button type="button" class="lead-detail-trigger" data-lead-detail="d" aria-controls="lead-detail-preview" aria-expanded="false"><strong>Lead Exemplo D</strong></button></td><td>Entrada</td><td>70</td><td><span class="label-soft">Quente</span></td></tr>
             </tbody></table>
           </div>
           <div style="margin:20px 0" aria-labelledby="lead-detail-heading">
@@ -195,7 +201,7 @@
             <p class="caption">Selecione um lead fictício para consultar a ficha e a sequência de eventos totalmente inventada. Não há datas, autores, contatos, histórico real ou permissões verificadas.</p>
             <div id="lead-detail-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true" hidden></div>
           </div>
-          <div class="help">Filtros, contagens e ordenação são somente simulações locais sobre quatro exemplos fictícios. Pontuação e faixa são valores estáticos, sem qualificação automática de pessoas, gravação ou ligação com o PHP em desenvolvimento.</div>
+          <div class="help">Filtros combinados, contagens e ordenação são somente simulações locais sobre quatro exemplos fictícios. Pontuação e faixa são valores estáticos, sem qualificação automática de pessoas, gravação ou ligação com o PHP em desenvolvimento.</div>
           <button class="action" type="button" data-go="pipeline">Visualizar funil ilustrativo</button>
         </div>
       </section>
@@ -339,6 +345,7 @@
   const accessScenarioButtons = Array.from(document.querySelectorAll('[data-access-scenario]'));
   const accessScenarioPreview = document.getElementById('access-boundary-preview');
   const leadFilterButtons = Array.from(document.querySelectorAll('[data-lead-stage]'));
+  const leadTemperatureButtons = Array.from(document.querySelectorAll('[data-lead-temperature]'));
   const leadFixtureRows = Array.from(document.querySelectorAll('#screen-leads [data-lead-fixture-stage]'));
   const leadFilterSummary = document.getElementById('lead-filter-summary');
   const leadSortButtons = Array.from(document.querySelectorAll('#screen-leads [data-lead-sort]'));
@@ -348,6 +355,8 @@
   const pipelineReviewButtons = Array.from(document.querySelectorAll('#screen-pipeline [data-pipeline-review]'));
   const leadDetailPreview = document.getElementById('lead-detail-preview');
   let selectedLeadFixture = null;
+  let selectedLeadStage = 'all';
+  let selectedLeadTemperature = 'all';
 
   function navigate(page, moveFocus) {
     if (!Object.prototype.hasOwnProperty.call(names,page)) return;
@@ -394,23 +403,41 @@
 
   // Offline-only view filter. No API, user input, persistence, mutation of a
   // lead or permission decision. Row fixtures are hard-coded in the HTML.
-  function showLeadStage(stage) {
-    const stages=['all','entrada','em-contato','qualificacao'];
-    if (!stages.includes(stage)) return;
-    leadFilterButtons.forEach(function(node){
-      node.setAttribute('aria-pressed',String(node.getAttribute('data-lead-stage')===stage));
-    });
+  // Two independent filters for FOUR hard-coded demo rows. They never query
+  // an API, modify a lead, infer permission or persist filter state.
+  function applyLeadFixtureFilters() {
     let displayed=0;
     leadFixtureRows.forEach(function(node){
-      const matches=stage==='all'||node.getAttribute('data-lead-fixture-stage')===stage;
-      node.hidden=!matches;
-      if(matches) displayed++;
+      const byStage=selectedLeadStage==='all'||node.getAttribute('data-lead-fixture-stage')===selectedLeadStage;
+      const byTemperature=selectedLeadTemperature==='all'||node.getAttribute('data-lead-fixture-temperature')===selectedLeadTemperature;
+      node.hidden=!(byStage&&byTemperature);
+      if(!node.hidden) displayed++;
     });
     leadFilterSummary.textContent='Mostrando '+displayed+' de '+leadFixtureRows.length+' leads fictícios.';
     if(selectedLeadFixture!==null){
       const active=leadDetailButtons.find(function(button){return button.getAttribute('data-lead-detail')===selectedLeadFixture;});
       if(!active || active.closest('tr').hidden) showLeadDetail(null);
     }
+  }
+
+  function showLeadStage(stage) {
+    const stages=['all','entrada','em-contato','qualificacao'];
+    if (!stages.includes(stage)) return;
+    selectedLeadStage=stage;
+    leadFilterButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(node.getAttribute('data-lead-stage')===stage));
+    });
+    applyLeadFixtureFilters();
+  }
+
+  function showLeadTemperature(temperature) {
+    const temperatures=['all','cold','warm','hot'];
+    if (!temperatures.includes(temperature)) return;
+    selectedLeadTemperature=temperature;
+    leadTemperatureButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(node.getAttribute('data-lead-temperature')===temperature));
+    });
+    applyLeadFixtureFilters();
   }
 
   // Only reorder four hard-coded HTML fixtures, never query or update leads.
@@ -642,6 +669,7 @@
   importReviewButtons.forEach(function(node){node.addEventListener('click',function(){showImportReviewCase(node.getAttribute('data-import-review'));});});
   accessScenarioButtons.forEach(function(node){node.addEventListener('click',function(){showAccessBoundaryCase(node.getAttribute('data-access-scenario'));});});
   leadFilterButtons.forEach(function(node){node.addEventListener('click',function(){showLeadStage(node.getAttribute('data-lead-stage'));});});
+  leadTemperatureButtons.forEach(function(node){node.addEventListener('click',function(){showLeadTemperature(node.getAttribute('data-lead-temperature'));});});
   leadSortButtons.forEach(function(node){node.addEventListener('click',function(){sortLeadFixtures(node.getAttribute('data-lead-sort'));});});
   // Navigate between two static example views. This does NOT move leads
   // between stages, authenticate membership, grant access or read a backend.
@@ -652,6 +680,7 @@
     });
     if(!destination) return;
     showLeadStage('all');
+    showLeadTemperature('all');
     navigate('leads',false);
     showLeadDetail(code);
     destination.focus();
@@ -662,6 +691,7 @@
   });});
   navigate('welcome',false);
   showLeadStage('all');
+  showLeadTemperature('all');
   sortLeadFixtures('original');
   showState('loading');
   showMonitorScenario('received');
