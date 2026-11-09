@@ -129,11 +129,23 @@ $driver = <<<'HTML'
       temperatureButtons.find(node=>node.dataset.leadTemperature==='warm').click();
       check(count()===0,'empty mixed filter at 320px');
       check(doc.getElementById('lead-filter-summary').textContent.includes('0 de 4'),'screen reader count for empty intersection');
+      const emptyState=doc.getElementById('lead-empty-filter-state');
+      const clearFilters=doc.getElementById('lead-clear-filters');
+      check(!emptyState.hidden&&emptyState.textContent.includes('Nenhum lead fictício corresponde'),'empty guidance displayed at 320px');
+      check(clearFilters.type==='button','mobile reset has no form submission');
       stageButtons.find(node=>node.dataset.leadStage==='all').click();
       check(count()===1,'stage reset preserves temperature on mobile');
       temperatureButtons.find(node=>node.dataset.leadTemperature==='all').click();
       check(count()===4,'mobile filter reset shows four demo rows');
       check(doc.documentElement.scrollWidth<=320,'combined filters do not overflow page');
+      check(emptyState.hidden,'mobile empty guidance disappears after valid results');
+      stageButtons.find(node=>node.dataset.leadStage==='qualificacao').click();
+      temperatureButtons.find(node=>node.dataset.leadTemperature==='warm').click();
+      check(!emptyState.hidden&&count()===0,'mobile reset offered when no matches');
+      clearFilters.click();
+      check(count()===4&&emptyState.hidden,'mobile reset restores all rows');
+      check(doc.activeElement===stageButtons.find(node=>node.dataset.leadStage==='all'),'mobile reset moves focus to visible all-stages button');
+      check(doc.documentElement.scrollWidth<=320,'mobile reset state does not overflow');
 
       // UX-F3-26: real 320px keyboard-friendly fixture review.
       const detailButtons=Array.from(doc.querySelectorAll('#screen-leads [data-lead-detail]'));

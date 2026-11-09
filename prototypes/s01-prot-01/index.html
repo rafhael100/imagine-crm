@@ -187,6 +187,10 @@
            </div>
            <p id="lead-filter-summary" class="caption" role="status" aria-live="polite" aria-atomic="true">Mostrando 4 de 4 leads fictícios.</p>
            <p id="lead-sort-summary" class="caption" role="status" aria-live="polite" aria-atomic="true">Ordem original dos exemplos.</p>
+           <div id="lead-empty-filter-state" class="state-surface" role="status" aria-live="polite" aria-atomic="true" hidden>
+             <p>Nenhum lead fictício corresponde à combinação selecionada. Não foi realizada consulta ao CRM.</p>
+             <button type="button" class="state-button" id="lead-clear-filters">Limpar filtros fictícios</button>
+           </div>
           <div class="table-scroll" tabindex="0" aria-label="Tabela de leads fictícios, role para navegar horizontalmente se necessário">
             <table class="demo-table"><thead><tr><th scope="col">Identificação fictícia</th><th scope="col">Etapa visual</th><th scope="col">Pontuação exemplo</th><th scope="col">Faixa descritiva</th></tr></thead>
             <tbody>
@@ -348,6 +352,8 @@
   const leadTemperatureButtons = Array.from(document.querySelectorAll('[data-lead-temperature]'));
   const leadFixtureRows = Array.from(document.querySelectorAll('#screen-leads [data-lead-fixture-stage]'));
   const leadFilterSummary = document.getElementById('lead-filter-summary');
+  const leadEmptyFilterState = document.getElementById('lead-empty-filter-state');
+  const leadClearFiltersButton = document.getElementById('lead-clear-filters');
   const leadSortButtons = Array.from(document.querySelectorAll('#screen-leads [data-lead-sort]'));
   const leadSortSummary = document.getElementById('lead-sort-summary');
   const leadFixtureTableBody = document.querySelector('#screen-leads .demo-table tbody');
@@ -414,6 +420,7 @@
       if(!node.hidden) displayed++;
     });
     leadFilterSummary.textContent='Mostrando '+displayed+' de '+leadFixtureRows.length+' leads fictícios.';
+    leadEmptyFilterState.hidden=displayed!==0;
     if(selectedLeadFixture!==null){
       const active=leadDetailButtons.find(function(button){return button.getAttribute('data-lead-detail')===selectedLeadFixture;});
       if(!active || active.closest('tr').hidden) showLeadDetail(null);
@@ -670,6 +677,12 @@
   accessScenarioButtons.forEach(function(node){node.addEventListener('click',function(){showAccessBoundaryCase(node.getAttribute('data-access-scenario'));});});
   leadFilterButtons.forEach(function(node){node.addEventListener('click',function(){showLeadStage(node.getAttribute('data-lead-stage'));});});
   leadTemperatureButtons.forEach(function(node){node.addEventListener('click',function(){showLeadTemperature(node.getAttribute('data-lead-temperature'));});});
+  leadClearFiltersButton.addEventListener('click',function(){
+    showLeadStage('all');
+    showLeadTemperature('all');
+    const defaultStage=leadFilterButtons.find(function(button){return button.getAttribute('data-lead-stage')==='all';});
+    if(defaultStage) defaultStage.focus();
+  });
   leadSortButtons.forEach(function(node){node.addEventListener('click',function(){sortLeadFixtures(node.getAttribute('data-lead-sort'));});});
   // Navigate between two static example views. This does NOT move leads
   // between stages, authenticate membership, grant access or read a backend.
