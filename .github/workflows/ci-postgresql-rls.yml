@@ -1,0 +1,158 @@
+name: CRM Imagine - PostgreSQL RLS F1
+
+on:
+  push:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+  pull_request:
+    branches:
+      - main
+      - dev/fast-track-crm-2026-11-04
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-postgres-rls-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  postgres-rls:
+    name: PostgreSQL 16 / RLS / PHP 8.4
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_crm_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d imagine_crm_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      APP_URL: http://127.0.0.1
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: imagine_crm_ci
+      DB_USERNAME: postgres
+      DB_PASSWORD: ci-only-password
+      RLS_TEST_USERNAME: crm_app_ci
+      RLS_TEST_PASSWORD: ephemeral-role-only
+      IAM_TEST_USERNAME: crm_iam_ci
+      IAM_TEST_PASSWORD: ephemeral-iam-role-only
+      PROVISION_TEST_USERNAME: crm_provision_ci
+      PROVISION_TEST_PASSWORD: ephemeral-provision-role-only
+      ASYNC_TEST_USERNAME: crm_async_ci
+      ASYNC_TEST_PASSWORD: ephemeral-async-role-only
+      ASYNC_AUDIT_TEST_USERNAME: crm_async_audit_ci
+      ASYNC_AUDIT_TEST_PASSWORD: ephemeral-async-audit-only
+      IAM_ABUSE_REDIS_TEST: 'true'
+      REDIS_CLIENT: phpredis
+      REDIS_HOST: 127.0.0.1
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+      PGPASSWORD: ci-only-password
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup PHP / extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, curl, zip, pdo_pgsql, pgsql, redis
+          tools: composer:v2
+          coverage: none
+      - name: Install locked dependencies
+        run: |
+          test -f composer.lock
+          composer validate --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+      - name: Prepare temporary app key
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+      - name: Migrate tenant schema in temporary PostgreSQL
+        run: |
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          php artisan migrate --force --no-interaction
+      - name: Explicitly migrate isolated auth laboratory
+        env:
+          CRM_AUTH_EXPERIMENTAL: 'true'
+        run: |
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          php artisan migrate --path=database/experimental-migrations/auth --force --no-interaction
+      - name: Create non-bypass application role
+        run: |
+          psql -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE ROLE crm_app_ci LOGIN PASSWORD 'ephemeral-role-only'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_app_ci;
+          GRANT USAGE ON SCHEMA public TO crm_app_ci;
+          GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE crm_memberships TO crm_app_ci;
+          CREATE ROLE crm_iam_ci LOGIN PASSWORD 'ephemeral-iam-role-only'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_iam_ci;
+          GRANT USAGE ON SCHEMA public TO crm_iam_ci;
+          GRANT SELECT ON TABLE crm_global_identities, crm_auth_credentials TO crm_iam_ci;
+          GRANT UPDATE (last_totp_step) ON TABLE crm_auth_credentials TO crm_iam_ci;
+          GRANT SELECT, INSERT, UPDATE ON TABLE crm_auth_sessions TO crm_iam_ci;
+          GRANT SELECT, UPDATE (consumed_at) ON TABLE crm_auth_recovery_codes TO crm_iam_ci;
+          GRANT SELECT, INSERT, UPDATE ON TABLE crm_auth_operations TO crm_iam_ci;
+          GRANT INSERT ON TABLE crm_iam_audit_events TO crm_iam_ci;
+          CREATE ROLE crm_provision_ci LOGIN PASSWORD 'ephemeral-provision-role-only'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_provision_ci;
+          GRANT USAGE ON SCHEMA public TO crm_provision_ci;
+          GRANT SELECT, INSERT ON TABLE crm_global_identities TO crm_provision_ci;
+          GRANT SELECT, INSERT, UPDATE ON TABLE crm_auth_credentials TO crm_provision_ci;
+          GRANT SELECT, INSERT ON TABLE crm_auth_recovery_codes TO crm_provision_ci;
+          GRANT SELECT, UPDATE ON TABLE crm_auth_sessions TO crm_provision_ci;
+          GRANT SELECT, INSERT, UPDATE ON TABLE crm_auth_operations TO crm_provision_ci;
+          GRANT SELECT, UPDATE (revoked_at) ON TABLE crm_auth_mandates TO crm_provision_ci;
+          GRANT INSERT ON TABLE crm_iam_audit_events TO crm_provision_ci;
+          SQL
+      - name: Explicitly migrate inert async laboratory and create isolated role
+        env:
+          CRM_AUTH_EXPERIMENTAL: 'true'
+        run: |
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          php artisan migrate --path=database/experimental-migrations/async --force --no-interaction
+          psql -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE ROLE crm_async_ci LOGIN PASSWORD 'ephemeral-async-role-only'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_async_ci;
+          GRANT USAGE ON SCHEMA public TO crm_async_ci;
+          GRANT SELECT, INSERT ON TABLE crm_lab_async_ledger, crm_lab_async_attempts,
+            crm_lab_async_inbox, crm_lab_async_outbox TO crm_async_ci;
+          CREATE ROLE crm_async_audit_ci LOGIN PASSWORD 'ephemeral-async-audit-only'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_async_audit_ci;
+          GRANT USAGE ON SCHEMA public TO crm_async_audit_ci;
+          GRANT SELECT ON TABLE crm_lab_async_ledger, crm_lab_async_attempts,
+            crm_lab_async_inbox, crm_lab_async_outbox TO crm_async_audit_ci;
+          SQL
+      - name: Run isolated PostgreSQL RLS tests
+        run: php artisan test --filter=PostgresMembershipRlsTest --no-ansi
+      - name: Run full synthetic test suite
+        run: php artisan test --no-ansi
