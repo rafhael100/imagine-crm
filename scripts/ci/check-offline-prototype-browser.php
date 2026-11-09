@@ -88,6 +88,22 @@ $testScript = <<<'JS'
     check(visible()===1,'qualification stage count');
     filterButtons.find(x=>x.dataset.leadStage==='all').click();
     check(visible()===4,'all stage restores every fixture');
+    // Validate real Chromium DOM sorting without any lead mutation or API.
+    const sortButtons=Array.from(document.querySelectorAll('#screen-leads [data-lead-sort]'));
+    const order=()=>Array.from(document.querySelectorAll('#screen-leads tbody tr')).map(x=>x.querySelector('strong').textContent);
+    const fixtures=['Lead Exemplo A','Lead Exemplo B','Lead Exemplo C','Lead Exemplo D'];
+    check(sortButtons.length===3&&JSON.stringify(order())===JSON.stringify(fixtures),'original fixture order');
+    sortButtons.find(x=>x.dataset.leadSort==='high').click();
+    check(JSON.stringify(order())===JSON.stringify(['Lead Exemplo C','Lead Exemplo D','Lead Exemplo B','Lead Exemplo A']),'descending score order');
+    filterButtons.find(x=>x.dataset.leadStage==='entrada').click();
+    check(visible()===2,'filter remains functional after sorting');
+    check(document.getElementById('lead-sort-summary').textContent.includes('maior pontuação'),'sort live feedback');
+    filterButtons.find(x=>x.dataset.leadStage==='all').click();
+    sortButtons.find(x=>x.dataset.leadSort==='low').click();
+    check(JSON.stringify(order())===JSON.stringify(['Lead Exemplo A','Lead Exemplo B','Lead Exemplo D','Lead Exemplo C']),'ascending score order');
+    sortButtons.find(x=>x.dataset.leadSort==='original').click();
+    check(JSON.stringify(order())===JSON.stringify(fixtures),'restore original order');
+    check(document.querySelectorAll('[data-lead-sort][aria-pressed="true"]').length===1,'one selected sort');
     check(document.querySelectorAll('[data-lead-stage][aria-pressed="true"]').length===1,'one pressed filter');
 
     const skip=document.querySelector('.skip-link');
