@@ -119,6 +119,11 @@ $driver = <<<'HTML'
       sortButtons.find(node=>node.dataset.leadSort==='original').click();
       check(JSON.stringify(order())===JSON.stringify(['Lead Exemplo A','Lead Exemplo B','Lead Exemplo C','Lead Exemplo D']),'original order restored in 320px');
       check(doc.documentElement.scrollWidth<=320,'no horizontal page overflow on lead screen');
+      buttons.find(node=>node.dataset.page==='dashboard').click();
+      const quotas=Array.from(doc.querySelectorAll('#screen-dashboard [data-quota-fixture] meter'));
+      check(quotas.length===3,'three static quota meters on 320px');
+      check(JSON.stringify(quotas.map(node=>[node.value,node.max]))===JSON.stringify([[4,20],[1,2],[0,2]]),'fictional quota readings on mobile');
+      check(doc.documentElement.scrollWidth<=320,'no overflow in quota dashboard on 320px');
 
       done=true;
       marker.setAttribute('data-imagine-320','PASS');
