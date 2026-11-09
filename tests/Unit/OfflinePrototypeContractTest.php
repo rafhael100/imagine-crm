@@ -22,13 +22,13 @@ final class OfflinePrototypeContractTest extends TestCase
         return $html;
     }
 
-    public function test_demo_contains_seven_distinct_navigable_sections(): void
+    public function test_demo_contains_eight_distinct_navigable_sections(): void
     {
         $html = self::html();
         preg_match_all('/<section data-screen="([^"]+)"/', $html, $screens);
         preg_match_all('/<button class="nav-button"[^>]+data-page="([^"]+)"/', $html, $navigation);
 
-        self::assertSame(['welcome', 'organization', 'dashboard', 'leads', 'pipeline', 'states', 'about'], $screens[1]);
+        self::assertSame(['welcome', 'organization', 'dashboard', 'leads', 'pipeline', 'import', 'states', 'about'], $screens[1]);
         self::assertSame($screens[1], $navigation[1]);
         self::assertStringContainsString('PROTÓTIPO — DADOS FICTÍCIOS', $html);
     }
@@ -44,6 +44,17 @@ final class OfflinePrototypeContractTest extends TestCase
         self::assertStringContainsString('Dados de clientes', $html);
         self::assertStringContainsString('00', $html);
         self::assertStringContainsString('apenas para revisão visual', $html);
+    }
+
+    public function test_synthetic_import_preview_never_accepts_files_or_exposes_raw_cells(): void
+    {
+        $html = self::html();
+
+        self::assertStringContainsString('Prévia de importação', $html);
+        self::assertStringContainsString('NÃO É POSSÍVEL IMPORTAR', $html);
+        self::assertStringContainsString('Não exibido', $html);
+        self::assertStringContainsString('esta tela não executa a inspeção PHP', $html);
+        self::assertStringContainsString('nenhum registro é gravado', $html);
     }
 
     public function test_no_network_storage_credentials_forms_or_remote_assets_are_requested(): void
