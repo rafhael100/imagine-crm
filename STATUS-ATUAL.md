@@ -3,7 +3,7 @@
 **Atualizado em:** 09/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
-**HEAD DEV no levantamento:** `91c54bebcbf34cd67e6b7b8b6858676191f4c348` — UX-F3-24 [PR #79](https://github.com/rafhael100/imagine-crm/pull/79), **MERGED somente DEV**, depois do relatório F3-23 [PR #78](https://github.com/rafhael100/imagine-crm/pull/78). Ambos são incrementos **sintéticos e inertes**, com F0 e PostgreSQL/RLS verdes antes e depois de cada merge; não autorizam importação, API, clientes ou produção.  
+**HEAD DEV no levantamento:** `61ce0c43e65f41600c10c47d051e6ae2fc046c72` — F3-25 [PR #82](https://github.com/rafhael100/imagine-crm/pull/82), **MERGED somente DEV**, após F3-24 [PR #81](https://github.com/rafhael100/imagine-crm/pull/81). A DEV agrega um gate negativo por tenant/campos e um tripwire de release para impedir ativação inadvertida de importação/exportação. Ambos permanecem **somente laboratoriais**, com CIs F0/PostgreSQL aprovadas antes e depois do merge.  
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
@@ -36,6 +36,8 @@
 | UX-F3-23 — estados ilustrativos do mapeamento | [PR #76](https://github.com/rafhael100/imagine-crm/pull/76) | Integrado DEV: 3 cenários offline acessíveis, Chromium 520/320 CSS px; sem upload, backend ou dados de cliente |
 | F3-23 — relatório sintético de avisos de prévia | [PR #78](https://github.com/rafhael100/imagine-crm/pull/78) | Integrado DEV: valida contagens e partições forjadas; emite avisos fixos de fórmulas/vazios/lacunas, sem autorização, conteúdo de célula ou contrato real |
 | UX-F3-24 — avisos fictícios no protótipo | [PR #79](https://github.com/rafhael100/imagine-crm/pull/79) | Integrado DEV: três cenários acessíveis de revisão CSV, 520/320px Chromium, sem conexão com PHP, upload ou dados reais |
+| F3-24 — contrato negativo por tenant/campos de importação | [PR #81](https://github.com/rafhael100/imagine-crm/pull/81) | Integrado DEV: valida forma, referência de organização, identidade apenas declarada e alvos mapeados; **sempre DENY**, mesmo com mapa sem avisos |
+| F3-25 — tripwire de release para portabilidade | [PR #82](https://github.com/rafhael100/imagine-crm/pull/82) | Integrado DEV: testes negativos rejeitam novas rotas de portabilidade e qualquer método de autorização/mutação nos contratos sintéticos |
 | CORE/SEG/AUT/INT/LGPD | [Issue #27](https://github.com/rafhael100/imagine-crm/issues/27) e gates da documentação | **67 pendências CORE e gates especializados ABERTOS**, sem homologação |
 
 ## B. Evidências recentes de CI
@@ -73,6 +75,10 @@
 - **F3-23 (PR #78):** antes de merge `013c604831dcf314099c777291f0ade7fa3958a2`, [F0 #42628263260](https://github.com/rafhael100/imagine-crm/actions/runs/42628263260) e [PostgreSQL #42628263172](https://github.com/rafhael100/imagine-crm/actions/runs/42628263172), **SUCCESS**. Depois de merge DEV `21011389439656b3417108c0e0ae84ddb8ea9031`, [F0 #42628494459](https://github.com/rafhael100/imagine-crm/actions/runs/42628494459) e [PostgreSQL #42628494586](https://github.com/rafhael100/imagine-crm/actions/runs/42628494586), **SUCCESS**.
 - **UX-F3-24 (PR #79):** antes de merge `428a5549a14b4fee36106a02860961a3ae335a34`, [F0 #42628975234](https://github.com/rafhael100/imagine-crm/actions/runs/42628975234) e [PostgreSQL #42628975313](https://github.com/rafhael100/imagine-crm/actions/runs/42628975313), **SUCCESS**. Depois de merge DEV `91c54bebcbf34cd67e6b7b8b6858676191f4c348`, [F0 #42629166698](https://github.com/rafhael100/imagine-crm/actions/runs/42629166698) e [PostgreSQL #42629166702](https://github.com/rafhael100/imagine-crm/actions/runs/42629166702), **SUCCESS**. Ausência de avisos sintéticos jamais é evidência de importação autorizada.
 - Todos os novos resultados são **laboratórios/instrumentos de UX**, não revisão independente de segurança, LGPD, dados de clientes, liberação de quotas ou autorização operacional.
+
+- **F3-24 (PR #81):** antes do merge `a2aa6544e7ed7fcbc608b617672c8b1ae902be01`, [F0 #42631492068](https://github.com/rafhael100/imagine-crm/actions/runs/42631492068) e [PostgreSQL #42631492089](https://github.com/rafhael100/imagine-crm/actions/runs/42631492089), **SUCCESS**. Depois do merge DEV `a6d06d5e252da90faf706645ff53b83b756eb597`, [F0 #42631807569](https://github.com/rafhael100/imagine-crm/actions/runs/42631807569) e [PostgreSQL #42631807520](https://github.com/rafhael100/imagine-crm/actions/runs/42631807520), **SUCCESS**.
+- **F3-25 (PR #82):** antes do merge `18d5e9d5dfb5b0b9e61a0b4c58631a2bce8f8a7f`, [F0 #42632263184](https://github.com/rafhael100/imagine-crm/actions/runs/42632263184) e [PostgreSQL #42632263337](https://github.com/rafhael100/imagine-crm/actions/runs/42632263337), **SUCCESS**. Depois do merge DEV `61ce0c43e65f41600c10c47d051e6ae2fc046c72`, [F0 #42632585564](https://github.com/rafhael100/imagine-crm/actions/runs/42632585564) e [PostgreSQL #42632585047](https://github.com/rafhael100/imagine-crm/actions/runs/42632585047), **SUCCESS**.
+- Reforço de segurança de regressão somente: UUID e contexto construídos não são autenticação; `SCOPE_NOT_VERIFIED` permanece `allowed=false`; a CI negativa não aprova endpoints, IA, exportação, campos reais, privacidade ou homologação de produção.
 
 ## C. Bloqueios para passar de laboratório a produto
 
