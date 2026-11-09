@@ -359,6 +359,72 @@ final class PostgresLeadIdempotencyBoundaryTest extends TestCase
             ->where('tenant_id', self::A)->count());
     }
 
+    /**
+     * A PostgreSQL policy with current_setting() only provides a row filter.
+     * Without a server-authenticated context, the physical role cannot know
+     * whether tenant A or B is legally accessible to the application caller.
+     */
+    public function test_untrusted_tenant_guc_can_switch_visible_tenant_rows(): void
+    {
+        // Fixtures inserted by ADMIN in disposable CI, never by an end user.
+        $this->fixture->table(self::LEDGER)->insert([
+            $this->row(self::A, self::KEY),
+            $this->row(self::B, self::KEY),
+        ]);
+
+        $this->begin($this->primary, self::A);
+        $this->assertSame([self::A],
+            $this->primary->table(self::LEDGER)->pluck('tenant_id')->all());
+
+        // Deliberately demonstrate that the restricted DB role CAN change
+        // the GUC to B even though no identity/membership was authenticated.
+        // This is an unmet security precondition, NOT a bypass to enable.
+        $this->primary->selectOne("SELECT set_config('app.tenant_id', ?, true)", [self::B]);
+        $this->assertSame([self::B],
+            $this->primary->table(self::LEDGER)->pluck('tenant_id')->all());
+        $this->primary->commit();
+
+        // SET LOCAL disappears on commit; it does not solve provenance.
+        $this->assertSame(0, $this->primary->table(self::LEDGER)->count());
+    }
+
+    public function test_missing_and_rolled_back_tenant_context_cannot_read_fixture_rows(): void
+    {
+        $this->fixture->table(self::LEDGER)->insert($this->row());
+        $this->assertSame(0, $this->primary->table(self::LEDGER)->count());
+
+        $this->begin($this->primary, self::A);
+        $this->assertSame(1, $this->primary->table(self::LEDGER)->count());
+        $this->primary->rollBack();
+        $this->assertSame(0, $this->primary->table(self::LEDGER)->count());
+
+        $this->begin($this->primary, self::B);
+        $this->assertSame(0, $this->primary->table(self::LEDGER)->count());
+        $this->primary->commit();
+        $this->assertSame(0, $this->primary->table(self::LEDGER)->count());
+    }
+
+    public function test_session_scoped_guc_would_leak_a_tenant_context_between_jobs(): void
+    {
+        $this->fixture->table(self::LEDGER)->insert($this->row());
+
+        // Do NOT use false in production/pools. This deliberately probes
+        // the hazard of session-scoped instead of transaction-scoped state.
+        try {
+            $this->primary->selectOne(
+                "SELECT set_config('app.tenant_id', ?, false)", [self::A],
+            );
+            $this->assertSame(1, $this->primary->table(self::LEDGER)->count());
+            $this->assertSame(1, $this->primary->table(self::LEDGER)->count());
+        } finally {
+            // Ensure the deliberately contaminated connection is reset even
+            // if assertions throw; never poison other tests.
+            $this->primary->statement('RESET app.tenant_id');
+        }
+
+        $this->assertSame(0, $this->primary->table(self::LEDGER)->count());
+    }
+
     public function test_existing_async_ledger_is_not_the_business_lead_delivery_system(): void
     {
         // The PHP lab contract pins original destination, while the existing
