@@ -157,17 +157,23 @@
             <button type="button" class="state-button" data-lead-stage="em-contato" aria-pressed="false">Em contato</button>
             <button type="button" class="state-button" data-lead-stage="qualificacao" aria-pressed="false">Qualificação</button>
           </div>
-          <p id="lead-filter-summary" class="caption" role="status" aria-live="polite" aria-atomic="true">Mostrando 4 de 4 leads fictícios.</p>
+          <div class="switcher" role="group" aria-label="Ordenar leads fictícios por pontuação">
+             <button type="button" class="state-button" data-lead-sort="original" aria-pressed="true">Ordem original</button>
+             <button type="button" class="state-button" data-lead-sort="high" aria-pressed="false">Maior pontuação</button>
+             <button type="button" class="state-button" data-lead-sort="low" aria-pressed="false">Menor pontuação</button>
+           </div>
+           <p id="lead-filter-summary" class="caption" role="status" aria-live="polite" aria-atomic="true">Mostrando 4 de 4 leads fictícios.</p>
+           <p id="lead-sort-summary" class="caption" role="status" aria-live="polite" aria-atomic="true">Ordem original dos exemplos.</p>
           <div class="table-scroll" tabindex="0" aria-label="Tabela de leads fictícios, role para navegar horizontalmente se necessário">
             <table class="demo-table"><thead><tr><th scope="col">Identificação fictícia</th><th scope="col">Etapa visual</th><th scope="col">Pontuação exemplo</th><th scope="col">Faixa descritiva</th></tr></thead>
             <tbody>
-              <tr data-lead-fixture-stage="entrada"><td><strong>Lead Exemplo A</strong></td><td>Entrada</td><td>30</td><td><span class="label-soft">Frio</span></td></tr>
-              <tr data-lead-fixture-stage="em-contato"><td><strong>Lead Exemplo B</strong></td><td>Em contato</td><td>55</td><td><span class="label-soft">Morno</span></td></tr>
-              <tr data-lead-fixture-stage="qualificacao"><td><strong>Lead Exemplo C</strong></td><td>Qualificação</td><td>85</td><td><span class="label-soft">Quente</span></td></tr>
-              <tr data-lead-fixture-stage="entrada"><td><strong>Lead Exemplo D</strong></td><td>Entrada</td><td>70</td><td><span class="label-soft">Quente</span></td></tr>
+              <tr data-lead-fixture-stage="entrada" data-lead-fixture-score="30" data-lead-fixture-order="0"><td><strong>Lead Exemplo A</strong></td><td>Entrada</td><td>30</td><td><span class="label-soft">Frio</span></td></tr>
+              <tr data-lead-fixture-stage="em-contato" data-lead-fixture-score="55" data-lead-fixture-order="1"><td><strong>Lead Exemplo B</strong></td><td>Em contato</td><td>55</td><td><span class="label-soft">Morno</span></td></tr>
+              <tr data-lead-fixture-stage="qualificacao" data-lead-fixture-score="85" data-lead-fixture-order="2"><td><strong>Lead Exemplo C</strong></td><td>Qualificação</td><td>85</td><td><span class="label-soft">Quente</span></td></tr>
+              <tr data-lead-fixture-stage="entrada" data-lead-fixture-score="70" data-lead-fixture-order="3"><td><strong>Lead Exemplo D</strong></td><td>Entrada</td><td>70</td><td><span class="label-soft">Quente</span></td></tr>
             </tbody></table>
           </div>
-          <div class="help">Filtro e contagens são somente uma simulação local sobre quatro exemplos fictícios. Pontuação e faixa são valores estáticos; não existe algoritmo sobre pessoas nem ligação com o PHP em desenvolvimento.</div>
+          <div class="help">Filtros, contagens e ordenação são somente simulações locais sobre quatro exemplos fictícios. Pontuação e faixa são valores estáticos, sem qualificação automática de pessoas, gravação ou ligação com o PHP em desenvolvimento.</div>
           <button class="action" type="button" data-go="pipeline">Visualizar funil ilustrativo</button>
         </div>
       </section>
@@ -274,6 +280,9 @@
   const leadFilterButtons = Array.from(document.querySelectorAll('[data-lead-stage]'));
   const leadFixtureRows = Array.from(document.querySelectorAll('#screen-leads [data-lead-fixture-stage]'));
   const leadFilterSummary = document.getElementById('lead-filter-summary');
+  const leadSortButtons = Array.from(document.querySelectorAll('#screen-leads [data-lead-sort]'));
+  const leadSortSummary = document.getElementById('lead-sort-summary');
+  const leadFixtureTableBody = document.querySelector('#screen-leads .demo-table tbody');
 
   function navigate(page, moveFocus) {
     if (!Object.prototype.hasOwnProperty.call(names,page)) return;
@@ -334,6 +343,28 @@
     leadFilterSummary.textContent='Mostrando '+displayed+' de '+leadFixtureRows.length+' leads fictícios.';
   }
 
+  // Only reorder four hard-coded HTML fixtures, never query or update leads.
+  // Original order is retained as an explicit stable tie-breaker.
+  function sortLeadFixtures(mode) {
+    const modes=['original','high','low'];
+    if (!modes.includes(mode)) return;
+    const ordered=leadFixtureRows.slice().sort(function(a,b){
+      const scoreA=Number(a.getAttribute('data-lead-fixture-score'));
+      const scoreB=Number(b.getAttribute('data-lead-fixture-score'));
+      const indexA=Number(a.getAttribute('data-lead-fixture-order'));
+      const indexB=Number(b.getAttribute('data-lead-fixture-order'));
+      if(mode==='high') return scoreB-scoreA || indexA-indexB;
+      if(mode==='low') return scoreA-scoreB || indexA-indexB;
+      return indexA-indexB;
+    });
+    ordered.forEach(function(node){leadFixtureTableBody.appendChild(node);});
+    leadSortButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(node.getAttribute('data-lead-sort')===mode));
+    });
+    const description={original:'Ordem original dos exemplos.',high:'Leads fictícios ordenados por maior pontuação.',low:'Leads fictícios ordenados por menor pontuação.'};
+    leadSortSummary.textContent=description[mode];
+  }
+
   function showMonitorScenario(code) {
     const cases = Object.freeze({
       received: {
@@ -391,8 +422,10 @@
   stateButtons.forEach(function(node){node.addEventListener('click',function(){showState(node.getAttribute('data-demo-state'));});});
   monitorButtons.forEach(function(node){node.addEventListener('click',function(){showMonitorScenario(node.getAttribute('data-monitor-scenario'));});});
   leadFilterButtons.forEach(function(node){node.addEventListener('click',function(){showLeadStage(node.getAttribute('data-lead-stage'));});});
+  leadSortButtons.forEach(function(node){node.addEventListener('click',function(){sortLeadFixtures(node.getAttribute('data-lead-sort'));});});
   navigate('welcome',false);
   showLeadStage('all');
+  sortLeadFixtures('original');
   showState('loading');
   showMonitorScenario('received');
 })();
