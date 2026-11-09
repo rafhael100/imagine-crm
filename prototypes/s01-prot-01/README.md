@@ -1,11 +1,11 @@
 # S01-PROT-01-F1 — Protótipo navegável offline do Imagine CRM
 
-**Natureza:** demonstração estática de UX com conteúdo 100% fictício, sem ambiente de clientes, integração ou autorização funcional. A expansão F2 acrescenta três telas de negócio puramente ilustrativas; não representa ativação de módulos.
+**Natureza:** demonstração estática de UX com conteúdo 100% fictício, sem ambiente de clientes, integração ou autorização funcional. A expansão F2 acrescentou três telas de negócio; a extensão F3-04 inclui uma oitava tela ilustrativa de prévia de importação.
 
 ## Como executar
 
 1. Baixe a pasta `prototypes/s01-prot-01/` ou abra o arquivo `index.html` diretamente no navegador (protocolo `file://`).
-2. Use o menu **Boas-vindas**, **Minha organização**, **Visão geral**, **Leads fictícios**, **Funil ilustrativo**, **Estados da tela**, **Sobre o protótipo**.
+2. Use o menu **Boas-vindas**, **Minha organização**, **Visão geral**, **Leads fictícios**, **Funil ilustrativo**, **Prévia de importação**, **Estados da tela**, **Sobre o protótipo**.
 3. Em **Estados da tela**, experimente as opções UI-01/02/03/04, que trocam **somente texto simulado**.
 
 **Não é necessário instalar pacotes ou iniciar servidor**. A demonstração foi construída em um único HTML, com CSS e JS embutidos; há uma política CSP local de bloqueio de conexões, sem recursos remotos.
@@ -30,11 +30,19 @@
 - `tests/Unit/OfflinePrototypeContractTest.php` adiciona quatro verificações regressivas estáticas para número de telas, aviso de demonstração, fronteira offline e estados de UI. **Não substituem** inspeção em navegador real, revisão de acessibilidade nem testes de autorização.
 - Esta extensão é **PR filha** de #31, mantendo o diff isolado; não deve ser integrada diretamente à DEV contornando a revisão e o eventual aceite da base.
 
+## Extensão F3-04: prévia de importação ilustrativa
+
+- A oitava tela **Prévia de importação** exibe contagens **fixas** de 3 linhas, 3 colunas e 1 célula de exemplo sinalizada; mostra somente a posição fictícia, **sem apresentar conteúdo de células**.
+- Esta tela **não invoca** `SyntheticImportPreviewInspector` nem `SpreadsheetTextRiskGuard` do PHP. É um exemplo estático de produto/UX, não evidência de integração.
+- Não permite anexar, ler ou enviar planilhas, pré-visualizar dados reais, processar contatos, salvar registros ou autorizar importações.
+- O aviso `PROTÓTIPO — DADOS FICTÍCIOS` permanece em toda a navegação e `canImport()` no laboratório PHP F3-03 sempre retorna falso.
+- A revisão visual em navegador real e a validação de acessibilidade continuam pendentes; testes estáticos de UI não substituem a homologação de importação IN-118/INT-08.
+
 ## Critérios de revisão UX-01..UX-08
 
 | Critério | Verificação proposta | Observação |
 | --- | --- | --- |
-| UX-01 | Sete seções alternadas com botões de navegação, sem rotas reais. | Revisão visual manual necessária. |
+| UX-01 | Oito seções alternadas com botões de navegação, sem rotas reais. | Revisão visual manual necessária. |
 | UX-02 | Aviso permanente `PROTÓTIPO — DADOS FICTÍCIOS`. | Presente no cabeçalho. |
 | UX-03 | Apenas nome e vínculo próprios **fictícios** em `Minha organização`. | Não expor planos/usuários/leads. |
 | UX-04 | UI-03/UI-04 removem o conteúdo do painel de demonstração antes de apresentar a mensagem neutra. | Validar por navegação. |
