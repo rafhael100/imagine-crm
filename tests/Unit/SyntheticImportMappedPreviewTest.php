@@ -14,7 +14,7 @@ final class SyntheticImportMappedPreviewTest extends TestCase
 {
     public function test_csv_header_is_used_in_same_decode_and_never_escapes_report(): void
     {
-        $csv = "label,source,note\n\"Lead Exemplo A\",site-demo,\"=SUM(1,2)\"\n";
+        $csv = "label,source_field,note\n\"Lead Exemplo A\",site-demo,\"=SUM(1,2)\"\n";
         $decoder = new SyntheticCsvPreviewDecoder();
 
         $mapped = $decoder->previewMapped(
@@ -41,7 +41,7 @@ final class SyntheticImportMappedPreviewTest extends TestCase
         );
 
         $serialized = json_encode($mapped, JSON_THROW_ON_ERROR);
-        foreach (['Lead Exemplo', 'site-demo', '=SUM', '"label"', '"source"', '"note"', '"description"', '"origin"'] as $sensitive) {
+        foreach (['Lead Exemplo', 'site-demo', '=SUM', '"label"', '"source_field"', '"note"', '"description"', '"origin"'] as $sensitive) {
             self::assertStringNotContainsString($sensitive, $serialized);
         }
         self::assertTrue((new \ReflectionClass(SyntheticImportMappedPreviewSummary::class))->isReadOnly());
