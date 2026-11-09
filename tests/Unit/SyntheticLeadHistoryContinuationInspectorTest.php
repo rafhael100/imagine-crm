@@ -77,6 +77,22 @@ final class SyntheticLeadHistoryContinuationInspectorTest extends TestCase
         ));
     }
 
+    public function test_case_normalization_cannot_hide_replayed_event_identifiers(): void
+    {
+        $replayed = new SyntheticLeadHistoryClaim(
+            strtoupper(self::TENANT),
+            strtoupper(self::LEAD),
+            strtoupper('33333333-3333-4333-8333-000000000001'),
+            strtoupper(self::ACTOR),
+            2,
+            'stage_changed',
+        );
+        self::assertClosed('EVENT_REFERENCE_REUSED', self::inspect(
+            [self::claim(1, 1)],
+            [$replayed],
+        ));
+    }
+
     public function test_gaps_and_overlaps_across_slice_boundary_do_not_pass(): void
     {
         self::assertClosed('HISTORY_ORDER_UNVERIFIED', self::inspect(
