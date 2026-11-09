@@ -63,7 +63,7 @@ final class OfflinePrototypeLeadDetailTest extends TestCase
             "if(!active || active.closest('tr').hidden) showLeadDetail(null)",
             "if(page!=='leads') showLeadDetail(null)",
             'leadDetailPreview.replaceChildren()',
-            "node.setAttribute('aria-expanded'",
+            "button.setAttribute('aria-expanded'",
             'Visualização ilustrativa não autoriza exportação, alteração ou ação comercial.',
             'Nenhum contato, histórico pessoal ou permissão foi consultado.',
         ] as $required) {
