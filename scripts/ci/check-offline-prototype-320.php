@@ -168,6 +168,12 @@ $driver = <<<'HTML'
       check(timeline().length===2&&!timeline().some(x=>x.includes('Qualificação')),'first event slice restored in 320px');
       check(doc.documentElement.scrollWidth<=320,'no timeline overflow on mobile');
       check(doc.documentElement.scrollWidth<=320,'no horizontal page overflow on lead screen');
+      // Temperature change also invalidates a previously expanded lead.
+      temperatureButtons.find(node=>node.dataset.leadTemperature==='hot').click();
+      check(detailPanel.hidden&&timeline().length===0,'mobile temperature change clears selected history');
+      check(first.getAttribute('aria-expanded')==='false','mobile hidden lead is collapsed');
+      check(doc.documentElement.scrollWidth<=320,'band filtering remains inside mobile viewport');
+
       // UX-F3-28: pipeline-to-detail review works with a 320px viewport.
       stageButtons.find(node=>node.dataset.leadStage==='entrada').click();
       pipeline.click();
