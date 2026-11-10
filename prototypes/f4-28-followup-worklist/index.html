@@ -65,8 +65,8 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
 <p id="empty-note" role="status" aria-live="polite" class="notice" hidden>A amostra fictícia selecionada não contém registros nesta faixa. Isso não comprova que os atendimentos reais foram concluídos.</p>
 <div class="table-wrap">
 <table>
-<caption>Identificadores e prazos inventados, em UTC</caption>
-<thead><tr><th scope="col">ID fictício</th><th scope="col">Prazo (UTC)</th><th scope="col">Faixa</th><th scope="col">Ação local</th></tr></thead>
+<caption>Identificadores inventados e prazos com fuso explícito</caption>
+<thead><tr><th scope="col">ID fictício</th><th scope="col">Prazo (ISO 8601)</th><th scope="col">Faixa</th><th scope="col">Ação local</th></tr></thead>
 <tbody id="worklist-rows"></tbody>
 </table>
 </div>
@@ -75,7 +75,7 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
 <p class="muted">Prévia somente leitura dos campos inventados já apresentados na lista; não há histórico real, contatos, tarefas realizadas ou ação operacional.</p>
 <dl class="detail-grid">
 <div><dt>Identificador fictício</dt><dd id="detail-id"></dd></div>
-<div><dt>Prazo UTC</dt><dd id="detail-due"></dd></div>
+<div><dt>Prazo (com fuso)</dt><dd id="detail-due"></dd></div>
 <div><dt>Faixa de prazo</dt><dd id="detail-bucket"></dd></div>
 </dl>
 <button type="button" id="close-detail">Fechar detalhes</button>
