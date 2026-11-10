@@ -57,6 +57,10 @@ final class FollowUpAgingProjection
         }
         try {
             $date = new DateTimeImmutable($value);
+            $errors = DateTimeImmutable::getLastErrors();
+            if ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) {
+                throw new InvalidArgumentException('Invalid calendar date or timezone offset.');
+            }
         } catch (\Exception $exception) {
             throw new InvalidArgumentException('Invalid timestamp.', 0, $exception);
         }
