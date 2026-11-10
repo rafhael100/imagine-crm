@@ -48,8 +48,8 @@ YAML;
             || substr_count($yaml, 'permissions:'."\n".'  contents: read') !== 1) {
             $issues[] = 'token_permissions';
         }
-        if (preg_match_all('/(?m)^\s*runs-on:\s*ubuntu-latest\s*$/', $yaml) !== 1
-            || preg_match('/(?m)^\s*runs-on:\s*(?!ubuntu-latest\s*$)/', $yaml)) {
+        if (preg_match_all('/(?m)^[ \\t]*runs-on:[ \\t]*([^\\r\\n]+)[ \\t]*$/', $yaml, $runnerMatches) !== 1
+            || trim($runnerMatches[1][0] ?? '') !== 'ubuntu-latest') {
             $issues[] = 'runner';
         }
         if (preg_match('/\$\{\{\s*(?:secrets|vars)\./', $yaml) === 1) {
