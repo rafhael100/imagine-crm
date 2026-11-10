@@ -53,6 +53,11 @@ $assertions = <<<'JS'
     check(value('count-alerts')==='0','clean alerts');
     check(issues().length===0,'no fabricated clean findings');
     check(!document.getElementById('clean-note').hidden,'clean caution visible');
+    check(value('row-flagged')==='0','clean sample has zero flagged data rows');
+    check(value('row-unflagged')==='2','clean sample has two rows without detected findings');
+    check(value('row-header-risk')==='0','clean sample no header cell warnings');
+    check(document.querySelectorAll('#row-review-rows tr').length===2,'two clean row records');
+    check(Array.from(document.querySelectorAll('#row-review-rows tr')).every(row=>row.textContent.includes('revisão obrigatória')),'clean rows still require review');
     check(value('map-count')==='3','mapping assignments counted');
     check(value('map-unmapped')==='0','clean mapping has no omitted source columns');
     check(value('map-conflicts')==='0','clean mapping has no detected conflicts');
@@ -92,11 +97,22 @@ $assertions = <<<'JS'
     check(issues().some(row=>row.includes('Linha 3, coluna 2')&&row.includes('Apóstrofo')),'ambiguous quote');
     check(document.getElementById('clean-note').hidden,'clean note hidden for warnings');
     check(value('preview-status').includes('Nenhuma operação de importação'),'never claims a real import');
+    check(value('row-flagged')==='2','two problematic data rows');
+    check(value('row-unflagged')==='1','one row without detected findings');
+    const rowReview=Array.from(document.querySelectorAll('#row-review-rows tr')).map(row=>row.textContent);
+    check(rowReview.length===3,'three original data rows in diagnostics');
+    check(rowReview.some(row=>row.includes('Linha 2')&&row.includes('Coluna 3')&&row.includes('Prefixo semelhante')),'formula row diagnoses only a position');
+    check(rowReview.some(row=>row.includes('Linha 3')&&row.includes('Quantidade de colunas divergente')&&row.includes('Coluna 2')),'ragged row and formula share one review');
+    check(rowReview.some(row=>row.includes('Linha 4')&&row.includes('revisão obrigatória')),'unflagged row still requires review');
+    check(value('row-review-status').includes('nenhuma importação ou escrita permitida'),'row preview never approves import');
     check(value('map-count')==='3'&&value('map-conflicts')==='0','structure choice does not modify independent mapping example');
 
     document.querySelector('[data-sample="0"]').click();
     check(value('count-alerts')==='0','clean reset count');
     check(issues().length===0,'old findings cleared');
+    check(value('row-flagged')==='0','row warnings clear on clean sample reset');
+    check(value('row-unflagged')==='2','clean row total returns');
+    check(document.querySelectorAll('#row-review-rows tr').length===2,'no old row findings retained');
     check(!document.getElementById('clean-note').hidden,'clean caveat restored');
 
     result.setAttribute('data-imagine-browser-smoke','PASS');
@@ -159,6 +175,8 @@ try {
       check(win.innerWidth===320,'actual 320 CSS pixels');
       check(doc.documentElement.scrollWidth<=320,'no page horizontal overflow');
       check(doc.getElementById('count-alerts').textContent==='0','initial mobile zero');
+      check(doc.getElementById('row-flagged').textContent==='0','initial mobile row warning count');
+      check(doc.querySelectorAll('#row-review-rows tr').length===2,'initial mobile clean rows');
       check(doc.getElementById('map-conflicts').textContent==='0','initial mobile mapping clean');
       const mapChoice=doc.querySelector('[data-map="1"]');
       mapChoice.focus();
@@ -174,10 +192,15 @@ try {
       sample.click();
       check(doc.activeElement===sample,'mobile keyboard focus');
       check(doc.getElementById('count-alerts').textContent==='5','mobile issue total');
+      check(doc.getElementById('row-flagged').textContent==='2','mobile two rows flagged');
+      check(doc.getElementById('row-unflagged').textContent==='1','mobile unflagged row still counted');
+      check(doc.querySelectorAll('#row-review-rows tr').length===3,'mobile all data rows shown');
       check(doc.querySelectorAll('#findings-rows tr').length===5,'mobile issue rows');
       check(doc.documentElement.scrollWidth<=320,'no overflow after issues');
       doc.querySelector('[data-sample="0"]').click();
       check(doc.querySelectorAll('#findings-rows tr').length===0,'mobile stale rows cleared');
+      check(doc.getElementById('row-flagged').textContent==='0','mobile stale per-row warnings cleared');
+      check(doc.querySelectorAll('#row-review-rows tr').length===2,'mobile row preview reset');
       check(!doc.querySelector('form,input,textarea'),'no mobile capture');
       finish('PASS','real Chromium 320 px synthetic CSV preview');
     }catch(error){finish('FAIL',error.message);}
