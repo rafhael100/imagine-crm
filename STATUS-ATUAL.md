@@ -3,7 +3,7 @@
 **Atualizado em:** 09/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
-**HEAD DEV no levantamento:** `1bee57b48a99dfaf9469552b76992a679c5fd3e9` — PR #116 integrado após #114/#115. F3-32 produz deltas estritamente sintéticos sem matching de leads; F3-33 verifica paridade da interface fictícia com PHP; OPS-16 registra os bloqueios funcionais. Os workflows pré-merge passaram; resultados pós-merge de #116 requerem conferência separada. Sem ALLOW, clientes, main, VPS ou produção.
+**HEAD DEV no levantamento:** `c0d67814131b10bc9b9a9c61c52831ab57f0bb5f` — integração DEV do PR #121 após #118/#119/#120. F3-34..F3-37 trazem somente contagem, facetas, ordenação estável e composição de uma prévia **sintética em memória**, sem direito de acesso, IDs de clientes, persistência ou API. F0 e PostgreSQL/RLS passaram no PR #121 e na DEV pós-merge ([F0](https://github.com/rafhael100/imagine-crm/actions/runs/42733335721), [PostgreSQL](https://github.com/rafhael100/imagine-crm/actions/runs/42733335724)). `main`, VPS, clientes e produção não foram alterados.
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
@@ -251,3 +251,17 @@ O `AGENTS.md` é instrução de programação, `STATUS-ATUAL.md` é resumo hist�
 **Estado de aprovação:** PRs acima integrados exclusivamente na DEV com testes pré-merge F0 e PostgreSQL/RLS aprovados. Para cada HEAD de DEV deve-se conferir novamente as duas CIs após merge; os números de PR não provam homologação nem release.
 
 **NO-GO funcional ainda vigente:** R01-D01..D05 sem ratificação itemizada, [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) sem revisor independente, e CORE02/IAM/CORE04/CORE07/CORE08/LGPD/QA ainda abertos. Nada de cliente real, ALLOW, migração de produto, main, VPS ou produção.
+
+
+## E. Laboratório de visualização de leads F3-34..F3-37 — 09/11/2026
+
+| Etapa | Entrega e limite |
+|---|---|
+| [#118](https://github.com/rafhael100/imagine-crm/pull/118) F3-34 | Contador por etapa/faixa fictícias, 16 combinações, validado exclusivamente em memória; DEV `77e59479` |
+| [#119](https://github.com/rafhael100/imagine-crm/pull/119) F3-35 | Matriz 3x3 de facetas e fonte única para filtros; DEV `b9652bb9` |
+| [#120](https://github.com/rafhael100/imagine-crm/pull/120) F3-36 | Ordenação estável de posições de exemplos, sem IDs; DEV `c049a808` |
+| [#121](https://github.com/rafhael100/imagine-crm/pull/121) F3-37 | Prévia composta filtro+ordenacao: 48 combinações, dados exclusivamente artificiais; DEV `c0d67814` |
+
+**Evidência CI:** todos os quatro PRs tiveram F0 e PostgreSQL/RLS verdes na HEAD; os dois workflows pós-merge da HEAD `c0d67814` também passaram: [F0 #42733335721](https://github.com/rafhael100/imagine-crm/actions/runs/42733335721), [RLS #42733335724](https://github.com/rafhael100/imagine-crm/actions/runs/42733335724). Essas provas não executam política de `ALLOW` nem comprovam release de CRM real.
+
+**Gates preservados:** [S01/R01-D01..D05](https://github.com/rafhael100/imagine-crm/issues/22) continuam sem ratificação operacional, [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) exige revisão independente, e CORE02/IAM/CORE04/CORE07/CORE08/LGPD/QA permanecem abertos. Nenhuma implantação, API de clientes, SQL de negócio, dados pessoais, grants ou alterações em `main`/VPS foi autorizada por esses testes.
