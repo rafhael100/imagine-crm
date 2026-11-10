@@ -100,6 +100,17 @@ $driver = <<<'HTML'
       check(followUpPanel.textContent.includes('Igualdade exata de segundos UTC'),'mobile exact-instant activity sample');
       followUps.find(node=>node.dataset.followupCase==='upcoming').click();
       check(followUpPanel.textContent.includes('2 de 5'),'mobile future activity sample');
+      const horizonButtons=Array.from(doc.querySelectorAll('#screen-monitor [data-followup-horizon]'));
+      const horizonStatus=doc.getElementById('followup-horizon-summary');
+      const horizonDaily=doc.getElementById('followup-horizon-daily');
+      check(horizonButtons.length===2&&horizonDaily.querySelectorAll('li').length===1,'one-day synthetic UTC horizon at 320px');
+      check(horizonStatus.textContent.includes('1 de 2 exemplos futuros dentro da janela'),'one UTC future item at 320px');
+      horizonButtons.find(x=>x.dataset.followupHorizon==='7').click();
+      check(horizonDaily.querySelectorAll('li').length===7&&horizonStatus.textContent.includes('2 de 2 exemplos futuros dentro da janela'),'seven-day UTC horizon at 320px');
+      check(horizonDaily.textContent.includes('2026-11-12 — 1'),'mobile date breakdown matches fixture');
+      check(horizonButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'one horizon selected on mobile');
+      horizonButtons.find(x=>x.dataset.followupHorizon==='1').click();
+      check(doc.documentElement.scrollWidth<=320,'UTC horizon does not cause horizontal overflow');
       const followUpPageSizes=Array.from(doc.querySelectorAll('#screen-monitor [data-followup-page-size]'));
       const followUpPrev=doc.getElementById('followup-page-prev');
       const followUpNext=doc.getElementById('followup-page-next');
