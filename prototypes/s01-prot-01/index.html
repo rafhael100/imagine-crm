@@ -177,6 +177,19 @@
           <div id="trial-quota-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
           <div class="help"><strong>Somente visualização.</strong> A contagem exibida não cria, prorroga, bloqueia, converte nem cobra um trial. Franquia zerada não significa ilimitada; nenhum direito operacional é concedido.</div>
         </section>
+        <section class="card" data-quota-whatif-demo aria-labelledby="quota-whatif-title" style="margin-top:18px">
+          <p class="eyebrow">REV-F5-02 · Projeção de consumo fictício</p>
+          <h2 id="quota-whatif-title">Simulação de aumento de leads</h2>
+          <p class="soft">Exemplo fixo com 4 de 20 leads. Escolha apenas um incremento hipotético; nenhuma reserva, novo lead ou cobrança será realizada.</p>
+          <div class="switcher" role="group" aria-label="Incrementos fictícios de leads">
+            <button type="button" class="state-button" data-quota-whatif="none" aria-pressed="true">Adicionar 0</button>
+            <button type="button" class="state-button" data-quota-whatif="ten" aria-pressed="false">Adicionar 10</button>
+            <button type="button" class="state-button" data-quota-whatif="sixteen" aria-pressed="false">Adicionar 16</button>
+            <button type="button" class="state-button" data-quota-whatif="seventeen" aria-pressed="false">Adicionar 17</button>
+          </div>
+          <div id="quota-whatif-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
+          <p class="caption">Cálculo fictício, sem leitura de consumo real, direito de criar leads, alterações na franquia ou simulação de preço.</p>
+        </section>
         <div class="two-col" style="margin-top:18px">
           <div class="card"><p class="eyebrow">Acompanhamento comercial — demonstração</p><h2>Do primeiro contato à qualificação</h2><p class="soft">Explore uma tabela sintética de leads e visualize sua organização em colunas. Não há botão de salvar, edição ou envio de mensagem.</p><button class="action" type="button" data-go="leads">Ver leads fictícios</button></div>
           <div class="card"><h2>O que vem depois</h2><p class="soft">A implementação real dependerá de autenticação, isolamento por empresa, definição dos direitos por ação e campo, privacidade e testes de segurança.</p><div class="help">Esta visão não utiliza qualquer informação de empresa ou cliente.</div></div>
@@ -410,6 +423,9 @@
   const trialQuotaPreview = document.getElementById('trial-quota-preview');
   let selectedTrialPhase = 'active';
   let selectedTrialQuota = 'in-range';
+  const quotaWhatIfButtons = Array.from(document.querySelectorAll('#screen-dashboard [data-quota-whatif]'));
+  const quotaWhatIfPreview = document.getElementById('quota-whatif-preview');
+  let selectedQuotaWhatIf = 'none';
   const preview = document.getElementById('demo-preview');
   const stateButtons = Array.from(document.querySelectorAll('[data-demo-state]'));
   const monitorButtons = Array.from(document.querySelectorAll('[data-monitor-scenario]'));
@@ -891,6 +907,34 @@
     renderTrialQuotaPreview();
   }
 
+  // Pure display arithmetic over a fixed, invented 4/20 leads snapshot.
+  // Never creates a lead, reserves quota, bills, or selects a tenant.
+  function renderQuotaWhatIf() {
+    const scenarios=Object.freeze({
+      none:{requested:0,projected:4,remaining:16,excess:0,impact:'in_range'},
+      ten:{requested:10,projected:14,remaining:6,excess:0,impact:'in_range'},
+      sixteen:{requested:16,projected:20,remaining:0,excess:0,impact:'at_limit'},
+      seventeen:{requested:17,projected:21,remaining:0,excess:1,impact:'would_exceed'}
+    });
+    const sample=scenarios[selectedQuotaWhatIf];
+    if(!sample) return;
+    quotaWhatIfButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(node.getAttribute('data-quota-whatif')===selectedQuotaWhatIf));
+    });
+    quotaWhatIfPreview.replaceChildren();
+    const inner=document.createElement('div');
+    addText(inner,'p','PROJEÇÃO HIPOTÉTICA — SEM DADOS REAIS','state-note');
+    addText(inner,'h3','Uso imaginário: 4 + '+sample.requested+' = '+sample.projected+' de 20 leads');
+    addText(inner,'p','Situação descritiva: '+sample.impact+'. Restantes: '+sample.remaining+'. Excesso: '+sample.excess+'.');
+    addText(inner,'p','Nenhum lead foi criado, nenhuma franquia foi reservada e nenhuma cobrança foi executada.');
+    quotaWhatIfPreview.appendChild(inner);
+  }
+  function showQuotaWhatIf(code) {
+    if(code!=='none'&&code!=='ten'&&code!=='sixteen'&&code!=='seventeen') return;
+    selectedQuotaWhatIf=code;
+    renderQuotaWhatIf();
+  }
+
   function showBackupIntegrityCase(code) {
     const cases = Object.freeze({
       consistent: {
@@ -1053,6 +1097,7 @@
   backupIntegrityButtons.forEach(function(node){node.addEventListener('click',function(){showBackupIntegrityCase(node.getAttribute('data-backup-check'));});});
   trialPhaseButtons.forEach(function(node){node.addEventListener('click',function(){showTrialPhase(node.getAttribute('data-trial-phase'));});});
   trialQuotaButtons.forEach(function(node){node.addEventListener('click',function(){showTrialQuota(node.getAttribute('data-trial-quota'));});});
+  quotaWhatIfButtons.forEach(function(node){node.addEventListener('click',function(){showQuotaWhatIf(node.getAttribute('data-quota-whatif'));});});
   leadFilterButtons.forEach(function(node){node.addEventListener('click',function(){showLeadStage(node.getAttribute('data-lead-stage'));});});
   leadTemperatureButtons.forEach(function(node){node.addEventListener('click',function(){showLeadTemperature(node.getAttribute('data-lead-temperature'));});});
   leadClearFiltersButton.addEventListener('click',function(){
@@ -1105,6 +1150,7 @@
   showAccessBoundaryCase('read-only');
   showBackupIntegrityCase('consistent');
   renderTrialQuotaPreview();
+  renderQuotaWhatIf();
 })();
 </script>
 </body>
