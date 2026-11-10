@@ -21,6 +21,7 @@ final class OfflinePrototypeFollowUpWorklistTest extends TestCase
         $html = file_get_contents(dirname(__DIR__, 2).'/prototypes/s01-prot-01/index.html');
         self::assertIsString($html);
         self::assertSame(5, substr_count($html, 'Object.freeze({dueAt:'));
+        self::assertStringContainsString("Object.freeze({dueAt:'2026-11-12T23:00:00Z',completed:false})", $html);
         self::assertStringContainsString("const followUpReferenceUtc='2026-11-09T22:00:00Z'", $html);
         foreach (['21:00:00Z', '22:00:00Z', '23:00:00Z'] as $time) {
             self::assertStringContainsString($time, $html);
@@ -31,7 +32,7 @@ final class OfflinePrototypeFollowUpWorklistTest extends TestCase
             ['due_at' => '2026-11-09T23:00:00Z', 'completed' => false],
             ['due_at' => '2026-11-09T22:00:00Z', 'completed' => false],
             ['due_at' => '2026-11-09T21:00:00Z', 'completed' => true],
-            ['due_at' => '2026-11-09T23:00:00Z', 'completed' => false],
+            ['due_at' => '2026-11-12T23:00:00Z', 'completed' => false],
         ];
 
         $worklist = new SyntheticFollowUpWorklist();
