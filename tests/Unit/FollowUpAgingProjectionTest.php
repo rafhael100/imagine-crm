@@ -37,6 +37,20 @@ final class FollowUpAgingProjectionTest extends TestCase
         ], '2026-11-10T11:00:00Z'));
     }
 
+    public function test_fractional_second_before_now_is_overdue(): void
+    {
+        self::assertSame([
+            'overdue' => ['before'],
+            'due_24h' => ['at', 'boundary'],
+            'due_later' => ['after'],
+        ], FollowUpAgingProjection::project([
+            ['id' => 'before', 'due_at' => '2026-11-10T09:59:59.999999Z'],
+            ['id' => 'at', 'due_at' => '2026-11-10T10:00:00.000000Z'],
+            ['id' => 'boundary', 'due_at' => '2026-11-11T10:00:00.000000Z'],
+            ['id' => 'after', 'due_at' => '2026-11-11T10:00:00.000001Z'],
+        ], '2026-11-10T10:00:00.000000Z'));
+    }
+
     public function test_rejects_implicit_timezone(): void
     {
         $this->expectException(InvalidArgumentException::class);
