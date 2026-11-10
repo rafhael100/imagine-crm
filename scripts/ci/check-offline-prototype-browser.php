@@ -58,6 +58,19 @@ $testScript = <<<'JS'
     check(!document.getElementById('screen-monitor').hidden,'active screen visible');
     check(document.querySelectorAll('[data-screen]:not([hidden])').length===1,'one screen visible');
     check(document.querySelectorAll('#demo-navigation [aria-current="page"]').length===1,'one selected item');
+    // F4-01: switch fixed activity deadlines without side effects.
+    const followUpButtons=Array.from(document.querySelectorAll('#screen-monitor [data-followup-case]'));
+    const followUpStatus=document.getElementById('followup-demo-preview');
+    check(followUpButtons.length===4&&followUpStatus.textContent.includes('1 de 5'),'four offline follow-up modes');
+    check(followUpButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'one initially selected follow-up mode');
+    followUpButtons.find(x=>x.dataset.followupCase==='upcoming').click();
+    check(followUpStatus.textContent.includes('2 de 5'),'two future synthetic follow-ups');
+    check(followUpButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'one selected follow-up mode after click');
+    followUpButtons.find(x=>x.dataset.followupCase==='completed').click();
+    check(followUpStatus.textContent.includes('concluída')&&followUpStatus.textContent.includes('1 de 5'),'completed synthetic follow-up presented');
+    followUpButtons.find(x=>x.dataset.followupCase==='overdue').click();
+    check(followUpStatus.textContent.includes('Prazo ultrapassado'),'default follow-up category restored');
+    check(!document.querySelector('#screen-monitor form,#screen-monitor input'),'follow-ups never request personal data');
 
     const leads=nav.find(x=>x.dataset.page==='leads');
     const pipeline=nav.find(x=>x.dataset.page==='pipeline');
