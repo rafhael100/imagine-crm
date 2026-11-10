@@ -295,6 +295,19 @@ $driver = <<<'HTML'
       check(doc.querySelectorAll('[data-access-scenario][aria-pressed="true"]').length===1,'one pressed access scenario');
       check(doc.documentElement.scrollWidth<=320,'no horizontal overflow on access boundary at 320px');
       check(!doc.querySelector('form,input,textarea'),'no input or export controls');
+      // REC-LAB-04: accessible integrity outcomes also work at 320 CSS px.
+      const backupButtons=Array.from(doc.querySelectorAll('#screen-import [data-backup-check]'));
+      const backupPanel=doc.getElementById('backup-integrity-preview');
+      check(backupButtons.length===3&&backupPanel.textContent.includes('SELF_CLAIM_MATCH_UNTRUSTED'),'backup fixture default on 320');
+      backupButtons.find(node=>node.dataset.backupCheck==='mismatch').click();
+      check(backupPanel.textContent.includes('SELF_CLAIM_MISMATCH'),'backup mismatch on 320');
+      backupButtons.find(node=>node.dataset.backupCheck==='forged').click();
+      check(backupPanel.textContent.includes('quem controla os bytes pode recalcular'),'forged backup claim on 320');
+      check(backupButtons.filter(node=>node.getAttribute('aria-pressed')==='true').length===1,'one backup scenario active on 320');
+      backupButtons.find(node=>node.dataset.backupCheck==='consistent').click();
+      check(backupPanel.textContent.includes('Nenhuma operação foi autorizada'),'backup cannot restore on 320');
+      check(doc.documentElement.scrollWidth<=320,'backup preview does not overflow 320 pixels');
+      check(!doc.querySelector('form,input,textarea'),'backup preview does not accept files');
 
       done=true;
       marker.setAttribute('data-imagine-320','PASS');

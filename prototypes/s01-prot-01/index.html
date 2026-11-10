@@ -336,6 +336,17 @@
             <div id="access-boundary-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
             <p class="caption">Nenhum cenário avalia identidade, perfil, tenant ou campo. Não é uma autorização nem um bloqueio operacional.</p>
           </div>
+          <div style="margin-top:22px" aria-labelledby="backup-demo-heading" data-backup-demo>
+            <h3 id="backup-demo-heading">Integridade de cópia — simulação offline</h3>
+            <p class="soft">Exemplos de validação de um manifesto fictício. Nenhum backup foi recebido, gerado, recuperado ou restaurado.</p>
+            <div class="switcher" role="group" aria-label="Cenários fictícios de integridade de backup">
+              <button type="button" class="state-button" data-backup-check="consistent" aria-pressed="true">Hash correspondente</button>
+              <button type="button" class="state-button" data-backup-check="mismatch" aria-pressed="false">Conteúdo alterado</button>
+              <button type="button" class="state-button" data-backup-check="forged" aria-pressed="false">Hash também alterado</button>
+            </div>
+            <div id="backup-integrity-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
+            <p class="caption">Conferência de hash não autentica origem e nunca autoriza restauração, eliminação de origem ou acesso a dados. Laboratório sem arquivos, SQL, credenciais ou download.</p>
+          </div>
         </div>
       </section>
       <section id="screen-states" data-screen="states" aria-label="Estados da tela" hidden>
@@ -412,6 +423,8 @@
   const importReviewPreview = document.getElementById('import-review-preview');
   const accessScenarioButtons = Array.from(document.querySelectorAll('[data-access-scenario]'));
   const accessScenarioPreview = document.getElementById('access-boundary-preview');
+  const backupIntegrityButtons = Array.from(document.querySelectorAll('#screen-import [data-backup-check]'));
+  const backupIntegrityPreview = document.getElementById('backup-integrity-preview');
   const leadFilterButtons = Array.from(document.querySelectorAll('[data-lead-stage]'));
   const leadTemperatureButtons = Array.from(document.querySelectorAll('[data-lead-temperature]'));
   const leadFixtureRows = Array.from(document.querySelectorAll('#screen-leads [data-lead-fixture-stage]'));
@@ -780,6 +793,40 @@
 
   // Purely visual states based on fixed, invented descriptions.
   // No CSV parsing, user input, requests, persistence or permission decisions.
+  // Three fixed text-only outcomes of a synthetic integrity comparison.
+  // This UI never reads bytes, checks a real digest or initiates restoration.
+  function showBackupIntegrityCase(code) {
+    const cases = Object.freeze({
+      consistent: {
+        title:'Hash e tamanho coincidem na amostra fictícia',
+        detail:'SELF_CLAIM_MATCH_UNTRUSTED: a igualdade é fornecida pela própria fonte não verificada.',
+        warning:'Nenhuma origem, autenticidade, completude ou possibilidade de restaurar foi comprovada.'
+      },
+      mismatch: {
+        title:'Divergência de integridade no exemplo',
+        detail:'SELF_CLAIM_MISMATCH: os bytes artificiais não correspondem ao tamanho ou hash declarado.',
+        warning:'Amostra inconsistente. Nenhuma restauração pode ser autorizada.'
+      },
+      forged: {
+        title:'Hash recalculado também não comprova procedência',
+        detail:'SELF_CLAIM_MATCH_UNTRUSTED: quem controla os bytes pode recalcular um hash correspondente.',
+        warning:'Mesmo uma igualdade matemática não comprova backup confiável ou isolamento de empresa.'
+      }
+    });
+    if(!Object.prototype.hasOwnProperty.call(cases,code)) return;
+    backupIntegrityButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(node.getAttribute('data-backup-check')===code));
+    });
+    backupIntegrityPreview.replaceChildren();
+    const inner=document.createElement('div');
+    addText(inner,'p','INTEGRIDADE DE CÓPIA — EXEMPLO SEM ARQUIVOS','state-note');
+    addText(inner,'h3',cases[code].title);
+    addText(inner,'p',cases[code].detail);
+    addText(inner,'p',cases[code].warning);
+    addText(inner,'p','Nenhum backup foi criado ou restaurado. Nenhuma operação foi autorizada.');
+    backupIntegrityPreview.appendChild(inner);
+  }
+
   function showImportMappingState(code) {
     const cases = Object.freeze({
       complete: {
@@ -907,6 +954,7 @@
   importMappingButtons.forEach(function(node){node.addEventListener('click',function(){showImportMappingState(node.getAttribute('data-import-mapping'));});});
   importReviewButtons.forEach(function(node){node.addEventListener('click',function(){showImportReviewCase(node.getAttribute('data-import-review'));});});
   accessScenarioButtons.forEach(function(node){node.addEventListener('click',function(){showAccessBoundaryCase(node.getAttribute('data-access-scenario'));});});
+  backupIntegrityButtons.forEach(function(node){node.addEventListener('click',function(){showBackupIntegrityCase(node.getAttribute('data-backup-check'));});});
   leadFilterButtons.forEach(function(node){node.addEventListener('click',function(){showLeadStage(node.getAttribute('data-lead-stage'));});});
   leadTemperatureButtons.forEach(function(node){node.addEventListener('click',function(){showLeadTemperature(node.getAttribute('data-lead-temperature'));});});
   leadClearFiltersButton.addEventListener('click',function(){
@@ -957,6 +1005,7 @@
   showImportMappingState('complete');
   showImportReviewCase('clear');
   showAccessBoundaryCase('read-only');
+  showBackupIntegrityCase('consistent');
 })();
 </script>
 </body>
