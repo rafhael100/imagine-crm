@@ -266,6 +266,16 @@
             <button type="button" class="state-button" data-followup-case="completed" aria-pressed="false">Concluídas (1)</button>
           </div>
           <div id="followup-demo-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
+          <div class="switcher" role="group" aria-label="Quantidade de acompanhamentos fictícios por página">
+            <button type="button" class="state-button" data-followup-page-size="2" aria-pressed="true">2 por página</button>
+            <button type="button" class="state-button" data-followup-page-size="1" aria-pressed="false">1 por página</button>
+          </div>
+          <div class="switcher" role="group" aria-label="Navegar páginas fictícias de acompanhamentos">
+            <button type="button" class="state-button" id="followup-page-prev" disabled>Anterior</button>
+            <button type="button" class="state-button" id="followup-page-next" disabled>Próxima</button>
+          </div>
+          <p id="followup-page-summary" class="caption" role="status" aria-live="polite" aria-atomic="true">Página 1 de 1; exemplos fictícios.</p>
+          <ul id="followup-fixture-list" class="info-list" aria-label="Acompanhamentos anônimos de exemplo"></ul>
           <div class="help"><strong>Apenas demonstração.</strong> Não foi criada, modificada ou atribuída qualquer tarefa. Nenhum aviso, mensagem, cobrança ou notificação será enviado.</div>
         </section>
       </section>
@@ -366,6 +376,22 @@
   const monitorPreview = document.getElementById('monitor-preview');
   const followUpButtons = Array.from(document.querySelectorAll('#screen-monitor [data-followup-case]'));
   const followUpPreview = document.getElementById('followup-demo-preview');
+  const followUpPageButtons = Array.from(document.querySelectorAll('#screen-monitor [data-followup-page-size]'));
+  const followUpPagePrev = document.getElementById('followup-page-prev');
+  const followUpPageNext = document.getElementById('followup-page-next');
+  const followUpPageSummary = document.getElementById('followup-page-summary');
+  const followUpList = document.getElementById('followup-fixture-list');
+  const followUpFixtures = Object.freeze([
+    Object.freeze({dueAt:'2026-11-09T21:00:00Z',completed:false}),
+    Object.freeze({dueAt:'2026-11-09T23:00:00Z',completed:false}),
+    Object.freeze({dueAt:'2026-11-09T22:00:00Z',completed:false}),
+    Object.freeze({dueAt:'2026-11-09T21:00:00Z',completed:true}),
+    Object.freeze({dueAt:'2026-11-09T23:00:00Z',completed:false})
+  ]);
+  const followUpReferenceUtc='2026-11-09T22:00:00Z';
+  let selectedFollowUpCase='overdue';
+  let selectedFollowUpPageSize=2;
+  let selectedFollowUpPage=0;
   const importMappingButtons = Array.from(document.querySelectorAll('[data-import-mapping]'));
   const importMappingPreview = document.getElementById('import-mapping-preview');
   const importReviewButtons = Array.from(document.querySelectorAll('[data-import-review]'));
@@ -578,6 +604,55 @@
     leadDetailPreview.appendChild(inner);
   }
 
+  // In-memory positions-only worklist over five explicit UTC demo fixtures.
+  // No real clock, task identity, storage, authorization or network request.
+  function renderFollowUpWorklist() {
+    const selected=followUpFixtures.map(function(fixture,position){return {fixture:fixture,position:position};})
+      .filter(function(item){
+        if(selectedFollowUpCase==='completed') return item.fixture.completed;
+        if(item.fixture.completed) return false;
+        if(selectedFollowUpCase==='overdue') return item.fixture.dueAt<followUpReferenceUtc;
+        if(selectedFollowUpCase==='due-now') return item.fixture.dueAt===followUpReferenceUtc;
+        if(selectedFollowUpCase==='upcoming') return item.fixture.dueAt>followUpReferenceUtc;
+        return false;
+      }).sort(function(a,b){
+        if(a.fixture.dueAt===b.fixture.dueAt) return a.position-b.position;
+        return a.fixture.dueAt<b.fixture.dueAt?-1:1;
+      });
+    const pages=Math.ceil(selected.length/selectedFollowUpPageSize);
+    if(selectedFollowUpPage>=pages) selectedFollowUpPage=0;
+    const current=selected.slice(selectedFollowUpPage*selectedFollowUpPageSize,
+      (selectedFollowUpPage+1)*selectedFollowUpPageSize);
+    followUpList.replaceChildren();
+    current.forEach(function(item){
+      const li=document.createElement('li');
+      li.textContent='Exemplo fictício '+(item.position+1)+' — prazo UTC '+item.fixture.dueAt+
+        (item.fixture.completed?' — concluído no exemplo':' — não concluído no exemplo');
+      followUpList.appendChild(li);
+    });
+    followUpPagePrev.disabled=selectedFollowUpPage===0;
+    followUpPageNext.disabled=pages===0||selectedFollowUpPage>=pages-1;
+    followUpPageSummary.textContent=pages===0?'Nenhuma página de exemplos fictícios.':
+      'Página '+(selectedFollowUpPage+1)+' de '+pages+'. '+selected.length+' exemplos correspondentes.';
+  }
+
+  function showFollowUpPageSize(size) {
+    if(size!==1 && size!==2) return;
+    selectedFollowUpPageSize=size;
+    selectedFollowUpPage=0;
+    followUpPageButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(Number(node.getAttribute('data-followup-page-size'))===size));
+    });
+    renderFollowUpWorklist();
+  }
+
+  function moveFollowUpPage(step) {
+    if(step!==-1 && step!==1) return;
+    if((step===-1&&followUpPagePrev.disabled)||(step===1&&followUpPageNext.disabled)) return;
+    selectedFollowUpPage+=step;
+    renderFollowUpWorklist();
+  }
+
   // Fixed, read-only labels matching five anonymous PHP lab fixtures.
   // No clock, scheduling, customer identity, permission or notification.
   function showFollowUpCase(code) {
@@ -615,6 +690,9 @@
     addText(inner,'p',cases[code].note);
     addText(inner,'p','Nenhuma ação ou notificação foi executada.');
     followUpPreview.appendChild(inner);
+    selectedFollowUpCase=code;
+    selectedFollowUpPage=0;
+    renderFollowUpWorklist();
   }
 
   function showMonitorScenario(code) {
@@ -776,6 +854,9 @@
   stateButtons.forEach(function(node){node.addEventListener('click',function(){showState(node.getAttribute('data-demo-state'));});});
   monitorButtons.forEach(function(node){node.addEventListener('click',function(){showMonitorScenario(node.getAttribute('data-monitor-scenario'));});});
   followUpButtons.forEach(function(node){node.addEventListener('click',function(){showFollowUpCase(node.getAttribute('data-followup-case'));});});
+  followUpPageButtons.forEach(function(node){node.addEventListener('click',function(){showFollowUpPageSize(Number(node.getAttribute('data-followup-page-size')));});});
+  followUpPagePrev.addEventListener('click',function(){moveFollowUpPage(-1);});
+  followUpPageNext.addEventListener('click',function(){moveFollowUpPage(1);});
   importMappingButtons.forEach(function(node){node.addEventListener('click',function(){showImportMappingState(node.getAttribute('data-import-mapping'));});});
   importReviewButtons.forEach(function(node){node.addEventListener('click',function(){showImportReviewCase(node.getAttribute('data-import-review'));});});
   accessScenarioButtons.forEach(function(node){node.addEventListener('click',function(){showAccessBoundaryCase(node.getAttribute('data-access-scenario'));});});
