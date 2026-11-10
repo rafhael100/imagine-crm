@@ -60,6 +60,28 @@ thead{background:#edf5f7}[hidden]{display:none!important}
 </table>
 </div>
 </section>
+<section class="card" aria-labelledby="mapping-title">
+<h2 id="mapping-title">Prévia independente do mapeamento de colunas</h2>
+<p class="small">Esta demonstração utiliza sempre a amostra fictícia A, independentemente do exemplo estrutural selecionado acima. Não mostra nem aceita nomes de campos ou conteúdos de células.</p>
+<div class="controls" role="group" aria-label="Exemplos fictícios de mapeamento">
+<button type="button" data-map="0" aria-pressed="true">A — posições sem conflito</button>
+<button type="button" data-map="1" aria-pressed="false">B — posições conflitantes</button>
+</div>
+<div class="metrics">
+<div class="metric">Atribuições fictícias<strong id="map-count">3</strong></div>
+<div class="metric">Colunas sem atribuição<strong id="map-unmapped">0</strong></div>
+<div class="metric">Tipos de conflito<strong id="map-conflicts">0</strong></div>
+</div>
+<p id="map-status" role="status" aria-live="polite">Nenhum conflito detectado no exemplo. Revisão humana continua obrigatória.</p>
+<p class="notice">Mesmo sem conflitos neste teste, nenhuma importação ou escrita é autorizada. Colunas sem atribuição não serão descartadas automaticamente.</p>
+<div class="table-wrap">
+<table>
+<caption>Somente posições e tipos de inconsistência em mapeamentos inventados</caption>
+<thead><tr><th scope="col">Posição fictícia</th><th scope="col">Verificação</th></tr></thead>
+<tbody id="map-rows"></tbody>
+</table>
+</div>
+</section>
 <p class="small">A detecção não seleciona encoding, separador, normalização, consentimento, direitos por empresa ou política de exportação. Todos esses critérios continuam aguardando homologação.</p>
 </main>
 <noscript><p class="notice">JavaScript é necessário para alternar as amostras. Os dados desta página são sempre fictícios.</p></noscript>
@@ -93,6 +115,30 @@ thead{background:#edf5f7}[hidden]{display:none!important}
         {"row":2,"column":3,"code":"formula_prefix"},
         {"row":3,"column":2,"code":"apostrophe_formula_ambiguous"}
       ]
+    }
+  ]);
+  const MAPPING_REPORTS = Object.freeze([
+    {
+      "header_columns":3,
+      "data_rows":2,
+      "mapping_count":3,
+      "unmapped_columns":[],
+      "duplicate_source_columns":[],
+      "duplicate_target_mapping_positions":[],
+      "issue_codes":[],
+      "cell_warning_count":0,
+      "review_required":true
+    },
+    {
+      "header_columns":3,
+      "data_rows":2,
+      "mapping_count":3,
+      "unmapped_columns":[3],
+      "duplicate_source_columns":[1],
+      "duplicate_target_mapping_positions":[[1,3]],
+      "issue_codes":["duplicate_source_mapping","duplicate_target_mapping"],
+      "cell_warning_count":0,
+      "review_required":true
     }
   ]);
   const NAMES = Object.freeze({
@@ -137,7 +183,40 @@ thead{background:#edf5f7}[hidden]{display:none!important}
   }
   buttons.forEach(button => button.addEventListener("click", () => show(Number(button.dataset.sample))));
   show(0);
-})();
+  const mapButtons = Array.from(document.querySelectorAll("[data-map]"));
+  const mapRows = document.getElementById("map-rows");
+  function addMapIssue(position, reason) {
+    const row = document.createElement("tr");
+    for (const value of [position, reason]) {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.appendChild(cell);
+    }
+    mapRows.appendChild(row);
+  }
+  function showMap(index) {
+    const report = MAPPING_REPORTS[index];
+    mapRows.replaceChildren();
+    document.getElementById("map-count").textContent = String(report.mapping_count);
+    document.getElementById("map-unmapped").textContent = String(report.unmapped_columns.length);
+    document.getElementById("map-conflicts").textContent = String(report.issue_codes.length);
+    for (const column of report.unmapped_columns) {
+      addMapIssue("Coluna " + column, "Sem atribuição explícita; nenhuma exclusão autorizada");
+    }
+    for (const column of report.duplicate_source_columns) {
+      addMapIssue("Coluna " + column, "Origem utilizada em mais de uma atribuição");
+    }
+    for (const positions of report.duplicate_target_mapping_positions) {
+      addMapIssue("Atribuições " + positions.join(", "), "Destino fictício repetido");
+    }
+    document.getElementById("map-status").textContent = report.issue_codes.length === 0
+      ? "Nenhum conflito detectado no exemplo. Revisão humana continua obrigatória."
+      : "Conflitos fictícios detectados. Revisão humana obrigatória; nenhuma importação realizada.";
+    mapButtons.forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.map) === index)));
+  }
+  mapButtons.forEach(button => button.addEventListener("click", () => showMap(Number(button.dataset.map))));
+  showMap(0);
+)();
 </script>
 </body>
 </html>
