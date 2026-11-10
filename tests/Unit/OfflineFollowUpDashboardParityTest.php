@@ -31,14 +31,14 @@ final class OfflineFollowUpDashboardParityTest extends TestCase
             PREG_SET_ORDER
         );
         preg_match_all(
-            '/<tr><th scope="row">([ABC])<\/th><td>(\d+)<\/td><td>(\d+)<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>/',
+            '/<tr><th scope="row">([ABCD])<\/th><td>(\d+)<\/td><td>(\d+)<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>/',
             $html,
             $rows,
             PREG_SET_ORDER
         );
 
-        self::assertCount(3, $fixtures);
-        self::assertCount(3, $rows);
+        self::assertCount(4, $fixtures);
+        self::assertCount(4, $rows);
 
         foreach ($fixtures as $index => $match) {
             $overdue = (int) $match[1];
@@ -74,6 +74,17 @@ final class OfflineFollowUpDashboardParityTest extends TestCase
                 'total' => $total,
             ], FollowUpSnapshot::build($items, '2026-11-10T10:00:00Z')['counts']);
         }
+    }
+
+    public function test_zero_period_explains_that_zero_does_not_prove_work_completion(): void
+    {
+        $html = self::html();
+        self::assertStringContainsString('data-period="3">Período D — vazio', $html);
+        self::assertStringContainsString('id="empty-period-note"', $html);
+        self::assertStringContainsString('role="status" aria-live="polite" hidden', $html);
+        self::assertStringContainsString('Não significa que tarefas reais foram concluídas', $html);
+        self::assertStringContainsString('Math.max(current.total, 1)', $html);
+        self::assertStringContainsString('current.total !== 0', $html);
     }
 
     public function test_initial_meter_values_match_first_fixture_and_are_labeled(): void
