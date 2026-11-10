@@ -22,7 +22,7 @@ final class OfflineFollowUpDashboardContractTest extends TestCase
         self::assertStringContainsString('PROTÓTIPO — DADOS FICTÍCIOS', $html);
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringContainsString("form-action 'none'", $html);
-        self::assertStringContainsString('default-src &#39;none&#39;', htmlspecialchars($html, ENT_QUOTES, 'UTF-8'));
+        self::assertStringContainsString("default-src 'none'", $html);
     }
 
     public function test_has_three_keyboard_operable_period_controls(): void
