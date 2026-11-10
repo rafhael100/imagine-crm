@@ -45,7 +45,7 @@ $assertions = <<<'JS'
   function click(selector){const button=document.querySelector(selector);check(button!==null,'missing '+selector);button.click();return button;}
   function page(){return document.getElementById('page-indicator').textContent.trim();}
   function summary(){return document.getElementById('result-summary').textContent.trim();}
-  function onlyPressed(selector,value){const pressed=Array.from(document.querySelectorAll(selector+'[aria-pressed="true"]'));check(pressed.length===1 && pressed[0].dataset[selector==='[data-filter]'?'filter':'sample']===value,'pressed '+selector+' '+value);}
+  function onlyPressed(selector,value){const pressed=Array.from(document.querySelectorAll(selector+'[aria-pressed="true"]'));const key=selector==='[data-filter]'?'filter':selector==='[data-page-size]'?'pageSize':'sample';check(pressed.length===1 && pressed[0].dataset[key]===value,'pressed '+selector+' '+value);}
   try{
     check(document.querySelector('main')!==null,'semantic main landmark');
     check(document.body.textContent.includes('PROTÓTIPO — DADOS FICTÍCIOS'),'fiction warning');
