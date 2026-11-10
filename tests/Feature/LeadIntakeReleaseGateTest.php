@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Core\Activities\SyntheticFollowUpQueue;
+use App\Core\Activities\SyntheticFollowUpWorklist;
 use App\Core\Authorization\AccessRequest;
 use App\Core\Authorization\AuthorizationDecision;
 use App\Core\Authorization\DenyByDefaultAuthorizer;
@@ -43,7 +45,7 @@ final class LeadIntakeReleaseGateTest extends TestCase
 
             $this->assertSame([], $methods, "Unexpected public mutating route: {$path}");
             $this->assertDoesNotMatchRegularExpression(
-                '~^(?:api(?:/|$)|(?:crm/)?(?:leads|contacts|imports|exports)(?:/|$)|login(?:/|$)|register(?:/|$))~i',
+                '~^(?:api(?:/|$)|(?:crm/)?(?:leads|contacts|imports|exports|activities|tasks|followups|follow-ups|reminders|notifications)(?:/|$)|login(?:/|$)|register(?:/|$))~i',
                 $path,
                 "Public business route requires dedicated gate approval: {$path}",
             );
@@ -117,4 +119,42 @@ final class LeadIntakeReleaseGateTest extends TestCase
         $preview = (new SyntheticImportPreviewInspector())->inspect(['label'], [['Sample']]);
         $this->assertFalse($preview->canImport());
     }
+    public function test_follow_up_worklist_remains_inert_with_no_operational_authority(): void
+    {
+        // The source is deliberately anonymous; dates do not define a real SLA.
+        $fixtures = [
+            ['due_at' => '2026-11-09T21:00:00Z', 'completed' => false],
+            ['due_at' => '2026-11-09T22:00:00Z', 'completed' => false],
+            ['due_at' => '2026-11-09T23:00:00Z', 'completed' => false],
+            ['due_at' => '2026-11-09T21:00:00Z', 'completed' => true],
+        ];
+
+        $now = '2026-11-09T22:00:00Z';
+        $queue = (new SyntheticFollowUpQueue())->summarize($fixtures, $now);
+        $this->assertSame(3, $queue['open']);
+        $this->assertSame([0, 1, 2], $queue['open_positions']);
+        $this->assertFalse($queue['authorized']);
+        $this->assertFalse($queue['can_notify']);
+
+        $views = [
+            'open' => [0, 1, 2],
+            'overdue' => [0],
+            'due_now' => [1],
+            'upcoming' => [2],
+            'completed' => [3],
+        ];
+        foreach ($views as $view => $positions) {
+            $preview = (new SyntheticFollowUpWorklist())->page($fixtures, $now, $view, 0, 20);
+            $this->assertSame($positions, $preview['positions']);
+            $this->assertSame(count($positions), $preview['matched']);
+            $this->assertFalse($preview['authorized']);
+            $this->assertFalse($preview['can_notify']);
+            $this->assertSame(
+                ['positions', 'view', 'total', 'matched', 'page', 'page_size', 'page_count',
+                    'has_previous', 'has_next', 'empty', 'authorized', 'can_notify'],
+                array_keys($preview),
+            );
+        }
+    }
+
 }
