@@ -53,7 +53,7 @@ $assertions = <<<'JS'
     check(count('total')===String(values[3]),period+' total');
     for(const [i,name] of ['overdue','due24','later'].entries()){
       check(meter(name).value===values[i],period+' meter '+name);
-      check(meter(name).max===values[3],period+' meter maximum '+name);
+      check(meter(name).max===Math.max(values[3],1),period+' meter maximum '+name);
       check(count('text-'+name)===values[i]+' de '+values[3],period+' meter text '+name);
     }
   }
@@ -62,7 +62,7 @@ $assertions = <<<'JS'
     check(document.body.textContent.includes('PROTÓTIPO — DADOS FICTÍCIOS'),'fiction warning');
     check(!document.querySelector('form,input,textarea,iframe'),'no data capture surface');
     const buttons=Array.from(document.querySelectorAll('[data-period]'));
-    check(buttons.length===3,'three period choices');
+    check(buttons.length===4,'four period choices');
     check(selected().length===1&&selected()[0]===buttons[0],'one initial selected period');
     verify([2,3,4,9],'A');
     check(count('delta').includes('sem comparação anterior'),'first period has no invented delta');
@@ -83,8 +83,15 @@ $assertions = <<<'JS'
     check(document.activeElement===buttons[2],'keyboard focus retained');
     check(selected().length===1&&selected()[0]===buttons[2],'C alone selected');
 
+    buttons[3].click();
+    verify([0,0,0,0],'D empty');
+    check(count('delta').includes('Total: -9'),'D signed change after C');
+    check(!document.getElementById('empty-period-note').hidden,'empty-state explanation visible');
+    check(selected().length===1&&selected()[0]===buttons[3],'D alone selected');
+
     buttons[0].click();
     verify([2,3,4,9],'A restored');
+    check(document.getElementById('empty-period-note').hidden,'empty-state explanation hidden again');
     check(count('delta').includes('sem comparação anterior'),'reset initial period');
     check(selected().length===1&&selected()[0]===buttons[0],'A alone selected');
     const link=document.querySelector('a[href="../s01-prot-01/index.html"]');
@@ -153,7 +160,7 @@ try {
       check(win.innerWidth===320,'true 320 CSS px viewport');
       check(doc.documentElement.scrollWidth<=320,'no page horizontal overflow');
       const buttons=Array.from(doc.querySelectorAll('[data-period]'));
-      check(buttons.length===3,'three period choices at mobile width');
+      check(buttons.length===4,'four period choices at mobile width');
       check(doc.getElementById('total').textContent==='9','initial nine fixtures');
       buttons[1].focus();
       buttons[1].click();
@@ -164,6 +171,12 @@ try {
       check(doc.querySelectorAll('[data-period][aria-pressed="true"]').length===1,'one pressed choice');
       buttons[2].click();
       check(doc.getElementById('delta').textContent.includes('Total: -1'),'mobile period C delta');
+      buttons[3].click();
+      check(doc.getElementById('total').textContent==='0','mobile empty period');
+      check(doc.getElementById('meter-overdue').value===0,'mobile zero overdue meter');
+      check(doc.getElementById('meter-overdue').max===1,'mobile safe meter maximum at zero');
+      check(doc.getElementById('text-overdue').textContent==='0 de 0','mobile zero label');
+      check(!doc.getElementById('empty-period-note').hidden,'mobile empty-state explanation');
       check(doc.documentElement.scrollWidth<=320,'no overflow after interaction');
       check(!doc.querySelector('form,input,textarea'),'no mobile data capture');
       finish('PASS','Chromium 320px synthetic follow-up dashboard');
