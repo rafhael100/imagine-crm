@@ -3,7 +3,7 @@
 **Atualizado em:** 09/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
-**HEAD DEV no levantamento:** `f3f69dff060c815f2eea8ae35c70e2fe0bcc4106` — PRs [#130](https://github.com/rafhael100/imagine-crm/pull/130), [#131](https://github.com/rafhael100/imagine-crm/pull/131) e [#132](https://github.com/rafhael100/imagine-crm/pull/132) integrados somente DEV, cada um com F0 e PG/RLS aprovados na HEAD e pós-merge. Lista sintética de atividades por prazo, interface offline paginada e gate que bloqueia novas rotas públicas de tarefas/notificações. Não são funcionalidades para clientes; sem `ALLOW`, dados reais, VPS, `main` ou produção.
+**HEAD DEV no levantamento:** `782fed72d04a1eb3fe7e0146931e9ba9b2b11955` — PRs [#134](https://github.com/rafhael100/imagine-crm/pull/134), [#135](https://github.com/rafhael100/imagine-crm/pull/135) e [#136](https://github.com/rafhael100/imagine-crm/pull/136) integrados somente DEV com ambos os workflows F0 e PG/RLS aprovados após merge. Horizonte UTC de prazo sintético, controles offline 1/7 dias e invariantes cruzadas da fila/lista/horizonte. Sem `ALLOW`, API de clientes, tarefas reais, agendamento, `main`, VPS ou produção.
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
@@ -305,3 +305,16 @@ O `AGENTS.md` é instrução de programação, `STATUS-ATUAL.md` é resumo hist�
 **Relatório/handoff:** [F4-01/F4-02/SEC-F4-03 — limites e próximos controles](docs/desenvolvimento/CRM-F4-01-atividades-handoff-laboratorio-2026-11-09.md). Nenhuma operação de criação/edição/atribuição de atividade, agendamento, notificação, SLA real, leitura de lead de cliente, worker, webhook, API, login comercial, RLS de produção ou receita foi implementada.
 
 **Impedimentos de produto ainda abertos:** decisões [S01-R01-D01..D05 / Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) sem ratificação itemizada; [revisão SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) ainda sem revisor técnico independente; CORE02/IAM/CORE04/CORE07/CORE08/LGPD/QA e demais gates sem aceite. Nenhuma solicitação genérica de continuidade é prova suficiente de autorização operacional. `main`/VPS/produção continuam protegidas.
+
+
+## I. F4-04 / UX-F4-04 / QA-F4-05 — consolidação de horizonte UTC (09/11/2026)
+
+| PR somente DEV | Entrega e escopo limitado | Evidência pós-merge |
+|---|---|---|
+| [#134](https://github.com/rafhael100/imagine-crm/pull/134) — F4-04 | Agregação de até 20 fixtures anônimas por 1..14 dias UTC; separação de vencido/agora/futuros dentro/fora da janela, sem SLA, `authorized=false` e `can_notify=false`. DEV `fad917b7`. | [F0 #42746292021](https://github.com/rafhael100/imagine-crm/actions/runs/42746292021), [PG/RLS #42746291935](https://github.com/rafhael100/imagine-crm/actions/runs/42746291935): success |
+| [#135](https://github.com/rafhael100/imagine-crm/pull/135) — UX-F4-04 | Protótipo offline com seleção 1/7 dias, resumo por dia, cinco datas fictícias, sem relógio real e testes de navegador também a 320px. DEV `c3d091ec`. | [F0 #42746736965](https://github.com/rafhael100/imagine-crm/actions/runs/42746736965), [PG/RLS #42746737084](https://github.com/rafhael100/imagine-crm/actions/runs/42746737084): success |
+| [#136](https://github.com/rafhael100/imagine-crm/pull/136) — QA-F4-05 | Teste de consistência integrada entre fila, lista paginada, horizonte e datas literais da interface, para 0..20 itens artificiais, sem saída de dados pessoais. DEV `782fed72`. | [F0 #42747103676](https://github.com/rafhael100/imagine-crm/actions/runs/42747103676), [PG/RLS #42747103574](https://github.com/rafhael100/imagine-crm/actions/runs/42747103574): success |
+
+**Handoff atualizado:** [módulo de atividades — escopo laboratorial e riscos](docs/desenvolvimento/CRM-F4-01-atividades-handoff-laboratorio-2026-11-09.md). Estas provas não homologam calendários comerciais, fuso horário do usuário, SLA, comunicação, persistência, privacidade, autenticação, autorização, identidade nem infraestrutura.
+
+**NO-GO permanece:** [R01-D01..D05 / Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) sem aceite de acesso operacional; [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) sem revisor independente e parecer P0/P1; CORE02/IAM/CORE04/CORE06/CORE07/CORE08/LGPD/QA e demais gates ainda pendentes. `main`, VPS e produção não foram alteradas.
