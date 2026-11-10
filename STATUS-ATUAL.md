@@ -3,7 +3,7 @@
 **Atualizado em:** 09/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
-**HEAD DEV no levantamento:** `eab49ced33a4c0c802ad779018b56fae8d30929e` — PRs [#123](https://github.com/rafhael100/imagine-crm/pull/123), [#124](https://github.com/rafhael100/imagine-crm/pull/124) e [#125](https://github.com/rafhael100/imagine-crm/pull/125) integrados somente DEV, com F0 e PostgreSQL/RLS aprovados antes/depois dos merges. Paginação PHP somente de posições sintéticas; interface offline de 2/4 exemplos e correção da navegação do funil para a página/foco da ficha fictícia. Sem ALLOW, consulta real, API, acesso a cliente, `main`, VPS ou produção.
+**HEAD DEV no levantamento:** `1a14216b6ffd91fede26f6910a60195d8a7d22f4` — [PR #127](https://github.com/rafhael100/imagine-crm/pull/127) (núcleo de prazos UTC, inerte) e [PR #128](https://github.com/rafhael100/imagine-crm/pull/128) (interface offline de acompanhamentos fictícios) integrados somente DEV. Ambas as CIs pós-merge aprovaram as SHAs dos dois PRs. Nenhum acesso real, atividade persistida, alerta, `ALLOW`, `main`, VPS ou produção foi ativado.
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
@@ -280,3 +280,15 @@ O `AGENTS.md` é instrução de programação, `STATUS-ATUAL.md` é resumo hist�
 **Limite:** esses casos validam apenas laboratório sintético e HTML estático. Não constituem autenticação, isolamento de clientes em operação, paginação real, conversão de leads, comercialização, homologação de segurança ou aprovação LGPD. Nenhum endpoint, migration de produto, direito positivo/ALLOW, importação real, VPS ou `main` foi alterado nesta rodada.
 
 **NO-GO permanece:** [S01/R01-D01..D05](https://github.com/rafhael100/imagine-crm/issues/22) sem deliberação executável; [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) ainda precisa de revisor independente real; CORE02/04/06/07/08/09/10, AUT, LGPD, FIN/CON e demais gates sem aceite específico. Não confundir múltiplos testes verdes com produto pronto para clientes.
+
+
+## G. F4-01 — núcleo de acompanhamentos e demo offline (09/11/2026)
+
+| PR | Entrega DEV | Validação pós-merge |
+|---|---|---|
+| [#127](https://github.com/rafhael100/imagine-crm/pull/127) | Classificação UTC de até 20 fixtures anônimas, contagens, ordenação de posições, testes negativos; DEV `063648d9` | [F0 #42739900102](https://github.com/rafhael100/imagine-crm/actions/runs/42739900102) + [PG/RLS #42739900562](https://github.com/rafhael100/imagine-crm/actions/runs/42739900562), ambos success |
+| [#128](https://github.com/rafhael100/imagine-crm/pull/128) | Prévia acessível de quatro estados de prazo no monitor offline, cinco tarefas inventadas e testes reais Chromium/320px; DEV `1a14216b` | [F0 #42740358075](https://github.com/rafhael100/imagine-crm/actions/runs/42740358075) + [PG/RLS #42740358212](https://github.com/rafhael100/imagine-crm/actions/runs/42740358212), ambos success |
+
+**Handoff técnico:** [F4-01: limites, evidências e critérios de GO](docs/desenvolvimento/CRM-F4-01-atividades-handoff-laboratorio-2026-11-09.md). A fila é puramente aritmética, não gere SLA, mandato, identidade, task real, APIs, lembretes ou filas de trabalho. A interface usa texto fixo e CSP offline. O código não concede autorizações e não grava informação pessoal.
+
+**NO-GO funcional vigente:** [R01-D01..D05 / Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) seguem propostas sem aceite operacional, [Issue SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) não possui parecer independente itemizado; CORE/AUT/LGPD/FIN/CON permanecem em aberto. Não aprovar cliente, `main`, VPS ou releases por CI laboratorial.
