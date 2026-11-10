@@ -14,7 +14,7 @@ main{max-width:1080px;margin:auto;padding:2rem 1rem 4rem}h1{font-size:clamp(1.6r
 .controls{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;margin:1rem 0 1.5rem}
 button{border:1px solid #22687a;border-radius:.7rem;background:#fff;color:#174d63;padding:.7rem 1rem;cursor:pointer;font:inherit;font-weight:700}
 button[aria-pressed="true"]{background:#1c6172;color:#fff}button:focus-visible,a:focus-visible{outline:3px solid #17b1a5;outline-offset:3px}
-.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.card{background:#fff;border:1px solid #dce6ec;border-radius:1rem;padding:1.3rem;min-width:0}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.distribution{display:grid;gap:1rem}.bar-heading{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem}.bar-heading label{font-weight:650}.bar-heading output{color:#4d6172}.distribution meter{width:100%;height:1.5rem;accent-color:#247e87}.card{background:#fff;border:1px solid #dce6ec;border-radius:1rem;padding:1.3rem;min-width:0}
 .metric{font-size:2rem;font-weight:800;margin:.2rem 0}.muted{color:#5a7182}.summary{margin:1.4rem 0}.table-wrap{overflow-x:auto;border:1px solid #dce6ec;border-radius:1rem;background:white}
 table{width:100%;border-collapse:collapse;min-width:540px;text-align:left}th,td{padding:1rem;border-bottom:1px solid #e9eff3}th{background:#e9f2f5}tbody tr:last-child td{border-bottom:0}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
@@ -43,6 +43,15 @@ table{width:100%;border-collapse:collapse;min-width:540px;text-align:left}th,td{
 <div class="card"><div class="muted">Após 24 horas</div><p class="metric" id="later">4</p></div>
 <div class="card"><div class="muted">Total</div><p class="metric" id="total">9</p></div>
 </div>
+</section>
+<section class="card summary" aria-labelledby="title-distribution">
+<h2 id="title-distribution">Distribuição por faixa de prazo — demonstração</h2>
+<div class="distribution">
+<div><div class="bar-heading"><label for="meter-overdue">Vencidos</label><output id="text-overdue" for="meter-overdue">2 de 9</output></div><meter id="meter-overdue" min="0" max="9" value="2">2 de 9</meter></div>
+<div><div class="bar-heading"><label for="meter-due24">Próximas 24 horas</label><output id="text-due24" for="meter-due24">3 de 9</output></div><meter id="meter-due24" min="0" max="9" value="3">3 de 9</meter></div>
+<div><div class="bar-heading"><label for="meter-later">Após 24 horas</label><output id="text-later" for="meter-later">4 de 9</output></div><meter id="meter-later" min="0" max="9" value="4">4 de 9</meter></div>
+</div>
+<p class="muted">Barras proporcionais a cada total fictício; não representam SLA, tarefas executadas ou dados de clientes.</p>
 </section>
 <section class="card summary" aria-labelledby="title-delta">
 <h2 id="title-delta">Variação em relação ao período anterior</h2>
@@ -79,6 +88,12 @@ table{width:100%;border-collapse:collapse;min-width:540px;text-align:left}th,td{
     const current = periods[index], previous = index ? periods[index-1] : null;
     for (const [key,id] of Object.entries(keys)) {
       document.getElementById(id).textContent = String(current[key]);
+    }
+    for (const key of ["overdue", "due24", "later"]) {
+      const meter = document.getElementById("meter-" + key);
+      meter.max = Math.max(current.total, 1);
+      meter.value = current[key];
+      document.getElementById("text-" + key).textContent = current[key] + " de " + current.total;
     }
     document.getElementById("delta").textContent = previous
       ? "Vencidos: " + signed(current.overdue-previous.overdue)
