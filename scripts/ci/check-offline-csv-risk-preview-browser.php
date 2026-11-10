@@ -53,6 +53,27 @@ $assertions = <<<'JS'
     check(value('count-alerts')==='0','clean alerts');
     check(issues().length===0,'no fabricated clean findings');
     check(!document.getElementById('clean-note').hidden,'clean caution visible');
+    check(value('map-count')==='3','mapping assignments counted');
+    check(value('map-unmapped')==='0','clean mapping has no omitted source columns');
+    check(value('map-conflicts')==='0','clean mapping has no detected conflicts');
+    check(document.querySelectorAll('#map-rows tr').length===0,'no fabricated mapping conflicts');
+    check(value('map-status').includes('Revisão humana continua obrigatória'),'clean mapping still needs review');
+    const conflictingMap=document.querySelector('[data-map="1"]');
+    conflictingMap.focus();
+    conflictingMap.click();
+    check(document.activeElement===conflictingMap,'mapping choice keeps keyboard focus');
+    check(document.querySelectorAll('[data-map][aria-pressed="true"]').length===1,'one mapping example selected');
+    check(value('map-unmapped')==='1','one source column not assigned');
+    check(value('map-conflicts')==='2','two mapping issue categories');
+    const mappedIssues=Array.from(document.querySelectorAll('#map-rows tr')).map(row=>row.textContent);
+    check(mappedIssues.length===3,'three mapping diagnostic rows');
+    check(mappedIssues.some(row=>row.includes('Coluna 3')&&row.includes('Sem atribuição')),'unmapped position explained');
+    check(mappedIssues.some(row=>row.includes('Coluna 1')&&row.includes('mais de uma atribuição')),'duplicate source explained');
+    check(mappedIssues.some(row=>row.includes('Atribuições 1, 3')&&row.includes('Destino fictício')),'duplicate target explained');
+    check(value('map-status').includes('Revisão humana obrigatória'),'mapping conflict requires human review');
+    document.querySelector('[data-map="0"]').click();
+    check(value('map-conflicts')==='0','mapping issues cleared on reset');
+    check(document.querySelectorAll('#map-rows tr').length===0,'no stale mapping diagnostics');
 
     const suspicious=document.querySelector('[data-sample="1"]');
     suspicious.focus();
@@ -71,6 +92,7 @@ $assertions = <<<'JS'
     check(issues().some(row=>row.includes('Linha 3, coluna 2')&&row.includes('Apóstrofo')),'ambiguous quote');
     check(document.getElementById('clean-note').hidden,'clean note hidden for warnings');
     check(value('preview-status').includes('Nenhuma operação de importação'),'never claims a real import');
+    check(value('map-count')==='3'&&value('map-conflicts')==='0','structure choice does not modify independent mapping example');
 
     document.querySelector('[data-sample="0"]').click();
     check(value('count-alerts')==='0','clean reset count');
@@ -137,6 +159,16 @@ try {
       check(win.innerWidth===320,'actual 320 CSS pixels');
       check(doc.documentElement.scrollWidth<=320,'no page horizontal overflow');
       check(doc.getElementById('count-alerts').textContent==='0','initial mobile zero');
+      check(doc.getElementById('map-conflicts').textContent==='0','initial mobile mapping clean');
+      const mapChoice=doc.querySelector('[data-map="1"]');
+      mapChoice.focus();
+      mapChoice.click();
+      check(doc.activeElement===mapChoice,'mobile mapping focus preserved');
+      check(doc.getElementById('map-conflicts').textContent==='2','mobile two mapping conflict categories');
+      check(doc.querySelectorAll('#map-rows tr').length===3,'mobile mapping rows');
+      check(doc.documentElement.scrollWidth<=320,'mapping does not overflow mobile viewport');
+      doc.querySelector('[data-map="0"]').click();
+      check(doc.querySelectorAll('#map-rows tr').length===0,'mobile mapping issues reset');
       const sample=doc.querySelector('[data-sample="1"]');
       sample.focus();
       sample.click();

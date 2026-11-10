@@ -16,4 +16,12 @@ O PHPUnit `OfflineCsvRiskPreviewParityTest` extrai as duas estruturas JSON fixas
 
 `scripts/ci/check-offline-csv-risk-preview-browser.php` usa Chromium real para alternância, focos, renderização dos cinco alertas, limpeza de linhas ao retornar à amostra A e ausência de transbordamento de página em viewport de 320 CSS px. O workflow `ci-f0.yml` exige esse smoke, sem dependência nova.
 
-**Limitação:** a prévia é uma demonstração de apresentação dos diagnósticos, não uma inspeção de arquivo real, XLSX, proteção contra todas as variantes de fórmula, decisão de encoding, mapeamento de colunas, deduplicação, autorização de exportação ou conformidade LGPD. Não há chamada a banco, API, tenant, `ALLOW`, migrações, VPS, produção, custo ou alteração de `main`. Os gates de [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) e do [PR #175](https://github.com/rafhael100/imagine-crm/pull/175) permanecem abertos; o segundo continua em rascunho.
+**Limitação:** a prévia é uma demonstração de apresentação dos diagnósticos, não uma inspeção de arquivo real, XLSX, proteção contra todas as variantes de fórmula, decisão de encoding, mapeamento operacional de colunas, deduplicação, autorização de exportação ou conformidade LGPD. Não há chamada a banco, API, tenant, `ALLOW`, migrações, VPS, produção, custo ou alteração de `main`. Os gates de [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) e do [PR #175](https://github.com/rafhael100/imagine-crm/pull/175) permanecem abertos; o segundo continua em rascunho.
+
+## UX F3-24 — Prévia separada dos conflitos de mapeamento
+
+A mesma página possui uma seção **independente das amostras de estrutura acima**. Ela apresenta dois relatórios estáticos do mapeamento de colunas da amostra A: (A) três atribuições sem conflito identificado e (B) três atribuições com uma coluna não mapeada, origem duplicada e destino fictício repetido. A interface apresenta somente contagens e posições, nunca o conteúdo do cabeçalho nem os nomes dos destinos.
+
+As informações são deliberadamente não operacionais. Não há campo para escolher destino real; `fixture_*` é um marcador inventado. Uma prévia sem alertas continua com **revisão humana obrigatória**, sem autorização de importação ou exclusão de colunas não mapeadas.
+
+O `OfflineCsvMappingPreviewParityTest` compara os dois relatórios JSON com o `CsvMappingPlanPreview` PHP F3-23 usando matrizes fictícias. O smoke em Chromium desktop e 320 CSS px também alterna os dois exemplos, confirma os conflitos e verifica a limpeza dos resultados antigos. O produto real ainda dependerá das políticas de encoding, validação dos campos, autorização por tenant e aprovação da Central IN-118.
