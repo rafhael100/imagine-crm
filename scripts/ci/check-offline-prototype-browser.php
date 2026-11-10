@@ -65,6 +65,18 @@ $testScript = <<<'JS'
     check(followUpButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'one initially selected follow-up mode');
     followUpButtons.find(x=>x.dataset.followupCase==='upcoming').click();
     check(followUpStatus.textContent.includes('2 de 5'),'two future synthetic follow-ups');
+    const horizonButtons=Array.from(document.querySelectorAll('#screen-monitor [data-followup-horizon]'));
+    const horizonSummary=document.getElementById('followup-horizon-summary');
+    const horizonRows=()=>Array.from(document.querySelectorAll('#followup-horizon-daily li'));
+    check(horizonButtons.length===2&&horizonRows().length===1,'UTC demo starts with a one-day view');
+    check(horizonSummary.textContent.includes('1 de 2 exemplos futuros dentro da janela'),'one future example today in UTC');
+    check(horizonRows()[0].textContent.includes('2026-11-09')&&horizonRows()[0].textContent.includes('— 1 '),'UTC day has one anonymous future item');
+    horizonButtons.find(x=>x.dataset.followupHorizon==='7').click();
+    check(horizonRows().length===7&&horizonSummary.textContent.includes('2 de 2 exemplos futuros dentro da janela'),'seven-day UTC horizon contains both future examples');
+    check(horizonRows().some(x=>x.textContent.includes('2026-11-12 — 1')),'day four has second invented due date');
+    check(horizonButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'one UTC horizon control selected');
+    horizonButtons.find(x=>x.dataset.followupHorizon==='1').click();
+    check(horizonRows().length===1&&horizonSummary.textContent.includes('1 fora da janela'),'one-day UTC horizon can be restored');
     const followUpPageSizes=Array.from(document.querySelectorAll('#screen-monitor [data-followup-page-size]'));
     const followUpPrev=document.getElementById('followup-page-prev');
     const followUpNext=document.getElementById('followup-page-next');

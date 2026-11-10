@@ -276,6 +276,12 @@
           </div>
           <p id="followup-page-summary" class="caption" role="status" aria-live="polite" aria-atomic="true">Página 1 de 1; exemplos fictícios.</p>
           <ul id="followup-fixture-list" class="info-list" aria-label="Acompanhamentos anônimos de exemplo"></ul>
+          <div class="switcher" role="group" aria-label="Selecionar horizonte UTC de prazos fictícios">
+            <button type="button" class="state-button" data-followup-horizon="1" aria-pressed="true">Hoje UTC</button>
+            <button type="button" class="state-button" data-followup-horizon="7" aria-pressed="false">7 dias UTC</button>
+          </div>
+          <p id="followup-horizon-summary" class="caption" role="status" aria-live="polite" aria-atomic="true">Horizonte UTC fictício; não é uma previsão real.</p>
+          <ul id="followup-horizon-daily" class="info-list" aria-label="Distribuição diária de exemplos futuros em UTC"></ul>
           <div class="help"><strong>Apenas demonstração.</strong> Não foi criada, modificada ou atribuída qualquer tarefa. Nenhum aviso, mensagem, cobrança ou notificação será enviado.</div>
         </section>
       </section>
@@ -381,17 +387,25 @@
   const followUpPageNext = document.getElementById('followup-page-next');
   const followUpPageSummary = document.getElementById('followup-page-summary');
   const followUpList = document.getElementById('followup-fixture-list');
+  const followUpHorizonButtons = Array.from(document.querySelectorAll('#screen-monitor [data-followup-horizon]'));
+  const followUpHorizonSummary = document.getElementById('followup-horizon-summary');
+  const followUpHorizonDaily = document.getElementById('followup-horizon-daily');
+  const followUpHorizonDates = Object.freeze([
+    '2026-11-09', '2026-11-10', '2026-11-11', '2026-11-12',
+    '2026-11-13', '2026-11-14', '2026-11-15'
+  ]);
   const followUpFixtures = Object.freeze([
     Object.freeze({dueAt:'2026-11-09T21:00:00Z',completed:false}),
     Object.freeze({dueAt:'2026-11-09T23:00:00Z',completed:false}),
     Object.freeze({dueAt:'2026-11-09T22:00:00Z',completed:false}),
     Object.freeze({dueAt:'2026-11-09T21:00:00Z',completed:true}),
-    Object.freeze({dueAt:'2026-11-09T23:00:00Z',completed:false})
+    Object.freeze({dueAt:'2026-11-12T23:00:00Z',completed:false})
   ]);
   const followUpReferenceUtc='2026-11-09T22:00:00Z';
   let selectedFollowUpCase='overdue';
   let selectedFollowUpPageSize=2;
   let selectedFollowUpPage=0;
+  let selectedFollowUpHorizon=1;
   const importMappingButtons = Array.from(document.querySelectorAll('[data-import-mapping]'));
   const importMappingPreview = document.getElementById('import-mapping-preview');
   const importReviewButtons = Array.from(document.querySelectorAll('[data-import-review]'));
@@ -602,6 +616,38 @@
     addText(inner,'p','Nenhum contato, histórico pessoal ou permissão foi consultado.');
     addText(inner,'p','Visualização ilustrativa não autoriza exportação, alteração ou ação comercial.');
     leadDetailPreview.appendChild(inner);
+  }
+
+  // UTC-only day windows over five explicitly anonymous fixtures. This is
+  // a text preview, not a customer schedule or a business SLA calendar.
+  function renderFollowUpHorizon() {
+    const days=followUpHorizonDates.slice(0,selectedFollowUpHorizon);
+    const future=followUpFixtures.filter(function(fixture){
+      return !fixture.completed&&fixture.dueAt>followUpReferenceUtc;
+    });
+    let within=0;
+    followUpHorizonDaily.replaceChildren();
+    days.forEach(function(day){
+      const count=future.filter(function(fixture){
+        return fixture.dueAt.slice(0,10)===day;
+      }).length;
+      within+=count;
+      const row=document.createElement('li');
+      row.textContent='Dia UTC '+day+' — '+count+' acompanhamentos fictícios futuros';
+      followUpHorizonDaily.appendChild(row);
+    });
+    followUpHorizonSummary.textContent='Horizonte UTC de '+selectedFollowUpHorizon+
+      (selectedFollowUpHorizon===1?' dia. ':' dias. ')+within+' de '+future.length+
+      ' exemplos futuros dentro da janela; '+(future.length-within)+' fora da janela.';
+  }
+
+  function showFollowUpHorizon(days) {
+    if(days!==1&&days!==7) return;
+    selectedFollowUpHorizon=days;
+    followUpHorizonButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(Number(node.getAttribute('data-followup-horizon'))===days));
+    });
+    renderFollowUpHorizon();
   }
 
   // In-memory positions-only worklist over five explicit UTC demo fixtures.
@@ -857,6 +903,7 @@
   followUpPageButtons.forEach(function(node){node.addEventListener('click',function(){showFollowUpPageSize(Number(node.getAttribute('data-followup-page-size')));});});
   followUpPagePrev.addEventListener('click',function(){moveFollowUpPage(-1);});
   followUpPageNext.addEventListener('click',function(){moveFollowUpPage(1);});
+  followUpHorizonButtons.forEach(function(node){node.addEventListener('click',function(){showFollowUpHorizon(Number(node.getAttribute('data-followup-horizon')));});});
   importMappingButtons.forEach(function(node){node.addEventListener('click',function(){showImportMappingState(node.getAttribute('data-import-mapping'));});});
   importReviewButtons.forEach(function(node){node.addEventListener('click',function(){showImportReviewCase(node.getAttribute('data-import-review'));});});
   accessScenarioButtons.forEach(function(node){node.addEventListener('click',function(){showAccessBoundaryCase(node.getAttribute('data-access-scenario'));});});
@@ -906,6 +953,7 @@
   showState('loading');
   showMonitorScenario('received');
   showFollowUpCase('overdue');
+  showFollowUpHorizon(1);
   showImportMappingState('complete');
   showImportReviewCase('clear');
   showAccessBoundaryCase('read-only');
