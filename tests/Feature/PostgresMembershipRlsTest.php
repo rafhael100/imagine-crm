@@ -393,6 +393,41 @@ final class PostgresMembershipRlsTest extends TestCase
         }
     }
 
+    public function test_two_active_memberships_never_activate_a_business_allow_policy(): void
+    {
+        DB::table('crm_memberships')->where('organization_id', self::ORG_B)
+            ->update(['status' => 'active', 'version' => 2]);
+        $probe = DB::connection('pgsql_rls_probe');
+
+        foreach ([self::ORG_A, self::ORG_B] as $tenantId) {
+            $guard = Mockery::mock(Guard::class);
+            $guard->shouldReceive('getProvider')->andReturn(
+                new EloquentUserProvider($this->app['hash'], GlobalIdentity::class),
+            );
+            $guard->shouldReceive('user')->once()->andReturn(
+                (new GlobalIdentity())->forceFill(['id' => self::PRINCIPAL]),
+            );
+            $boundary = new TenantAccessBoundary(
+                new GuardPrincipalSource($guard, $this->verifiedSession()),
+                $this->store(),
+                new DenyByDefaultAuthorizer(),
+            );
+
+            try {
+                $boundary->execute(
+                    $tenantId,
+                    'lead',
+                    'read',
+                    fn () => $this->fail('An active membership does not authorize a business callback.'),
+                );
+                $this->fail('Unapproved business access unexpectedly succeeded.');
+            } catch (AuthorizationException) {
+                $this->assertSame(0, $probe->transactionLevel());
+                $this->assertSame(0, $probe->table('crm_memberships')->count());
+            }
+        }
+    }
+
     public function test_custom_guc_is_mutable_and_does_not_prove_active_membership(): void
     {
         $probe = DB::connection('pgsql_rls_probe');
