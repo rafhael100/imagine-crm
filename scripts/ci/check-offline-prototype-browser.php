@@ -307,6 +307,19 @@ $testScript = <<<'JS'
     check(whatIfButtons.filter(node=>node.getAttribute('aria-pressed')==='true').length===1,'one quota increment selected');
     whatIfButtons.find(node=>node.dataset.quotaWhatif==='none').click();
     check(whatIfPreview.textContent.includes('Nenhum lead foi criado, nenhuma franquia foi reservada'),'what-if preview stays inert');
+    const compareButtons=Array.from(document.querySelectorAll('#screen-dashboard [data-quota-compare]'));
+    const comparePanel=document.getElementById('quota-compare-preview');
+    check(compareButtons.length===4&&comparePanel.textContent.includes('Retrato A: 4 de 20'),'quota comparison starts on leads');
+    check(comparePanel.textContent.includes('Retrato B: 9 de 25')&&comparePanel.textContent.includes('Variação de uso: 5'),'both invented lead snapshots');
+    compareButtons.find(node=>node.dataset.quotaCompare==='users').click();
+    check(comparePanel.textContent.includes('2 de 2')&&comparePanel.textContent.includes('3 de 2')&&comparePanel.textContent.includes('over_limit'),'users cross a synthetic quota boundary');
+    compareButtons.find(node=>node.dataset.quotaCompare==='automations').click();
+    check(comparePanel.textContent.includes('0 de 0')&&comparePanel.textContent.includes('0 de 3')&&comparePanel.textContent.includes('zero_capacity'),'a zero limit does not mean unlimited');
+    compareButtons.find(node=>node.dataset.quotaCompare==='storage_bytes').click();
+    check(comparePanel.textContent.includes('12 de 10')&&comparePanel.textContent.includes('7 de 10')&&comparePanel.textContent.includes('Variação de uso: -5'),'synthetic usage can decrease');
+    check(compareButtons.filter(node=>node.getAttribute('aria-pressed')==='true').length===1,'only one synthetic comparison selected');
+    compareButtons.find(node=>node.dataset.quotaCompare==='leads').click();
+    check(comparePanel.textContent.includes('Nenhuma alteração de plano, autorização, exportação ou cobrança foi realizada.'),'quota comparison does not change operations');
     check(document.querySelectorAll('[data-screen]:not([hidden])').length===1,'dashboard isolated from other screens');
     
     // The three offline mapping scenarios are only hard-coded DOM text.
