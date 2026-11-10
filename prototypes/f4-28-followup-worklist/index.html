@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; font-src 'none'; object-src 'none'; form-action 'none'; base-uri 'none'">
+<title>Imagine CRM — Lista de acompanhamentos fictícios</title>
+<style>
+:root{font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#173247;background:#f3f7fa}*{box-sizing:border-box}
+body{margin:0}a{color:#12546e}.skip{position:absolute;top:-5rem;left:1rem;padding:.75rem;background:#fff}.skip:focus{top:1rem}
+header{background:#143449;color:white;padding:1.5rem clamp(1rem,4vw,3rem)}
+main{width:min(100%,1040px);margin:0 auto;padding:1.5rem 1rem 4rem}
+h1{font-size:clamp(1.5rem,4vw,2.25rem);margin:.5rem 0}h2{font-size:1.15rem;margin:0 0 1rem}
+.notice{padding:1rem;background:#fff7dd;border-left:4px solid #b38320;margin:1rem 0}
+.card{background:white;border:1px solid #d5e4ea;border-radius:.9rem;padding:1rem;min-width:0;margin:1rem 0}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;margin:.6rem 0 1.1rem}
+button{border:1px solid #1e6578;border-radius:.6rem;padding:.6rem .9rem;background:#fff;color:#17485b;font:inherit;cursor:pointer}
+button[aria-pressed=true]{color:#fff;background:#205e72;font-weight:700}button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,a:focus-visible{outline:3px solid #10a7a1;outline-offset:3px}
+.table-wrap{max-width:100%;overflow-x:auto}
+table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{border-bottom:1px solid #e4edf1;padding:.8rem;white-space:nowrap}thead{background:#edf5f7}
+.status{font-weight:650}.muted{color:#536b7b}.pager{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;margin:1rem 0}
+[hidden]{display:none!important}
+@media(max-width:400px){main{padding:1rem .75rem}.card{padding:.8rem}button{padding:.55rem .65rem}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Pular ao conteúdo</a>
+<header><strong>Imagine CRM</strong> · Laboratório comercial</header>
+<main id="main">
+<p><a href="../f4-15-followup-dashboard/index.html">Voltar ao painel de acompanhamentos</a></p>
+<h1>Lista de acompanhamentos — prévia offline</h1>
+<div class="notice" role="note"><strong>PROTÓTIPO — DADOS FICTÍCIOS.</strong> Nenhum usuário, empresa, contato, lead ou prazo real foi consultado. Não há login, API, gravação nem comprovação de atividade concluída.</div>
+<section class="card" aria-labelledby="samples-title">
+<h2 id="samples-title">Amostra demonstrativa</h2>
+<div class="controls" role="group" aria-label="Selecione a amostra fictícia">
+<button type="button" data-sample="a" aria-pressed="true">A — cinco registros</button>
+<button type="button" data-sample="empty" aria-pressed="false">B — amostra vazia</button>
+</div>
+<p class="muted">Relógio fixo do exemplo: 10/11/2026, 10h UTC. Não representa o horário atual.</p>
+</section>
+<section class="card" aria-labelledby="worklist-title">
+<h2 id="worklist-title">Registros de exemplo</h2>
+<div class="controls" role="group" aria-label="Filtre os prazos fictícios">
+<button type="button" data-filter="all" aria-pressed="true">Todos</button>
+<button type="button" data-filter="overdue" aria-pressed="false">Vencidos</button>
+<button type="button" data-filter="due_24h" aria-pressed="false">Até 24h</button>
+<button type="button" data-filter="due_later" aria-pressed="false">Após 24h</button>
+</div>
+<p class="status" id="result-summary" aria-live="polite">5 registros fictícios no filtro Todos.</p>
+<p id="empty-note" role="status" aria-live="polite" class="notice" hidden>A amostra fictícia selecionada não contém registros nesta faixa. Isso não comprova que os atendimentos reais foram concluídos.</p>
+<div class="table-wrap">
+<table>
+<caption>Identificadores e prazos inventados, em UTC</caption>
+<thead><tr><th scope="col">ID fictício</th><th scope="col">Prazo (UTC)</th><th scope="col">Faixa</th></tr></thead>
+<tbody id="worklist-rows"></tbody>
+</table>
+</div>
+<div class="pager">
+<button type="button" id="previous" disabled>Anterior</button>
+<output id="page-indicator" aria-live="polite">Página 1 de 3</output>
+<button type="button" id="next">Próxima</button>
+</div>
+<p class="muted">Dois registros por página · ordenação pelo prazo absoluto e depois pelo identificador. Nenhum botão realiza uma ação comercial.</p>
+</section>
+<p class="muted">Somente arquivos locais, sem armazenamento, rede, importação ou exportação. A etiqueta da amostra é fictícia e não é autenticação ou isolamento por empresa.</p>
+</main>
+<noscript><p class="notice">Ative JavaScript para navegar nesta prévia local. Nenhum dado real está disponível.</p></noscript>
+<script>
+"use strict";
+(() => {
+  const FIXTURE_SCOPE = "fixture-sales-a";
+  const CLOCK = "2026-11-10T10:00:00Z";
+  const PAGE_SIZE = 2;
+  // Fully invented IDs and times, independently reconciled with PHP F4-27 in CI.
+  const SAMPLE_A = Object.freeze([
+    Object.freeze({id:"fixture-late",due_at:"2026-11-12T12:00:00Z",scope:"fixture-sales-a"}),
+    Object.freeze({id:"fixture-b",due_at:"2026-11-10T11:00:00Z",scope:"fixture-sales-a"}),
+    Object.freeze({id:"fixture-overdue",due_at:"2026-11-10T09:00:00Z",scope:"fixture-sales-a"}),
+    Object.freeze({id:"fixture-a",due_at:"2026-11-10T08:00:00-03:00",scope:"fixture-sales-a"}),
+    Object.freeze({id:"fixture-now",due_at:"2026-11-10T10:00:00Z",scope:"fixture-sales-a"})
+  ]);
+  const BUCKET_NAMES = Object.freeze({all:"Todos",overdue:"Vencidos",due_24h:"Até 24h",due_later:"Após 24h"});
+  const rows = document.getElementById("worklist-rows");
+  const sampleButtons = Array.from(document.querySelectorAll("[data-sample]"));
+  const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
+  const previous = document.getElementById("previous");
+  const next = document.getElementById("next");
+  let sample = "a";
+  let bucket = "all";
+  let page = 1;
+  function classify(dueAt) {
+    const deadline = Date.parse(dueAt);
+    const now = Date.parse(CLOCK);
+    return deadline < now ? "overdue" : deadline <= now + 86400000 ? "due_24h" : "due_later";
+  }
+  function render() {
+    const records = sample === "a" ? SAMPLE_A : [];
+    const selected = records
+      .filter(record => bucket === "all" || classify(record.due_at) === bucket)
+      .slice()
+      .sort((left, right) => Date.parse(left.due_at) - Date.parse(right.due_at) || left.id.localeCompare(right.id, "en"));
+    const pages = Math.max(1, Math.ceil(selected.length / PAGE_SIZE));
+    page = Math.min(Math.max(1, page), pages);
+    const visible = selected.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    rows.replaceChildren();
+    for (const record of visible) {
+      const tr = document.createElement("tr");
+      const fields = [record.id, record.due_at, BUCKET_NAMES[classify(record.due_at)]];
+      for (const value of fields) {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        tr.appendChild(cell);
+      }
+      rows.appendChild(tr);
+    }
+    const empty = selected.length === 0;
+    document.getElementById("empty-note").hidden = !empty;
+    document.getElementById("result-summary").textContent =
+      selected.length + " registro(s) fictício(s) no filtro " + BUCKET_NAMES[bucket] +
+      ". Total da amostra: " + records.length + ".";
+    document.getElementById("page-indicator").textContent = "Página " + page + " de " + pages;
+    previous.disabled = page <= 1;
+    next.disabled = page >= pages;
+    sampleButtons.forEach(button => button.setAttribute("aria-pressed", String(button.dataset.sample === sample)));
+    filterButtons.forEach(button => button.setAttribute("aria-pressed", String(button.dataset.filter === bucket)));
+  }
+  sampleButtons.forEach(button => button.addEventListener("click", () => {
+    sample = button.dataset.sample;
+    bucket = "all";
+    page = 1;
+    render();
+  }));
+  filterButtons.forEach(button => button.addEventListener("click", () => {
+    bucket = button.dataset.filter;
+    page = 1;
+    render();
+  }));
+  previous.addEventListener("click", () => { if (page > 1) { page -= 1; render(); } });
+  next.addEventListener("click", () => { page += 1; render(); });
+  render();
+})();
+</script>
+</body>
+</html>

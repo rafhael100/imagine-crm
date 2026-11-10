@@ -97,6 +97,7 @@ $assertions = <<<'JS'
     check(selected().length===1&&selected()[0]===buttons[0],'A alone selected');
     const link=document.querySelector('a[href="../s01-prot-01/index.html"]');
     check(link!==null,'local return link');
+    check(document.querySelector('a[href="../f4-28-followup-worklist/index.html"]')!==null,'local follow-up worklist link');
     output.setAttribute('data-imagine-browser-smoke','PASS');
     output.textContent='UX-F4-22 real Chromium dashboard controls PASS';
   }catch(error){

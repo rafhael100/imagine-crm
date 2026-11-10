@@ -66,3 +66,6 @@ jobs:
 
       - name: Browser smoke test of standalone follow-up dashboard (desktop and 320px)
         run: php scripts/ci/check-followup-dashboard-browser.php
+
+      - name: Browser smoke test of offline follow-up worklist (desktop and 320px)
+        run: php scripts/ci/check-followup-worklist-browser.php
