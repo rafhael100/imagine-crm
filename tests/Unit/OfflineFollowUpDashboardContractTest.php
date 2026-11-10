@@ -25,10 +25,10 @@ final class OfflineFollowUpDashboardContractTest extends TestCase
         self::assertStringContainsString("default-src 'none'", $html);
     }
 
-    public function test_has_three_keyboard_operable_period_controls(): void
+    public function test_has_four_keyboard_operable_period_controls(): void
     {
         $html = $this->html();
-        self::assertSame(3, preg_match_all('/<button type="button" aria-pressed="(?:true|false)" data-period="[012]">/', $html));
+        self::assertSame(4, preg_match_all('/<button type="button" aria-pressed="(?:true|false)" data-period="[0123]">/', $html));
         self::assertStringContainsString('button:focus-visible', $html);
         self::assertStringContainsString('aria-live="polite"', $html);
     }
