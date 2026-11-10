@@ -36,3 +36,21 @@
 - Nenhum `ALLOW`, endpoint de tarefas/leads, migrations operacionais, credencial, exportação, integração externa, deploy, alteração de `main` ou VPS foi criada por F4-01.
 
 **Critério de continuidade:** seguir com laboratórios, testes adversariais e documentação em DEV. Qualquer código operacional requer novo aceite específico do escopo e dos controles de identidade/tenant/segurança, não somente CI verde.
+
+
+## 3. Extensão F4-02 e SEC-F4-03 — final da rodada de 09/11/2026
+
+| Incremento DEV | Contrato limitado, com evidência |
+|---|---|
+| [PR #130](https://github.com/rafhael100/imagine-crm/pull/130) — `SyntheticFollowUpWorklist` | Cinco visões fechadas de acompanhamento anônimo, páginas locais com 1..20 posições, ordenação por prazo UTC, rejeição de índices/entradas inválidos, `authorized=false` e `can_notify=false`. [CI F0](https://github.com/rafhael100/imagine-crm/actions/runs/42743813555), [PG/RLS](https://github.com/rafhael100/imagine-crm/actions/runs/42743813791) **sucesso pós-merge**, SHA DEV `76a8d9eb74bc24ed1cc4748c403bbac98743f022`. |
+| [PR #131](https://github.com/rafhael100/imagine-crm/pull/131) — UX-F4-02 | Lista offline de cinco exemplos com filtro de quatro categorias, paginação 1/2, estados, foco, evidências de browser e 320px; não há banco/API nem relógio atual. [CI F0](https://github.com/rafhael100/imagine-crm/actions/runs/42744165899), [PG/RLS](https://github.com/rafhael100/imagine-crm/actions/runs/42744165945) **sucesso pós-merge**, SHA DEV `593f3a26ebba9179ecaa3efa160471b27a8c6ffd`. |
+| [PR #132](https://github.com/rafhael100/imagine-crm/pull/132) — SEC-F4-03 | Gate regressivo nega publicação de rotas públicas de atividades, tarefas, follow-ups, lembretes e notificações antes de revisão específica; assegura ausência de autoridade/aviso nos dois componentes PHP. [CI F0](https://github.com/rafhael100/imagine-crm/actions/runs/42744477725), [PG/RLS](https://github.com/rafhael100/imagine-crm/actions/runs/42744477812) **sucesso pós-merge**, SHA DEV `f3f69dff060c815f2eea8ae35c70e2fe0bcc4106`. |
+
+### Distinção de produto e próximos gates
+
+Estes incrementos **não** criam um motor de tarefas operacional. O sistema não autentica nem identifica pessoas/organizações reais para essas atividades, não grava tarefas, não calcula SLA aprovado, não envia notificações, não ativa workers, não oferece API e não cobra clientes. A prova de RLS é em PostgreSQL de CI, não um aceite de acesso a um tenant real.
+
+- **Funcionalidade S01:** [R01-D01..D05 / Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) ainda necessita decisão específica sobre exposição de campos/estados, identidade confiável e evidência. Não presumir aprovação a partir de pedidos gerais de continuidade.
+- **Segurança de dados e operação:** [SEG/DBA / Issue #27](https://github.com/rafhael100/imagine-crm/issues/27) exige responsável independente verificável e avaliação por risco P0/P1. Nem testes automatizados nem autoavaliação de quem desenvolveu se tornam parecer independente.
+- **Futuro módulo de atividades:** requer contrato próprio de autorização criar/atribuir/ler/editar/concluir/reabrir/exportar/notificar, revalidação por request, isolamento tenant-bound, política de tempos/SLA/consentimento/retention, auditoria, testes de revogação e idempotência/concorrência. Não é possível substituir esses requisitos por código de interface.
+- **Release:** só após homologação técnica/privacidade/QA e aceite de produto, infraestrutura habilitada separadamente, e decisão explícita para `main`/VPS/produção. Nenhum desses passos foi realizado aqui.
