@@ -297,6 +297,137 @@ final class PostgresMembershipRlsTest extends TestCase
         $this->assertSame(1, (int) DB::table('crm_memberships')->where('organization_id', self::ORG_B)->value('version'));
     }
 
+    /**
+     * SEGDBA-05 regression: one verified human may belong to two tenants,
+     * but each unit of work must independently check that exact membership.
+     * The read-only laboratory callback is NOT an approved business read.
+     */
+    public function test_same_principal_with_two_active_memberships_never_merges_tenant_contexts(): void
+    {
+        DB::table('crm_memberships')->where('organization_id', self::ORG_B)
+            ->update(['status' => 'active', 'version' => 3]);
+
+        $principal = new PrincipalReference(self::PRINCIPAL);
+        $probe = DB::connection('pgsql_rls_probe');
+        $store = $this->store();
+
+        foreach ([[self::ORG_A, 1], [self::ORG_B, 3], [self::ORG_A, 1]] as [$tenantId, $expectedVersion]) {
+            $visible = $store->within($principal, $tenantId, function ($membership) use ($tenantId, $probe, $expectedVersion): array {
+                $this->assertSame($tenantId, $membership->tenantId);
+                $this->assertSame($expectedVersion, $membership->version);
+                $this->assertSame(1, $probe->transactionLevel());
+                return $probe->table('crm_memberships')->pluck('organization_id')->all();
+            });
+            $this->assertSame([$tenantId], $visible);
+            $this->assertSame(0, $probe->transactionLevel());
+            $this->assertSame(0, $probe->table('crm_memberships')->count());
+        }
+
+        // Revoking only B must not revoke A or leave an inherited B context.
+        DB::table('crm_memberships')->where('organization_id', self::ORG_B)
+            ->update(['status' => 'revoked', 'version' => 4]);
+        try {
+            $store->within($principal, self::ORG_B, fn () => $this->fail('Revoked B callback must not run.'));
+            $this->fail('Expected revocation denial for B.');
+        } catch (AuthorizationException) {
+            $this->assertSame(0, $probe->transactionLevel());
+            $this->assertSame(0, $probe->table('crm_memberships')->count());
+        }
+        $this->assertSame(
+            [self::ORG_A],
+            $store->within($principal, self::ORG_A, fn () => $probe->table('crm_memberships')->pluck('organization_id')->all()),
+        );
+        $this->assertSame(0, $probe->table('crm_memberships')->count());
+    }
+
+    public function test_two_active_memberships_remain_separate_across_parallel_database_sessions(): void
+    {
+        DB::table('crm_memberships')->where('organization_id', self::ORG_B)
+            ->update(['status' => 'active', 'version' => 2]);
+
+        $first = DB::connection('pgsql_rls_probe');
+        $settings = config('database.connections.pgsql_rls_probe');
+        config(['database.connections.pgsql_rls_parallel' => $settings]);
+        DB::purge('pgsql_rls_parallel');
+        $second = DB::connection('pgsql_rls_parallel');
+        $principal = new PrincipalReference(self::PRINCIPAL);
+
+        try {
+            $outer = new PostgresActiveMembershipStore($first);
+            $inner = new PostgresActiveMembershipStore($second);
+
+            $outer->within($principal, self::ORG_A, function () use ($first, $inner, $second, $principal): void {
+                $this->assertSame([self::ORG_A], $first->table('crm_memberships')->pluck('organization_id')->all());
+
+                $seenB = $inner->within($principal, self::ORG_B, function ($membership) use ($second): array {
+                    $this->assertSame(self::ORG_B, $membership->tenantId);
+                    $this->assertSame(1, $second->transactionLevel());
+                    return $second->table('crm_memberships')->pluck('organization_id')->all();
+                });
+                $this->assertSame([self::ORG_B], $seenB);
+
+                $this->assertSame(0, $second->transactionLevel());
+                $this->assertSame(0, $second->table('crm_memberships')->count());
+                $this->assertSame([self::ORG_A], $first->table('crm_memberships')->pluck('organization_id')->all());
+
+                // Different connections can carry separate local contexts; this
+                // does NOT authorize nested switching on the same connection.
+                try {
+                    (new PostgresActiveMembershipStore($first))->within(
+                        $principal, self::ORG_B,
+                        fn () => $this->fail('Nested tenant switch on one DB connection must not run.'),
+                    );
+                    $this->fail('Expected a nested-transaction guard.');
+                } catch (LogicException) {
+                    $this->assertSame([self::ORG_A], $first->table('crm_memberships')->pluck('organization_id')->all());
+                }
+            });
+
+            $this->assertSame(0, $first->transactionLevel());
+            $this->assertSame(0, $second->transactionLevel());
+            $this->assertSame(0, $first->table('crm_memberships')->count());
+            $this->assertSame(0, $second->table('crm_memberships')->count());
+        } finally {
+            DB::disconnect('pgsql_rls_parallel');
+            DB::purge('pgsql_rls_parallel');
+        }
+    }
+
+    public function test_two_active_memberships_never_activate_a_business_allow_policy(): void
+    {
+        DB::table('crm_memberships')->where('organization_id', self::ORG_B)
+            ->update(['status' => 'active', 'version' => 2]);
+        $probe = DB::connection('pgsql_rls_probe');
+
+        foreach ([self::ORG_A, self::ORG_B] as $tenantId) {
+            $guard = Mockery::mock(Guard::class);
+            $guard->shouldReceive('getProvider')->andReturn(
+                new EloquentUserProvider($this->app['hash'], GlobalIdentity::class),
+            );
+            $guard->shouldReceive('user')->once()->andReturn(
+                (new GlobalIdentity())->forceFill(['id' => self::PRINCIPAL]),
+            );
+            $boundary = new TenantAccessBoundary(
+                new GuardPrincipalSource($guard, $this->verifiedSession()),
+                $this->store(),
+                new DenyByDefaultAuthorizer(),
+            );
+
+            try {
+                $boundary->execute(
+                    $tenantId,
+                    'lead',
+                    'read',
+                    fn () => $this->fail('An active membership does not authorize a business callback.'),
+                );
+                $this->fail('Unapproved business access unexpectedly succeeded.');
+            } catch (AuthorizationException) {
+                $this->assertSame(0, $probe->transactionLevel());
+                $this->assertSame(0, $probe->table('crm_memberships')->count());
+            }
+        }
+    }
+
     public function test_custom_guc_is_mutable_and_does_not_prove_active_membership(): void
     {
         $probe = DB::connection('pgsql_rls_probe');
