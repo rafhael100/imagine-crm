@@ -60,6 +60,24 @@ thead{background:#edf5f7}[hidden]{display:none!important}
 </table>
 </div>
 </section>
+<section class="card" aria-labelledby="row-review-title">
+<h2 id="row-review-title">Revisão por linha — dados fictícios</h2>
+<p class="small">Esta seção acompanha a amostra estrutural A ou B escolhida acima. Nenhuma linha é liberada para importação, mesmo sem alertas.</p>
+<div class="metrics">
+<div class="metric">Linhas com alertas<strong id="row-flagged">0</strong></div>
+<div class="metric">Sem problemas detectados<strong id="row-unflagged">2</strong></div>
+<div class="metric">Alertas do cabeçalho<strong id="row-header-risk">0</strong></div>
+</div>
+<p id="row-review-status" role="status" aria-live="polite">Revisão humana obrigatória; importação proibida.</p>
+<div class="table-wrap">
+<table>
+<caption>Posições, largura e tipos de alerta; nunca os valores das células</caption>
+<thead><tr><th scope="col">Linha original</th><th scope="col">Colunas encontradas</th><th scope="col">Verificação</th></tr></thead>
+<tbody id="row-review-rows"></tbody>
+</table>
+</div>
+<p class="notice">O estado “sem problemas detectados” não significa aprovação, importação realizada ou autorização para descartar registros.</p>
+</section>
 <section class="card" aria-labelledby="mapping-title">
 <h2 id="mapping-title">Prévia independente do mapeamento de colunas</h2>
 <p class="small">Esta demonstração utiliza sempre a amostra fictícia A, independentemente do exemplo estrutural selecionado acima. Não mostra nem aceita nomes de campos ou conteúdos de células.</p>
@@ -115,6 +133,39 @@ thead{background:#edf5f7}[hidden]{display:none!important}
         {"row":2,"column":3,"code":"formula_prefix"},
         {"row":3,"column":2,"code":"apostrophe_formula_ambiguous"}
       ]
+    }
+  ]);
+  const ROW_REPORTS = Object.freeze([
+    {
+      "data_rows":2,
+      "expected_columns":3,
+      "rows_with_findings":0,
+      "rows_without_detected_findings":2,
+      "header_cell_warning_count":0,
+      "global_issue_codes":[],
+      "unmapped_columns":[],
+      "row_reviews":[
+        {"row":2,"actual_columns":3,"issue_codes":[],"cell_findings":[],"review_required":true},
+        {"row":3,"actual_columns":3,"issue_codes":[],"cell_findings":[],"review_required":true}
+      ],
+      "review_required":true,
+      "import_permitted":false
+    },
+    {
+      "data_rows":3,
+      "expected_columns":4,
+      "rows_with_findings":2,
+      "rows_without_detected_findings":1,
+      "header_cell_warning_count":0,
+      "global_issue_codes":["empty_header","duplicate_header","ragged_data_rows","risky_cells"],
+      "unmapped_columns":[],
+      "row_reviews":[
+        {"row":2,"actual_columns":4,"issue_codes":["risky_cells"],"cell_findings":[{"column":3,"code":"formula_prefix"}],"review_required":true},
+        {"row":3,"actual_columns":3,"issue_codes":["column_count_mismatch","risky_cells"],"cell_findings":[{"column":2,"code":"apostrophe_formula_ambiguous"}],"review_required":true},
+        {"row":4,"actual_columns":4,"issue_codes":[],"cell_findings":[],"review_required":true}
+      ],
+      "review_required":true,
+      "import_permitted":false
     }
   ]);
   const MAPPING_REPORTS = Object.freeze([
@@ -180,9 +231,9 @@ thead{background:#edf5f7}[hidden]{display:none!important}
       ? "Amostra fictícia sem alertas detectados. Isso não é aprovação de importação."
       : alerts + " alerta(s) na amostra fictícia. Nenhuma operação de importação foi realizada.";
     buttons.forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.sample) === index)));
+    showRowReview(index);
   }
   buttons.forEach(button => button.addEventListener("click", () => show(Number(button.dataset.sample))));
-  show(0);
   const mapButtons = Array.from(document.querySelectorAll("[data-map]"));
   const mapRows = document.getElementById("map-rows");
   function addMapIssue(position, reason) {
@@ -215,7 +266,34 @@ thead{background:#edf5f7}[hidden]{display:none!important}
     mapButtons.forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.map) === index)));
   }
   mapButtons.forEach(button => button.addEventListener("click", () => showMap(Number(button.dataset.map))));
+  const reviewTable = document.getElementById("row-review-rows");
+  function showRowReview(index) {
+    const report = ROW_REPORTS[index];
+    reviewTable.replaceChildren();
+    document.getElementById("row-flagged").textContent = String(report.rows_with_findings);
+    document.getElementById("row-unflagged").textContent = String(report.rows_without_detected_findings);
+    document.getElementById("row-header-risk").textContent = String(report.header_cell_warning_count);
+    for (const review of report.row_reviews) {
+      const tr = document.createElement("tr");
+      const labels = [];
+      if (review.issue_codes.includes("column_count_mismatch")) labels.push("Quantidade de colunas divergente");
+      for (const item of review.cell_findings) {
+        labels.push("Coluna " + item.column + ": " + (NAMES[item.code] || "Revisão necessária"));
+      }
+      if (labels.length === 0) labels.push("Sem problemas detectados — revisão obrigatória");
+      for (const value of ["Linha " + review.row, String(review.actual_columns), labels.join("; ")]) {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        tr.appendChild(cell);
+      }
+      reviewTable.appendChild(tr);
+    }
+    document.getElementById("row-review-status").textContent =
+      "Revisão humana obrigatória para " + report.data_rows +
+      " linha(s) fictícia(s); nenhuma importação ou escrita permitida.";
+  }
   showMap(0);
+  show(0);
 })();
 </script>
 </body>
