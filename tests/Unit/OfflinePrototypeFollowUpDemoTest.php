@@ -59,7 +59,7 @@ final class OfflinePrototypeFollowUpDemoTest extends TestCase
             ['due_at' => '2026-11-09T23:00:00Z', 'completed' => false],
             ['due_at' => '2026-11-09T22:00:00Z', 'completed' => false],
             ['due_at' => '2026-11-09T21:00:00Z', 'completed' => true],
-            ['due_at' => '2026-11-09T23:00:00Z', 'completed' => false],
+            ['due_at' => '2026-11-12T23:00:00Z', 'completed' => false],
         ];
         $summary = (new SyntheticFollowUpQueue())->summarize($fixed, '2026-11-09T22:00:00Z');
         self::assertSame(['overdue' => 1, 'due_now' => 1, 'upcoming' => 2, 'completed' => 1], [
