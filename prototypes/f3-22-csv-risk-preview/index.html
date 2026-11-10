@@ -17,7 +17,7 @@ a{color:#12546e}.skip{position:absolute;top:-5rem;left:1rem;background:#fff;padd
 button[aria-pressed=true]{background:#245f75;color:#fff;font-weight:700}button:focus-visible,a:focus-visible{outline:3px solid #05a7a5;outline-offset:3px}
 .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.65rem}.metric{border:1px solid #d5e4ea;background:#f7fafb;border-radius:.6rem;padding:.7rem;min-width:0}
 .metric strong{font-size:1.6rem;display:block}.small{color:#516979}.table-wrap{overflow-x:auto;max-width:100%}
-table{border-collapse:collapse;text-align:left;width:100%;min-width:440px}th,td{border-bottom:1px solid #e2edf1;padding:.75rem;white-space:nowrap}
+table{border-collapse:collapse;text-align:left;width:100%;min-width:440px}#review-decision-table{min-width:780px}#review-decision-table button{margin:.15rem;padding:.35rem .5rem;font-size:.85rem}button:disabled{opacity:.48;cursor:not-allowed}th,td{border-bottom:1px solid #e2edf1;padding:.75rem;white-space:nowrap}
 thead{background:#edf5f7}[hidden]{display:none!important}
 @media(max-width:650px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:400px){main{padding:1rem .75rem}.card{padding:.8rem}button{padding:.6rem}}
@@ -77,6 +77,24 @@ thead{background:#edf5f7}[hidden]{display:none!important}
 </table>
 </div>
 <p class="notice">O estado “sem problemas detectados” não significa aprovação, importação realizada ou autorização para descartar registros.</p>
+</section>
+<section class="card" aria-labelledby="disposition-title">
+<h2 id="disposition-title">Simulação de revisão das linhas fictícias</h2>
+<p class="small">As escolhas existem somente nesta página local, são descartadas ao trocar a amostra e <strong>não verificam a identidade de ninguém</strong>. Uma linha sinalizada não pode ser marcada como “sem alertas”.</p>
+<div class="metrics">
+<div class="metric">Pendentes<strong id="decision-pending">2</strong></div>
+<div class="metric">Revisadas sem alertas (simulação)<strong id="decision-reviewed">0</strong></div>
+<div class="metric">Correção necessária (simulação)<strong id="decision-correction">0</strong></div>
+</div>
+<p id="decision-status" role="status" aria-live="polite">Todas as escolhas estão pendentes. Importação sempre proibida.</p>
+<div class="table-wrap">
+<table id="review-decision-table">
+<caption>Somente estado temporário e posição da linha fictícia, sem dados pessoais</caption>
+<thead><tr><th scope="col">Linha</th><th scope="col">Alerta detectado</th><th scope="col">Estado fictício</th><th scope="col">Opções locais</th></tr></thead>
+<tbody id="review-decision-rows"></tbody>
+</table>
+</div>
+<p class="notice"><strong>SEM AUTORIZAÇÃO:</strong> mesmo com todas as escolhas preenchidas, não existe confirmação humana, gravação, importação ou aprovação de dados reais.</p>
 </section>
 <section class="card" aria-labelledby="mapping-title">
 <h2 id="mapping-title">Prévia independente do mapeamento de colunas</h2>
@@ -232,6 +250,7 @@ thead{background:#edf5f7}[hidden]{display:none!important}
       : alerts + " alerta(s) na amostra fictícia. Nenhuma operação de importação foi realizada.";
     buttons.forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.sample) === index)));
     showRowReview(index);
+    resetReviewChoices(index);
   }
   buttons.forEach(button => button.addEventListener("click", () => show(Number(button.dataset.sample))));
   const mapButtons = Array.from(document.querySelectorAll("[data-map]"));
@@ -291,6 +310,71 @@ thead{background:#edf5f7}[hidden]{display:none!important}
     document.getElementById("row-review-status").textContent =
       "Revisão humana obrigatória para " + report.data_rows +
       " linha(s) fictícia(s); nenhuma importação ou escrita permitida.";
+  }
+  // All choices exist only in-memory in this local tab. None proves identity.
+  const decisionTable = document.getElementById("review-decision-rows");
+  const reviewSelections = new Map();
+  let reviewSample = 0;
+  const REVIEW_LABELS = Object.freeze({
+    fixture_pending:"Pendente",
+    fixture_reviewed_no_findings:"Sem alertas (somente teste)",
+    fixture_needs_correction:"Correção necessária (somente teste)"
+  });
+  function renderReviewChoices() {
+    const rows = ROW_REPORTS[reviewSample].row_reviews;
+    let pending = 0, reviewed = 0, correction = 0;
+    decisionTable.replaceChildren();
+    for (const info of rows) {
+      const flagged = info.issue_codes.length !== 0;
+      const choice = reviewSelections.get(info.row) || "fixture_pending";
+      if (choice === "fixture_pending") ++pending;
+      else if (choice === "fixture_reviewed_no_findings") ++reviewed;
+      else ++correction;
+      const tr = document.createElement("tr");
+      for (const value of ["Linha " + info.row, flagged ? "Sim" : "Não", REVIEW_LABELS[choice]]) {
+        const td = document.createElement("td");
+        td.textContent = value;
+        tr.appendChild(td);
+      }
+      const actions = document.createElement("td");
+      const options = [
+        ["fixture_pending", "Voltar a pendente"],
+        ["fixture_reviewed_no_findings", "Simular revisão sem alertas"],
+        ["fixture_needs_correction", "Simular correção necessária"]
+      ];
+      for (const [next, label] of options) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        button.dataset.reviewRow = String(info.row);
+        button.dataset.reviewChoice = next;
+        button.setAttribute("aria-label", label + " — linha fictícia " + info.row);
+        button.setAttribute("aria-pressed", String(next === choice));
+        button.disabled = next === "fixture_reviewed_no_findings" && flagged;
+        button.addEventListener("click", () => {
+          if (next === "fixture_pending") reviewSelections.delete(info.row);
+          else reviewSelections.set(info.row, next);
+          renderReviewChoices();
+          const restored = Array.from(document.querySelectorAll("[data-review-row]"))
+            .find(element => element.dataset.reviewRow === String(info.row) && element.dataset.reviewChoice === next);
+          if (restored) restored.focus();
+        });
+        actions.appendChild(button);
+      }
+      tr.appendChild(actions);
+      decisionTable.appendChild(tr);
+    }
+    document.getElementById("decision-pending").textContent = String(pending);
+    document.getElementById("decision-reviewed").textContent = String(reviewed);
+    document.getElementById("decision-correction").textContent = String(correction);
+    document.getElementById("decision-status").textContent =
+      pending + " pendente(s), " + reviewed + " revisão(ões) fictícia(s) sem alertas, " +
+      correction + " correção(ões) fictícia(s). Importação sempre proibida; identidade não verificada.";
+  }
+  function resetReviewChoices(index) {
+    reviewSample = index;
+    reviewSelections.clear();
+    renderReviewChoices();
   }
   showMap(0);
   show(0);
