@@ -22,3 +22,9 @@ O CI F0 agora executa `php scripts/ci/check-followup-dashboard-browser.php`, al�
 O navegador testa a interação real dos três períodos, o estado `aria-pressed`, totais, variações assinadas, valores/legendas das barras nativas, conservação de foco e a restauração do estado inicial. A segunda execução usa um iframe `srcdoc` com viewport **real de 320 CSS px**, validando seleções, texto acessível e ausência de transbordamento horizontal. Perfis e arquivos de teste são temporários e descartados.
 
 **Limite do resultado:** prova de regressão da UI totalmente fictícia e offline, não é auditoria independente de acessibilidade, segurança da aplicação, autorização por tenant, tráfego externo, homologaçao comercial ou integração Laravel. As fontes continuam números estáticos inventados. Nenhuma execução de negócio, credencial, migração, mudança da `main`, VPS ou produção.
+
+## UX F4-23 — Período demonstrativo sem registros
+
+O **Período D** contém zero registros fictícios em todas as faixas. A interface apresenta um aviso acessível de estado vazio: nenhum acompanhamento consta **na amostra inventada**, sem sugerir conclusão de atividades ou ausência de pendências reais. As barras `<meter>` mantêm `max=1` e `value=0` para evitar comportamento indefinido quando o total é zero, mas seus rótulos exibem corretamente `0 de 0`.
+
+Os testes estáticos agora reconciliam quatro períodos A–D contra projeções sintéticas PHP; o smoke em Chromium Desktop/320px também confirma a seleção de D, a variação negativa relativa a C, o estado vazio e o retorno a A. Nada acessa dados reais, altera registros, autoriza operações, reduz o escopo de SEG/DBA/CORE ou habilita deploy.
