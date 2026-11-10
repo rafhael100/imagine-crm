@@ -34,6 +34,7 @@ table{width:100%;border-collapse:collapse;min-width:540px;text-align:left}th,td{
 <button type="button" aria-pressed="true" data-period="0">Período A</button>
 <button type="button" aria-pressed="false" data-period="1">Período B</button>
 <button type="button" aria-pressed="false" data-period="2">Período C</button>
+<button type="button" aria-pressed="false" data-period="3">Período D — vazio</button>
 </div>
 <section aria-labelledby="title-counts">
 <h2 id="title-counts">Resumo do período selecionado</h2>
@@ -44,6 +45,7 @@ table{width:100%;border-collapse:collapse;min-width:540px;text-align:left}th,td{
 <div class="card"><div class="muted">Total</div><p class="metric" id="total">9</p></div>
 </div>
 </section>
+<p id="empty-period-note" class="notice" role="status" aria-live="polite" hidden>Sem acompanhamentos nesta amostra fictícia. Não significa que tarefas reais foram concluídas nem que existe ausência de pendências em qualquer empresa.</p>
 <section class="card summary" aria-labelledby="title-distribution">
 <h2 id="title-distribution">Distribuição por faixa de prazo — demonstração</h2>
 <div class="distribution">
@@ -67,6 +69,7 @@ table{width:100%;border-collapse:collapse;min-width:540px;text-align:left}th,td{
 <tr><th scope="row">A</th><td>2</td><td>3</td><td>4</td><td>9</td></tr>
 <tr><th scope="row">B</th><td>3</td><td>2</td><td>5</td><td>10</td></tr>
 <tr><th scope="row">C</th><td>1</td><td>4</td><td>4</td><td>9</td></tr>
+<tr><th scope="row">D</th><td>0</td><td>0</td><td>0</td><td>0</td></tr>
 </tbody></table>
 </div></section>
 <p class="muted">Modo local: sem persistência, arquivos externos, telemetria, envio de formulários ou recursos de rede.</p>
@@ -78,7 +81,8 @@ table{width:100%;border-collapse:collapse;min-width:540px;text-align:left}th,td{
   const periods = Object.freeze([
     Object.freeze({overdue:2,due24:3,later:4,total:9}),
     Object.freeze({overdue:3,due24:2,later:5,total:10}),
-    Object.freeze({overdue:1,due24:4,later:4,total:9})
+    Object.freeze({overdue:1,due24:4,later:4,total:9}),
+    Object.freeze({overdue:0,due24:0,later:0,total:0})
   ]);
   const buttons = Array.from(document.querySelectorAll("[data-period]"));
   const keys = Object.freeze({overdue:"overdue",due24:"due24",later:"later",total:"total"});
@@ -95,6 +99,7 @@ table{width:100%;border-collapse:collapse;min-width:540px;text-align:left}th,td{
       meter.value = current[key];
       document.getElementById("text-" + key).textContent = current[key] + " de " + current.total;
     }
+    document.getElementById("empty-period-note").hidden = current.total !== 0;
     document.getElementById("delta").textContent = previous
       ? "Vencidos: " + signed(current.overdue-previous.overdue)
         + " · Até 24h: " + signed(current.due24-previous.due24)
