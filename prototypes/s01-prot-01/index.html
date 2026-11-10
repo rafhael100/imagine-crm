@@ -255,6 +255,19 @@
           <div id="monitor-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
           <div class="help"><strong>Simulação somente visual.</strong> Selecionar um cenário não realiza busca, reenvio, confirmação, gravação, exclusão ou alteração de status no CRM.</div>
         </div>
+        <section class="card" data-followup-demo aria-labelledby="followup-demo-title" style="margin-top:18px">
+          <p class="eyebrow">F4-01 · Prévia de atividades sem conexão</p>
+          <h2 id="followup-demo-title">Acompanhamentos fictícios por prazo</h2>
+          <p class="soft">Cinco atividades inteiramente inventadas e um instante UTC de referência fixo. Isto não é uma agenda em tempo real, nem regra de SLA.</p>
+          <div class="switcher" role="group" aria-label="Selecionar classificação ilustrativa de atividade">
+            <button type="button" class="state-button" data-followup-case="overdue" aria-pressed="true">Atrasadas (1)</button>
+            <button type="button" class="state-button" data-followup-case="due-now" aria-pressed="false">No instante (1)</button>
+            <button type="button" class="state-button" data-followup-case="upcoming" aria-pressed="false">Futuras (2)</button>
+            <button type="button" class="state-button" data-followup-case="completed" aria-pressed="false">Concluídas (1)</button>
+          </div>
+          <div id="followup-demo-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
+          <div class="help"><strong>Apenas demonstração.</strong> Não foi criada, modificada ou atribuída qualquer tarefa. Nenhum aviso, mensagem, cobrança ou notificação será enviado.</div>
+        </section>
       </section>
       <section id="screen-import" data-screen="import" aria-label="Prévia fictícia de importação" hidden>
         <p class="lead">Visualização de uma prévia inteiramente sintética. Nenhum arquivo é recebido, nenhum registro é gravado e nenhum dado de cliente é processado.</p>
@@ -351,6 +364,8 @@
   const stateButtons = Array.from(document.querySelectorAll('[data-demo-state]'));
   const monitorButtons = Array.from(document.querySelectorAll('[data-monitor-scenario]'));
   const monitorPreview = document.getElementById('monitor-preview');
+  const followUpButtons = Array.from(document.querySelectorAll('#screen-monitor [data-followup-case]'));
+  const followUpPreview = document.getElementById('followup-demo-preview');
   const importMappingButtons = Array.from(document.querySelectorAll('[data-import-mapping]'));
   const importMappingPreview = document.getElementById('import-mapping-preview');
   const importReviewButtons = Array.from(document.querySelectorAll('[data-import-review]'));
@@ -563,6 +578,45 @@
     leadDetailPreview.appendChild(inner);
   }
 
+  // Fixed, read-only labels matching five anonymous PHP lab fixtures.
+  // No clock, scheduling, customer identity, permission or notification.
+  function showFollowUpCase(code) {
+    const cases = Object.freeze({
+      overdue: {
+        title:'Prazo ultrapassado no exemplo',
+        count:'1 de 5 atividades fictícias.',
+        note:'O instante ilustrativo de vencimento é anterior ao instante UTC de referência.'
+      },
+      'due-now': {
+        title:'Prazo igual ao instante de referência',
+        count:'1 de 5 atividades fictícias.',
+        note:'Igualdade exata de segundos UTC. Nenhuma regra comercial ou alerta foi configurado.'
+      },
+      upcoming: {
+        title:'Prazo posterior no exemplo',
+        count:'2 de 5 atividades fictícias.',
+        note:'Uma classificação demonstrativa de datas futuras, sem relógio em tempo real.'
+      },
+      completed: {
+        title:'Atividade marcada como concluída no exemplo',
+        count:'1 de 5 atividades fictícias.',
+        note:'Este estado é inventado e não modifica dados de clientes nem libera ações.'
+      }
+    });
+    if (!Object.prototype.hasOwnProperty.call(cases,code)) return;
+    followUpButtons.forEach(function(button){
+      button.setAttribute('aria-pressed',String(button.getAttribute('data-followup-case')===code));
+    });
+    followUpPreview.replaceChildren();
+    const inner=document.createElement('div');
+    addText(inner,'p','EXEMPLO DE ATIVIDADE — SEM AGENDA REAL','state-note');
+    addText(inner,'h3',cases[code].title);
+    addText(inner,'p',cases[code].count);
+    addText(inner,'p',cases[code].note);
+    addText(inner,'p','Nenhuma ação ou notificação foi executada.');
+    followUpPreview.appendChild(inner);
+  }
+
   function showMonitorScenario(code) {
     const cases = Object.freeze({
       received: {
@@ -721,6 +775,7 @@
   document.querySelectorAll('[data-go]').forEach(function(node){node.addEventListener('click',function(){navigate(node.getAttribute('data-go'),true);});});
   stateButtons.forEach(function(node){node.addEventListener('click',function(){showState(node.getAttribute('data-demo-state'));});});
   monitorButtons.forEach(function(node){node.addEventListener('click',function(){showMonitorScenario(node.getAttribute('data-monitor-scenario'));});});
+  followUpButtons.forEach(function(node){node.addEventListener('click',function(){showFollowUpCase(node.getAttribute('data-followup-case'));});});
   importMappingButtons.forEach(function(node){node.addEventListener('click',function(){showImportMappingState(node.getAttribute('data-import-mapping'));});});
   importReviewButtons.forEach(function(node){node.addEventListener('click',function(){showImportReviewCase(node.getAttribute('data-import-review'));});});
   accessScenarioButtons.forEach(function(node){node.addEventListener('click',function(){showAccessBoundaryCase(node.getAttribute('data-access-scenario'));});});
@@ -769,6 +824,7 @@
   sortLeadFixtures('original');
   showState('loading');
   showMonitorScenario('received');
+  showFollowUpCase('overdue');
   showImportMappingState('complete');
   showImportReviewCase('clear');
   showAccessBoundaryCase('read-only');

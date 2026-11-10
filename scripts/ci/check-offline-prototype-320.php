@@ -92,6 +92,17 @@ $driver = <<<'HTML'
       check(doc.getElementById('page-title').textContent==='Monitoramento de leads','page switch at 320');
       check(doc.activeElement===doc.getElementById('page-title'),'heading focus');
       check(doc.querySelectorAll('[data-screen]:not([hidden])').length===1,'one active screen');
+      // F4-01: fixed deadline preview has working accessible buttons in 320px.
+      const followUps=Array.from(doc.querySelectorAll('#screen-monitor [data-followup-case]'));
+      const followUpPanel=doc.getElementById('followup-demo-preview');
+      check(followUps.length===4&&followUpPanel.textContent.includes('1 de 5'),'four synthetic activity states on mobile');
+      followUps.find(node=>node.dataset.followupCase==='due-now').click();
+      check(followUpPanel.textContent.includes('Igualdade exata de segundos UTC'),'mobile exact-instant activity sample');
+      followUps.find(node=>node.dataset.followupCase==='upcoming').click();
+      check(followUpPanel.textContent.includes('2 de 5'),'mobile future activity sample');
+      check(followUps.filter(node=>node.getAttribute('aria-pressed')==='true').length===1,'single selected activity state on mobile');
+      check(doc.documentElement.scrollWidth<=320,'activity demonstration does not overflow 320px');
+      followUps.find(node=>node.dataset.followupCase==='overdue').click();
       leads.focus();
       leads.dispatchEvent(new win.KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true}));
       check(doc.activeElement===pipeline,'arrow focus at 320');
