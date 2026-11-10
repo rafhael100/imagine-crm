@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; img-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'">
+<title>Imagine CRM — Prévia fictícia de alertas CSV</title>
+<style>
+:root{font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:#f3f7fa;color:#183449}
+*{box-sizing:border-box}body{margin:0}header{background:#143449;color:#fff;padding:1.4rem clamp(1rem,4vw,3rem)}
+main{width:min(100%,1000px);padding:1.5rem 1rem 4rem;margin:auto}h1{font-size:clamp(1.5rem,4vw,2.2rem);margin:.5rem 0}
+h2{font-size:1.2rem;margin:.2rem 0 1rem}p{overflow-wrap:anywhere}
+a{color:#12546e}.skip{position:absolute;top:-5rem;left:1rem;background:#fff;padding:.75rem}.skip:focus{top:1rem}
+.card{border:1px solid #d5e4ea;border-radius:.85rem;background:#fff;padding:1rem;margin:1rem 0;min-width:0}
+.notice{background:#fff7dd;border-left:4px solid #ad7e19;padding:1rem;margin:1rem 0}
+.controls{display:flex;gap:.6rem;flex-wrap:wrap}button{font:inherit;cursor:pointer;border-radius:.6rem;background:#fff;color:#164e62;border:1px solid #236b7e;padding:.65rem .9rem}
+button[aria-pressed=true]{background:#245f75;color:#fff;font-weight:700}button:focus-visible,a:focus-visible{outline:3px solid #05a7a5;outline-offset:3px}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.65rem}.metric{border:1px solid #d5e4ea;background:#f7fafb;border-radius:.6rem;padding:.7rem;min-width:0}
+.metric strong{font-size:1.6rem;display:block}.small{color:#516979}.table-wrap{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;text-align:left;width:100%;min-width:440px}th,td{border-bottom:1px solid #e2edf1;padding:.75rem;white-space:nowrap}
+thead{background:#edf5f7}[hidden]{display:none!important}
+@media(max-width:650px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:400px){main{padding:1rem .75rem}.card{padding:.8rem}button{padding:.6rem}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Pular para conteúdo</a>
+<header><strong>Imagine CRM</strong> · Laboratório de portabilidade</header>
+<main id="main">
+<p><a href="../s01-prot-01/index.html">Voltar ao protótipo principal</a></p>
+<h1>Prévia de alertas CSV — somente demonstração</h1>
+<p class="notice" role="note"><strong>PROTÓTIPO — DADOS FICTÍCIOS.</strong> Nenhum CSV ou planilha foi aberto ou criado. Os números são inventados e não garantem que um arquivo seja seguro. Não é possível importar, exportar, alterar ou acessar clientes nesta página.</p>
+<section class="card" aria-labelledby="choose-title">
+<h2 id="choose-title">Escolha uma amostra inventada</h2>
+<div class="controls" role="group" aria-label="Amostras de estrutura CSV">
+<button type="button" data-sample="0" aria-pressed="true">A — estrutura regular</button>
+<button type="button" data-sample="1" aria-pressed="false">B — problemas demonstrativos</button>
+</div>
+<p class="small">Estas são duas listas fixas de resultados sintéticos; nenhum conteúdo de células é exibido ou processado no navegador.</p>
+</section>
+<section class="card" aria-labelledby="summary-title">
+<h2 id="summary-title">Resumo da prévia</h2>
+<div class="metrics">
+<div class="metric">Linhas totais<strong id="count-rows">3</strong></div>
+<div class="metric">Linhas de dados<strong id="count-data">2</strong></div>
+<div class="metric">Colunas declaradas<strong id="count-columns">3</strong></div>
+<div class="metric">Alertas<strong id="count-alerts">0</strong></div>
+</div>
+<p id="preview-status" role="status" aria-live="polite">Amostra fictícia sem alertas detectados. Isso não é aprovação de importação.</p>
+</section>
+<section class="card" aria-labelledby="findings-title">
+<h2 id="findings-title">Alertas e verificações</h2>
+<p class="small">O relatório contém apenas a categoria e as posições, nunca os valores dos registros.</p>
+<p id="clean-note" class="notice">Nenhum alerta na amostra inventada. O resultado não certifica segurança de um CSV real.</p>
+<div class="table-wrap">
+<table>
+<caption>Posições e motivos de alerta em dados inteiramente fictícios</caption>
+<thead><tr><th scope="col">Tipo</th><th scope="col">Posição</th><th scope="col">Motivo</th></tr></thead>
+<tbody id="findings-rows"></tbody>
+</table>
+</div>
+</section>
+<p class="small">A detecção não seleciona encoding, separador, normalização, consentimento, direitos por empresa ou política de exportação. Todos esses critérios continuam aguardando homologação.</p>
+</main>
+<noscript><p class="notice">JavaScript é necessário para alternar as amostras. Os dados desta página são sempre fictícios.</p></noscript>
+<script>
+"use strict";
+(() => {
+  // Static reports: independently checked in CI against invented PHP matrices.
+  // They contain no actual header names, contact information or cell contents.
+  const REPORTS = Object.freeze([
+    {
+      "row_count":3,
+      "data_row_count":2,
+      "header_columns":3,
+      "header_missing":false,
+      "ragged_data_rows":[],
+      "empty_header_columns":[],
+      "duplicate_header_groups":[],
+      "flagged_cell_count":0,
+      "cell_findings":[]
+    },
+    {
+      "row_count":4,
+      "data_row_count":3,
+      "header_columns":4,
+      "header_missing":false,
+      "ragged_data_rows":[3],
+      "empty_header_columns":[4],
+      "duplicate_header_groups":[[1,3]],
+      "flagged_cell_count":2,
+      "cell_findings":[
+        {"row":2,"column":3,"code":"formula_prefix"},
+        {"row":3,"column":2,"code":"apostrophe_formula_ambiguous"}
+      ]
+    }
+  ]);
+  const NAMES = Object.freeze({
+    "formula_prefix":"Prefixo semelhante a fórmula",
+    "apostrophe_formula_ambiguous":"Apóstrofo com possível fórmula",
+    "control_byte":"Caractere de controle",
+    "nul_byte":"Byte NUL",
+    "bom_prefix":"BOM no início"
+  });
+  const buttons = Array.from(document.querySelectorAll("[data-sample]"));
+  const table = document.getElementById("findings-rows");
+  function addIssue(type, position, reason) {
+    const tr = document.createElement("tr");
+    for (const text of [type, position, reason]) {
+      const cell = document.createElement("td");
+      cell.textContent = text;
+      tr.appendChild(cell);
+    }
+    table.appendChild(tr);
+  }
+  function show(index) {
+    const report = REPORTS[index];
+    table.replaceChildren();
+    document.getElementById("count-rows").textContent = String(report.row_count);
+    document.getElementById("count-data").textContent = String(report.data_row_count);
+    document.getElementById("count-columns").textContent = String(report.header_columns);
+    for (const row of report.ragged_data_rows) addIssue("Estrutura", "Linha " + row, "Quantidade diferente de colunas");
+    for (const col of report.empty_header_columns) addIssue("Cabeçalho", "Coluna " + col, "Nome vazio");
+    for (const columns of report.duplicate_header_groups) addIssue("Cabeçalho", "Colunas " + columns.join(", "), "Nome repetido");
+    for (const finding of report.cell_findings) {
+      addIssue("Célula", "Linha " + finding.row + ", coluna " + finding.column, NAMES[finding.code] || "Revisão necessária");
+    }
+    const alerts = report.ragged_data_rows.length + report.empty_header_columns.length +
+      report.duplicate_header_groups.length + report.cell_findings.length;
+    document.getElementById("count-alerts").textContent = String(alerts);
+    const clean = alerts === 0;
+    document.getElementById("clean-note").hidden = !clean;
+    document.getElementById("preview-status").textContent = clean
+      ? "Amostra fictícia sem alertas detectados. Isso não é aprovação de importação."
+      : alerts + " alerta(s) na amostra fictícia. Nenhuma operação de importação foi realizada.";
+    buttons.forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.sample) === index)));
+  }
+  buttons.forEach(button => button.addEventListener("click", () => show(Number(button.dataset.sample))));
+  show(0);
+})();
+</script>
+</body>
+</html>
