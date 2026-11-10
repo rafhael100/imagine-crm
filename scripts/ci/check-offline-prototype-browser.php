@@ -88,6 +88,23 @@ $testScript = <<<'JS'
     check(visible()===1,'qualification stage count');
     filterButtons.find(x=>x.dataset.leadStage==='all').click();
     check(visible()===4,'all stage restores every fixture');
+    // F3-38: exercise purely local pagination, including disabled boundary controls.
+    const pageSizeButtons=Array.from(document.querySelectorAll('#screen-leads [data-lead-page-size]'));
+    const previousPage=document.getElementById('lead-page-prev');
+    const nextPage=document.getElementById('lead-page-next');
+    const pageSummary=document.getElementById('lead-page-summary');
+    check(pageSizeButtons.length===2&&previousPage.disabled&&nextPage.disabled,'four demo rows start on a single page');
+    pageSizeButtons.find(x=>x.dataset.leadPageSize==='2').click();
+    check(visible()===2&&previousPage.disabled&&!nextPage.disabled,'two-per-page preview with next enabled');
+    check(pageSummary.textContent.includes('Página 1 de 2'),'first demo page announced');
+    nextPage.click();
+    check(visible()===2&&!previousPage.disabled&&nextPage.disabled,'second demo page boundaries');
+    check(pageSummary.textContent.includes('Página 2 de 2'),'second page announced');
+    filterButtons.find(x=>x.dataset.leadStage==='entrada').click();
+    check(visible()===2&&previousPage.disabled&&nextPage.disabled,'filter resets pagination');
+    filterButtons.find(x=>x.dataset.leadStage==='all').click();
+    pageSizeButtons.find(x=>x.dataset.leadPageSize==='4').click();
+    check(visible()===4&&previousPage.disabled&&nextPage.disabled,'default four-row view restored');
     // Validate real Chromium DOM sorting without any lead mutation or API.
     const sortButtons=Array.from(document.querySelectorAll('#screen-leads [data-lead-sort]'));
     const order=()=>Array.from(document.querySelectorAll('#screen-leads tbody tr')).map(x=>x.querySelector('strong').textContent);
