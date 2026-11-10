@@ -271,6 +271,29 @@ $testScript = <<<'JS'
     check(meters.length===3,'three fictional quota meters');
     check(JSON.stringify(meters.map(x=>[x.value,x.max]))===JSON.stringify([[4,20],[1,2],[0,2]]),'synthetic quota meter values');
     check(document.getElementById('quota-demo-title').textContent==='Franquias demonstrativas','quota demo heading');
+    // REV-F5-01: fixed trial and quota controls must never activate rights.
+    const trialButtons=Array.from(document.querySelectorAll('#screen-dashboard [data-trial-phase]'));
+    const quotaBandButtons=Array.from(document.querySelectorAll('#screen-dashboard [data-trial-quota]'));
+    const trialOverview=document.getElementById('trial-quota-preview');
+    check(trialButtons.length===3&&quotaBandButtons.length===4,'3 trial phases and 4 static quota states');
+    check(trialOverview.textContent.includes('within_window')&&trialOverview.textContent.includes('in_range'),'trial and quota default examples');
+    trialButtons.find(x=>x.dataset.trialPhase==='before').click();
+    check(trialOverview.textContent.includes('before_start')&&trialOverview.textContent.includes('14 dias informativos'),'before trial example');
+    trialButtons.find(x=>x.dataset.trialPhase==='ended').click();
+    check(trialOverview.textContent.includes('after_window')&&trialOverview.textContent.includes('0 dias restantes'),'trial exact-end example');
+    trialButtons.find(x=>x.dataset.trialPhase==='active').click();
+    check(trialOverview.textContent.includes('3 dias arredondados'),'active illustrative countdown');
+    quotaBandButtons.find(x=>x.dataset.trialQuota==='at-limit').click();
+    check(trialOverview.textContent.includes('at_limit')&&trialOverview.textContent.includes('20 de 20'),'at-limit quota example');
+    quotaBandButtons.find(x=>x.dataset.trialQuota==='over-limit').click();
+    check(trialOverview.textContent.includes('over_limit')&&trialOverview.textContent.includes('21 de 20'),'over-limit without billing');
+    quotaBandButtons.find(x=>x.dataset.trialQuota==='zero-capacity').click();
+    check(trialOverview.textContent.includes('zero_capacity')&&trialOverview.textContent.includes('0 de 0'),'zero does not mean unlimited');
+    quotaBandButtons.find(x=>x.dataset.trialQuota==='in-range').click();
+    check(trialOverview.textContent.includes('in_range'),'restore fixture quota');
+    check(trialButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'one trial phase selected');
+    check(quotaBandButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'one quota band selected');
+    check(trialOverview.textContent.includes('Nenhum acesso, bloqueio, cobrança, convite ou recurso foi alterado.'),'no activation in any trial/quota state');
     check(document.querySelectorAll('[data-screen]:not([hidden])').length===1,'dashboard isolated from other screens');
     
     // The three offline mapping scenarios are only hard-coded DOM text.
