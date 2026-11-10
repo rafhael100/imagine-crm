@@ -3,7 +3,7 @@
 **Atualizado em:** 10/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
-**HEAD DEV no levantamento:** `c8173047c7dbe0120591605f443611a39db45ebc` — PRs [#151](https://github.com/rafhael100/imagine-crm/pull/151), [#152](https://github.com/rafhael100/imagine-crm/pull/152) e [#153](https://github.com/rafhael100/imagine-crm/pull/153) integrados **somente DEV** com as verificações Laravel/F0 e PostgreSQL/RLS verdes na HEAD pós-merge de cada entrega. Provas negativas adicionais de isolamento de dois vínculos ativos em tenants diferentes, inventário de workflows efêmeros e privilégios das cinco roles sintéticas; ainda não constituem homologação SEG/DBA, identidade, ACL operacional ou `ALLOW`.
+**HEAD DEV verificada em 10/11/2026 após F4-27:** `31d5c279696aa28aa32fe982025e8db699380d78` — [PR #176](https://github.com/rafhael100/imagine-crm/pull/176) integrado somente DEV após [F0 #42874150540](https://github.com/rafhael100/imagine-crm/actions/runs/42874150540) e [PostgreSQL/RLS #42874150654](https://github.com/rafhael100/imagine-crm/actions/runs/42874150654), ambos `success`. A sequência anterior foi registrada em seções históricas; PRs #173 e #174 seguem integrados DEV com seus próprios gates, e o PR #175 segue **DRAFT, sem merge, aguardando revisor independente**. Nenhuma autorização de dados reais, `ALLOW` ou produção decorre desse HEAD.
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
@@ -369,3 +369,28 @@ O `AGENTS.md` é instrução de programação, `STATUS-ATUAL.md` é resumo hist�
 | [#153](https://github.com/rafhael100/imagine-crm/pull/153) — SEGDBA-03 | Testes PG **somente leitura** nas cinco roles efêmeras verificam ausência de CREATE no banco/schema e herança de roles administrativas. SHA `c8173047`. Sem validação de roles reais. | [F0 #42770764173](https://github.com/rafhael100/imagine-crm/actions/runs/42770764173), [PG/RLS #42770764290](https://github.com/rafhael100/imagine-crm/actions/runs/42770764290): success |
 
 **Handoff:** [OPS-26 — evidências, limites e matriz pendente de revisão SEG/DBA](docs/desenvolvimento/CRM-OPS-26-evidencias-segdba-rls-ci-2026-11-10.md). Este pacote não encerra os achados da [Issue #27](https://github.com/rafhael100/imagine-crm/issues/27) nem designa o revisor independente exigido. A [Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) continua pendente para R01/CAM/EST e primeira funcionalidade real. `DenyByDefaultAuthorizer` e a única rota de saúde `/up` permanecem. Nenhum cliente, CNPJ real, mudança de `main`, produção/VPS, credencial, faturamento ou migração operacional.
+
+
+## N. OPS-28 — entregas F4 e posição dos gates (10/11/2026)
+
+**Fonte verificada:** GitHub no instante da atualização, HEAD DEV `31d5c279696aa28aa32fe982025e8db699380d78`, `main` ainda em `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` pela comparação direta. Os números e links a seguir não significam homologação de software com clientes.
+
+| Frente | Evidências e estado | Limite |
+|---|---|---|
+| F4-06..F4-14 | [PRs #155–#163](https://github.com/rafhael100/imagine-crm/pulls?q=is%3Apr+is%3Amerged+F4) — classificação, snapshots, matriz de transição, agregados, série temporal e testes | Somente objetos PHP/fixtures sem origens reais, persistência ou autorização |
+| UX-F4-15..F4-24 | [#164](https://github.com/rafhael100/imagine-crm/pull/164), [#165](https://github.com/rafhael100/imagine-crm/pull/165), [#167](https://github.com/rafhael100/imagine-crm/pull/167), [#170](https://github.com/rafhael100/imagine-crm/pull/170), [#171](https://github.com/rafhael100/imagine-crm/pull/171), [#172](https://github.com/rafhael100/imagine-crm/pull/172) | Protótipos estáticos e Chromium com dados **fictícios**; não interface autenticada operacional |
+| Contratos sintéticos F4-20 e QA | [#168](https://github.com/rafhael100/imagine-crm/pull/168), [#169](https://github.com/rafhael100/imagine-crm/pull/169) | Composição de série e validação de tamanho/schema; não provam isolamento real |
+| Contenção negativa de empresa e escopo | [#173](https://github.com/rafhael100/imagine-crm/pull/173) · DEV `c5488e1f`, [#174](https://github.com/rafhael100/imagine-crm/pull/174) · DEV `a265e3f8` | Etiquetas `fixture-*` declaradas, duplicação de IDs, tripwire de entrypoints; **não** verificam identidade, membership, RLS de origem ou `ALLOW` |
+| F4-27 — lista paginada sintética | [PR #176](https://github.com/rafhael100/imagine-crm/pull/176) · DEV `31d5c279` | Ordenação por instante UTC, filtros por vencimento, até 25 itens por página e 100 por amostra, 18 novos testes; IDs somente inventados, sem dados de clientes |
+| Revisão SEG/DBA | [Issue #27](https://github.com/rafhael100/imagine-crm/issues/27), [PR #175](https://github.com/rafhael100/imagine-crm/pull/175) **DRAFT aberto** | Pacote de evidências preparado, ambos workflows da proposta documental verdes; **não houve revisor independente, parecer ou GO** |
+| Migrações e ledger | [#23](https://github.com/rafhael100/imagine-crm/pull/23), [#26](https://github.com/rafhael100/imagine-crm/pull/26), [#49](https://github.com/rafhael100/imagine-crm/pull/49) — todos **DRAFT abertos, sem merge** | Continuam sujeitos a parecer específico, análise de diff cumulativo e gates de arquitetura, segurança e privacidade |
+
+### Evidência CI da última entrega
+
+- F4-27, HEAD do PR `a01e5f608771a4e893e196a4f91b5e64d76980aa`: [F0 CI #42874150540](https://github.com/rafhael100/imagine-crm/actions/runs/42874150540) **success** e [PostgreSQL RLS F1 #42874150654](https://github.com/rafhael100/imagine-crm/actions/runs/42874150654) **success**, seguidos de merge exclusivamente DEV `31d5c279696aa28aa32fe982025e8db699380d78`.
+- O tripwire contra ligação dos cálculos fictícios a rotas/providers/jobs foi ampliado para F4-27. É verificação estática limitada, não auditoria de execução.
+- Não há evidência suficiente para uma **porcentagem objetiva de conclusão do CRM**: múltiplos gates P0/P1 e o primeiro recorte operacional S01 continuam abertos.
+
+### Condição NO-GO preservada
+
+**Não habilitar rotas/consultas de clientes, autenticação funcional, grants, `ALLOW`, exportação, migrações operacionais, publicação ou deploy** com base nesses PRs. A S01 [Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) ainda depende de aprovações de contratos e direitos; [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) exige parecer independente com competências e evidências rastreáveis. Integração com dados reais exige decisão separada. `main`, VPS e produção não foram alteradas nesta sequência.
