@@ -25,3 +25,15 @@ A mesma página possui uma seção **independente das amostras de estrutura acim
 As informações são deliberadamente não operacionais. Não há campo para escolher destino real; `fixture_*` é um marcador inventado. Uma prévia sem alertas continua com **revisão humana obrigatória**, sem autorização de importação ou exclusão de colunas não mapeadas.
 
 O `OfflineCsvMappingPreviewParityTest` compara os dois relatórios JSON com o `CsvMappingPlanPreview` PHP F3-23 usando matrizes fictícias. O smoke em Chromium desktop e 320 CSS px também alterna os dois exemplos, confirma os conflitos e verifica a limpeza dos resultados antigos. O produto real ainda dependerá das políticas de encoding, validação dos campos, autorização por tenant e aprovação da Central IN-118.
+
+## UX F3-26 — Diagnósticos por linha, sem importação
+
+A seção **Revisão por linha — dados fictícios** acompanha a amostra de estrutura A ou B. Para cada linha de dados ela mostra somente número original, quantidade de colunas e tipos de alertas. Valores, cabeçalhos e nomes de campos continuam ocultos.
+
+- Exemplo A: duas linhas de dados, nenhuma sinalizada pelo analisador limitado; **ambas exigem revisão**, sem autorização de importação.
+- Exemplo B: três linhas de dados, duas sinalizadas. A linha 2 tem prefixo semelhante a fórmula na coluna 3; a linha 3 tem quantidade de colunas divergente e apóstrofo ambíguo na coluna 2. A linha 4 não apresenta alertas detectados, mas também não é aprovada.
+- Alertas globais de cabeçalho e conflito de mapeamento permanecem nos respectivos resumos; não são atribuídos artificialmente a uma linha de dados.
+
+`OfflineCsvRowReviewParityTest` confronta os dois relatórios imutáveis `ROW_REPORTS` com a análise PHP `CsvRowReviewPreview` F3-25, usando matrizes sintéticas e atribuições `fixture_*`. O smoke Chromium F0 exercita as contagens, a renderização dos motivos e a limpeza de linhas antigas em desktop e 320 CSS px.
+
+**Sem importação real, direitos de uso, seleção de CSV, persistência, ALLOW, autorização de organização/usuário, exclusão de linhas, conclusão de revisão ou upload.** A interface é somente uma demonstração de apresentação dos resultados da análise sintética, não a ferramenta operacional.
