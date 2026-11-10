@@ -18,6 +18,7 @@ use InvalidArgumentException;
 final class FollowUpAgingProjection
 {
     private const BUCKETS = ['overdue', 'due_24h', 'due_later'];
+    private const MAX_SYNTHETIC_ITEMS = 100;
 
     /**
      * @param list<array{id:string,due_at:string}> $items
@@ -25,13 +26,18 @@ final class FollowUpAgingProjection
      */
     public static function project(array $items, string $asOf): array
     {
+        if (!array_is_list($items) || count($items) > self::MAX_SYNTHETIC_ITEMS) {
+            throw new InvalidArgumentException('Synthetic follow-ups require a bounded list.');
+        }
+
         $now = self::parseInstant($asOf);
         $buckets = array_fill_keys(self::BUCKETS, []);
         $cutoff = $now->modify('+24 hours');
         $ids = [];
 
         foreach ($items as $item) {
-            if (!is_array($item) || !isset($item['id'], $item['due_at'])
+            if (!is_array($item) || count($item) !== 2
+                || !isset($item['id'], $item['due_at'])
                 || !is_string($item['id']) || trim($item['id']) === ''
                 || !is_string($item['due_at'])) {
                 throw new InvalidArgumentException('Synthetic follow-up requires id and due_at.');
