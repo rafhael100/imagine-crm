@@ -3,7 +3,7 @@
 **Atualizado em:** 10/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
-**HEAD DEV no levantamento:** `fddcf15c52912a75afe0798d1af724fea672011b` — PRs [#142](https://github.com/rafhael100/imagine-crm/pull/142), [#143](https://github.com/rafhael100/imagine-crm/pull/143), [#144](https://github.com/rafhael100/imagine-crm/pull/144) e [#145](https://github.com/rafhael100/imagine-crm/pull/145) integrados exclusivamente DEV, cada qual com F0 e PostgreSQL/RLS aprovados **após merge**. Trial ilustrativo de 14 dias, bandas de franquia e projeção hipotética de consumo, com controles acessíveis no protótipo offline. Sem elegibilidade de trial, cobranças, reservas, direitos, APIs, dados reais, VPS, `main` ou produção.
+**HEAD DEV no levantamento:** `10ee6d6d3e0b264d76ae601db2bb28ebc8671eba` — PRs [#147](https://github.com/rafhael100/imagine-crm/pull/147), [#148](https://github.com/rafhael100/imagine-crm/pull/148) e [#149](https://github.com/rafhael100/imagine-crm/pull/149) integrados **somente DEV** com F0 e PostgreSQL/RLS `success` na HEAD pós-merge de cada PR. Comparação informativa entre dois conjuntos de medidores fictícios, interface offline e testes cruzados de 36 estados. Nenhum dado real, cronologia contratual, API, `ALLOW`, cobrança, exportação, VPS, `main` ou produção.
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
@@ -345,3 +345,16 @@ O `AGENTS.md` é instrução de programação, `STATUS-ATUAL.md` é resumo hist�
 **Handoff detalhado:** [OPS-24 — trial e franquias, contratos futuros e evidências](docs/desenvolvimento/CRM-OPS-24-trial-franquias-handoff-laboratorio-2026-11-10.md). Nenhuma integração com CNPJ/OTP/autenticação, consumo real, pagamento, mudança de plano, suspensão de conta, crédito de IA ou faturamento foi implementada; são dados totalmente fabricados. `DenyByDefaultAuthorizer` continua exclusivamente deny-only, e só `GET|HEAD /up` permanece como rota pública.
 
 **NO-GO operacional ainda vigente:** [R01/CAM/EST / Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) sem aceites específicos e [SEG/DBA / Issue #27](https://github.com/rafhael100/imagine-crm/issues/27) sem parecer técnico independente/aceite P0/P1. CORE/AUT/FIN/CON/LGPD/QA/infraestrutura e demais dependências continuam pendentes. Nenhum merge para `main`, VPS, deploy ou cliente real.
+
+
+## L. REV-F5-03 / QA-F5-04 — comparação de franquias fictícias (10/11/2026)
+
+| PR só DEV | Entrega de laboratório e limites | Evidência CI pós-merge |
+|---|---|---|
+| [#147](https://github.com/rafhael100/imagine-crm/pull/147) · REV-F5-03 | PHP puro: variações de uso/limite/saldo/excesso, bandas e tendências entre dois snapshots anônimos com mesmo conjunto de 1..12 medidores. Recusa medidor ausente; não verifica tenant, origem ou período. SHA `9dc41b31`. | [F0 #42755887306](https://github.com/rafhael100/imagine-crm/actions/runs/42755887306) / [PG-RLS #42755887296](https://github.com/rafhael100/imagine-crm/actions/runs/42755887296) — success |
+| [#148](https://github.com/rafhael100/imagine-crm/pull/148) · UX-REV-F5-03 | Protótipo offline com 4 medidores fictícios e comparação A/B, testes de paridade PHP, controles acessíveis e navegador 320px. SHA `84d2a8da`. | [F0 #42756293499](https://github.com/rafhael100/imagine-crm/actions/runs/42756293499) / [PG-RLS #42756293314](https://github.com/rafhael100/imagine-crm/actions/runs/42756293314) — success |
+| [#149](https://github.com/rafhael100/imagine-crm/pull/149) · QA-REV-F5-04 | Testes cruzados em 36 combinações artificiais de capacidade/uso (inclusive zero e PHP_INT_MAX) entre readout, delta e previsão; sem direitos de reserva, cobrança, enforcement ou exportação. SHA `10ee6d6d`. | [F0 #42756582639](https://github.com/rafhael100/imagine-crm/actions/runs/42756582639) / [PG-RLS #42756582565](https://github.com/rafhael100/imagine-crm/actions/runs/42756582565) — success |
+
+**Handoff completo:** [OPS-25 — comparação, testes, riscos e gates de segurança](docs/desenvolvimento/CRM-OPS-25-comparacao-franquias-invariantes-2026-11-10.md). A igualdade de nome de medidor em dois dados de entrada não prova mesma organização, mesmo usuário ou origem confiável; nenhum período de cobrança real foi comparado, e não há autorização operacional.
+
+**Permanecem NO-GO:** S01 R01-D01..D05 e CAM/EST na [Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) e parecer independente SEG/DBA na [Issue #27](https://github.com/rafhael100/imagine-crm/issues/27); CORE/AUT/LGPD/FIN/CON/QA, homologação e implantação ainda abertas. `DenyByDefaultAuthorizer` continua sem `ALLOW`; apenas rota de saúde `/up`; `main`, VPS e produção preservadas.
