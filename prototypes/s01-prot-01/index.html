@@ -190,6 +190,19 @@
           <div id="quota-whatif-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
           <p class="caption">Cálculo fictício, sem leitura de consumo real, direito de criar leads, alterações na franquia ou simulação de preço.</p>
         </section>
+        <section class="card" data-quota-compare-demo aria-labelledby="quota-compare-title" style="margin-top:18px">
+          <p class="eyebrow">REV-F5-03 · Comparação de cenários inventados</p>
+          <h2 id="quota-compare-title">Como o uso e o limite podem variar</h2>
+          <p class="soft">Escolha um medidor fictício para comparar dois retratos ilustrativos. Não representam meses, contas, empresas, assinaturas nem alterações reais.</p>
+          <div class="switcher" role="group" aria-label="Medidor fictício para comparar">
+            <button type="button" class="state-button" data-quota-compare="leads" aria-pressed="true">Leads</button>
+            <button type="button" class="state-button" data-quota-compare="users" aria-pressed="false">Usuários</button>
+            <button type="button" class="state-button" data-quota-compare="automations" aria-pressed="false">Automações</button>
+            <button type="button" class="state-button" data-quota-compare="storage_bytes" aria-pressed="false">Armazenamento fictício</button>
+          </div>
+          <div id="quota-compare-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
+          <p class="caption">Comparação não prova origem, histórico, autorização ou consumo de um cliente. Não modifica limites, envia dados ou emite cobranças.</p>
+        </section>
         <div class="two-col" style="margin-top:18px">
           <div class="card"><p class="eyebrow">Acompanhamento comercial — demonstração</p><h2>Do primeiro contato à qualificação</h2><p class="soft">Explore uma tabela sintética de leads e visualize sua organização em colunas. Não há botão de salvar, edição ou envio de mensagem.</p><button class="action" type="button" data-go="leads">Ver leads fictícios</button></div>
           <div class="card"><h2>O que vem depois</h2><p class="soft">A implementação real dependerá de autenticação, isolamento por empresa, definição dos direitos por ação e campo, privacidade e testes de segurança.</p><div class="help">Esta visão não utiliza qualquer informação de empresa ou cliente.</div></div>
@@ -426,6 +439,9 @@
   const quotaWhatIfButtons = Array.from(document.querySelectorAll('#screen-dashboard [data-quota-whatif]'));
   const quotaWhatIfPreview = document.getElementById('quota-whatif-preview');
   let selectedQuotaWhatIf = 'none';
+  const quotaCompareButtons = Array.from(document.querySelectorAll('#screen-dashboard [data-quota-compare]'));
+  const quotaComparePreview = document.getElementById('quota-compare-preview');
+  let selectedQuotaCompare = 'leads';
   const preview = document.getElementById('demo-preview');
   const stateButtons = Array.from(document.querySelectorAll('[data-demo-state]'));
   const monitorButtons = Array.from(document.querySelectorAll('[data-monitor-scenario]'));
@@ -935,6 +951,43 @@
     renderQuotaWhatIf();
   }
 
+  // Four closed invented comparisons, with no account/tenant or calendar.
+  function renderQuotaCompare() {
+    const meters=Object.freeze({
+      leads:{name:'Leads fictícios',earlierLimit:20,earlierUsed:4,laterLimit:25,laterUsed:9,earlierBand:'in_range',laterBand:'in_range'},
+      users:{name:'Usuários fictícios',earlierLimit:2,earlierUsed:2,laterLimit:2,laterUsed:3,earlierBand:'at_limit',laterBand:'over_limit'},
+      automations:{name:'Automações fictícias',earlierLimit:0,earlierUsed:0,laterLimit:3,laterUsed:0,earlierBand:'zero_capacity',laterBand:'in_range'},
+      storage_bytes:{name:'Armazenamento fictício (unidades ilustrativas)',earlierLimit:10,earlierUsed:12,laterLimit:10,laterUsed:7,earlierBand:'over_limit',laterBand:'in_range'}
+    });
+    const m=meters[selectedQuotaCompare];
+    if(!m) return;
+    quotaCompareButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(node.getAttribute('data-quota-compare')===selectedQuotaCompare));
+    });
+    const usageDelta=m.laterUsed-m.earlierUsed;
+    const limitDelta=m.laterLimit-m.earlierLimit;
+    const earlyRemaining=Math.max(0,m.earlierLimit-m.earlierUsed);
+    const laterRemaining=Math.max(0,m.laterLimit-m.laterUsed);
+    const earlyExcess=Math.max(0,m.earlierUsed-m.earlierLimit);
+    const laterExcess=Math.max(0,m.laterUsed-m.laterLimit);
+    quotaComparePreview.replaceChildren();
+    const inner=document.createElement('div');
+    addText(inner,'p','DOIS CENÁRIOS ANÔNIMOS — NENHUMA OPERAÇÃO','state-note');
+    addText(inner,'h3',m.name);
+    addText(inner,'p','Retrato A: '+m.earlierUsed+' de '+m.earlierLimit+' (banda '+m.earlierBand+').');
+    addText(inner,'p','Retrato B: '+m.laterUsed+' de '+m.laterLimit+' (banda '+m.laterBand+').');
+    addText(inner,'p','Variação de uso: '+usageDelta+'. Variação de limite: '+limitDelta+'.');
+    addText(inner,'p','Saldo A/B: '+earlyRemaining+' / '+laterRemaining+'. Excesso A/B: '+earlyExcess+' / '+laterExcess+'.');
+    addText(inner,'p','Nenhuma alteração de plano, autorização, exportação ou cobrança foi realizada.');
+    quotaComparePreview.appendChild(inner);
+  }
+
+  function showQuotaCompare(code) {
+    if(code!=='leads'&&code!=='users'&&code!=='automations'&&code!=='storage_bytes') return;
+    selectedQuotaCompare=code;
+    renderQuotaCompare();
+  }
+
   function showBackupIntegrityCase(code) {
     const cases = Object.freeze({
       consistent: {
@@ -1098,6 +1151,7 @@
   trialPhaseButtons.forEach(function(node){node.addEventListener('click',function(){showTrialPhase(node.getAttribute('data-trial-phase'));});});
   trialQuotaButtons.forEach(function(node){node.addEventListener('click',function(){showTrialQuota(node.getAttribute('data-trial-quota'));});});
   quotaWhatIfButtons.forEach(function(node){node.addEventListener('click',function(){showQuotaWhatIf(node.getAttribute('data-quota-whatif'));});});
+  quotaCompareButtons.forEach(function(node){node.addEventListener('click',function(){showQuotaCompare(node.getAttribute('data-quota-compare'));});});
   leadFilterButtons.forEach(function(node){node.addEventListener('click',function(){showLeadStage(node.getAttribute('data-lead-stage'));});});
   leadTemperatureButtons.forEach(function(node){node.addEventListener('click',function(){showLeadTemperature(node.getAttribute('data-lead-temperature'));});});
   leadClearFiltersButton.addEventListener('click',function(){
@@ -1151,6 +1205,7 @@
   showBackupIntegrityCase('consistent');
   renderTrialQuotaPreview();
   renderQuotaWhatIf();
+  renderQuotaCompare();
 })();
 </script>
 </body>
