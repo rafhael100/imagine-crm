@@ -45,7 +45,7 @@ $assertions = <<<'JS'
   function click(selector){const button=document.querySelector(selector);check(button!==null,'missing '+selector);button.click();return button;}
   function page(){return document.getElementById('page-indicator').textContent.trim();}
   function summary(){return document.getElementById('result-summary').textContent.trim();}
-  function onlyPressed(selector,value){const pressed=Array.from(document.querySelectorAll(selector+'[aria-pressed="true"]'));check(pressed.length===1 && pressed[0].dataset[selector==='[data-filter]'?'filter':'sample']===value,'pressed '+selector+' '+value);}
+  function onlyPressed(selector,value){const pressed=Array.from(document.querySelectorAll(selector+'[aria-pressed="true"]'));const key=selector==='[data-filter]'?'filter':selector==='[data-page-size]'?'pageSize':'sample';check(pressed.length===1 && pressed[0].dataset[key]===value,'pressed '+selector+' '+value);}
   try{
     check(document.querySelector('main')!==null,'semantic main landmark');
     check(document.body.textContent.includes('PROTÓTIPO — DADOS FICTÍCIOS'),'fiction warning');
@@ -54,6 +54,10 @@ $assertions = <<<'JS'
     check(rows().join('|')==='fixture-overdue|fixture-now','initial chronological page 1');
     check(page()==='Página 1 de 3','three pages');
     check(summary().includes('Total da amostra: 5'),'global sample total');
+    check(document.getElementById('count-overdue').textContent==='1','overdue sample count');
+    check(document.getElementById('count-due24').textContent==='3','due24 sample count');
+    check(document.getElementById('count-later').textContent==='1','future sample count');
+    check(document.getElementById('count-all').textContent==='5','sample total card');
     check(document.getElementById('previous').disabled,'first page prev disabled');
     check(!document.getElementById('next').disabled,'first page next enabled');
 
@@ -75,11 +79,13 @@ $assertions = <<<'JS'
     click('[data-filter="overdue"]');
     check(rows().join('|')==='fixture-overdue','overdue filter');
     check(page()==='Página 1 de 1','filtered one page');
+    check(document.getElementById('count-all').textContent==='5','filter does not change global total');
     click('[data-filter="due_later"]');
     check(rows().join('|')==='fixture-late','due later filter');
     const emptyChoice=click('[data-sample="empty"]');
     check(document.getElementById('empty-note').hidden===false,'explicit empty note');
     check(rows().length===0,'empty sample has no rows');
+    check(['count-overdue','count-due24','count-later','count-all'].every(id=>document.getElementById(id).textContent==='0'),'empty sample count cards reset');
     check(page()==='Página 1 de 1','empty page label');
     check(document.getElementById('previous').disabled&&document.getElementById('next').disabled,'empty page disabled navigation');
     onlyPressed('[data-filter]','all');
@@ -90,6 +96,19 @@ $assertions = <<<'JS'
     check(document.getElementById('empty-note').hidden,'empty warning resets');
     check(rows().join('|')==='fixture-overdue|fixture-now','sample restore');
     onlyPressed('[data-sample]','a');
+    check(document.getElementById('count-all').textContent==='5','sample restore total');
+    click('[data-page-size="5"]');
+    onlyPressed('[data-page-size]','5');
+    check(rows().length===5,'five rows in expanded page');
+    check(page()==='Página 1 de 1','five rows fit one page');
+    check(document.getElementById('next').disabled,'expanded page next disabled');
+    click('[data-filter="due_24h"]');
+    check(rows().length===3,'three due24 rows with page size five');
+    check(document.getElementById('count-due24').textContent==='3','due24 count stable after filtering');
+    click('[data-page-size="2"]');
+    onlyPressed('[data-page-size]','2');
+    check(rows().length===2,'page size two restored');
+    check(page()==='Página 1 de 2','page size reset to first page');
 
     output.setAttribute('data-imagine-browser-smoke','PASS');
     output.textContent='F4-28 Chromium filtering pagination and empty-state PASS';
@@ -152,6 +171,12 @@ try {
       check(win.innerWidth===320,'real 320 CSS px viewport');
       check(doc.documentElement.scrollWidth<=320,'no horizontal overflow');
       check(doc.querySelectorAll('#worklist-rows tr').length===2,'initial two mobile rows');
+      check(doc.getElementById('count-all').textContent==='5','mobile global count');
+      doc.querySelector('[data-page-size="5"]').click();
+      check(doc.querySelectorAll('#worklist-rows tr').length===5,'mobile expanded page');
+      check(doc.getElementById('page-indicator').textContent==='Página 1 de 1','mobile expanded page indicator');
+      doc.querySelector('[data-page-size="2"]').click();
+      check(doc.querySelectorAll('#worklist-rows tr').length===2,'mobile reset to two records');
       const filter=doc.querySelector('[data-filter="due_24h"]');
       filter.focus();
       filter.click();
@@ -161,6 +186,7 @@ try {
       check(doc.querySelectorAll('#worklist-rows tr').length===1,'mobile last row');
       doc.querySelector('[data-sample="empty"]').click();
       check(doc.getElementById('empty-note').hidden===false,'mobile empty warning');
+      check(doc.getElementById('count-all').textContent==='0','mobile zero total card');
       check(doc.querySelectorAll('#worklist-rows tr').length===0,'mobile empty rows');
       check(doc.documentElement.scrollWidth<=320,'no page overflow after interactions');
       check(!doc.querySelector('form,input,textarea'),'no capture UI');

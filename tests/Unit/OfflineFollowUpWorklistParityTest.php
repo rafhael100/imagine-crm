@@ -96,6 +96,39 @@ final class OfflineFollowUpWorklistParityTest extends TestCase
         self::assertSame([], $empty['items']);
     }
 
+    public function test_summary_cards_and_both_page_sizes_reconcile_with_php(): void
+    {
+        $html = self::html();
+        foreach ([
+            'count-overdue' => '1', 'count-due24' => '3',
+            'count-later' => '1', 'count-all' => '5',
+        ] as $id => $value) {
+            self::assertStringContainsString('id="'.$id.'">'.$value.'</strong>', $html);
+        }
+
+        self::assertSame(
+            2,
+            preg_match_all(
+                '/<button type="button" data-page-size="(?:2|5)" aria-pressed="(?:true|false)">/',
+                $html,
+            ),
+        );
+        self::assertStringContainsString('pageSize = Number(button.dataset.pageSize);', $html);
+        self::assertStringContainsString('document.getElementById("count-all").textContent = String(records.length);', $html);
+
+        foreach ([2, 5] as $size) {
+            $result = FollowUpFixtureWorklistPage::paginate(
+                'fixture-sales-a', self::sample(), '2026-11-10T10:00:00Z', 'all', 1, $size,
+            );
+            self::assertSame(5, $result['selected_total']);
+            self::assertSame($size === 2 ? 3 : 1, $result['pages']);
+            self::assertCount($size, $result['items']);
+            self::assertSame(1, $result['counts']['overdue']);
+            self::assertSame(3, $result['counts']['due_24h']);
+            self::assertSame(1, $result['counts']['due_later']);
+        }
+    }
+
     public function test_ui_is_explicitly_fictional_local_only_and_keyboard_operable(): void
     {
         $html = self::html();

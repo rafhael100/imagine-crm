@@ -7,7 +7,7 @@ Abra `index.html` em um navegador por meio de `file://`. Não exige instalação
 - Amostra A: cinco registros inteiramente inventados, relógio fixo `2026-11-10T10:00:00Z`. Os IDs `fixture-...` e as datas não identificam nenhuma empresa/cliente real.
 - Amostra B: zero registros; a interface avisa que isso **não comprova tarefas concluídas**.
 - Filtros `Todos`, `Vencidos`, `Até 24h` e `Após 24h`, com botões nativos, `aria-pressed`, foco visível e atualização de resumo `aria-live`.
-- Ordenação por instante absoluto (datas com offsets explícitos), seguida do identificador fictício; duas linhas por página, botões anterior/próximo com bloqueios de limite.
+- Ordenação por instante absoluto (datas com offsets explícitos), seguida do identificador fictício; opção de 2 ou 5 linhas por página, botões anterior/próximo com bloqueios de limite.
 - Tabela rolável apenas horizontalmente no próprio contêiner, sem alargar a página no viewport de 320 CSS px; status e mensagens usam texto não executável.
 - Nada importa, exporta, altera, salva, envia ou dispara operações.
 
