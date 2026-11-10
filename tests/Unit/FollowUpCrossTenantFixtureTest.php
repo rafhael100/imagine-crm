@@ -36,11 +36,11 @@ final class FollowUpCrossTenantFixtureTest extends TestCase
         $companyA = self::observations(
             [
                 ['id' => 'local-001', 'due_at' => '2026-11-10T09:00:00Z'],
-                ['id' => 'local-002', 'due_at' => '2026-11-12T12:00:00Z'],
+                ['id' => 'local-002', 'due_at' => '2026-11-12T09:00:00Z'],
             ],
             [
                 ['id' => 'local-001', 'due_at' => '2026-11-10T09:00:00Z'],
-                ['id' => 'local-002', 'due_at' => '2026-11-12T12:00:00Z'],
+                ['id' => 'local-002', 'due_at' => '2026-11-12T09:00:00Z'],
             ],
         );
         $companyB = self::observations(
