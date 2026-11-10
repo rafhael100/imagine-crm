@@ -40,12 +40,16 @@ final class CsvCellRiskPreviewTest extends TestCase
             ['safe', '   =1+1', "\t@run", "\xEF\xBB\xBF +3"],
         ];
         $result = CsvCellRiskPreview::inspect($matrix);
-        self::assertSame(8, $result['flagged_count']);
-        foreach ($result['findings'] as $i => $finding) {
-            self::assertSame(1 + intdiv($i, 4), $finding['row']);
-            self::assertSame(1 + ($i % 4), $finding['column']);
-            self::assertSame('formula_prefix', $finding['code']);
-        }
+        self::assertSame(7, $result['flagged_count']);
+        self::assertSame([
+            ['row' => 1, 'column' => 1, 'code' => 'formula_prefix'],
+            ['row' => 1, 'column' => 2, 'code' => 'formula_prefix'],
+            ['row' => 1, 'column' => 3, 'code' => 'formula_prefix'],
+            ['row' => 1, 'column' => 4, 'code' => 'formula_prefix'],
+            ['row' => 2, 'column' => 2, 'code' => 'formula_prefix'],
+            ['row' => 2, 'column' => 3, 'code' => 'formula_prefix'],
+            ['row' => 2, 'column' => 4, 'code' => 'formula_prefix'],
+        ], $result['findings']);
 
         $json = json_encode($result, JSON_THROW_ON_ERROR);
         foreach (['SUM(A1:A2)', 'HYPERLINK', 'https://', 'safe', 'sample', '-12'] as $raw) {
