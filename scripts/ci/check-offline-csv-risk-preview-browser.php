@@ -91,6 +91,36 @@ $assertions = <<<'JS'
     check(value('map-conflicts')==='0','mapping issues cleared on reset');
     check(document.querySelectorAll('#map-rows tr').length===0,'no stale mapping diagnostics');
 
+    check(value('snapshot-rows-before')==='3'&&value('snapshot-rows-after')==='3','snapshot initial counts');
+    check(value('snapshot-changes')==='0','identical synthetic snapshot initially');
+    check(document.querySelectorAll('#snapshot-diff-rows tr').length===0,'identical snapshot has no diff rows');
+    check(value('snapshot-status').includes('Revisão humana continua necessária'),'identical version not a human approval');
+    const snapshotOptions=Array.from(document.querySelectorAll('[data-snapshot]'));
+    check(snapshotOptions.length===4,'four invented snapshot scenarios');
+    for(const [scenario,count,position,kind] of [
+      [1,'1','2','Linha'],
+      [2,'1','2','Associação'],
+      [3,'1','4','Linha']
+    ]){
+      const option=snapshotOptions[scenario];
+      option.focus();
+      option.click();
+      check(document.activeElement===option,'snapshot buttons preserve keyboard focus');
+      check(document.querySelectorAll('[data-snapshot][aria-pressed="true"]').length===1,'only one snapshot scenario pressed');
+      check(option.getAttribute('aria-pressed')==='true','selected snapshot scenario pressed');
+      check(value('snapshot-changes')===count,'one affected position per changed snapshot');
+      const diff=Array.from(document.querySelectorAll('#snapshot-diff-rows tr'));
+      check(diff.length===1,'old snapshot rows cleared');
+      check(diff[0].textContent.includes(kind)&&diff[0].textContent.includes(position),'correct kind and position');
+      check(value('snapshot-status').includes('escolhas antigas inválidas'),'changed version invalidates stale decisions');
+      check(value('snapshot-status').includes('importação proibida'),'no import allowed in snapshot comparison');
+    }
+    check(value('snapshot-rows-after')==='4','appended-row variant counts four rows');
+    snapshotOptions[0].click();
+    check(value('snapshot-changes')==='0','identical version resets changed position count');
+    check(document.querySelectorAll('#snapshot-diff-rows tr').length===0,'identical version clears stale differences');
+    check(value('decision-reviewed')==='1'&&value('decision-correction')==='1','independent snapshot demo does not mutate other mock review choices');
+
     const suspicious=document.querySelector('[data-sample="1"]');
     suspicious.focus();
     suspicious.click();
@@ -217,6 +247,21 @@ try {
       check(doc.documentElement.scrollWidth<=320,'mapping does not overflow mobile viewport');
       doc.querySelector('[data-map="0"]').click();
       check(doc.querySelectorAll('#map-rows tr').length===0,'mobile mapping issues reset');
+      check(doc.getElementById('snapshot-changes').textContent==='0','mobile initial identical snapshot');
+      const mappingRevision=doc.querySelector('[data-snapshot="2"]');
+      mappingRevision.focus();
+      mappingRevision.click();
+      check(doc.activeElement===mappingRevision,'mobile snapshot choice focus');
+      check(doc.getElementById('snapshot-changes').textContent==='1','mobile changed association position');
+      check(doc.querySelectorAll('#snapshot-diff-rows tr').length===1,'mobile one snapshot difference');
+      check(doc.querySelector('#snapshot-diff-rows').textContent.includes('Associação'),'mobile mapping change label');
+      check(doc.documentElement.scrollWidth<=320,'mobile snapshot table stays in scrollable container');
+      doc.querySelector('[data-snapshot="3"]').click();
+      check(doc.getElementById('snapshot-rows-after').textContent==='4','mobile appended row count');
+      check(doc.querySelectorAll('#snapshot-diff-rows tr').length===1,'mobile prior position cleared');
+      doc.querySelector('[data-snapshot="0"]').click();
+      check(doc.querySelectorAll('#snapshot-diff-rows tr').length===0,'mobile stale snapshot diff cleared');
+
       const sample=doc.querySelector('[data-sample="1"]');
       sample.focus();
       sample.click();
