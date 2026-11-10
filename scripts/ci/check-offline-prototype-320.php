@@ -100,6 +100,18 @@ $driver = <<<'HTML'
       check(followUpPanel.textContent.includes('Igualdade exata de segundos UTC'),'mobile exact-instant activity sample');
       followUps.find(node=>node.dataset.followupCase==='upcoming').click();
       check(followUpPanel.textContent.includes('2 de 5'),'mobile future activity sample');
+      const followUpPageSizes=Array.from(doc.querySelectorAll('#screen-monitor [data-followup-page-size]'));
+      const followUpPrev=doc.getElementById('followup-page-prev');
+      const followUpNext=doc.getElementById('followup-page-next');
+      const followUpList=doc.getElementById('followup-fixture-list');
+      check(followUpPageSizes.length===2&&followUpList.querySelectorAll('li').length===2,'mobile future worklist starts with two fixtures');
+      followUpPageSizes.find(node=>node.dataset.followupPageSize==='1').click();
+      check(followUpList.querySelectorAll('li').length===1&&followUpPrev.disabled&&!followUpNext.disabled,'mobile one per page state');
+      followUpNext.click();
+      check(followUpList.textContent.includes('Exemplo fictício 5')&&!followUpPrev.disabled&&followUpNext.disabled,'mobile next page opens correct synthetic activity');
+      followUps.find(node=>node.dataset.followupCase==='overdue').click();
+      check(followUpList.textContent.includes('Exemplo fictício 1')&&followUpPrev.disabled&&followUpNext.disabled,'mobile category switch resets page');
+      followUpPageSizes.find(node=>node.dataset.followupPageSize==='2').click();
       check(followUps.filter(node=>node.getAttribute('aria-pressed')==='true').length===1,'single selected activity state on mobile');
       check(doc.documentElement.scrollWidth<=320,'activity demonstration does not overflow 320px');
       followUps.find(node=>node.dataset.followupCase==='overdue').click();
