@@ -12,12 +12,12 @@ use RecursiveIteratorIterator;
 /**
  * Static tripwire, not a complete proof of runtime authorization.
  *
- * Fails if experimental follow-up projections are directly wired into
+ * Fails if experimental follow-up projections or CSV preview are directly wired into
  * application entry points before the independent security gates close.
  */
 final class FollowUpRuntimeSeparationTripwireTest extends TestCase
 {
-    public function test_synthetic_followup_calculators_are_not_wired_into_live_entrypoints(): void
+    public function test_synthetic_laboratory_calculators_are_not_wired_into_live_entrypoints(): void
     {
         $root = dirname(__DIR__, 2);
         $entryPoints = [
@@ -39,6 +39,7 @@ final class FollowUpRuntimeSeparationTripwireTest extends TestCase
             'FollowUpBucketTransitions',
             'FollowUpWorkloadDelta',
             'FollowUpWorkloadSummary',
+            'CsvCellRiskPreview',
         ];
 
         foreach ($entryPoints as $directory) {
@@ -62,7 +63,7 @@ final class FollowUpRuntimeSeparationTripwireTest extends TestCase
                     self::assertStringNotContainsString(
                         $className,
                         $source,
-                        $file->getPathname().' must not connect laboratory follow-up classes to runtime'
+                        $file->getPathname().' must not connect laboratory classes to runtime'
                     );
                 }
             }
