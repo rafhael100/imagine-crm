@@ -3,7 +3,7 @@
 **Atualizado em:** 09/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
-**HEAD DEV no levantamento:** `1a14216b6ffd91fede26f6910a60195d8a7d22f4` — [PR #127](https://github.com/rafhael100/imagine-crm/pull/127) (núcleo de prazos UTC, inerte) e [PR #128](https://github.com/rafhael100/imagine-crm/pull/128) (interface offline de acompanhamentos fictícios) integrados somente DEV. Ambas as CIs pós-merge aprovaram as SHAs dos dois PRs. Nenhum acesso real, atividade persistida, alerta, `ALLOW`, `main`, VPS ou produção foi ativado.
+**HEAD DEV no levantamento:** `f3f69dff060c815f2eea8ae35c70e2fe0bcc4106` — PRs [#130](https://github.com/rafhael100/imagine-crm/pull/130), [#131](https://github.com/rafhael100/imagine-crm/pull/131) e [#132](https://github.com/rafhael100/imagine-crm/pull/132) integrados somente DEV, cada um com F0 e PG/RLS aprovados na HEAD e pós-merge. Lista sintética de atividades por prazo, interface offline paginada e gate que bloqueia novas rotas públicas de tarefas/notificações. Não são funcionalidades para clientes; sem `ALLOW`, dados reais, VPS, `main` ou produção.
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
@@ -292,3 +292,16 @@ O `AGENTS.md` é instrução de programação, `STATUS-ATUAL.md` é resumo hist�
 **Handoff técnico:** [F4-01: limites, evidências e critérios de GO](docs/desenvolvimento/CRM-F4-01-atividades-handoff-laboratorio-2026-11-09.md). A fila é puramente aritmética, não gere SLA, mandato, identidade, task real, APIs, lembretes ou filas de trabalho. A interface usa texto fixo e CSP offline. O código não concede autorizações e não grava informação pessoal.
 
 **NO-GO funcional vigente:** [R01-D01..D05 / Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) seguem propostas sem aceite operacional, [Issue SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) não possui parecer independente itemizado; CORE/AUT/LGPD/FIN/CON permanecem em aberto. Não aprovar cliente, `main`, VPS ou releases por CI laboratorial.
+
+
+## H. F4-02 e SEC-F4-03 — evolução restrita e provas (09/11/2026)
+
+| PR integrado apenas DEV | Entrega e garantia limitada | CI pós-merge |
+|---|---|---|
+| [#130](https://github.com/rafhael100/imagine-crm/pull/130) — F4-02 | PHP puro: filtros de cinco estados de prazos UTC sintéticos, ordenação estável e paginação local, sem autoridade, cursor real ou dados de cliente. SHA `76a8d9eb`. | [F0 #42743813555](https://github.com/rafhael100/imagine-crm/actions/runs/42743813555) + [PG/RLS #42743813791](https://github.com/rafhael100/imagine-crm/actions/runs/42743813791): success |
+| [#131](https://github.com/rafhael100/imagine-crm/pull/131) — UX-F4-02 | Lista fictícia paginada na interface offline, controles acessíveis e testes no navegador a 320 CSS pixels. SHA `593f3a26`. | [F0 #42744165899](https://github.com/rafhael100/imagine-crm/actions/runs/42744165899) + [PG/RLS #42744165945](https://github.com/rafhael100/imagine-crm/actions/runs/42744165945): success |
+| [#132](https://github.com/rafhael100/imagine-crm/pull/132) — SEC-F4-03 | Gate regressivo para impedir exposição de rotas públicas de tarefas/atividades/avisos sem aceite e confirmar ausência de autoridade dos laboratórios. SHA `f3f69dff`. | [F0 #42744477725](https://github.com/rafhael100/imagine-crm/actions/runs/42744477725) + [PG/RLS #42744477812](https://github.com/rafhael100/imagine-crm/actions/runs/42744477812): success |
+
+**Relatório/handoff:** [F4-01/F4-02/SEC-F4-03 — limites e próximos controles](docs/desenvolvimento/CRM-F4-01-atividades-handoff-laboratorio-2026-11-09.md). Nenhuma operação de criação/edição/atribuição de atividade, agendamento, notificação, SLA real, leitura de lead de cliente, worker, webhook, API, login comercial, RLS de produção ou receita foi implementada.
+
+**Impedimentos de produto ainda abertos:** decisões [S01-R01-D01..D05 / Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) sem ratificação itemizada; [revisão SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) ainda sem revisor técnico independente; CORE02/IAM/CORE04/CORE07/CORE08/LGPD/QA e demais gates sem aceite. Nenhuma solicitação genérica de continuidade é prova suficiente de autorização operacional. `main`/VPS/produção continuam protegidas.
