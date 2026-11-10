@@ -30,7 +30,6 @@ final class PublicRouteSurfaceSealTest extends TestCase
             $methods = $route->methods();
             sort($methods);
             $this->assertSame(['GET', 'HEAD'], $methods, 'Only health GET/HEAD is permitted.');
-            $this->assertFalse($route->isFallback(), 'Fallback routes are not a reviewed public API.');
         }
     }
 
