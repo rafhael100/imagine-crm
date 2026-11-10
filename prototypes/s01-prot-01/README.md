@@ -127,3 +127,9 @@ A demonstração **não** implementa nem testa IAM, tenant, membership, RLS, per
 - [Escopo S01-PROT-01](https://github.com/rafhael100/imagine-crm/blob/docs/func-p0-01-s01-r01-r02-2026-11-06/docs/desenvolvimento/CRM-FUNC-P0-01-S01-PROT-01-escopo-prototipo-navegavel-offline-proposta-v01-2026-11-08.md)
 - Base da branch de implementação: `dev/fast-track-crm-2026-11-04`, HEAD prévia `8c9683acfd8decf98544402acda360d7e0f0a489`.
 - Execução limitada após o “ok” da Direção, exclusivamente para prototipação fictícia em branch filha e PR em rascunho. **Nenhum outro pacote foi liberado por analogia**.
+
+## UX F4-16 — Acesso ao painel offline de acompanhamentos
+
+Na tela **Visão geral** há um link relativo para `../f4-15-followup-dashboard/index.html`. A prévia de acompanhamentos oferece link de retorno para `../s01-prot-01/index.html`. Para manter os links funcionais no modo `file://`, preserve ambas as pastas dentro de `prototypes/`.
+
+É **somente navegação entre dois arquivos locais fictícios**: não habilita o backend, não autoriza clientes, não lê ou sincroniza dados, não publica recursos nem dispensa revisões independentes de segurança. A suíte `OfflineFollowUpNavigationContractTest` verifica estaticamente as rotas relativas e os avisos de isolamento.

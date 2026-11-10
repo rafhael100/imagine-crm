@@ -60,7 +60,12 @@ final class OfflinePrototypeResourceBoundaryTest extends TestCase
                 self::assertFalse($element->hasAttribute($attribute), $element->tagName.'@'.$attribute.' may introduce a resource or action');
             }
             if ($element->hasAttribute('href')) {
-                self::assertSame('#conteudo', $element->getAttribute('href'), 'Only the local skip link is permitted');
+                self::assertSame('a', strtolower($element->tagName), 'Only anchors may carry local navigation links');
+                self::assertContains(
+                    $element->getAttribute('href'),
+                    ['#conteudo', '../f4-15-followup-dashboard/index.html'],
+                    'Only explicit, vetted local navigation destinations are permitted'
+                );
             }
         }
 
