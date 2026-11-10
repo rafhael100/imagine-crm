@@ -67,7 +67,7 @@ final class FollowUpTimeline
 
     private static function parseInstant(string $raw): DateTimeImmutable
     {
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/D', $raw)) {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/D', $raw)) {
             throw new InvalidArgumentException('Observation timestamp requires an ISO-8601 offset.');
         }
 
