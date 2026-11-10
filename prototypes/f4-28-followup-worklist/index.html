@@ -17,11 +17,11 @@ h1{font-size:clamp(1.5rem,4vw,2.25rem);margin:.5rem 0}h2{font-size:1.15rem;margi
 button{border:1px solid #1e6578;border-radius:.6rem;padding:.6rem .9rem;background:#fff;color:#17485b;font:inherit;cursor:pointer}
 button[aria-pressed=true]{color:#fff;background:#205e72;font-weight:700}button:disabled{opacity:.45;cursor:not-allowed}
 button:focus-visible,a:focus-visible{outline:3px solid #10a7a1;outline-offset:3px}
-.table-wrap{max-width:100%;overflow-x:auto}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem}.stat{border:1px solid #d3e4e9;border-radius:.6rem;padding:.65rem;background:#f7fafb}.stat strong{font-size:1.65rem;display:block}.table-wrap{max-width:100%;overflow-x:auto}
 table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{border-bottom:1px solid #e4edf1;padding:.8rem;white-space:nowrap}thead{background:#edf5f7}
 .status{font-weight:650}.muted{color:#536b7b}.pager{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;margin:1rem 0}
 [hidden]{display:none!important}
-@media(max-width:400px){main{padding:1rem .75rem}.card{padding:.8rem}button{padding:.55rem .65rem}}
+@media(max-width:640px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:400px){main{padding:1rem .75rem}.card{padding:.8rem}button{padding:.55rem .65rem}}
 </style>
 </head>
 <body>
@@ -39,6 +39,16 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
 </div>
 <p class="muted">Relógio fixo do exemplo: 10/11/2026, 10h UTC. Não representa o horário atual.</p>
 </section>
+<section class="card" aria-labelledby="counts-title">
+<h2 id="counts-title">Resumo da amostra fictícia</h2>
+<div class="metrics">
+<div class="stat">Vencidos<strong id="count-overdue">1</strong></div>
+<div class="stat">Próximas 24 horas<strong id="count-due24">3</strong></div>
+<div class="stat">Após 24 horas<strong id="count-later">1</strong></div>
+<div class="stat">Total<strong id="count-all">5</strong></div>
+</div>
+<p class="muted">As contagens mostram toda a amostra selecionada, não apenas a página ou o filtro atual.</p>
+</section>
 <section class="card" aria-labelledby="worklist-title">
 <h2 id="worklist-title">Registros de exemplo</h2>
 <div class="controls" role="group" aria-label="Filtre os prazos fictícios">
@@ -46,6 +56,10 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
 <button type="button" data-filter="overdue" aria-pressed="false">Vencidos</button>
 <button type="button" data-filter="due_24h" aria-pressed="false">Até 24h</button>
 <button type="button" data-filter="due_later" aria-pressed="false">Após 24h</button>
+</div>
+<div class="controls" role="group" aria-label="Escolha a quantidade fictícia por página">
+<button type="button" data-page-size="2" aria-pressed="true">2 por página</button>
+<button type="button" data-page-size="5" aria-pressed="false">5 por página</button>
 </div>
 <p class="status" id="result-summary" aria-live="polite">5 registros fictícios no filtro Todos.</p>
 <p id="empty-note" role="status" aria-live="polite" class="notice" hidden>A amostra fictícia selecionada não contém registros nesta faixa. Isso não comprova que os atendimentos reais foram concluídos.</p>
@@ -61,7 +75,7 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
 <output id="page-indicator" aria-live="polite">Página 1 de 3</output>
 <button type="button" id="next">Próxima</button>
 </div>
-<p class="muted">Dois registros por página · ordenação pelo prazo absoluto e depois pelo identificador. Nenhum botão realiza uma ação comercial.</p>
+<p class="muted">De 2 a 5 registros por página · ordenação pelo prazo absoluto e depois pelo identificador. Nenhum botão realiza uma ação comercial.</p>
 </section>
 <p class="muted">Somente arquivos locais, sem armazenamento, rede, importação ou exportação. A etiqueta da amostra é fictícia e não é autenticação ou isolamento por empresa.</p>
 </main>
@@ -71,7 +85,7 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
 (() => {
   const FIXTURE_SCOPE = "fixture-sales-a";
   const CLOCK = "2026-11-10T10:00:00Z";
-  const PAGE_SIZE = 2;
+  let pageSize = 2;
   // Fully invented IDs and times, independently reconciled with PHP F4-27 in CI.
   const SAMPLE_A = Object.freeze([
     Object.freeze({id:"fixture-late",due_at:"2026-11-12T12:00:00Z",scope:"fixture-sales-a"}),
@@ -84,6 +98,7 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
   const rows = document.getElementById("worklist-rows");
   const sampleButtons = Array.from(document.querySelectorAll("[data-sample]"));
   const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
+  const pageSizeButtons = Array.from(document.querySelectorAll("[data-page-size]"));
   const previous = document.getElementById("previous");
   const next = document.getElementById("next");
   let sample = "a";
@@ -96,13 +111,19 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
   }
   function render() {
     const records = sample === "a" ? SAMPLE_A : [];
+    const counts = {overdue:0,due_24h:0,due_later:0};
+    for (const record of records) counts[classify(record.due_at)]++;
+    document.getElementById("count-overdue").textContent = String(counts.overdue);
+    document.getElementById("count-due24").textContent = String(counts.due_24h);
+    document.getElementById("count-later").textContent = String(counts.due_later);
+    document.getElementById("count-all").textContent = String(records.length);
     const selected = records
       .filter(record => bucket === "all" || classify(record.due_at) === bucket)
       .slice()
       .sort((left, right) => Date.parse(left.due_at) - Date.parse(right.due_at) || left.id.localeCompare(right.id, "en"));
-    const pages = Math.max(1, Math.ceil(selected.length / PAGE_SIZE));
+    const pages = Math.max(1, Math.ceil(selected.length / pageSize));
     page = Math.min(Math.max(1, page), pages);
-    const visible = selected.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    const visible = selected.slice((page - 1) * pageSize, page * pageSize);
     rows.replaceChildren();
     for (const record of visible) {
       const tr = document.createElement("tr");
@@ -124,6 +145,7 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
     next.disabled = page >= pages;
     sampleButtons.forEach(button => button.setAttribute("aria-pressed", String(button.dataset.sample === sample)));
     filterButtons.forEach(button => button.setAttribute("aria-pressed", String(button.dataset.filter === bucket)));
+    pageSizeButtons.forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.pageSize) === pageSize)));
   }
   sampleButtons.forEach(button => button.addEventListener("click", () => {
     sample = button.dataset.sample;
@@ -133,6 +155,11 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
   }));
   filterButtons.forEach(button => button.addEventListener("click", () => {
     bucket = button.dataset.filter;
+    page = 1;
+    render();
+  }));
+  pageSizeButtons.forEach(button => button.addEventListener("click", () => {
+    pageSize = Number(button.dataset.pageSize);
     page = 1;
     render();
   }));
