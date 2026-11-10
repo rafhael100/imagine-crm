@@ -159,6 +159,24 @@
           </div>
           <div class="help">Os medidores HTML são estáticos e não consultam o componente PHP ENT-04. Valor exibido não concede permissão, não confirma trial, não consome franquia e não gera cobrança.</div>
         </section>
+        <section class="card" data-trial-quota-demo aria-labelledby="trial-quota-demo-title" style="margin-top:18px">
+          <p class="eyebrow">REV-F5-01 · Prévia de trial e franquias</p>
+          <h2 id="trial-quota-demo-title">Período de teste e limites — exemplos fictícios</h2>
+          <p class="soft">Alternar os cenários não ativa contas, não calcula a elegibilidade do CNPJ, não altera recursos contratados e não envia cobrança.</p>
+          <div class="switcher" role="group" aria-label="Fase fictícia do período de teste">
+            <button type="button" class="state-button" data-trial-phase="before" aria-pressed="false">Antes do início</button>
+            <button type="button" class="state-button" data-trial-phase="active" aria-pressed="true">Dentro de 14 dias</button>
+            <button type="button" class="state-button" data-trial-phase="ended" aria-pressed="false">Período encerrado</button>
+          </div>
+          <div class="switcher" role="group" aria-label="Estado ilustrativo de uma franquia">
+            <button type="button" class="state-button" data-trial-quota="in-range" aria-pressed="true">Disponível</button>
+            <button type="button" class="state-button" data-trial-quota="at-limit" aria-pressed="false">No limite</button>
+            <button type="button" class="state-button" data-trial-quota="over-limit" aria-pressed="false">Acima do limite</button>
+            <button type="button" class="state-button" data-trial-quota="zero-capacity" aria-pressed="false">Capacidade zero</button>
+          </div>
+          <div id="trial-quota-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true"></div>
+          <div class="help"><strong>Somente visualização.</strong> A contagem exibida não cria, prorroga, bloqueia, converte nem cobra um trial. Franquia zerada não significa ilimitada; nenhum direito operacional é concedido.</div>
+        </section>
         <div class="two-col" style="margin-top:18px">
           <div class="card"><p class="eyebrow">Acompanhamento comercial — demonstração</p><h2>Do primeiro contato à qualificação</h2><p class="soft">Explore uma tabela sintética de leads e visualize sua organização em colunas. Não há botão de salvar, edição ou envio de mensagem.</p><button class="action" type="button" data-go="leads">Ver leads fictícios</button></div>
           <div class="card"><h2>O que vem depois</h2><p class="soft">A implementação real dependerá de autenticação, isolamento por empresa, definição dos direitos por ação e campo, privacidade e testes de segurança.</p><div class="help">Esta visão não utiliza qualquer informação de empresa ou cliente.</div></div>
@@ -387,6 +405,11 @@
   const screens = Array.from(document.querySelectorAll('[data-screen]'));
   const nav = Array.from(document.querySelectorAll('[data-page]'));
   const heading = document.getElementById('page-title');
+  const trialPhaseButtons = Array.from(document.querySelectorAll('#screen-dashboard [data-trial-phase]'));
+  const trialQuotaButtons = Array.from(document.querySelectorAll('#screen-dashboard [data-trial-quota]'));
+  const trialQuotaPreview = document.getElementById('trial-quota-preview');
+  let selectedTrialPhase = 'active';
+  let selectedTrialQuota = 'in-range';
   const preview = document.getElementById('demo-preview');
   const stateButtons = Array.from(document.querySelectorAll('[data-demo-state]'));
   const monitorButtons = Array.from(document.querySelectorAll('[data-monitor-scenario]'));
@@ -795,6 +818,79 @@
   // No CSV parsing, user input, requests, persistence or permission decisions.
   // Three fixed text-only outcomes of a synthetic integrity comparison.
   // This UI never reads bytes, checks a real digest or initiates restoration.
+  // Closed labels from synthetic trial/quota readouts, not real entitlement.
+  function renderTrialQuotaPreview() {
+    const phases = Object.freeze({
+      before: {
+        title:'Fase anterior ao início fictício',
+        code:'before_start',
+        detail:'14 dias informativos restantes antes de um início de exemplo; não comprova elegibilidade.'
+      },
+      active: {
+        title:'Fase dentro da janela fictícia',
+        code:'within_window',
+        detail:'3 dias arredondados para cima como exemplo, sem consulta a relógio ou ativação real.'
+      },
+      ended: {
+        title:'Janela fictícia encerrada',
+        code:'after_window',
+        detail:'0 dias restantes. O fim de uma prévia não suspende nenhuma conta.'
+      }
+    });
+    const quotas = Object.freeze({
+      'in-range': {
+        code:'in_range',
+        title:'Exemplo dentro da franquia',
+        detail:'4 de 20 leads fictícios; 16 posições aritméticas restantes.'
+      },
+      'at-limit': {
+        code:'at_limit',
+        title:'Exemplo exatamente no limite',
+        detail:'20 de 20 leads fictícios; nenhuma posição aritmética restante.'
+      },
+      'over-limit': {
+        code:'over_limit',
+        title:'Exemplo acima do limite',
+        detail:'21 de 20 leads fictícios; 1 unidade de excesso. Não há cobrança automática.'
+      },
+      'zero-capacity': {
+        code:'zero_capacity',
+        title:'Exemplo com capacidade zero',
+        detail:'0 de 0 posições. Zero não corresponde a ilimitado.'
+      }
+    });
+    const phase=phases[selectedTrialPhase];
+    const quota=quotas[selectedTrialQuota];
+    if(!phase||!quota) return;
+    trialPhaseButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(node.getAttribute('data-trial-phase')===selectedTrialPhase));
+    });
+    trialQuotaButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(node.getAttribute('data-trial-quota')===selectedTrialQuota));
+    });
+    trialQuotaPreview.replaceChildren();
+    const inner=document.createElement('div');
+    addText(inner,'p','TRIAL E FRANQUIAS — DADOS INVENTADOS','state-note');
+    addText(inner,'h3',phase.title);
+    addText(inner,'p','Fase de laboratório: '+phase.code+'. '+phase.detail);
+    addText(inner,'h3',quota.title);
+    addText(inner,'p','Banda informativa: '+quota.code+'. '+quota.detail);
+    addText(inner,'p','Nenhum acesso, bloqueio, cobrança, convite ou recurso foi alterado.');
+    trialQuotaPreview.appendChild(inner);
+  }
+
+  function showTrialPhase(code) {
+    if(code!=='before'&&code!=='active'&&code!=='ended') return;
+    selectedTrialPhase=code;
+    renderTrialQuotaPreview();
+  }
+
+  function showTrialQuota(code) {
+    if(code!=='in-range'&&code!=='at-limit'&&code!=='over-limit'&&code!=='zero-capacity') return;
+    selectedTrialQuota=code;
+    renderTrialQuotaPreview();
+  }
+
   function showBackupIntegrityCase(code) {
     const cases = Object.freeze({
       consistent: {
@@ -955,6 +1051,8 @@
   importReviewButtons.forEach(function(node){node.addEventListener('click',function(){showImportReviewCase(node.getAttribute('data-import-review'));});});
   accessScenarioButtons.forEach(function(node){node.addEventListener('click',function(){showAccessBoundaryCase(node.getAttribute('data-access-scenario'));});});
   backupIntegrityButtons.forEach(function(node){node.addEventListener('click',function(){showBackupIntegrityCase(node.getAttribute('data-backup-check'));});});
+  trialPhaseButtons.forEach(function(node){node.addEventListener('click',function(){showTrialPhase(node.getAttribute('data-trial-phase'));});});
+  trialQuotaButtons.forEach(function(node){node.addEventListener('click',function(){showTrialQuota(node.getAttribute('data-trial-quota'));});});
   leadFilterButtons.forEach(function(node){node.addEventListener('click',function(){showLeadStage(node.getAttribute('data-lead-stage'));});});
   leadTemperatureButtons.forEach(function(node){node.addEventListener('click',function(){showLeadTemperature(node.getAttribute('data-lead-temperature'));});});
   leadClearFiltersButton.addEventListener('click',function(){
@@ -1006,6 +1104,7 @@
   showImportReviewCase('clear');
   showAccessBoundaryCase('read-only');
   showBackupIntegrityCase('consistent');
+  renderTrialQuotaPreview();
 })();
 </script>
 </body>
