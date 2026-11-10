@@ -7,7 +7,7 @@ namespace App\Core\Leads;
 use InvalidArgumentException;
 
 /**
- * F3-34: offline-only count of bounded, artificial lead fixtures.
+ * F3-34/F3-35: offline-only count of bounded, artificial lead fixtures.
  * No lead identity, row exposure, tenant, SQL, authorization or API.
  */
 final class SyntheticLeadFilterCounts
@@ -23,20 +23,23 @@ final class SyntheticLeadFilterCounts
             throw new InvalidArgumentException('Invalid synthetic lead filters.');
         }
 
-        // Validate the whole input first, including hidden and unmatched rows.
-        $summary = (new SyntheticPipelineSummary())->summarize($fixtures);
-        $bands = new LeadScoringBands();
-        $matched = 0;
-        foreach ($fixtures as $fixture) {
-            if (($stage === 'all' || $fixture['stage'] === $stage)
-                && ($temperature === 'all' || $bands->classify($fixture['score'])->value === $temperature)) {
-                ++$matched;
-            }
+        // One validated source of counts for the UI badges and filtered totals.
+        // Invalid, hidden, or unmatched fixtures are never silently skipped.
+        $facets = (new SyntheticLeadFacetMatrix())->summarize($fixtures);
+
+        if ($stage === 'all' && $temperature === 'all') {
+            $matched = $facets['total'];
+        } elseif ($stage === 'all') {
+            $matched = $facets['temperature_totals'][$temperature];
+        } elseif ($temperature === 'all') {
+            $matched = $facets['stage_totals'][$stage];
+        } else {
+            $matched = $facets['cells'][$stage][$temperature];
         }
 
         return [
             'matched' => $matched,
-            'total' => $summary['total'],
+            'total' => $facets['total'],
             'empty' => $matched === 0,
             'authorized' => false,
         ];
