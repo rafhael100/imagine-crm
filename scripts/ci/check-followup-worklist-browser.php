@@ -93,6 +93,8 @@ $assertions = <<<'JS'
     const secondAction=document.querySelector('#worklist-rows tr button');
     secondAction.click();
     check(!detailPanel.hidden,'details open on another page');
+    check(document.getElementById('detail-id').textContent==='fixture-a','second-page synthetic id');
+    check(document.getElementById('detail-due').textContent==='2026-11-10T08:00:00-03:00','raw ISO offset preserved without false UTC conversion');
     click('[data-filter="due_24h"]');
     check(detailPanel.hidden,'filter hides details from previous page');
     check(document.getElementById('detail-id').textContent==='','filter clears stale data');
