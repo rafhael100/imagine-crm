@@ -17,7 +17,7 @@ Nenhum PR registra estado de conta real, seleciona tenant/usuário, confere um c
 
 - **#147**: [F0 pós-merge #42755887306](https://github.com/rafhael100/imagine-crm/actions/runs/42755887306), [PostgreSQL/RLS pós-merge #42755887296](https://github.com/rafhael100/imagine-crm/actions/runs/42755887296) — `success` no commit `9dc41b31`.
 - **#148**: [F0 pós-merge #42756293499](https://github.com/rafhael100/imagine-crm/actions/runs/42756293499), [PostgreSQL/RLS pós-merge #42756293314](https://github.com/rafhael100/imagine-crm/actions/runs/42756293314) — `success` no commit `84d2a8da`.
-- **#149**: [F0 pós-merge #42756582639](https://github.com/rafhael100/imagine-crm/actions/runs/42756582639) — `success` no commit `10ee6d6d`; [PostgreSQL/RLS pós-merge #42756582565](https://github.com/rafhael100/imagine-crm/actions/runs/42756582565) — verificar conclusão antes de declarar `success`.
+- **#149**: [F0 pós-merge #42756582639](https://github.com/rafhael100/imagine-crm/actions/runs/42756582639) — `success` no commit `10ee6d6d`; [PostgreSQL/RLS pós-merge #42756582565](https://github.com/rafhael100/imagine-crm/actions/runs/42756582565) — `success` no commit `10ee6d6d`, sem implicar homologação funcional.
 
 ## 3. Limites e riscos para implementação futura
 
