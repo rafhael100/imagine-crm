@@ -50,7 +50,7 @@
     .help{background:#edf7f7;border:1px solid #d3ebeb;border-radius:13px;padding:16px 18px;margin-top:19px;color:#315e62;font-size:13px}
     .preview-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}.switcher{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 20px}
     .state-button{background:#f7fafc;border:1px solid #dbe4eb;border-radius:100px;padding:9px 15px;color:#455a6e;font-weight:680;cursor:pointer;font-size:13px}
-    .state-button[aria-pressed="true"]{background:#173f52;border-color:#173f52;color:#fff}.state-button:hover{border-color:#1b8b8c}
+    .state-button[aria-pressed="true"]{background:#173f52;border-color:#173f52;color:#fff}.state-button:hover{border-color:#1b8b8c}.state-button:disabled{opacity:.55;cursor:not-allowed}
     .state-surface{min-height:208px;border:1px dashed #a2bdc5;border-radius:15px;background:#f8fbfc;padding:24px;display:flex;align-items:center}
     .state-surface>div{max-width:100%}.state-surface p{margin:7px 0;color:#607488;font-size:14px}
     .state-note{color:#56858b!important;font-size:12px!important;font-weight:700;letter-spacing:.2px}
@@ -187,6 +187,15 @@
            </div>
            <p id="lead-filter-summary" class="caption" role="status" aria-live="polite" aria-atomic="true">Mostrando 4 de 4 leads fictícios.</p>
            <p id="lead-sort-summary" class="caption" role="status" aria-live="polite" aria-atomic="true">Ordem original dos exemplos.</p>
+           <div class="switcher" role="group" aria-label="Quantidade de exemplos fictícios por página">
+             <button type="button" class="state-button" data-lead-page-size="4" aria-pressed="true">4 por página</button>
+             <button type="button" class="state-button" data-lead-page-size="2" aria-pressed="false">2 por página</button>
+           </div>
+           <div class="switcher" role="group" aria-label="Navegar páginas de leads fictícios">
+             <button type="button" class="state-button" id="lead-page-prev" disabled>Anterior</button>
+             <button type="button" class="state-button" id="lead-page-next" disabled>Próxima</button>
+           </div>
+           <p id="lead-page-summary" class="caption" role="status" aria-live="polite" aria-atomic="true">Página 1 de 1. Quatro exemplos fictícios.</p>
            <div id="lead-empty-filter-state" class="state-surface" role="status" aria-live="polite" aria-atomic="true" hidden>
              <p>Nenhum lead fictício corresponde à combinação selecionada. Não foi realizada consulta ao CRM.</p>
              <button type="button" class="state-button" id="lead-clear-filters">Limpar filtros fictícios</button>
@@ -356,6 +365,10 @@
   const leadClearFiltersButton = document.getElementById('lead-clear-filters');
   const leadSortButtons = Array.from(document.querySelectorAll('#screen-leads [data-lead-sort]'));
   const leadSortSummary = document.getElementById('lead-sort-summary');
+  const leadPageSizeButtons = Array.from(document.querySelectorAll('#screen-leads [data-lead-page-size]'));
+  const leadPagePrev = document.getElementById('lead-page-prev');
+  const leadPageNext = document.getElementById('lead-page-next');
+  const leadPageSummary = document.getElementById('lead-page-summary');
   const leadFixtureTableBody = document.querySelector('#screen-leads .demo-table tbody');
   const leadDetailButtons = Array.from(document.querySelectorAll('#screen-leads [data-lead-detail]'));
   const pipelineReviewButtons = Array.from(document.querySelectorAll('#screen-pipeline [data-pipeline-review]'));
@@ -363,6 +376,8 @@
   let selectedLeadFixture = null;
   let selectedLeadStage = 'all';
   let selectedLeadTemperature = 'all';
+  let selectedLeadPageSize = 4;
+  let selectedLeadPage = 0;
 
   function navigate(page, moveFocus) {
     if (!Object.prototype.hasOwnProperty.call(names,page)) return;
@@ -421,6 +436,18 @@
     });
     leadFilterSummary.textContent='Mostrando '+displayed+' de '+leadFixtureRows.length+' leads fictícios.';
     leadEmptyFilterState.hidden=displayed!==0;
+    // Paging operates only on the already filtered, sorted DOM fixtures.
+    // No cursor or external source is introduced.
+    const filteredRows=Array.from(leadFixtureTableBody.querySelectorAll('tr')).filter(function(row){return !row.hidden;});
+    const pageCount=Math.ceil(filteredRows.length/selectedLeadPageSize);
+    if(selectedLeadPage>=pageCount) selectedLeadPage=0;
+    filteredRows.forEach(function(row,index){
+      row.hidden=index<selectedLeadPage*selectedLeadPageSize||index>=(selectedLeadPage+1)*selectedLeadPageSize;
+    });
+    leadPagePrev.disabled=selectedLeadPage===0;
+    leadPageNext.disabled=pageCount===0||selectedLeadPage>=pageCount-1;
+    leadPageSummary.textContent=pageCount===0?'Nenhuma página de exemplos fictícios.':
+      'Página '+(selectedLeadPage+1)+' de '+pageCount+'. '+displayed+' exemplos fictícios correspondem aos filtros.';
     if(selectedLeadFixture!==null){
       const active=leadDetailButtons.find(function(button){return button.getAttribute('data-lead-detail')===selectedLeadFixture;});
       if(!active || active.closest('tr').hidden) showLeadDetail(null);
@@ -431,6 +458,7 @@
     const stages=['all','entrada','em-contato','qualificacao'];
     if (!stages.includes(stage)) return;
     selectedLeadStage=stage;
+    selectedLeadPage=0;
     leadFilterButtons.forEach(function(node){
       node.setAttribute('aria-pressed',String(node.getAttribute('data-lead-stage')===stage));
     });
@@ -441,6 +469,7 @@
     const temperatures=['all','cold','warm','hot'];
     if (!temperatures.includes(temperature)) return;
     selectedLeadTemperature=temperature;
+    selectedLeadPage=0;
     leadTemperatureButtons.forEach(function(node){
       node.setAttribute('aria-pressed',String(node.getAttribute('data-lead-temperature')===temperature));
     });
@@ -467,8 +496,28 @@
     });
     const description={original:'Ordem original dos exemplos.',high:'Leads fictícios ordenados por maior pontuação.',low:'Leads fictícios ordenados por menor pontuação.'};
     leadSortSummary.textContent=description[mode];
+    selectedLeadPage=0;
+    applyLeadFixtureFilters();
   }
 
+
+  // Demo-only pagination: two or four fixed rows, always bounded.
+  function showLeadPageSize(size) {
+    if(size!==2 && size!==4) return;
+    selectedLeadPageSize=size;
+    selectedLeadPage=0;
+    leadPageSizeButtons.forEach(function(node){
+      node.setAttribute('aria-pressed',String(Number(node.getAttribute('data-lead-page-size'))===size));
+    });
+    applyLeadFixtureFilters();
+  }
+
+  function moveLeadPage(step) {
+    if(step!==-1 && step!==1) return;
+    if((step===-1 && leadPagePrev.disabled)||(step===1 && leadPageNext.disabled)) return;
+    selectedLeadPage+=step;
+    applyLeadFixtureFilters();
+  }
 
   // Four closed, fixed descriptors corresponding only to the existing demo rows.
   // Text-only output never reads a CSV, client field, tenant, storage or API.
@@ -684,6 +733,9 @@
     if(defaultStage) defaultStage.focus();
   });
   leadSortButtons.forEach(function(node){node.addEventListener('click',function(){sortLeadFixtures(node.getAttribute('data-lead-sort'));});});
+  leadPageSizeButtons.forEach(function(node){node.addEventListener('click',function(){showLeadPageSize(Number(node.getAttribute('data-lead-page-size')));});});
+  leadPagePrev.addEventListener('click',function(){moveLeadPage(-1);});
+  leadPageNext.addEventListener('click',function(){moveLeadPage(1);});
   // Navigate between two static example views. This does NOT move leads
   // between stages, authenticate membership, grant access or read a backend.
   pipelineReviewButtons.forEach(function(node){node.addEventListener('click',function(){
