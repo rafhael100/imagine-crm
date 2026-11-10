@@ -3,7 +3,7 @@
 **Atualizado em:** 09/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
-**HEAD DEV no levantamento:** `c0d67814131b10bc9b9a9c61c52831ab57f0bb5f` — integração DEV do PR #121 após #118/#119/#120. F3-34..F3-37 trazem somente contagem, facetas, ordenação estável e composição de uma prévia **sintética em memória**, sem direito de acesso, IDs de clientes, persistência ou API. F0 e PostgreSQL/RLS passaram no PR #121 e na DEV pós-merge ([F0](https://github.com/rafhael100/imagine-crm/actions/runs/42733335721), [PostgreSQL](https://github.com/rafhael100/imagine-crm/actions/runs/42733335724)). `main`, VPS, clientes e produção não foram alterados.
+**HEAD DEV no levantamento:** `eab49ced33a4c0c802ad779018b56fae8d30929e` — PRs [#123](https://github.com/rafhael100/imagine-crm/pull/123), [#124](https://github.com/rafhael100/imagine-crm/pull/124) e [#125](https://github.com/rafhael100/imagine-crm/pull/125) integrados somente DEV, com F0 e PostgreSQL/RLS aprovados antes/depois dos merges. Paginação PHP somente de posições sintéticas; interface offline de 2/4 exemplos e correção da navegação do funil para a página/foco da ficha fictícia. Sem ALLOW, consulta real, API, acesso a cliente, `main`, VPS ou produção.
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
@@ -265,3 +265,18 @@ O `AGENTS.md` é instrução de programação, `STATUS-ATUAL.md` é resumo hist�
 **Evidência CI:** todos os quatro PRs tiveram F0 e PostgreSQL/RLS verdes na HEAD; os dois workflows pós-merge da HEAD `c0d67814` também passaram: [F0 #42733335721](https://github.com/rafhael100/imagine-crm/actions/runs/42733335721), [RLS #42733335724](https://github.com/rafhael100/imagine-crm/actions/runs/42733335724). Essas provas não executam política de `ALLOW` nem comprovam release de CRM real.
 
 **Gates preservados:** [S01/R01-D01..D05](https://github.com/rafhael100/imagine-crm/issues/22) continuam sem ratificação operacional, [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) exige revisão independente, e CORE02/IAM/CORE04/CORE07/CORE08/LGPD/QA permanecem abertos. Nenhuma implantação, API de clientes, SQL de negócio, dados pessoais, grants ou alterações em `main`/VPS foi autorizada por esses testes.
+
+
+## F. F3-38 / UX-F3-38 / UX-F3-39 — 09/11/2026
+
+| PR | Resultado validado somente DEV |
+|---|---|
+| [#123](https://github.com/rafhael100/imagine-crm/pull/123) F3-38 | Paginação local, cursor-free, de até 20 fixtures sintéticas: posições, tamanho 1..20, intervalo de páginas, critérios negativos e 240 combinações de filtros/ordem/tamanhos; DEV `c0556939` |
+| [#124](https://github.com/rafhael100/imagine-crm/pull/124) UX-F3-38 | Paginação acessível do HTML offline com 2/4 exemplos, botões anterior/próxima e testes reais Chromium 520/320 CSS pixels; DEV `394e203f` |
+| [#125](https://github.com/rafhael100/imagine-crm/pull/125) UX-F3-39 | Navegação do funil para página correta do exemplo e foco do teclado, também verificada nos dois tamanhos de viewport; DEV `eab49ced` |
+
+**Checks pós-merge confirmados:** #123 [F0](https://github.com/rafhael100/imagine-crm/actions/runs/42736369674) + [PG/RLS](https://github.com/rafhael100/imagine-crm/actions/runs/42736369156); #124 [F0](https://github.com/rafhael100/imagine-crm/actions/runs/42736895340) + [PG/RLS](https://github.com/rafhael100/imagine-crm/actions/runs/42736895373); #125 [F0](https://github.com/rafhael100/imagine-crm/actions/runs/42737318558) + [PG/RLS](https://github.com/rafhael100/imagine-crm/actions/runs/42737318162), todos `success` nas SHAs verificadas.
+
+**Limite:** esses casos validam apenas laboratório sintético e HTML estático. Não constituem autenticação, isolamento de clientes em operação, paginação real, conversão de leads, comercialização, homologação de segurança ou aprovação LGPD. Nenhum endpoint, migration de produto, direito positivo/ALLOW, importação real, VPS ou `main` foi alterado nesta rodada.
+
+**NO-GO permanece:** [S01/R01-D01..D05](https://github.com/rafhael100/imagine-crm/issues/22) sem deliberação executável; [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) ainda precisa de revisor independente real; CORE02/04/06/07/08/09/10, AUT, LGPD, FIN/CON e demais gates sem aceite específico. Não confundir múltiplos testes verdes com produto pronto para clientes.
