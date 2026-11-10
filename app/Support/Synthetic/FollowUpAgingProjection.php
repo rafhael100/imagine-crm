@@ -27,6 +27,7 @@ final class FollowUpAgingProjection
     {
         $now = self::parseInstant($asOf);
         $buckets = array_fill_keys(self::BUCKETS, []);
+        $cutoff = $now->modify('+24 hours');
         $ids = [];
 
         foreach ($items as $item) {
@@ -41,8 +42,7 @@ final class FollowUpAgingProjection
             $ids[$item['id']] = true;
 
             $due = self::parseInstant($item['due_at']);
-            $seconds = $due->getTimestamp() - $now->getTimestamp();
-            $bucket = $seconds < 0 ? 'overdue' : ($seconds <= 86400 ? 'due_24h' : 'due_later');
+            $bucket = $due < $now ? 'overdue' : ($due <= $cutoff ? 'due_24h' : 'due_later');
             $buckets[$bucket][] = $item['id'];
         }
 
