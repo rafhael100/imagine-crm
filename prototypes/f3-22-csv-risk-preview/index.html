@@ -118,6 +118,30 @@ thead{background:#edf5f7}[hidden]{display:none!important}
 </table>
 </div>
 </section>
+<section class="card" aria-labelledby="snapshot-title">
+<h2 id="snapshot-title">Mudanças de versão — comparação fictícia</h2>
+<p class="small">Esta demonstração é independente das amostras e das escolhas de revisão acima. Compare apenas relatórios inventados, sem ler conteúdos CSV, nomes de campos ou identificadores de clientes. Posições não representam IDs de leads.</p>
+<div class="controls" role="group" aria-label="Cenários fictícios de versionamento de lote">
+<button type="button" data-snapshot="0" aria-pressed="true">Sem mudança</button>
+<button type="button" data-snapshot="1" aria-pressed="false">Célula alterada</button>
+<button type="button" data-snapshot="2" aria-pressed="false">Mapeamento alterado</button>
+<button type="button" data-snapshot="3" aria-pressed="false">Linha acrescentada</button>
+</div>
+<div class="metrics">
+<div class="metric">Linhas antes<strong id="snapshot-rows-before">3</strong></div>
+<div class="metric">Linhas depois<strong id="snapshot-rows-after">3</strong></div>
+<div class="metric">Posições afetadas<strong id="snapshot-changes">0</strong></div>
+</div>
+<p id="snapshot-status" role="status" aria-live="polite">Nenhuma mudança detectada na amostra fictícia. Revisão humana continua necessária; importação proibida.</p>
+<div class="table-wrap">
+<table>
+<caption>Diferenças por posição entre versões inventadas, sem identificação pessoal</caption>
+<thead><tr><th scope="col">Categoria</th><th scope="col">Posição</th><th scope="col">Alteração</th></tr></thead>
+<tbody id="snapshot-diff-rows"></tbody>
+</table>
+</div>
+<p class="notice">Uma versão idêntica <strong>não comprova revisão humana</strong>. Uma versão modificada indica que decisões vinculadas a ela devem ser descartadas; os botões de revisão acima são de outra demonstração independente. Checksum público não equivale a assinatura, armazenamento imutável ou autorização para importar.</p>
+</section>
 <p class="small">A detecção não seleciona encoding, separador, normalização, consentimento, direitos por empresa ou política de exportação. Todos esses critérios continuam aguardando homologação.</p>
 </main>
 <noscript><p class="notice">JavaScript é necessário para alternar as amostras. Os dados desta página são sempre fictícios.</p></noscript>
@@ -208,6 +232,40 @@ thead{background:#edf5f7}[hidden]{display:none!important}
       "issue_codes":["duplicate_source_mapping","duplicate_target_mapping"],
       "cell_warning_count":0,
       "review_required":true
+    }
+  ]);
+  const SNAPSHOT_REPORTS = Object.freeze([
+    {
+      "same_snapshot":true,"review_invalidated":false,
+      "before_row_count":3,"after_row_count":3,
+      "changed_row_positions":[],"added_row_positions":[],"removed_row_positions":[],
+      "before_mapping_count":3,"after_mapping_count":3,
+      "changed_mapping_positions":[],"added_mapping_positions":[],"removed_mapping_positions":[],
+      "human_verified":false,"review_required":true,"import_permitted":false
+    },
+    {
+      "same_snapshot":false,"review_invalidated":true,
+      "before_row_count":3,"after_row_count":3,
+      "changed_row_positions":[2],"added_row_positions":[],"removed_row_positions":[],
+      "before_mapping_count":3,"after_mapping_count":3,
+      "changed_mapping_positions":[],"added_mapping_positions":[],"removed_mapping_positions":[],
+      "human_verified":false,"review_required":true,"import_permitted":false
+    },
+    {
+      "same_snapshot":false,"review_invalidated":true,
+      "before_row_count":3,"after_row_count":3,
+      "changed_row_positions":[],"added_row_positions":[],"removed_row_positions":[],
+      "before_mapping_count":3,"after_mapping_count":3,
+      "changed_mapping_positions":[2],"added_mapping_positions":[],"removed_mapping_positions":[],
+      "human_verified":false,"review_required":true,"import_permitted":false
+    },
+    {
+      "same_snapshot":false,"review_invalidated":true,
+      "before_row_count":3,"after_row_count":4,
+      "changed_row_positions":[],"added_row_positions":[4],"removed_row_positions":[],
+      "before_mapping_count":3,"after_mapping_count":3,
+      "changed_mapping_positions":[],"added_mapping_positions":[],"removed_mapping_positions":[],
+      "human_verified":false,"review_required":true,"import_permitted":false
     }
   ]);
   const NAMES = Object.freeze({
@@ -376,7 +434,43 @@ thead{background:#edf5f7}[hidden]{display:none!important}
     reviewSelections.clear();
     renderReviewChoices();
   }
+  const snapshotButtons = Array.from(document.querySelectorAll("[data-snapshot]"));
+  const snapshotRows = document.getElementById("snapshot-diff-rows");
+  function showSnapshot(index) {
+    const report = SNAPSHOT_REPORTS[index];
+    snapshotRows.replaceChildren();
+    document.getElementById("snapshot-rows-before").textContent = String(report.before_row_count);
+    document.getElementById("snapshot-rows-after").textContent = String(report.after_row_count);
+    const kinds = [
+      ["changed_row_positions", "Linha", "Alterada"],
+      ["added_row_positions", "Linha", "Acrescentada"],
+      ["removed_row_positions", "Linha", "Removida"],
+      ["changed_mapping_positions", "Associação", "Alterada"],
+      ["added_mapping_positions", "Associação", "Acrescentada"],
+      ["removed_mapping_positions", "Associação", "Removida"]
+    ];
+    let total = 0;
+    for (const [key, category, action] of kinds) {
+      for (const position of report[key]) {
+        total += 1;
+        const tr = document.createElement("tr");
+        for (const value of [category, String(position), action]) {
+          const td = document.createElement("td");
+          td.textContent = value;
+          tr.appendChild(td);
+        }
+        snapshotRows.appendChild(tr);
+      }
+    }
+    document.getElementById("snapshot-changes").textContent = String(total);
+    document.getElementById("snapshot-status").textContent = report.review_invalidated
+      ? "Versão fictícia alterada: escolhas antigas inválidas. Revisão humana continua necessária; importação proibida."
+      : "Nenhuma mudança detectada na amostra fictícia. Revisão humana continua necessária; importação proibida.";
+    snapshotButtons.forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.snapshot) === index)));
+  }
+  snapshotButtons.forEach(button => button.addEventListener("click", () => showSnapshot(Number(button.dataset.snapshot))));
   showMap(0);
+  showSnapshot(0);
   show(0);
 })();
 </script>
