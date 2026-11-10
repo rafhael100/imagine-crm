@@ -28,7 +28,7 @@ O teste `tests/Feature/PublicRouteSurfaceSealTest.php` falha se qualquer rota al
 
 A tela já existente de **prévia de importação** exibe três estados fixos, selecionados por botões sem formulário ou entrada de dados: (1) conteúdo e SHA coincidentes mas de origem não comprovada, (2) alteração de bytes, (3) atacante recalcula bytes e SHA. DOM é gerado apenas com texto e `replaceChildren`. Não há upload/download, relógio, API, restore, persistência ou leitura de backup. PHPUnit confere a correspondência dos estados com a classe PHP; Chromium exerce cenários e controles a 320px. O layout mantém as nove telas do protótipo e a CSP sem conexão.
 
-**CI pré-merge:** [F0 #42749708930](https://github.com/rafhael100/imagine-crm/actions/runs/42749708930) e [PostgreSQL/RLS #42749709245](https://github.com/rafhael100/imagine-crm/actions/runs/42749709245) — `success` na HEAD do PR. **CI pós-merge:** [F0 #42749836340](https://github.com/rafhael100/imagine-crm/actions/runs/42749836340) e [PG/RLS #42749836326](https://github.com/rafhael100/imagine-crm/actions/runs/42749836326) — consultar estado final no GitHub, não presumir aceite de release.
+**CI pré-merge:** [F0 #42749708930](https://github.com/rafhael100/imagine-crm/actions/runs/42749708930) e [PostgreSQL/RLS #42749709245](https://github.com/rafhael100/imagine-crm/actions/runs/42749709245) — `success` na HEAD do PR. **CI pós-merge:** [F0 #42749836340](https://github.com/rafhael100/imagine-crm/actions/runs/42749836340) e [PG/RLS #42749836326](https://github.com/rafhael100/imagine-crm/actions/runs/42749836326) — ambos `success` na SHA DEV `50a25b0c`. Isso não equivale a autorização de release.
 
 ## 4. O que falta para backups e restauros reais
 
