@@ -747,6 +747,15 @@
     showLeadStage('all');
     showLeadTemperature('all');
     navigate('leads',false);
+    // A pipeline example can point to page 2 of the local, sorted fixture.
+    // Resolve only an existing DOM row, never a tenant, record ID or API.
+    const targetRow=destination.closest('tr');
+    const orderedRows=Array.from(leadFixtureTableBody.querySelectorAll('tr'));
+    const rowIndex=orderedRows.indexOf(targetRow);
+    if(rowIndex<0) return;
+    selectedLeadPage=Math.floor(rowIndex/selectedLeadPageSize);
+    applyLeadFixtureFilters();
+    if(targetRow.hidden) return;
     showLeadDetail(code);
     destination.focus();
   });});

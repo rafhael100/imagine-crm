@@ -207,17 +207,21 @@ $testScript = <<<'JS'
     nav.find(x=>x.dataset.page==='pipeline').click();
     const pipelineReview=Array.from(document.querySelectorAll('#screen-pipeline [data-pipeline-review]'));
     check(pipelineReview.length===4,'four pipeline review buttons');
+    pageSizeButtons.find(x=>x.dataset.leadPageSize==='2').click();
     pipelineReview.find(x=>x.dataset.pipelineReview==='c').click();
     check(document.getElementById('page-title').textContent==='Leads fictícios','pipeline review opens leads page');
     check(document.querySelectorAll('[data-screen]:not([hidden])').length===1,'only leads page active after pipeline navigation');
     check(document.activeElement===detailButtons.find(x=>x.dataset.leadDetail==='c'),'focus moved to matching lead button');
     check(document.getElementById('lead-filter-summary').textContent.includes('4 de 4'),'pipeline review resets stage filter');
     check(detailPanel.textContent.includes('Lead Exemplo C')&&detailPanel.textContent.includes('Qualificação'),'pipeline review opens matching fixture');
+    check(pageSummary.textContent.includes('Página 2 de 2')&&!detailButtons.find(x=>x.dataset.leadDetail==='c').closest('tr').hidden,'pipeline review opens fixture on correct second page');
     nav.find(x=>x.dataset.page==='pipeline').click();
     check(detailPanel.hidden,'leaving lead review hides previous detail');
     pipelineReview.find(x=>x.dataset.pipelineReview==='a').click();
     check(detailPanel.textContent.includes('Lead Exemplo A')&&!detailPanel.textContent.includes('Lead Exemplo C'),'pipeline review never carries stale lead');
     check(document.querySelectorAll('[data-lead-detail][aria-expanded="true"]').length===1,'only one lead expanded after pipeline navigation');
+    check(pageSummary.textContent.includes('Página 1 de 2')&&!detailButtons.find(x=>x.dataset.leadDetail==='a').closest('tr').hidden,'pipeline review returns to first page');
+    pageSizeButtons.find(x=>x.dataset.leadPageSize==='4').click();
     check(!document.querySelector('form,input,textarea'),'pipeline review has no form or mutation');
 
     // Static quota meters are an isolated visual example, never entitlement.
