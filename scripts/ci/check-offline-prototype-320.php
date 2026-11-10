@@ -107,6 +107,20 @@ $driver = <<<'HTML'
       check(doc.getElementById('lead-filter-summary').textContent.includes('2 de 4'),'filter status announces count');
       stageButtons.find(node=>node.dataset.leadStage==='all').click();
       check(count()===4,'all synthetic entries restored');
+      // F3-38: paged synthetic fixtures remain usable at 320 CSS pixels.
+      const pageSizes=Array.from(doc.querySelectorAll('#screen-leads [data-lead-page-size]'));
+      const prevPage=doc.getElementById('lead-page-prev');
+      const nextPage=doc.getElementById('lead-page-next');
+      check(pageSizes.length===2&&prevPage.disabled&&nextPage.disabled,'one default page at 320');
+      pageSizes.find(node=>node.dataset.leadPageSize==='2').click();
+      check(count()===2&&prevPage.disabled&&!nextPage.disabled,'two demo rows visible at 320');
+      nextPage.click();
+      check(count()===2&&!prevPage.disabled&&nextPage.disabled,'mobile next page advances');
+      stageButtons.find(node=>node.dataset.leadStage==='entrada').click();
+      check(count()===2&&prevPage.disabled&&nextPage.disabled,'mobile filter resets page');
+      stageButtons.find(node=>node.dataset.leadStage==='all').click();
+      pageSizes.find(node=>node.dataset.leadPageSize==='4').click();
+      check(count()===4,'mobile pagination restores baseline rows');
       // Fixture-only score ordering and stage filtering must coexist at 320px.
       const sortButtons=Array.from(doc.querySelectorAll('#screen-leads [data-lead-sort]'));
       const order=()=>Array.from(doc.querySelectorAll('#screen-leads tbody tr')).map(node=>node.querySelector('strong').textContent);
