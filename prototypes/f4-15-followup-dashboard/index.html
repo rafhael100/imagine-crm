@@ -97,6 +97,7 @@ table{width:100%;border-collapse:collapse;min-width:540px;text-align:left}th,td{
       const meter = document.getElementById("meter-" + key);
       meter.max = Math.max(current.total, 1);
       meter.value = current[key];
+      meter.textContent = current[key] + " de " + current.total;
       document.getElementById("text-" + key).textContent = current[key] + " de " + current.total;
     }
     document.getElementById("empty-period-note").hidden = current.total !== 0;

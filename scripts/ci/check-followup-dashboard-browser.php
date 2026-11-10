@@ -54,6 +54,7 @@ $assertions = <<<'JS'
     for(const [i,name] of ['overdue','due24','later'].entries()){
       check(meter(name).value===values[i],period+' meter '+name);
       check(meter(name).max===Math.max(values[3],1),period+' meter maximum '+name);
+      check(meter(name).textContent.trim()===values[i]+' de '+values[3],period+' meter fallback text '+name);
       check(count('text-'+name)===values[i]+' de '+values[3],period+' meter text '+name);
     }
   }
@@ -175,6 +176,7 @@ try {
       check(doc.getElementById('total').textContent==='0','mobile empty period');
       check(doc.getElementById('meter-overdue').value===0,'mobile zero overdue meter');
       check(doc.getElementById('meter-overdue').max===1,'mobile safe meter maximum at zero');
+      check(doc.getElementById('meter-overdue').textContent.trim()==='0 de 0','mobile zero fallback text');
       check(doc.getElementById('text-overdue').textContent==='0 de 0','mobile zero label');
       check(!doc.getElementById('empty-period-note').hidden,'mobile empty-state explanation');
       check(doc.documentElement.scrollWidth<=320,'no overflow after interaction');

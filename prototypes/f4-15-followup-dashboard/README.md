@@ -1,6 +1,6 @@
 # F4-15 — Prévia offline dos indicadores de follow-up
 
-Abra `index.html` diretamente no navegador; funciona com `file://`, sem instalação, sem ambiente remoto ou conexão externa. O usuário pode alternar três períodos fictícios e consultar contagens e diferenças assinadas.
+Abra `index.html` diretamente no navegador; funciona com `file://`, sem instalação, sem ambiente remoto ou conexão externa. O usuário pode alternar quatro períodos fictícios (A–D, incluindo D vazio) e consultar contagens e diferenças assinadas.
 
 ## Avisos de escopo
 - É **um protótipo independente** do painel existente em `prototypes/s01-prot-01/`, sem backend, autenticação ou integração com o PHP F4-06..F4-14.
@@ -22,6 +22,10 @@ O CI F0 agora executa `php scripts/ci/check-followup-dashboard-browser.php`, al�
 O navegador testa a interação real dos três períodos, o estado `aria-pressed`, totais, variações assinadas, valores/legendas das barras nativas, conservação de foco e a restauração do estado inicial. A segunda execução usa um iframe `srcdoc` com viewport **real de 320 CSS px**, validando seleções, texto acessível e ausência de transbordamento horizontal. Perfis e arquivos de teste são temporários e descartados.
 
 **Limite do resultado:** prova de regressão da UI totalmente fictícia e offline, não é auditoria independente de acessibilidade, segurança da aplicação, autorização por tenant, tráfego externo, homologaçao comercial ou integração Laravel. As fontes continuam números estáticos inventados. Nenhuma execução de negócio, credencial, migração, mudança da `main`, VPS ou produção.
+
+## UX F4-24 — Sincronização do texto de apoio das barras
+
+O texto interno de cada elemento `<meter>`, utilizado como fallback em navegadores sem suporte a `<meter>`, agora é atualizado junto com `value`, `max` e a legenda externa `N de total`. O smoke em Chromium testa a consistência entre as três representações nos períodos A–D, incluindo `0 de 0` em D e na viewport de 320 px. Essa sincronização mantém o protótipo offline, sem atribuir significado operacional aos números.
 
 ## UX F4-23 — Período demonstrativo sem registros
 
