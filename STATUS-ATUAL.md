@@ -3,7 +3,7 @@
 **Atualizado em:** 10/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).  
-**HEAD DEV verificada em 10/11/2026 após F4-27:** `31d5c279696aa28aa32fe982025e8db699380d78` — [PR #176](https://github.com/rafhael100/imagine-crm/pull/176) integrado somente DEV após [F0 #42874150540](https://github.com/rafhael100/imagine-crm/actions/runs/42874150540) e [PostgreSQL/RLS #42874150654](https://github.com/rafhael100/imagine-crm/actions/runs/42874150654), ambos `success`. A sequência anterior foi registrada em seções históricas; PRs #173 e #174 seguem integrados DEV com seus próprios gates, e o PR #175 segue **DRAFT, sem merge, aguardando revisor independente**. Nenhuma autorização de dados reais, `ALLOW` ou produção decorre desse HEAD.
+**HEAD DEV verificada em 10/11/2026 após UX F4-29:** `984eb44f541e6afdccc5130f3972bc585ae75e7f` — [PR #179](https://github.com/rafhael100/imagine-crm/pull/179) integrado exclusivamente DEV após [F0 #42881868686](https://github.com/rafhael100/imagine-crm/actions/runs/42881868686) e [PostgreSQL/RLS #42881868639](https://github.com/rafhael100/imagine-crm/actions/runs/42881868639), ambos `success`. O PR #178 também foi integrado DEV após CI verde; ver OPS-29. O PR #175 segue **DRAFT sem merge nem parecer independente**. Não há autorização para dados reais, `ALLOW`, migrations operacionais, `main` ou produção.
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
@@ -394,3 +394,17 @@ O `AGENTS.md` é instrução de programação, `STATUS-ATUAL.md` é resumo hist�
 ### Condição NO-GO preservada
 
 **Não habilitar rotas/consultas de clientes, autenticação funcional, grants, `ALLOW`, exportação, migrações operacionais, publicação ou deploy** com base nesses PRs. A S01 [Issue #22](https://github.com/rafhael100/imagine-crm/issues/22) ainda depende de aprovações de contratos e direitos; [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) exige parecer independente com competências e evidências rastreáveis. Integração com dados reais exige decisão separada. `main`, VPS e produção não foram alteradas nesta sequência.
+
+
+## O. OPS-29 — prévia interativa de worklist sintética (10/11/2026)
+
+**Branch revisada:** `dev/fast-track-crm-2026-11-04`. **HEAD após integrações:** `984eb44f541e6afdccc5130f3972bc585ae75e7f`. **HEAD main sem avanço DEV:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` (verificação direta). Abaixo estão evidências de produto **offline**, não lançamento.
+
+| Entrega | Evidência da HEAD e merge DEV | Alcance e limite |
+|---|---|---|
+| [UX F4-28 — PR #178](https://github.com/rafhael100/imagine-crm/pull/178) | PR `8bdea11370db6368f14c71cd60e44667b4a4a447`, merge DEV `9b85d7e305fc430a09ce154dd68bd7ee62a60c7d`; [F0 #42880993417](https://github.com/rafhael100/imagine-crm/actions/runs/42880993417) e [PG/RLS #42880993382](https://github.com/rafhael100/imagine-crm/actions/runs/42880993382) — **success** | Tela local com 5 acompanhamentos inventados, 4 filtros, ordenação, 2 por página, estado vazio, paridade PHP F4-27 e Chromium desktop/320px; nenhuma rede, API ou identidade de cliente |
+| [UX F4-29 — PR #179](https://github.com/rafhael100/imagine-crm/pull/179) | PR `bf3ed9f5d470d3408fe6f5114eb6ff1bd39840b3`, merge DEV `984eb44f541e6afdccc5130f3972bc585ae75e7f`; [F0 #42881868686](https://github.com/rafhael100/imagine-crm/actions/runs/42881868686) e [PG/RLS #42881868639](https://github.com/rafhael100/imagine-crm/actions/runs/42881868639) — **success** | Contadores da amostra por faixa, escolha entre 2/5 por página, reset, filtros e testes real Chromium/320px. Sem backend ativo nem autorização |
+
+**Artefato utilizável para avaliação visual:** [worklist offline fictícia](prototypes/f4-28-followup-worklist/index.html), alcançável por link local no [painel F4-15](prototypes/f4-15-followup-dashboard/index.html). É indispensável manter a estrutura da pasta `prototypes/`; não existe URL de homologação ou deploy publicado.
+
+**Gates abertos e NO-GO:** revisão SEG/DBA [Issue #27](https://github.com/rafhael100/imagine-crm/issues/27) e [PR #175](https://github.com/rafhael100/imagine-crm/pull/175) **DRAFT** sem parecer independente; S01 [Issue #22](https://github.com/rafhael100/imagine-crm/issues/22), CORE, IAM, política de direitos por ação/campo/escopo, privacidade/LGPD, RLS de origem, QA funcional e restauro continuam pendentes. Não ativar `ALLOW`, rotas, consulta real, dados de clientes, schemas, exportação ou publicação. `main`, VPS e produção preservadas. Não se pode inferir percentual geral do CRM a partir de resultados CI de laboratório.
