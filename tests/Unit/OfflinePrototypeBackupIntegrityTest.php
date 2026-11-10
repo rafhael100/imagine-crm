@@ -31,7 +31,7 @@ final class OfflinePrototypeBackupIntegrityTest extends TestCase
 
         $xpath = new DOMXPath($doc);
         self::assertSame(1, $xpath->query('//section[@id="screen-import"]//div[@data-backup-demo]')->length);
-        $buttons = $xpath->query('//section[@data-backup-demo]//button[@data-backup-check]');
+        $buttons = $xpath->query('//div[@data-backup-demo]//button[@data-backup-check]');
         self::assertSame(3, $buttons->length);
         $modes = [];
         $pressed = 0;
@@ -48,7 +48,7 @@ final class OfflinePrototypeBackupIntegrityTest extends TestCase
         self::assertSame('true', $buttons->item(0)->getAttribute('aria-pressed'));
         self::assertSame(
             1,
-            $xpath->query('//section[@data-backup-demo]//div[@id="backup-integrity-preview" and @role="status" and @aria-live="polite" and @aria-atomic="true"]')->length,
+            $xpath->query('//div[@data-backup-demo]//div[@id="backup-integrity-preview" and @role="status" and @aria-live="polite" and @aria-atomic="true"]')->length,
         );
         self::assertSame(9, $xpath->query('//section[@data-screen]')->length);
     }
