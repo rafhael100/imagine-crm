@@ -4,7 +4,7 @@
 
 ## Implementação
 
-Nova página `prototypes/f4-28-followup-worklist/index.html` ligada por links locais bidirecionais ao painel F4-15, sem alteração do protótipo principal S01 nem das superfícies Laravel. O usuário de teste pode trocar duas amostras fictícias, aplicar quatro filtros de prazo e paginar a lista. Os IDs e as datas são inventados; a lista não representa dados reais.
+Nova página `prototypes/f4-28-followup-worklist/index.html` ligada por links locais bidirecionais ao painel F4-15, sem alteração do protótipo principal S01 nem das superfícies Laravel. O usuário de teste pode trocar duas amostras fictícias, aplicar quatro filtros de prazo e paginar a lista em páginas de 2 ou 5 itens. O resumo expõe as contagens da amostra inteira, sem confundir a quantidade filtrada com o total. Os IDs e as datas são inventados; a lista não representa dados reais.
 
 A página contém uma tabela sem campos editáveis, paginação de 2 registros, contagem por filtro e total da amostra, rótulos claros para estado vazio, CSP `connect-src 'none'` e `form-action 'none'` e ausência de código de rede, persistência ou inserção de HTML executável.
 
