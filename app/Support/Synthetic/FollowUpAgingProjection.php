@@ -52,7 +52,7 @@ final class FollowUpAgingProjection
     private static function parseInstant(string $value): DateTimeImmutable
     {
         // Explicit offset prevents implicit system timezone and DST ambiguity.
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/D', $value)) {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/D', $value)) {
             throw new InvalidArgumentException('Expected ISO-8601 timestamp with explicit offset.');
         }
         try {

@@ -51,6 +51,20 @@ final class FollowUpAgingProjectionTest extends TestCase
         ], '2026-11-10T10:00:00.000000Z'));
     }
 
+    public function test_rejects_submicrosecond_reference_clock(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        FollowUpAgingProjection::project([], '2026-11-10T10:00:00.0000001Z');
+    }
+
+    public function test_rejects_submicrosecond_due_at(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        FollowUpAgingProjection::project([
+            ['id' => 'tiny', 'due_at' => '2026-11-10T10:00:00.0000001Z'],
+        ], '2026-11-10T10:00:00Z');
+    }
+
     public function test_rejects_implicit_timezone(): void
     {
         $this->expectException(InvalidArgumentException::class);

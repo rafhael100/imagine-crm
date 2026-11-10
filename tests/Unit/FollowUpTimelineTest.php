@@ -41,6 +41,14 @@ final class FollowUpTimelineTest extends TestCase
         self::assertSame([], FollowUpTimeline::build([]));
     }
 
+    public function test_rejects_submicrosecond_observation_instead_of_rounding(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        FollowUpTimeline::build([
+            ['at' => '2026-11-10T10:00:00.0000001Z', 'snapshot' => $this->snapshot('2026-11-10T10:00:00Z')],
+        ]);
+    }
+
     public function test_rejects_same_instant_in_other_offset(): void
     {
         $this->expectException(InvalidArgumentException::class);
