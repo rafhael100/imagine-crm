@@ -37,3 +37,11 @@ A seção **Revisão por linha — dados fictícios** acompanha a amostra de est
 `OfflineCsvRowReviewParityTest` confronta os dois relatórios imutáveis `ROW_REPORTS` com a análise PHP `CsvRowReviewPreview` F3-25, usando matrizes sintéticas e atribuições `fixture_*`. O smoke Chromium F0 exercita as contagens, a renderização dos motivos e a limpeza de linhas antigas em desktop e 320 CSS px.
 
 **Sem importação real, direitos de uso, seleção de CSV, persistência, ALLOW, autorização de organização/usuário, exclusão de linhas, conclusão de revisão ou upload.** A interface é somente uma demonstração de apresentação dos resultados da análise sintética, não a ferramenta operacional.
+
+## UX F3-28 — escolhas de revisão inteiramente simuladas
+
+A seção **Simulação de revisão das linhas fictícias** apresenta posições e estados temporários, nunca valores de células, nomes de contatos ou informações de empresas. Em cada linha há botões locais para voltar a pendente, simular revisão sem alertas ou simular necessidade de correção. **A opção “sem alertas” fica desabilitada se aquela linha tiver problema detectado**. Alterar a amostra estrutural A/B apaga todas as escolhas para evitar decisões residuais de outra amostra.
+
+As escolhas são mantidas apenas em um `Map` no JavaScript desta página; **não há persistência, login, identidade verificada, token, importação nem certificação de aprovação humana**. Os botões usam rótulos claros, `aria-pressed`, e preservam o foco após redesenhar a tabela. A tabela possui rolagem horizontal local no viewport de 320 CSS px, sem alargar a página. Zero pendências significa apenas que os estados de simulação foram preenchidos, **não** que o lote possa ser importado.
+
+`OfflineCsvReviewChoicesParityTest` confere resultados esperados dessas escolhas contra `CsvRowDispositionPreview` F3-27 usando matrizes inventadas, incluindo um lote todo classificado que ainda retorna `human_verified=false` e `import_permitted=false`. O smoke Chromium desktop/320 px exercita seleção, opção desabilitada nas linhas sinalizadas, restauração do foco, contagens e limpeza dos estados ao trocar a amostra. A revisão verdadeira requer contrato próprio com ator autenticado, snapshot imutável, política por campo/tenant e trilha auditável, além dos gates SEG/DBA, CORE, LGPD e Central IN-118.

@@ -58,6 +58,17 @@ $assertions = <<<'JS'
     check(value('row-header-risk')==='0','clean sample no header cell warnings');
     check(document.querySelectorAll('#row-review-rows tr').length===2,'two clean row records');
     check(Array.from(document.querySelectorAll('#row-review-rows tr')).every(row=>row.textContent.includes('revisão obrigatória')),'clean rows still require review');
+    check(value('decision-pending')==='2'&&value('decision-reviewed')==='0'&&value('decision-correction')==='0','all clean rows initially pending');
+    check(document.querySelectorAll('#review-decision-rows tr').length===2,'two simulated review rows');
+    const reviewedA=document.querySelector('[data-review-row="2"][data-review-choice="fixture_reviewed_no_findings"]');
+    check(reviewedA&&!reviewedA.disabled,'unflagged row can be simulated as reviewed');
+    reviewedA.focus();
+    reviewedA.click();
+    check(value('decision-reviewed')==='1'&&value('decision-pending')==='1','mock reviewed increments only for clean row');
+    check(document.activeElement===document.querySelector('[data-review-row="2"][data-review-choice="fixture_reviewed_no_findings"]'),'focus restored after redraw');
+    document.querySelector('[data-review-row="3"][data-review-choice="fixture_needs_correction"]').click();
+    check(value('decision-reviewed')==='1'&&value('decision-correction')==='1'&&value('decision-pending')==='0','all clean rows have mock dispositions');
+    check(value('decision-status').includes('Importação sempre proibida'),'no business approval even after all rows reviewed');
     check(value('map-count')==='3','mapping assignments counted');
     check(value('map-unmapped')==='0','clean mapping has no omitted source columns');
     check(value('map-conflicts')==='0','clean mapping has no detected conflicts');
@@ -99,6 +110,16 @@ $assertions = <<<'JS'
     check(value('preview-status').includes('Nenhuma operação de importação'),'never claims a real import');
     check(value('row-flagged')==='2','two problematic data rows');
     check(value('row-unflagged')==='1','one row without detected findings');
+    check(value('decision-pending')==='3'&&value('decision-reviewed')==='0'&&value('decision-correction')==='0','new sample resets mock review choices');
+    check(document.querySelectorAll('#review-decision-rows tr').length===3,'three mock review rows');
+    check(document.querySelector('[data-review-row="2"][data-review-choice="fixture_reviewed_no_findings"]').disabled,'flagged formula row cannot claim clean review');
+    check(document.querySelector('[data-review-row="3"][data-review-choice="fixture_reviewed_no_findings"]').disabled,'ragged and flagged row cannot claim clean review');
+    check(!document.querySelector('[data-review-row="4"][data-review-choice="fixture_reviewed_no_findings"]').disabled,'clean row still allows only a fake no-finding choice');
+    document.querySelector('[data-review-row="2"][data-review-choice="fixture_needs_correction"]').click();
+    document.querySelector('[data-review-row="3"][data-review-choice="fixture_needs_correction"]').click();
+    document.querySelector('[data-review-row="4"][data-review-choice="fixture_reviewed_no_findings"]').click();
+    check(value('decision-pending')==='0'&&value('decision-correction')==='2'&&value('decision-reviewed')==='1','two mock corrections and one fake clean review');
+    check(value('decision-status').includes('Importação sempre proibida'),'no import even after all flagged sample choices');
     const rowReview=Array.from(document.querySelectorAll('#row-review-rows tr')).map(row=>row.textContent);
     check(rowReview.length===3,'three original data rows in diagnostics');
     check(rowReview.some(row=>row.includes('Linha 2')&&row.includes('Coluna 3')&&row.includes('Prefixo semelhante')),'formula row diagnoses only a position');
@@ -113,6 +134,8 @@ $assertions = <<<'JS'
     check(value('row-flagged')==='0','row warnings clear on clean sample reset');
     check(value('row-unflagged')==='2','clean row total returns');
     check(document.querySelectorAll('#row-review-rows tr').length===2,'no old row findings retained');
+    check(value('decision-pending')==='2'&&value('decision-reviewed')==='0'&&value('decision-correction')==='0','sample reset erases all fake review decisions');
+    check(document.querySelectorAll('#review-decision-rows tr').length===2,'no stale disposition rows');
     check(!document.getElementById('clean-note').hidden,'clean caveat restored');
 
     result.setAttribute('data-imagine-browser-smoke','PASS');
@@ -177,6 +200,13 @@ try {
       check(doc.getElementById('count-alerts').textContent==='0','initial mobile zero');
       check(doc.getElementById('row-flagged').textContent==='0','initial mobile row warning count');
       check(doc.querySelectorAll('#row-review-rows tr').length===2,'initial mobile clean rows');
+      check(doc.getElementById('decision-pending').textContent==='2','mobile review initial pending');
+      const cleanChoice=doc.querySelector('[data-review-row="2"][data-review-choice="fixture_reviewed_no_findings"]');
+      cleanChoice.focus();
+      cleanChoice.click();
+      check(doc.getElementById('decision-reviewed').textContent==='1','mobile mock reviewed clean row');
+      check(doc.activeElement===doc.querySelector('[data-review-row="2"][data-review-choice="fixture_reviewed_no_findings"]'),'mobile review focus restored');
+      check(doc.documentElement.scrollWidth<=320,'mobile review table scrolling stays inside container');
       check(doc.getElementById('map-conflicts').textContent==='0','initial mobile mapping clean');
       const mapChoice=doc.querySelector('[data-map="1"]');
       mapChoice.focus();
@@ -195,12 +225,19 @@ try {
       check(doc.getElementById('row-flagged').textContent==='2','mobile two rows flagged');
       check(doc.getElementById('row-unflagged').textContent==='1','mobile unflagged row still counted');
       check(doc.querySelectorAll('#row-review-rows tr').length===3,'mobile all data rows shown');
+      check(doc.getElementById('decision-pending').textContent==='3','mobile new sample clears mock decisions');
+      check(doc.querySelector('[data-review-row="2"][data-review-choice="fixture_reviewed_no_findings"]').disabled,'mobile flagged row clean action disabled');
+      doc.querySelector('[data-review-row="2"][data-review-choice="fixture_needs_correction"]').click();
+      check(doc.getElementById('decision-correction').textContent==='1','mobile correction mock selection');
+      check(doc.documentElement.scrollWidth<=320,'mobile review redraw does not overflow');
       check(doc.querySelectorAll('#findings-rows tr').length===5,'mobile issue rows');
       check(doc.documentElement.scrollWidth<=320,'no overflow after issues');
       doc.querySelector('[data-sample="0"]').click();
       check(doc.querySelectorAll('#findings-rows tr').length===0,'mobile stale rows cleared');
       check(doc.getElementById('row-flagged').textContent==='0','mobile stale per-row warnings cleared');
       check(doc.querySelectorAll('#row-review-rows tr').length===2,'mobile row preview reset');
+      check(doc.getElementById('decision-pending').textContent==='2','mobile review selections discarded on sample change');
+      check(doc.getElementById('decision-correction').textContent==='0','mobile stale corrections cleared');
       check(!doc.querySelector('form,input,textarea'),'no mobile capture');
       finish('PASS','real Chromium 320 px synthetic CSV preview');
     }catch(error){finish('FAIL',error.message);}
