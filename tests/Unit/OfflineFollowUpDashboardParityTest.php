@@ -106,6 +106,7 @@ final class OfflineFollowUpDashboardParityTest extends TestCase
         }
         self::assertStringContainsString('meter.max = Math.max(current.total, 1);', $html);
         self::assertStringContainsString('meter.value = current[key];', $html);
+        self::assertStringContainsString('meter.textContent = current[key] + " de " + current.total;', $html);
         self::assertStringContainsString('document.getElementById("text-" + key).textContent', $html);
     }
 
