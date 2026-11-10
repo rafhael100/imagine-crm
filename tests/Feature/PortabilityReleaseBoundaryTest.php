@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Core\Authorization\AuthorizationDecision;
+use App\Core\Portability\SyntheticBackupIntegrityInspector;
 use App\Core\Portability\SyntheticCsvPreviewDecoder;
 use App\Core\Portability\SyntheticImportReviewInspector;
 use App\Core\Portability\SyntheticMappedImportDenyGate;
@@ -125,4 +126,23 @@ final class PortabilityReleaseBoundaryTest extends TestCase
         $this->assertSame(['evaluate'], get_class_methods(SyntheticMappedImportDenyGate::class));
         $this->assertFalse(AuthorizationDecision::deny()->allowed);
     }
+    public function test_consistent_synthetic_backup_manifest_never_enables_restore_or_deletion(): void
+    {
+        $bytes = 'fake lab bytes only';
+        $manifest = [
+            'format' => 'synthetic-blob-v1',
+            'declared_bytes' => strlen($bytes),
+            'recorded_at_utc' => '2026-11-10T03:00:00Z',
+            'sha256' => hash('sha256', $bytes),
+        ];
+
+        $assessment = (new SyntheticBackupIntegrityInspector())->inspect($manifest, $bytes);
+        $this->assertTrue($assessment->matchesSelfDeclaredDigest());
+        $this->assertFalse($assessment->canRestore());
+        $this->assertFalse($assessment->canAcceptAsVerifiedBackup());
+        $this->assertFalse($assessment->canDeleteOriginal());
+        $this->assertSame(['reasonCode'], array_keys(get_object_vars($assessment)));
+        $this->assertSame(['inspect'], get_class_methods(SyntheticBackupIntegrityInspector::class));
+    }
+
 }
