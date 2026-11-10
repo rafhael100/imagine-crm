@@ -18,7 +18,7 @@
 - **PR #142**, SHA `1030b9e6`: [Laravel/F0 #42752837537](https://github.com/rafhael100/imagine-crm/actions/runs/42752837537), [PostgreSQL/RLS #42752837544](https://github.com/rafhael100/imagine-crm/actions/runs/42752837544) — ambos `success`.
 - **PR #143**, SHA `03279c48`: [Laravel/F0 #42753286028](https://github.com/rafhael100/imagine-crm/actions/runs/42753286028), [PostgreSQL/RLS #42753285986](https://github.com/rafhael100/imagine-crm/actions/runs/42753285986) — ambos `success`.
 - **PR #144**, SHA `812bedbc`: [Laravel/F0 #42753689673](https://github.com/rafhael100/imagine-crm/actions/runs/42753689673), [PostgreSQL/RLS #42753689544](https://github.com/rafhael100/imagine-crm/actions/runs/42753689544) — ambos `success`.
-- **PR #145**, SHA `fddcf15c`: [Laravel/F0 #42754127338](https://github.com/rafhael100/imagine-crm/actions/runs/42754127338) — `success`; [PostgreSQL/RLS #42754127309](https://github.com/rafhael100/imagine-crm/actions/runs/42754127309) — consultar conclusão antes de declarar verde.
+- **PR #145**, SHA `fddcf15c`: [Laravel/F0 #42754127338](https://github.com/rafhael100/imagine-crm/actions/runs/42754127338) — `success`; [PostgreSQL/RLS #42754127309](https://github.com/rafhael100/imagine-crm/actions/runs/42754127309) — `success` na SHA DEV `fddcf15c`, sem implicar homologação operacional.
 
 ## 3. Contratos operacionais que NÃO foram implementados
 
