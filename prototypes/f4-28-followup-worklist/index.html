@@ -19,9 +19,9 @@ button[aria-pressed=true]{color:#fff;background:#205e72;font-weight:700}button:d
 button:focus-visible,a:focus-visible{outline:3px solid #10a7a1;outline-offset:3px}
 .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem}.stat{border:1px solid #d3e4e9;border-radius:.6rem;padding:.65rem;background:#f7fafb}.stat strong{font-size:1.65rem;display:block}.table-wrap{max-width:100%;overflow-x:auto}
 table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{border-bottom:1px solid #e4edf1;padding:.8rem;white-space:nowrap}thead{background:#edf5f7}
-.status{font-weight:650}.muted{color:#536b7b}.pager{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;margin:1rem 0}
+.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.detail-grid dt{font-weight:650}.detail-grid dd{margin:0;overflow-wrap:anywhere}.status{font-weight:650}.muted{color:#536b7b}.pager{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;margin:1rem 0}
 [hidden]{display:none!important}
-@media(max-width:640px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:400px){main{padding:1rem .75rem}.card{padding:.8rem}button{padding:.55rem .65rem}}
+@media(max-width:640px){.metrics,.detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:400px){main{padding:1rem .75rem}.card{padding:.8rem}button{padding:.55rem .65rem}}
 </style>
 </head>
 <body>
@@ -66,10 +66,20 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
 <div class="table-wrap">
 <table>
 <caption>Identificadores e prazos inventados, em UTC</caption>
-<thead><tr><th scope="col">ID fictício</th><th scope="col">Prazo (UTC)</th><th scope="col">Faixa</th></tr></thead>
+<thead><tr><th scope="col">ID fictício</th><th scope="col">Prazo (UTC)</th><th scope="col">Faixa</th><th scope="col">Ação local</th></tr></thead>
 <tbody id="worklist-rows"></tbody>
 </table>
 </div>
+<section class="card" id="record-detail" role="region" aria-labelledby="detail-title" tabindex="-1" hidden>
+<h2 id="detail-title">Detalhes do registro fictício</h2>
+<p class="muted">Prévia somente leitura dos campos inventados já apresentados na lista; não há histórico real, contatos, tarefas realizadas ou ação operacional.</p>
+<dl class="detail-grid">
+<div><dt>Identificador fictício</dt><dd id="detail-id"></dd></div>
+<div><dt>Prazo UTC</dt><dd id="detail-due"></dd></div>
+<div><dt>Faixa de prazo</dt><dd id="detail-bucket"></dd></div>
+</dl>
+<button type="button" id="close-detail">Fechar detalhes</button>
+</section>
 <div class="pager">
 <button type="button" id="previous" disabled>Anterior</button>
 <output id="page-indicator" aria-live="polite">Página 1 de 3</output>
@@ -96,6 +106,9 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
   ]);
   const BUCKET_NAMES = Object.freeze({all:"Todos",overdue:"Vencidos",due_24h:"Até 24h",due_later:"Após 24h"});
   const rows = document.getElementById("worklist-rows");
+  const detailPanel = document.getElementById("record-detail");
+  const closeDetail = document.getElementById("close-detail");
+  let expandedButton = null;
   const sampleButtons = Array.from(document.querySelectorAll("[data-sample]"));
   const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
   const pageSizeButtons = Array.from(document.querySelectorAll("[data-page-size]"));
@@ -109,7 +122,34 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
     const now = Date.parse(CLOCK);
     return deadline < now ? "overdue" : deadline <= now + 86400000 ? "due_24h" : "due_later";
   }
+  function hideDetail(restoreFocus = false) {
+    const previousButton = expandedButton;
+    expandedButton = null;
+    detailPanel.hidden = true;
+    if (previousButton) {
+      previousButton.setAttribute("aria-expanded", "false");
+      if (restoreFocus && previousButton.isConnected) previousButton.focus();
+    }
+    for (const id of ["detail-id", "detail-due", "detail-bucket"]) {
+      document.getElementById(id).textContent = "";
+    }
+  }
+  function showDetail(record, button) {
+    hideDetail(false);
+    expandedButton = button;
+    button.setAttribute("aria-expanded", "true");
+    document.getElementById("detail-id").textContent = record.id;
+    document.getElementById("detail-due").textContent = record.due_at;
+    document.getElementById("detail-bucket").textContent = BUCKET_NAMES[classify(record.due_at)];
+    detailPanel.hidden = false;
+    detailPanel.focus();
+  }
+  closeDetail.addEventListener("click", () => hideDetail(true));
+  detailPanel.addEventListener("keydown", event => {
+    if (event.key === "Escape") hideDetail(true);
+  });
   function render() {
+    hideDetail(false);
     const records = sample === "a" ? SAMPLE_A : [];
     const counts = {overdue:0,due_24h:0,due_later:0};
     for (const record of records) counts[classify(record.due_at)]++;
@@ -133,6 +173,16 @@ table{width:100%;min-width:520px;border-collapse:collapse;text-align:left}th,td{
         cell.textContent = value;
         tr.appendChild(cell);
       }
+      const action = document.createElement("td");
+      const detailButton = document.createElement("button");
+      detailButton.type = "button";
+      detailButton.textContent = "Ver detalhes";
+      detailButton.setAttribute("aria-label", "Ver detalhes do registro fictício " + record.id);
+      detailButton.setAttribute("aria-controls", "record-detail");
+      detailButton.setAttribute("aria-expanded", "false");
+      detailButton.addEventListener("click", () => showDetail(record, detailButton));
+      action.appendChild(detailButton);
+      tr.appendChild(action);
       rows.appendChild(tr);
     }
     const empty = selected.length === 0;
