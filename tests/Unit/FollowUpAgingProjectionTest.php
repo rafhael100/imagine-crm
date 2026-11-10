@@ -43,6 +43,12 @@ final class FollowUpAgingProjectionTest extends TestCase
         FollowUpAgingProjection::project([], '2026-11-10T10:00:00');
     }
 
+    public function test_rejects_invalid_calendar_date(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        FollowUpAgingProjection::project([], '2026-02-30T10:00:00Z');
+    }
+
     public function test_rejects_duplicate_ids(): void
     {
         $this->expectException(InvalidArgumentException::class);
