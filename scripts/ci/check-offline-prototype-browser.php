@@ -294,6 +294,19 @@ $testScript = <<<'JS'
     check(trialButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'one trial phase selected');
     check(quotaBandButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'one quota band selected');
     check(trialOverview.textContent.includes('Nenhum acesso, bloqueio, cobrança, convite ou recurso foi alterado.'),'no activation in any trial/quota state');
+    // REV-F5-02: display-only projected quota increments, never a reservation.
+    const whatIfButtons=Array.from(document.querySelectorAll('#screen-dashboard [data-quota-whatif]'));
+    const whatIfPreview=document.getElementById('quota-whatif-preview');
+    check(whatIfButtons.length===4&&whatIfPreview.textContent.includes('4 + 0 = 4 de 20'),'what-if preview starts at four fake leads');
+    whatIfButtons.find(node=>node.dataset.quotaWhatif==='ten').click();
+    check(whatIfPreview.textContent.includes('4 + 10 = 14 de 20')&&whatIfPreview.textContent.includes('Restantes: 6'),'within-limit hypothetical consumption');
+    whatIfButtons.find(node=>node.dataset.quotaWhatif==='sixteen').click();
+    check(whatIfPreview.textContent.includes('at_limit')&&whatIfPreview.textContent.includes('4 + 16 = 20 de 20'),'exact quota hypothetical boundary');
+    whatIfButtons.find(node=>node.dataset.quotaWhatif==='seventeen').click();
+    check(whatIfPreview.textContent.includes('would_exceed')&&whatIfPreview.textContent.includes('Excesso: 1'),'hypothetical excess does not auto-charge');
+    check(whatIfButtons.filter(node=>node.getAttribute('aria-pressed')==='true').length===1,'one quota increment selected');
+    whatIfButtons.find(node=>node.dataset.quotaWhatif==='none').click();
+    check(whatIfPreview.textContent.includes('Nenhum lead foi criado, nenhuma franquia foi reservada'),'what-if preview stays inert');
     check(document.querySelectorAll('[data-screen]:not([hidden])').length===1,'dashboard isolated from other screens');
     
     // The three offline mapping scenarios are only hard-coded DOM text.
