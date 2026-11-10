@@ -314,6 +314,20 @@ $testScript = <<<'JS'
     accessButtons.find(x=>x.dataset.accessScenario==='read-only').click();
     check(accessPanel.textContent.includes('Nenhuma exportação foi autorizada ou realizada'),'all cases deny export');
     check(!document.querySelector('form,input,textarea'),'no export or input form');
+    // REC-LAB-04: compare three hard-coded, NON-AUTHORITATIVE backup labels.
+    const backupButtons=Array.from(document.querySelectorAll('#screen-import [data-backup-check]'));
+    const backupPanel=document.getElementById('backup-integrity-preview');
+    check(backupButtons.length===3&&backupPanel!==null,'three offline integrity scenarios');
+    check(backupPanel.textContent.includes('SELF_CLAIM_MATCH_UNTRUSTED'),'default self-declared match is not a proof');
+    check(backupPanel.textContent.includes('Nenhum backup foi criado ou restaurado'),'no restore action in default fixture');
+    backupButtons.find(x=>x.dataset.backupCheck==='mismatch').click();
+    check(backupPanel.textContent.includes('SELF_CLAIM_MISMATCH'),'tampered fixture is rejected');
+    backupButtons.find(x=>x.dataset.backupCheck==='forged').click();
+    check(backupPanel.textContent.includes('quem controla os bytes pode recalcular'),'forged self-claim remains untrusted');
+    check(backupButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'only one backup scenario pressed');
+    backupButtons.find(x=>x.dataset.backupCheck==='consistent').click();
+    check(backupPanel.textContent.includes('Nenhuma operação foi autorizada'),'backup preview never changes authority');
+    check(!document.querySelector('form,input,textarea'),'backup demo has no upload, file or restore form');
 
     const skip=document.querySelector('.skip-link');
     check(skip&&skip.getAttribute('href')==='#conteudo','skip link exists');
