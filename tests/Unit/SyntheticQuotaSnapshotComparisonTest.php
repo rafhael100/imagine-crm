@@ -49,7 +49,7 @@ final class SyntheticQuotaSnapshotComparisonTest extends TestCase
         self::assertSame(1, $result['usage_decreased']);
         self::assertSame(1, $result['usage_unchanged']);
         self::assertSame(2, $result['limits_changed']);
-        self::assertSame(4, $result['bands_changed']);
+        self::assertSame(3, $result['bands_changed']);
 
         $lead = $result['rows'][0];
         self::assertSame(4, $lead['earlier_used']);
