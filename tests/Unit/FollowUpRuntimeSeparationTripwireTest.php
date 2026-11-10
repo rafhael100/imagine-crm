@@ -30,6 +30,7 @@ final class FollowUpRuntimeSeparationTripwireTest extends TestCase
         ];
         $labClasses = [
             'FollowUpObservationSeries',
+            'FollowUpFixtureScopeConsistency',
             'FollowUpAgingProjection',
             'FollowUpSnapshot',
             'FollowUpTimeline',
