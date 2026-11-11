@@ -34,13 +34,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: rafhael100/imagine-ai-agents
-          ref: 562896763f900a8a264ea46aa35e2aeacd5e0903
+          ref: 4a03adf5f91e760950adaa3239fb2c8dba05da6d
           path: _synthetic_agents_fixture
           persist-credentials: false
 
       - name: Verify immutable Agents revision
         run: |
-          test "$(git -C _synthetic_agents_fixture rev-parse HEAD)" = "562896763f900a8a264ea46aa35e2aeacd5e0903"
+          test "$(git -C _synthetic_agents_fixture rev-parse HEAD)" = "4a03adf5f91e760950adaa3239fb2c8dba05da6d"
 
       - name: PHP without Composer, services or credentials
         uses: shivammathur/setup-php@v2
