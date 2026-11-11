@@ -171,6 +171,36 @@ final class OfflineKanbanFunnelTest extends TestCase
         self::assertStringContainsString("connect-src 'none'", $html);
     }
 
+    public function test_bulk_followup_action_is_visible_only_atomic_reversible_and_deny_only(): void
+    {
+        $html = self::html();
+        foreach ([
+            'id="complete-visible-followups"',
+            'Concluir pendentes visíveis (simulação)',
+            "const pendingVisible=subset.filter(",
+            "byId('complete-visible-followups').disabled=pendingVisible.length===0;",
+            "history.push({kind:'batch-followup',states:selected.map(",
+            "selected.forEach(function(item){item.followup='done';});",
+            "previous.kind==='batch-followup'",
+            "if(match)match.followup=state.from;",
+            "render('batch');",
+            "focus==='batch'?",
+            "item.followup==='pending';",
+            'Ação reversível e local.',
+        ] as $required) {
+            self::assertStringContainsString($required, $html);
+        }
+        self::assertStringContainsString("connect-src 'none'", $html);
+        self::assertStringContainsString("form-action 'none'", $html);
+        foreach ([
+            '<form', '<input', '<textarea', 'fetch(', 'navigator.sendBeacon',
+            'XMLHttpRequest', 'localStorage', 'sessionStorage', 'indexedDB',
+            'window.open(', 'Notification(', '.innerHTML',
+        ] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, $html);
+        }
+    }
+
     public function test_accessible_actions_and_mobile_layout_are_present(): void
     {
         $html = self::html();
