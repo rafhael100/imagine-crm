@@ -132,6 +132,27 @@ $driver = <<<'HTML'
       check(doc.getElementById('page-title').textContent==='Monitoramento de leads','no implicit activation');
       // Stage filtering is demo-only, but its DOM behavior must work in 320px.
       leads.click();
+      // UX-F3-51: actual mobile quick-view state, one selected preset and
+      // reset to all without overflow, stored data or network operations.
+      const quickButtons=Array.from(doc.querySelectorAll('#screen-leads [data-lead-quick-view]'));
+      const quickStatus=doc.getElementById('lead-quick-view-status');
+      check(quickButtons.length===4&&quickStatus.textContent.includes('Todos os exemplos'),'mobile quick views initial');
+      quickButtons.find(x=>x.dataset.leadQuickView==='hot').click();
+      check(quickStatus.textContent.includes('quentes'),'mobile hot quick view text');
+      doc.querySelector('#screen-leads [data-lead-stage="entrada"]').click();
+      check(quickStatus.textContent.includes('Filtros personalizados'),'manual mobile filter invalidates stale preset');
+      check(quickButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===0,'mobile manual override deselects all quick presets');
+      quickButtons.find(x=>x.dataset.leadQuickView==='hot').click();
+      check(doc.querySelectorAll('#screen-leads tr[data-lead-fixture-stage]:not([hidden])').length===2,'mobile hot filter returns two');
+      quickButtons.find(x=>x.dataset.leadQuickView==='contact').click();
+      check(doc.querySelectorAll('#screen-leads tr[data-lead-fixture-stage]:not([hidden])').length===1,'mobile contact filter one');
+      quickButtons.find(x=>x.dataset.leadQuickView==='qualification').click();
+      check(quickStatus.textContent.includes('qualificação'),'mobile qualification view');
+      quickButtons.find(x=>x.dataset.leadQuickView==='all').click();
+      check(doc.querySelectorAll('#screen-leads tr[data-lead-fixture-stage]:not([hidden])').length===4,'restore all mobile fixtures');
+      check(quickButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'mobile single quick view');
+      check(doc.documentElement.scrollWidth<=320,'quick views do not overflow mobile viewport');
+
       // UX-F3-50: fixed delivery states remain usable at TRUE 320 CSS px.
       const deliveryBtns=Array.from(doc.querySelectorAll('#screen-leads [data-delivery-case]'));
       const deliveryPreview=doc.getElementById('delivery-demo-preview');

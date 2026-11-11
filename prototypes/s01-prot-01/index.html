@@ -216,6 +216,13 @@
         <p class="lead">Tabela fictícia com filtros visuais combinados por etapa e faixa descritiva. Identificadores, etapas, pontuações e classificações são inventados; nenhuma alteração ou registro é realizado.</p>
         <div class="card">
           <div class="heading-row"><div><p class="eyebrow">Dados sintéticos</p><h2>Leads de exemplo</h2></div><span class="pill">SEM DADOS REAIS</span></div>
+          <div class="switcher" role="group" aria-label="Visões rápidas fictícias de leads">
+            <button type="button" class="state-button" data-lead-quick-view="all" aria-pressed="true">Todos os exemplos</button>
+            <button type="button" class="state-button" data-lead-quick-view="hot" aria-pressed="false">Quentes primeiro</button>
+            <button type="button" class="state-button" data-lead-quick-view="contact" aria-pressed="false">Em contato</button>
+            <button type="button" class="state-button" data-lead-quick-view="qualification" aria-pressed="false">Em qualificação</button>
+          </div>
+          <p id="lead-quick-view-status" role="status" aria-live="polite" aria-atomic="true" class="caption">Todos os exemplos fictícios, em ordem original.</p>
           <div class="switcher" role="group" aria-label="Filtrar leads fictícios por etapa">
             <button type="button" class="state-button" data-lead-stage="all" aria-pressed="true">Todos</button>
             <button type="button" class="state-button" data-lead-stage="entrada" aria-pressed="false">Entrada</button>
@@ -495,6 +502,8 @@
   const accessScenarioPreview = document.getElementById('access-boundary-preview');
   const backupIntegrityButtons = Array.from(document.querySelectorAll('#screen-import [data-backup-check]'));
   const backupIntegrityPreview = document.getElementById('backup-integrity-preview');
+  const leadQuickViewButtons = Array.from(document.querySelectorAll('#screen-leads [data-lead-quick-view]'));
+  const leadQuickViewStatus = document.getElementById('lead-quick-view-status');
   const leadFilterButtons = Array.from(document.querySelectorAll('[data-lead-stage]'));
   const leadTemperatureButtons = Array.from(document.querySelectorAll('[data-lead-temperature]'));
   const leadFixtureRows = Array.from(document.querySelectorAll('#screen-leads [data-lead-fixture-stage]'));
@@ -516,6 +525,7 @@
   let selectedLeadFixture = null;
   let selectedLeadStage = 'all';
   let selectedLeadTemperature = 'all';
+  let selectedLeadSort = 'original';
   let selectedLeadPageSize = 4;
   let selectedLeadPage = 0;
 
@@ -592,6 +602,7 @@
       const active=leadDetailButtons.find(function(button){return button.getAttribute('data-lead-detail')===selectedLeadFixture;});
       if(!active || active.closest('tr').hidden) showLeadDetail(null);
     }
+    updateLeadQuickViewIndicator();
   }
 
   function showLeadStage(stage) {
@@ -634,12 +645,57 @@
     leadSortButtons.forEach(function(node){
       node.setAttribute('aria-pressed',String(node.getAttribute('data-lead-sort')===mode));
     });
+    selectedLeadSort=mode;
     const description={original:'Ordem original dos exemplos.',high:'Leads fictícios ordenados por maior pontuação.',low:'Leads fictícios ordenados por menor pontuação.'};
     leadSortSummary.textContent=description[mode];
     selectedLeadPage=0;
     applyLeadFixtureFilters();
   }
 
+
+  // UX F3-51: quick views are a COMPOSITION of existing local DOM filters.
+  // They never query the server, change a business stage, save preferences
+  // or pretend to resolve a tenant/identity/lead. Manual edits clear presets.
+  function updateLeadQuickViewIndicator() {
+    const presets=Object.freeze({
+      all:Object.freeze(['all','all','original']),
+      hot:Object.freeze(['all','hot','high']),
+      contact:Object.freeze(['em-contato','all','original']),
+      qualification:Object.freeze(['qualificacao','all','original'])
+    });
+    const active=Object.keys(presets).find(function(code){
+      const parts=presets[code];
+      return parts[0]===selectedLeadStage
+        && parts[1]===selectedLeadTemperature
+        && parts[2]===selectedLeadSort;
+    })||null;
+    leadQuickViewButtons.forEach(function(button){
+      button.setAttribute('aria-pressed',String(button.getAttribute('data-lead-quick-view')===active));
+    });
+    const descriptions={
+      all:'Todos os exemplos fictícios, em ordem original.',
+      hot:'Visão fictícia de leads quentes, ordenados por maior pontuação.',
+      contact:'Visão fictícia dos exemplos em contato.',
+      qualification:'Visão fictícia dos exemplos em qualificação.'
+    };
+    leadQuickViewStatus.textContent=active===null
+      ? 'Filtros personalizados: nenhuma visão rápida selecionada.'
+      : descriptions[active];
+  }
+
+  function showLeadQuickView(code) {
+    const choices=Object.freeze({
+      all:Object.freeze(['all','all','original']),
+      hot:Object.freeze(['all','hot','high']),
+      contact:Object.freeze(['em-contato','all','original']),
+      qualification:Object.freeze(['qualificacao','all','original'])
+    });
+    if(!Object.prototype.hasOwnProperty.call(choices,code)) return;
+    const chosen=choices[code];
+    showLeadStage(chosen[0]);
+    showLeadTemperature(chosen[1]);
+    sortLeadFixtures(chosen[2]);
+  }
 
   // Demo-only pagination: two or four fixed rows, always bounded.
   function showLeadPageSize(size) {
@@ -1217,6 +1273,9 @@
     const defaultStage=leadFilterButtons.find(function(button){return button.getAttribute('data-lead-stage')==='all';});
     if(defaultStage) defaultStage.focus();
   });
+  leadQuickViewButtons.forEach(function(button){button.addEventListener('click',function(){
+    showLeadQuickView(button.getAttribute('data-lead-quick-view'));
+  });});
   leadSortButtons.forEach(function(node){node.addEventListener('click',function(){sortLeadFixtures(node.getAttribute('data-lead-sort'));});});
   leadPageSizeButtons.forEach(function(node){node.addEventListener('click',function(){showLeadPageSize(Number(node.getAttribute('data-lead-page-size')));});});
   leadPagePrev.addEventListener('click',function(){moveLeadPage(-1);});
