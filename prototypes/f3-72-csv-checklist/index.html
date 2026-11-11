@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; img-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; frame-src 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — Checklist CSV de demonstração</title>
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#1b3448;background:#f4f8fa;line-height:1.48}
+body{margin:0;min-width:0}
+a,button{font:inherit}
+a{color:#14616b}
+a:focus-visible,button:focus-visible{outline:3px solid #0d8586;outline-offset:3px}
+.skip{position:absolute;top:12px;left:-10000px;padding:10px;background:white;z-index:5}
+.skip:focus{left:12px}
+header{background:#19394c;color:#f4f9fa;padding:16px max(16px,calc((100vw - 1120px)/2));display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+header b{letter-spacing:-.03em;font-size:1.16rem}
+header a{color:#d9f3ef;font-weight:700}
+main{max-width:1170px;margin:auto;padding:clamp(18px,3vw,34px)}
+.eyebrow{font-size:.74rem;color:#0c7777;font-weight:820;text-transform:uppercase;letter-spacing:.12em}
+h1{font-size:clamp(1.55rem,4vw,2.45rem);line-height:1.2;margin:8px 0}
+h2{font-size:1.12rem;margin:0 0 11px}
+.lead{max-width:770px;color:#526b7a;margin:0 0 17px}
+.notice{background:#e5f5f0;border:1px solid #acdad6;border-radius:12px;padding:12px 15px;font-weight:730;margin-bottom:18px}
+.panel{background:#fff;border:1px solid #d8e8ed;border-radius:15px;padding:17px;margin:16px 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px}
+button{border:1px solid #a5c5ca;background:#f5fafb;border-radius:9px;padding:9px 13px;color:#24566b;cursor:pointer;font-weight:750}
+button:hover{background:#e4f1f3}
+button[aria-pressed="true"]{background:#164d5c;color:#fff;border-color:#164d5c}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.metric{border:1px solid #dce7ed;background:#f8fbfc;border-radius:11px;padding:13px;min-width:0}
+.metric span{color:#5a7180;font-size:.77rem;display:block}
+.metric strong{font-size:1.45rem;display:block;margin-top:4px;font-variant-numeric:tabular-nums}
+.status{background:#f5f8f9;border-radius:10px;padding:12px;margin-top:16px;font-weight:700;color:#255768}
+.table-wrap{overflow-x:auto;width:100%;max-width:100%}
+table{width:100%;border-collapse:collapse;min-width:410px}
+caption{text-align:left;color:#597386;font-size:.76rem;margin:8px 0}
+th,td{padding:10px 11px;border-bottom:1px solid #dfebf0;text-align:left;vertical-align:top;font-size:.88rem}
+thead{background:#ecf4f6}
+#check-rows tr:last-child td{border-bottom:0}
+.small{font-size:.81rem;color:#5c7484}
+footer{max-width:1170px;margin:auto;padding:0 34px 36px;color:#5c7484;font-size:.8rem}
+@media(max-width:690px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){main{padding:16px 12px}.panel{padding:13px}.metric{padding:10px}button{width:100%}.controls{display:grid;grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header>
+  <b>imagine CRM <small>• Laboratório</small></b>
+  <a href="../f3-22-csv-risk-preview/index.html">Voltar à prévia CSV</a>
+</header>
+<main id="conteudo">
+  <span class="eyebrow">Pré-validação estrutural · Simulação</span>
+  <h1>Checklist CSV de demonstração</h1>
+  <p class="lead">Confira quatro exemplos de como o CRM poderá apontar colunas ausentes, células obrigatórias vazias, linhas repetidas e fórmulas suspeitas antes da importação.</p>
+  <div class="notice">PROTÓTIPO — DADOS FICTÍCIOS. Nenhum arquivo é aberto, enviado, armazenado ou importado. Os campos obrigatórios destes exemplos não são uma política comercial aprovada.</div>
+  <section class="panel" aria-labelledby="examples-title">
+    <h2 id="examples-title">Escolha um relatório inventado</h2>
+    <div class="controls" role="group" aria-label="Cenários de análise CSV fictícia">
+      <button type="button" data-case="0" aria-pressed="true">A · Sem avisos</button>
+      <button type="button" data-case="1" aria-pressed="false">B · Vazios e repetições</button>
+      <button type="button" data-case="2" aria-pressed="false">C · Fórmulas suspeitas</button>
+      <button type="button" data-case="3" aria-pressed="false">D · Colunas ausentes</button>
+    </div>
+    <p class="small">Cada amostra é um relatório numérico fixo e testado contra o Core PHP, não o conteúdo de uma planilha.</p>
+  </section>
+  <section class="panel" aria-labelledby="overview-title">
+    <h2 id="overview-title">Resultado estrutural fictício</h2>
+    <div class="metrics">
+      <div class="metric"><span>Linhas analisadas</span><strong id="metric-rows">2</strong></div>
+      <div class="metric"><span>Colunas encontradas</span><strong id="metric-columns">2</strong></div>
+      <div class="metric"><span>Colunas mapeadas</span><strong id="metric-mapped">2</strong></div>
+      <div class="metric"><span>Avisos por posição</span><strong id="metric-findings">0</strong></div>
+    </div>
+    <p class="status" role="status" aria-live="polite" aria-atomic="true" id="review-status">Amostra fictícia sem avisos. Importação proibida.</p>
+  </section>
+  <section class="panel" aria-labelledby="findings-title">
+    <h2 id="findings-title">Posições que merecem revisão</h2>
+    <p class="small">Os avisos mostram apenas números de linhas e colunas. Nenhum valor de célula, nome de campo, dado pessoal ou identificador de contato é exibido.</p>
+    <div class="table-wrap">
+      <table>
+        <caption>Alertas sintéticos por tipo e posição; índice de linha e coluna começando em 1</caption>
+        <thead><tr><th scope="col">Tipo de alerta</th><th scope="col">Posição técnica</th></tr></thead>
+        <tbody id="check-rows"></tbody>
+      </table>
+    </div>
+    <p class="notice">Sem avisos não significa que existam consentimento, autorização por empresa, deduplicação de contatos ou permissão para importar.</p>
+  </section>
+</main>
+<footer>Imagine CRM • Prévia somente de laboratório. Nenhum dado real ou permissão de gravação é utilizado.</footer>
+<script>
+(function(){
+  'use strict';
+  // Position-only synthetic reports; parity checked by PHP unit tests.
+  const SCENARIOS = Object.freeze([
+    {
+      "rows":2,"columns":2,"mapped":2,
+      "repeats":[],"missing_headers":[],"empty_cells":[],"formula_positions":[],"allowed":false
+    },
+    {
+      "rows":3,"columns":3,"mapped":3,
+      "repeats":[{"firstRow":2,"repeatedRow":3}],
+      "missing_headers":[3],
+      "empty_cells":[{"row":1,"column":1},{"row":2,"column":2},{"row":3,"column":2}],
+      "formula_positions":[],"allowed":false
+    },
+    {
+      "rows":2,"columns":3,"mapped":3,
+      "repeats":[],"missing_headers":[],"empty_cells":[],
+      "formula_positions":[{"row":1,"column":3},{"row":2,"column":3}],"allowed":false
+    },
+    {
+      "rows":1,"columns":2,"mapped":1,
+      "repeats":[],"missing_headers":[1,2],"empty_cells":[],"formula_positions":[],"allowed":false
+    }
+  ]);
+  const byId=function(id){return document.getElementById(id);};
+  const write=function(id,value){byId(id).textContent=String(value);};
+  function row(type,position){
+    const tr=document.createElement('tr');
+    const left=document.createElement('td');
+    const right=document.createElement('td');
+    left.textContent=type;
+    right.textContent=position;
+    tr.appendChild(left);
+    tr.appendChild(right);
+    return tr;
+  }
+  function show(index){
+    const report=SCENARIOS[index];
+    if(!report||report.allowed!==false)throw new Error('Amostra não autorizada');
+    const table=byId('check-rows');
+    table.replaceChildren();
+    let findings=0;
+    report.repeats.forEach(function(item){
+      table.appendChild(row('Linha exatamente repetida','Primeira linha '+item.firstRow+'; repetida na linha '+item.repeatedRow));
+      findings++;
+    });
+    report.missing_headers.forEach(function(position){
+      table.appendChild(row('Cabeçalho técnico necessário ausente','Coluna requerida nº '+position));
+      findings++;
+    });
+    report.empty_cells.forEach(function(item){
+      table.appendChild(row('Campo técnico obrigatório vazio','Linha '+item.row+', coluna '+item.column));
+      findings++;
+    });
+    report.formula_positions.forEach(function(item){
+      table.appendChild(row('Possível fórmula de planilha','Linha '+item.row+', coluna '+item.column));
+      findings++;
+    });
+    if(findings===0)table.appendChild(row('Nenhum alerta estrutural detectado','Revisão humana ainda necessária'));
+    write('metric-rows',report.rows);
+    write('metric-columns',report.columns);
+    write('metric-mapped',report.mapped);
+    write('metric-findings',findings);
+    write('review-status',(findings===0?
+      'Amostra fictícia sem avisos detectados.':
+      'Amostra fictícia com '+findings+' aviso(s) por posição.')+
+      ' Importação proibida; nenhuma pessoa ou empresa foi verificada.');
+    document.querySelectorAll('[data-case]').forEach(function(button){
+      button.setAttribute('aria-pressed',String(Number(button.dataset.case)===index));
+    });
+  }
+  document.querySelectorAll('[data-case]').forEach(function(button){
+    button.addEventListener('click',function(){show(Number(button.dataset.case));});
+  });
+  show(0);
+})();
+</script>
+</body>
+</html>

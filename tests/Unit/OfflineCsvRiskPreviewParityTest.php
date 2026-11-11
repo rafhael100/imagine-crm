@@ -104,6 +104,18 @@ final class OfflineCsvRiskPreviewParityTest extends TestCase
         self::assertStringContainsString("form-action 'none'", $html);
     }
 
+    public function test_checklist_navigation_stays_local_and_has_a_real_destination(): void
+    {
+        $html = self::html();
+        self::assertStringContainsString(
+            'href="../f3-72-csv-checklist/index.html"',
+            $html,
+        );
+        self::assertFileExists(
+            dirname(__DIR__, 2).'/prototypes/f3-72-csv-checklist/index.html',
+        );
+    }
+
     public function test_browser_has_no_network_form_storage_or_remote_resource(): void
     {
         $html = self::html();
@@ -118,7 +130,7 @@ final class OfflineCsvRiskPreviewParityTest extends TestCase
 
         preg_match_all('/\bhref="([^"]+)"/', $html, $links);
         self::assertSame(
-            ['#main', '../s01-prot-01/index.html'],
+            ['#main', '../s01-prot-01/index.html', '../f3-72-csv-checklist/index.html'],
             $links[1],
         );
     }
