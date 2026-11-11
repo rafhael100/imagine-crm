@@ -29,20 +29,12 @@ final class SyntheticCsvImportPreflight
         string $delimiter = ',',
         ?array $requiredTechnicalLabels = null,
     ): SyntheticCsvImportPreflightSummary {
-        // Decodes once, discards cell/header values; preview only counts/positions.
-        $parser = new SyntheticCsvImportPreview();
-        $preview = $parser->inspectSuggested(
-            $syntheticCsv, $targetLabels, $delimiter,
+        // ONE bounded parse gives all diagnostics for the same decoded
+        // snapshot; never exposes CSV values, field names, hashes or PII.
+        $composite = (new SyntheticCsvImportPreview())->inspectComposite(
+            $syntheticCsv, $targetLabels, $requiredTechnicalLabels, $delimiter,
         );
-        // All passes use the SAME strict, 32 KiB-bounded canonical decoder.
-        // Additional local passes expose only numeric positions, never cell
-        // values, names or real business policy. The denial never changes.
-        $repeats = $parser->inspectRepeatedRows($syntheticCsv, $delimiter);
-        $required = $requiredTechnicalLabels === null
-            ? null
-            : $parser->inspectRequiredCells(
-                $syntheticCsv, $requiredTechnicalLabels, $delimiter,
-            );
+        $preview = $composite->mappedPreview;
 
         // Do not permit the requested-field description to claim a target
         // column not present in the exact-match proposal (or an unmapped
@@ -79,6 +71,10 @@ final class SyntheticCsvImportPreflight
             $valid ? $requestedFields : [],
         );
 
-        return new SyntheticCsvImportPreflightSummary($preview, $decision, $repeats, $required);
+        return new SyntheticCsvImportPreflightSummary(
+            $preview, $decision,
+            $composite->repeatPreview,
+            $composite->requiredCellsPreview,
+        );
     }
 }
