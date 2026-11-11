@@ -43,7 +43,7 @@ final class SyntheticKanbanCsvPreviewBuilder
                 || !is_int($record['stage']) || $record['stage'] < 0 || $record['stage'] > 3
                 || !in_array($record['priority'], ['high', 'normal'], true)
                 || !in_array($record['followup'], ['pending', 'done'], true)
-                || !is_int($record['value']) || $record['value'] < 0
+                || !is_int($record['value']) || $record['value'] < 0 || $record['value'] > 9007199254740991
                 || !is_int($record['score']) || $record['score'] < 0 || $record['score'] > 100) {
                 self::invalid();
             }
