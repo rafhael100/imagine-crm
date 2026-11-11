@@ -55,3 +55,11 @@ Os quatro objetos `SNAPSHOT_REPORTS` são metadados estáticos, verificados em `
 Uma versão alterada significa que as escolhas **associadas àquela versão** seriam consideradas desatualizadas no laboratório. Os botões de revisão fictícia em outra seção **não são as mesmas escolhas** e não são alterados por este exemplo independente. Em qualquer cenário, inclusive sem mudanças, **identidade humana não é verificada e importação continua proibida**.
 
 Este exercício não estabelece snapshot imutável ou transacional, autenticação, assinatura, trilha, idempotência, política de retenção, integridade de dados reais ou autorização multiempresa. O checksum público de F3-29 não é um mecanismo de segurança suficiente para produção. CORE/IAM/S01, LGPD, Central IN-118 e parecer SEG/DBA independente permanecem obrigatórios; nenhum acesso real, API, banco, upload, `ALLOW`, VPS, `main` ou deploy foi habilitado.
+
+## UX F3-34 — conflitos e idempotência simulados
+
+A prévia inclui **Conflitos de revisão — simulação**, com seis resultados isolados do restante da página: estado inicial, primeiro registro fictício, repetição idempotente, mesma chave com payload diferente, segunda revisão com versão antiga e alteração de lote inventado. São objetos estáticos, **não** botões que executam operações no PHP, no servidor ou em qualquer dado de cliente.
+
+O arquivo `OfflineCsvReviewRaceParityTest.php` executa a classe PHP `CsvReviewRaceFixture` F3-33 com matrizes fictícias e confronta, campo a campo, os seis resultados apresentados em `RACE_REPORTS`. O smoke Chromium F0 alterna todas as situações no desktop e verifica foco, estado, rolagem e ausência de autorização no viewport de 320 CSS px.
+
+**Registros e versões exibidos são simulados e independentes de outros painéis.** O usuário não fornece CSV, revisão, chave, identidade ou campo real. O fluxo não tem autenticação, mutex, transação, banco durável, idempotência interprocessos, trilha imutável ou upload. `human_verified=false`, `review_required=true` e `import_permitted=false` em todos os seis estados. A interface não libera `ALLOW` nem importa contatos, mesmo quando uma revisão fictícia é exibida como registrada. SEG/DBA, CORE/IAM, S01, LGPD, Central IN-118 e o contrato F3-32 seguem sem GO.

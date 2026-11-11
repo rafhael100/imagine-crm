@@ -121,6 +121,27 @@ $assertions = <<<'JS'
     check(document.querySelectorAll('#snapshot-diff-rows tr').length===0,'identical version clears stale differences');
     check(value('decision-reviewed')==='1'&&value('decision-correction')==='1','independent snapshot demo does not mutate other mock review choices');
 
+    check(value('race-version')==='1'&&value('race-events')==='0','initial fake review version');
+    const raceOptions=Array.from(document.querySelectorAll('[data-race]'));
+    check(raceOptions.length===6,'six independent race scenarios');
+    for(const [i,version,events,word] of [
+      [1,'2','1','simulada'],[2,'2','1','Repetição'],
+      [3,'2','1','Chave divergente'],[4,'2','1','Versão antiga'],
+      [5,'3','0','descartadas']
+    ]){
+      const control=raceOptions[i];
+      control.focus();
+      control.click();
+      check(document.activeElement===control,'race focus remains on chosen button');
+      check(document.querySelectorAll('[data-race][aria-pressed="true"]').length===1,'only one race example selected');
+      check(value('race-version')===version&&value('race-events')===events,'race counters match fixture state');
+      check(value('race-status').includes(word),'correct race outcome described');
+      check(value('race-status').includes('importação proibida'),'fake review never approves import');
+    }
+    raceOptions[0].click();
+    check(value('race-version')==='1'&&value('race-events')==='0','race state reset to initial');
+    check(value('decision-reviewed')==='1'&&value('decision-correction')==='1','independent review mock choices unchanged');
+
     const suspicious=document.querySelector('[data-sample="1"]');
     suspicious.focus();
     suspicious.click();
@@ -261,6 +282,21 @@ try {
       check(doc.querySelectorAll('#snapshot-diff-rows tr').length===1,'mobile prior position cleared');
       doc.querySelector('[data-snapshot="0"]').click();
       check(doc.querySelectorAll('#snapshot-diff-rows tr').length===0,'mobile stale snapshot diff cleared');
+
+      check(doc.getElementById('race-version').textContent==='1','mobile race initial version');
+      const raceConflict=doc.querySelector('[data-race="3"]');
+      raceConflict.focus();
+      raceConflict.click();
+      check(doc.activeElement===raceConflict,'mobile race choice keeps focus');
+      check(doc.getElementById('race-version').textContent==='2','mobile race version after conflict');
+      check(doc.getElementById('race-events').textContent==='1','mobile conflict does not duplicate fake event');
+      check(doc.getElementById('race-status').textContent.includes('importação proibida'),'mobile no import authority');
+      doc.querySelector('[data-race="5"]').click();
+      check(doc.getElementById('race-version').textContent==='3','mobile revised fixture increments version');
+      check(doc.getElementById('race-events').textContent==='0','mobile revised fixture clears fake events');
+      check(doc.documentElement.scrollWidth<=320,'mobile race controls do not expand page');
+      doc.querySelector('[data-race="0"]').click();
+      check(doc.getElementById('race-version').textContent==='1','mobile race reset');
 
       const sample=doc.querySelector('[data-sample="1"]');
       sample.focus();
