@@ -36,6 +36,7 @@ final class AiaReadOnlyMockBoundaryTest extends TestCase
 
     public function test_valid_agents_f1_12_request_remains_denied(): void
     {
+        self::assertTrue(AiaReadOnlyMockBoundary::hasFixtureShape(self::validWire()));
         self::assertDenied(self::validWire());
     }
 
@@ -44,6 +45,7 @@ final class AiaReadOnlyMockBoundaryTest extends TestCase
         foreach ([['ref'], ['stage'], ['stage', 'ref']] as $fields) {
             $request = self::validWire();
             $request['fields'] = $fields;
+            self::assertTrue(AiaReadOnlyMockBoundary::hasFixtureShape($request));
             self::assertDenied($request);
         }
     }
@@ -73,7 +75,9 @@ final class AiaReadOnlyMockBoundaryTest extends TestCase
             ['approval' => true],
             ['contract' => 'SYNTHETIC_CRM_AIA_READ_V2'],
         ] as $change) {
-            self::assertDenied(array_replace(self::validWire(), $change));
+            $request = array_replace(self::validWire(), $change);
+            self::assertFalse(AiaReadOnlyMockBoundary::hasFixtureShape($request));
+            self::assertDenied($request);
         }
     }
 
@@ -82,6 +86,7 @@ final class AiaReadOnlyMockBoundaryTest extends TestCase
         foreach (array_keys(self::validWire()) as $key) {
             $request = self::validWire();
             unset($request[$key]);
+            self::assertFalse(AiaReadOnlyMockBoundary::hasFixtureShape($request));
             self::assertDenied($request);
         }
 
@@ -96,6 +101,7 @@ final class AiaReadOnlyMockBoundaryTest extends TestCase
             self::assertDenied(array_replace(self::validWire(), $change));
         }
 
+        self::assertFalse(AiaReadOnlyMockBoundary::hasFixtureShape([0 => 'SYNTHETIC_CRM_AIA_READ_V1']));
         self::assertDenied([0 => 'SYNTHETIC_CRM_AIA_READ_V1']);
     }
 
@@ -103,6 +109,7 @@ final class AiaReadOnlyMockBoundaryTest extends TestCase
     {
         $request = self::validWire();
         $request['unexpected_email'] = 'private@example.test';
+        self::assertFalse(AiaReadOnlyMockBoundary::hasFixtureShape($request));
         $output = json_encode(AiaReadOnlyMockBoundary::inspect($request), JSON_THROW_ON_ERROR);
         foreach ([
             'private@example.test', 'SYNTHETIC_TENANT_A', 'SYNTHETIC_USER_A',
