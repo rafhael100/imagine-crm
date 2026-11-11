@@ -373,12 +373,17 @@ $checks = <<<'JS'
     check(csvLines().length===2&&csvLines()[1]==='F05;2;high;pending;5300;90','CSV respects stage focus');
     move('F05','next');
     check(csvLines().length===1,'CSV has only header when selected card leaves stage');
+    check(byId('lane-detail-2').textContent==='Alta: 0 · Pendentes: 0','empty focused lane resets its summary');
     byId('undo-change').click();
     check(csvLines().length===2&&csvLines()[1].startsWith('F05;2;'),'undo restores CSV without cached rows');
+    check(byId('lane-detail-2').textContent==='Alta: 1 · Pendentes: 1','undo restores filtered lane summary');
     byId('reset-demo').click();
     check(csvLines().length===9,'CSV follows reset');
+    check(byId('lane-detail-0').textContent==='Alta: 1 · Pendentes: 1','initial entry counts match actual fixtures');
+    check(byId('lane-detail-3').textContent==='Alta: 1 · Pendentes: 2','initial proposal counts match actual fixtures');
     byId('add-fiction').click();
     check(csvLines().length===10&&csvLines()[9]==='F09;0;high;pending;1850;59','new generated fictitious card enters CSV');
+    check(byId('lane-detail-0').textContent==='Alta: 2 · Pendentes: 2','fictional card creation updates lane breakdown');
     byId('undo-change').click();
     check(csvLines().length===9,'undo creation removes generated CSV entry');
     stageButton('3').click();
@@ -412,6 +417,24 @@ $checks = <<<'JS'
     byId('reset-demo').click();
     check(visible()===8&&csvLines().length===9,'reset restores original IDs and CSV');
     byId('toggle-csv-demo').click();
+    byId('reset-demo').click();
+    for(let cycle=0;cycle<69;cycle++){
+      const button=document.querySelector('[data-card-id="F01"] button[data-followup]');
+      button.click();
+    }
+    check(byId('count-moves').textContent==='69','sixty-nine fictional edits completed');
+    check(document.querySelector('[data-card-id="F01"] .followup-label').textContent.includes('concluído'),'odd toggle count ends completed');
+    check(document.querySelectorAll('#activity-list li').length<=6,'activity display stays six entries');
+    for(let undo=0;undo<64;undo++){
+      check(!byId('undo-change').disabled,'bounded undo remains available through sixty-four');
+      byId('undo-change').click();
+    }
+    check(byId('undo-change').disabled,'history stops at sixty-four snapshots without unbounded growth');
+    check(byId('count-moves').textContent==='133','undo remains a distinct action metric');
+    check(document.querySelector('[data-card-id="F01"] .followup-label').textContent.includes('concluído'),'first five oldest actions intentionally not undoable');
+    byId('reset-demo').click();
+    check(byId('count-moves').textContent==='0'&&byId('undo-change').disabled,'reset clears capped undo history');
+    check(document.querySelector('[data-card-id="F01"] .followup-label').textContent.includes('pendente'),'reset recovers original fictional state');
     check(!document.querySelector('form,iframe,textarea'),'no capture route');
     output.setAttribute('data-imagine-browser-smoke','PASS');
     output.textContent='F3-59 desktop real Chromium PASS';
@@ -583,6 +606,7 @@ try {
       check(!mobileCsv.hidden&&mobileCsvButton.getAttribute('aria-expanded')==='true','mobile CSV preview opens');
       check(doc.activeElement===mobileCsvButton,'mobile CSV focus preserved');
       check(mobileCsv.textContent.trim().split('\n').length===9,'mobile CSV eight fictitious rows');
+      check(doc.getElementById('lane-detail-0').textContent==='Alta: 1 · Pendentes: 1','mobile default summary');
       doc.querySelector('[data-stage-filter="3"]').click();
       doc.querySelector('[data-priority="high"]').click();
       check(mobileCsv.textContent.trim().split('\n').length===2,'mobile CSV filtered to one high proposal');
@@ -607,6 +631,15 @@ try {
       check(doc.querySelector('[data-card-id="F13"]')===null,'mobile never generates F13');
       doc.getElementById('reset-demo').click();
       check(doc.documentElement.scrollWidth<=320,'mobile reusable slot controls do not overflow');
+      for(let cycle=0;cycle<5;cycle++){
+        doc.querySelector('[data-card-id="F01"] button[data-followup]').click();
+      }
+      check(doc.querySelector('[data-card-id="F01"] .followup-label').textContent.includes('concluído'),'mobile five toggles');
+      for(let undo=0;undo<5;undo++)doc.getElementById('undo-change').click();
+      check(doc.getElementById('undo-change').disabled,'mobile undo clears recent history');
+      check(doc.querySelector('[data-card-id="F01"] .followup-label').textContent.includes('pendente'),'mobile undo restores initial status');
+      doc.getElementById('reset-demo').click();
+      check(doc.documentElement.scrollWidth<=320,'bounded history interaction has no mobile overflow');
       check(doc.documentElement.scrollWidth<=320,'no overflow after reset');
       finish('PASS','real interactive 320 px viewport');
     }catch(error){finish('FAIL',error.message);}
