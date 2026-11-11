@@ -54,6 +54,7 @@ $checks = <<<'JS'
     check(document.querySelectorAll('.lane').length===4,'exact four stages');
     check(visible()===8,'eight invented opportunities');
     check(['0','1','2','3'].every(n=>count(n)==='2'),'two invented opportunities per stage initially');
+    check(['2.760','5.600','7.750','8.700'].every((sum,i)=>document.getElementById('lane-value-'+i).textContent.includes(sum)),'initial fictional values per stage');
     check(document.getElementById('count-visible').textContent==='8','initial metric');
     check(document.getElementById('count-high').textContent==='4','priority metric');
     check(document.getElementById('count-moves').textContent==='0','no edits initially');
@@ -68,12 +69,14 @@ $checks = <<<'JS'
     check(document.activeElement===high,'filter retains keyboard focus');
     check(document.querySelectorAll('[data-priority][aria-pressed="true"]').length===1,'single selected filter');
     check(['0','1','2','3'].every(n=>count(n)==='1'),'one high priority item per stage');
+    check(['1.800','3.900','5.300','7.600'].every((sum,i)=>document.getElementById('lane-value-'+i).textContent.includes(sum)),'high priority stage amounts recalculate');
     document.querySelector('[data-priority="normal"]').click();
     check(visible()===4&&document.getElementById('count-high').textContent==='0','normal filter');
     document.querySelector('[data-priority="all"]').click();
     check(visible()===8&&document.getElementById('count-high').textContent==='4','all restores cards');
     move('F01','next');
     check(count(0)==='1'&&count(1)==='3','stage one updated');
+    check(document.getElementById('lane-value-0').textContent.includes('960')&&document.getElementById('lane-value-1').textContent.includes('7.400'),'stage totals respond to movement');
     check(document.getElementById('count-moves').textContent==='1','movement counted');
     check(!document.getElementById('undo-change').disabled,'undo enabled');
     check(document.querySelector('[data-card-id="F01"]').closest('.lane').id==='', 'ticket remains semantic'); 
@@ -99,6 +102,7 @@ $checks = <<<'JS'
     add.click();
     check(visible()===9,'one invented opportunity created');
     check(document.querySelector('#lane-0 [data-card-id="F09"]')!==null,'new fictional card at entry');
+    check(document.getElementById('lane-value-0').textContent.includes('4.610'),'new fictional card contributes only to entry total');
     check(document.activeElement.closest('[data-card-id="F09"]')!==null,'focus follows generated card');
     check(!document.getElementById('undo-change').disabled,'undo fictional add');
     add.click();
@@ -113,6 +117,7 @@ $checks = <<<'JS'
     check(visible()===12,'capacity can be reused safely');
     document.getElementById('reset-demo').click();
     check(visible()===8,'reset removes all generated fictional cards');
+    check(document.getElementById('lane-value-0').textContent.includes('2.760'),'reset restores stage value total');
     check(!add.disabled&&document.getElementById('undo-change').disabled,'reset clears creation history');
 
     check(document.documentElement.scrollWidth<=window.innerWidth+1,'desktop no page horizontal overflow');
@@ -173,11 +178,13 @@ try {
       check(win.innerWidth===320,'real 320 CSS pixel frame viewport');
       check(doc.documentElement.scrollWidth<=320,'no horizontal page overflow');
       check(doc.querySelectorAll('[data-card-id]').length===8,'eight cards on mobile');
+      check(doc.getElementById('lane-value-0').textContent.includes('2.760'),'mobile initial entry value');
       check(win.getComputedStyle(doc.querySelector('.board')).gridTemplateColumns.split(' ').length===1,'one column layout');
       const next=doc.querySelector('[data-card-id="F01"] button[data-move="next"]');
       next.focus();
       next.click();
       check(doc.querySelector('#lane-1 [data-card-id="F01"]')!==null,'mobile moves a ticket');
+      check(doc.getElementById('lane-value-1').textContent.includes('7.400'),'mobile stage value changes');
       check(doc.activeElement.closest('[data-card-id="F01"]')!==null,'mobile movement focus');
       check(doc.documentElement.scrollWidth<=320,'no mobile overflow after movement');
       doc.querySelector('[data-priority="high"]').click();
@@ -188,6 +195,7 @@ try {
       add.click();
       add.click();
       check(doc.querySelectorAll('[data-card-id]').length===10,'mobile creates two fictional cards');
+      check(doc.getElementById('lane-value-0').textContent.includes('6.610'),'mobile two additions update entry amount');
       check(doc.querySelector('#lane-0 [data-card-id="F09"]')!==null,'mobile new fixture at entry');
       check(doc.documentElement.scrollWidth<=320,'mobile creation does not overflow');
       doc.getElementById('undo-change').click();
