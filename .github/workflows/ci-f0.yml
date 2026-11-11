@@ -72,3 +72,6 @@ jobs:
 
       - name: Browser smoke test of synthetic CSV preview (desktop and 320px)
         run: php scripts/ci/check-offline-csv-risk-preview-browser.php
+
+      - name: Browser smoke test of offline Kanban opportunities (desktop and real 320px)
+        run: php scripts/ci/check-offline-kanban-browser.php
