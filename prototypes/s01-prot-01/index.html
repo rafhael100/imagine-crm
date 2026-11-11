@@ -1209,8 +1209,7 @@
   leadFilterButtons.forEach(function(node){node.addEventListener('click',function(){showLeadStage(node.getAttribute('data-lead-stage'));});});
   leadTemperatureButtons.forEach(function(node){node.addEventListener('click',function(){showLeadTemperature(node.getAttribute('data-lead-temperature'));});});
   leadClearFiltersButton.addEventListener('click',function(){
-    showDeliveryDemoCase('queued');
-  showLeadStage('all');
+    showLeadStage('all');
     showLeadTemperature('all');
     const defaultStage=leadFilterButtons.find(function(button){return button.getAttribute('data-lead-stage')==='all';});
     if(defaultStage) defaultStage.focus();
@@ -1250,6 +1249,7 @@
     showLeadDetail(selectedLeadFixture===code?null:code);
   });});
   navigate('welcome',false);
+  showDeliveryDemoCase('queued');
   showLeadStage('all');
   showLeadTemperature('all');
   sortLeadFixtures('original');
