@@ -10,7 +10,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * F3-94: compare 36 UI-equivalent filter combinations with a reference reducer
+ * F3-94: compare 45 UI-equivalent filter combinations with a reference reducer
  * using the eight real, wholly fabricated HTML Kanban fixture definitions.
  */
 final class SyntheticKanbanFilteredStageInspectorTest extends TestCase
@@ -71,7 +71,7 @@ final class SyntheticKanbanFilteredStageInspectorTest extends TestCase
         self::assertSame(45, $seen);
         self::assertSame($original, $rows);
         self::assertSame(8, $inspector->inspect($rows)->total);
-        self::assertSame(2, $inspector->inspect($rows, 'high', 'pending', 2)->total);
+        self::assertSame(1, $inspector->inspect($rows, 'high', 'pending', 2)->total);
         self::assertSame(0, $inspector->inspect($rows, 'high', 'done', 2)->total);
         self::assertSame(0, $inspector->inspect([])->total);
         self::assertStringNotContainsString('F01', json_encode($inspector->inspect($rows), JSON_THROW_ON_ERROR));
