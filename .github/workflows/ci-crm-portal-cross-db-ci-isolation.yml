@@ -9,6 +9,7 @@ on:
       - 'tests/Labs/F3_40/**'
       - 'tests/Labs/F3_41/**'
       - 'tests/Labs/F3_42/**'
+      - 'tests/Labs/F3_49/**'
       - '.github/workflows/ci-crm-portal-cross-db-ci-isolation.yml'
   workflow_dispatch:
 
@@ -71,6 +72,13 @@ jobs:
           ref: af414ed7aece433e65b4f813be12ba3546cc5c8a
           path: portal-source
           persist-credentials: false
+      - name: Checkout EXACT pinned CRM CORE-INT-01 review revision (CI-only)
+        uses: actions/checkout@v5
+        with:
+          repository: rafhael100/imagine-crm
+          ref: 881ebbf0ddf486f8a85c4848f85719a2f4207f6c
+          path: crm-core-source
+          persist-credentials: false
       - name: Verify immutable Portal provenance and no cross-import into runtime
         shell: bash
         run: |
@@ -84,6 +92,24 @@ jobs:
             echo "CI-only cross-repo fixture imported into CRM runtime" >&2
             exit 1
           fi
+      - name: Assemble approved standalone Core slice only inside the disposable runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C crm-core-source rev-parse HEAD)" = "881ebbf0ddf486f8a85c4848f85719a2f4207f6c"
+          test ! -f app/Core/Leads/PortalIngressPreparationBoundary.php
+          for name in \
+            PortalServiceHandoffAssessment \
+            PortalServiceHandoffInspector \
+            PortalTechnicalEnvelopeDecoder \
+            PortalIngressPreparationAssessment \
+            PortalIngressPreparationBoundary; do
+            test -f "crm-core-source/app/Core/Leads/$name.php"
+            cp -- "crm-core-source/app/Core/Leads/$name.php" "app/Core/Leads/$name.php"
+            php -l "app/Core/Leads/$name.php"
+          done
+          # Untracked files stay on this ephemeral runner; no source commit.
+          test "$(git ls-files -- app/Core/Leads/PortalIngressPreparationBoundary.php)" = ""
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
@@ -129,3 +155,5 @@ jobs:
           done
           test "$ready" -eq 1
           php tests/Labs/F3_42/test_real_portal_crm_cross_repo.php
+          php -l tests/Labs/F3_49/test_real_core_portal_crm_e2e.php
+          php tests/Labs/F3_49/test_real_core_portal_crm_e2e.php
