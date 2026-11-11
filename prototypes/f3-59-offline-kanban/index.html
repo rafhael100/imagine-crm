@@ -120,6 +120,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   <div class="filters" role="group" aria-label="Controle da simulação">
   <button type="button" id="complete-visible-followups">Concluir pendentes visíveis (simulação)</button>
   <button type="button" id="advance-visible-stage">Avançar etapas visíveis (simulação)</button>
+  <button type="button" id="return-visible-stage">Retornar etapas visíveis (simulação)</button>
   <button type="button" id="add-fiction">Adicionar oportunidade fictícia</button>
   <button type="button" id="undo-change" disabled>Desfazer ação</button>
   <button type="button" id="reset-demo">Reiniciar simulação</button>
@@ -272,6 +273,9 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   });
   const pendingVisible=subset.filter(function(item){return item.followup==='pending';});
   const movableVisible=subset.filter(function(item){return item.stage<STAGES.length-1;});
+  const returnableVisible=subset.filter(function(item){return item.stage>0;});
+  byId('return-visible-stage').disabled=returnableVisible.length===0;
+  byId('return-visible-stage').setAttribute('aria-label','Retornar '+returnableVisible.length+' oportunidades fictícias visíveis uma etapa. Ação reversível.');
   byId('advance-visible-stage').disabled=movableVisible.length===0;
   byId('advance-visible-stage').setAttribute('aria-label','Avançar '+movableVisible.length+' oportunidades fictícias visíveis em uma etapa. Ação reversível.');
   byId('complete-visible-followups').disabled=pendingVisible.length===0;
@@ -283,6 +287,9 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const element=focus.startsWith('followup:')
   ?document.querySelector('[data-card-id="'+focus.slice(9)+'"] button[data-followup]'):
   focus==='stage'?document.querySelector('[data-stage-filter="'+stageFilter+'"]'):
+  focus==='batch-return'?(byId('return-visible-stage').disabled
+    ?document.querySelector('[data-stage-filter="'+stageFilter+'"]')
+    :byId('return-visible-stage')):
   focus==='batch-move'?(byId('advance-visible-stage').disabled
     ?document.querySelector('[data-stage-filter="'+stageFilter+'"]')
     :byId('advance-visible-stage')):
@@ -334,23 +341,27 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   render(item.id);
   describe(item.label+' movida para '+STAGES[next]+'.');
   });
-  byId('advance-visible-stage').addEventListener('click',function(){
+  function moveVisibleStage(direction){
+  if(direction!==1&&direction!==-1)return;
   const selected=opportunities.filter(function(item){
   return (priority==='all'||item.priority===priority)
   && (followupFilter==='all'||item.followup===followupFilter)
   && (stageFilter==='all'||item.stage===stageFilter)
-  && item.stage<STAGES.length-1;
+  && item.stage+direction>=0&&item.stage+direction<STAGES.length;
   });
   if(selected.length===0)return;
   history.push({kind:'batch-move',states:selected.map(function(item){
     return {id:item.id,from:item.stage};
   })});
-  selected.forEach(function(item){item.stage++;});
-  remember('Avanço fictício de '+selected.length+' oportunidades visíveis em uma etapa.');
+  selected.forEach(function(item){item.stage+=direction;});
+  const description=direction===1?'Avanço':'Retorno';
+  remember(description+' fictício de '+selected.length+' oportunidades visíveis em uma etapa.');
   moves++;
-  render('batch-move');
-  describe('Avanço fictício em lote de '+selected.length+' oportunidades. Reversível nesta aba.');
-  });
+  render(direction===1?'batch-move':'batch-return');
+  describe(description+' fictício em lote de '+selected.length+' oportunidades. Reversível nesta aba.');
+  }
+  byId('advance-visible-stage').addEventListener('click',function(){moveVisibleStage(1);});
+  byId('return-visible-stage').addEventListener('click',function(){moveVisibleStage(-1);});
   byId('complete-visible-followups').addEventListener('click',function(){
   const selected=opportunities.filter(function(item){
   return (priority==='all'||item.priority===priority)
