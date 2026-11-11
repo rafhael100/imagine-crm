@@ -55,6 +55,12 @@ button[disabled]{opacity:.47;cursor:not-allowed}
 .moves button{font-size:.73rem;flex:1 1 85px;padding:8px}
 .empty{border:1px dashed #a8c0c9;background:#f8fbfc;border-radius:11px;color:#677e8c;padding:16px;font-size:.8rem}
 .status{border:1px solid #d0e3e9;color:#285b69;background:white;margin-top:15px;border-radius:11px;padding:12px 15px;font-weight:670}
+.activity{margin-top:15px;background:#fff;border:1px solid #dce7ed;border-radius:14px;padding:18px}
+.activity h2{font-size:1.03rem;margin:0 0 6px}
+.activity p{color:#637789;font-size:.78rem;margin:0 0 10px}
+.activity ol{padding-left:21px;margin:0;color:#35566a;font-size:.85rem}
+.activity li{padding:7px 0;border-bottom:1px solid #edf2f5;overflow-wrap:anywhere}
+.activity li:last-child{border-bottom:0}
 footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28px 32px}
 @media(max-width:1000px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.board{grid-template-columns:minmax(0,1fr)}.toolbar{align-items:stretch}.toolbar>div{width:100%}.stats{gap:8px}.stat{padding:12px}button{min-height:42px}main{padding:18px 14px}header{padding:14px 16px}}
@@ -85,6 +91,11 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       <button type="button" data-priority="high" aria-pressed="false">Alta</button>
       <button type="button" data-priority="normal" aria-pressed="false">Normal</button>
     </div>
+    <div class="filters" role="group" aria-label="Ordenar cartões fictícios">
+      <strong>Ordenação:</strong>
+      <button type="button" data-order="default" aria-pressed="true">Ordem original</button>
+      <button type="button" data-order="score" aria-pressed="false">Maior pontuação</button>
+    </div>
     <div class="filters" role="group" aria-label="Controle da simulação">
       <button type="button" id="add-fiction">Adicionar oportunidade fictícia</button>
       <button type="button" id="undo-change" disabled>Desfazer ação</button>
@@ -97,6 +108,11 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     <section class="lane" aria-labelledby="lane-title-2"><div class="lane-header"><h2 id="lane-title-2">Qualificação</h2><span id="lane-count-2" class="lane-count">0</span></div><p id="lane-value-2" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-2"></div></section>
     <section class="lane" aria-labelledby="lane-title-3"><div class="lane-header"><h2 id="lane-title-3">Proposta</h2><span id="lane-count-3" class="lane-count">0</span></div><p id="lane-value-3" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-3"></div></section>
   </div>
+  <section class="activity" aria-labelledby="activity-heading">
+    <h2 id="activity-heading">Atividade simulada nesta aba</h2>
+    <p>Histórico de demonstração, sem auditoria de CRM ou persistência. São mostradas até seis ações recentes.</p>
+    <ol id="activity-list" aria-label="Ações fictícias recentes"><li>Nenhuma ação simulada registrada.</li></ol>
+  </section>
   <p id="simulation-status" class="status" role="status" aria-live="polite" aria-atomic="true">Carregando simulação local.</p>
 </main>
 <footer>Ambiente de demonstração offline. Os valores e oportunidades são totalmente inventados; nenhum registro de CRM é consultado ou alterado.</footer>
@@ -119,6 +135,8 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   let history=[];
   let moves=0;
   let nextGenerated=9;
+  let order='default';
+  let activity=[];
   const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
   const byId=function(id){return document.getElementById(id);};
   const put=function(id,value){byId(id).textContent=String(value);};
@@ -160,6 +178,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       const target=byId('lane-'+index);
       target.replaceChildren();
       const items=subset.filter(function(item){return item.stage===index;});
+      if(order==='score')items.sort(function(a,b){return b.score-a.score||a.id.localeCompare(b.id);});
       put('lane-count-'+index,items.length);
       put('lane-value-'+index,'Valor fictício nesta etapa: '+money.format(
         items.reduce(function(total,item){return total+item.value;},0)
@@ -170,6 +189,14 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     document.querySelectorAll('[data-priority]').forEach(function(button){
       button.setAttribute('aria-pressed',String(button.dataset.priority===priority));
     });
+    const activityList=byId('activity-list');
+    activityList.replaceChildren();
+    (activity.length?activity.slice(0,6):['Nenhuma ação simulada registrada.']).forEach(function(message){
+      activityList.appendChild(node('li','',message));
+    });
+    document.querySelectorAll('[data-order]').forEach(function(button){
+      button.setAttribute('aria-pressed',String(button.dataset.order===order));
+    });
     byId('undo-change').disabled=history.length===0;
     byId('add-fiction').disabled=opportunities.length>=12;
     byId('add-fiction').setAttribute('aria-label', opportunities.length>=12?'Limite de doze oportunidades fictícias atingido':'Adicionar oportunidade fictícia somente na memória');
@@ -178,6 +205,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
         focus==='add'?byId('add-fiction'):
         focus==='reset'?byId('reset-demo'):
         focus==='filter'?document.querySelector('[data-priority="'+priority+'"]'):
+        focus==='sort'?document.querySelector('[data-order="'+order+'"]'):
         document.querySelector('[data-card-id="'+focus+'"] button:not([disabled])');
       if(element)element.focus();
     }
@@ -190,6 +218,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     const next=item.stage+(button.dataset.move==='next'?1:-1);
     if(next<0||next>=STAGES.length)return;
     history.push({kind:'move',id:item.id,from:item.stage});
+    activity.unshift(item.label+' movida de '+STAGES[item.stage]+' para '+STAGES[next]+'.');
     item.stage=next;
     moves++;
     render(item.id);
@@ -209,6 +238,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     };
     opportunities.push(item);
     history.push({kind:'add',id:item.id});
+    activity.unshift(item.label+' criada na etapa Entrada.');
     moves++;
     priority='all';
     render(item.id);
@@ -221,8 +251,10 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     if(!item)return;
     if(previous.kind==='add'){
       opportunities=opportunities.filter(function(entry){return entry.id!==item.id;});
+      activity.unshift('Criação simulada de '+item.label+' desfeita.');
       describe('Criação simulada desfeita: '+item.label+'.');
     }else if(previous.kind==='move'){
+      activity.unshift('Movimento de '+item.label+' desfeito.');
       item.stage=previous.from;
       describe('Último movimento desfeito: '+item.label+' voltou para '+STAGES[item.stage]+'.');
     }else{
@@ -237,6 +269,8 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     moves=0;
     nextGenerated=9;
     priority='all';
+    order='default';
+    activity=[];
     render('reset');
     describe('Quadro fictício reiniciado.');
   });
@@ -245,6 +279,13 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       priority=button.dataset.priority;
       render('filter');
       describe('Filtro de prioridade atualizado.');
+    });
+  });
+  document.querySelectorAll('[data-order]').forEach(function(button){
+    button.addEventListener('click',function(){
+      order=button.dataset.order;
+      render('sort');
+      describe('Ordenação fictícia atualizada.');
     });
   });
   render();
