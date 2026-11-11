@@ -81,7 +81,7 @@ final class AiaReadOnlyMockBoundary
     private static function denied(): array
     {
         return [
-            'contract' => 'SYNTHETIC_CRM_AIA_READ_V1',
+            'contract' => 'SYNTHETIC_CRM_AIA_PUBLIC_V1',
             'state' => 'DENIED_OR_NOT_FOUND',
             'projection' => null,
             'real_authorization' => false,
