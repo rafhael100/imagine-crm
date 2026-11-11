@@ -75,7 +75,37 @@ final class SyntheticCsvImportPreview
         return new SyntheticImportMappedPreviewSummary($preview, $proposal);
     }
 
-    /** @return array{SyntheticImportPreviewSummary, list<string>} */
+    /**
+     * F3-66: structural duplicate ROW diagnostics only. Identical, already
+     * decoded cell sequences receive one-based first/repeated positions.
+     * No text/hash is exposed or persisted. This is not contact dedup.
+     */
+    public function inspectRepeatedRows(
+        string $csv,
+        string $delimiter = ',',
+    ): SyntheticCsvRowRepeatSummary {
+        [$preview, , $rows] = $this->decode($csv, $delimiter);
+        $repeated = [];
+
+        // Bounded at 50 rows: exact in-memory comparisons avoid hash collisions
+        // and avoid retaining untrusted row text as map keys or identifiers.
+        foreach ($rows as $rowIndex => $row) {
+            for ($firstIndex = 0; $firstIndex < $rowIndex; ++$firstIndex) {
+                if ($rows[$firstIndex] === $row) {
+                    $repeated[] = [
+                        'firstRow' => $firstIndex + 1,
+                        'repeatedRow' => $rowIndex + 1,
+                    ];
+                    break;
+                }
+            }
+        }
+
+        return new SyntheticCsvRowRepeatSummary($preview, $repeated);
+    }
+
+    /** @return array{SyntheticImportPreviewSummary, list<string>, list<list<string>>} */
+
     private function decode(string $csv, string $delimiter): array
     {
         // Never guess a locale or silently reinterpret the header. Two known
@@ -177,7 +207,7 @@ final class SyntheticCsvImportPreview
         } catch (InvalidArgumentException) {
             self::invalid(); // Generic error; no original header or cell.
         }
-        return [$preview, $columns];
+        return [$preview, $columns, $rows];
     }
 
     /** @param list<string> $row */
