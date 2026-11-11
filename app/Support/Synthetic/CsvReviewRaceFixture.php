@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Support\Synthetic;
 
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * A single-process, forgeable in-memory teaching model for review races.
@@ -55,6 +56,8 @@ final class CsvReviewRaceFixture
 
     /**
      * @param list<array{row:int,status:string}> $decisions
+     * @param string $syntheticFault Only fixture_none, fixture_abort_before_record,
+     *     or fixture_lost_ack_after_record. Not operational fault handling.
      * @return array{
      *   status:string,fixture_version:int,recorded_review_events:int,
      *   last_decision_count:int,human_verified:bool,
@@ -66,7 +69,16 @@ final class CsvReviewRaceFixture
         string $expectedFingerprint,
         string $idempotencyKey,
         array $decisions,
+        string $syntheticFault = 'fixture_none',
     ): array {
+        if (!in_array($syntheticFault, [
+            'fixture_none',
+            'fixture_abort_before_record',
+            'fixture_lost_ack_after_record',
+        ], true)) {
+            throw new InvalidArgumentException('Invalid synthetic failure window.');
+        }
+
         if ($expectedVersion < 1
             || preg_match('/\Afixture-sha256-v1:[a-f0-9]{64}\z/D', $expectedFingerprint) !== 1
             || preg_match('/\Afixture_key_[a-z0-9]{1,24}\z/D', $idempotencyKey) !== 1) {
@@ -112,10 +124,22 @@ final class CsvReviewRaceFixture
             $this->rows, $this->mapping, $expectedFingerprint, $normalized,
         );
 
+        // Explicit fault injection is restricted to this invented model.
+        // Reject BEFORE the local recording step; no key is consumed.
+        if ($syntheticFault === 'fixture_abort_before_record') {
+            return $this->state('fixture_abort_no_op');
+        }
+
         $this->recordedRequests[$idempotencyKey] = $requestHash;
         ++$this->version;
         ++$this->recordedReviews;
         $this->lastDecisionCount = count($normalized);
+
+        // Simulate a lost response AFTER a local event was recorded.
+        // A caller must not treat this exception as proof of rollback.
+        if ($syntheticFault === 'fixture_lost_ack_after_record') {
+            throw new RuntimeException('Synthetic acknowledgement unavailable; outcome unknown.');
+        }
 
         return $this->state('fixture_recorded_only');
     }
