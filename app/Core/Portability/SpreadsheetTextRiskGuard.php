@@ -34,6 +34,13 @@ final class SpreadsheetTextRiskGuard
             return true;
         }
 
+        // Unicode NEL, LINE SEPARATOR and PARAGRAPH SEPARATOR can act as
+        // line breaks in downstream spreadsheet consumers. Reject these
+        // embedded characters, even when no formula prefix is visible.
+        if (preg_match('/[\x{0085}\x{2028}\x{2029}]/u', $cell) === 1) {
+            return true;
+        }
+
         // Treat all Unicode separators (Z) and invisible format marks (Cf)
         // as possible engine-trimmed prefixes. Standalone leading combining marks (M) can also obscure
         // the executable prefix. This is conservative risk detection,
