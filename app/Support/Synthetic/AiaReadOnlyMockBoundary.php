@@ -18,27 +18,35 @@ final class AiaReadOnlyMockBoundary
         'principal_ref', 'resource_ref', 'purpose_ref', 'fields',
     ];
 
-    /** @param array<mixed> $wire
+    /**
+     * Syntactic compatibility only. NEVER grants any read permission.
+     *
+     * @param array<mixed> $wire
+     */
+    public static function hasFixtureShape(array $wire): bool
+    {
+        if (count($wire) !== count(self::KEYS)) {
+            return false;
+        }
+        $keys = array_keys($wire);
+        sort($keys, SORT_STRING);
+        $expected = self::KEYS;
+        sort($expected, SORT_STRING);
+        return $keys === $expected
+            && $wire['contract'] === 'SYNTHETIC_CRM_AIA_READ_V1'
+            && $wire['operation'] === 'crm.lead.read_minimal'
+            && self::mockRefsAreValid($wire)
+            && self::fieldsAreValid($wire['fields']);
+    }
+
+    /**
+     * @param array<mixed> $wire
      * @return array{contract:string,state:string,projection:null,real_authorization:false,external_calls:0}
      */
     public static function inspect(array $wire): array
     {
-        // Fail closed for everything including valid synthetic requests.
-        // Deliberately do not echo input values or error specifics.
-        if (count($wire) === count(self::KEYS)) {
-            $keys = array_keys($wire);
-            sort($keys, SORT_STRING);
-            $expected = self::KEYS;
-            sort($expected, SORT_STRING);
-            if ($keys === $expected
-                && $wire['contract'] === 'SYNTHETIC_CRM_AIA_READ_V1'
-                && $wire['operation'] === 'crm.lead.read_minimal'
-                && self::mockRefsAreValid($wire)
-                && self::fieldsAreValid($wire['fields'])) {
-                return self::denied();
-            }
-        }
-
+        // Intentional uniform denial, even for well-formed fixture requests.
+        // Shape matching is testable above, but conveys no service identity.
         return self::denied();
     }
 
