@@ -10,7 +10,7 @@ use Symfony\Component\Process\ExecutableFinder;
 
 $html = file_get_contents(dirname(__DIR__, 2).'/prototypes/f3-59-offline-kanban/index.html');
 if (!is_string($html)
-    || strlen($html) > 30000
+    || strlen($html) > 32000
     || substr_count($html, '</body>') !== 1
     || !str_contains($html, 'PROTÓTIPO — DADOS FICTÍCIOS.')
     || !str_contains($html, "connect-src 'none'")
@@ -357,6 +357,36 @@ $checks = <<<'JS'
     byId('undo-change').click();
     check(document.querySelector('#lane-1 [data-card-id="F04"]')!==null,'undo completed-only return');
     byId('reset-demo').click();
+    const csvButton=byId('toggle-csv-demo'),csvView=byId('csv-preview');
+    check(csvView.hidden&&csvButton.getAttribute('aria-expanded')==='false','CSV preview initially closed');
+    csvButton.focus();csvButton.click();
+    check(!csvView.hidden&&csvButton.getAttribute('aria-expanded')==='true','CSV preview opens read only');
+    check(document.activeElement===csvButton,'CSV reveal preserves button focus');
+    const csvLines=()=>csvView.textContent.trim().split('\n');
+    check(csvLines()[0]==='id;etapa;prioridade;acompanhamento;valor_ficticio;pontuacao','strict technical CSV header');
+    check(csvLines().length===9,'CSV preview has eight invented rows');
+    check(csvLines()[1]==='F01;0;high;pending;1800;92','first CSV fixture is technical only');
+    check(csvLines()[8]==='F08;3;normal;pending;1100;57','last CSV fixture is technical only');
+    document.querySelector('[data-priority="high"]').click();
+    check(csvLines().length===5&&csvLines().slice(1).every(x=>x.includes(';high;')),'CSV respects priority filtering');
+    stageButton('2').click();
+    check(csvLines().length===2&&csvLines()[1]==='F05;2;high;pending;5300;90','CSV respects stage focus');
+    move('F05','next');
+    check(csvLines().length===1,'CSV has only header when selected card leaves stage');
+    byId('undo-change').click();
+    check(csvLines().length===2&&csvLines()[1].startsWith('F05;2;'),'undo restores CSV without cached rows');
+    byId('reset-demo').click();
+    check(csvLines().length===9,'CSV follows reset');
+    byId('add-fiction').click();
+    check(csvLines().length===10&&csvLines()[9]==='F09;0;high;pending;1850;59','new generated fictitious card enters CSV');
+    byId('undo-change').click();
+    check(csvLines().length===9,'undo creation removes generated CSV entry');
+    stageButton('3').click();
+    followupFilter('done').click();
+    check(csvLines().length===1,'empty intersection emits header only');
+    byId('reset-demo').click();
+    csvButton.click();
+    check(csvView.hidden&&csvButton.getAttribute('aria-expanded')==='false','CSV preview closes without exporting a file');
     check(!document.querySelector('form,iframe,textarea'),'no capture route');
     output.setAttribute('data-imagine-browser-smoke','PASS');
     output.textContent='F3-59 desktop real Chromium PASS';
@@ -522,6 +552,21 @@ try {
       check(doc.querySelector('#lane-3 [data-card-id="F08"]')!==null,'mobile undo restores backward stage');
       doc.getElementById('reset-demo').click();
       check(doc.documentElement.scrollWidth<=320,'mobile bulk return controls no overflow');
+      const mobileCsvButton=doc.getElementById('toggle-csv-demo');
+      const mobileCsv=doc.getElementById('csv-preview');
+      mobileCsvButton.focus();mobileCsvButton.click();
+      check(!mobileCsv.hidden&&mobileCsvButton.getAttribute('aria-expanded')==='true','mobile CSV preview opens');
+      check(doc.activeElement===mobileCsvButton,'mobile CSV focus preserved');
+      check(mobileCsv.textContent.trim().split('\n').length===9,'mobile CSV eight fictitious rows');
+      doc.querySelector('[data-stage-filter="3"]').click();
+      doc.querySelector('[data-priority="high"]').click();
+      check(mobileCsv.textContent.trim().split('\n').length===2,'mobile CSV filtered to one high proposal');
+      check(mobileCsv.textContent.includes('F07;3;high;pending;7600;95'),'mobile filtered CSV technical value');
+      check(doc.documentElement.scrollWidth<=320,'mobile CSV scroll is internal');
+      doc.getElementById('reset-demo').click();
+      check(mobileCsv.textContent.trim().split('\n').length===9,'mobile CSV restored after reset');
+      mobileCsvButton.click();
+      check(mobileCsv.hidden,'mobile CSV preview closes');
       check(doc.documentElement.scrollWidth<=320,'no overflow after reset');
       finish('PASS','real interactive 320 px viewport');
     }catch(error){finish('FAIL',error.message);}
