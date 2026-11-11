@@ -93,7 +93,7 @@ final class OfflinePortalCrmDeliveryDemoTest extends TestCase
             'O receptor pode ter gravado ou não.',$html
         );
         self::assertStringContainsString(
-            'Nenhum contato enviado',$html // UI label is uppercase, check below instead if needed
+            'NENHUM CONTATO ENVIADO',$html
         );
     }
 }
