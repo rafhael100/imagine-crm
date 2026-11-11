@@ -25,10 +25,11 @@ final class SyntheticCsvImportPreflight
         TenantContext $unverifiedContext,
         mixed $targetTenantId,
         mixed $requestedFields,
+        string $delimiter = ',',
     ): SyntheticCsvImportPreflightSummary {
         // Decodes once, discards cell/header values; preview only counts/positions.
         $preview = (new SyntheticCsvImportPreview())->inspectSuggested(
-            $syntheticCsv, $targetLabels,
+            $syntheticCsv, $targetLabels, $delimiter,
         );
 
         // Do not permit the requested-field description to claim a target
