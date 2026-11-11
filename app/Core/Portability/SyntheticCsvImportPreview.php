@@ -9,7 +9,7 @@ use InvalidArgumentException;
 /**
  * F3-53: bounded, offline CSV *preview* for synthetic fixtures only.
  *
- * Parses RFC-4180-style comma/quote/CRLF or LF text in memory. It does not
+ * Parses explicit comma or semicolon/quote/CRLF or LF text in memory. It does not
  * ingest files/uploads, store cells, infer ownership, authenticate the tenant,
  * deduplicate contacts or authorize an import. No row/cell data leaves inspect.
  * F3-55 makes this the single canonical decoder for legacy preview + mapped preview.
@@ -21,9 +21,9 @@ final class SyntheticCsvImportPreview
     private const MAX_COLUMNS = 8;
     private const MAX_CELL_BYTES = 512;
 
-    public function inspect(string $csv): SyntheticImportPreviewSummary
+    public function inspect(string $csv, string $delimiter = ','): SyntheticImportPreviewSummary
     {
-        return $this->decode($csv)[0];
+        return $this->decode($csv, $delimiter)[0];
     }
 
     /**
@@ -36,8 +36,9 @@ final class SyntheticCsvImportPreview
         string $csv,
         array $targetLabels,
         array $mappingPairs,
+        string $delimiter = ',',
     ): SyntheticImportMappedPreviewSummary {
-        [$preview, $sourceLabels] = $this->decode($csv);
+        [$preview, $sourceLabels] = $this->decode($csv, $delimiter);
 
         try {
             $mapping = (new SyntheticColumnMappingInspector())->assess(
@@ -59,8 +60,9 @@ final class SyntheticCsvImportPreview
     public function inspectSuggested(
         string $csv,
         array $targetLabels,
+        string $delimiter = ',',
     ): SyntheticImportMappedPreviewSummary {
-        [$preview, $sourceLabels] = $this->decode($csv);
+        [$preview, $sourceLabels] = $this->decode($csv, $delimiter);
 
         try {
             $proposal = (new SyntheticColumnMappingInspector())->suggestExactMatches(
@@ -74,8 +76,13 @@ final class SyntheticCsvImportPreview
     }
 
     /** @return array{SyntheticImportPreviewSummary, list<string>} */
-    private function decode(string $csv): array
+    private function decode(string $csv, string $delimiter): array
     {
+        // Never guess a locale or silently reinterpret the header. Two known
+        // delimiters are permitted only when the caller explicitly selects one.
+        if ($delimiter !== ',' && $delimiter !== ';') {
+            self::invalid();
+        }
         if ($csv === '' || strlen($csv) > self::MAX_BYTES
             || preg_match('//u', $csv) !== 1 || str_contains($csv, "\0")) {
             self::invalid();
@@ -116,7 +123,7 @@ final class SyntheticCsvImportPreview
                 } else {
                     self::invalid();
                 }
-            } elseif ($char === ',' && $mode !== 'quoted') {
+            } elseif ($char === $delimiter && $mode !== 'quoted') {
                 $rowHasRepresentation = true;
                 self::finishCell($row, $cell);
                 $mode = 'start';
