@@ -104,6 +104,14 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   <button type="button" data-followup-filter="pending" aria-pressed="false">Pendentes</button>
   <button type="button" data-followup-filter="done" aria-pressed="false">Concluídos</button>
   </div>
+  <div class="filters" role="group" aria-label="Focar etapa fictícia">
+  <strong>Etapa:</strong>
+  <button type="button" data-stage-filter="all" aria-pressed="true">Todas etapas</button>
+  <button type="button" data-stage-filter="0" aria-pressed="false">Entrada</button>
+  <button type="button" data-stage-filter="1" aria-pressed="false">Em contato</button>
+  <button type="button" data-stage-filter="2" aria-pressed="false">Qualificação</button>
+  <button type="button" data-stage-filter="3" aria-pressed="false">Proposta</button>
+  </div>
   <div class="filters" role="group" aria-label="Ordenar cartões fictícios">
   <strong>Ordenação:</strong>
   <button type="button" data-order="default" aria-pressed="true">Ordem original</button>
@@ -156,6 +164,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   let opportunities=FIXTURES.map(function(item){return Object.assign({},item);});
   let priority='all';
   let followupFilter='all';
+  let stageFilter='all';
   let history=[];
   let moves=0;
   let nextGenerated=9;
@@ -202,7 +211,8 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   function render(focus){
   const subset=opportunities.filter(function(item){
   return (priority==='all'||item.priority===priority)
-  && (followupFilter==='all'||item.followup===followupFilter);
+  && (followupFilter==='all'||item.followup===followupFilter)
+  && (stageFilter==='all'||item.stage===stageFilter);
   });
   put('count-visible',subset.length);
   put('count-high',subset.filter(function(item){return item.priority==='high';}).length);
@@ -211,6 +221,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   put('count-moves',moves);
   STAGES.forEach(function(stage,index){
   const target=byId('lane-'+index);
+  target.closest('.lane').hidden=(stageFilter!=='all'&&stageFilter!==index);
   target.replaceChildren();
   const items=subset.filter(function(item){return item.stage===index;});
   if(order==='score')items.sort(function(a,b){return b.score-a.score||a.id.localeCompare(b.id);});
@@ -247,6 +258,9 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   document.querySelectorAll('[data-followup-filter]').forEach(function(button){
   button.setAttribute('aria-pressed',String(button.dataset.followupFilter===followupFilter));
   });
+  document.querySelectorAll('[data-stage-filter]').forEach(function(button){
+  button.setAttribute('aria-pressed',String(button.dataset.stageFilter===String(stageFilter)));
+  });
   const activityList=byId('activity-list');
   activityList.replaceChildren();
   (activity.length?activity.slice(0,6):['Nenhuma ação simulada registrada.']).forEach(function(message){
@@ -264,6 +278,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   if(focus){
   const element=focus.startsWith('followup:')
   ?document.querySelector('[data-card-id="'+focus.slice(9)+'"] button[data-followup]'):
+  focus==='stage'?document.querySelector('[data-stage-filter="'+stageFilter+'"]'):
   focus==='batch'?(byId('complete-visible-followups').disabled
   ?document.querySelector('[data-followup-filter="all"]')
   :byId('complete-visible-followups')):
@@ -274,6 +289,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   focus==='sort'?document.querySelector('[data-order="'+order+'"]'):
   document.querySelector('[data-card-id="'+focus+'"] button:not([disabled])');
   if(element)element.focus();
+  else if(stageFilter!=='all')document.querySelector('[data-stage-filter="'+stageFilter+'"]').focus();
   }
   }
   byId('followup-queue').addEventListener('click',function(event){
@@ -315,6 +331,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const selected=opportunities.filter(function(item){
   return (priority==='all'||item.priority===priority)
   && (followupFilter==='all'||item.followup===followupFilter)
+  && (stageFilter==='all'||item.stage===stageFilter)
   && item.followup==='pending';
   });
   if(selected.length===0)return;
@@ -344,6 +361,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   moves++;
   priority='all';
   followupFilter='all';
+  stageFilter='all';
   render(item.id);
   describe(item.label+' criada apenas nesta aba.');
   });
@@ -388,6 +406,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   nextGenerated=9;
   priority='all';
   followupFilter='all';
+  stageFilter='all';
   order='default';
   activity=[];
   render('reset');
@@ -406,6 +425,13 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   render('filter');
   button.focus();
   describe('Filtro de acompanhamento fictício atualizado.');
+  });
+  });
+  document.querySelectorAll('[data-stage-filter]').forEach(function(button){
+  button.addEventListener('click',function(){
+  stageFilter=button.dataset.stageFilter==='all'?'all':Number(button.dataset.stageFilter);
+  render('stage');
+  describe('Foco na etapa fictícia atualizado.');
   });
   });
   document.querySelectorAll('[data-order]').forEach(function(button){

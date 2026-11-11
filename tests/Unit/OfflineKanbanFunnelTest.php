@@ -227,6 +227,39 @@ final class OfflineKanbanFunnelTest extends TestCase
         }
     }
 
+    public function test_stage_focus_restricts_visible_cards_queue_and_bulk_operations(): void
+    {
+        $html = self::html();
+        foreach ([
+            'data-stage-filter="all" aria-pressed="true"',
+            'data-stage-filter="0" aria-pressed="false"',
+            'data-stage-filter="1" aria-pressed="false"',
+            'data-stage-filter="2" aria-pressed="false"',
+            'data-stage-filter="3" aria-pressed="false"',
+            "let stageFilter='all';",
+            "item.stage===stageFilter",
+            "target.closest('.lane').hidden=(stageFilter!=='all'&&stageFilter!==index);",
+            "button.dataset.stageFilter===String(stageFilter)",
+            "stageFilter=button.dataset.stageFilter==='all'?'all':Number(button.dataset.stageFilter);",
+            "render('stage');",
+            "focus==='stage'?",
+            "else if(stageFilter!=='all')document.querySelector(",
+            "stageFilter='all';",
+        ] as $expected) {
+            self::assertStringContainsString($expected, $html);
+        }
+
+        // The *same* stage guard must apply to the visible subset AND bulk
+        // action; otherwise hidden-stage cards could be modified.
+        self::assertGreaterThanOrEqual(2, substr_count(
+            $html, "(stageFilter==='all'||item.stage===stageFilter)",
+        ));
+        self::assertStringContainsString("connect-src 'none'", $html);
+        foreach (['<form', '<input', '<textarea', 'fetch(', 'localStorage'] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, $html);
+        }
+    }
+
     public function test_accessible_actions_and_mobile_layout_are_present(): void
     {
         $html = self::html();
