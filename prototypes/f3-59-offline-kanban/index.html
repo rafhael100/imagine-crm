@@ -58,6 +58,10 @@ button[disabled]{opacity:.47;cursor:not-allowed}
 .empty{border:1px dashed #a8c0c9;background:#f8fbfc;border-radius:11px;color:#677e8c;padding:16px;font-size:.8rem}
 .status{border:1px solid #d0e3e9;color:#285b69;background:white;margin-top:15px;border-radius:11px;padding:12px 15px;font-weight:670}
 .activity{margin-top:15px;background:#fff;border:1px solid #dce7ed;border-radius:14px;padding:18px}
+ .queue-wrap{overflow-x:auto;max-width:100%}
+.queue-table{width:100%;min-width:400px;border-collapse:collapse}
+.queue-table th,.queue-table td{padding:8px 10px;text-align:left;border-bottom:1px solid #e4edf0;font-size:.83rem}
+.queue-table th{color:#3b5a6c}
 .activity h2{font-size:1.03rem;margin:0 0 6px}
 .activity p{color:#637789;font-size:.78rem;margin:0 0 10px}
 .activity ol{padding-left:21px;margin:0;color:#35566a;font-size:.85rem}
@@ -118,6 +122,15 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     <section class="lane" aria-labelledby="lane-title-2"><div class="lane-header"><h2 id="lane-title-2">Qualificação</h2><span id="lane-count-2" class="lane-count">0</span></div><p id="lane-value-2" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-2"></div></section>
     <section class="lane" aria-labelledby="lane-title-3"><div class="lane-header"><h2 id="lane-title-3">Proposta</h2><span id="lane-count-3" class="lane-count">0</span></div><p id="lane-value-3" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-3"></div></section>
   </div>
+  <section class="activity" aria-labelledby="queue-heading">
+    <h2 id="queue-heading">Fila de acompanhamentos fictícios pendentes</h2>
+    <p>Somente cartões visíveis com pendências, ordenados por pontuação inventada. Localizar não envia mensagens nem altera etapas.</p>
+    <div class="queue-wrap"><table class="queue-table">
+      <caption>Revisão local de oportunidades fictícias; nenhum dado de cliente</caption>
+      <thead><tr><th scope="col">Oportunidade</th><th scope="col">Etapa</th><th scope="col">Pontuação</th><th scope="col">Localizar</th></tr></thead>
+      <tbody id="followup-queue"></tbody>
+    </table></div>
+  </section>
   <section class="activity" aria-labelledby="activity-heading">
     <h2 id="activity-heading">Atividade simulada nesta aba</h2>
     <p>Histórico de demonstração, sem auditoria de CRM ou persistência. São mostradas até seis ações recentes.</p>
@@ -208,6 +221,26 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       if(!items.length)target.appendChild(node('p','empty','Nenhuma oportunidade fictícia neste filtro.'));
       items.forEach(function(item){target.appendChild(ticket(item));});
     });
+    const queue=byId('followup-queue');
+    queue.replaceChildren();
+    const waiting=subset.filter(function(item){return item.followup==='pending';})
+      .sort(function(a,b){return b.score-a.score||a.id.localeCompare(b.id);});
+    if(!waiting.length){
+      const row=node('tr');const cell=node('td','', 'Nenhum acompanhamento fictício pendente neste filtro.');
+      cell.colSpan=4;row.appendChild(cell);queue.appendChild(row);
+    }
+    waiting.forEach(function(item){
+      const row=node('tr');
+      [item.label,STAGES[item.stage],item.score+'/100'].forEach(function(value){
+        row.appendChild(node('td','',value));
+      });
+      const action=node('td');
+      const button=node('button','', 'Localizar cartão');
+      button.type='button';
+      button.dataset.queueCard=item.id;
+      button.setAttribute('aria-label','Localizar '+item.label+' no funil fictício');
+      action.appendChild(button);row.appendChild(action);queue.appendChild(row);
+    });
     document.querySelectorAll('[data-priority]').forEach(function(button){
       button.setAttribute('aria-pressed',String(button.dataset.priority===priority));
     });
@@ -243,6 +276,15 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       if(element)element.focus();
     }
   }
+  byId('followup-queue').addEventListener('click',function(event){
+    const button=event.target.closest('button[data-queue-card]');
+    if(!button)return;
+    const target=document.querySelector('[data-card-id="'+button.dataset.queueCard+'"] button[data-followup]');
+    if(!target)return;
+    target.focus();
+    target.scrollIntoView({block:'nearest'});
+    describe('Cartão fictício '+button.dataset.queueCard+' localizado no funil.');
+  });
   byId('board').addEventListener('click',function(event){
     const followButton=event.target.closest('button[data-followup]');
     if(followButton){
