@@ -1,0 +1,72 @@
+name: CRM F3-50 - Offline Portal CRM delivery states real browser
+
+on:
+  push:
+    branches:
+      - dev/f3-50-offline-lead-delivery-ux-2026-11-10
+  pull_request:
+    paths:
+      - 'prototypes/s01-prot-01/index.html'
+      - 'tests/Unit/OfflinePortalCrmDeliveryDemoTest.php'
+      - 'scripts/ci/check-offline-prototype-browser.php'
+      - 'scripts/ci/check-offline-prototype-320.php'
+      - '.github/workflows/ci-f3-50-delivery-prototype-browser.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-browser-offline-states:
+    name: Laravel PHP 8.4 / Chromium desktop and 320px
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring,dom,xml,pdo_sqlite,sqlite3,curl,zip
+          tools: composer:v2
+          coverage: none
+      - name: Install locked dependencies and confirm static/offline safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer validate --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+          php -l tests/Unit/OfflinePortalCrmDeliveryDemoTest.php
+          php -l scripts/ci/check-offline-prototype-browser.php
+          php -l scripts/ci/check-offline-prototype-320.php
+          test "$(wc -c <prototypes/s01-prot-01/index.html)" -lt 100000
+          if grep -E 'fetch\(|XMLHttpRequest|WebSocket|localStorage|sessionStorage|<form|<input|<textarea' \
+            prototypes/s01-prot-01/index.html; then
+            echo 'Demo must remain fully offline, immutable and without contact capture' >&2
+            exit 1
+          fi
+      - name: Run PHP DOM/accessibility and public route tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .env.example .env
+          php artisan key:generate --force
+          php artisan test --filter=OfflinePortalCrmDeliveryDemoTest --no-ansi
+          php artisan test --filter=PublicRouteSurfaceSealTest --no-ansi
+      - name: Exercise actual Chromium interactions at desktop and 320 CSS px
+        shell: bash
+        run: |
+          set -euo pipefail
+          php scripts/ci/check-offline-prototype-browser.php
+          php scripts/ci/check-offline-prototype-320.php

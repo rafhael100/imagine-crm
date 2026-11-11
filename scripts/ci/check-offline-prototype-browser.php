@@ -114,6 +114,25 @@ $testScript = <<<'JS'
     // Exercise the fixture-only stage filter in the real narrow browser.
     leads.click();
     check(document.getElementById('page-title').textContent==='Leads fictícios','open lead screen');
+    // UX-F3-50: verify real browser delivery guidance, never a real CRM ACK.
+    const deliveryBtns=Array.from(document.querySelectorAll('#screen-leads [data-delivery-case]'));
+    const deliveryPreview=document.getElementById('delivery-demo-preview');
+    check(deliveryBtns.length===4&&deliveryPreview!==null,'four synthetic delivery controls');
+    check(deliveryPreview.textContent.includes('Pendente de revisão'),'default delivery demo state');
+    check(deliveryBtns.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'single initial delivery selection');
+    deliveryBtns.find(x=>x.dataset.deliveryCase==='unknown').click();
+    check(deliveryPreview.textContent.includes('Resultado incerto — reenvio bloqueado'),'unknown outcome visible');
+    check(deliveryPreview.textContent.includes('Não reenviar automaticamente.'),'unknown outcome forbids blind retry');
+    check(deliveryBtns.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'single selected unknown state');
+    deliveryBtns.find(x=>x.dataset.deliveryCase==='mock-confirmed').click();
+    check(deliveryPreview.textContent.includes('Recibo sintético compatível'),'mock receipt clearly labeled');
+    check(deliveryPreview.textContent.includes('não comprova CRM real'),'no false CRM delivery');
+    deliveryBtns.find(x=>x.dataset.deliveryCase==='claimed').click();
+    check(deliveryPreview.textContent.includes('confirmação ausente'),'in-flight status remains unconfirmed');
+    deliveryBtns.find(x=>x.dataset.deliveryCase==='queued').click();
+    check(deliveryPreview.textContent.includes('Pendente de revisão'),'default delivery state restored');
+    check(!document.querySelector('#screen-leads form,#screen-leads input,#screen-leads textarea'),'delivery demo cannot capture contacts');
+
     const filterButtons=Array.from(document.querySelectorAll('[data-lead-stage]'));
     const rows=Array.from(document.querySelectorAll('#screen-leads [data-lead-fixture-stage]'));
     const visible=()=>rows.filter(x=>!x.hidden).length;

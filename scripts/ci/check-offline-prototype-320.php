@@ -132,6 +132,18 @@ $driver = <<<'HTML'
       check(doc.getElementById('page-title').textContent==='Monitoramento de leads','no implicit activation');
       // Stage filtering is demo-only, but its DOM behavior must work in 320px.
       leads.click();
+      // UX-F3-50: fixed delivery states remain usable at TRUE 320 CSS px.
+      const deliveryBtns=Array.from(doc.querySelectorAll('#screen-leads [data-delivery-case]'));
+      const deliveryPreview=doc.getElementById('delivery-demo-preview');
+      check(deliveryBtns.length===4&&deliveryPreview.textContent.includes('Pendente de revisão'),'four mobile delivery states');
+      deliveryBtns.find(x=>x.dataset.deliveryCase==='unknown').click();
+      check(deliveryPreview.textContent.includes('Não reenviar automaticamente.'),'mobile uncertainty retains re-send hold');
+      deliveryBtns.find(x=>x.dataset.deliveryCase==='mock-confirmed').click();
+      check(deliveryPreview.textContent.includes('não comprova CRM real'),'mobile mock receipt clearly not production');
+      deliveryBtns.find(x=>x.dataset.deliveryCase==='queued').click();
+      check(deliveryBtns.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'one selected mobile delivery case');
+      check(doc.documentElement.scrollWidth<=320,'new delivery guidance never creates horizontal overflow');
+      check(!doc.querySelector('#screen-leads form,#screen-leads input'),'no contact capture on mobile');
       const stageButtons=Array.from(doc.querySelectorAll('#screen-leads [data-lead-stage]'));
       const leadRows=Array.from(doc.querySelectorAll('#screen-leads [data-lead-fixture-stage]'));
       const count=()=>leadRows.filter(node=>!node.hidden).length;

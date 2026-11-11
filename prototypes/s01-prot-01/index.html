@@ -52,6 +52,9 @@
     .state-button{background:#f7fafc;border:1px solid #dbe4eb;border-radius:100px;padding:9px 15px;color:#455a6e;font-weight:680;cursor:pointer;font-size:13px}
     .state-button[aria-pressed="true"]{background:#173f52;border-color:#173f52;color:#fff}.state-button:hover{border-color:#1b8b8c}.state-button:disabled{opacity:.55;cursor:not-allowed}
     .state-surface{min-height:208px;border:1px dashed #a2bdc5;border-radius:15px;background:#f8fbfc;padding:24px;display:flex;align-items:center}
+    [data-delivery-demo]{display:block;min-width:0;max-width:100%;overflow-wrap:anywhere}
+    [data-delivery-demo] .switcher{max-width:100%}
+    #delivery-demo-preview{min-width:0;max-width:100%}
     .state-surface>div{max-width:100%}.state-surface p{margin:7px 0;color:#607488;font-size:14px}
     .state-note{color:#56858b!important;font-size:12px!important;font-weight:700;letter-spacing:.2px}
     .info-list{display:grid;gap:13px}.info-item{display:flex;gap:12px;color:#43576c;font-size:14px}.check{color:#168478;font-weight:800}
@@ -258,6 +261,17 @@
             <h3 id="lead-detail-heading">Revisão de um exemplo — somente leitura</h3>
             <p class="caption">Selecione um lead fictício para consultar a ficha e a sequência de eventos totalmente inventada. Não há datas, autores, contatos, histórico real ou permissões verificadas.</p>
             <div id="lead-detail-preview" class="state-surface" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+          </div>
+          <div class="state-surface" data-delivery-demo aria-labelledby="delivery-demo-title">
+            <h3 id="delivery-demo-title">Entrega Portal → CRM — estados de exemplo</h3>
+            <p class="caption">Demonstração visual de uma solicitação inteiramente fictícia. Não há conexão com Portal, CRM, fila, banco de dados ou usuário real.</p>
+            <div class="switcher" role="group" aria-label="Escolher estado fictício de entrega">
+              <button type="button" class="state-button" data-delivery-case="queued" aria-pressed="true">Pendente</button>
+              <button type="button" class="state-button" data-delivery-case="claimed" aria-pressed="false">Em processamento</button>
+              <button type="button" class="state-button" data-delivery-case="unknown" aria-pressed="false">Resultado incerto</button>
+              <button type="button" class="state-button" data-delivery-case="mock-confirmed" aria-pressed="false">Recibo de laboratório</button>
+            </div>
+            <div id="delivery-demo-preview" role="status" aria-live="polite" aria-atomic="true"></div>
           </div>
           <div class="help">Filtros combinados, contagens e ordenação são somente simulações locais sobre quatro exemplos fictícios. Pontuação e faixa são valores estáticos, sem qualificação automática de pessoas, gravação ou ligação com o PHP em desenvolvimento.</div>
           <button class="action" type="button" data-go="pipeline">Visualizar funil ilustrativo</button>
@@ -497,6 +511,8 @@
   const leadDetailButtons = Array.from(document.querySelectorAll('#screen-leads [data-lead-detail]'));
   const pipelineReviewButtons = Array.from(document.querySelectorAll('#screen-pipeline [data-pipeline-review]'));
   const leadDetailPreview = document.getElementById('lead-detail-preview');
+  const deliveryCaseButtons = Array.from(document.querySelectorAll('#screen-leads [data-delivery-case]'));
+  const deliveryDemoPreview = document.getElementById('delivery-demo-preview');
   let selectedLeadFixture = null;
   let selectedLeadStage = 'all';
   let selectedLeadTemperature = 'all';
@@ -641,6 +657,46 @@
     if((step===-1 && leadPagePrev.disabled)||(step===1 && leadPageNext.disabled)) return;
     selectedLeadPage+=step;
     applyLeadFixtureFilters();
+  }
+
+  // UX F3-50: four FIXED receipt/transport states only. No request,
+  // storage, authenticated actor, business action or real CRM acknowledgment.
+  function showDeliveryDemoCase(code) {
+    const cases=Object.freeze({
+      queued:Object.freeze({
+        title:'Pendente de revisão',
+        explanation:'A solicitação fictícia aparece somente como um evento pendente de revisão.',
+        action:'Nenhuma entrega ao CRM foi confirmada; não apresentar sucesso ao visitante.'
+      }),
+      claimed:Object.freeze({
+        title:'Em processamento — confirmação ausente',
+        explanation:'Uma tentativa ilustrativa tem prazo de execução, mas ainda não existe recibo confiável.',
+        action:'Aguardar evidência verificável; não presumir que o lead já foi salvo.'
+      }),
+      unknown:Object.freeze({
+        title:'Resultado incerto — reenvio bloqueado',
+        explanation:'O exemplo simula uma resposta perdida após uma tentativa. O receptor pode ter gravado ou não.',
+        action:'Não reenviar automaticamente. Consultar a origem confiável e reconciliar antes de qualquer decisão.'
+      }),
+      'mock-confirmed':Object.freeze({
+        title:'Recibo sintético compatível — sem confirmação real',
+        explanation:'O laboratório pode comparar um HMAC após um commit em banco descartável.',
+        action:'Uma assinatura de teste não comprova CRM real nem autoriza confirmar entrega ao visitante.'
+      })
+    });
+    if(!Object.prototype.hasOwnProperty.call(cases,code)) return;
+    deliveryCaseButtons.forEach(function(button){
+      button.setAttribute('aria-pressed',String(button.getAttribute('data-delivery-case')===code));
+    });
+    deliveryDemoPreview.replaceChildren();
+    const entry=cases[code];
+    const panel=document.createElement('div');
+    addText(panel,'p','CENÁRIO SINTÉTICO — NENHUM CONTATO ENVIADO','state-note');
+    addText(panel,'h4',entry.title);
+    addText(panel,'p',entry.explanation);
+    addText(panel,'p',entry.action);
+    addText(panel,'p','Nenhum envio, reenvio, consulta, confirmação ou alteração de estado foi realizado.');
+    deliveryDemoPreview.appendChild(panel);
   }
 
   // Four closed, fixed descriptors corresponding only to the existing demo rows.
@@ -1188,11 +1244,15 @@
     showLeadDetail(code);
     destination.focus();
   });});
+  deliveryCaseButtons.forEach(function(node){node.addEventListener('click',function(){
+    showDeliveryDemoCase(node.getAttribute('data-delivery-case'));
+  });});
   leadDetailButtons.forEach(function(node){node.addEventListener('click',function(){
     const code=node.getAttribute('data-lead-detail');
     showLeadDetail(selectedLeadFixture===code?null:code);
   });});
   navigate('welcome',false);
+  showDeliveryDemoCase('queued');
   showLeadStage('all');
   showLeadTemperature('all');
   sortLeadFixtures('original');
