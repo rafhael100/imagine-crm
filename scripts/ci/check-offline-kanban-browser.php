@@ -310,6 +310,7 @@ $checks = <<<'JS'
     check(visible()===4,'four high-priority fixtures');
     stageAdvance.click();
     check(document.querySelector('#lane-3 [data-card-id="F07"]')!==null,'terminal high card unaffected');
+    document.querySelector('[data-priority="all"]').click();
     check(document.querySelector('#lane-2 [data-card-id="F06"]')!==null,'hidden normal card unaffected');
     check(document.querySelector('#lane-3 [data-card-id="F05"]')!==null,'qualified high card advanced');
     byId('undo-change').click();
