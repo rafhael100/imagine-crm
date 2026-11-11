@@ -104,6 +104,56 @@ final class SyntheticCsvImportPreview
         return new SyntheticCsvRowRepeatSummary($preview, $repeated);
     }
 
+    /**
+     * F3-69: assess caller-selected technical REQUIRED fields against a
+     * bounded, fully decoded synthetic CSV, returning positions only.
+     * Missing headers remain positional warnings, not inferred aliases.
+     *
+     * The same ASCII trim rule as SyntheticImportPreviewInspector is used
+     * for empty cells so overall empty-cell counts stay consistent.
+     *
+     * @param array<mixed> $requiredTechnicalLabels
+     */
+    public function inspectRequiredCells(
+        string $csv,
+        array $requiredTechnicalLabels,
+        string $delimiter = ',',
+    ): SyntheticCsvRequiredCellsSummary {
+        [$preview, $sourceLabels, $rows] = $this->decode($csv, $delimiter);
+
+        try {
+            $mapping = (new SyntheticColumnMappingInspector())->suggestExactMatches(
+                $sourceLabels, $requiredTechnicalLabels,
+            );
+        } catch (InvalidArgumentException) {
+            self::invalid();
+        }
+
+        $requiredSourcePositions = [];
+        foreach ($mapping->positions as $pair) {
+            $requiredSourcePositions[] = $pair['source'];
+        }
+
+        $emptyRequired = [];
+        foreach ($rows as $rowIndex => $row) {
+            foreach ($requiredSourcePositions as $position) {
+                if (trim($row[$position - 1]) === '') {
+                    $emptyRequired[] = [
+                        'row' => $rowIndex + 1,
+                        'column' => $position,
+                    ];
+                }
+            }
+        }
+
+        return new SyntheticCsvRequiredCellsSummary(
+            csvPreview: $preview,
+            requiredSourcePositions: $requiredSourcePositions,
+            missingRequiredTargetPositions: $mapping->unmappedTargetPositions,
+            emptyRequiredCellPositions: $emptyRequired,
+        );
+    }
+
     /** @return array{SyntheticImportPreviewSummary, list<string>, list<list<string>>} */
 
     private function decode(string $csv, string $delimiter): array

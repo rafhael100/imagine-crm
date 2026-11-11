@@ -80,6 +80,26 @@ final class SyntheticCsvPreviewDecoder
         }
     }
 
+    /**
+     * Position-only warnings for caller-selected technical required columns.
+     * No CRM business-field policy or authority is implied.
+     *
+     * @param array<mixed> $requiredTechnicalLabels
+     */
+    public function previewRequiredCells(
+        string $syntheticCsv,
+        array $requiredTechnicalLabels,
+        string $delimiter = ',',
+    ): SyntheticCsvRequiredCellsSummary {
+        try {
+            return (new SyntheticCsvImportPreview())->inspectRequiredCells(
+                $syntheticCsv, $requiredTechnicalLabels, $delimiter,
+            );
+        } catch (InvalidArgumentException) {
+            self::invalid();
+        }
+    }
+
     private static function invalid(): never
     {
         // Do not reveal client-like fields, cell contents or validation hints.
