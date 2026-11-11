@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; img-src 'none'; font-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — Revisão técnica de submissões fictícias</title>
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#17394b;background:#f3f7fa;line-height:1.5}
+body{margin:0;min-width:0}
+a,button{font:inherit}
+a{color:#115c6b}
+button:focus-visible,a:focus-visible{outline:3px solid #0c8888;outline-offset:3px}
+.skip{position:absolute;left:-10000px;top:12px;background:white;padding:12px;z-index:5}
+.skip:focus{left:12px}
+header{background:#183c50;color:#ecf9f7;padding:17px max(17px,calc((100vw - 1100px)/2));display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header b{letter-spacing:-.03em}header a{color:#dcf7ed}
+main{max-width:1140px;margin:auto;padding:clamp(17px,3vw,34px)}
+.eyebrow{text-transform:uppercase;font-size:.75rem;color:#117f77;letter-spacing:.13em;font-weight:800}
+h1{margin:5px 0 12px;font-size:clamp(1.5rem,4vw,2.45rem);line-height:1.18}
+h2{margin:0 0 9px;font-size:1.1rem}
+p{color:#4d6a7b}
+.lead{max-width:850px}
+.notice{padding:13px 15px;background:#e6f5f0;border:1px solid #afd6d1;border-radius:10px;color:#1c5c5a;font-weight:760}
+.panel{background:white;border:1px solid #d9e7ee;border-radius:14px;padding:18px;margin:18px 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}
+button{background:#f5fafb;border:1px solid #aac8d1;border-radius:9px;padding:10px 14px;color:#204b63;font-weight:740;cursor:pointer}
+button[aria-pressed="true"]{background:#194d5b;border-color:#194d5b;color:white}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.metric{background:#f8fbfd;border:1px solid #dce9ee;border-radius:11px;padding:14px;min-width:0}
+.metric span{display:block;font-size:.78rem;color:#5c7486}
+.metric strong{display:block;font-size:1.55rem;line-height:1.3;margin-top:6px;font-variant-numeric:tabular-nums}
+.status{padding:12px;background:#f3f8f9;border-radius:10px;color:#234e60;font-weight:700}
+.scroll{overflow-x:auto;max-width:100%}
+table{width:100%;min-width:420px;border-collapse:collapse}
+caption{text-align:left;color:#526e80;font-size:.78rem;margin:6px 0}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #e0eaf0;font-size:.87rem}
+th{background:#eef5f8}
+.small{font-size:.83rem;color:#597386}
+footer{max-width:1140px;margin:auto;padding:0 26px 30px;font-size:.8rem;color:#617788}
+@media(max-width:690px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:370px){main{padding:16px 12px}.panel{padding:13px}.controls{display:grid;grid-template-columns:minmax(0,1fr)}.metric{padding:10px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header><b>imagine CRM · Laboratório</b><a href="../index.html">Voltar ao laboratório</a></header>
+<main id="conteudo">
+  <span class="eyebrow">Integração Portal → CRM · Revisão offline</span>
+  <h1>Submissões técnicas fictícias</h1>
+  <p class="lead">Veja quatro exemplos de como o CRM pode apontar referências de envio repetidas, vínculos contraditórios ou organização divergente. Os números abaixo são resultados sintéticos do Core.</p>
+  <p class="notice">PROTÓTIPO — DADOS FICTÍCIOS. Nenhuma submissão real é consultada, capturada, enviada ou confirmada. Não há autenticação de empresa, vínculo ou serviço.</p>
+  <section class="panel" aria-labelledby="cases-title">
+    <h2 id="cases-title">Escolha um cenário técnico inventado</h2>
+    <div class="controls" role="group" aria-label="Cenários fictícios de referências de submissão">
+      <button type="button" data-case="0" aria-pressed="true">A · Envios distintos</button>
+      <button type="button" data-case="1" aria-pressed="false">B · Submissão repetida</button>
+      <button type="button" data-case="2" aria-pressed="false">C · Vínculo divergente</button>
+      <button type="button" data-case="3" aria-pressed="false">D · Organização divergente</button>
+    </div>
+    <p class="small">As amostras contêm somente índices numéricos previamente verificados pelo Core PHP. Não há identificadores nem dados de contatos.</p>
+  </section>
+  <section class="panel" aria-labelledby="summary-title">
+    <h2 id="summary-title">Resultado de laboratório</h2>
+    <div class="metrics">
+      <div class="metric"><span>Referências analisadas</span><strong id="count-claims">2</strong></div>
+      <div class="metric"><span>Envios repetidos</span><strong id="count-same">0</strong></div>
+      <div class="metric"><span>Vínculos divergentes</span><strong id="count-binding">0</strong></div>
+      <div class="metric"><span>Organizações divergentes</span><strong id="count-org">0</strong></div>
+    </div>
+    <p class="status" id="review-status" role="status" aria-live="polite" aria-atomic="true">Sem avisos estruturais. Entrega não autorizada.</p>
+  </section>
+  <section class="panel" aria-labelledby="positions-title">
+    <h2 id="positions-title">Avisos por posição</h2>
+    <div class="scroll"><table>
+      <caption>Posições das referências de laboratório; contagem a partir de 1</caption>
+      <thead><tr><th scope="col">Tipo</th><th scope="col">Referências</th></tr></thead>
+      <tbody id="finding-rows"></tbody>
+    </table></div>
+    <p class="notice">Uma coincidência técnica não comprova identidade de empresa, autorização de retry, contato duplicado, registro persistido ou entrega ao CRM. Nenhuma operação é permitida.</p>
+  </section>
+</main>
+<footer>Imagine CRM · Simulação offline. Sem API, rede, storage, identidades reais ou registro de leads.</footer>
+<script>
+(function(){
+  'use strict';
+  // F3-81: metadata-only scenarios checked against real F3-80 PHP Core.
+  const SCENARIOS = Object.freeze([
+    {"claims":2,"same":[],"binding":[],"organization":[],"allowed":false},
+    {"claims":2,"same":[{"first":1,"repeated":2}],"binding":[],"organization":[],"allowed":false},
+    {"claims":2,"same":[],"binding":[{"first":1,"conflicting":2}],"organization":[],"allowed":false},
+    {"claims":2,"same":[],"binding":[],"organization":[{"first":1,"conflicting":2}],"allowed":false}
+  ]);
+  const byId=id=>document.getElementById(id);
+  function addRow(label,positions){
+    const tr=document.createElement('tr');
+    const category=document.createElement('td');
+    const detail=document.createElement('td');
+    category.textContent=label;
+    detail.textContent=positions;
+    tr.appendChild(category);tr.appendChild(detail);
+    byId('finding-rows').appendChild(tr);
+  }
+  function show(index){
+    const report=SCENARIOS[index];
+    if(!report||report.allowed!==false)throw new Error('Amostra não autorizada');
+    byId('finding-rows').replaceChildren();
+    report.same.forEach(pair=>addRow('Submissão técnica repetida','Posições '+pair.first+' e '+pair.repeated));
+    report.binding.forEach(pair=>addRow('Vínculo técnico divergente','Posições '+pair.first+' e '+pair.conflicting));
+    report.organization.forEach(pair=>addRow('Organização declarada divergente','Posições '+pair.first+' e '+pair.conflicting));
+    const warnings=report.same.length+report.binding.length+report.organization.length;
+    if(!warnings)addRow('Nenhum aviso estrutural','Revisão técnica continua necessária');
+    byId('count-claims').textContent=String(report.claims);
+    byId('count-same').textContent=String(report.same.length);
+    byId('count-binding').textContent=String(report.binding.length);
+    byId('count-org').textContent=String(report.organization.length);
+    byId('review-status').textContent=(warnings?'Amostra fictícia com '+warnings+' aviso(s).':'Amostra fictícia sem avisos.')+' Entrega não autorizada. Nenhuma organização foi autenticada.';
+    document.querySelectorAll('[data-case]').forEach(button=>{
+      button.setAttribute('aria-pressed',String(Number(button.dataset.case)===index));
+    });
+  }
+  document.querySelectorAll('[data-case]').forEach(button=>{
+    button.addEventListener('click',()=>show(Number(button.dataset.case)));
+  });
+  show(0);
+})();
+</script>
+</body>
+</html>

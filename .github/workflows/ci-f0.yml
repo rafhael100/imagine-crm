@@ -81,3 +81,6 @@ jobs:
 
       - name: Browser smoke test of CSV checklist (1100px and 320px)
         run: php scripts/ci/check-offline-csv-checklist-browser.php
+
+      - name: Browser smoke test of synthetic technical submission review (1100px and 320px)
+        run: php scripts/ci/check-offline-submission-review-browser.php
