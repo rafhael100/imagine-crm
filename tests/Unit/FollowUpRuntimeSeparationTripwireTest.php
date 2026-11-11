@@ -46,6 +46,7 @@ final class FollowUpRuntimeSeparationTripwireTest extends TestCase
             'CsvRowDispositionPreview',
             'CsvReviewSnapshotPreview',
             'CsvSnapshotRevisionDeltaPreview',
+            'CsvReviewRaceFixture',
         ];
 
         foreach ($entryPoints as $directory) {
