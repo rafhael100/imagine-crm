@@ -329,4 +329,65 @@ $otherAuth=signed($otherOrg,$GLOBALS['requestKey'],
 $denied=httpToCrm($otherOrg,$otherAuth);
 check($denied[0]===403&&$denied[1]['reasonCode']==='PINNED_CONTEXT_CONFLICT',
     'real CRM F3-41 refuses forged tenant despite syntactically valid MAC');
+
+// An attacker with the (CI-only) MAC key still cannot select another tenant
+// or destination. Both repository implementations independently pin context.
+foreach ([
+    'organization_reference','binding_reference','site_reference',
+    'form_reference','destination_reference'
+] as $field) {
+    $forged=$a;
+    $forged[$field]='abababab-abab-4aba-8aba-abababababab';
+    check(stagePortal($portal,$forged,$portalKey)==='PINNED_METADATA_REJECTED',
+        'real Portal independently refuses forged '.$field);
+    $signedForge=signed($forged,$GLOBALS['requestKey'],
+        'imagine.portal.synthetic-service-request.v1',uuid(),$iat,$iat+120);
+    $denied=httpToCrm($forged,$signedForge);
+    check($denied[0]===403&&$denied[1]['reasonCode']==='PINNED_CONTEXT_CONFLICT',
+        'real CRM independently refuses forged '.$field);
+}
+foreach (['name','email','phone','message','consent','cargo','mobile'] as $field) {
+    $unexpected=$a;
+    $unexpected[$field]='SYNTHETIC_TEST_ONLY';
+    check(stagePortal($portal,$unexpected,$portalKey)==='PINNED_METADATA_REJECTED',
+        'Portal technical envelope must never include '.$field);
+    $withValidMac=signed($unexpected,$GLOBALS['requestKey'],
+        'imagine.portal.synthetic-service-request.v1',uuid(),$iat,$iat+120);
+    $denied=httpToCrm($unexpected,$withValidMac);
+    check($denied[0]===422&&$denied[1]['reasonCode']==='ENVELOPE_REJECTED',
+        'CRM rejects '.$field.' even with syntactically signed metadata');
+}
+check(countDb($crm,'crm_portal_handoff_ci','metadata_receipts',$a['submission_reference'])===1,
+    'forged fields cannot duplicate or change CRM persisted fixture');
+check(countDb($portal,'portal_commercial_ci','metadata_ledger',$a['submission_reference'])===1,
+    'forged fields cannot modify original Portal fixture');
+
+// Prevent confused-deputy use of a lookup signature for a write or of an
+// ingestion signature for a readback, even with the same physical key.
+$lookupOnIngest=signed($a,$GLOBALS['requestKey'],
+    'imagine.portal.synthetic-crm-lookup.v1',uuid(),$iat,$iat+120);
+$wrongDomain=httpToCrm($a,$lookupOnIngest,'/__lab/crm/ingest');
+check($wrongDomain[0]===401
+    && $wrongDomain[1]['reasonCode']==='SYNTHETIC_AUTH_REJECTED',
+    'lookup MAC cannot authorize insertion');
+$ingestOnLookup=signed($a,$GLOBALS['requestKey'],
+    'imagine.portal.synthetic-service-request.v1',uuid(),$iat,$iat+120);
+$wrongDomain=httpToCrm($a,$ingestOnLookup,'/__lab/crm/readback');
+check($wrongDomain[0]===401
+    && $wrongDomain[1]['reasonCode']==='SYNTHETIC_AUTH_REJECTED',
+    'ingest MAC cannot authorize lookup');
+
+// Identical nonce replay on a NEW submission is rejected by the CRM's
+// separate nonce ledger: a new business ID cannot recycle an old signature.
+$c=envelope('d6d6d6d6-d6d6-4d6d-8d6d-d6d6d6d6d6d6');
+$nonceReused=signed($c,$GLOBALS['requestKey'],
+    'imagine.portal.synthetic-service-request.v1',$send['nonce'],$iat,$iat+120);
+$blocked=httpToCrm($c,$nonceReused);
+check($blocked[0]===409&&$blocked[1]['reasonCode']==='REQUEST_NONCE_REPLAY',
+    'nonce cannot move from one logical CRM submission to another');
+check(countDb($crm,'crm_portal_handoff_ci','metadata_receipts',$c['submission_reference'])===0,
+    'nonce replay did not create a new mock CRM lead');
+check(countDb($portal,'portal_commercial_ci','metadata_ledger',$c['submission_reference'])===0,
+    'replay did not create an unrelated Portal lead');
+
 echo "CRM F3-42 PASS: ".$checks." cross-repository PHP compatibility assertions, two real disposable PostgreSQL containers, HTTP + unknown hold; NO real lead.\n";
