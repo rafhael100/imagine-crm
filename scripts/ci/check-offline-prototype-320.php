@@ -139,6 +139,10 @@ $driver = <<<'HTML'
       check(quickButtons.length===4&&quickStatus.textContent.includes('Todos os exemplos'),'mobile quick views initial');
       quickButtons.find(x=>x.dataset.leadQuickView==='hot').click();
       check(quickStatus.textContent.includes('quentes'),'mobile hot quick view text');
+      doc.querySelector('#screen-leads [data-lead-stage="entrada"]').click();
+      check(quickStatus.textContent.includes('Filtros personalizados'),'manual mobile filter invalidates stale preset');
+      check(quickButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===0,'mobile manual override deselects all quick presets');
+      quickButtons.find(x=>x.dataset.leadQuickView==='hot').click();
       check(doc.querySelectorAll('#screen-leads tr[data-lead-fixture-stage]:not([hidden])').length===2,'mobile hot filter returns two');
       quickButtons.find(x=>x.dataset.leadQuickView==='contact').click();
       check(doc.querySelectorAll('#screen-leads tr[data-lead-fixture-stage]:not([hidden])').length===1,'mobile contact filter one');
