@@ -33,7 +33,7 @@ use ImagineAI\MockBridge\MockCrmReadRequest;
 function check(bool $condition, string $description): void
 {
     if (!$condition) {
-        throw new RuntimeException('F3-45 mismatch: '.$description);
+        throw new RuntimeException('F3-45/F3-46 mismatch: '.$description);
     }
 }
 
@@ -66,7 +66,7 @@ function checkUniformDeny(array $wire): void
 {
     $actual = AiaReadOnlyMockBoundary::inspect($wire);
     check($actual === [
-        'contract' => 'SYNTHETIC_CRM_AIA_READ_V1',
+        'contract' => 'SYNTHETIC_CRM_AIA_PUBLIC_V1',
         'state' => 'DENIED_OR_NOT_FOUND',
         'projection' => null,
         'real_authorization' => false,
@@ -95,6 +95,41 @@ check(($schema['properties']['fields']['uniqueItems'] ?? null) === true, 'unique
 $allowed = $schema['properties']['fields']['items']['enum'] ?? [];
 sort($allowed, SORT_STRING);
 check($allowed === ['ref', 'stage'], 'minimal field names');
+
+
+// F3-46: the Agents PUBLIC response schema is intentionally a different
+// version identifier from the READ request schema. Keep both exact.
+$responseSchemaFile = $agentsRoot.'/contracts/crm-aia-public-response.v1.synthetic.schema.json';
+check(is_file($responseSchemaFile), 'Agents public response schema exists');
+$responseSchema = json_decode((string) file_get_contents($responseSchemaFile), true, 32, JSON_THROW_ON_ERROR);
+check(($responseSchema['additionalProperties'] ?? null) === false, 'public response schema is closed');
+$responseKeys = $responseSchema['required'] ?? [];
+sort($responseKeys, SORT_STRING);
+check($responseKeys === ['contract', 'external_calls', 'projection', 'real_authorization', 'state'],
+    'public response required field set');
+check(($responseSchema['properties']['contract']['const'] ?? null) === 'SYNTHETIC_CRM_AIA_PUBLIC_V1',
+    'public response version distinct from request');
+check(($responseSchema['properties']['real_authorization']['const'] ?? null) === false,
+    'public response must never grant real authorization');
+check(($responseSchema['properties']['external_calls']['const'] ?? null) === 0,
+    'public response external calls must be zero');
+$responseStates = $responseSchema['properties']['state']['enum'] ?? [];
+sort($responseStates, SORT_STRING);
+check($responseStates === ['DENIED_OR_NOT_FOUND', 'READ_SYNTHETIC_ONLY'],
+    'public response closed states');
+check(($responseSchema['allOf'][0]['then']['properties']['projection']['type'] ?? null) === 'null',
+    'denied responses must have null projection');
+check(($responseSchema['allOf'][0]['if']['properties']['state']['const'] ?? null) === 'DENIED_OR_NOT_FOUND',
+    'denied response conditional matches the state');
+check(($responseSchema['$defs']['minimalProjection']['additionalProperties'] ?? null) === false,
+    'synthetic projection forbids extra fields');
+$projectionKeys = array_keys($responseSchema['$defs']['minimalProjection']['properties'] ?? []);
+sort($projectionKeys, SORT_STRING);
+check($projectionKeys === ['ref', 'stage'], 'minimal projection fields');
+check(($responseSchema['$defs']['minimalProjection']['minProperties'] ?? null) === 1,
+    'projection is nonempty in a synthetic successful state');
+check(($responseSchema['$defs']['minimalProjection']['maxProperties'] ?? null) === 2,
+    'projection is limited to two synthetic fields');
 
 $cases = [];
 $cases[] = [validRequest(), true, 'valid minimum'];
@@ -162,4 +197,4 @@ try {
 }
 check($deniedMismatch, 'Agents context mismatch must deny');
 
-echo 'F3-45 synthetic parity passed: '.count($cases).' cases, uniform CRM denial, zero external calls.'.PHP_EOL;
+echo 'F3-45/F3-46 request+public-response parity passed: '.count($cases).' cases, uniform CRM denial, zero external calls.'.PHP_EOL;
