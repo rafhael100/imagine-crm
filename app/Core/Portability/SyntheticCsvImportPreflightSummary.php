@@ -15,7 +15,13 @@ final readonly class SyntheticCsvImportPreflightSummary
     public function __construct(
         public SyntheticImportMappedPreviewSummary $preview,
         public AuthorizationDecision $decision,
+        public ?SyntheticCsvRowRepeatSummary $repeatPreview = null,
     ) {}
+
+    public function hasRepeatWarnings(): bool
+    {
+        return $this->repeatPreview?->hasRepeatedRows() ?? false;
+    }
 
     public function canImport(): bool
     {
