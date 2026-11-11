@@ -40,6 +40,7 @@ $checks = <<<'JS'
   output.setAttribute('data-imagine-browser-smoke','RUNNING');
   document.body.appendChild(output);
   function check(value,why){if(!value)throw new Error(why);}
+  const byId=id=>document.getElementById(id);
   function count(n){return document.getElementById('lane-count-'+n).textContent.trim();}
   function visible(){return document.querySelectorAll('[data-card-id]').length;}
   function move(id,direction){
