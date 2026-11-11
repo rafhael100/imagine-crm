@@ -16,10 +16,10 @@ final class OfflinePrototypeHubTest extends TestCase
         return $content;
     }
 
-    public function test_hub_connects_exactly_three_existing_offline_prototypes(): void
+    public function test_hub_connects_six_existing_offline_prototypes(): void
     {
         $html = self::hub();
-        self::assertSame(3, substr_count($html, '<article class="card">'));
+        self::assertSame(6, substr_count($html, '<article class="card">'));
         self::assertStringContainsString('PROTÓTIPO — DADOS FICTÍCIOS.', $html);
         self::assertStringContainsString('Funil Kanban', $html);
         self::assertStringContainsString('Prévia de CSV', $html);
@@ -30,6 +30,9 @@ final class OfflinePrototypeHubTest extends TestCase
             's01-prot-01/index.html',
             'f3-59-offline-kanban/index.html',
             'f3-22-csv-risk-preview/index.html',
+            'f3-52-delivery-reconciliation/index.html',
+            'f4-15-followup-dashboard/index.html',
+            'f4-28-followup-worklist/index.html',
         ], $links[1]);
         foreach (array_slice($links[1], 1) as $relative) {
             self::assertFileExists(dirname(__DIR__, 2).'/prototypes/'.$relative);
