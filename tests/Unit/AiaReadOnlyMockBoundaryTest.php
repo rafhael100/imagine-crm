@@ -98,7 +98,9 @@ final class AiaReadOnlyMockBoundaryTest extends TestCase
             ['resource_ref' => 4],
             ['contract' => null],
         ] as $change) {
-            self::assertDenied(array_replace(self::validWire(), $change));
+            $request = array_replace(self::validWire(), $change);
+            self::assertFalse(AiaReadOnlyMockBoundary::hasFixtureShape($request));
+            self::assertDenied($request);
         }
 
         self::assertFalse(AiaReadOnlyMockBoundary::hasFixtureShape([0 => 'SYNTHETIC_CRM_AIA_READ_V1']));
