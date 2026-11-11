@@ -115,6 +115,67 @@ final class SyntheticCsvImportPreflightTest extends TestCase
         }
     }
 
+    public function test_exact_repeat_positions_flow_through_denied_preflight(): void
+    {
+        $report = self::inspect(
+            csv: "name,stage\n"
+                . "SYNTHETIC_A,SYNTHETIC_STAGE\n"
+                . "SYNTHETIC_B,SYNTHETIC_STAGE\n"
+                . "SYNTHETIC_A,SYNTHETIC_STAGE\n",
+        );
+
+        self::assertNotNull($report->repeatPreview);
+        self::assertTrue($report->hasRepeatWarnings());
+        self::assertSame([['firstRow' => 1, 'repeatedRow' => 3]],
+            $report->repeatPreview->repeatedRowPositions);
+        self::assertEquals($report->preview->csvPreview, $report->repeatPreview->csvPreview);
+        self::assertTrue($report->preview->isMappingComplete());
+        self::assertSame('SCOPE_NOT_VERIFIED', $report->decision->reasonCode);
+        self::assertFalse($report->decision->allowed);
+        self::assertFalse($report->canImport());
+        self::assertFalse($report->canPersistLead());
+        self::assertFalse($report->canEnableImportRoute());
+        self::assertFalse($report->repeatPreview->canDeduplicateContacts());
+
+        $encoded = json_encode($report, JSON_THROW_ON_ERROR);
+        foreach (['SYNTHETIC_A', 'SYNTHETIC_B', 'SYNTHETIC_STAGE', self::TENANT] as $private) {
+            self::assertStringNotContainsString($private, $encoded);
+        }
+    }
+
+    public function test_semicolon_row_repeats_remain_warnings_with_tenant_mismatch_denied(): void
+    {
+        $result = (new SyntheticCsvImportPreflight())->inspect(
+            "name;note\nSYNTHETIC_A;\"2,50\"\nSYNTHETIC_A;\"2,50\"\n",
+            ['name', 'note'],
+            self::context(),
+            self::OTHER,
+            ['name', 'note'],
+            ';',
+        );
+
+        self::assertTrue($result->hasRepeatWarnings());
+        self::assertSame([['firstRow' => 1, 'repeatedRow' => 2]],
+            $result->repeatPreview->repeatedRowPositions);
+        self::assertSame('CONTRACT_INVALID', $result->decision->reasonCode);
+        self::assertFalse($result->decision->allowed);
+        self::assertFalse($result->canImport());
+        self::assertFalse($result->repeatPreview->canDeduplicateContacts());
+    }
+
+    public function test_similar_contact_like_rows_are_not_contact_deduplication_or_authority(): void
+    {
+        $result = self::inspect(
+            csv: "name,stage\nSYNTHETIC_A,STAGE_ONE\nSYNTHETIC_A,STAGE_TWO\n",
+        );
+        self::assertNotNull($result->repeatPreview);
+        self::assertFalse($result->hasRepeatWarnings());
+        self::assertSame([], $result->repeatPreview->repeatedRowPositions);
+        self::assertFalse($result->repeatPreview->canDeduplicateContacts());
+        self::assertFalse($result->canImport());
+        self::assertSame('SCOPE_NOT_VERIFIED', $result->decision->reasonCode);
+    }
+
     public function test_untrusted_correlation_is_scrubbed_and_rejected_csv_is_not_reflected(): void
     {
         $withFakeCorrelation = self::inspect(
