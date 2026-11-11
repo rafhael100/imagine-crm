@@ -397,6 +397,27 @@ final class OfflineKanbanFunnelTest extends TestCase
         self::assertStringNotContainsString('fetch(', $html);
     }
 
+    public function test_undo_history_is_bounded_for_long_fictional_sessions(): void
+    {
+        $html = self::html();
+        foreach ([
+            'const MAX_UNDO_ACTIONS=64;',
+            'function trimUndoHistory(){',
+            'if(history.length>MAX_UNDO_ACTIONS)history.splice(0,history.length-MAX_UNDO_ACTIONS);',
+            'Seis ações são exibidas; até 64 podem ser desfeitas.',
+            "history.pop()",
+            "history=[];",
+        ] as $contract) {
+            self::assertStringContainsString($contract, $html);
+        }
+        self::assertSame(5, substr_count($html, 'history.push('));
+        self::assertSame(5, substr_count($html, 'trimUndoHistory();'));
+        self::assertStringContainsString("connect-src 'none'", $html);
+        self::assertStringNotContainsString('localStorage', $html);
+        self::assertStringNotContainsString('sessionStorage', $html);
+        self::assertStringNotContainsString('fetch(', $html);
+    }
+
     public function test_accessible_actions_and_mobile_layout_are_present(): void
     {
         $html = self::html();
