@@ -1,0 +1,68 @@
+name: CRM F3-53 - Offline Portal CRM navigation and full browser regression
+
+on:
+  push:
+    branches:
+      - dev/f3-53-offline-reconciliation-navigation-2026-11-11
+  pull_request:
+    paths:
+      - 'prototypes/s01-prot-01/index.html'
+      - 'prototypes/f3-52-delivery-reconciliation/index.html'
+      - 'tests/Unit/OfflineDeliveryReconciliationNavigationTest.php'
+      - 'tests/Unit/OfflineFollowUpNavigationContractTest.php'
+      - 'tests/Unit/OfflinePrototypeResourceBoundaryTest.php'
+      - '.github/workflows/ci-f3-53-reconciliation-navigation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-navigation-and-regression:
+    name: PHP 8.4 / navigable CRM and Chromium desktop+320px
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring,dom,xml,pdo_sqlite,sqlite3,curl,zip
+          tools: composer:v2
+          coverage: none
+      - name: Install locked framework
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer validate --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+      - name: Verify all local links, static resources, six cases and route seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .env.example .env
+          php artisan key:generate --force
+          php artisan test --filter=OfflineDeliveryReconciliationNavigationTest --no-ansi
+          php artisan test --filter=OfflineFollowUpNavigationContractTest --no-ansi
+          php artisan test --filter=OfflinePrototypeResourceBoundaryTest --no-ansi
+          php artisan test --filter=OfflineDeliveryReconciliationDashboardTest --no-ansi
+          php artisan test --filter=PublicRouteSurfaceSealTest --no-ansi
+      - name: Run both real Chromium demos at desktop and 320 CSS px
+        shell: bash
+        run: |
+          set -euo pipefail
+          php scripts/ci/check-offline-prototype-browser.php
+          php scripts/ci/check-offline-prototype-320.php
+          php scripts/ci/check-offline-delivery-reconciliation-browser.php
