@@ -4,11 +4,15 @@ on:
   push:
     branches:
       - dev/f3-42-cross-repo-portal-crm-real-code-ci-2026-11-10
+      - dev/f3-49-core-real-portal-crm-cross-repo-e2e-2026-11-10
   pull_request:
     paths:
       - 'tests/Labs/F3_40/**'
       - 'tests/Labs/F3_41/**'
       - 'tests/Labs/F3_42/**'
+      - 'tests/Labs/F3_49/**'
+      - 'app/Core/Leads/PortalIngressPreparation**'
+      - 'app/Core/Leads/PortalTechnicalEnvelopeDecoder.php'
       - '.github/workflows/ci-f3-42-cross-repo-portal-crm.yml'
   workflow_dispatch:
 
@@ -129,3 +133,5 @@ jobs:
           done
           test "$ready" -eq 1
           php tests/Labs/F3_42/test_real_portal_crm_cross_repo.php
+          php -l tests/Labs/F3_49/test_real_core_portal_crm_e2e.php
+          php tests/Labs/F3_49/test_real_core_portal_crm_e2e.php
