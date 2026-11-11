@@ -10,7 +10,7 @@ use Symfony\Component\Process\ExecutableFinder;
 
 $html = file_get_contents(dirname(__DIR__, 2).'/prototypes/f3-59-offline-kanban/index.html');
 if (!is_string($html)
-    || strlen($html) > 28000
+    || strlen($html) > 30000
     || substr_count($html, '</body>') !== 1
     || !str_contains($html, 'PROTÓTIPO — DADOS FICTÍCIOS.')
     || !str_contains($html, "connect-src 'none'")
@@ -317,6 +317,46 @@ $checks = <<<'JS'
     document.querySelector('[data-priority="all"]').click();
     check(['2','2','2','2'].every((expected,i)=>count(i)===expected),'bulk high undo restores all prior stages');
     byId('reset-demo').click();
+    const bulkReturn=byId('return-visible-stage');
+    byId('reset-demo').click();
+    check(!bulkReturn.disabled,'backward bulk action enabled for six non-entry fictitious cards');
+    bulkReturn.focus();
+    bulkReturn.click();
+    check(byId('count-moves').textContent==='1','six-card bulk return counts as one action');
+    check(['4','2','2','0'].every((expected,i)=>count(i)===expected),'six non-entry cards return exactly one stage');
+    check(document.querySelector('#lane-0 [data-card-id="F03"]')!==null,'contact high moved to entry');
+    check(document.querySelector('#lane-0 [data-card-id="F01"]')!==null,'entry high remains untouched');
+    check(document.querySelector('#lane-2 [data-card-id="F07"]')!==null,'proposal high moved to qualification');
+    check(document.activeElement===bulkReturn,'keyboard focus stays on eligible bulk return');
+    byId('undo-change').click();
+    check(['2','2','2','2'].every((expected,i)=>count(i)===expected),'single undo restores all six original stages');
+    byId('reset-demo').click();
+
+    stageButton('0').click();
+    check(bulkReturn.disabled,'entry-only view cannot return before first stage');
+    stageButton('3').click();
+    document.querySelector('[data-priority="normal"]').click();
+    check(visible()===1&&document.querySelector('[data-card-id="F08"]')!==null,'proposal+normal selects only F08');
+    bulkReturn.focus();
+    bulkReturn.click();
+    check(visible()===0&&bulkReturn.disabled,'backward move hides selected card in stage-focused view');
+    check(document.activeElement===stageButton('3'),'focus returns to active stage selector');
+    stageButton('all').click();
+    document.querySelector('[data-priority="all"]').click();
+    check(document.querySelector('#lane-2 [data-card-id="F08"]')!==null,'only visible normal proposal returned');
+    check(document.querySelector('#lane-3 [data-card-id="F07"]')!==null,'hidden high proposal remains untouched');
+    byId('undo-change').click();
+    check(document.querySelector('#lane-3 [data-card-id="F08"]')!==null,'undo restores filtered return');
+    byId('reset-demo').click();
+
+    followupFilter('done').click();
+    check(visible()===2,'completed only has two fictional cards');
+    bulkReturn.click();
+    check(document.querySelector('#lane-0 [data-card-id="F04"]')!==null,'eligible completed F04 returned to entry');
+    check(document.querySelector('#lane-0 [data-card-id="F02"]')!==null,'completed F02 already at entry untouched');
+    byId('undo-change').click();
+    check(document.querySelector('#lane-1 [data-card-id="F04"]')!==null,'undo completed-only return');
+    byId('reset-demo').click();
     check(!document.querySelector('form,iframe,textarea'),'no capture route');
     output.setAttribute('data-imagine-browser-smoke','PASS');
     output.textContent='F3-59 desktop real Chromium PASS';
@@ -466,6 +506,22 @@ try {
       check(doc.querySelector('#lane-0 [data-card-id="F01"]')!==null,'mobile undo restores moved card');
       doc.getElementById('reset-demo').click();
       check(doc.documentElement.scrollWidth<=320,'bulk stage control responsive at 320px');
+      const mobileReturn=doc.getElementById('return-visible-stage');
+      check(!mobileReturn.disabled,'mobile bulk return enabled after reset');
+      doc.querySelector('[data-stage-filter="3"]').click();
+      doc.querySelector('[data-priority="normal"]').click();
+      mobileReturn.focus();
+      mobileReturn.click();
+      check(doc.getElementById('count-visible').textContent==='0','mobile stage-focused return empties view');
+      check(doc.activeElement===doc.querySelector('[data-stage-filter="3"]'),'mobile return focus fallback');
+      doc.querySelector('[data-stage-filter="all"]').click();
+      doc.querySelector('[data-priority="all"]').click();
+      check(doc.querySelector('#lane-2 [data-card-id="F08"]')!==null,'mobile F08 returned to qualification');
+      check(doc.querySelector('#lane-3 [data-card-id="F07"]')!==null,'mobile hidden F07 remains in proposal');
+      doc.getElementById('undo-change').click();
+      check(doc.querySelector('#lane-3 [data-card-id="F08"]')!==null,'mobile undo restores backward stage');
+      doc.getElementById('reset-demo').click();
+      check(doc.documentElement.scrollWidth<=320,'mobile bulk return controls no overflow');
       check(doc.documentElement.scrollWidth<=320,'no overflow after reset');
       finish('PASS','real interactive 320 px viewport');
     }catch(error){finish('FAIL',error.message);}
