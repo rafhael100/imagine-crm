@@ -1,0 +1,80 @@
+name: CRM CORE-INT-02 - Non-superuser service login and tenant RLS
+
+on:
+  push:
+    branches:
+      - review/crm-portal-cross-db-ci-isolated-2026-11-11
+  pull_request:
+    paths:
+      - 'tests/Labs/F3_40/crm_handoff_pg16.sql'
+      - 'tests/Labs/F3_45/**'
+      - '.github/workflows/ci-crm-portal-service-login-rls.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  least-privilege-pg16:
+    name: PHP ${{ matrix.php }} / non-superuser real PG16
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3','8.4']
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: imagine_crm_handoff_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: f345-fixture-only-not-a-real-secret
+        ports:
+          - '127.0.0.1:5432:5432'
+        options: >-
+          --health-cmd "pg_isready -U postgres -d imagine_crm_handoff_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      CRM_F345_PRIVILEGE_LAB: '1'
+      DB_HOST: 127.0.0.1
+      DB_DATABASE: imagine_crm_handoff_ci
+      DB_PASSWORD: f345-fixture-only-not-a-real-secret
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_pgsql,pgsql
+          tools: none
+          coverage: none
+      - name: Prevent CI-only service accounts in CRM operational code
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R -E 'crm_f345_service_|CRM_F345_PRIVILEGE_LAB|service_login_pg16.sql' \
+             app routes bootstrap database/migrations 2>/dev/null; then
+            echo "Test-only F3-45 PostgreSQL credentials appeared in CRM runtime" >&2
+            exit 1
+          fi
+      - name: Provision isolated PG16 with fixed-tenant RLS and direct LOGIN roles
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PGPASSWORD="$DB_PASSWORD"
+          test "$(psql -h 127.0.0.1 -U postgres -d imagine_crm_handoff_ci -tAc 'SHOW server_version_num')" -ge 160000
+          test "$(psql -h 127.0.0.1 -U postgres -d imagine_crm_handoff_ci -tAc "SELECT count(*) FROM pg_namespace WHERE nspname='crm_portal_handoff_ci'")" = 0
+          psql -h 127.0.0.1 -U postgres -d imagine_crm_handoff_ci \
+            -v ON_ERROR_STOP=1 -f tests/Labs/F3_40/crm_handoff_pg16.sql
+          psql -h 127.0.0.1 -U postgres -d imagine_crm_handoff_ci \
+            -v ON_ERROR_STOP=1 -f tests/Labs/F3_45/service_login_pg16.sql
+      - name: Validate non-superuser RLS and denied UPDATE/DELETE/SET ROLE
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l tests/Labs/F3_45/test_service_logins_pg16.php
+          php tests/Labs/F3_45/test_service_logins_pg16.php
