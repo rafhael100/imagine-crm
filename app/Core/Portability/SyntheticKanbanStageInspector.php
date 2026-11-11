@@ -20,16 +20,22 @@ final class SyntheticKanbanStageInspector
         $byStage = [0, 0, 0, 0];
         $high = 0;
         $pending = 0;
+        $highByStage = [0, 0, 0, 0];
+        $pendingByStage = [0, 0, 0, 0];
         foreach ($records as $record) {
             ++$byStage[$record['stage']];
             if ($record['priority'] === 'high') {
                 ++$high;
+                ++$highByStage[$record['stage']];
             }
             if ($record['followup'] === 'pending') {
                 ++$pending;
+                ++$pendingByStage[$record['stage']];
             }
         }
 
-        return new SyntheticKanbanStageSummary($byStage, count($records), $high, $pending);
+        return new SyntheticKanbanStageSummary(
+            $byStage, count($records), $high, $pending, $highByStage, $pendingByStage,
+        );
     }
 }
