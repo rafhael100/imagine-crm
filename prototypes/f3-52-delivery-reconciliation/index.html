@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Imagine CRM — Conferência técnica de entregas (offline)</title>
+  <style>
+    *{box-sizing:border-box}
+    :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#183247;background:#f3f7f9}
+    body{margin:0;min-width:0;overflow-wrap:anywhere;line-height:1.5}
+    .skip{position:absolute;left:-10000px;top:10px;background:#fff;padding:10px;border:2px solid #006a70;z-index:5}
+    .skip:focus{left:12px}
+    .wrap{max-width:1120px;padding:24px 20px 50px;margin:0 auto;min-width:0}
+    .top{display:flex;gap:20px;flex-wrap:wrap;align-items:start;justify-content:space-between;margin-bottom:18px}
+    h1{font-size:clamp(1.45rem,4vw,2.1rem);margin:6px 0 8px;letter-spacing:-.035em}
+    h2{font-size:1.15rem;margin:0 0 10px}
+    h3{font-size:1.08rem;margin:0 0 8px}
+    p{margin:4px 0 12px}
+    .eyebrow{font-size:.74rem;text-transform:uppercase;letter-spacing:.13em;font-weight:800;color:#186c73}
+    .sub{color:#516679;max-width:810px}
+    .notice{border:1px solid #b9d6d7;background:#e5f3f1;border-radius:14px;padding:14px 16px;font-weight:680;margin-bottom:22px}
+    .back{color:#0a5961;font-weight:700}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}
+    .metric{background:white;border:1px solid #dbe7ec;border-radius:15px;padding:17px;min-width:0}
+    .metric b{display:block;font-size:1.8rem;margin-bottom:3px}
+    .metric small{color:#536b7d}
+    .panel{background:#fff;border:1px solid #dbe7ec;border-radius:17px;padding:19px;margin-bottom:18px;min-width:0}
+    .choices{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+    button{font:inherit;cursor:pointer;border:1px solid #acc3cf;border-radius:11px;background:#f7fafc;color:#284258;padding:10px 13px;min-height:42px}
+    button[aria-pressed="true"],button[aria-expanded="true"]{background:#145063;color:white;border-color:#145063}
+    button:hover{border-color:#16858e}
+    button:focus-visible,a:focus-visible{outline:3px solid #1b9994;outline-offset:3px}
+    button:disabled{cursor:not-allowed;opacity:.5}
+    .caption{font-size:.86rem;color:#536a7e}
+    .table-scroll{overflow-x:auto;max-width:100%;border:1px solid #dfebef;border-radius:12px}
+    table{width:100%;border-collapse:collapse;text-align:left;font-size:.9rem;min-width:540px}
+    th,td{padding:12px 11px;border-bottom:1px solid #e4edf2}
+    th{font-size:.8rem;background:#f0f7f8;color:#3f5f70}
+    tr:last-child td{border-bottom:none}
+    tr[hidden]{display:none}
+    .pill{border-radius:100px;background:#ecf3f4;color:#294d5b;padding:4px 9px;white-space:nowrap;font-size:.8rem}
+    .risk{background:#fff2d5;color:#754b00}
+    .error{background:#fce8e6;color:#812e31}
+    .ok{background:#e2f2eb;color:#205f45}
+    .details{border-left:4px solid #206e75;background:#eff7f6;border-radius:10px;padding:18px;margin-top:17px;min-width:0}
+    .details[hidden],.empty[hidden]{display:none}
+    .details ol{padding-left:24px;margin:10px 0}
+    .details li{margin:7px 0}
+    .empty{padding:18px;border:1px dashed #bdd1d8;border-radius:12px}
+    .foot{color:#65798a;font-size:.83rem;margin-top:25px}
+    [role="status"]{min-width:0}
+    @media(max-width:620px){.wrap{padding:16px 12px 38px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{padding:13px}table{font-size:.83rem}th,td{padding:10px 8px}.top{gap:7px}.metric{padding:12px}.metric b{font-size:1.5rem}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para a conferência</a>
+  <main id="conteudo" class="wrap" tabindex="-1">
+    <header class="top">
+      <div><p class="eyebrow">Imagine CRM · protótipo offline</p><h1>Conferência técnica de entregas</h1>
+        <p class="sub">Prévia navegável dos estados de transporte Portal → CRM. Os seis casos, eventos e números são inventados. Não há identidade, tenant, lead, integração ou armazenamento operacional.</p>
+      </div>
+      <a class="back" href="../s01-prot-01/index.html">Voltar ao protótipo principal do CRM</a>
+    </header>
+    <p class="notice">PROTÓTIPO — DADOS FICTÍCIOS. Nenhum contato foi enviado, persistido, reenviado, conciliado ou confirmado em um CRM real.</p>
+    <section class="metrics" aria-label="Contadores de casos de demonstração">
+      <div class="metric"><b id="metric-total">6</b><small>Casos fictícios</small></div>
+      <div class="metric"><b id="metric-review">2</b><small>Exigem revisão humana</small></div>
+      <div class="metric"><b id="metric-wait">3</b><small>Aguardam evidência</small></div>
+      <div class="metric"><b id="metric-lab">1</b><small>Recibo somente de CI</small></div>
+    </section>
+    <section class="panel" aria-labelledby="list-heading">
+      <h2 id="list-heading">Lista de tentativas ilustrativas</h2>
+      <p class="caption">Filtrar ou ordenar muda apenas a apresentação de casos de teste; nada é consultado, reprocessado ou enviado.</p>
+      <div role="group" aria-label="Filtrar casos de entrega fictícios" class="choices" id="filter-controls">
+        <button type="button" data-filter="all" aria-pressed="true">Todos (6)</button>
+        <button type="button" data-filter="review" aria-pressed="false">Revisão necessária (2)</button>
+        <button type="button" data-filter="waiting" aria-pressed="false">Aguardando (3)</button>
+        <button type="button" data-filter="lab" aria-pressed="false">Recibo de CI (1)</button>
+      </div>
+      <div role="group" aria-label="Ordenar casos fictícios" class="choices" id="sort-controls">
+        <button type="button" data-sort="original" aria-pressed="true">Ordem de exemplo</button>
+        <button type="button" data-sort="review-first" aria-pressed="false">Revisões primeiro</button>
+      </div>
+      <p id="list-status" role="status" aria-live="polite" aria-atomic="true" class="caption">Exibindo 6 de 6 casos fictícios, na ordem de exemplo.</p>
+      <div class="table-scroll" tabindex="0" aria-label="Tabela horizontal com tentativas fictícias">
+        <table><thead><tr><th scope="col">Caso fictício</th><th scope="col">Estado de transporte</th><th scope="col">Interpretação</th><th scope="col">Examinar</th></tr></thead>
+          <tbody id="case-rows">
+            <tr data-case="a" data-group="waiting" data-order="0"><td>Caso A</td><td>Pendente</td><td><span class="pill">Sem recibo</span></td><td><button type="button" data-detail="a" aria-expanded="false" aria-controls="case-detail">Ver detalhes</button></td></tr>
+            <tr data-case="b" data-group="waiting" data-order="1"><td>Caso B</td><td>Em processamento</td><td><span class="pill">Lease ilustrativo</span></td><td><button type="button" data-detail="b" aria-expanded="false" aria-controls="case-detail">Ver detalhes</button></td></tr>
+            <tr data-case="c" data-group="review" data-order="2"><td>Caso C</td><td>Resultado desconhecido</td><td><span class="pill risk">Reenvio bloqueado</span></td><td><button type="button" data-detail="c" aria-expanded="false" aria-controls="case-detail">Ver detalhes</button></td></tr>
+            <tr data-case="d" data-group="review" data-order="3"><td>Caso D</td><td>Conflito de vínculo</td><td><span class="pill error">Negação obrigatória</span></td><td><button type="button" data-detail="d" aria-expanded="false" aria-controls="case-detail">Ver detalhes</button></td></tr>
+            <tr data-case="e" data-group="lab" data-order="4"><td>Caso E</td><td>Recibo sintético</td><td><span class="pill ok">Somente CI</span></td><td><button type="button" data-detail="e" aria-expanded="false" aria-controls="case-detail">Ver detalhes</button></td></tr>
+            <tr data-case="f" data-group="waiting" data-order="5"><td>Caso F</td><td>Contingência não confirmada</td><td><span class="pill">Sem recibo</span></td><td><button type="button" data-detail="f" aria-expanded="false" aria-controls="case-detail">Ver detalhes</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="no-cases" class="empty" role="status" hidden>Nenhum caso fictício corresponde ao filtro.</p>
+      <section class="details" id="case-detail" aria-labelledby="case-detail-heading" hidden>
+        <h3 id="case-detail-heading">Evento fictício</h3>
+        <div id="case-detail-content" role="status" aria-live="polite" aria-atomic="true"></div>
+      </section>
+    </section>
+    <section class="panel" aria-labelledby="rules-heading">
+      <h2 id="rules-heading">Regras de tratamento que a simulação preserva</h2>
+      <p>Uma resposta HTTP, um HMAC com chave de teste ou um registro em PostgreSQL descartável não equivalem a consentimento, autorização multiempresa ou gravação de um lead real.</p>
+      <p>Um resultado desconhecido impede novo envio automático até a reconciliação por fonte confiável; um conflito de empresa ou destino não pode ser ignorado.</p>
+      <p class="caption">Os controles nesta página alteram somente texto e visibilidade. Não há botões de reenviar, confirmar, descartar ou liberar acesso.</p>
+    </section>
+    <footer class="foot">Imagine CRM · demonstração local · sem rede, login, PII, serviço, persistência ou deploy.</footer>
+  </main>
+<script>
+(function(){
+  'use strict';
+  const examples=Object.freeze({
+    a:Object.freeze({title:'Caso A — pendente',summary:'A entrada ainda não recebeu prova do receptor.',events:Object.freeze(['Solicitação inventada registrada apenas como evento demonstrativo.','Nenhum recibo confiável apresentado.']),decision:'Não confirmar ao visitante. Não presumir persistência.'}),
+    b:Object.freeze({title:'Caso B — tentativa em processamento',summary:'O lease representado não prova que o CRM concluiu a operação.',events:Object.freeze(['Claim técnico hipotético atribuído.','Janela fictícia de execução ainda aberta.']),decision:'Aguardar evidência verificável antes de qualquer conclusão.'}),
+    c:Object.freeze({title:'Caso C — resposta perdida',summary:'Após uma tentativa, o resultado pode estar salvo ou não.',events:Object.freeze(['Envio de teste iniciado.','Resposta simulada perdida.','Idempotência operacional não verificada.']),decision:'Não reenviar automaticamente; consultar o resultado por canal autenticado e reconciliar.'}),
+    d:Object.freeze({title:'Caso D — vinculação divergente',summary:'A empresa ou destino informado não corresponde ao vínculo independente.',events:Object.freeze(['Metadados fictícios comparados ao vínculo fixado.','Divergência detectada antes de qualquer operação.']),decision:'Negar processamento; não mudar a organização de destino nem permitir escalada.'}),
+    e:Object.freeze({title:'Caso E — recibo só de laboratório',summary:'O teste sintético verificou uma assinatura sobre metadados fictícios.',events:Object.freeze(['Transação em banco descartável de CI.','HMAC sintético compatível após commit.']),decision:'Não declarar lead entregue a um CRM real nem confirmar ao visitante.'}),
+    f:Object.freeze({title:'Caso F — contingência não confirmada',summary:'O receptor alternativo não substitui uma confirmação durável do CRM.',events:Object.freeze(['Tentativa de contingência ilustrada.','Ausência de prova independente de persistência.']),decision:'Não excluir conteúdo provisório nem anunciar recebimento.'})
+  });
+  const tbody=document.getElementById('case-rows');
+  const rows=Array.from(tbody.querySelectorAll('tr[data-case]'));
+  const filterButtons=Array.from(document.querySelectorAll('[data-filter]'));
+  const sortButtons=Array.from(document.querySelectorAll('[data-sort]'));
+  const detailButtons=Array.from(document.querySelectorAll('[data-detail]'));
+  const detail=document.getElementById('case-detail');
+  const detailContent=document.getElementById('case-detail-content');
+  const status=document.getElementById('list-status');
+  const empty=document.getElementById('no-cases');
+  let activeFilter='all';
+  let activeSort='original';
+  let selected=null;
+  function add(parent,tag,value) {
+    const node=document.createElement(tag);
+    node.textContent=value;
+    parent.appendChild(node);
+    return node;
+  }
+  function showDetail(code) {
+    const row=rows.find(function(node){return node.dataset.case===code;});
+    selected=code!==null && Object.prototype.hasOwnProperty.call(examples,code)
+      && row && !row.hidden ? code : null;
+    detailButtons.forEach(function(button){
+      button.setAttribute('aria-expanded',String(button.dataset.detail===selected));
+    });
+    detailContent.replaceChildren();
+    detail.hidden=selected===null;
+    if(selected===null)return;
+    const item=examples[selected];
+    add(detailContent,'p',item.summary);
+    const list=document.createElement('ol');
+    list.setAttribute('aria-label','Linha do tempo exclusivamente fictícia');
+    item.events.forEach(function(event){add(list,'li',event);});
+    detailContent.appendChild(list);
+    add(detailContent,'p',item.decision);
+    document.getElementById('case-detail-heading').textContent=item.title;
+  }
+  function apply() {
+    const ordered=rows.slice().sort(function(a,b){
+      if(activeSort==='review-first') {
+        const ar=a.dataset.group==='review'?0:1;
+        const br=b.dataset.group==='review'?0:1;
+        if(ar!==br)return ar-br;
+      }
+      return Number(a.dataset.order)-Number(b.dataset.order);
+    });
+    ordered.forEach(function(row){tbody.appendChild(row);});
+    let shown=0;
+    ordered.forEach(function(row){
+      row.hidden=activeFilter!=='all' && row.dataset.group!==activeFilter;
+      if(!row.hidden)shown++;
+    });
+    filterButtons.forEach(function(button){
+      button.setAttribute('aria-pressed',String(button.dataset.filter===activeFilter));
+    });
+    sortButtons.forEach(function(button){
+      button.setAttribute('aria-pressed',String(button.dataset.sort===activeSort));
+    });
+    status.textContent='Exibindo '+shown+' de 6 casos fictícios, '
+      +(activeSort==='review-first'?'com revisões primeiro.':'na ordem de exemplo.');
+    empty.hidden=shown!==0;
+    if(selected!==null){
+      const current=rows.find(function(row){return row.dataset.case===selected;});
+      if(!current || current.hidden)showDetail(null);
+    }
+  }
+  const total=rows.length;
+  document.getElementById('metric-total').textContent=String(total);
+  document.getElementById('metric-review').textContent=String(rows.filter(function(row){return row.dataset.group==='review';}).length);
+  document.getElementById('metric-wait').textContent=String(rows.filter(function(row){return row.dataset.group==='waiting';}).length);
+  document.getElementById('metric-lab').textContent=String(rows.filter(function(row){return row.dataset.group==='lab';}).length);
+  filterButtons.forEach(function(button){button.addEventListener('click',function(){
+    activeFilter=button.dataset.filter;apply();
+  });});
+  sortButtons.forEach(function(button){button.addEventListener('click',function(){
+    activeSort=button.dataset.sort;apply();
+  });});
+  detailButtons.forEach(function(button){button.addEventListener('click',function(){
+    showDetail(selected===button.dataset.detail?null:button.dataset.detail);
+  });});
+  apply();
+})();
+</script>
+</body>
+</html>
