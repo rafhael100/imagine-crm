@@ -9,6 +9,7 @@ use App\Core\Portability\SyntheticCsvImportPreflight;
 use App\Core\Portability\SyntheticCsvImportPreflightSummary;
 use App\Core\Portability\SyntheticCsvReviewReportV1;
 use App\Core\Portability\SyntheticCsvRowRepeatSummary;
+use App\Core\Portability\SyntheticCsvRequiredCellsSummary;
 use App\Core\Portability\SyntheticImportMappedPreviewSummary;
 use App\Core\Portability\SyntheticImportPreviewSummary;
 use App\Core\Tenancy\TenantContext;
@@ -202,5 +203,84 @@ final class SyntheticCsvReviewReportV1Test extends TestCase
                 self::assertSame('Relatorio CSV sintetico invalido.', $error->getMessage());
             }
         }
+    }
+
+    public function test_forged_duplicate_warning_coordinates_are_denied_with_generic_error(): void
+    {
+        $good = self::preflight();
+        $csv = $good->preview->csvPreview;
+        $mapping = $good->preview->mappingPreview;
+
+        $duplicateFormula = new SyntheticImportPreviewSummary(
+            $csv->rowsInspected,
+            $csv->columnsInspected,
+            $csv->emptyCells,
+            [['row' => 1, 'column' => 3], ['row' => 1, 'column' => 3]],
+        );
+
+        $duplicateRequired = new SyntheticCsvRequiredCellsSummary(
+            $csv, [1, 2], [3],
+            [['row' => 1, 'column' => 1], ['row' => 1, 'column' => 1]],
+        );
+
+        $cases = [
+            new SyntheticCsvImportPreflightSummary(
+                new SyntheticImportMappedPreviewSummary($duplicateFormula, $mapping),
+                $good->decision,
+            ),
+            new SyntheticCsvImportPreflightSummary(
+                $good->preview, $good->decision,
+                $good->repeatPreview, $duplicateRequired,
+            ),
+        ];
+
+        foreach ($cases as $preflight) {
+            try {
+                (new SyntheticCsvReviewReportV1())->build($preflight);
+                self::fail('Repeated warning coordinate was accepted.');
+            } catch (InvalidArgumentException $exception) {
+                self::assertSame('Relatorio CSV sintetico invalido.', $exception->getMessage());
+            }
+        }
+    }
+
+    public function test_missing_header_position_cannot_exceed_actual_target_schema(): void
+    {
+        $good = self::preflight();
+        // The mapped target schema has three columns; position four must fail,
+        // even though the broader technical protocol allows up to eight.
+        $required = new SyntheticCsvRequiredCellsSummary(
+            $good->preview->csvPreview, [1, 2], [4], [],
+        );
+        $bad = new SyntheticCsvImportPreflightSummary(
+            $good->preview, $good->decision,
+            $good->repeatPreview, $required,
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Relatorio CSV sintetico invalido.');
+        (new SyntheticCsvReviewReportV1())->build($bad);
+    }
+
+    public function test_required_empty_warning_count_cannot_exceed_total_empty_cells(): void
+    {
+        $good = self::preflight();
+        $base = $good->preview->csvPreview;
+        $forged = new SyntheticImportPreviewSummary(
+            $base->rowsInspected, $base->columnsInspected, 1,
+            $base->potentialFormulaPositions,
+        );
+        $required = new SyntheticCsvRequiredCellsSummary(
+            $forged, [1, 2], [],
+            [['row' => 1, 'column' => 1], ['row' => 2, 'column' => 1]],
+        );
+        $bad = new SyntheticCsvImportPreflightSummary(
+            new SyntheticImportMappedPreviewSummary($forged, $good->preview->mappingPreview),
+            $good->decision, null, $required,
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Relatorio CSV sintetico invalido.');
+        (new SyntheticCsvReviewReportV1())->build($bad);
     }
 }
