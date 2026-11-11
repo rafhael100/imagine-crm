@@ -36,7 +36,11 @@ final class SyntheticKanbanStageInspectorTest extends TestCase
         self::assertSame(12, $result->total);
         self::assertSame(6, $result->highPriority);
         self::assertSame(8, $result->pendingFollowups);
+        self::assertSame([3, 0, 3, 0], $result->highPriorityByStage);
+        self::assertSame([2, 2, 2, 2], $result->pendingByStage);
         self::assertSame(12, array_sum($result->stageCounts));
+        self::assertSame($result->highPriority, array_sum($result->highPriorityByStage));
+        self::assertSame($result->pendingFollowups, array_sum($result->pendingByStage));
         self::assertFalse($result->canReadCustomerData());
         self::assertFalse($result->canPersistLead());
 
@@ -59,6 +63,8 @@ final class SyntheticKanbanStageInspectorTest extends TestCase
         self::assertSame(3, $updated->total);
         self::assertSame(2, $updated->highPriority);
         self::assertSame(2, $updated->pendingFollowups);
+        self::assertSame([0, 0, 1, 1], $updated->highPriorityByStage);
+        self::assertSame([0, 1, 0, 1], $updated->pendingByStage);
         self::assertSame(0, $before[0]['stage']);
     }
 
