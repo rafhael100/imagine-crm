@@ -48,8 +48,8 @@ final class SyntheticSubmissionClaimBatchInspectorTest extends TestCase
         self::assertSame([['first' => 1, 'repeated' => 3]], $report->sameOrganizationClaimPositions);
         self::assertSame([
             ['first' => 1, 'conflicting' => 4],
-            ['first' => 2, 'conflicting' => 5],
             ['first' => 3, 'conflicting' => 4],
+            ['first' => 2, 'conflicting' => 5],
         ], $report->crossOrganizationClaimPositions);
         self::assertTrue($report->hasRepeatedSubmissionClaims());
         self::assertTrue($report->hasCrossOrganizationConflicts());
