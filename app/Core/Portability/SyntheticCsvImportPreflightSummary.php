@@ -16,7 +16,18 @@ final readonly class SyntheticCsvImportPreflightSummary
         public SyntheticImportMappedPreviewSummary $preview,
         public AuthorizationDecision $decision,
         public ?SyntheticCsvRowRepeatSummary $repeatPreview = null,
+        public ?SyntheticCsvRequiredCellsSummary $requiredCellsPreview = null,
     ) {}
+
+    public function hasMissingRequiredHeaders(): bool
+    {
+        return $this->requiredCellsPreview?->hasMissingRequiredHeaders() ?? false;
+    }
+
+    public function hasEmptyRequiredCells(): bool
+    {
+        return $this->requiredCellsPreview?->hasEmptyRequiredCells() ?? false;
+    }
 
     public function hasRepeatWarnings(): bool
     {
