@@ -128,7 +128,11 @@ function draw(){
     button.dataset.select=x.id;
     button.setAttribute('aria-pressed',String(x.id===selected));
     button.setAttribute('aria-label','Selecionar '+x.name+' na etapa '+STAGES[x.stage]);
-    button.addEventListener('click',function(){selected=x.id;draw();});
+    button.addEventListener('click',function(){
+      selected=x.id;draw();
+      const next=Array.from(document.querySelectorAll('[data-select]')).find(node=>node.dataset.select===selected);
+      if(next)next.focus();
+    });
     cards[x.stage].appendChild(card);
   });
   counts.forEach((n,i)=>{document.getElementById('count-'+i).textContent=String(n);});
@@ -155,7 +159,7 @@ function move(delta){
   lead.stage=target;
   moveCount++;
   const msg=lead.name+': '+STAGES[from]+' → '+STAGES[target]+' (somente na demonstração).';
-  history.push(msg);
+  history.push(msg);if(history.length>40)history.shift();
   status.textContent=msg+' Nenhum lead real foi modificado.';
   draw();
 }
@@ -172,7 +176,7 @@ function revert(){
   selected=lead.id;
   undoCount++;
   const msg='Desfeito: '+lead.name+' retornou para '+STAGES[last.from]+'.';
-  history.push(msg);
+  history.push(msg);if(history.length>40)history.shift();
   status.textContent=msg+' Somente na demonstração.';
   draw();
 }
