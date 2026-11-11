@@ -1,0 +1,63 @@
+name: CRM F3-52 - Offline Portal CRM reconciliation review dashboard
+
+on:
+  push:
+    branches:
+      - dev/f3-52-portal-crm-reconciliation-ux-2026-11-11
+  pull_request:
+    paths:
+      - 'prototypes/f3-52-delivery-reconciliation/**'
+      - 'tests/Unit/OfflineDeliveryReconciliationDashboardTest.php'
+      - 'scripts/ci/check-offline-delivery-reconciliation-browser.php'
+      - '.github/workflows/ci-f3-52-reconciliation-browser.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-reconciliation:
+    name: PHP 8.4 / PHPUnit and real Chromium desktop+320px
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring,dom,xml,pdo_sqlite,sqlite3,curl,zip
+          tools: composer:v2
+          coverage: none
+      - name: Check source syntax and locked dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l tests/Unit/OfflineDeliveryReconciliationDashboardTest.php
+          php -l scripts/ci/check-offline-delivery-reconciliation-browser.php
+          composer validate --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+      - name: Verify fixture contract and deny-by-default route seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .env.example .env
+          php artisan key:generate --force
+          php artisan test --filter=OfflineDeliveryReconciliationDashboardTest --no-ansi
+          php artisan test --filter=PublicRouteSurfaceSealTest --no-ansi
+      - name: Exercise filtering, sorting, detail and keyboard in desktop and true 320px Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          php scripts/ci/check-offline-delivery-reconciliation-browser.php
