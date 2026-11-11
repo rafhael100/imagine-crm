@@ -176,6 +176,101 @@ final class SyntheticCsvImportPreflightTest extends TestCase
         self::assertSame('SCOPE_NOT_VERIFIED', $result->decision->reasonCode);
     }
 
+    public function test_optional_required_field_positions_are_combined_with_repeats_and_tenant_deny(): void
+    {
+        $result = (new SyntheticCsvImportPreflight())->inspect(
+            "stage;name;note\n"
+                . ";SYNTHETIC_A;safe\n"
+                . "SYNTHETIC_STAGE;;safe\n"
+                . "SYNTHETIC_STAGE;;safe\n",
+            ['stage', 'name', 'note'],
+            self::context(),
+            self::TENANT,
+            ['stage', 'name'],
+            ';',
+            ['name', 'stage', 'missing'],
+        );
+
+        self::assertNotNull($result->requiredCellsPreview);
+        self::assertSame([1, 2], $result->requiredCellsPreview->requiredSourcePositions);
+        self::assertSame([3], $result->requiredCellsPreview->missingRequiredTargetPositions);
+        self::assertSame([
+            ['row' => 1, 'column' => 1],
+            ['row' => 2, 'column' => 2],
+            ['row' => 3, 'column' => 2],
+        ], $result->requiredCellsPreview->emptyRequiredCellPositions);
+        self::assertTrue($result->hasMissingRequiredHeaders());
+        self::assertTrue($result->hasEmptyRequiredCells());
+        self::assertTrue($result->hasRepeatWarnings());
+        self::assertSame([['firstRow' => 2, 'repeatedRow' => 3]],
+            $result->repeatPreview->repeatedRowPositions);
+        self::assertEquals($result->preview->csvPreview, $result->repeatPreview->csvPreview);
+        self::assertEquals($result->preview->csvPreview, $result->requiredCellsPreview->csvPreview);
+        self::assertTrue($result->preview->isMappingComplete());
+        self::assertSame('SCOPE_NOT_VERIFIED', $result->decision->reasonCode);
+        self::assertFalse($result->decision->allowed);
+        self::assertFalse($result->canImport());
+        self::assertFalse($result->canPersistLead());
+        self::assertFalse($result->canEnableImportRoute());
+
+        $encoded = json_encode($result, JSON_THROW_ON_ERROR);
+        foreach (['SYNTHETIC_A', 'SYNTHETIC_STAGE', '"stage"', '"name"',
+            '"note"', '"missing"', self::TENANT, self::PRINCIPAL] as $secret) {
+            self::assertStringNotContainsString($secret, $encoded);
+        }
+    }
+
+    public function test_required_cells_remain_optional_and_no_warnings_mean_no_authorization(): void
+    {
+        $default = self::inspect();
+        self::assertNull($default->requiredCellsPreview);
+        self::assertFalse($default->hasMissingRequiredHeaders());
+        self::assertFalse($default->hasEmptyRequiredCells());
+        self::assertFalse($default->canImport());
+
+        $complete = (new SyntheticCsvImportPreflight())->inspect(
+            "name,stage\nSYNTHETIC_A,SYNTHETIC_STAGE\n",
+            ['name', 'stage'],
+            self::context(),
+            self::TENANT,
+            ['name', 'stage'],
+            ',',
+            ['name', 'stage'],
+        );
+
+        self::assertNotNull($complete->requiredCellsPreview);
+        self::assertSame([], $complete->requiredCellsPreview->missingRequiredTargetPositions);
+        self::assertSame([], $complete->requiredCellsPreview->emptyRequiredCellPositions);
+        self::assertFalse($complete->hasMissingRequiredHeaders());
+        self::assertFalse($complete->hasEmptyRequiredCells());
+        self::assertFalse($complete->hasRepeatWarnings());
+        self::assertSame('SCOPE_NOT_VERIFIED', $complete->decision->reasonCode);
+        self::assertFalse($complete->decision->allowed);
+        self::assertFalse($complete->canImport());
+    }
+
+    public function test_unapproved_required_field_specification_rejects_without_leak(): void
+    {
+        foreach ([[], ['Name'], ['name', 'name'], ['=HYPERLINK'],
+            ['name', new \stdClass()], ['name' => 'stage']] as $fields) {
+            try {
+                (new SyntheticCsvImportPreflight())->inspect(
+                    "name,stage\nSYNTHETIC_A,SYNTHETIC_STAGE\n",
+                    ['name', 'stage'],
+                    self::context(),
+                    self::TENANT,
+                    ['name'],
+                    ',',
+                    $fields,
+                );
+                self::fail('Malformed required-field spec accepted');
+            } catch (InvalidArgumentException $error) {
+                self::assertSame('Estrutura CSV de pre-visualizacao invalida.', $error->getMessage());
+                self::assertStringNotContainsString('HYPERLINK', $error->getMessage());
+            }
+        }
+    }
+
     public function test_untrusted_correlation_is_scrubbed_and_rejected_csv_is_not_reflected(): void
     {
         $withFakeCorrelation = self::inspect(
