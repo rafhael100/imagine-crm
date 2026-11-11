@@ -63,6 +63,7 @@ final class SyntheticCsvReviewReportV1
         }
 
         $formula = self::pairs($preview->potentialFormulaPositions, 'row', 'column', $rows, $columns);
+        self::uniqueCoordinatePairs($formula, 'row', 'column');
         $repeats = [];
         if ($preflight->repeatPreview !== null) {
             if ($preflight->repeatPreview->csvPreview != $preview) {
@@ -91,11 +92,15 @@ final class SyntheticCsvReviewReportV1
                 self::invalid();
             }
             $requiredSource = self::indices($required->requiredSourcePositions, $columns);
-            $missingHeaders = self::indices($required->missingRequiredTargetPositions, 8);
+            $missingHeaders = self::indices($required->missingRequiredTargetPositions, $targets);
             $requiredEmpty = self::pairs(
                 $required->emptyRequiredCellPositions,
                 'row', 'column', $rows, $columns,
             );
+            self::uniqueCoordinatePairs($requiredEmpty, 'row', 'column');
+            if (count($requiredEmpty) > $preview->emptyCells) {
+                self::invalid();
+            }
             foreach ($requiredEmpty as $cell) {
                 if (!in_array($cell['column'], $requiredSource, true)) {
                     self::invalid();
@@ -178,6 +183,22 @@ final class SyntheticCsvReviewReportV1
         }
 
         return $values;
+    }
+
+    /**
+     * @param list<array<string, int>> $pairs
+     * A forged summary must not repeat one warning coordinate to inflate counts.
+     */
+    private static function uniqueCoordinatePairs(array $pairs, string $first, string $second): void
+    {
+        $seen = [];
+        foreach ($pairs as $pair) {
+            $key = $pair[$first].':'.$pair[$second];
+            if (isset($seen[$key])) {
+                self::invalid();
+            }
+            $seen[$key] = true;
+        }
     }
 
     private static function invalid(): never
