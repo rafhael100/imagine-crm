@@ -63,7 +63,7 @@ final class OfflinePrototypeResourceBoundaryTest extends TestCase
                 self::assertSame('a', strtolower($element->tagName), 'Only anchors may carry local navigation links');
                 self::assertContains(
                     $element->getAttribute('href'),
-                    ['#conteudo', '../f4-15-followup-dashboard/index.html'],
+                    ['#conteudo', '../f4-15-followup-dashboard/index.html', '../f3-52-delivery-reconciliation/index.html'],
                     'Only explicit, vetted local navigation destinations are permitted'
                 );
             }
