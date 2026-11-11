@@ -14,3 +14,9 @@ Este recorte aplica **apenas a funcionalidade de UX offline F3-52/F3-53** direta
 
 ## Gates
 PR draft diretamente contra DEV para revisão independente do UX, **sem merge automático**, sem alterar `main`, VPS, produção ou dados reais. Os PRs originais #243 e #245 permanecem como histórico da implementação; este PR substitui **apenas o trajeto de integração visual** no planejamento de revisão, sem afirmar que os PRs de laboratório foram absorvidos. `F70` Comercial, CORE/IAM, revisão SEG/DBA/LGPD, identidade de serviço, consentimento, recibo e armazenamento duráveis seguem bloqueados. Não interpretar teste em PostgreSQL efêmero como operação homologada.
+
+## Ampliação controlada da mesma PR — prévia de riscos CSV já existente
+
+A aba **Prévia de importação**, que permanece sem upload nem autorização de importação, agora abre por um hyperlink `file://` exclusivamente local o protótipo preexistente `prototypes/f3-22-csv-risk-preview/index.html`; o protótipo CSV já contém retorno ao CRM principal. Os testes `OfflineCsvRiskNavigationTest`, `OfflineCsvRiskPreviewParityTest` e `check-offline-csv-risk-preview-browser.php` foram incluídos no workflow dedicado. A whitelist local de destinos passa a incluir só este caminho aprovado, e o contrato de cardinalidade da página principal muda de três para quatro links (pular para conteúdo, acompanhamentos, conferência de entregas e prévia CSV). **Não** há acesso a arquivos reais nem aprovação de importação.
+
+Assim a PR focalizada reúne duas jornadas de revisão UX disponíveis no código existente, preservando a base DEV e evitando novas PRs empilhadas apenas para acrescentar navegação.
