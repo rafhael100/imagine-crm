@@ -162,6 +162,20 @@ foreach ([
 ] as $change) {
     $cases[] = [array_replace(validRequest(), $change), false, 'invalid field or grant'];
 }
+// F3-49: both parsers must reject an oversized, untrusted key surface
+// before accidentally accepting a partial matching request.
+$flood = validRequest();
+for ($i = 0; $i < 512; ++$i) {
+    $flood['unknown_field_'.$i] = 'SYNTHETIC_EXTRA';
+}
+$cases[] = [$flood, false, 'extra-property flood'];
+$cases[] = [array_replace(validRequest(), [
+    'fields' => [['ref']],
+]), false, 'nested field name'];
+$cases[] = [array_replace(validRequest(), [
+    'fields' => [true],
+]), false, 'boolean field name'];
+
 foreach (array_keys(validRequest()) as $key) {
     $request = validRequest();
     unset($request[$key]);
