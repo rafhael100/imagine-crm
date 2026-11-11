@@ -85,23 +85,8 @@ final class SyntheticCsvImportPreview
         string $delimiter = ',',
     ): SyntheticCsvRowRepeatSummary {
         [$preview, , $rows] = $this->decode($csv, $delimiter);
-        $repeated = [];
 
-        // Bounded at 50 rows: exact in-memory comparisons avoid hash collisions
-        // and avoid retaining untrusted row text as map keys or identifiers.
-        foreach ($rows as $rowIndex => $row) {
-            for ($firstIndex = 0; $firstIndex < $rowIndex; ++$firstIndex) {
-                if ($rows[$firstIndex] === $row) {
-                    $repeated[] = [
-                        'firstRow' => $firstIndex + 1,
-                        'repeatedRow' => $rowIndex + 1,
-                    ];
-                    break;
-                }
-            }
-        }
-
-        return new SyntheticCsvRowRepeatSummary($preview, $repeated);
+        return new SyntheticCsvRowRepeatSummary($preview, self::repeatedPositions($rows));
     }
 
     /**
@@ -121,6 +106,82 @@ final class SyntheticCsvImportPreview
     ): SyntheticCsvRequiredCellsSummary {
         [$preview, $sourceLabels, $rows] = $this->decode($csv, $delimiter);
 
+        return self::requiredCellSummary($preview, $sourceLabels, $rows, $requiredTechnicalLabels);
+    }
+
+    /**
+     * F3-71: ONE canonical parse for exact mapping, repeated rows and optional
+     * required technical columns. Uses the same private structural algorithms
+     * as each legacy API, with no duplicated rows/header payload in results.
+     *
+     * @param array<mixed> $targetLabels
+     * @param array<mixed>|null $requiredTechnicalLabels
+     */
+    public function inspectComposite(
+        string $csv,
+        array $targetLabels,
+        ?array $requiredTechnicalLabels = null,
+        string $delimiter = ',',
+    ): SyntheticCsvCompositeSummary {
+        [$preview, $sourceLabels, $rows] = $this->decode($csv, $delimiter);
+
+        try {
+            $proposal = (new SyntheticColumnMappingInspector())->suggestExactMatches(
+                $sourceLabels, $targetLabels,
+            );
+        } catch (InvalidArgumentException) {
+            self::invalid();
+        }
+
+        $mapped = new SyntheticImportMappedPreviewSummary($preview, $proposal);
+        $repeats = new SyntheticCsvRowRepeatSummary(
+            $preview,
+            self::repeatedPositions($rows),
+        );
+        $required = $requiredTechnicalLabels === null
+            ? null
+            : self::requiredCellSummary(
+                $preview, $sourceLabels, $rows, $requiredTechnicalLabels,
+            );
+
+        return new SyntheticCsvCompositeSummary($mapped, $repeats, $required);
+    }
+
+    /**
+     * @param list<list<string>> $rows
+     * @return list<array{firstRow: int, repeatedRow: int}>
+     */
+    private static function repeatedPositions(array $rows): array
+    {
+        $repeated = [];
+        // The parser already limits this in-memory comparison to 50 rows.
+        // No hashes, storage or contact identifier comparison are involved.
+        foreach ($rows as $rowIndex => $row) {
+            for ($firstIndex = 0; $firstIndex < $rowIndex; ++$firstIndex) {
+                if ($rows[$firstIndex] === $row) {
+                    $repeated[] = [
+                        'firstRow' => $firstIndex + 1,
+                        'repeatedRow' => $rowIndex + 1,
+                    ];
+                    break;
+                }
+            }
+        }
+
+        return $repeated;
+    }
+
+    /**
+     * @param list<string> $sourceLabels
+     * @param list<list<string>> $rows
+     * @param array<mixed> $requiredTechnicalLabels
+     */
+    private static function requiredCellSummary(
+        SyntheticImportPreviewSummary $preview,
+        array $sourceLabels,
+        array $rows,
+        array $requiredTechnicalLabels,
+    ): SyntheticCsvRequiredCellsSummary {
         try {
             $mapping = (new SyntheticColumnMappingInspector())->suggestExactMatches(
                 $sourceLabels, $requiredTechnicalLabels,
