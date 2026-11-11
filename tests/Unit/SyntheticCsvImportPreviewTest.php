@@ -31,7 +31,7 @@ final class SyntheticCsvImportPreviewTest extends TestCase
         }
     }
 
-    public function test_quoted_comma_doubled_quotes_multiline_and_crlf_are_supported(): void
+    public function test_quoted_multiline_csv_is_parseable_but_embedded_newline_is_flagged_for_export(): void
     {
         $csv = "\xEF\xBB\xBFname,note\r\n"
             . "\"SYNTHETIC_A\",\"Hello, \"\"world\"\"\"\r\n"
@@ -39,7 +39,8 @@ final class SyntheticCsvImportPreviewTest extends TestCase
         $summary = self::inspect($csv);
         self::assertSame(2, $summary->rowsInspected);
         self::assertSame(2, $summary->columnsInspected);
-        self::assertSame(0, $summary->potentiallyExecutableCellCount());
+        self::assertSame(1, $summary->potentiallyExecutableCellCount());
+        self::assertSame([['row' => 2, 'column' => 2]], $summary->potentialFormulaPositions);
         self::assertFalse($summary->canImport());
     }
 
