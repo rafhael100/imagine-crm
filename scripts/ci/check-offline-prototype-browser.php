@@ -114,6 +114,27 @@ $testScript = <<<'JS'
     // Exercise the fixture-only stage filter in the real narrow browser.
     leads.click();
     check(document.getElementById('page-title').textContent==='Leads fictícios','open lead screen');
+    // UX-F3-51: quick views compose existing stage/band/sort/pagination
+    // without adding API calls, lead mutations or persisted preferences.
+    const quickButtons=Array.from(document.querySelectorAll('#screen-leads [data-lead-quick-view]'));
+    const quickStatus=document.getElementById('lead-quick-view-status');
+    const quickRows=Array.from(document.querySelectorAll('#screen-leads [data-lead-fixture-stage]'));
+    const quickVisible=()=>quickRows.filter(x=>!x.hidden).length;
+    check(quickButtons.length===4&&quickStatus.textContent.includes('Todos os exemplos fictícios'),'quick views initial');
+    quickButtons.find(x=>x.dataset.leadQuickView==='hot').click();
+    check(quickVisible()===2,'hot quick view shows two invented rows');
+    check(quickRows.filter(x=>!x.hidden).every(x=>x.dataset.leadFixtureTemperature==='hot'),'hot quick view uses existing temperature filter');
+    check(document.querySelector('#screen-leads tbody tr').querySelector('strong').textContent==='Lead Exemplo C','hot quick view orders by score');
+    check(quickStatus.textContent.includes('leads quentes'),'live quick view status');
+    quickButtons.find(x=>x.dataset.leadQuickView==='contact').click();
+    check(quickVisible()===1,'contact view one fixture');
+    check(quickRows.find(x=>!x.hidden).querySelector('strong').textContent==='Lead Exemplo B','contact view row B');
+    quickButtons.find(x=>x.dataset.leadQuickView==='qualification').click();
+    check(quickVisible()===1&&quickRows.find(x=>!x.hidden).querySelector('strong').textContent==='Lead Exemplo C','qualification view row C');
+    quickButtons.find(x=>x.dataset.leadQuickView==='all').click();
+    check(quickVisible()===4,'restore all quick view');
+    check(quickButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'one quick preset selected');
+
     // UX-F3-50: verify real browser delivery guidance, never a real CRM ACK.
     const deliveryBtns=Array.from(document.querySelectorAll('#screen-leads [data-delivery-case]'));
     const deliveryPreview=document.getElementById('delivery-demo-preview');
