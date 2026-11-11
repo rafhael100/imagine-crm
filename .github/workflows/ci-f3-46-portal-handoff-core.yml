@@ -51,13 +51,21 @@ jobs:
           php -l app/Core/Leads/PortalServiceHandoffInspector.php
           php -l tests/Unit/PortalServiceHandoffInspectorTest.php
           composer validate --no-check-publish
-          composer install --no-interaction --prefer-dist --no-progress
+          # Locked Laravel/Symfony dependencies require PHP >=8.4.1.
+          # Test pure PHP Core compatibility on 8.3 without modifying lock.
+          if [ "${{ matrix.php }}" = "8.4" ]; then
+            composer install --no-interaction --prefer-dist --no-progress
+          fi
       - name: Test domain/tenant security boundary, plus public route seal
         shell: bash
         run: |
           set -euo pipefail
-          cp .env.example .env
-          php artisan key:generate --force
-          php artisan test --filter=PortalServiceHandoffInspectorTest --no-ansi
-          php artisan test --filter=PublicRouteSurfaceSealTest --no-ansi
-          php artisan test --filter=LeadIntakeReleaseGateTest --no-ansi
+          php -l tests/Labs/F3_46/php83_core_smoke.php
+          php tests/Labs/F3_46/php83_core_smoke.php
+          if [ "${{ matrix.php }}" = "8.4" ]; then
+            cp .env.example .env
+            php artisan key:generate --force
+            php artisan test --filter=PortalServiceHandoffInspectorTest --no-ansi
+            php artisan test --filter=PublicRouteSurfaceSealTest --no-ansi
+            php artisan test --filter=LeadIntakeReleaseGateTest --no-ansi
+          fi
