@@ -260,6 +260,45 @@ final class OfflineKanbanFunnelTest extends TestCase
         }
     }
 
+    public function test_bulk_stage_advance_only_uses_visible_eligible_cards_and_one_undo(): void
+    {
+        $html = self::html();
+        foreach ([
+            'id="advance-visible-stage"',
+            'Avançar etapas visíveis (simulação)',
+            "const movableVisible=subset.filter(function(item){return item.stage<STAGES.length-1;});",
+            "byId('advance-visible-stage').disabled=movableVisible.length===0;",
+            "focus==='batch-move'?",
+            "history.push({kind:'batch-move',states:selected.map(",
+            "return {id:item.id,from:item.stage};",
+            "selected.forEach(function(item){item.stage++;});",
+            "previous.kind==='batch-move'",
+            "if(match)match.stage=state.from;",
+            "render('batch-move');",
+            "item.stage<STAGES.length-1;",
+        ] as $required) {
+            self::assertStringContainsString($required, $html);
+        }
+
+        // Both visual subset and bulk action must apply exactly the same
+        // priority, follow-up and stage filters. An invisible stage cannot
+        // be affected by this action.
+        foreach ([
+            "(priority==='all'||item.priority===priority)",
+            "(followupFilter==='all'||item.followup===followupFilter)",
+            "(stageFilter==='all'||item.stage===stageFilter)",
+        ] as $filter) {
+            self::assertGreaterThanOrEqual(3, substr_count($html, $filter));
+        }
+
+        self::assertStringContainsString("connect-src 'none'", $html);
+        self::assertStringContainsString("form-action 'none'", $html);
+        foreach (['<form', '<input', '<textarea', 'fetch(', 'localStorage',
+            'sessionStorage', 'XMLHttpRequest', 'indexedDB', '.innerHTML'] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, $html);
+        }
+    }
+
     public function test_accessible_actions_and_mobile_layout_are_present(): void
     {
         $html = self::html();
