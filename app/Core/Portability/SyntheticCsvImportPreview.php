@@ -50,6 +50,29 @@ final class SyntheticCsvImportPreview
         return new SyntheticImportMappedPreviewSummary($preview, $mapping);
     }
 
+    /**
+     * F3-56: no guessing, normalization, aliases or implicit field rights.
+     * A matching label proposes only a technical POSITION, never authority.
+     *
+     * @param array<mixed> $targetLabels Synthetic technical labels only.
+     */
+    public function inspectSuggested(
+        string $csv,
+        array $targetLabels,
+    ): SyntheticImportMappedPreviewSummary {
+        [$preview, $sourceLabels] = $this->decode($csv);
+
+        try {
+            $proposal = (new SyntheticColumnMappingInspector())->suggestExactMatches(
+                $sourceLabels, $targetLabels,
+            );
+        } catch (InvalidArgumentException) {
+            self::invalid();
+        }
+
+        return new SyntheticImportMappedPreviewSummary($preview, $proposal);
+    }
+
     /** @return array{SyntheticImportPreviewSummary, list<string>} */
     private function decode(string $csv): array
     {

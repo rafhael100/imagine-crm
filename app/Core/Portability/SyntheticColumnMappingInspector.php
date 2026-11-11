@@ -85,6 +85,47 @@ final class SyntheticColumnMappingInspector
         );
     }
 
+    /**
+     * F3-56: suggest only exact, case-sensitive TECHNICAL label matches.
+     *
+     * This is a structural draft, not a CRM target-field schema, import
+     * policy, personal-data classifier or authority to map/write records.
+     * Zero matching labels yields an empty suggestion, not guessed matches.
+     *
+     * @param array<mixed> $sourceLabels
+     * @param array<mixed> $targetLabels
+     */
+    public function suggestExactMatches(
+        array $sourceLabels,
+        array $targetLabels,
+    ): SyntheticColumnMappingSummary {
+        self::validateLabels($sourceLabels);
+        self::validateLabels($targetLabels);
+
+        $targetIndexes = array_flip($targetLabels);
+        $positions = [];
+        foreach ($sourceLabels as $index => $label) {
+            if (array_key_exists($label, $targetIndexes)) {
+                $positions[] = [
+                    'source' => $index + 1,
+                    'target' => $targetIndexes[$label] + 1,
+                ];
+            }
+        }
+
+        if ($positions !== []) {
+            return $this->assess($sourceLabels, $targetLabels, $positions);
+        }
+
+        return new SyntheticColumnMappingSummary(
+            count($sourceLabels),
+            count($targetLabels),
+            [],
+            range(1, count($sourceLabels)),
+            range(1, count($targetLabels)),
+        );
+    }
+
     /** @param array<mixed> $labels */
     private static function validateLabels(array $labels): void
     {

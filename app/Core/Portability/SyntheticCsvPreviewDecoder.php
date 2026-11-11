@@ -43,6 +43,24 @@ final class SyntheticCsvPreviewDecoder
         }
     }
 
+    /**
+     * Suggest positions for exact technical labels without writing anything.
+     *
+     * @param array<mixed> $targetLabels
+     */
+    public function previewSuggested(
+        string $syntheticCsv,
+        array $targetLabels,
+    ): SyntheticImportMappedPreviewSummary {
+        try {
+            return (new SyntheticCsvImportPreview())->inspectSuggested(
+                $syntheticCsv, $targetLabels,
+            );
+        } catch (InvalidArgumentException) {
+            self::invalid();
+        }
+    }
+
     private static function invalid(): never
     {
         // Do not reveal client-like fields, cell contents or validation hints.
