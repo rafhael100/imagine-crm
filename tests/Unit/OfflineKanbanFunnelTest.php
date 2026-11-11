@@ -275,7 +275,7 @@ final class OfflineKanbanFunnelTest extends TestCase
             "previous.kind==='batch-move'",
             "if(match)match.stage=state.from;",
             "render('batch-move');",
-            "item.stage<STAGES.length-1;",
+            "item.stage+direction>=0&&item.stage+direction<STAGES.length",
         ] as $required) {
             self::assertStringContainsString($required, $html);
         }
