@@ -25,6 +25,10 @@ final class SpreadsheetTextRiskGuardTest extends TestCase
             'embedded CR' => ["prefix\r=1+1"],
             'embedded DEL' => ["prefix\x7fplain"],
             'embedded control after Unicode' => ["SYNTHETIC_\u{2060}\t=1+1"],
+            'embedded Unicode NEL' => ["SYNTHETIC_A\u{0085}=CMD"],
+            'embedded Unicode line separator' => ["SYNTHETIC_A\u{2028}=CMD"],
+            'embedded Unicode paragraph separator' => ["SYNTHETIC_A\u{2029}=CMD"],
+            'embedded Unicode break without formula' => ["SYNTHETIC_A\u{2028}SYNTHETIC_B"],
 
             'leading newline' => ["\nplain"],
             'leading return' => ["\rplain"],
@@ -72,6 +76,7 @@ final class SpreadsheetTextRiskGuardTest extends TestCase
             'word joiner inside neutral text' => ["Lead\u{2060}= nota"],
             'soft hyphen inside neutral text' => ["Primeiro\u{00AD}+ segundo"],
             'combining mark inside ordinary text' => ["Cafe\u{0301} = 1"],
+            'non-breaking space inside ordinary text' => ["Lead\u{00A0}Exemplo"],
 
         ];
     }
