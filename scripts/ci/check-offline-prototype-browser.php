@@ -126,6 +126,12 @@ $testScript = <<<'JS'
     check(quickRows.filter(x=>!x.hidden).every(x=>x.dataset.leadFixtureTemperature==='hot'),'hot quick view uses existing temperature filter');
     check(document.querySelector('#screen-leads tbody tr').querySelector('strong').textContent==='Lead Exemplo C','hot quick view orders by score');
     check(quickStatus.textContent.includes('leads quentes'),'live quick view status');
+    // Switching individual filters must not falsely keep the preset active.
+    document.querySelector('#screen-leads [data-lead-stage="entrada"]').click();
+    check(quickButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===0,'manual override clears quick preset');
+    check(quickStatus.textContent.includes('Filtros personalizados'),'manual override explicitly announced');
+    quickButtons.find(x=>x.dataset.leadQuickView==='hot').click();
+    check(quickButtons.filter(x=>x.getAttribute('aria-pressed')==='true').length===1,'quick preset restores after manual override');
     quickButtons.find(x=>x.dataset.leadQuickView==='contact').click();
     check(quickVisible()===1,'contact view one fixture');
     check(quickRows.find(x=>!x.hidden).querySelector('strong').textContent==='Lead Exemplo B','contact view row B');
