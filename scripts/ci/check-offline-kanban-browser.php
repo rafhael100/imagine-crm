@@ -412,6 +412,24 @@ $checks = <<<'JS'
     byId('reset-demo').click();
     check(visible()===8&&csvLines().length===9,'reset restores original IDs and CSV');
     byId('toggle-csv-demo').click();
+    byId('reset-demo').click();
+    for(let cycle=0;cycle<69;cycle++){
+      const button=document.querySelector('[data-card-id="F01"] button[data-followup]');
+      button.click();
+    }
+    check(byId('count-moves').textContent==='69','sixty-nine fictional edits completed');
+    check(document.querySelector('[data-card-id="F01"] .followup-label').textContent.includes('concluído'),'odd toggle count ends completed');
+    check(document.querySelectorAll('#activity-list li').length<=6,'activity display stays six entries');
+    for(let undo=0;undo<64;undo++){
+      check(!byId('undo-change').disabled,'bounded undo remains available through sixty-four');
+      byId('undo-change').click();
+    }
+    check(byId('undo-change').disabled,'history stops at sixty-four snapshots without unbounded growth');
+    check(byId('count-moves').textContent==='133','undo remains a distinct action metric');
+    check(document.querySelector('[data-card-id="F01"] .followup-label').textContent.includes('concluído'),'first five oldest actions intentionally not undoable');
+    byId('reset-demo').click();
+    check(byId('count-moves').textContent==='0'&&byId('undo-change').disabled,'reset clears capped undo history');
+    check(document.querySelector('[data-card-id="F01"] .followup-label').textContent.includes('pendente'),'reset recovers original fictional state');
     check(!document.querySelector('form,iframe,textarea'),'no capture route');
     output.setAttribute('data-imagine-browser-smoke','PASS');
     output.textContent='F3-59 desktop real Chromium PASS';
@@ -607,6 +625,15 @@ try {
       check(doc.querySelector('[data-card-id="F13"]')===null,'mobile never generates F13');
       doc.getElementById('reset-demo').click();
       check(doc.documentElement.scrollWidth<=320,'mobile reusable slot controls do not overflow');
+      for(let cycle=0;cycle<5;cycle++){
+        doc.querySelector('[data-card-id="F01"] button[data-followup]').click();
+      }
+      check(doc.querySelector('[data-card-id="F01"] .followup-label').textContent.includes('concluído'),'mobile five toggles');
+      for(let undo=0;undo<5;undo++)doc.getElementById('undo-change').click();
+      check(doc.getElementById('undo-change').disabled,'mobile undo clears recent history');
+      check(doc.querySelector('[data-card-id="F01"] .followup-label').textContent.includes('pendente'),'mobile undo restores initial status');
+      doc.getElementById('reset-demo').click();
+      check(doc.documentElement.scrollWidth<=320,'bounded history interaction has no mobile overflow');
       check(doc.documentElement.scrollWidth<=320,'no overflow after reset');
       finish('PASS','real interactive 320 px viewport');
     }catch(error){finish('FAIL',error.message);}
