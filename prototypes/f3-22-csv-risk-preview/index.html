@@ -142,6 +142,25 @@ thead{background:#edf5f7}[hidden]{display:none!important}
 </div>
 <p class="notice">Uma versão idêntica <strong>não comprova revisão humana</strong>. Uma versão modificada indica que decisões vinculadas a ela devem ser descartadas; os botões de revisão acima são de outra demonstração independente. Checksum público não equivale a assinatura, armazenamento imutável ou autorização para importar.</p>
 </section>
+<section class="card" aria-labelledby="race-title">
+<h2 id="race-title">Conflitos de revisão — simulação</h2>
+<p class="small">Seis exemplos independentes sem sessão, gravação ou permissão real.</p>
+<div class="controls" role="group" aria-label="Cenários fictícios de revisão">
+<button type="button" data-race="0" aria-pressed="true">Inicial</button>
+<button type="button" data-race="1" aria-pressed="false">Primeira revisão</button>
+<button type="button" data-race="2" aria-pressed="false">Repetição igual</button>
+<button type="button" data-race="3" aria-pressed="false">Chave conflitante</button>
+<button type="button" data-race="4" aria-pressed="false">Versão antiga</button>
+<button type="button" data-race="5" aria-pressed="false">Lote alterado</button>
+</div>
+<div class="metrics">
+<div class="metric">Versão fictícia<strong id="race-version">1</strong></div>
+<div class="metric">Revisões simuladas<strong id="race-events">0</strong></div>
+<div class="metric">Últimas decisões<strong id="race-decisions">0</strong></div>
+</div>
+<p id="race-status" role="status" aria-live="polite">Estado inicial fictício. Revisão humana não comprovada; importação proibida.</p>
+<p class="notice">Nenhuma pessoa é autenticada, nenhum lead é importado e não existe concorrência entre processos ou banco real.</p>
+</section>
 <p class="small">A detecção não seleciona encoding, separador, normalização, consentimento, direitos por empresa ou política de exportação. Todos esses critérios continuam aguardando homologação.</p>
 </main>
 <noscript><p class="notice">JavaScript é necessário para alternar as amostras. Os dados desta página são sempre fictícios.</p></noscript>
@@ -268,6 +287,7 @@ thead{background:#edf5f7}[hidden]{display:none!important}
       "human_verified":false,"review_required":true,"import_permitted":false
     }
   ]);
+  const RACE_REPORTS = Object.freeze([{"status":"fixture_read_only","fixture_version":1,"recorded_review_events":0,"last_decision_count":0,"human_verified":false,"review_required":true,"import_permitted":false},{"status":"fixture_recorded_only","fixture_version":2,"recorded_review_events":1,"last_decision_count":1,"human_verified":false,"review_required":true,"import_permitted":false},{"status":"fixture_idempotent_replay_no_op","fixture_version":2,"recorded_review_events":1,"last_decision_count":1,"human_verified":false,"review_required":true,"import_permitted":false},{"status":"fixture_idempotency_conflict_no_op","fixture_version":2,"recorded_review_events":1,"last_decision_count":1,"human_verified":false,"review_required":true,"import_permitted":false},{"status":"fixture_stale_no_op","fixture_version":2,"recorded_review_events":1,"last_decision_count":1,"human_verified":false,"review_required":true,"import_permitted":false},{"status":"fixture_replaced_review_reset","fixture_version":3,"recorded_review_events":0,"last_decision_count":0,"human_verified":false,"review_required":true,"import_permitted":false}]);
   const NAMES = Object.freeze({
     "formula_prefix":"Prefixo semelhante a fórmula",
     "apostrophe_formula_ambiguous":"Apóstrofo com possível fórmula",
@@ -469,8 +489,20 @@ thead{background:#edf5f7}[hidden]{display:none!important}
     snapshotButtons.forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.snapshot) === index)));
   }
   snapshotButtons.forEach(button => button.addEventListener("click", () => showSnapshot(Number(button.dataset.snapshot))));
+  const raceButtons = Array.from(document.querySelectorAll("[data-race]"));
+  const raceLabels = ["Estado inicial fictício.","Uma revisão simulada em memória.","Repetição igual: nenhum novo evento.","Chave divergente: conflito sem novo evento.","Versão antiga: recusada.","Lote alterado: decisões descartadas."];
+  function showRace(index) {
+    const report = RACE_REPORTS[index];
+    document.getElementById("race-version").textContent = String(report.fixture_version);
+    document.getElementById("race-events").textContent = String(report.recorded_review_events);
+    document.getElementById("race-decisions").textContent = String(report.last_decision_count);
+    document.getElementById("race-status").textContent = raceLabels[index] + " Revisão humana não comprovada; importação proibida.";
+    raceButtons.forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.race) === index)));
+  }
+  raceButtons.forEach(button => button.addEventListener("click", () => showRace(Number(button.dataset.race))));
   showMap(0);
   showSnapshot(0);
+  showRace(0);
   show(0);
 })();
 </script>
