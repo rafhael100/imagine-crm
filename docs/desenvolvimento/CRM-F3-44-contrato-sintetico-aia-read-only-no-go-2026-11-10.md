@@ -10,7 +10,7 @@ Este pacote adiciona no CRM `AiaReadOnlyMockBoundary` com a mesma forma de oito 
 
 **Todos os pedidos — inclusive os bem formados — recebem a mesma resposta de negativa:**
 ```json
-{"contract":"SYNTHETIC_CRM_AIA_READ_V1","state":"DENIED_OR_NOT_FOUND","projection":null,"real_authorization":false,"external_calls":0}
+{"contract":"SYNTHETIC_CRM_AIA_PUBLIC_V1","state":"DENIED_OR_NOT_FOUND","projection":null,"real_authorization":false,"external_calls":0}
 ```
 
 Nenhum valor da requisição é devolvido. Não há cadastro, controller, rota, rede, chamada ao Agents, autorização positiva, consulta a lead, token, integração de conta, memória de sessão, banco, nem transmissão de PII. Ser compatível com o formato de um protótipo **não** é ter integração funcional.
@@ -27,3 +27,5 @@ Nenhum valor da requisição é devolvido. Não há cadastro, controller, rota, 
 - Direção: aprovar explicitamente integração funcional, responsáveis, ambiente de homologação e qualquer custo.
 
 **NO-GO:** sem `ALLOW`, leitura real de leads, deploy, VPS, `main`, dados reais, API funcional ou fechamento de gates. Esta classe é proibida de ser ligada ao runtime; `SyntheticRuntimeIsolationTest` continua sendo o tripwire.
+
+**Errata F3-46:** o identificador de saída é `SYNTHETIC_CRM_AIA_PUBLIC_V1`; `SYNTHETIC_CRM_AIA_READ_V1` identifica exclusivamente a requisição. Essa correção não altera as negativas nem concede acesso.
