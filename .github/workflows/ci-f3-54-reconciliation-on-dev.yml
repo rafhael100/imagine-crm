@@ -8,6 +8,9 @@ on:
     paths:
       - 'prototypes/s01-prot-01/index.html'
       - 'prototypes/f3-52-delivery-reconciliation/index.html'
+      - 'prototypes/f3-55-sales-pipeline-lab/**'
+      - 'tests/Unit/OfflineSalesPipeline**.php'
+      - 'scripts/ci/check-offline-sales-pipeline-browser.php'
       - 'tests/Unit/OfflineDeliveryReconciliationNavigationTest.php'
       - 'tests/Unit/OfflineFollowUpNavigationContractTest.php'
       - 'tests/Unit/OfflinePrototypeResourceBoundaryTest.php'
