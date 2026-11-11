@@ -26,7 +26,7 @@ final class AiaReadOnlyMockBoundaryTest extends TestCase
     private static function assertDenied(array $request): void
     {
         self::assertSame([
-            'contract' => 'SYNTHETIC_CRM_AIA_READ_V1',
+            'contract' => 'SYNTHETIC_CRM_AIA_PUBLIC_V1',
             'state' => 'DENIED_OR_NOT_FOUND',
             'projection' => null,
             'real_authorization' => false,
