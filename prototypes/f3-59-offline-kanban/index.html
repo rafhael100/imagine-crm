@@ -69,13 +69,13 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
 <main id="conteudo">
   <span class="eyebrow">Funil de vendas · Simulação local</span>
   <h1>Quadro de oportunidades fictícias</h1>
-  <p class="lead">Explore o funil, filtre por prioridade, avance ou retorne etapas e desfaça movimentos. Tudo acontece somente na memória desta aba.</p>
+  <p class="lead">Explore o funil, crie oportunidades fictícias, filtre por prioridade, avance ou retorne etapas e desfaça ações. Tudo acontece somente na memória desta aba.</p>
   <div class="notice">PROTÓTIPO — DADOS FICTÍCIOS. Nenhuma alteração é salva no CRM, enviada ao servidor ou comunicada a clientes.</div>
   <section class="stats" aria-label="Indicadores da simulação">
     <div class="stat"><span>Oportunidades visíveis</span><b id="count-visible">0</b></div>
     <div class="stat"><span>Prioridade alta visível</span><b id="count-high">0</b></div>
     <div class="stat"><span>Valor fictício visível</span><b id="sum-visible">R$ 0</b></div>
-    <div class="stat"><span>Movimentos nesta aba</span><b id="count-moves">0</b></div>
+    <div class="stat"><span>Ações simuladas nesta aba</span><b id="count-moves">0</b></div>
   </section>
   <div class="toolbar">
     <div class="filters" role="group" aria-label="Filtrar oportunidades por prioridade">
@@ -85,7 +85,8 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       <button type="button" data-priority="normal" aria-pressed="false">Normal</button>
     </div>
     <div class="filters" role="group" aria-label="Controle da simulação">
-      <button type="button" id="undo-change" disabled>Desfazer movimento</button>
+      <button type="button" id="add-fiction">Adicionar oportunidade fictícia</button>
+      <button type="button" id="undo-change" disabled>Desfazer ação</button>
       <button type="button" id="reset-demo">Reiniciar simulação</button>
     </div>
   </div>
@@ -116,6 +117,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   let priority='all';
   let history=[];
   let moves=0;
+  let nextGenerated=9;
   const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
   const byId=function(id){return document.getElementById(id);};
   const put=function(id,value){byId(id).textContent=String(value);};
@@ -165,8 +167,11 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       button.setAttribute('aria-pressed',String(button.dataset.priority===priority));
     });
     byId('undo-change').disabled=history.length===0;
+    byId('add-fiction').disabled=opportunities.length>=12;
+    byId('add-fiction').setAttribute('aria-label', opportunities.length>=12?'Limite de doze oportunidades fictícias atingido':'Adicionar oportunidade fictícia somente na memória');
     if(focus){
       const element=focus==='undo'?byId('undo-change'):
+        focus==='add'?byId('add-fiction'):
         focus==='reset'?byId('reset-demo'):
         focus==='filter'?document.querySelector('[data-priority="'+priority+'"]'):
         document.querySelector('[data-card-id="'+focus+'"] button:not([disabled])');
@@ -180,26 +185,53 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     if(!item)return;
     const next=item.stage+(button.dataset.move==='next'?1:-1);
     if(next<0||next>=STAGES.length)return;
-    history.push({id:item.id,from:item.stage});
+    history.push({kind:'move',id:item.id,from:item.stage});
     item.stage=next;
     moves++;
     render(item.id);
     describe(item.label+' movida para '+STAGES[next]+'.');
+  });
+  byId('add-fiction').addEventListener('click',function(){
+    if(opportunities.length>=12)return;
+    const number=nextGenerated++;
+    const reference=String(number).padStart(2,'0');
+    const item={
+      id:'F'+reference,
+      label:'Oportunidade fictícia '+reference,
+      stage:0,
+      priority:number%2===0?'normal':'high',
+      value:500+number*150,
+      score:50+number%35
+    };
+    opportunities.push(item);
+    history.push({kind:'add',id:item.id});
+    moves++;
+    priority='all';
+    render(item.id);
+    describe(item.label+' criada apenas nesta aba.');
   });
   byId('undo-change').addEventListener('click',function(){
     if(!history.length)return;
     const previous=history.pop();
     const item=opportunities.find(function(entry){return entry.id===previous.id;});
     if(!item)return;
-    item.stage=previous.from;
+    if(previous.kind==='add'){
+      opportunities=opportunities.filter(function(entry){return entry.id!==item.id;});
+      describe('Criação simulada desfeita: '+item.label+'.');
+    }else if(previous.kind==='move'){
+      item.stage=previous.from;
+      describe('Último movimento desfeito: '+item.label+' voltou para '+STAGES[item.stage]+'.');
+    }else{
+      return;
+    }
     moves++;
     render('undo');
-    describe('Último movimento desfeito: '+item.label+' voltou para '+STAGES[item.stage]+'.');
   });
   byId('reset-demo').addEventListener('click',function(){
     opportunities=FIXTURES.map(function(item){return Object.assign({},item);});
     history=[];
     moves=0;
+    nextGenerated=9;
     priority='all';
     render('reset');
     describe('Quadro fictício reiniciado.');
