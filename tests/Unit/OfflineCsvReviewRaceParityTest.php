@@ -116,7 +116,7 @@ final class OfflineCsvReviewRaceParityTest extends TestCase
         ));
         self::assertStringContainsString('id="race-status" role="status" aria-live="polite"', $html);
         self::assertStringContainsString('Revisão humana não comprovada; importação proibida.', $html);
-        self::assertStringContainsString('String(Number(button.dataset.race) === index)', $html);
+        self::assertStringContainsString('b.setAttribute("aria-pressed",String(+b.dataset.race===i))', $html);
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringContainsString("form-action 'none'", $html);
 
