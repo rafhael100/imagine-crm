@@ -201,6 +201,32 @@ final class OfflineKanbanFunnelTest extends TestCase
         }
     }
 
+    public function test_pending_queue_is_derived_from_the_same_filtered_state_and_never_persists(): void
+    {
+        $html = self::html();
+        foreach ([
+            'id="followup-queue"',
+            'Fila de acompanhamentos fictícios pendentes',
+            'class="queue-wrap"',
+            'class="queue-table"',
+            "const waiting=subset.filter(function(item){return item.followup==='pending';})",
+            "b.score-a.score||a.id.localeCompare(b.id)",
+            "button.dataset.queueCard=item.id;",
+            "button.setAttribute('aria-label','Localizar '+item.label",
+            "byId('followup-queue').addEventListener('click'",
+            "target.scrollIntoView({block:'nearest'});",
+            "target.focus();",
+            "queue.replaceChildren();",
+        ] as $contract) {
+            self::assertStringContainsString($contract, $html);
+        }
+        self::assertStringContainsString("connect-src 'none'", $html);
+        foreach (['<form', '<input', '<textarea', 'fetch(', 'localStorage',
+            'sessionStorage', 'XMLHttpRequest', 'indexedDB', '.innerHTML'] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, $html);
+        }
+    }
+
     public function test_accessible_actions_and_mobile_layout_are_present(): void
     {
         $html = self::html();
