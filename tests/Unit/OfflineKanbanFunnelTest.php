@@ -96,6 +96,19 @@ final class OfflineKanbanFunnelTest extends TestCase
         }
     }
 
+    public function test_every_stage_exposes_live_fictional_value_totals(): void
+    {
+        $html = self::html();
+        for ($stage = 0; $stage < 4; ++$stage) {
+            self::assertSame(1, substr_count($html, 'id="lane-value-'.$stage.'"'));
+        }
+        self::assertSame(4, substr_count($html, 'Valor fictício nesta etapa: R$ 0'));
+        self::assertStringContainsString("put('lane-value-'+index", $html);
+        self::assertStringContainsString('items.reduce(function(total,item)', $html);
+        self::assertStringContainsString('font-variant-numeric:tabular-nums', $html);
+        self::assertStringNotContainsString('window.localStorage', $html);
+    }
+
     public function test_accessible_actions_and_mobile_layout_are_present(): void
     {
         $html = self::html();
