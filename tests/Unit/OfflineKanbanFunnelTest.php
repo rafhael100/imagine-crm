@@ -83,7 +83,7 @@ final class OfflineKanbanFunnelTest extends TestCase
             "history.push({kind:'move',id:item.id,from:item.stage});",
             "opportunities.length>=12",
             "opportunities=opportunities.filter(",
-            "nextGenerated=9;",
+            "const number=[9,10,11,12].find(function(candidate){",
             "priority='all';",
             "render(item.id);",
             "render('undo');",
@@ -372,6 +372,29 @@ final class OfflineKanbanFunnelTest extends TestCase
         }
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringContainsString("form-action 'none'", $html);
+    }
+
+    public function test_generated_technical_ids_reuse_vacant_F09_to_F12_slots_after_undo(): void
+    {
+        $html = self::html();
+        foreach ([
+            "const number=[9,10,11,12].find(function(candidate){",
+            "return !opportunities.some(function(entry){",
+            "return entry.id==='F'+String(candidate).padStart(2,'0');",
+            "if(number===undefined)return;",
+            "const reference=String(number).padStart(2,'0');",
+            "id:'F'+reference,",
+            "opportunities.length>=12",
+            "opportunities=opportunities.filter(function(entry){return entry.id!==item.id;});",
+            "opportunities=FIXTURES.map(function(item){return Object.assign({},item);});",
+        ] as $required) {
+            self::assertStringContainsString($required, $html);
+        }
+        self::assertStringNotContainsString('nextGenerated', $html);
+        self::assertStringNotContainsString('F13', $html);
+        self::assertStringContainsString("connect-src 'none'", $html);
+        self::assertStringNotContainsString('localStorage', $html);
+        self::assertStringNotContainsString('fetch(', $html);
     }
 
     public function test_accessible_actions_and_mobile_layout_are_present(): void

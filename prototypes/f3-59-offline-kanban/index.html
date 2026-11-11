@@ -176,7 +176,6 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   let stageFilter='all';
   let history=[];
   let moves=0;
-  let nextGenerated=9;
   let order='default';
   let activity=[];
   const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
@@ -411,7 +410,14 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   });
   byId('add-fiction').addEventListener('click',function(){
   if(opportunities.length>=12)return;
-  const number=nextGenerated++;
+  // Choose the first unused synthetic slot. Undoing a creation MUST NOT
+  // burn an ID and silently grow beyond the F01..F12 CSV contract.
+  const number=[9,10,11,12].find(function(candidate){
+  return !opportunities.some(function(entry){
+    return entry.id==='F'+String(candidate).padStart(2,'0');
+  });
+  });
+  if(number===undefined)return;
   const reference=String(number).padStart(2,'0');
   const item={
   id:'F'+reference,
@@ -481,7 +487,6 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   opportunities=FIXTURES.map(function(item){return Object.assign({},item);});
   history=[];
   moves=0;
-  nextGenerated=9;
   priority='all';
   followupFilter='all';
   stageFilter='all';

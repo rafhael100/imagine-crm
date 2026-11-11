@@ -387,6 +387,31 @@ $checks = <<<'JS'
     byId('reset-demo').click();
     csvButton.click();
     check(csvView.hidden&&csvButton.getAttribute('aria-expanded')==='false','CSV preview closes without exporting a file');
+    byId('reset-demo').click();
+    const addForIds=byId('add-fiction');
+    for(let i=0;i<25;i++){
+      addForIds.click();
+      check(document.querySelector('[data-card-id="F09"]')!==null,'cycled creation always reuses F09');
+      check(document.querySelector('[data-card-id="F13"]')===null,'cyclic creation never emits F13');
+      byId('undo-change').click();
+      check(visible()===8&&document.querySelector('[data-card-id="F09"]')===null,'undo releases reusable F09');
+    }
+    check(byId('undo-change').disabled,'undo stack empty after repeated create/undo cycles');
+    for(let i=0;i<4;i++)addForIds.click();
+    check(visible()===12&&addForIds.disabled,'four generated slots fill at F12');
+    check(['F09','F10','F11','F12'].every(id=>document.querySelector('[data-card-id="'+id+'"]')!==null),'four generated IDs unique');
+    check(document.querySelector('[data-card-id="F13"]')===null,'no ID exceeds fixed synthetic contract');
+    byId('toggle-csv-demo').click();
+    check(csvLines().length===13&&csvLines()[12].startsWith('F12;'),'CSV remains valid for max twelve fixtures');
+    byId('undo-change').click();
+    check(visible()===11&&!addForIds.disabled,'undo frees latest F12 slot');
+    addForIds.click();
+    check(visible()===12&&document.querySelector('[data-card-id="F12"]')!==null,'readding reuses F12 after undo');
+    check(csvLines().length===13&&csvLines()[12].startsWith('F12;'),'CSV stays valid after reclaimed F12');
+    check(!csvView.textContent.includes('indisponível'),'CSV never fails due to burnt ID counter');
+    byId('reset-demo').click();
+    check(visible()===8&&csvLines().length===9,'reset restores original IDs and CSV');
+    byId('toggle-csv-demo').click();
     check(!document.querySelector('form,iframe,textarea'),'no capture route');
     output.setAttribute('data-imagine-browser-smoke','PASS');
     output.textContent='F3-59 desktop real Chromium PASS';
@@ -567,6 +592,21 @@ try {
       check(mobileCsv.textContent.trim().split('\n').length===9,'mobile CSV restored after reset');
       mobileCsvButton.click();
       check(mobileCsv.hidden,'mobile CSV preview closes');
+      const mobileAddIds=doc.getElementById('add-fiction');
+      for(let i=0;i<8;i++){
+        mobileAddIds.click();
+        check(doc.querySelector('[data-card-id="F09"]')!==null,'mobile reuses F09 after undo');
+        doc.getElementById('undo-change').click();
+        check(doc.querySelectorAll('[data-card-id]').length===8,'mobile undo restores eight records');
+      }
+      for(let i=0;i<4;i++)mobileAddIds.click();
+      check(['F09','F10','F11','F12'].every(id=>doc.querySelector('[data-card-id="'+id+'"]')!==null),'mobile generated IDs F09-F12');
+      doc.getElementById('undo-change').click();
+      mobileAddIds.click();
+      check(doc.querySelector('[data-card-id="F12"]')!==null,'mobile reuses F12 slot');
+      check(doc.querySelector('[data-card-id="F13"]')===null,'mobile never generates F13');
+      doc.getElementById('reset-demo').click();
+      check(doc.documentElement.scrollWidth<=320,'mobile reusable slot controls do not overflow');
       check(doc.documentElement.scrollWidth<=320,'no overflow after reset');
       finish('PASS','real interactive 320 px viewport');
     }catch(error){finish('FAIL',error.message);}
