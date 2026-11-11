@@ -53,9 +53,14 @@ jobs:
         run: |
           php -l app/Support/Synthetic/AiaReadOnlyMockBoundary.php
           php -l scripts/ci/check-aia-crm-contract-parity.php
+          php -l scripts/ci/check-aia-php-public-facade-witness.php
+          php -l _synthetic_agents_fixture/tools/op01_php_public_response_probe.php
           php -l _synthetic_agents_fixture/src/Domain/MockError.php
           php -l _synthetic_agents_fixture/src/Domain/TenantContext.php
           php -l _synthetic_agents_fixture/src/MockBridge/MockCrmReadRequest.php
 
       - name: Cross-repository syntactic parity; uniform deny
         run: php scripts/ci/check-aia-crm-contract-parity.php
+
+      - name: Execute pinned Agents public facade, quarantine synthetic success
+        run: php scripts/ci/check-aia-php-public-facade-witness.php
