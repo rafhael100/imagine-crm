@@ -16,6 +16,7 @@ final class SyntheticKanbanCsvPreviewBuilder
 {
     private const HEADER = "id;etapa;prioridade;acompanhamento;valor_ficticio;pontuacao\n";
     private const KEYS = ['id', 'stage', 'priority', 'followup', 'value', 'score'];
+    private const MAX_EXACT_JS_INTEGER = 9007199254740991;
 
     public function render(mixed $records): string
     {
@@ -25,6 +26,7 @@ final class SyntheticKanbanCsvPreviewBuilder
 
         $seen = [];
         $rows = [];
+        $totalValue = 0;
 
         // All rows are validated before ANY serialized content is returned.
         foreach ($records as $record) {
@@ -43,10 +45,17 @@ final class SyntheticKanbanCsvPreviewBuilder
                 || !is_int($record['stage']) || $record['stage'] < 0 || $record['stage'] > 3
                 || !in_array($record['priority'], ['high', 'normal'], true)
                 || !in_array($record['followup'], ['pending', 'done'], true)
-                || !is_int($record['value']) || $record['value'] < 0 || $record['value'] > 9007199254740991
+                || !is_int($record['value']) || $record['value'] < 0 || $record['value'] > self::MAX_EXACT_JS_INTEGER
                 || !is_int($record['score']) || $record['score'] < 0 || $record['score'] > 100) {
                 self::invalid();
             }
+
+            // The browser displays an aggregate fictional value; individual
+            // integers may be safe while their sum is no longer exact in JS.
+            if ($record['value'] > self::MAX_EXACT_JS_INTEGER - $totalValue) {
+                self::invalid();
+            }
+            $totalValue += $record['value'];
 
             $seen[$record['id']] = true;
             $rows[] = implode(';', [
