@@ -62,7 +62,7 @@ final class OfflineFollowUpNavigationContractTest extends TestCase
         foreach (['s01-prot-01', 'f4-15-followup-dashboard'] as $page) {
             $html = self::html($page);
             preg_match_all('/\\bhref="([^"]+)"/', $html, $matches);
-            self::assertCount($page === 'f4-15-followup-dashboard' ? 3 : 2, $matches[1]);
+            self::assertCount($page === 'f4-15-followup-dashboard' ? 3 : 3, $matches[1]);
             foreach ($matches[1] as $href) {
                 self::assertMatchesRegularExpression(
                     '~^(?:#[a-z-]+|\\.\\./[a-z0-9-]+/index\\.html)$~D',
