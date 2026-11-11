@@ -9,6 +9,9 @@ on:
       - 'prototypes/s01-prot-01/index.html'
       - 'prototypes/f3-52-delivery-reconciliation/index.html'
       - 'prototypes/f3-55-sales-pipeline-lab/**'
+      - 'prototypes/index.html'
+      - 'tests/Unit/OfflineDemoHubContractTest.php'
+      - 'scripts/ci/check-offline-demo-hub-browser.php'
       - 'tests/Unit/OfflineSalesPipeline**.php'
       - 'scripts/ci/check-offline-sales-pipeline-browser.php'
       - 'tests/Unit/OfflineDeliveryReconciliationNavigationTest.php'
@@ -60,6 +63,7 @@ jobs:
           php artisan test --filter=OfflineDeliveryReconciliationNavigationTest --no-ansi
           php artisan test --filter=OfflineCsvRiskNavigationTest --no-ansi
           php artisan test --filter=OfflineSalesPipelineSimulatorTest --no-ansi
+          php artisan test --filter=OfflineDemoHubContractTest --no-ansi
           php artisan test --filter=OfflineSalesPipelineNavigationTest --no-ansi
           php artisan test --filter=OfflineCsvRiskPreviewParityTest --no-ansi
           php artisan test --filter=OfflineFollowUpNavigationContractTest --no-ansi
@@ -76,3 +80,5 @@ jobs:
           php scripts/ci/check-offline-csv-risk-preview-browser.php
           php -l scripts/ci/check-offline-sales-pipeline-browser.php
           php scripts/ci/check-offline-sales-pipeline-browser.php
+          php -l scripts/ci/check-offline-demo-hub-browser.php
+          php scripts/ci/check-offline-demo-hub-browser.php
