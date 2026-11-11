@@ -25,7 +25,7 @@ h1{font-size:clamp(1.5rem,3vw,2.35rem);line-height:1.2;margin:4px 0 8px;letter-s
 .lead{color:#5a7182;max-width:820px;margin:0 0 20px}
 .eyebrow{text-transform:uppercase;letter-spacing:.13em;color:#147b77;font-size:.73rem;font-weight:800}
 .notice{background:#e4f4f1;color:#215a5b;border:1px solid #b7dcda;padding:12px 16px;border-radius:12px;font-weight:750;margin-bottom:20px}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin:0 0 20px}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px;margin:0 0 20px}
 .stat{background:#fff;border:1px solid #deeaef;border-radius:13px;padding:16px;min-width:0}
 .stat b{display:block;font-size:clamp(1.3rem,3vw,1.85rem);line-height:1.2;margin:4px 0;font-variant-numeric:tabular-nums}
 .stat span{display:block;font-size:.8rem;color:#637789}
@@ -51,6 +51,8 @@ button[disabled]{opacity:.47;cursor:not-allowed}
 .ticket .value{font-size:1.03rem;font-weight:850;color:#1c5a67;display:block;margin-top:9px;font-variant-numeric:tabular-nums}
 .tag{display:inline-block;border-radius:50px;background:#e9f5f3;color:#13665b;font-size:.7rem;font-weight:800;padding:4px 9px}
 .tag.high{background:#fff1d5;color:#79581e}
+.followup-label{display:block;font-size:.75rem;font-weight:750;color:#3c6071;margin-top:9px}
+.followup-toggle{background:#e4f4ed;border-color:#a2cfbf;color:#125f50;width:100%;margin-top:10px}
 .moves{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
 .moves button{font-size:.73rem;flex:1 1 85px;padding:8px}
 .empty{border:1px dashed #a8c0c9;background:#f8fbfc;border-radius:11px;color:#677e8c;padding:16px;font-size:.8rem}
@@ -76,11 +78,12 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
 <main id="conteudo">
   <span class="eyebrow">Funil de vendas · Simulação local</span>
   <h1>Quadro de oportunidades fictícias</h1>
-  <p class="lead">Explore o funil, crie oportunidades fictícias, filtre por prioridade, avance ou retorne etapas e desfaça ações. Tudo acontece somente na memória desta aba.</p>
+  <p class="lead">Explore o funil, mova oportunidades e simule a conclusão de acompanhamentos. Filtros e ações são reversíveis e existem somente na memória desta aba.</p>
   <div class="notice">PROTÓTIPO — DADOS FICTÍCIOS. Nenhuma alteração é salva no CRM, enviada ao servidor ou comunicada a clientes.</div>
   <section class="stats" aria-label="Indicadores da simulação">
     <div class="stat"><span>Oportunidades visíveis</span><b id="count-visible">0</b></div>
     <div class="stat"><span>Prioridade alta visível</span><b id="count-high">0</b></div>
+    <div class="stat"><span>Acompanhamentos pendentes visíveis</span><b id="count-pending">0</b></div>
     <div class="stat"><span>Valor fictício visível</span><b id="sum-visible">R$ 0</b></div>
     <div class="stat"><span>Ações simuladas nesta aba</span><b id="count-moves">0</b></div>
   </section>
@@ -90,6 +93,12 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       <button type="button" data-priority="all" aria-pressed="true">Todas</button>
       <button type="button" data-priority="high" aria-pressed="false">Alta</button>
       <button type="button" data-priority="normal" aria-pressed="false">Normal</button>
+    </div>
+    <div class="filters" role="group" aria-label="Filtrar situação de acompanhamento fictício">
+      <strong>Acompanhamento:</strong>
+      <button type="button" data-followup-filter="all" aria-pressed="true">Todos</button>
+      <button type="button" data-followup-filter="pending" aria-pressed="false">Pendentes</button>
+      <button type="button" data-followup-filter="done" aria-pressed="false">Concluídos</button>
     </div>
     <div class="filters" role="group" aria-label="Ordenar cartões fictícios">
       <strong>Ordenação:</strong>
@@ -121,17 +130,18 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   'use strict';
   const STAGES=Object.freeze(['Entrada','Em contato','Qualificação','Proposta']);
   const FIXTURES=Object.freeze([
-    Object.freeze({id:'F01',label:'Oportunidade fictícia 01',stage:0,priority:'high',value:1800,score:92}),
-    Object.freeze({id:'F02',label:'Oportunidade fictícia 02',stage:0,priority:'normal',value:960,score:53}),
-    Object.freeze({id:'F03',label:'Oportunidade fictícia 03',stage:1,priority:'high',value:3900,score:86}),
-    Object.freeze({id:'F04',label:'Oportunidade fictícia 04',stage:1,priority:'normal',value:1700,score:64}),
-    Object.freeze({id:'F05',label:'Oportunidade fictícia 05',stage:2,priority:'high',value:5300,score:90}),
-    Object.freeze({id:'F06',label:'Oportunidade fictícia 06',stage:2,priority:'normal',value:2450,score:68}),
-    Object.freeze({id:'F07',label:'Oportunidade fictícia 07',stage:3,priority:'high',value:7600,score:95}),
-    Object.freeze({id:'F08',label:'Oportunidade fictícia 08',stage:3,priority:'normal',value:1100,score:57})
+    Object.freeze({id:'F01',label:'Oportunidade fictícia 01',stage:0,priority:'high',value:1800,score:92,followup:'pending'}),
+    Object.freeze({id:'F02',label:'Oportunidade fictícia 02',stage:0,priority:'normal',value:960,score:53,followup:'done'}),
+    Object.freeze({id:'F03',label:'Oportunidade fictícia 03',stage:1,priority:'high',value:3900,score:86,followup:'pending'}),
+    Object.freeze({id:'F04',label:'Oportunidade fictícia 04',stage:1,priority:'normal',value:1700,score:64,followup:'done'}),
+    Object.freeze({id:'F05',label:'Oportunidade fictícia 05',stage:2,priority:'high',value:5300,score:90,followup:'pending'}),
+    Object.freeze({id:'F06',label:'Oportunidade fictícia 06',stage:2,priority:'normal',value:2450,score:68,followup:'pending'}),
+    Object.freeze({id:'F07',label:'Oportunidade fictícia 07',stage:3,priority:'high',value:7600,score:95,followup:'pending'}),
+    Object.freeze({id:'F08',label:'Oportunidade fictícia 08',stage:3,priority:'normal',value:1100,score:57,followup:'pending'})
   ]);
   let opportunities=FIXTURES.map(function(item){return Object.assign({},item);});
   let priority='all';
+  let followupFilter='all';
   let history=[];
   let moves=0;
   let nextGenerated=9;
@@ -156,6 +166,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     card.appendChild(meta);
     card.appendChild(node('span','tag'+(item.priority==='high'?' high':''),item.priority==='high'?'Prioridade alta':'Prioridade normal'));
     card.appendChild(node('span','value',money.format(item.value)));
+    card.appendChild(node('span','followup-label',item.followup==='done'?'Acompanhamento fictício concluído':'Acompanhamento fictício pendente'));
     const actions=node('div','moves');
     [-1,1].forEach(function(step){
       const button=node('button','',step===-1?'Etapa anterior':'Próxima etapa');
@@ -167,12 +178,21 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       actions.appendChild(button);
     });
     card.appendChild(actions);
+    const followButton=node('button','followup-toggle',item.followup==='done'?'Reabrir acompanhamento fictício':'Concluir acompanhamento fictício');
+    followButton.type='button';
+    followButton.dataset.followup=item.id;
+    followButton.setAttribute('aria-label',(item.followup==='done'?'Reabrir':'Concluir')+' acompanhamento fictício de '+item.label);
+    card.appendChild(followButton);
     return card;
   }
   function render(focus){
-    const subset=opportunities.filter(function(item){return priority==='all'||item.priority===priority;});
+    const subset=opportunities.filter(function(item){
+      return (priority==='all'||item.priority===priority)
+        && (followupFilter==='all'||item.followup===followupFilter);
+    });
     put('count-visible',subset.length);
     put('count-high',subset.filter(function(item){return item.priority==='high';}).length);
+    put('count-pending',subset.filter(function(item){return item.followup==='pending';}).length);
     put('sum-visible',money.format(subset.reduce(function(sum,item){return sum+item.value;},0)));
     put('count-moves',moves);
     STAGES.forEach(function(stage,index){
@@ -190,6 +210,9 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     document.querySelectorAll('[data-priority]').forEach(function(button){
       button.setAttribute('aria-pressed',String(button.dataset.priority===priority));
     });
+    document.querySelectorAll('[data-followup-filter]').forEach(function(button){
+      button.setAttribute('aria-pressed',String(button.dataset.followupFilter===followupFilter));
+    });
     const activityList=byId('activity-list');
     activityList.replaceChildren();
     (activity.length?activity.slice(0,6):['Nenhuma ação simulada registrada.']).forEach(function(message){
@@ -202,7 +225,9 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     byId('add-fiction').disabled=opportunities.length>=12;
     byId('add-fiction').setAttribute('aria-label', opportunities.length>=12?'Limite de doze oportunidades fictícias atingido':'Adicionar oportunidade fictícia somente na memória');
     if(focus){
-      const element=focus==='undo'?byId('undo-change'):
+      const element=focus.startsWith('followup:')
+        ?document.querySelector('[data-card-id="'+focus.slice(9)+'"] button[data-followup]'):
+        focus==='undo'?byId('undo-change'):
         focus==='add'?byId('add-fiction'):
         focus==='reset'?byId('reset-demo'):
         focus==='filter'?document.querySelector('[data-priority="'+priority+'"]'):
@@ -212,6 +237,18 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     }
   }
   byId('board').addEventListener('click',function(event){
+    const followButton=event.target.closest('button[data-followup]');
+    if(followButton){
+      const item=opportunities.find(function(entry){return entry.id===followButton.dataset.followup;});
+      if(!item)return;
+      history.push({kind:'followup',id:item.id,from:item.followup});
+      item.followup=item.followup==='done'?'pending':'done';
+      remember(item.label+' teve acompanhamento fictício '+(item.followup==='done'?'concluído.':'reaberto.'));
+      moves++;
+      render('followup:'+item.id);
+      describe('Situação fictícia de acompanhamento atualizada: '+item.label+'.');
+      return;
+    }
     const button=event.target.closest('button[data-move]');
     if(!button||button.disabled)return;
     const item=opportunities.find(function(entry){return entry.id===button.dataset.id;});
@@ -235,13 +272,15 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       stage:0,
       priority:number%2===0?'normal':'high',
       value:500+number*150,
-      score:50+number%35
+      score:50+number%35,
+      followup:'pending'
     };
     opportunities.push(item);
     history.push({kind:'add',id:item.id});
     remember(item.label+' criada na etapa Entrada.');
     moves++;
     priority='all';
+    followupFilter='all';
     render(item.id);
     describe(item.label+' criada apenas nesta aba.');
   });
@@ -258,6 +297,10 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       remember('Movimento de '+item.label+' desfeito.');
       item.stage=previous.from;
       describe('Último movimento desfeito: '+item.label+' voltou para '+STAGES[item.stage]+'.');
+    }else if(previous.kind==='followup'){
+      item.followup=previous.from;
+      remember('Acompanhamento fictício de '+item.label+' restaurado.');
+      describe('Situação do acompanhamento fictício restaurada: '+item.label+'.');
     }else{
       return;
     }
@@ -270,6 +313,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     moves=0;
     nextGenerated=9;
     priority='all';
+    followupFilter='all';
     order='default';
     activity=[];
     render('reset');
@@ -280,6 +324,14 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       priority=button.dataset.priority;
       render('filter');
       describe('Filtro de prioridade atualizado.');
+    });
+  });
+  document.querySelectorAll('[data-followup-filter]').forEach(function(button){
+    button.addEventListener('click',function(){
+      followupFilter=button.dataset.followupFilter;
+      render('filter');
+      button.focus();
+      describe('Filtro de acompanhamento fictício atualizado.');
     });
   });
   document.querySelectorAll('[data-order]').forEach(function(button){

@@ -133,6 +133,44 @@ final class OfflineKanbanFunnelTest extends TestCase
         self::assertStringNotContainsString('<form', $html);
     }
 
+    public function test_reversible_fictional_followups_have_no_real_customer_side_effects(): void
+    {
+        $html = self::html();
+        self::assertSame(8, preg_match_all(
+            "/Object\\.freeze\\(\\{id:'F[0-9]{2}'.*?followup:'(?:pending|done)'\\}\\)/",
+            $html,
+        ));
+        self::assertSame(2, substr_count($html, ",followup:'done'"));
+        foreach ([
+            'id="count-pending"',
+            'Acompanhamentos pendentes visíveis',
+            'data-followup-filter="all" aria-pressed="true"',
+            'data-followup-filter="pending" aria-pressed="false"',
+            'data-followup-filter="done" aria-pressed="false"',
+            "history.push({kind:'followup',id:item.id,from:item.followup});",
+            "item.followup=item.followup==='done'?'pending':'done';",
+            "item.followup=previous.from;",
+            "followupFilter='all';",
+            "focus.startsWith('followup:')",
+            "const followButton=event.target.closest('button[data-followup]');",
+            "render('followup:'+item.id);",
+            "followup:'pending'",
+            "item.followup==='pending'",
+            'Acompanhamento fictício pendente',
+            'Concluir acompanhamento fictício',
+        ] as $assertion) {
+            self::assertStringContainsString($assertion, $html);
+        }
+        foreach ([
+            '<form', '<input', '<textarea', 'fetch(', 'XMLHttpRequest',
+            'localStorage', 'sessionStorage', 'Notification(', 'navigator.sendBeacon',
+            'indexedDB', 'setTimeout(', 'onClick=', '.innerHTML', 'document.cookie',
+        ] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, $html);
+        }
+        self::assertStringContainsString("connect-src 'none'", $html);
+    }
+
     public function test_accessible_actions_and_mobile_layout_are_present(): void
     {
         $html = self::html();
