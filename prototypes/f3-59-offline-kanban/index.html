@@ -331,6 +331,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const selected=opportunities.filter(function(item){
   return (priority==='all'||item.priority===priority)
   && (followupFilter==='all'||item.followup===followupFilter)
+  && (stageFilter==='all'||item.stage===stageFilter)
   && item.followup==='pending';
   });
   if(selected.length===0)return;
@@ -360,6 +361,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   moves++;
   priority='all';
   followupFilter='all';
+  stageFilter='all';
   render(item.id);
   describe(item.label+' criada apenas nesta aba.');
   });
