@@ -63,6 +63,23 @@ final class SyntheticCsvPreviewDecoder
         }
     }
 
+    /**
+     * Position-only repeated-row diagnostic for synthetic CSV.
+     * This never authorizes deduplication of contacts.
+     */
+    public function previewRepeatedRows(
+        string $syntheticCsv,
+        string $delimiter = ',',
+    ): SyntheticCsvRowRepeatSummary {
+        try {
+            return (new SyntheticCsvImportPreview())->inspectRepeatedRows(
+                $syntheticCsv, $delimiter,
+            );
+        } catch (InvalidArgumentException) {
+            self::invalid();
+        }
+    }
+
     private static function invalid(): never
     {
         // Do not reveal client-like fields, cell contents or validation hints.
