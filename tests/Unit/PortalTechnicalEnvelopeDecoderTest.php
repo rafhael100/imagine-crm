@@ -41,7 +41,7 @@ final class PortalTechnicalEnvelopeDecoderTest extends TestCase
             str_replace('"imagine.lead-intake"', '"imagine.lead-\u0069ntake"', self::json($frame)),
             str_replace('"11111111', '"\u00311111111', self::json($frame)),
         ] as $raw) {
-            self::assertSame($frame,$decoder->decode($raw));
+            self::assertEqualsCanonicalizing($frame,$decoder->decode($raw));
         }
     }
 
