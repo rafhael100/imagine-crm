@@ -132,6 +132,20 @@ function expectDenied(PDO $db,callable $action,string $description): void
     check(!$db->inTransaction(),'failed command must not leave open transaction');
 }
 
+function expectAtomicDenied(PDO $db,array $refs,string $description): void
+{
+    $rejected=false;
+    try {
+        insertAtomic($db,$refs); // Owns its transaction and rollback.
+    } catch (PDOException $e) {
+        $rejected=true;
+        check($e->getCode()==='42501',
+            'cross-tenant insert denied specifically by RLS: '.$description);
+    }
+    check($rejected,'cross-tenant atomic insert denied: '.$description);
+    check(!$db->inTransaction(),'cross-tenant failure rolls back completely');
+}
+
 $root=new PDO(
     'pgsql:host=127.0.0.1;port=5432;dbname=imagine_crm_handoff_ci',
     'postgres',(string)getenv('DB_PASSWORD'),
@@ -182,17 +196,13 @@ check(insertAtomic($a,sample($orgA,
     'a2a2a2a2-a2a2-4a2a-8a2a-a2a2a2a2a2a2'))===[1,0],
     'new nonce is not a new lead');
 
-expectDenied($a,static function(PDO $db) use($orgB): void {
-    insertAtomic($db,sample($orgB,
-        'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
-        'c1c1c1c1-c1c1-4c1c-8c1c-c1c1c1c1c1c1'));
-},'A inserts into tenant B');
+expectAtomicDenied($a,sample($orgB,
+    'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+    'c1c1c1c1-c1c1-4c1c-8c1c-c1c1c1c1c1c1'),'A inserts into tenant B');
 
-expectDenied($b,static function(PDO $db) use($orgA): void {
-    insertAtomic($db,sample($orgA,
-        'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
-        'd1d1d1d1-d1d1-4d1d-8d1d-d1d1d1d1d1d1'));
-},'B inserts into tenant A');
+expectAtomicDenied($b,sample($orgA,
+    'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+    'd1d1d1d1-d1d1-4d1d-8d1d-d1d1d1d1d1d1'),'B inserts into tenant A');
 
 foreach ([$a,$b] as $db) {
     foreach ([
