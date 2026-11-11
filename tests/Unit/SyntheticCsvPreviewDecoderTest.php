@@ -43,7 +43,8 @@ final class SyntheticCsvPreviewDecoderTest extends TestCase
 
         self::assertSame(2, $report->rowsInspected);
         self::assertSame(2, $report->columnsInspected);
-        self::assertSame(0, $report->potentiallyExecutableCellCount());
+        self::assertSame(1, $report->potentiallyExecutableCellCount());
+        self::assertSame([['row' => 1, 'column' => 2]], $report->potentialFormulaPositions);
         self::assertFalse($report->canImport());
     }
 
