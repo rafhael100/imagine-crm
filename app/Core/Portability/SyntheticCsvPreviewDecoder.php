@@ -16,10 +16,10 @@ use InvalidArgumentException;
  */
 final class SyntheticCsvPreviewDecoder
 {
-    public function preview(string $syntheticCsv): SyntheticImportPreviewSummary
+    public function preview(string $syntheticCsv, string $delimiter = ','): SyntheticImportPreviewSummary
     {
         try {
-            return (new SyntheticCsvImportPreview())->inspect($syntheticCsv);
+            return (new SyntheticCsvImportPreview())->inspect($syntheticCsv, $delimiter);
         } catch (InvalidArgumentException) {
             self::invalid();
         }
@@ -33,10 +33,11 @@ final class SyntheticCsvPreviewDecoder
         string $syntheticCsv,
         array $targetLabels,
         array $mappingPairs,
+        string $delimiter = ',',
     ): SyntheticImportMappedPreviewSummary {
         try {
             return (new SyntheticCsvImportPreview())->inspectMapped(
-                $syntheticCsv, $targetLabels, $mappingPairs,
+                $syntheticCsv, $targetLabels, $mappingPairs, $delimiter,
             );
         } catch (InvalidArgumentException) {
             self::invalid();
@@ -51,10 +52,11 @@ final class SyntheticCsvPreviewDecoder
     public function previewSuggested(
         string $syntheticCsv,
         array $targetLabels,
+        string $delimiter = ',',
     ): SyntheticImportMappedPreviewSummary {
         try {
             return (new SyntheticCsvImportPreview())->inspectSuggested(
-                $syntheticCsv, $targetLabels,
+                $syntheticCsv, $targetLabels, $delimiter,
             );
         } catch (InvalidArgumentException) {
             self::invalid();
