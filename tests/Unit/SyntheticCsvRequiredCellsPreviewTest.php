@@ -111,7 +111,7 @@ final class SyntheticCsvRequiredCellsPreviewTest extends TestCase
         $report = (new SyntheticCsvImportPreview())->inspectRequiredCells(
             "name,note\n"
             . "SYNTHETIC_A,\"=1+1\"\n"
-            . ",\" \\u{2060}=1+1\"\n",
+            . ",\" \u{2060}=1+1\"\n",
             ['name'],
         );
         self::assertSame([['row' => 2, 'column' => 1]],
