@@ -106,6 +106,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       <button type="button" data-order="score" aria-pressed="false">Maior pontuação</button>
     </div>
     <div class="filters" role="group" aria-label="Controle da simulação">
+      <button type="button" id="complete-visible-followups">Concluir pendentes visíveis (simulação)</button>
       <button type="button" id="add-fiction">Adicionar oportunidade fictícia</button>
       <button type="button" id="undo-change" disabled>Desfazer ação</button>
       <button type="button" id="reset-demo">Reiniciar simulação</button>
@@ -221,12 +222,18 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     document.querySelectorAll('[data-order]').forEach(function(button){
       button.setAttribute('aria-pressed',String(button.dataset.order===order));
     });
+    const pendingVisible=subset.filter(function(item){return item.followup==='pending';});
+    byId('complete-visible-followups').disabled=pendingVisible.length===0;
+    byId('complete-visible-followups').setAttribute('aria-label','Concluir '+pendingVisible.length+' acompanhamentos fictícios pendentes visíveis. Ação reversível e local.');
     byId('undo-change').disabled=history.length===0;
     byId('add-fiction').disabled=opportunities.length>=12;
     byId('add-fiction').setAttribute('aria-label', opportunities.length>=12?'Limite de doze oportunidades fictícias atingido':'Adicionar oportunidade fictícia somente na memória');
     if(focus){
       const element=focus.startsWith('followup:')
         ?document.querySelector('[data-card-id="'+focus.slice(9)+'"] button[data-followup]'):
+        focus==='batch'?(byId('complete-visible-followups').disabled
+          ?document.querySelector('[data-followup-filter="all"]')
+          :byId('complete-visible-followups')):
         focus==='undo'?byId('undo-change'):
         focus==='add'?byId('add-fiction'):
         focus==='reset'?byId('reset-demo'):
@@ -262,6 +269,20 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
     render(item.id);
     describe(item.label+' movida para '+STAGES[next]+'.');
   });
+  byId('complete-visible-followups').addEventListener('click',function(){
+    const selected=opportunities.filter(function(item){
+      return (priority==='all'||item.priority===priority)
+        && (followupFilter==='all'||item.followup===followupFilter)
+        && item.followup==='pending';
+    });
+    if(selected.length===0)return;
+    history.push({kind:'batch-followup',states:selected.map(function(item){return {id:item.id,from:item.followup};})});
+    selected.forEach(function(item){item.followup='done';});
+    remember('Conclusão fictícia de '+selected.length+' acompanhamentos visíveis em lote.');
+    moves++;
+    render('batch');
+    describe('Conclusão simulada de '+selected.length+' acompanhamentos pendentes visíveis.');
+  });
   byId('add-fiction').addEventListener('click',function(){
     if(opportunities.length>=12)return;
     const number=nextGenerated++;
@@ -287,6 +308,17 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   byId('undo-change').addEventListener('click',function(){
     if(!history.length)return;
     const previous=history.pop();
+    if(previous.kind==='batch-followup'){
+      previous.states.forEach(function(state){
+        const match=opportunities.find(function(entry){return entry.id===state.id;});
+        if(match)match.followup=state.from;
+      });
+      remember('Conclusão de '+previous.states.length+' acompanhamentos fictícios desfeita.');
+      moves++;
+      render('undo');
+      describe('Conclusão simulada em lote desfeita.');
+      return;
+    }
     const item=opportunities.find(function(entry){return entry.id===previous.id;});
     if(!item)return;
     if(previous.kind==='add'){
