@@ -271,11 +271,11 @@ final class OfflineKanbanFunnelTest extends TestCase
             "focus==='batch-move'?",
             "history.push({kind:'batch-move',states:selected.map(",
             "return {id:item.id,from:item.stage};",
-            "selected.forEach(function(item){item.stage++;});",
+            "selected.forEach(function(item){item.stage+=direction;});",
             "previous.kind==='batch-move'",
             "if(match)match.stage=state.from;",
-            "render('batch-move');",
-            "item.stage<STAGES.length-1;",
+            "render(direction===1?'batch-move':'batch-return');",
+            "item.stage+direction>=0&&item.stage+direction<STAGES.length",
         ] as $required) {
             self::assertStringContainsString($required, $html);
         }
@@ -291,6 +291,44 @@ final class OfflineKanbanFunnelTest extends TestCase
             self::assertGreaterThanOrEqual(3, substr_count($html, $filter));
         }
 
+        self::assertStringContainsString("connect-src 'none'", $html);
+        self::assertStringContainsString("form-action 'none'", $html);
+        foreach (['<form', '<input', '<textarea', 'fetch(', 'localStorage',
+            'sessionStorage', 'XMLHttpRequest', 'indexedDB', '.innerHTML'] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, $html);
+        }
+    }
+
+    public function test_backward_stage_batch_shares_filters_and_atomic_undo_with_forward_action(): void
+    {
+        $html = self::html();
+        foreach ([
+            'id="return-visible-stage"',
+            'Retornar etapas visíveis (simulação)',
+            "const returnableVisible=subset.filter(function(item){return item.stage>0;});",
+            "byId('return-visible-stage').disabled=returnableVisible.length===0;",
+            "byId('return-visible-stage').setAttribute('aria-label'",
+            "focus==='batch-return'?",
+            "function moveVisibleStage(direction){",
+            "if(direction!==1&&direction!==-1)return;",
+            "item.stage+direction>=0&&item.stage+direction<STAGES.length",
+            "history.push({kind:'batch-move',states:selected.map(",
+            "selected.forEach(function(item){item.stage+=direction;});",
+            "render(direction===1?'batch-move':'batch-return');",
+            "moveVisibleStage(-1);",
+            "moveVisibleStage(1);",
+            "previous.kind==='batch-move'",
+            "if(match)match.stage=state.from;",
+        ] as $required) {
+            self::assertStringContainsString($required, $html);
+        }
+        foreach ([
+            "(priority==='all'||item.priority===priority)",
+            "(followupFilter==='all'||item.followup===followupFilter)",
+            "(stageFilter==='all'||item.stage===stageFilter)",
+        ] as $guard) {
+            self::assertGreaterThanOrEqual(3, substr_count($html, $guard));
+        }
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringContainsString("form-action 'none'", $html);
         foreach (['<form', '<input', '<textarea', 'fetch(', 'localStorage',
