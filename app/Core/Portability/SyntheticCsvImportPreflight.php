@@ -28,9 +28,14 @@ final class SyntheticCsvImportPreflight
         string $delimiter = ',',
     ): SyntheticCsvImportPreflightSummary {
         // Decodes once, discards cell/header values; preview only counts/positions.
-        $preview = (new SyntheticCsvImportPreview())->inspectSuggested(
+        $parser = new SyntheticCsvImportPreview();
+        $preview = $parser->inspectSuggested(
             $syntheticCsv, $targetLabels, $delimiter,
         );
+        // Both passes use the SAME strict, 32 KiB-bounded canonical decoder.
+        // This additional local pass exposes only duplicate row POSITIONS;
+        // it does not deduplicate contacts, write data or change the denial.
+        $repeats = $parser->inspectRepeatedRows($syntheticCsv, $delimiter);
 
         // Do not permit the requested-field description to claim a target
         // column not present in the exact-match proposal (or an unmapped
@@ -67,6 +72,6 @@ final class SyntheticCsvImportPreflight
             $valid ? $requestedFields : [],
         );
 
-        return new SyntheticCsvImportPreflightSummary($preview, $decision);
+        return new SyntheticCsvImportPreflightSummary($preview, $decision, $repeats);
     }
 }
