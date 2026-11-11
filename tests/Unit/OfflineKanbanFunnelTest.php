@@ -109,6 +109,30 @@ final class OfflineKanbanFunnelTest extends TestCase
         self::assertStringNotContainsString('window.localStorage', $html);
     }
 
+    public function test_keyboard_sort_and_six_item_activity_log_are_local_only(): void
+    {
+        $html = self::html();
+        foreach ([
+            'data-order="default" aria-pressed="true"',
+            'data-order="score" aria-pressed="false"',
+            'id="activity-list"',
+            'Atividade simulada nesta aba',
+            "if(order==='score')items.sort(",
+            "b.score-a.score||a.id.localeCompare(b.id)",
+            "focus==='sort'?",
+            'function remember(message){activity.unshift(message);if(activity.length>6)activity.length=6;}',
+            "remember(item.label+' movida de '",
+            "remember(item.label+' criada na etapa Entrada.')",
+            "order='default';",
+            "activity=[];",
+        ] as $contract) {
+            self::assertStringContainsString($contract, $html);
+        }
+
+        self::assertStringNotContainsString('localStorage', $html);
+        self::assertStringNotContainsString('<form', $html);
+    }
+
     public function test_accessible_actions_and_mobile_layout_are_present(): void
     {
         $html = self::html();
