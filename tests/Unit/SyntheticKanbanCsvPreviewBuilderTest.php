@@ -121,6 +121,33 @@ final class SyntheticKanbanCsvPreviewBuilderTest extends TestCase
         self::assertSame(9, (new SyntheticCsvImportPreview())->inspect($result, ';')->rowsInspected);
     }
 
+    public function test_all_twelve_reusable_fictional_slots_stay_within_browser_csv_contract(): void
+    {
+        $records = self::htmlFixtures();
+        for ($number = 9; $number <= 12; ++$number) {
+            $records[] = [
+                'id' => 'F'.str_pad((string) $number, 2, '0', STR_PAD_LEFT),
+                'stage' => 0,
+                'priority' => $number % 2 === 0 ? 'normal' : 'high',
+                'followup' => 'pending',
+                'value' => 500 + $number * 150,
+                'score' => 50 + $number % 35,
+            ];
+        }
+
+        $builder = new SyntheticKanbanCsvPreviewBuilder();
+        $csv = $builder->render($records);
+        $parser = (new SyntheticCsvImportPreview())->inspect($csv, ';');
+        self::assertSame(12, $parser->rowsInspected);
+        self::assertSame(6, $parser->columnsInspected);
+        self::assertSame([], $parser->potentialFormulaPositions);
+        self::assertSame(0, $parser->emptyCells);
+        self::assertFalse($parser->canImport());
+        self::assertStringEndsWith("F12;0;normal;pending;2300;62\n", $csv);
+        self::assertStringNotContainsString("F13;", $csv);
+        self::assertFalse($builder->canExportContacts());
+    }
+
     public function test_invalid_records_reject_whole_preview_without_reflecting_untrusted_cells(): void
     {
         $builder = new SyntheticKanbanCsvPreviewBuilder();
