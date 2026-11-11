@@ -52,6 +52,9 @@ jobs:
       - name: PHP syntax check
         run: |
           php -l app/Support/Synthetic/AiaReadOnlyMockBoundary.php
+          php -l app/Core/Leads/AgentsReadResponseAssessment.php
+          php -l app/Core/Leads/AgentsReadResponseInspector.php
+          php -l tests/Unit/AgentsReadResponseInspectorTest.php
           php -l scripts/ci/check-aia-crm-contract-parity.php
           php -l scripts/ci/check-aia-php-public-facade-witness.php
           php -l _synthetic_agents_fixture/tools/op01_php_public_response_probe.php
