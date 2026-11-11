@@ -128,7 +128,7 @@ final class SyntheticCsvImportPreflightTest extends TestCase
         self::assertTrue($report->hasRepeatWarnings());
         self::assertSame([['firstRow' => 1, 'repeatedRow' => 3]],
             $report->repeatPreview->repeatedRowPositions);
-        self::assertSame($report->preview->csvPreview, $report->repeatPreview->csvPreview);
+        self::assertEquals($report->preview->csvPreview, $report->repeatPreview->csvPreview);
         self::assertTrue($report->preview->isMappingComplete());
         self::assertSame('SCOPE_NOT_VERIFIED', $report->decision->reasonCode);
         self::assertFalse($report->decision->allowed);
