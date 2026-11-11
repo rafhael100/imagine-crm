@@ -44,6 +44,7 @@ button[disabled]{opacity:.47;cursor:not-allowed}
 .lane h2{margin:0;font-size:1rem;letter-spacing:-.02em}
 .lane-count{padding:3px 9px;background:#fff;border-radius:999px;border:1px solid #c7dae1;font-size:.78rem;font-weight:750}
 .lane-total{margin:0 0 12px;color:#426374;font-size:.79rem;font-weight:700;font-variant-numeric:tabular-nums}
+.lane-detail{margin:-6px 0 12px;color:#36586a;font-size:.76rem;font-weight:700;overflow-wrap:anywhere}
 .stack{display:grid;gap:11px}
 .ticket{background:#fff;border:1px solid #dbe7ed;border-radius:12px;padding:14px;box-shadow:0 4px 12px rgba(25,59,81,.025);min-width:0}
 .ticket h3{font-size:.94rem;margin:0 0 5px;overflow-wrap:anywhere}
@@ -128,10 +129,10 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   </div>
   </div>
   <div class="board" id="board" aria-label="Funil fictício de quatro etapas">
-  <section class="lane" aria-labelledby="lane-title-0"><div class="lane-header"><h2 id="lane-title-0">Entrada</h2><span id="lane-count-0" class="lane-count">0</span></div><p id="lane-value-0" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-0"></div></section>
-  <section class="lane" aria-labelledby="lane-title-1"><div class="lane-header"><h2 id="lane-title-1">Em contato</h2><span id="lane-count-1" class="lane-count">0</span></div><p id="lane-value-1" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-1"></div></section>
-  <section class="lane" aria-labelledby="lane-title-2"><div class="lane-header"><h2 id="lane-title-2">Qualificação</h2><span id="lane-count-2" class="lane-count">0</span></div><p id="lane-value-2" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-2"></div></section>
-  <section class="lane" aria-labelledby="lane-title-3"><div class="lane-header"><h2 id="lane-title-3">Proposta</h2><span id="lane-count-3" class="lane-count">0</span></div><p id="lane-value-3" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-3"></div></section>
+  <section class="lane" aria-labelledby="lane-title-0"><div class="lane-header"><h2 id="lane-title-0">Entrada</h2><span id="lane-count-0" class="lane-count">0</span></div><p id="lane-value-0" class="lane-total">Valor fictício nesta etapa: R$ 0</p><p id="lane-detail-0" class="lane-detail">Alta: 0 · Pendentes: 0</p><div class="stack" id="lane-0"></div></section>
+  <section class="lane" aria-labelledby="lane-title-1"><div class="lane-header"><h2 id="lane-title-1">Em contato</h2><span id="lane-count-1" class="lane-count">0</span></div><p id="lane-value-1" class="lane-total">Valor fictício nesta etapa: R$ 0</p><p id="lane-detail-1" class="lane-detail">Alta: 0 · Pendentes: 0</p><div class="stack" id="lane-1"></div></section>
+  <section class="lane" aria-labelledby="lane-title-2"><div class="lane-header"><h2 id="lane-title-2">Qualificação</h2><span id="lane-count-2" class="lane-count">0</span></div><p id="lane-value-2" class="lane-total">Valor fictício nesta etapa: R$ 0</p><p id="lane-detail-2" class="lane-detail">Alta: 0 · Pendentes: 0</p><div class="stack" id="lane-2"></div></section>
+  <section class="lane" aria-labelledby="lane-title-3"><div class="lane-header"><h2 id="lane-title-3">Proposta</h2><span id="lane-count-3" class="lane-count">0</span></div><p id="lane-value-3" class="lane-total">Valor fictício nesta etapa: R$ 0</p><p id="lane-detail-3" class="lane-detail">Alta: 0 · Pendentes: 0</p><div class="stack" id="lane-3"></div></section>
   </div>
   <section class="activity" aria-labelledby="queue-heading">
   <h2 id="queue-heading">Fila de acompanhamentos fictícios pendentes</h2>
@@ -250,6 +251,9 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const items=subset.filter(function(item){return item.stage===index;});
   if(order==='score')items.sort(function(a,b){return b.score-a.score||a.id.localeCompare(b.id);});
   put('lane-count-'+index,items.length);
+  const highInLane=items.filter(function(item){return item.priority==='high';}).length;
+  const pendingInLane=items.filter(function(item){return item.followup==='pending';}).length;
+  put('lane-detail-'+index,'Alta: '+highInLane+' · Pendentes: '+pendingInLane);
   put('lane-value-'+index,'Valor fictício nesta etapa: '+money.format(
   items.reduce(function(total,item){return total+item.value;},0)
   ));
