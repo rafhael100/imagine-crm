@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none';style-src 'unsafe-inline';script-src 'none';connect-src 'none';form-action 'none';font-src 'none';img-src 'none';object-src 'none';base-uri 'none'">
+<title>Imagine CRM — explorar demonstrações offline</title>
+<style>
+:root{font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#1d364d;background:#f3f7f9}
+*{box-sizing:border-box}body{margin:0}main{margin:auto;max-width:1100px;padding:28px 20px 60px;min-width:0}
+h1{font-size:clamp(1.6rem,4vw,2.4rem);letter-spacing:-.04em;line-height:1.13;margin:10px 0 14px}h2{font-size:1.13rem;line-height:1.3;margin:0 0 9px}
+p{margin:7px 0 12px}.sub{color:#506b7d;max-width:770px}
+.eyebrow{font-size:.77rem;color:#116975;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
+.notice{padding:15px 18px;border:1px solid #e2c37e;border-left:5px solid #ad801a;background:#fff7e5;border-radius:13px;margin:20px 0 28px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;min-width:0}
+.card{background:#fff;border:1px solid #dbe6eb;border-radius:17px;padding:19px;min-width:0;display:flex;flex-direction:column}
+.card p{color:#597083;font-size:.92rem}.card a{display:block;margin-top:auto;padding:10px 12px;border-radius:10px;background:#18576a;color:#fff;text-align:center;text-decoration:none;font-weight:750}
+.card a:hover{background:#0c7182}.card a:focus-visible{outline:3px solid #18b8ac;outline-offset:3px}
+.tag{display:inline-block;border-radius:99px;background:#e6f2f2;padding:3px 9px;font-size:.75rem;font-weight:700;color:#225c61;margin:0 0 12px;align-self:flex-start}
+details{background:#fff;border:1px solid #dbe6eb;border-radius:13px;padding:15px 18px;margin-top:22px}summary{font-weight:750;cursor:pointer}summary:focus-visible{outline:3px solid #18b8ac;outline-offset:3px}
+ol{margin:12px 0;padding-left:25px}li{margin:6px 0}
+.foot{font-size:.83rem;color:#667b8d;margin-top:26px}
+@media(max-width:860px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}main{padding:20px 13px 45px}.card{padding:16px}}
+</style>
+</head>
+<body>
+<main id="conteudo">
+<p class="eyebrow">Imagine CRM · demonstração local</p>
+<h1>Explore o CRM Imagine</h1>
+<p class="sub">Um único ponto de entrada para revisar as experiências de produto já desenvolvidas. Navegue entre as páginas sem instalar PHP, Laravel, PostgreSQL ou outros programas.</p>
+<div class="notice" role="note"><strong>PROTÓTIPOS — DADOS FICTÍCIOS.</strong> Todos os exemplos são inventados. Não existe login, API, CRM conectado, importação, contato real, alteração de lead, armazenamento ou envio de dados.</div>
+<section class="grid" aria-label="Seis experiências de produto disponíveis">
+<article class="card"><span class="tag">Navegação principal</span><h2>Visão geral do CRM</h2><p>Nove telas de demonstração: organização, indicadores, leads, funil, monitoramento, importação, estados de interface e mais.</p><a href="s01-prot-01/index.html">Abrir protótipo principal</a></article>
+<article class="card"><span class="tag">Funil comercial</span><h2>Simular movimentações</h2><p>Selecione quatro leads fictícios, avance ou retorne uma etapa, desfaça ações e restaure o exemplo. Tudo fica apenas na memória da página.</p><a href="f3-55-sales-pipeline-lab/index.html">Experimentar funil offline</a></article>
+<article class="card"><span class="tag">Entrega de leads</span><h2>Conferir resultados</h2><p>Examine seis situações fictícias de entrega Portal–CRM, com filtros, histórico e alertas para resultados desconhecidos.</p><a href="f3-52-delivery-reconciliation/index.html">Abrir conferência fictícia</a></article>
+<article class="card"><span class="tag">Acompanhamento</span><h2>Indicadores e prazos</h2><p>Explore demonstrativos de volume, distribuição e períodos de acompanhamento usando dados sintéticos.</p><a href="f4-15-followup-dashboard/index.html">Abrir indicadores fictícios</a></article>
+<article class="card"><span class="tag">Operação comercial</span><h2>Lista de acompanhamentos</h2><p>Veja filtros, detalhes, paginação e casos fictícios de prazos vencidos ou futuros, sem fazer contatos reais.</p><a href="f4-28-followup-worklist/index.html">Explorar lista fictícia</a></article>
+<article class="card"><span class="tag">Importação segura</span><h2>Revisar riscos CSV</h2><p>Teste prévias de formato, sinalizações e decisões ilustrativas de revisão sem ler, carregar ou importar arquivos.</p><a href="f3-22-csv-risk-preview/index.html">Abrir prévia fictícia de CSV</a></article>
+</section>
+<details><summary>Como testar e o que esta demonstração não faz</summary>
+<ol><li>Abra este arquivo <strong>prototypes/index.html</strong> no navegador.</li>
+<li>Use os seis links acima para examinar cada jornada. Os dados e indicadores pertencem apenas aos exemplos incluídos no repositório.</li>
+<li>Experimente a seleção por teclado, filtragem, mudança de etapa fictícia e botões de desfazer. Recarregar a página restaura os exemplos.</li>
+<li>Os testes de navegador do projeto verificam desktop e viewport móvel de 320 pixels; esta prévia não substitui homologação de acessibilidade com pessoas reais.</li>
+<li>Nenhum resultado desta página concede permissão de negócio, confirma recebimento de lead real ou libera uso em produção.</li>
+</ol></details>
+<footer class="foot">Imagine CRM · coleção offline e sem telemetria · avaliações de UX sujeitas à revisão de produto, Segurança, DBA e Privacidade.</footer>
+</main>
+</body>
+</html>
