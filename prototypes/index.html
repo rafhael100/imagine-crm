@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'none'; img-src 'none'; connect-src 'none'; font-src 'none'; frame-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — Laboratório navegável offline</title>
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;color:#172f45;background:#f3f7fa}
+body{margin:0;min-width:0}
+a{color:inherit}
+a:focus-visible{outline:3px solid #108b85;outline-offset:5px}
+.skip{position:absolute;top:10px;left:-10000px;background:#fff;padding:10px 15px;border-radius:8px;z-index:5}
+.skip:focus{left:12px}
+header{background:#17334b;color:white;padding:20px max(20px,calc((100vw - 1140px)/2));display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-size:1.24rem;font-weight:850;letter-spacing:-.03em}
+.brand small{color:#90c6c8;font-size:.68rem;letter-spacing:.16em;margin-left:6px}
+header span{font-size:.81rem;color:#c4dce8}
+main{max-width:1180px;margin:0 auto;padding:clamp(24px,5vw,58px) clamp(16px,4vw,36px)}
+.eyebrow{font-size:.76rem;font-weight:850;color:#127c77;text-transform:uppercase;letter-spacing:.14em}
+h1{font-size:clamp(1.8rem,4vw,3rem);letter-spacing:-.045em;line-height:1.12;margin:10px 0 15px}
+.lead{font-size:1.03rem;color:#526f80;max-width:740px;margin:0 0 25px}
+.notice{border:1px solid #b7d9d8;color:#215c5c;background:#e8f6f2;border-radius:14px;padding:15px 18px;font-weight:710;margin-bottom:27px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.card{min-width:0;background:#fff;border:1px solid #dce7ed;border-radius:17px;padding:25px;display:flex;flex-direction:column;box-shadow:0 6px 18px rgba(12,47,72,.04)}
+.number{display:inline-grid;place-items:center;background:#e8f5f1;color:#13675e;border-radius:12px;width:44px;height:44px;font-size:1.2rem;font-weight:840}
+h2{font-size:1.25rem;letter-spacing:-.025em;margin:18px 0 11px}
+.card p{font-size:.88rem;color:#5b7383;margin:0 0 18px}
+.card ul{padding-left:19px;color:#375265;font-size:.83rem;margin:0 0 24px}
+.card li{margin:6px 0}
+.card a{display:block;margin-top:auto;background:#195c66;color:#fff;font-weight:760;text-decoration:none;border-radius:11px;padding:13px 16px;text-align:center}
+.card a:hover{background:#126e72}
+.meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px;color:#597082;font-size:.77rem}
+.meta span{background:#ebf0f5;border-radius:50px;padding:6px 12px}
+footer{max-width:1180px;padding:0 clamp(16px,4vw,36px) 45px;margin:auto;font-size:.79rem;color:#6b7b8d}
+@media(max-width:950px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.cards{grid-template-columns:minmax(0,1fr)}header{padding:14px 18px}.card{padding:19px}main{padding:24px 16px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header>
+  <div class="brand">imagine <small>CRM</small></div>
+  <span>Ambiente de revisão offline • Sem conexão com clientes</span>
+</header>
+<main id="conteudo">
+  <span class="eyebrow">Laboratório navegável</span>
+  <h1>Explore o Imagine CRM</h1>
+  <p class="lead">Três experiências locais para verificar a interface, o funil de vendas e os controles de prévia de importação. A navegação funciona diretamente pelo arquivo HTML, sem servidor.</p>
+  <aside class="notice" aria-label="Aviso de ambiente">PROTÓTIPO — DADOS FICTÍCIOS. Estas telas não são o CRM em produção, não gravam registros nem enviam informações.</aside>
+  <section class="cards" aria-label="Protótipos disponíveis">
+    <article class="card">
+      <span class="number" aria-hidden="true">01</span>
+      <h2>Visão geral do CRM</h2>
+      <p>Protótipo principal com nove telas e navegação entre áreas do produto.</p>
+      <ul>
+        <li>Leads e etapas simuladas</li>
+        <li>Acompanhamentos fictícios</li>
+        <li>Visão de interface e métricas</li>
+      </ul>
+      <a href="s01-prot-01/index.html" aria-label="Abrir visão geral do CRM">Abrir visão geral</a>
+    </article>
+    <article class="card">
+      <span class="number" aria-hidden="true">02</span>
+      <h2>Funil Kanban</h2>
+      <p>Quadro de oportunidades inteiramente fictícias com interações em memória.</p>
+      <ul>
+        <li>Quatro etapas e oito oportunidades</li>
+        <li>Filtro, movimentação e desfazer</li>
+        <li>Reiniciar sem armazenar</li>
+      </ul>
+      <a href="f3-59-offline-kanban/index.html" aria-label="Abrir o funil Kanban fictício">Abrir funil Kanban</a>
+    </article>
+    <article class="card">
+      <span class="number" aria-hidden="true">03</span>
+      <h2>Prévia de CSV</h2>
+      <p>Explore a sinalização de estruturas e células suspeitas sem importar dados.</p>
+      <ul>
+        <li>Relatórios de exemplos fictícios</li>
+        <li>Contagens e posições de risco</li>
+        <li>Importação sempre bloqueada</li>
+      </ul>
+      <a href="f3-22-csv-risk-preview/index.html" aria-label="Abrir prévia de riscos CSV fictícia">Abrir prévia CSV</a>
+    </article>
+  </section>
+  <div class="meta" aria-label="Características do laboratório">
+    <span>Funciona sem internet</span>
+    <span>Sem login real</span>
+    <span>Dados exclusivamente fictícios</span>
+    <span>Sem persistência</span>
+  </div>
+</main>
+<footer>Imagine CRM • Ferramenta de revisão visual. Identidade, permissões, integrações reais, banco de dados e produção exigem liberação específica.</footer>
+</body>
+</html>
