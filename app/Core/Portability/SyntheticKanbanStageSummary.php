@@ -12,12 +12,16 @@ final readonly class SyntheticKanbanStageSummary
 {
     /**
      * @param array{0:int,1:int,2:int,3:int} $stageCounts
+     * @param array{0:int,1:int,2:int,3:int} $highPriorityByStage
+     * @param array{0:int,1:int,2:int,3:int} $pendingByStage
      */
     public function __construct(
         public array $stageCounts,
         public int $total,
         public int $highPriority,
         public int $pendingFollowups,
+        public array $highPriorityByStage,
+        public array $pendingByStage,
     ) {}
 
     public function canReadCustomerData(): bool
