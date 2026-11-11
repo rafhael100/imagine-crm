@@ -18,6 +18,7 @@ final class SyntheticCsvImportPreflight
      * @param array<mixed> $targetLabels Fictional technical field names.
      * @param mixed $targetTenantId Unverified claimed tenant.
      * @param mixed $requestedFields Unverified proposed target field names.
+     * @param array<mixed>|null $requiredTechnicalLabels Optional synthetic-only technical fields.
      */
     public function inspect(
         string $syntheticCsv,
@@ -26,16 +27,22 @@ final class SyntheticCsvImportPreflight
         mixed $targetTenantId,
         mixed $requestedFields,
         string $delimiter = ',',
+        ?array $requiredTechnicalLabels = null,
     ): SyntheticCsvImportPreflightSummary {
         // Decodes once, discards cell/header values; preview only counts/positions.
         $parser = new SyntheticCsvImportPreview();
         $preview = $parser->inspectSuggested(
             $syntheticCsv, $targetLabels, $delimiter,
         );
-        // Both passes use the SAME strict, 32 KiB-bounded canonical decoder.
-        // This additional local pass exposes only duplicate row POSITIONS;
-        // it does not deduplicate contacts, write data or change the denial.
+        // All passes use the SAME strict, 32 KiB-bounded canonical decoder.
+        // Additional local passes expose only numeric positions, never cell
+        // values, names or real business policy. The denial never changes.
         $repeats = $parser->inspectRepeatedRows($syntheticCsv, $delimiter);
+        $required = $requiredTechnicalLabels === null
+            ? null
+            : $parser->inspectRequiredCells(
+                $syntheticCsv, $requiredTechnicalLabels, $delimiter,
+            );
 
         // Do not permit the requested-field description to claim a target
         // column not present in the exact-match proposal (or an unmapped
@@ -72,6 +79,6 @@ final class SyntheticCsvImportPreflight
             $valid ? $requestedFields : [],
         );
 
-        return new SyntheticCsvImportPreflightSummary($preview, $decision, $repeats);
+        return new SyntheticCsvImportPreflightSummary($preview, $decision, $repeats, $required);
     }
 }
