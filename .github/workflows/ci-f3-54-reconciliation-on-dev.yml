@@ -1,4 +1,4 @@
-name: CRM F3-54 - Focused offline review navigation on latest DEV
+name: CRM F3-54 - Focused offline product journeys on DEV
 
 on:
   push:
@@ -56,6 +56,8 @@ jobs:
           php artisan key:generate --force
           php artisan test --filter=OfflineDeliveryReconciliationNavigationTest --no-ansi
           php artisan test --filter=OfflineCsvRiskNavigationTest --no-ansi
+          php artisan test --filter=OfflineSalesPipelineSimulatorTest --no-ansi
+          php artisan test --filter=OfflineSalesPipelineNavigationTest --no-ansi
           php artisan test --filter=OfflineCsvRiskPreviewParityTest --no-ansi
           php artisan test --filter=OfflineFollowUpNavigationContractTest --no-ansi
           php artisan test --filter=OfflinePrototypeResourceBoundaryTest --no-ansi
@@ -69,3 +71,5 @@ jobs:
           php scripts/ci/check-offline-prototype-320.php
           php scripts/ci/check-offline-delivery-reconciliation-browser.php
           php scripts/ci/check-offline-csv-risk-preview-browser.php
+          php -l scripts/ci/check-offline-sales-pipeline-browser.php
+          php scripts/ci/check-offline-sales-pipeline-browser.php
