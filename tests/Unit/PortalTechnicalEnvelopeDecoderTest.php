@@ -144,7 +144,6 @@ final class PortalTechnicalEnvelopeDecoderTest extends TestCase
         foreach ([
             str_replace('"protocol"','"proto\\"col"',$valid),
             str_replace('"protocol"','"proto\\uXX00col"',$valid),
-            str_replace('"protocol"','"proto\\',"",$valid),
             '{'.$valid,
             $valid.' extra',
             $valid."\x01",
