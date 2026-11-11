@@ -147,7 +147,7 @@ final class PortalServiceHandoffInspectorTest extends TestCase
         $good=self::signed($e);
         foreach ([
             [],[...$good,'issued_at'=>'1800000000'],
-            [...$good,'nonce'=>strtoupper(self::NONCE)],
+            [...$good,'nonce'=>'ABCDEFAB-CDEF-4ABC-8ABC-ABCDEFABCDEF'],
             [...$good,'nonce'=>'00000000-0000-0000-0000-000000000000'],
             [...$good,'mac'=>strtoupper($good['mac'])],
             [...$good,'mac'=>'not-a-hmac'],
