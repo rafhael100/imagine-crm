@@ -32,10 +32,12 @@ final class SpreadsheetTextRiskGuard
             return true;
         }
 
-        // Spreadsheet engines may ignore leading whitespace, BOM or hidden
-        // Unicode separators before interpreting =, +, -, @ as a formula.
+        // Treat all Unicode separators (Z) and invisible format marks (Cf)
+        // as possible engine-trimmed prefixes. Some zero-width marks such as
+        // U+034F are combining marks (Mn), not format marks. This is a
+        // conservative risk check, NOT CSV/XLSX escaping or sanitization.
         return preg_match(
-            '/\A(?:[[:space:]\x{00a0}\x{2000}-\x{200f}\x{2028}\x{2029}\x{202f}\x{205f}\x{3000}\x{feff}])*[=+\-@]/u',
+            '/\A(?:[[:space:]\p{Z}\p{Cf}\x{034f}])*[=+\-@]/u',
             $cell,
         ) === 1;
     }

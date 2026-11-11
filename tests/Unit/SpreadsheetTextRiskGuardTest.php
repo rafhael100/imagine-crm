@@ -26,6 +26,14 @@ final class SpreadsheetTextRiskGuardTest extends TestCase
             'leading bom' => ["\u{FEFF}=1"],
             'leading no-break space' => ["\u{00A0}=1"],
             'leading zero-width space' => ["\u{200B}=1"],
+            'leading Unicode word joiner' => ["\u{2060}=1"],
+            'leading Arabic formatting mark' => ["\u{061C}=1"],
+            'leading Mongolian separator' => ["\u{180E}=1"],
+            'leading combining grapheme joiner' => ["\u{034F}=1"],
+            'leading Unicode soft hyphen' => ["\u{00AD}+SUM(A1:A2)"],
+            'mixed invisible whitespace before formula' => ["  \u{200B}\u{2060} =1"],
+            'leading format mark before negative formula' => ["\u{2060}-CMD"],
+
             'leading ideographic space' => ["\u{3000}=1"],
             'non-utf8' => ["\xff=1"],
             'numeric text begins minus' => ['-10'],
@@ -52,6 +60,9 @@ final class SpreadsheetTextRiskGuardTest extends TestCase
             'punctuation inside text' => ['Texto = 2+2'],
             'safe leading spaces' => ['  Lead Exemplo'],
             'plus inside text' => ['Lead + Equipe'],
+            'word joiner inside neutral text' => ["Lead\u{2060}= nota"],
+            'soft hyphen inside neutral text' => ["Primeiro\u{00AD}+ segundo"],
+
         ];
     }
 
