@@ -21,3 +21,7 @@
 Revisão de diff, confirmar `behind_by=0` em relação à HEAD DEV, workflow F0 e PostgreSQL/RLS verdes na SHA exata, mais a nova CI cruzada PHP 8.3/8.4 verde. Após aprovação técnica, merge **apenas na DEV**, nunca `main`.
 
 **NO-GO** para API real, leitura de clientes, segredos, autorização `ALLOW`, banco persistente, deploy, VPS, custos e fechamento automático dos gates CORE/SEG/AUT/LGPD.
+
+## F3-46 — errata posterior da resposta
+
+A F3-45 cobriu originalmente somente o schema de requisição no commit Agents `562896763f900a8a264ea46aa35e2aeacd5e0903`. O schema de resposta pública foi introduzido depois no Agents EVID-10 (commit `4a03adf5f91e760950adaa3239fb2c8dba05da6d`). O marcador de saída anterior do CRM usava por engano o identificador da entrada. A F3-46 passou a verificar **ambos** os schemas, atualizou o checkout fixado na CI e corrigiu a resposta do CRM para `SYNTHETIC_CRM_AIA_PUBLIC_V1`. O histórico F3-45 permanece evidência válida apenas para a versão antiga; **não** alegar que já validava respostas públicas.
