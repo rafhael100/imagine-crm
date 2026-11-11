@@ -146,7 +146,7 @@ final class PortalServiceHandoffInspectorTest extends TestCase
         $e=self::frame();
         $good=self::signed($e);
         foreach ([
-            [],['issued_at'=>'1800000000',...$good],
+            [],[...$good,'issued_at'=>'1800000000'],
             [...$good,'nonce'=>strtoupper(self::NONCE)],
             [...$good,'nonce'=>'00000000-0000-0000-0000-000000000000'],
             [...$good,'mac'=>strtoupper($good['mac'])],
