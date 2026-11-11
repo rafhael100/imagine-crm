@@ -47,6 +47,26 @@ final class SyntheticImportMappedPreviewTest extends TestCase
         self::assertTrue((new \ReflectionClass(SyntheticImportMappedPreviewSummary::class))->isReadOnly());
     }
 
+    public function test_two_public_offline_entrypoints_share_one_parser_and_position_only_mapping(): void
+    {
+        $csv = "first,second\n\"SYNTHETIC_A,B\",\" \u{2060}=1\"\n";
+        $targets = ['crm_ref', 'crm_stage'];
+        $positions = [['source' => 2, 'target' => 1], ['source' => 1, 'target' => 2]];
+
+        $canonical = (new \App\Core\Portability\SyntheticCsvImportPreview())->inspectMapped(
+            $csv, $targets, $positions,
+        );
+        $legacy = (new SyntheticCsvPreviewDecoder())->previewMapped($csv, $targets, $positions);
+
+        self::assertEquals($canonical, $legacy);
+        self::assertSame(1, $canonical->csvPreview->potentiallyExecutableCellCount());
+        self::assertFalse($canonical->canImport());
+        self::assertFalse($legacy->canImport());
+        self::assertStringNotContainsString(
+            'SYNTHETIC_A', json_encode($canonical, JSON_THROW_ON_ERROR),
+        );
+    }
+
     public function test_partial_mapping_reports_missing_positions_without_inventing_fields(): void
     {
         $result = (new SyntheticCsvPreviewDecoder())->previewMapped(

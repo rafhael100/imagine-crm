@@ -48,6 +48,28 @@ final class SyntheticCsvPreviewDecoderTest extends TestCase
         self::assertFalse($report->canImport());
     }
 
+    public function test_bom_header_is_normalized_identically_for_existing_and_new_offline_clients(): void
+    {
+        $withBom = "\u{FEFF}label\nExample\n";
+        $old = (new SyntheticCsvPreviewDecoder())->preview($withBom);
+        $canonical = (new \App\Core\Portability\SyntheticCsvImportPreview())->inspect($withBom);
+        self::assertEquals($canonical, $old);
+        self::assertSame(1, $old->rowsInspected);
+        self::assertFalse($old->canImport());
+    }
+
+    public function test_legacy_decoder_now_rejects_malformed_quotes_strictly(): void
+    {
+        foreach (["label\nbare\"quote\n", "label\n\"unclosed\n", "label\n\"x\"trailing\n"] as $csv) {
+            try {
+                (new SyntheticCsvPreviewDecoder())->preview($csv);
+                self::fail('Malformed quoting was accepted.');
+            } catch (InvalidArgumentException $error) {
+                self::assertSame('Pre-visualizacao CSV sintetica invalida.', $error->getMessage());
+            }
+        }
+    }
+
     public function test_identical_rows_remain_distinct_and_never_become_imports(): void
     {
         $report = (new SyntheticCsvPreviewDecoder())->preview("label\nExample\nExample\n");
@@ -93,7 +115,7 @@ final class SyntheticCsvPreviewDecoderTest extends TestCase
             'only an empty header' => ["\n"],
             'more than 32768 bytes' => [str_repeat('A', 32769)],
             'NUL control byte' => ["label\nbad\0cell\n"],
-            'UTF-8 BOM not normalized' => ["\u{FEFF}label\nExample\n"],
+
             'invalid header syntax' => ["display name\nExample\n"],
             'header starts with number' => ["1label\nExample\n"],
             'duplicate columns' => ["label,label\nA,B\n"],

@@ -12,6 +12,7 @@ use InvalidArgumentException;
  * Parses RFC-4180-style comma/quote/CRLF or LF text in memory. It does not
  * ingest files/uploads, store cells, infer ownership, authenticate the tenant,
  * deduplicate contacts or authorize an import. No row/cell data leaves inspect.
+ * F3-55 makes this the single canonical decoder for legacy preview + mapped preview.
  */
 final class SyntheticCsvImportPreview
 {
@@ -21,6 +22,36 @@ final class SyntheticCsvImportPreview
     private const MAX_CELL_BYTES = 512;
 
     public function inspect(string $csv): SyntheticImportPreviewSummary
+    {
+        return $this->decode($csv)[0];
+    }
+
+    /**
+     * Parse once, validate a position-only mapping without leaking headers.
+     *
+     * @param array<mixed> $targetLabels
+     * @param array<mixed> $mappingPairs
+     */
+    public function inspectMapped(
+        string $csv,
+        array $targetLabels,
+        array $mappingPairs,
+    ): SyntheticImportMappedPreviewSummary {
+        [$preview, $sourceLabels] = $this->decode($csv);
+
+        try {
+            $mapping = (new SyntheticColumnMappingInspector())->assess(
+                $sourceLabels, $targetLabels, $mappingPairs,
+            );
+        } catch (InvalidArgumentException) {
+            self::invalid();
+        }
+
+        return new SyntheticImportMappedPreviewSummary($preview, $mapping);
+    }
+
+    /** @return array{SyntheticImportPreviewSummary, list<string>} */
+    private function decode(string $csv): array
     {
         if ($csv === '' || strlen($csv) > self::MAX_BYTES
             || preg_match('//u', $csv) !== 1 || str_contains($csv, "\0")) {
@@ -41,6 +72,7 @@ final class SyntheticCsvImportPreview
         $cell = '';
         $mode = 'start'; // start | bare | quoted | closed
         $endedByRowSeparator = false;
+        $rowHasRepresentation = false; // Distinguish blank line from quoted "".
         $length = strlen($csv);
 
         for ($i = 0; $i < $length; ++$i) {
@@ -48,6 +80,7 @@ final class SyntheticCsvImportPreview
             $endedByRowSeparator = false;
 
             if ($char === '"') {
+                $rowHasRepresentation = true;
                 if ($mode === 'start') {
                     $mode = 'quoted';
                 } elseif ($mode === 'quoted') {
@@ -61,9 +94,13 @@ final class SyntheticCsvImportPreview
                     self::invalid();
                 }
             } elseif ($char === ',' && $mode !== 'quoted') {
+                $rowHasRepresentation = true;
                 self::finishCell($row, $cell);
                 $mode = 'start';
             } elseif (($char === "\r" || $char === "\n") && $mode !== 'quoted') {
+                if (!$rowHasRepresentation) {
+                    self::invalid(); // Legacy fgetcsv rejected empty physical rows.
+                }
                 if ($char === "\r") {
                     if ($i + 1 >= $length || $csv[$i + 1] !== "\n") {
                         self::invalid(); // Reject ambiguous CR-only line breaks.
@@ -73,8 +110,10 @@ final class SyntheticCsvImportPreview
                 self::finishCell($row, $cell);
                 self::finishRow($rows, $row);
                 $mode = 'start';
+                $rowHasRepresentation = false;
                 $endedByRowSeparator = true;
             } else {
+                $rowHasRepresentation = true;
                 if ($mode === 'closed') {
                     self::invalid(); // No characters allowed after closing quote.
                 }
@@ -103,7 +142,12 @@ final class SyntheticCsvImportPreview
             self::invalid();
         }
 
-        return (new SyntheticImportPreviewInspector())->inspect($columns, $rows);
+        try {
+            $preview = (new SyntheticImportPreviewInspector())->inspect($columns, $rows);
+        } catch (InvalidArgumentException) {
+            self::invalid(); // Generic error; no original header or cell.
+        }
+        return [$preview, $columns];
     }
 
     /** @param list<string> $row */
