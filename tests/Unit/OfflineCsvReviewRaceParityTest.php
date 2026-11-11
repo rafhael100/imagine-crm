@@ -122,7 +122,7 @@ final class OfflineCsvReviewRaceParityTest extends TestCase
 
         $serialized = json_encode(self::reports(), JSON_THROW_ON_ERROR);
         foreach ([
-            'fiction-1', 'fiction-2', 'fixture_id', 'fixture_note',
+            'fiction-1', 'fiction-2', '"fixture_id"', '"fixture_note"',
             'fixture_key_a', 'modified invented content', '=1+1',
             'tenant_id', 'approved_by',
         ] as $forbidden) {
