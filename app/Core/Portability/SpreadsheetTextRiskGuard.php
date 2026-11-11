@@ -35,11 +35,11 @@ final class SpreadsheetTextRiskGuard
         }
 
         // Treat all Unicode separators (Z) and invisible format marks (Cf)
-        // as possible engine-trimmed prefixes. Some zero-width marks such as
-        // U+034F are combining marks (Mn), not format marks. This is a
-        // conservative risk check, NOT CSV/XLSX escaping or sanitization.
+        // as possible engine-trimmed prefixes. Standalone leading combining marks (M) can also obscure
+        // the executable prefix. This is conservative risk detection,
+        // NOT CSV/XLSX escaping or sanitization.
         return preg_match(
-            '/\A(?:[[:space:]\p{Z}\p{Cf}\x{034f}])*[=+\-@]/u',
+            '/\A(?:[[:space:]\p{Z}\p{Cf}\p{M}])*[=+\-@]/u',
             $cell,
         ) === 1;
     }
