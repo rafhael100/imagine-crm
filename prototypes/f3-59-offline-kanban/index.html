@@ -85,56 +85,56 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   <p class="lead">Mova oportunidades fictícias, conclua acompanhamentos simulados e desfaça ações nesta aba.</p>
   <div class="notice">PROTÓTIPO — DADOS FICTÍCIOS. Nenhuma alteração é salva no CRM, enviada ao servidor ou comunicada a clientes.</div>
   <section class="stats" aria-label="Indicadores da simulação">
-    <div class="stat"><span>Oportunidades visíveis</span><b id="count-visible">0</b></div>
-    <div class="stat"><span>Prioridade alta visível</span><b id="count-high">0</b></div>
-    <div class="stat"><span>Acompanhamentos pendentes visíveis</span><b id="count-pending">0</b></div>
-    <div class="stat"><span>Valor fictício visível</span><b id="sum-visible">R$ 0</b></div>
-    <div class="stat"><span>Ações simuladas nesta aba</span><b id="count-moves">0</b></div>
+  <div class="stat"><span>Oportunidades visíveis</span><b id="count-visible">0</b></div>
+  <div class="stat"><span>Prioridade alta visível</span><b id="count-high">0</b></div>
+  <div class="stat"><span>Acompanhamentos pendentes visíveis</span><b id="count-pending">0</b></div>
+  <div class="stat"><span>Valor fictício visível</span><b id="sum-visible">R$ 0</b></div>
+  <div class="stat"><span>Ações simuladas nesta aba</span><b id="count-moves">0</b></div>
   </section>
   <div class="toolbar">
-    <div class="filters" role="group" aria-label="Filtrar oportunidades por prioridade">
-      <strong>Prioridade:</strong>
-      <button type="button" data-priority="all" aria-pressed="true">Todas</button>
-      <button type="button" data-priority="high" aria-pressed="false">Alta</button>
-      <button type="button" data-priority="normal" aria-pressed="false">Normal</button>
-    </div>
-    <div class="filters" role="group" aria-label="Filtrar situação de acompanhamento fictício">
-      <strong>Acompanhamento:</strong>
-      <button type="button" data-followup-filter="all" aria-pressed="true">Todos</button>
-      <button type="button" data-followup-filter="pending" aria-pressed="false">Pendentes</button>
-      <button type="button" data-followup-filter="done" aria-pressed="false">Concluídos</button>
-    </div>
-    <div class="filters" role="group" aria-label="Ordenar cartões fictícios">
-      <strong>Ordenação:</strong>
-      <button type="button" data-order="default" aria-pressed="true">Ordem original</button>
-      <button type="button" data-order="score" aria-pressed="false">Maior pontuação</button>
-    </div>
-    <div class="filters" role="group" aria-label="Controle da simulação">
-      <button type="button" id="complete-visible-followups">Concluir pendentes visíveis (simulação)</button>
-      <button type="button" id="add-fiction">Adicionar oportunidade fictícia</button>
-      <button type="button" id="undo-change" disabled>Desfazer ação</button>
-      <button type="button" id="reset-demo">Reiniciar simulação</button>
-    </div>
+  <div class="filters" role="group" aria-label="Filtrar oportunidades por prioridade">
+  <strong>Prioridade:</strong>
+  <button type="button" data-priority="all" aria-pressed="true">Todas</button>
+  <button type="button" data-priority="high" aria-pressed="false">Alta</button>
+  <button type="button" data-priority="normal" aria-pressed="false">Normal</button>
+  </div>
+  <div class="filters" role="group" aria-label="Filtrar situação de acompanhamento fictício">
+  <strong>Acompanhamento:</strong>
+  <button type="button" data-followup-filter="all" aria-pressed="true">Todos</button>
+  <button type="button" data-followup-filter="pending" aria-pressed="false">Pendentes</button>
+  <button type="button" data-followup-filter="done" aria-pressed="false">Concluídos</button>
+  </div>
+  <div class="filters" role="group" aria-label="Ordenar cartões fictícios">
+  <strong>Ordenação:</strong>
+  <button type="button" data-order="default" aria-pressed="true">Ordem original</button>
+  <button type="button" data-order="score" aria-pressed="false">Maior pontuação</button>
+  </div>
+  <div class="filters" role="group" aria-label="Controle da simulação">
+  <button type="button" id="complete-visible-followups">Concluir pendentes visíveis (simulação)</button>
+  <button type="button" id="add-fiction">Adicionar oportunidade fictícia</button>
+  <button type="button" id="undo-change" disabled>Desfazer ação</button>
+  <button type="button" id="reset-demo">Reiniciar simulação</button>
+  </div>
   </div>
   <div class="board" id="board" aria-label="Funil fictício de quatro etapas">
-    <section class="lane" aria-labelledby="lane-title-0"><div class="lane-header"><h2 id="lane-title-0">Entrada</h2><span id="lane-count-0" class="lane-count">0</span></div><p id="lane-value-0" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-0"></div></section>
-    <section class="lane" aria-labelledby="lane-title-1"><div class="lane-header"><h2 id="lane-title-1">Em contato</h2><span id="lane-count-1" class="lane-count">0</span></div><p id="lane-value-1" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-1"></div></section>
-    <section class="lane" aria-labelledby="lane-title-2"><div class="lane-header"><h2 id="lane-title-2">Qualificação</h2><span id="lane-count-2" class="lane-count">0</span></div><p id="lane-value-2" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-2"></div></section>
-    <section class="lane" aria-labelledby="lane-title-3"><div class="lane-header"><h2 id="lane-title-3">Proposta</h2><span id="lane-count-3" class="lane-count">0</span></div><p id="lane-value-3" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-3"></div></section>
+  <section class="lane" aria-labelledby="lane-title-0"><div class="lane-header"><h2 id="lane-title-0">Entrada</h2><span id="lane-count-0" class="lane-count">0</span></div><p id="lane-value-0" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-0"></div></section>
+  <section class="lane" aria-labelledby="lane-title-1"><div class="lane-header"><h2 id="lane-title-1">Em contato</h2><span id="lane-count-1" class="lane-count">0</span></div><p id="lane-value-1" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-1"></div></section>
+  <section class="lane" aria-labelledby="lane-title-2"><div class="lane-header"><h2 id="lane-title-2">Qualificação</h2><span id="lane-count-2" class="lane-count">0</span></div><p id="lane-value-2" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-2"></div></section>
+  <section class="lane" aria-labelledby="lane-title-3"><div class="lane-header"><h2 id="lane-title-3">Proposta</h2><span id="lane-count-3" class="lane-count">0</span></div><p id="lane-value-3" class="lane-total">Valor fictício nesta etapa: R$ 0</p><div class="stack" id="lane-3"></div></section>
   </div>
   <section class="activity" aria-labelledby="queue-heading">
-    <h2 id="queue-heading">Fila de acompanhamentos fictícios pendentes</h2>
-    <p>Cartões visíveis com pendências, por pontuação fictícia. Sem envios.</p>
-    <div class="queue-wrap"><table class="queue-table">
-      <caption>Oportunidades fictícias visíveis</caption>
-      <thead><tr><th scope="col">Oportunidade</th><th scope="col">Etapa</th><th scope="col">Pontuação</th><th scope="col">Localizar</th></tr></thead>
-      <tbody id="followup-queue"></tbody>
-    </table></div>
+  <h2 id="queue-heading">Fila de acompanhamentos fictícios pendentes</h2>
+  <p>Cartões visíveis com pendências, por pontuação fictícia. Sem envios.</p>
+  <div class="queue-wrap"><table class="queue-table">
+  <caption>Oportunidades fictícias visíveis</caption>
+  <thead><tr><th scope="col">Oportunidade</th><th scope="col">Etapa</th><th scope="col">Pontuação</th><th scope="col">Localizar</th></tr></thead>
+  <tbody id="followup-queue"></tbody>
+  </table></div>
   </section>
   <section class="activity" aria-labelledby="activity-heading">
-    <h2 id="activity-heading">Atividade simulada nesta aba</h2>
-    <p>Histórico de demonstração, sem auditoria de CRM ou persistência. São mostradas até seis ações recentes.</p>
-    <ol id="activity-list" aria-label="Ações fictícias recentes"><li>Nenhuma ação simulada registrada.</li></ol>
+  <h2 id="activity-heading">Atividade simulada nesta aba</h2>
+  <p>Histórico de demonstração, sem auditoria de CRM ou persistência. São mostradas até seis ações recentes.</p>
+  <ol id="activity-list" aria-label="Ações fictícias recentes"><li>Nenhuma ação simulada registrada.</li></ol>
   </section>
   <p id="simulation-status" class="status" role="status" aria-live="polite" aria-atomic="true">Carregando simulação local.</p>
 </main>
@@ -144,14 +144,14 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   'use strict';
   const STAGES=Object.freeze(['Entrada','Em contato','Qualificação','Proposta']);
   const FIXTURES=Object.freeze([
-    Object.freeze({id:'F01',label:'Oportunidade fictícia 01',stage:0,priority:'high',value:1800,score:92,followup:'pending'}),
-    Object.freeze({id:'F02',label:'Oportunidade fictícia 02',stage:0,priority:'normal',value:960,score:53,followup:'done'}),
-    Object.freeze({id:'F03',label:'Oportunidade fictícia 03',stage:1,priority:'high',value:3900,score:86,followup:'pending'}),
-    Object.freeze({id:'F04',label:'Oportunidade fictícia 04',stage:1,priority:'normal',value:1700,score:64,followup:'done'}),
-    Object.freeze({id:'F05',label:'Oportunidade fictícia 05',stage:2,priority:'high',value:5300,score:90,followup:'pending'}),
-    Object.freeze({id:'F06',label:'Oportunidade fictícia 06',stage:2,priority:'normal',value:2450,score:68,followup:'pending'}),
-    Object.freeze({id:'F07',label:'Oportunidade fictícia 07',stage:3,priority:'high',value:7600,score:95,followup:'pending'}),
-    Object.freeze({id:'F08',label:'Oportunidade fictícia 08',stage:3,priority:'normal',value:1100,score:57,followup:'pending'})
+  Object.freeze({id:'F01',label:'Oportunidade fictícia 01',stage:0,priority:'high',value:1800,score:92,followup:'pending'}),
+  Object.freeze({id:'F02',label:'Oportunidade fictícia 02',stage:0,priority:'normal',value:960,score:53,followup:'done'}),
+  Object.freeze({id:'F03',label:'Oportunidade fictícia 03',stage:1,priority:'high',value:3900,score:86,followup:'pending'}),
+  Object.freeze({id:'F04',label:'Oportunidade fictícia 04',stage:1,priority:'normal',value:1700,score:64,followup:'done'}),
+  Object.freeze({id:'F05',label:'Oportunidade fictícia 05',stage:2,priority:'high',value:5300,score:90,followup:'pending'}),
+  Object.freeze({id:'F06',label:'Oportunidade fictícia 06',stage:2,priority:'normal',value:2450,score:68,followup:'pending'}),
+  Object.freeze({id:'F07',label:'Oportunidade fictícia 07',stage:3,priority:'high',value:7600,score:95,followup:'pending'}),
+  Object.freeze({id:'F08',label:'Oportunidade fictícia 08',stage:3,priority:'normal',value:1100,score:57,followup:'pending'})
   ]);
   let opportunities=FIXTURES.map(function(item){return Object.assign({},item);});
   let priority='all';
@@ -165,255 +165,255 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const byId=function(id){return document.getElementById(id);};
   const put=function(id,value){byId(id).textContent=String(value);};
   const node=function(tag,cls,text){
-    const element=document.createElement(tag);
-    if(cls)element.className=cls;
-    if(text!==undefined)element.textContent=String(text);
-    return element;
+  const element=document.createElement(tag);
+  if(cls)element.className=cls;
+  if(text!==undefined)element.textContent=String(text);
+  return element;
   };
   function describe(message){put('simulation-status',message+' Somente simulação local; nenhum lead real foi alterado.');}
   function remember(message){activity.unshift(message);if(activity.length>6)activity.length=6;}
   function ticket(item){
-    const card=node('article','ticket');
-    card.setAttribute('data-card-id',item.id);
-    card.appendChild(node('h3','',item.label));
-    const meta=node('p','', 'Pontuação fictícia: '+item.score+'/100');
-    card.appendChild(meta);
-    card.appendChild(node('span','tag'+(item.priority==='high'?' high':''),item.priority==='high'?'Prioridade alta':'Prioridade normal'));
-    card.appendChild(node('span','value',money.format(item.value)));
-    card.appendChild(node('span','followup-label',item.followup==='done'?'Acompanhamento fictício concluído':'Acompanhamento fictício pendente'));
-    const actions=node('div','moves');
-    [-1,1].forEach(function(step){
-      const button=node('button','',step===-1?'Etapa anterior':'Próxima etapa');
-      button.type='button';
-      button.dataset.move=step===-1?'back':'next';
-      button.dataset.id=item.id;
-      button.disabled=item.stage+step<0||item.stage+step>=STAGES.length;
-      button.setAttribute('aria-label',(step===-1?'Voltar':'Avançar')+' '+item.label+' de '+STAGES[item.stage]);
-      actions.appendChild(button);
-    });
-    card.appendChild(actions);
-    const followButton=node('button','followup-toggle',item.followup==='done'?'Reabrir acompanhamento fictício':'Concluir acompanhamento fictício');
-    followButton.type='button';
-    followButton.dataset.followup=item.id;
-    followButton.setAttribute('aria-label',(item.followup==='done'?'Reabrir':'Concluir')+' acompanhamento fictício de '+item.label);
-    card.appendChild(followButton);
-    return card;
+  const card=node('article','ticket');
+  card.setAttribute('data-card-id',item.id);
+  card.appendChild(node('h3','',item.label));
+  const meta=node('p','', 'Pontuação fictícia: '+item.score+'/100');
+  card.appendChild(meta);
+  card.appendChild(node('span','tag'+(item.priority==='high'?' high':''),item.priority==='high'?'Prioridade alta':'Prioridade normal'));
+  card.appendChild(node('span','value',money.format(item.value)));
+  card.appendChild(node('span','followup-label',item.followup==='done'?'Acompanhamento fictício concluído':'Acompanhamento fictício pendente'));
+  const actions=node('div','moves');
+  [-1,1].forEach(function(step){
+  const button=node('button','',step===-1?'Etapa anterior':'Próxima etapa');
+  button.type='button';
+  button.dataset.move=step===-1?'back':'next';
+  button.dataset.id=item.id;
+  button.disabled=item.stage+step<0||item.stage+step>=STAGES.length;
+  button.setAttribute('aria-label',(step===-1?'Voltar':'Avançar')+' '+item.label+' de '+STAGES[item.stage]);
+  actions.appendChild(button);
+  });
+  card.appendChild(actions);
+  const followButton=node('button','followup-toggle',item.followup==='done'?'Reabrir acompanhamento fictício':'Concluir acompanhamento fictício');
+  followButton.type='button';
+  followButton.dataset.followup=item.id;
+  followButton.setAttribute('aria-label',(item.followup==='done'?'Reabrir':'Concluir')+' acompanhamento fictício de '+item.label);
+  card.appendChild(followButton);
+  return card;
   }
   function render(focus){
-    const subset=opportunities.filter(function(item){
-      return (priority==='all'||item.priority===priority)
-        && (followupFilter==='all'||item.followup===followupFilter);
-    });
-    put('count-visible',subset.length);
-    put('count-high',subset.filter(function(item){return item.priority==='high';}).length);
-    put('count-pending',subset.filter(function(item){return item.followup==='pending';}).length);
-    put('sum-visible',money.format(subset.reduce(function(sum,item){return sum+item.value;},0)));
-    put('count-moves',moves);
-    STAGES.forEach(function(stage,index){
-      const target=byId('lane-'+index);
-      target.replaceChildren();
-      const items=subset.filter(function(item){return item.stage===index;});
-      if(order==='score')items.sort(function(a,b){return b.score-a.score||a.id.localeCompare(b.id);});
-      put('lane-count-'+index,items.length);
-      put('lane-value-'+index,'Valor fictício nesta etapa: '+money.format(
-        items.reduce(function(total,item){return total+item.value;},0)
-      ));
-      if(!items.length)target.appendChild(node('p','empty','Nenhuma oportunidade fictícia neste filtro.'));
-      items.forEach(function(item){target.appendChild(ticket(item));});
-    });
-    const queue=byId('followup-queue');
-    queue.replaceChildren();
-    const waiting=subset.filter(function(item){return item.followup==='pending';})
-      .sort(function(a,b){return b.score-a.score||a.id.localeCompare(b.id);});
-    if(!waiting.length){
-      const row=node('tr');const cell=node('td','', 'Nenhum acompanhamento fictício pendente neste filtro.');
-      cell.colSpan=4;row.appendChild(cell);queue.appendChild(row);
-    }
-    waiting.forEach(function(item){
-      const row=node('tr');
-      [item.label,STAGES[item.stage],item.score+'/100'].forEach(function(value){
-        row.appendChild(node('td','',value));
-      });
-      const action=node('td');
-      const button=node('button','', 'Localizar cartão');
-      button.type='button';
-      button.dataset.queueCard=item.id;
-      button.setAttribute('aria-label','Localizar '+item.label+' no funil fictício');
-      action.appendChild(button);row.appendChild(action);queue.appendChild(row);
-    });
-    document.querySelectorAll('[data-priority]').forEach(function(button){
-      button.setAttribute('aria-pressed',String(button.dataset.priority===priority));
-    });
-    document.querySelectorAll('[data-followup-filter]').forEach(function(button){
-      button.setAttribute('aria-pressed',String(button.dataset.followupFilter===followupFilter));
-    });
-    const activityList=byId('activity-list');
-    activityList.replaceChildren();
-    (activity.length?activity.slice(0,6):['Nenhuma ação simulada registrada.']).forEach(function(message){
-      activityList.appendChild(node('li','',message));
-    });
-    document.querySelectorAll('[data-order]').forEach(function(button){
-      button.setAttribute('aria-pressed',String(button.dataset.order===order));
-    });
-    const pendingVisible=subset.filter(function(item){return item.followup==='pending';});
-    byId('complete-visible-followups').disabled=pendingVisible.length===0;
-    byId('complete-visible-followups').setAttribute('aria-label','Concluir '+pendingVisible.length+' acompanhamentos fictícios pendentes visíveis. Ação reversível e local.');
-    byId('undo-change').disabled=history.length===0;
-    byId('add-fiction').disabled=opportunities.length>=12;
-    byId('add-fiction').setAttribute('aria-label', opportunities.length>=12?'Limite de doze oportunidades fictícias atingido':'Adicionar oportunidade fictícia somente na memória');
-    if(focus){
-      const element=focus.startsWith('followup:')
-        ?document.querySelector('[data-card-id="'+focus.slice(9)+'"] button[data-followup]'):
-        focus==='batch'?(byId('complete-visible-followups').disabled
-          ?document.querySelector('[data-followup-filter="all"]')
-          :byId('complete-visible-followups')):
-        focus==='undo'?byId('undo-change'):
-        focus==='add'?byId('add-fiction'):
-        focus==='reset'?byId('reset-demo'):
-        focus==='filter'?document.querySelector('[data-priority="'+priority+'"]'):
-        focus==='sort'?document.querySelector('[data-order="'+order+'"]'):
-        document.querySelector('[data-card-id="'+focus+'"] button:not([disabled])');
-      if(element)element.focus();
-    }
+  const subset=opportunities.filter(function(item){
+  return (priority==='all'||item.priority===priority)
+  && (followupFilter==='all'||item.followup===followupFilter);
+  });
+  put('count-visible',subset.length);
+  put('count-high',subset.filter(function(item){return item.priority==='high';}).length);
+  put('count-pending',subset.filter(function(item){return item.followup==='pending';}).length);
+  put('sum-visible',money.format(subset.reduce(function(sum,item){return sum+item.value;},0)));
+  put('count-moves',moves);
+  STAGES.forEach(function(stage,index){
+  const target=byId('lane-'+index);
+  target.replaceChildren();
+  const items=subset.filter(function(item){return item.stage===index;});
+  if(order==='score')items.sort(function(a,b){return b.score-a.score||a.id.localeCompare(b.id);});
+  put('lane-count-'+index,items.length);
+  put('lane-value-'+index,'Valor fictício nesta etapa: '+money.format(
+  items.reduce(function(total,item){return total+item.value;},0)
+  ));
+  if(!items.length)target.appendChild(node('p','empty','Nenhuma oportunidade fictícia neste filtro.'));
+  items.forEach(function(item){target.appendChild(ticket(item));});
+  });
+  const queue=byId('followup-queue');
+  queue.replaceChildren();
+  const waiting=subset.filter(function(item){return item.followup==='pending';})
+  .sort(function(a,b){return b.score-a.score||a.id.localeCompare(b.id);});
+  if(!waiting.length){
+  const row=node('tr');const cell=node('td','', 'Nenhum acompanhamento fictício pendente neste filtro.');
+  cell.colSpan=4;row.appendChild(cell);queue.appendChild(row);
   }
-  byId('followup-queue').addEventListener('click',function(event){
-    const button=event.target.closest('button[data-queue-card]');
-    if(!button)return;
-    const target=document.querySelector('[data-card-id="'+button.dataset.queueCard+'"] button[data-followup]');
-    if(!target)return;
-    target.focus();
-    target.scrollIntoView({block:'nearest'});
-    describe('Cartão fictício '+button.dataset.queueCard+' localizado no funil.');
+  waiting.forEach(function(item){
+  const row=node('tr');
+  [item.label,STAGES[item.stage],item.score+'/100'].forEach(function(value){
+  row.appendChild(node('td','',value));
   });
-  byId('board').addEventListener('click',function(event){
-    const followButton=event.target.closest('button[data-followup]');
-    if(followButton){
-      const item=opportunities.find(function(entry){return entry.id===followButton.dataset.followup;});
-      if(!item)return;
-      history.push({kind:'followup',id:item.id,from:item.followup});
-      item.followup=item.followup==='done'?'pending':'done';
-      remember(item.label+' teve acompanhamento fictício '+(item.followup==='done'?'concluído.':'reaberto.'));
-      moves++;
-      render('followup:'+item.id);
-      describe('Situação fictícia de acompanhamento atualizada: '+item.label+'.');
-      return;
-    }
-    const button=event.target.closest('button[data-move]');
-    if(!button||button.disabled)return;
-    const item=opportunities.find(function(entry){return entry.id===button.dataset.id;});
-    if(!item)return;
-    const next=item.stage+(button.dataset.move==='next'?1:-1);
-    if(next<0||next>=STAGES.length)return;
-    history.push({kind:'move',id:item.id,from:item.stage});
-    remember(item.label+' movida de '+STAGES[item.stage]+' para '+STAGES[next]+'.');
-    item.stage=next;
-    moves++;
-    render(item.id);
-    describe(item.label+' movida para '+STAGES[next]+'.');
-  });
-  byId('complete-visible-followups').addEventListener('click',function(){
-    const selected=opportunities.filter(function(item){
-      return (priority==='all'||item.priority===priority)
-        && (followupFilter==='all'||item.followup===followupFilter)
-        && item.followup==='pending';
-    });
-    if(selected.length===0)return;
-    history.push({kind:'batch-followup',states:selected.map(function(item){return {id:item.id,from:item.followup};})});
-    selected.forEach(function(item){item.followup='done';});
-    remember('Conclusão fictícia de '+selected.length+' acompanhamentos visíveis em lote.');
-    moves++;
-    render('batch');
-    describe('Conclusão simulada de '+selected.length+' acompanhamentos pendentes visíveis.');
-  });
-  byId('add-fiction').addEventListener('click',function(){
-    if(opportunities.length>=12)return;
-    const number=nextGenerated++;
-    const reference=String(number).padStart(2,'0');
-    const item={
-      id:'F'+reference,
-      label:'Oportunidade fictícia '+reference,
-      stage:0,
-      priority:number%2===0?'normal':'high',
-      value:500+number*150,
-      score:50+number%35,
-      followup:'pending'
-    };
-    opportunities.push(item);
-    history.push({kind:'add',id:item.id});
-    remember(item.label+' criada na etapa Entrada.');
-    moves++;
-    priority='all';
-    followupFilter='all';
-    render(item.id);
-    describe(item.label+' criada apenas nesta aba.');
-  });
-  byId('undo-change').addEventListener('click',function(){
-    if(!history.length)return;
-    const previous=history.pop();
-    if(previous.kind==='batch-followup'){
-      previous.states.forEach(function(state){
-        const match=opportunities.find(function(entry){return entry.id===state.id;});
-        if(match)match.followup=state.from;
-      });
-      remember('Conclusão de '+previous.states.length+' acompanhamentos fictícios desfeita.');
-      moves++;
-      render('undo');
-      describe('Conclusão simulada em lote desfeita.');
-      return;
-    }
-    const item=opportunities.find(function(entry){return entry.id===previous.id;});
-    if(!item)return;
-    if(previous.kind==='add'){
-      opportunities=opportunities.filter(function(entry){return entry.id!==item.id;});
-      remember('Criação simulada de '+item.label+' desfeita.');
-      describe('Criação simulada desfeita: '+item.label+'.');
-    }else if(previous.kind==='move'){
-      remember('Movimento de '+item.label+' desfeito.');
-      item.stage=previous.from;
-      describe('Último movimento desfeito: '+item.label+' voltou para '+STAGES[item.stage]+'.');
-    }else if(previous.kind==='followup'){
-      item.followup=previous.from;
-      remember('Acompanhamento fictício de '+item.label+' restaurado.');
-      describe('Situação do acompanhamento fictício restaurada: '+item.label+'.');
-    }else{
-      return;
-    }
-    moves++;
-    render('undo');
-  });
-  byId('reset-demo').addEventListener('click',function(){
-    opportunities=FIXTURES.map(function(item){return Object.assign({},item);});
-    history=[];
-    moves=0;
-    nextGenerated=9;
-    priority='all';
-    followupFilter='all';
-    order='default';
-    activity=[];
-    render('reset');
-    describe('Quadro fictício reiniciado.');
+  const action=node('td');
+  const button=node('button','', 'Localizar cartão');
+  button.type='button';
+  button.dataset.queueCard=item.id;
+  button.setAttribute('aria-label','Localizar '+item.label+' no funil fictício');
+  action.appendChild(button);row.appendChild(action);queue.appendChild(row);
   });
   document.querySelectorAll('[data-priority]').forEach(function(button){
-    button.addEventListener('click',function(){
-      priority=button.dataset.priority;
-      render('filter');
-      describe('Filtro de prioridade atualizado.');
-    });
+  button.setAttribute('aria-pressed',String(button.dataset.priority===priority));
   });
   document.querySelectorAll('[data-followup-filter]').forEach(function(button){
-    button.addEventListener('click',function(){
-      followupFilter=button.dataset.followupFilter;
-      render('filter');
-      button.focus();
-      describe('Filtro de acompanhamento fictício atualizado.');
-    });
+  button.setAttribute('aria-pressed',String(button.dataset.followupFilter===followupFilter));
+  });
+  const activityList=byId('activity-list');
+  activityList.replaceChildren();
+  (activity.length?activity.slice(0,6):['Nenhuma ação simulada registrada.']).forEach(function(message){
+  activityList.appendChild(node('li','',message));
   });
   document.querySelectorAll('[data-order]').forEach(function(button){
-    button.addEventListener('click',function(){
-      order=button.dataset.order;
-      render('sort');
-      describe('Ordenação fictícia atualizada.');
-    });
+  button.setAttribute('aria-pressed',String(button.dataset.order===order));
+  });
+  const pendingVisible=subset.filter(function(item){return item.followup==='pending';});
+  byId('complete-visible-followups').disabled=pendingVisible.length===0;
+  byId('complete-visible-followups').setAttribute('aria-label','Concluir '+pendingVisible.length+' acompanhamentos fictícios pendentes visíveis. Ação reversível e local.');
+  byId('undo-change').disabled=history.length===0;
+  byId('add-fiction').disabled=opportunities.length>=12;
+  byId('add-fiction').setAttribute('aria-label', opportunities.length>=12?'Limite de doze oportunidades fictícias atingido':'Adicionar oportunidade fictícia somente na memória');
+  if(focus){
+  const element=focus.startsWith('followup:')
+  ?document.querySelector('[data-card-id="'+focus.slice(9)+'"] button[data-followup]'):
+  focus==='batch'?(byId('complete-visible-followups').disabled
+  ?document.querySelector('[data-followup-filter="all"]')
+  :byId('complete-visible-followups')):
+  focus==='undo'?byId('undo-change'):
+  focus==='add'?byId('add-fiction'):
+  focus==='reset'?byId('reset-demo'):
+  focus==='filter'?document.querySelector('[data-priority="'+priority+'"]'):
+  focus==='sort'?document.querySelector('[data-order="'+order+'"]'):
+  document.querySelector('[data-card-id="'+focus+'"] button:not([disabled])');
+  if(element)element.focus();
+  }
+  }
+  byId('followup-queue').addEventListener('click',function(event){
+  const button=event.target.closest('button[data-queue-card]');
+  if(!button)return;
+  const target=document.querySelector('[data-card-id="'+button.dataset.queueCard+'"] button[data-followup]');
+  if(!target)return;
+  target.focus();
+  target.scrollIntoView({block:'nearest'});
+  describe('Cartão fictício '+button.dataset.queueCard+' localizado no funil.');
+  });
+  byId('board').addEventListener('click',function(event){
+  const followButton=event.target.closest('button[data-followup]');
+  if(followButton){
+  const item=opportunities.find(function(entry){return entry.id===followButton.dataset.followup;});
+  if(!item)return;
+  history.push({kind:'followup',id:item.id,from:item.followup});
+  item.followup=item.followup==='done'?'pending':'done';
+  remember(item.label+' teve acompanhamento fictício '+(item.followup==='done'?'concluído.':'reaberto.'));
+  moves++;
+  render('followup:'+item.id);
+  describe('Situação fictícia de acompanhamento atualizada: '+item.label+'.');
+  return;
+  }
+  const button=event.target.closest('button[data-move]');
+  if(!button||button.disabled)return;
+  const item=opportunities.find(function(entry){return entry.id===button.dataset.id;});
+  if(!item)return;
+  const next=item.stage+(button.dataset.move==='next'?1:-1);
+  if(next<0||next>=STAGES.length)return;
+  history.push({kind:'move',id:item.id,from:item.stage});
+  remember(item.label+' movida de '+STAGES[item.stage]+' para '+STAGES[next]+'.');
+  item.stage=next;
+  moves++;
+  render(item.id);
+  describe(item.label+' movida para '+STAGES[next]+'.');
+  });
+  byId('complete-visible-followups').addEventListener('click',function(){
+  const selected=opportunities.filter(function(item){
+  return (priority==='all'||item.priority===priority)
+  && (followupFilter==='all'||item.followup===followupFilter)
+  && item.followup==='pending';
+  });
+  if(selected.length===0)return;
+  history.push({kind:'batch-followup',states:selected.map(function(item){return {id:item.id,from:item.followup};})});
+  selected.forEach(function(item){item.followup='done';});
+  remember('Conclusão fictícia de '+selected.length+' acompanhamentos visíveis em lote.');
+  moves++;
+  render('batch');
+  describe('Conclusão simulada de '+selected.length+' acompanhamentos pendentes visíveis.');
+  });
+  byId('add-fiction').addEventListener('click',function(){
+  if(opportunities.length>=12)return;
+  const number=nextGenerated++;
+  const reference=String(number).padStart(2,'0');
+  const item={
+  id:'F'+reference,
+  label:'Oportunidade fictícia '+reference,
+  stage:0,
+  priority:number%2===0?'normal':'high',
+  value:500+number*150,
+  score:50+number%35,
+  followup:'pending'
+  };
+  opportunities.push(item);
+  history.push({kind:'add',id:item.id});
+  remember(item.label+' criada na etapa Entrada.');
+  moves++;
+  priority='all';
+  followupFilter='all';
+  render(item.id);
+  describe(item.label+' criada apenas nesta aba.');
+  });
+  byId('undo-change').addEventListener('click',function(){
+  if(!history.length)return;
+  const previous=history.pop();
+  if(previous.kind==='batch-followup'){
+  previous.states.forEach(function(state){
+  const match=opportunities.find(function(entry){return entry.id===state.id;});
+  if(match)match.followup=state.from;
+  });
+  remember('Conclusão de '+previous.states.length+' acompanhamentos fictícios desfeita.');
+  moves++;
+  render('undo');
+  describe('Conclusão simulada em lote desfeita.');
+  return;
+  }
+  const item=opportunities.find(function(entry){return entry.id===previous.id;});
+  if(!item)return;
+  if(previous.kind==='add'){
+  opportunities=opportunities.filter(function(entry){return entry.id!==item.id;});
+  remember('Criação simulada de '+item.label+' desfeita.');
+  describe('Criação simulada desfeita: '+item.label+'.');
+  }else if(previous.kind==='move'){
+  remember('Movimento de '+item.label+' desfeito.');
+  item.stage=previous.from;
+  describe('Último movimento desfeito: '+item.label+' voltou para '+STAGES[item.stage]+'.');
+  }else if(previous.kind==='followup'){
+  item.followup=previous.from;
+  remember('Acompanhamento fictício de '+item.label+' restaurado.');
+  describe('Situação do acompanhamento fictício restaurada: '+item.label+'.');
+  }else{
+  return;
+  }
+  moves++;
+  render('undo');
+  });
+  byId('reset-demo').addEventListener('click',function(){
+  opportunities=FIXTURES.map(function(item){return Object.assign({},item);});
+  history=[];
+  moves=0;
+  nextGenerated=9;
+  priority='all';
+  followupFilter='all';
+  order='default';
+  activity=[];
+  render('reset');
+  describe('Quadro fictício reiniciado.');
+  });
+  document.querySelectorAll('[data-priority]').forEach(function(button){
+  button.addEventListener('click',function(){
+  priority=button.dataset.priority;
+  render('filter');
+  describe('Filtro de prioridade atualizado.');
+  });
+  });
+  document.querySelectorAll('[data-followup-filter]').forEach(function(button){
+  button.addEventListener('click',function(){
+  followupFilter=button.dataset.followupFilter;
+  render('filter');
+  button.focus();
+  describe('Filtro de acompanhamento fictício atualizado.');
+  });
+  });
+  document.querySelectorAll('[data-order]').forEach(function(button){
+  button.addEventListener('click',function(){
+  order=button.dataset.order;
+  render('sort');
+  describe('Ordenação fictícia atualizada.');
+  });
   });
   render();
   describe('Oito oportunidades fictícias prontas para revisão.');
