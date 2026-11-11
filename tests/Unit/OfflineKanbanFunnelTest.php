@@ -30,7 +30,7 @@ final class OfflineKanbanFunnelTest extends TestCase
         self::assertStringContainsString('PROTÓTIPO — DADOS FICTÍCIOS.', $html);
         foreach ([
             'Entrada', 'Em contato', 'Qualificação', 'Proposta',
-            'Oportunidade fictícia 08', 'Movimentos nesta aba',
+            'Oportunidade fictícia 08', 'Ações simuladas nesta aba',
             'Desfazer ação', 'Reiniciar simulação',
             'data-priority="all"', 'data-priority="high"', 'data-priority="normal"',
             'id="simulation-status"', 'aria-live="polite"',
