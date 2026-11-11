@@ -373,12 +373,17 @@ $checks = <<<'JS'
     check(csvLines().length===2&&csvLines()[1]==='F05;2;high;pending;5300;90','CSV respects stage focus');
     move('F05','next');
     check(csvLines().length===1,'CSV has only header when selected card leaves stage');
+    check(byId('lane-detail-2').textContent==='Alta: 0 · Pendentes: 0','empty focused lane resets its summary');
     byId('undo-change').click();
     check(csvLines().length===2&&csvLines()[1].startsWith('F05;2;'),'undo restores CSV without cached rows');
+    check(byId('lane-detail-2').textContent==='Alta: 1 · Pendentes: 1','undo restores filtered lane summary');
     byId('reset-demo').click();
     check(csvLines().length===9,'CSV follows reset');
+    check(byId('lane-detail-0').textContent==='Alta: 1 · Pendentes: 1','initial entry counts match actual fixtures');
+    check(byId('lane-detail-3').textContent==='Alta: 1 · Pendentes: 2','initial proposal counts match actual fixtures');
     byId('add-fiction').click();
     check(csvLines().length===10&&csvLines()[9]==='F09;0;high;pending;1850;59','new generated fictitious card enters CSV');
+    check(byId('lane-detail-0').textContent==='Alta: 2 · Pendentes: 2','fictional card creation updates lane breakdown');
     byId('undo-change').click();
     check(csvLines().length===9,'undo creation removes generated CSV entry');
     stageButton('3').click();
@@ -583,6 +588,7 @@ try {
       check(!mobileCsv.hidden&&mobileCsvButton.getAttribute('aria-expanded')==='true','mobile CSV preview opens');
       check(doc.activeElement===mobileCsvButton,'mobile CSV focus preserved');
       check(mobileCsv.textContent.trim().split('\n').length===9,'mobile CSV eight fictitious rows');
+      check(doc.getElementById('lane-detail-0').textContent==='Alta: 1 · Pendentes: 1','mobile default summary');
       doc.querySelector('[data-stage-filter="3"]').click();
       doc.querySelector('[data-priority="high"]').click();
       check(mobileCsv.textContent.trim().split('\n').length===2,'mobile CSV filtered to one high proposal');
