@@ -93,10 +93,16 @@ function envelope(string $submission): array
 }
 function binding(array $e): array
 {
-    return array_intersect_key($e,array_fill_keys([
-        'organization_reference','binding_reference','site_reference',
-        'form_reference','destination_reference'
-    ],true));
+    // CRITICAL: the authoritatively pinned TEST tenant must NOT be copied
+    // from a potentially forged envelope. Derive it from a separate fixture.
+    // A real service would obtain these values from authenticated server DB.
+    return [
+        'organization_reference'=>'11111111-1111-4111-8111-111111111111',
+        'binding_reference'=>'22222222-2222-4222-8222-222222222222',
+        'site_reference'=>'44444444-4444-4444-8444-444444444444',
+        'form_reference'=>'55555555-5555-4555-8555-555555555555',
+        'destination_reference'=>'66666666-6666-4666-8666-666666666666',
+    ];
 }
 function uuid(): string
 {
