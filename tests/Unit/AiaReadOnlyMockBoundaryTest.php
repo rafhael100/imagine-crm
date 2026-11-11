@@ -107,6 +107,23 @@ final class AiaReadOnlyMockBoundaryTest extends TestCase
         self::assertDenied([0 => 'SYNTHETIC_CRM_AIA_READ_V1']);
     }
 
+    public function test_oversized_unknown_key_surface_cannot_enable_read(): void
+    {
+        $flood = self::validWire();
+        for ($i = 0; $i < 512; ++$i) {
+            $flood['unknown_'.$i] = 'SYNTHETIC_FORGED_GRANT';
+        }
+        self::assertFalse(AiaReadOnlyMockBoundary::hasFixtureShape($flood));
+        self::assertDenied($flood);
+
+        foreach ([[['ref']], [true], [42], [null]] as $fields) {
+            $wire = self::validWire();
+            $wire['fields'] = $fields;
+            self::assertFalse(AiaReadOnlyMockBoundary::hasFixtureShape($wire));
+            self::assertDenied($wire);
+        }
+    }
+
     public function test_response_never_includes_request_details_or_pii(): void
     {
         $request = self::validWire();
