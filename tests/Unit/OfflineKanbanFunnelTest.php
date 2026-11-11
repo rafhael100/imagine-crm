@@ -337,6 +337,43 @@ final class OfflineKanbanFunnelTest extends TestCase
         }
     }
 
+    public function test_csv_preview_reads_only_visible_fictional_metadata_and_never_exports_contacts(): void
+    {
+        $html = self::html();
+        foreach ([
+            'id="toggle-csv-demo" aria-expanded="false" aria-controls="csv-preview"',
+            'id="csv-preview" class="csv-demo" hidden',
+            'Prévia CSV dos cartões fictícios visíveis',
+            "function csvFromVisible(items){",
+            "const valid=items.length<=12&&items.every(function(item){",
+            "/^F(0[1-9]|1[0-2])$/.test(item.id)",
+            "Number.isInteger(item.stage)&&item.stage>=0&&item.stage<STAGES.length",
+            "['high','normal'].includes(item.priority)",
+            "['pending','done'].includes(item.followup)",
+            "Number.isSafeInteger(item.value)&&item.value>=0",
+            "Number.isInteger(item.score)&&item.score>=0&&item.score<=100",
+            "if(!valid)return 'Prévia fictícia indisponível: dados técnicos inválidos.';",
+            "id;etapa;prioridade;acompanhamento;valor_ficticio;pontuacao",
+            "if(!byId('csv-preview').hidden)byId('csv-preview').textContent=csvFromVisible(subset);",
+            "focus==='csv'?byId('toggle-csv-demo')",
+            "preview.hidden=!preview.hidden;",
+            "render('csv');",
+            "this.setAttribute('aria-expanded',String(!preview.hidden));",
+        ] as $required) {
+            self::assertStringContainsString($required, $html);
+        }
+        foreach ([
+            '<form', '<input', '<textarea', 'fetch(', 'XMLHttpRequest', 'WebSocket',
+            'localStorage', 'sessionStorage', 'Blob(', 'createObjectURL',
+            'navigator.clipboard', 'download=', '.innerHTML',
+            'document.write', 'navigator.sendBeacon', 'window.open(',
+        ] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, $html);
+        }
+        self::assertStringContainsString("connect-src 'none'", $html);
+        self::assertStringContainsString("form-action 'none'", $html);
+    }
+
     public function test_accessible_actions_and_mobile_layout_are_present(): void
     {
         $html = self::html();

@@ -62,6 +62,7 @@ button[disabled]{opacity:.47;cursor:not-allowed}
 .queue-table{width:100%;min-width:400px;border-collapse:collapse}
 .queue-table th,.queue-table td{padding:8px 10px;text-align:left;border-bottom:1px solid #e4edf0;font-size:.83rem}
 .queue-table th{color:#3b5a6c}
+.csv-demo{max-width:100%;overflow-x:auto;background:#f6f9fb;border:1px solid #d9e9ed;padding:12px;border-radius:9px;font: .78rem/1.6 ui-monospace,monospace;white-space:pre}
 .activity h2{font-size:1.03rem;margin:0 0 6px}
 .activity p{color:#637789;font-size:.78rem;margin:0 0 10px}
 .activity ol{padding-left:21px;margin:0;color:#35566a;font-size:.85rem}
@@ -141,6 +142,12 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   <tbody id="followup-queue"></tbody>
   </table></div>
   </section>
+  <section class="activity" aria-labelledby="csv-heading">
+  <h2 id="csv-heading">Prévia CSV dos cartões fictícios visíveis</h2>
+  <p>Somente referências artificiais, números e códigos técnicos. Sem arquivo ou exportação de contatos.</p>
+  <button type="button" id="toggle-csv-demo" aria-expanded="false" aria-controls="csv-preview">Mostrar prévia CSV fictícia</button>
+  <pre id="csv-preview" class="csv-demo" hidden aria-label="CSV técnico fictício somente para visualização"></pre>
+  </section>
   <section class="activity" aria-labelledby="activity-heading">
   <h2 id="activity-heading">Atividade simulada nesta aba</h2>
   <p>Histórico de demonstração, sem auditoria de CRM ou persistência. São mostradas até seis ações recentes.</p>
@@ -210,6 +217,21 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   card.appendChild(followButton);
   return card;
   }
+  function csvFromVisible(items){
+  const valid=items.length<=12&&items.every(function(item){
+  return /^F(0[1-9]|1[0-2])$/.test(item.id)
+  && Number.isInteger(item.stage)&&item.stage>=0&&item.stage<STAGES.length
+  && ['high','normal'].includes(item.priority)
+  && ['pending','done'].includes(item.followup)
+  && Number.isSafeInteger(item.value)&&item.value>=0
+  && Number.isInteger(item.score)&&item.score>=0&&item.score<=100;
+  });
+  if(!valid)return 'Prévia fictícia indisponível: dados técnicos inválidos.';
+  const header='id;etapa;prioridade;acompanhamento;valor_ficticio;pontuacao';
+  return header+'\n'+items.map(function(item){
+    return [item.id,item.stage,item.priority,item.followup,item.value,item.score].join(';');
+  }).join('\n')+(items.length?'\n':'');
+  }
   function render(focus){
   const subset=opportunities.filter(function(item){
   return (priority==='all'||item.priority===priority)
@@ -221,6 +243,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   put('count-pending',subset.filter(function(item){return item.followup==='pending';}).length);
   put('sum-visible',money.format(subset.reduce(function(sum,item){return sum+item.value;},0)));
   put('count-moves',moves);
+  if(!byId('csv-preview').hidden)byId('csv-preview').textContent=csvFromVisible(subset);
   STAGES.forEach(function(stage,index){
   const target=byId('lane-'+index);
   target.closest('.lane').hidden=(stageFilter!=='all'&&stageFilter!==index);
@@ -296,6 +319,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   focus==='batch'?(byId('complete-visible-followups').disabled
   ?document.querySelector('[data-followup-filter="all"]')
   :byId('complete-visible-followups')):
+  focus==='csv'?byId('toggle-csv-demo'):
   focus==='undo'?byId('undo-change'):
   focus==='add'?byId('add-fiction'):
   focus==='reset'?byId('reset-demo'):
@@ -306,6 +330,14 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   else if(stageFilter!=='all')document.querySelector('[data-stage-filter="'+stageFilter+'"]').focus();
   }
   }
+  byId('toggle-csv-demo').addEventListener('click',function(){
+  const preview=byId('csv-preview');
+  preview.hidden=!preview.hidden;
+  this.setAttribute('aria-expanded',String(!preview.hidden));
+  this.textContent=preview.hidden?'Mostrar prévia CSV fictícia':'Ocultar prévia CSV fictícia';
+  render('csv');
+  describe(preview.hidden?'Prévia CSV fictícia ocultada.':'Prévia CSV fictícia de cartões visíveis atualizada.');
+  });
   byId('followup-queue').addEventListener('click',function(event){
   const button=event.target.closest('button[data-queue-card]');
   if(!button)return;
