@@ -233,4 +233,4 @@ for(const r of looks)verifyReceipt(r.receipt,lost);
 assert.equal(count('request_nonces',lost.submission_reference),1);
 assert.equal(count('metadata_receipts',lost.submission_reference),1);
 
-console.log('F3-43 PASS: 76 signed concurrent HTTP requests across 4 PHP workers and disposable PG16; one first per key, nonce replays and wrong tenant/MAC denied; no live CRM ACK.');
+console.log('F3-43 PASS: 77 signed concurrent HTTP requests across 4 PHP workers and disposable PG16; one first per key, nonce replays and wrong tenant/MAC denied; no live CRM ACK.');
