@@ -30,8 +30,8 @@ final class OfflineKanbanFunnelTest extends TestCase
         self::assertStringContainsString('PROTÓTIPO — DADOS FICTÍCIOS.', $html);
         foreach ([
             'Entrada', 'Em contato', 'Qualificação', 'Proposta',
-            'Oportunidade fictícia 08', 'Movimentos nesta aba',
-            'Desfazer movimento', 'Reiniciar simulação',
+            'Oportunidade fictícia 08', 'Ações simuladas nesta aba',
+            'Desfazer ação', 'Reiniciar simulação',
             'data-priority="all"', 'data-priority="high"', 'data-priority="normal"',
             'id="simulation-status"', 'aria-live="polite"',
             'id="count-visible"', 'id="sum-visible"',
@@ -70,6 +70,30 @@ final class OfflineKanbanFunnelTest extends TestCase
         }
         preg_match_all('/\bhref="([^"]+)"/', $html, $links);
         self::assertSame(['#conteudo', '../s01-prot-01/index.html'], $links[1]);
+    }
+
+    public function test_in_memory_creation_is_bounded_reversible_and_without_user_input(): void
+    {
+        $html = self::html();
+        foreach ([
+            'id="add-fiction"',
+            'Adicionar oportunidade fictícia',
+            'Ações simuladas nesta aba',
+            "history.push({kind:'add',id:item.id});",
+            "history.push({kind:'move',id:item.id,from:item.stage});",
+            "opportunities.length>=12",
+            "opportunities=opportunities.filter(",
+            "nextGenerated=9;",
+            "priority='all';",
+            "render(item.id);",
+            "render('undo');",
+            'Limite de doze oportunidades fictícias atingido',
+        ] as $contract) {
+            self::assertStringContainsString($contract, $html);
+        }
+        foreach (['<form', '<input', '<textarea', 'localStorage', 'fetch('] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, $html);
+        }
     }
 
     public function test_accessible_actions_and_mobile_layout_are_present(): void
