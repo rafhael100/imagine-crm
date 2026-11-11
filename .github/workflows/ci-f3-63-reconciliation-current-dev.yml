@@ -1,0 +1,76 @@
+name: CRM F3-63 - Reconciled offline demo integration with current DEV
+
+on:
+  push:
+    branches:
+      - dev/f3-63-reconciliation-unique-integration-2026-11-11
+  pull_request:
+    paths:
+      - 'prototypes/index.html'
+      - 'prototypes/f3-52-delivery-reconciliation/**'
+      - 'prototypes/s01-prot-01/index.html'
+      - 'scripts/ci/check-offline-prototype-hub-browser.php'
+      - 'scripts/ci/check-offline-delivery-reconciliation-browser.php'
+      - 'tests/Unit/OfflinePrototypeHubTest.php'
+      - 'tests/Unit/OfflineDeliveryReconciliation**'
+      - 'tests/Unit/OfflineCsvRiskNavigationTest.php'
+      - '.github/workflows/ci-f3-63-reconciliation-current-dev.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unique-ux-integration:
+    name: PHP 8.4 / six linked demos and Chromium 320px
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring,dom,xml,pdo_sqlite,sqlite3,curl,zip
+          tools: composer:v2
+          coverage: none
+      - name: Install only locked PHP dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer validate --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+      - name: Verify six existing offline files, navigation and deny-by-default routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l scripts/ci/check-offline-delivery-reconciliation-browser.php
+          php -l scripts/ci/check-offline-prototype-hub-browser.php
+          cp .env.example .env
+          php artisan key:generate --force
+          php artisan test --filter=OfflinePrototypeHubTest --no-ansi
+          php artisan test --filter=OfflineDeliveryReconciliationDashboardTest --no-ansi
+          php artisan test --filter=OfflineDeliveryReconciliationNavigationTest --no-ansi
+          php artisan test --filter=OfflineCsvRiskNavigationTest --no-ansi
+          php artisan test --filter=OfflinePrototypeResourceBoundaryTest --no-ansi
+          php artisan test --filter=OfflineFollowUpNavigationContractTest --no-ansi
+          php artisan test --filter=PublicRouteSurfaceSealTest --no-ansi
+      - name: Test actual Chromium six-link launcher and delivery review at desktop and 320px
+        shell: bash
+        run: |
+          set -euo pipefail
+          php scripts/ci/check-offline-prototype-hub-browser.php
+          php scripts/ci/check-offline-delivery-reconciliation-browser.php
+          php scripts/ci/check-offline-prototype-browser.php
+          php scripts/ci/check-offline-prototype-320.php
