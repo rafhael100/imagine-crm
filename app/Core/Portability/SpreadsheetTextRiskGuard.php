@@ -27,8 +27,10 @@ final class SpreadsheetTextRiskGuard
             return true;
         }
 
-        // Leading tabs/newlines/control characters are unsafe even before text.
-        if (preg_match('/\A[\x00-\x1f\x7f]/u', $cell) === 1) {
+        // Embedded or leading ASCII controls (including CR/LF/TAB) are risky
+        // as spreadsheet text. A quoted multiline CSV cell is syntactically
+        // valid, but still needs format-specific protection before export.
+        if (preg_match('/[\x00-\x1f\x7f]/', $cell) === 1) {
             return true;
         }
 
