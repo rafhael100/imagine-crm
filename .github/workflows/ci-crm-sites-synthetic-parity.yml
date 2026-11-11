@@ -1,0 +1,62 @@
+name: CRM Imagine - Sites Synthetic Envelope Parity
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+  push:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-sites-f3-51-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sites-crm-envelope:
+    name: PHP ${{ matrix.php }} / actual Sites-CRM synthetic PHP
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4']
+    steps:
+      - name: Checkout CRM under test
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout pinned Sites integration source (not an API)
+        uses: actions/checkout@v4
+        with:
+          repository: rafhael100/imagine-sites
+          ref: 057b6f859df5050c842a86d18676e6332a79d1f9
+          path: _synthetic_sites_fixture
+          persist-credentials: false
+
+      - name: Verify immutable Sites commit
+        run: |
+          test "$(git -C _synthetic_sites_fixture rev-parse HEAD)" = "057b6f859df5050c842a86d18676e6332a79d1f9"
+
+      - name: PHP (pure classes only; no Composer or DB)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: none
+
+      - name: Lint both repositories' real PHP classes
+        run: |
+          set -euo pipefail
+          php -l scripts/ci/check-sites-crm-envelope-authority-witness.php
+          php -l app/Core/Leads/SyntheticLeadEnvelopeV1Inspector.php
+          for name in SyntheticCrmLeadEnvelopeV1Draft SyntheticLeadBindingAuthoritySnapshot SyntheticLeadBindingAuthoritySource SyntheticLeadBindingAuthorityAssessment SyntheticLeadBindingAuthorityPreflight; do
+            php -l "_synthetic_sites_fixture/src/Integration/${name}.php"
+          done
+
+      - name: Compare Sites draft and authority source against CRM Core
+        run: php scripts/ci/check-sites-crm-envelope-authority-witness.php
