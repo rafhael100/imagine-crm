@@ -91,10 +91,26 @@ $checks = <<<'JS'
     check(document.getElementById('undo-change').disabled,'undo cleared after second reversal');
     check(document.getElementById('simulation-status').textContent.includes('Somente simulação local'),'status does not suggest real CRM change');
     move('F02','next');
+    const stageOrder=()=>Array.from(document.querySelectorAll('#lane-1 [data-card-id]'))
+      .map(card=>card.getAttribute('data-card-id'));
+    check(JSON.stringify(stageOrder())===JSON.stringify(['F02','F03','F04']),'original stable fixture order after moving F02');
+    const scoreSort=document.querySelector('[data-order="score"]');
+    scoreSort.focus();
+    scoreSort.click();
+    check(scoreSort.getAttribute('aria-pressed')==='true','score ordering is pressed');
+    check(document.activeElement===scoreSort,'score sort preserves keyboard focus');
+    check(JSON.stringify(stageOrder())===JSON.stringify(['F03','F04','F02']),'higher scores sort before lower');
+    document.querySelector('[data-order="default"]').click();
+    check(JSON.stringify(stageOrder())===JSON.stringify(['F02','F03','F04']),'original insertion order restored');
+    check(document.querySelectorAll('[data-order][aria-pressed="true"]').length===1,'sort group has one selected option');
+    check(document.querySelectorAll('#activity-list li').length>=1,'actions recorded visibly');
+    check(document.getElementById('activity-list').textContent.includes('Oportunidade fictícia 02'),'activity log includes only fictional action');
     document.getElementById('reset-demo').click();
     check(visible()===8&&['0','1','2','3'].every(n=>count(n)==='2'),'reset all four lanes');
     check(document.getElementById('count-moves').textContent==='0','reset movement count');
     check(document.getElementById('undo-change').disabled,'reset clears history');
+    check(document.querySelectorAll('#activity-list li').length===1&&document.getElementById('activity-list').textContent.includes('Nenhuma ação'),'reset clears visible activity');
+    check(document.querySelector('[data-order="default"]').getAttribute('aria-pressed')==='true','reset defaults to insertion order');
     check(document.querySelector('[data-priority="all"]').getAttribute('aria-pressed')==='true','reset priority');
     const add=document.getElementById('add-fiction');
     check(add&&!add.disabled,'fictional creation enabled');
@@ -112,6 +128,7 @@ $checks = <<<'JS'
     check(add.disabled,'limit rejects a thirteenth fictional card');
     document.getElementById('undo-change').click();
     check(visible()===11,'undo removes latest fictional creation');
+    check(document.querySelectorAll('#activity-list li').length<=6,'history display remains bounded to six fictional actions');
     check(!add.disabled,'undo releases the bounded capacity');
     add.click();
     check(visible()===12,'capacity can be reused safely');
@@ -184,6 +201,10 @@ try {
       next.focus();
       next.click();
       check(doc.querySelector('#lane-1 [data-card-id="F01"]')!==null,'mobile moves a ticket');
+      check(doc.querySelectorAll('#activity-list li').length===1,'mobile history records movement');
+      doc.querySelector('[data-order="score"]').click();
+      check(doc.querySelector('[data-order="score"]').getAttribute('aria-pressed')==='true','mobile score sort selected');
+      check(doc.documentElement.scrollWidth<=320,'mobile sort does not overflow');
       check(doc.getElementById('lane-value-1').textContent.includes('7.400'),'mobile stage value changes');
       check(doc.activeElement.closest('[data-card-id="F01"]')!==null,'mobile movement focus');
       check(doc.documentElement.scrollWidth<=320,'no mobile overflow after movement');
