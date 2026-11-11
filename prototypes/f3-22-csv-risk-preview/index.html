@@ -144,10 +144,9 @@ thead{background:#edf5f7}[hidden]{display:none!important}
 </section>
 <section class="card" aria-labelledby="race-title">
 <h2 id="race-title">Conflitos de revisão — simulação</h2>
-<p class="small">Seis exemplos independentes sem sessão, gravação ou permissão real.</p>
-<div class="controls" role="group" aria-label="Cenários fictícios de revisão">
+<div class="controls" role="group" aria-label="Exemplos fictícios">
 <button type="button" data-race="0" aria-pressed="true">Inicial</button>
-<button type="button" data-race="1" aria-pressed="false">Primeira revisão</button>
+<button type="button" data-race="1" aria-pressed="false">Revisão</button>
 <button type="button" data-race="2" aria-pressed="false">Repetição igual</button>
 <button type="button" data-race="3" aria-pressed="false">Chave conflitante</button>
 <button type="button" data-race="4" aria-pressed="false">Versão antiga</button>
@@ -155,11 +154,11 @@ thead{background:#edf5f7}[hidden]{display:none!important}
 </div>
 <div class="metrics">
 <div class="metric">Versão fictícia<strong id="race-version">1</strong></div>
-<div class="metric">Revisões simuladas<strong id="race-events">0</strong></div>
-<div class="metric">Últimas decisões<strong id="race-decisions">0</strong></div>
+<div class="metric">Eventos<strong id="race-events">0</strong></div>
+<div class="metric">Decisões<strong id="race-decisions">0</strong></div>
 </div>
 <p id="race-status" role="status" aria-live="polite">Estado inicial fictício. Revisão humana não comprovada; importação proibida.</p>
-<p class="notice">Nenhuma pessoa é autenticada, nenhum lead é importado e não existe concorrência entre processos ou banco real.</p>
+<p class="notice">Sem autenticação, banco, concorrência real ou importação.</p>
 </section>
 <p class="small">A detecção não seleciona encoding, separador, normalização, consentimento, direitos por empresa ou política de exportação. Todos esses critérios continuam aguardando homologação.</p>
 </main>
@@ -489,17 +488,15 @@ thead{background:#edf5f7}[hidden]{display:none!important}
     snapshotButtons.forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.snapshot) === index)));
   }
   snapshotButtons.forEach(button => button.addEventListener("click", () => showSnapshot(Number(button.dataset.snapshot))));
-  const raceButtons = Array.from(document.querySelectorAll("[data-race]"));
-  const raceLabels = ["Estado inicial fictício.","Uma revisão simulada em memória.","Repetição igual: nenhum novo evento.","Chave divergente: conflito sem novo evento.","Versão antiga: recusada.","Lote alterado: decisões descartadas."];
-  function showRace(index) {
-    const report = RACE_REPORTS[index];
-    document.getElementById("race-version").textContent = String(report.fixture_version);
-    document.getElementById("race-events").textContent = String(report.recorded_review_events);
-    document.getElementById("race-decisions").textContent = String(report.last_decision_count);
-    document.getElementById("race-status").textContent = raceLabels[index] + " Revisão humana não comprovada; importação proibida.";
-    raceButtons.forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.race) === index)));
+  const raceButtons=[...document.querySelectorAll("[data-race]")];
+  const raceLabels=["Estado inicial fictício.","Uma revisão simulada em memória.","Repetição igual: nenhum novo evento.","Chave divergente: conflito sem novo evento.","Versão antiga: recusada.","Lote alterado: decisões descartadas."];
+  function showRace(i){
+    const r=RACE_REPORTS[i];
+    for(const [id,key] of [["race-version","fixture_version"],["race-events","recorded_review_events"],["race-decisions","last_decision_count"]])document.getElementById(id).textContent=String(r[key]);
+    document.getElementById("race-status").textContent=raceLabels[i]+" Revisão humana não comprovada; importação proibida.";
+    raceButtons.forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.race===i)));
   }
-  raceButtons.forEach(button => button.addEventListener("click", () => showRace(Number(button.dataset.race))));
+  raceButtons.forEach(b=>b.addEventListener("click",()=>showRace(+b.dataset.race)));
   showMap(0);
   showSnapshot(0);
   showRace(0);
