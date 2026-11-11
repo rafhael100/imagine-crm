@@ -20,6 +20,12 @@ final class SpreadsheetTextRiskGuardTest extends TestCase
             'at' => ['@SUM(A1:A2)'],
             'leading spaces' => ['   =2+2'],
             'leading tab' => ["\tplain"],
+            'embedded ASCII tab' => ["prefix\t=1+1"],
+            'embedded LF' => ["prefix\n=1+1"],
+            'embedded CR' => ["prefix\r=1+1"],
+            'embedded DEL' => ["prefix\x7fplain"],
+            'embedded control after Unicode' => ["SYNTHETIC_\u{2060}\t=1+1"],
+
             'leading newline' => ["\nplain"],
             'leading return' => ["\rplain"],
             'leading null' => ["\x00text"],
