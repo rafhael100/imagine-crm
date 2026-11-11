@@ -19,3 +19,15 @@ A PR [CORE-INT-01 #254](https://github.com/rafhael100/imagine-crm/pull/254) isol
 Nenhuma rota Laravel, worker, endpoint público, registro de cliente, login/segredo real, persistência produtiva, contrato de acesso real, webhook, deploy, VPN/VPS ou custo externo. Um status HTTP de laboratório **não é** aceite de lead; um recibo de PostgreSQL descartável **não é** ACK de CRM real; uma simulação de serviços assinados não substitui IAM ou KMS. F70 Comercial, SEG/DBA/LGPD e CORE permanecem **NO-GO** para ativação.
 
 Revisão em PR **DRAFT** sobre DEV. Nenhum merge em `main`, deploy ou conexão a serviços reais foi realizado.
+
+## Três provas adicionais isoladas no mesmo recorte
+
+Em vez de criar outra sequência de PRs, foram portados os testes originalmente experimentados nos marcos F3-43, F3-44 e F3-45, **cada um em um job independente com PostgreSQL 16 novo e descartável**:
+
+1. **Concorrência real** (`tests/Labs/F3_43/concurrent_http_pg16.mjs`, `ci-crm-portal-multiworker-concurrency.yml`): Node 22 dispara chamadas HMAC concorrentes a **quatro processos** PHP reais por loopback; comprova um único registro lógico, nonce repetido negado e recibos técnicos não-operacionais.
+2. **Falhas e timeout** (`tests/Labs/F3_44/fault_injection_pg16.php`, `ci-crm-portal-fault-injection.yml`): transação levanta exceção ou excede `statement_timeout`, testa rollback da reserva de nonce e do registro de metadados, ausência de recibo falso e readback antes de tentativa manual de reenvio de laboratório.
+3. **Acesso mínimo / RLS** (`tests/Labs/F3_45/service_login_pg16.sql`, `test_service_logins_pg16.php`, `ci-crm-portal-service-login-rls.yml`): logins PostgreSQL com `NOSUPERUSER/NOBYPASSRLS`, herança restrita a papel fixo da empresa sintética, sem `SET ROLE`, negação de troca de tenant e de comandos de escrita fora do escopo de teste.
+
+Os três conjuntos são **exclusivamente CI**. O SQL e os usuários com senhas literais de fixture NUNCA são migrations ou credenciais produtivas. O teste de concorrência usa `127.0.0.1:19141` somente no runner; nenhum handler Laravel foi criado. Todos preservam a distinção entre recibo de metadados de teste e confirmação durável de um contato real. Os workflows têm verificações negativas que recusam importar tokens, flags e arquivos de teste para `app`, `routes`, `bootstrap` ou `database/migrations`.
+
+Critério para revisão técnica: exigir a conclusão **verde na SHA final** dos quatro workflows de laboratório (F3-42/43/44/45 isolados), além dos gates F0, PostgreSQL/RLS, Sites e Agentes IA. Um CI verde ainda não equivale a aprovação SEG/DBA/LGPD, identidade de serviço ou implantação.
