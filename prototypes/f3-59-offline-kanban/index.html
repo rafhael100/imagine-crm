@@ -150,7 +150,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   </section>
   <section class="activity" aria-labelledby="activity-heading">
   <h2 id="activity-heading">Atividade simulada nesta aba</h2>
-  <p>Histórico de demonstração, sem auditoria de CRM ou persistência. São mostradas até seis ações recentes.</p>
+  <p>Histórico fictício, sem auditoria nem persistência. Seis ações são exibidas; até 64 podem ser desfeitas.</p>
   <ol id="activity-list" aria-label="Ações fictícias recentes"><li>Nenhuma ação simulada registrada.</li></ol>
   </section>
   <p id="simulation-status" class="status" role="status" aria-live="polite" aria-atomic="true">Carregando simulação local.</p>
@@ -189,6 +189,10 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   };
   function describe(message){put('simulation-status',message+' Somente simulação local; nenhum lead real foi alterado.');}
   function remember(message){activity.unshift(message);if(activity.length>6)activity.length=6;}
+  const MAX_UNDO_ACTIONS=64;
+  function trimUndoHistory(){
+  if(history.length>MAX_UNDO_ACTIONS)history.splice(0,history.length-MAX_UNDO_ACTIONS);
+  }
   function ticket(item){
   const card=node('article','ticket');
   card.setAttribute('data-card-id',item.id);
@@ -354,6 +358,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const item=opportunities.find(function(entry){return entry.id===followButton.dataset.followup;});
   if(!item)return;
   history.push({kind:'followup',id:item.id,from:item.followup});
+  trimUndoHistory();
   item.followup=item.followup==='done'?'pending':'done';
   remember(item.label+' teve acompanhamento fictício '+(item.followup==='done'?'concluído.':'reaberto.'));
   moves++;
@@ -368,6 +373,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const next=item.stage+(button.dataset.move==='next'?1:-1);
   if(next<0||next>=STAGES.length)return;
   history.push({kind:'move',id:item.id,from:item.stage});
+  trimUndoHistory();
   remember(item.label+' movida de '+STAGES[item.stage]+' para '+STAGES[next]+'.');
   item.stage=next;
   moves++;
@@ -386,6 +392,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   history.push({kind:'batch-move',states:selected.map(function(item){
     return {id:item.id,from:item.stage};
   })});
+  trimUndoHistory();
   selected.forEach(function(item){item.stage+=direction;});
   const description=direction===1?'Avanço':'Retorno';
   remember(description+' fictício de '+selected.length+' oportunidades visíveis em uma etapa.');
@@ -404,6 +411,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   });
   if(selected.length===0)return;
   history.push({kind:'batch-followup',states:selected.map(function(item){return {id:item.id,from:item.followup};})});
+  trimUndoHistory();
   selected.forEach(function(item){item.followup='done';});
   remember('Conclusão fictícia de '+selected.length+' acompanhamentos visíveis em lote.');
   moves++;
@@ -432,6 +440,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   };
   opportunities.push(item);
   history.push({kind:'add',id:item.id});
+  trimUndoHistory();
   remember(item.label+' criada na etapa Entrada.');
   moves++;
   priority='all';
