@@ -10,8 +10,11 @@ declare(strict_types=1);
  * in GitHub Actions; no Laravel route, database, token, HTTP or client data.
  */
 require_once dirname(__DIR__, 2).'/app/Support/Synthetic/AiaReadOnlyMockBoundary.php';
+require_once dirname(__DIR__, 2).'/app/Core/Leads/AgentsReadResponseAssessment.php';
+require_once dirname(__DIR__, 2).'/app/Core/Leads/AgentsReadResponseInspector.php';
 
 use App\Support\Synthetic\AiaReadOnlyMockBoundary;
+use App\Core\Leads\AgentsReadResponseInspector;
 
 function f347Check(bool $ok, string $label): void
 {
@@ -102,6 +105,27 @@ foreach ($record['cases'] as $index => $entry) {
         }
     }
 
+    // F3-50 exercises actual reusable CRM Core against actual Agents PHP
+    // outputs. Syntactic success must NEVER become CRM identity or ACL.
+    $assessment = (new AgentsReadResponseInspector())->inspect(
+        $out, $entry['fields'],
+    );
+    f347Check($assessment->reasonCode === (
+        $out['state'] === 'READ_SYNTHETIC_ONLY'
+            ? 'SYNTHETIC_PROJECTION_UNTRUSTED'
+            : 'SYNTHETIC_DENIAL_ONLY'
+    ), 'CRM Core did not classify the upstream fiction '.$caseName);
+    f347Check($assessment->isSyntheticFormatConsistent(), 'synthetic format drift '.$caseName);
+    f347Check(!$assessment->canReadRealLead()
+        && !$assessment->canUseCustomerData()
+        && !$assessment->canGrantAgentAccess()
+        && !$assessment->canWriteLead()
+        && !$assessment->canExportLead()
+        && !$assessment->canEnableRoute(),
+        'CRM Core must not elevate a synthetic response '.$caseName);
+    f347Check(array_keys((array) $assessment) === ['reasonCode'],
+        'CRM Core must never echo projection '.$caseName);
+
     // Critical ownership boundary: a synthetic success from Agents is NOT a
     // service identity, CRM authorization, membership or business data source.
     $crm = AiaReadOnlyMockBoundary::inspect($out);
@@ -122,5 +146,5 @@ foreach ([
     f347Check(!str_contains($stdout, $sensitive), 'probe must not expose '.$sensitive);
 }
 
-echo 'F3-47 PASS: six real Agents PHP facade scenarios; 2 synthetic '
+echo 'F3-47/F3-50 PASS: real Agents PHP facade and CRM Core; 2 synthetic '
     .'reads, 4 denials, CRM denied all 6 without external calls.'.PHP_EOL;
