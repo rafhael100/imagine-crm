@@ -93,6 +93,7 @@ final class OfflineSalesQuoteSubtotalParityTest extends TestCase
         ));
         foreach ([
             'PROTÓTIPO — DADOS FICTÍCIOS.', "connect-src 'none'",
+            'href="../f3-111-proposal-versions/index.html"',
             "form-action 'none'", 'href="../index.html"',
             'role="status" aria-live="polite"', 'button:focus-visible',
             "body.replaceChildren();", "label.textContent=line.label",

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; img-src 'none'; font-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — Revisão ilustrativa de versões de proposta</title>
+<style>
+:root{font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:#f4f8fa;color:#17384b}
+*{box-sizing:border-box}body{margin:0;min-width:0}a{color:#0a6372}a:focus-visible,button:focus-visible{outline:3px solid #11a494;outline-offset:3px}
+.skip{position:absolute;top:-5rem;left:1rem;padding:12px;background:#fff}.skip:focus{top:1rem}
+header{background:#183a51;color:#fff;padding:19px clamp(16px,4vw,44px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}header a{color:#dcf9f5}
+main{max-width:1060px;margin:auto;padding:clamp(18px,3vw,36px)}h1{font-size:clamp(1.6rem,4vw,2.5rem);line-height:1.17;margin:7px 0}h2{font-size:1.15rem;margin:0 0 12px}
+.kicker{color:#158477;text-transform:uppercase;letter-spacing:.12em;font-size:.77rem;font-weight:800}.lead{max-width:820px;color:#536e7e}
+.notice{background:#eaf7f2;border:1px solid #b5dad1;color:#235a51;border-radius:11px;padding:14px 16px;font-weight:690;margin:18px 0}
+.card{min-width:0;background:#fff;border:1px solid #d5e5eb;border-radius:15px;padding:clamp(16px,2.5vw,25px);margin:18px 0}
+.controls{display:flex;flex-wrap:wrap;gap:9px}button{font:inherit;font-weight:680;cursor:pointer;border:1px solid #adcbd0;border-radius:10px;background:#f6fbfc;color:#215769;padding:10px 13px}button[aria-pressed="true"]{background:#174e60;color:#fff;border-color:#174e60}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.stat{background:#f8fbfc;border:1px solid #dbe8eb;border-radius:11px;padding:13px;min-width:0}
+.stat span{display:block;color:#587480;font-size:.78rem}.stat strong{display:block;font-size:clamp(1.06rem,2.4vw,1.6rem);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.status{background:#eef6f8;border:1px solid #c1dce0;color:#1e5568;border-radius:9px;padding:12px 14px;font-weight:720}
+.table-wrap{max-width:100%;overflow-x:auto}table{width:100%;min-width:480px;border-collapse:collapse;text-align:left}
+th,td{border-bottom:1px solid #e4edf0;padding:11px 13px;font-size:.9rem}thead{background:#eef6f8}
+.small{font-size:.84rem;color:#5a7581}.empty{padding:17px;border-radius:10px;border:1px dashed #b5d1d8;background:#f7fafb}
+footer{max-width:1060px;margin:auto;padding:0 24px 34px;color:#607b87;font-size:.82rem}
+[hidden]{display:none!important}
+@media(max-width:720px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){main{padding:16px 12px}.card{padding:14px}.controls{display:grid;grid-template-columns:minmax(0,1fr)}.controls button{width:100%}.metrics{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header><strong>imagine CRM · Laboratório comercial</strong><a href="../f3-109-sales-quote-subtotal/index.html">Voltar aos itens de oportunidade</a></header>
+<main id="conteudo">
+  <p class="kicker">Propostas · Versões e evidências não verificadas</p>
+  <h1>Conferência de versões de proposta</h1>
+  <p class="lead">Compare situações de rascunho, envio, visualização e aceite declarado. Uma versão anterior não autoriza a posterior; abrir um link não significa aceitar.</p>
+  <div class="notice" role="note">PROTÓTIPO — DADOS FICTÍCIOS. Nenhuma proposta real foi criada, enviada, aceita, assinada ou cobrada. Os estados a seguir são alegações inventadas, sem verificação de identidade, validade jurídica ou pagamento.</div>
+  <section class="card" aria-labelledby="cases-title">
+    <h2 id="cases-title">Escolha uma sequência ilustrativa</h2>
+    <div class="controls" role="group" aria-label="Cenários fictícios de versões da proposta">
+      <button type="button" data-case="draft" aria-pressed="true">A · Rascunho inicial</button>
+      <button type="button" data-case="viewed" aria-pressed="false">B · Enviada e visualizada</button>
+      <button type="button" data-case="revision" aria-pressed="false">C · Versão nova após aceite</button>
+      <button type="button" data-case="accepted" aria-pressed="false">D · Aceite declarado</button>
+      <button type="button" data-case="empty" aria-pressed="false">E · Sem versões</button>
+    </div>
+    <p class="small">Os códigos de estados e versões são de laboratório. Não representam confirmação de destinatário, direitos, contrato ou assinatura.</p>
+  </section>
+  <section class="card" aria-labelledby="summary-title">
+    <h2 id="summary-title">Resumo da sequência inventada</h2>
+    <div class="metrics">
+      <div class="stat"><span>Versões</span><strong id="version-count">—</strong></div>
+      <div class="stat"><span>Versão atual</span><strong id="latest-version">—</strong></div>
+      <div class="stat"><span>Estado declarado atual</span><strong id="latest-status">—</strong></div>
+      <div class="stat"><span>Aceites declarados antigos</span><strong id="prior-accepted">—</strong></div>
+    </div>
+    <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Carregando exemplos.</p>
+    <p id="viewed-count" class="small">Visualizações sem aceite declarado: 0</p>
+  </section>
+  <section class="card" aria-labelledby="history-title">
+    <h2 id="history-title">Histórico descritivo de versões</h2>
+    <p id="empty-note" class="empty" role="status" hidden>Nenhuma versão fictícia informada. Nenhum documento foi emitido.</p>
+    <div id="version-table-wrap" class="table-wrap">
+      <table><caption>Somente códigos inventados; nenhum documento, pessoa ou link externo</caption>
+      <thead><tr><th scope="col">Versão</th><th scope="col">Estado alegado</th><th scope="col">Visualização declarada</th></tr></thead>
+      <tbody id="version-rows"></tbody></table>
+    </div>
+    <p class="small">Uma versão v1 descrita como aceita não torna v2 aceita. Uma visualização também não autentica o destinatário.</p>
+  </section>
+  <section class="card" aria-labelledby="gates-title">
+    <h2 id="gates-title">Permissões operacionais</h2>
+    <p id="rights" class="status">Enviar: NÃO · Aceitar: NÃO · Assinar: NÃO · Cobrar: NÃO · Gravar: NÃO</p>
+    <p class="small">Esta tela não implementa envio, aprovação gerencial, assinatura eletrônica, link seguro, validade temporal ou regra de cobrança. Todas essas operações exigem fontes e permissões oficiais.</p>
+  </section>
+</main>
+<footer>Imagine CRM · Laboratório local somente leitura. Sem API, dados pessoais, storage, assinatura ou pagamento real.</footer>
+<script>
+(function(){
+  'use strict';
+  // Fixed fictional, unverified claims: not an acceptance or authentication.
+  const SCENARIOS=Object.freeze([
+    {"id":"draft","versions":[{"version":1,"status":"draft","viewed":false}],"expected":{"latest_version":1,"latest_claimed_status":"draft","prior_claimed_accepted_versions":0,"viewed_without_claimed_acceptance":0}},
+    {"id":"viewed","versions":[{"version":1,"status":"sent","viewed":true}],"expected":{"latest_version":1,"latest_claimed_status":"sent","prior_claimed_accepted_versions":0,"viewed_without_claimed_acceptance":1}},
+    {"id":"revision","versions":[{"version":1,"status":"accepted","viewed":true},{"version":2,"status":"draft","viewed":false}],"expected":{"latest_version":2,"latest_claimed_status":"draft","prior_claimed_accepted_versions":1,"viewed_without_claimed_acceptance":0}},
+    {"id":"accepted","versions":[{"version":1,"status":"accepted","viewed":true}],"expected":{"latest_version":1,"latest_claimed_status":"accepted","prior_claimed_accepted_versions":0,"viewed_without_claimed_acceptance":0}},
+    {"id":"empty","versions":[],"expected":{"latest_version":null,"latest_claimed_status":null,"prior_claimed_accepted_versions":0,"viewed_without_claimed_acceptance":0}}
+  ]);
+  const STATUSES=Object.freeze({draft:'Rascunho',sent:'Enviada',accepted:'Aceite declarado',declined:'Recusada',expired:'Expirada'});
+  const get=id=>document.getElementById(id);
+  const put=(id,value)=>{get(id).textContent=String(value);};
+  function inspect(versions){
+    if(!Array.isArray(versions)||versions.length>8)throw new Error('Versões fictícias inválidas');
+    let acceptedBefore=0,viewedWithout=0;
+    versions.forEach((record,index)=>{
+      if(!record||record.version!==index+1||typeof record.viewed!=='boolean'||!Object.hasOwn(STATUSES,record.status))throw new Error('Versão fictícia inválida');
+      if(record.viewed&&record.status!=='accepted')++viewedWithout;
+      if(record.status==='accepted'&&index<versions.length-1)++acceptedBefore;
+    });
+    const last=versions.length?versions[versions.length-1]:null;
+    return {latest_version:last?last.version:null,latest_claimed_status:last?last.status:null,prior_claimed_accepted_versions:acceptedBefore,viewed_without_claimed_acceptance:viewedWithout};
+  }
+  function show(id){
+    const sample=SCENARIOS.find(x=>x.id===id);
+    if(!sample)throw new Error('Cenário desconhecido');
+    const result=inspect(sample.versions);
+    if(JSON.stringify(result)!==JSON.stringify(sample.expected))throw new Error('Inconsistência na prévia de versões');
+    put('version-count',sample.versions.length);
+    put('latest-version',result.latest_version===null?'Nenhuma':'v'+result.latest_version);
+    put('latest-status',result.latest_claimed_status===null?'Não existe':STATUSES[result.latest_claimed_status]);
+    put('prior-accepted',result.prior_claimed_accepted_versions);
+    put('viewed-count','Visualizações sem aceite declarado: '+result.viewed_without_claimed_acceptance);
+    const table=get('version-rows');table.replaceChildren();
+    sample.versions.forEach(record=>{
+      const tr=document.createElement('tr');
+      for(const value of ['v'+record.version,STATUSES[record.status],record.viewed?'Sim, não verificada':'Não informada']){
+        const cell=document.createElement('td');cell.textContent=value;tr.appendChild(cell);
+      }
+      table.appendChild(tr);
+    });
+    get('empty-note').hidden=sample.versions.length!==0;
+    get('version-table-wrap').hidden=sample.versions.length===0;
+    put('status','Cenário '+id+' · Informações inventadas. Nenhum aceite ou direito confirmado.');
+    put('rights','Enviar: NÃO · Aceitar: NÃO · Assinar: NÃO · Cobrar: NÃO · Gravar: NÃO');
+    document.querySelectorAll('[data-case]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.case===id)));
+  }
+  document.querySelectorAll('[data-case]').forEach(button=>button.addEventListener('click',()=>show(button.dataset.case)));
+  show('draft');
+})();
+</script>
+</body>
+</html>
