@@ -294,7 +294,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const visibleValue=subset.reduce(function(sum,item){return sum+item.value;},0);
   put('sum-visible',Number.isSafeInteger(visibleValue)?money.format(visibleValue):'Valor fictício indisponível');
   put('count-moves',moves);
-  if(!byId('csv-preview').hidden)byId('csv-preview').textContent=csvFromVisible(subset);
+  const displayOrder=[];
   STAGES.forEach(function(stage,index){
   const target=byId('lane-'+index);
   target.closest('.lane').hidden=(stageFilter!=='all'&&stageFilter!==index);
@@ -302,6 +302,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const items=subset.filter(function(item){return item.stage===index;});
   if(order==='score')items.sort(function(a,b){return b.score-a.score||a.id.localeCompare(b.id);});
   if(order==='value')items.sort(function(a,b){return b.value-a.value||a.id.localeCompare(b.id);});
+  displayOrder.push(...items);
   put('lane-count-'+index,items.length);
   const highInLane=items.filter(function(item){return item.priority==='high';}).length;
   const pendingInLane=items.filter(function(item){return item.followup==='pending';}).length;
@@ -312,6 +313,8 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   if(!items.length)target.appendChild(node('p','empty','Nenhuma oportunidade fictícia neste filtro.'));
   items.forEach(function(item){target.appendChild(ticket(item));});
   });
+  // Preview mirrors the exact visible per-stage card order, never hidden items.
+  if(!byId('csv-preview').hidden)byId('csv-preview').textContent=csvFromVisible(displayOrder);
   const queue=byId('followup-queue');
   queue.replaceChildren();
   const waiting=subset.filter(function(item){return item.followup==='pending';})
