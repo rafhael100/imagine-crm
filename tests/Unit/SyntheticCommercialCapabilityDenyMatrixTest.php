@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Core\Activities\SyntheticFollowUpQueue;
+use App\Core\Activities\SyntheticRecurringTaskSchedule;
 use App\Core\Leads\SyntheticScoreTrendPreview;
 use App\Core\Plans\SyntheticCancellationRetentionTimeline;
 use App\Core\Plans\SyntheticDelinquencyReviewTimeline;
@@ -12,9 +13,12 @@ use App\Core\Plans\SyntheticTrialRetentionTimeline;
 use App\Core\Plans\TrialWindowAdvisory;
 use App\Core\Sales\SyntheticLineItemSubtotalPreview;
 use App\Core\Sales\SyntheticOpportunityOutcomeInspector;
+use App\Core\Sales\SyntheticOpportunityTransitionLedger;
+use App\Core\Sales\SyntheticProposalLifecycleInspector;
 use App\Core\Sales\SyntheticProposalValidityPreview;
 use App\Core\Sales\SyntheticProposalVersionReview;
 use App\Core\Sales\SyntheticSalesEventUniquenessInspector;
+use App\Core\Sales\SyntheticStageFieldRequirementsInspector;
 use App\Core\Sales\SyntheticWeightedSalesForecast;
 use PHPUnit\Framework\TestCase;
 
@@ -55,6 +59,49 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'lead_hot_score' => (new SyntheticScoreTrendPreview())->preview([
                 ['observed_at_utc' => '2026-11-01T12:00:00Z', 'score' => 100],
             ]),
+            'proposal_lifecycle_accepted' => (new SyntheticProposalLifecycleInspector())->inspect([
+                [
+                    'version' => 1, 'action' => 'create',
+                    'occurred_at_utc' => '2026-11-01T10:00:00Z',
+                    'expires_at_utc' => null,
+                ],
+                [
+                    'version' => 1, 'action' => 'send',
+                    'occurred_at_utc' => '2026-11-01T11:00:00Z',
+                    'expires_at_utc' => '2026-11-08T11:00:00Z',
+                ],
+                [
+                    'version' => 1, 'action' => 'accept',
+                    'occurred_at_utc' => '2026-11-01T12:00:00Z',
+                    'expires_at_utc' => null,
+                ],
+            ]),
+            'opportunity_transition_won' => (new SyntheticOpportunityTransitionLedger())->inspect([
+                [
+                    'revision' => 1, 'action' => 'create', 'stage' => 0,
+                    'confirmed' => false, 'loss_reason_code' => null,
+                    'reopen_reason_code' => null,
+                    'occurred_at_utc' => '2026-11-01T10:00:00Z',
+                ],
+                [
+                    'revision' => 2, 'action' => 'win', 'stage' => 0,
+                    'confirmed' => true, 'loss_reason_code' => null,
+                    'reopen_reason_code' => null,
+                    'occurred_at_utc' => '2026-11-01T11:00:00Z',
+                ],
+            ]),
+            'stage_requirements_satisfied' => (new SyntheticStageFieldRequirementsInspector())->inspect(
+                0,
+                2,
+                [
+                    'amount' => true, 'assignee' => true, 'contact' => true,
+                    'expected_close' => true, 'source' => true,
+                ],
+                [[], [], ['contact', 'assignee', 'amount'], []],
+            ),
+            'task_recurrence_upcoming' => (new SyntheticRecurringTaskSchedule())->preview(
+                '2026-11-01T12:00:00Z', 'daily', 2, '2026-10-31T12:00:00Z',
+            ),
             'trial_review_window' => (new SyntheticTrialRetentionTimeline(
                 new TrialWindowAdvisory(2000000, 2000000 + 14 * 86400),
             ))->readout(),
@@ -67,10 +114,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         ];
     }
 
-    public function test_all_ten_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_fourteen_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(10, $reports);
+        self::assertCount(14, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -111,6 +158,14 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         self::assertFalse($reports['proposal_within_validity']['can_accept']);
         self::assertSame('quente', $reports['lead_hot_score']['last_band']);
         self::assertFalse($reports['lead_hot_score']['can_trigger_automation']);
+        self::assertSame('accepted', $reports['proposal_lifecycle_accepted']['latest_claimed_status']);
+        self::assertFalse($reports['proposal_lifecycle_accepted']['can_accept']);
+        self::assertSame('won', $reports['opportunity_transition_won']['latest_claimed_status']);
+        self::assertSame(0, $reports['opportunity_transition_won']['recognized_wins']);
+        self::assertTrue($reports['stage_requirements_satisfied']['requirements_met']);
+        self::assertFalse($reports['stage_requirements_satisfied']['can_move']);
+        self::assertSame(2, $reports['task_recurrence_upcoming']['upcoming_count']);
+        self::assertFalse($reports['task_recurrence_upcoming']['can_schedule_job']);
         self::assertSame('second_marker_elapsed', $reports['delinquency_day_thirty']['phase']);
         self::assertFalse($reports['delinquency_day_thirty']['can_suspend_service']);
     }
@@ -128,6 +183,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticOpportunityOutcomeInspector',
             'SyntheticSalesEventUniquenessInspector',
             'SyntheticProposalValidityPreview',
+            'SyntheticProposalLifecycleInspector',
+            'SyntheticOpportunityTransitionLedger',
+            'SyntheticStageFieldRequirementsInspector',
+            'SyntheticRecurringTaskSchedule',
         ] as $class) {
             self::assertStringNotContainsString($class, $routes);
         }
