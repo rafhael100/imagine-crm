@@ -29,11 +29,18 @@ final readonly class DatabaseSessionAuthority implements SessionAuthority
             throw new LogicException('Isolated IAM transaction required.');
         }
         if ($this->db->getDriverName() === 'pgsql') {
+            // A shared pool may carry a caller-set tenant marker or disabled
+            // RLS from a prior use. Neither may be inherited by global IAM.
+            // Read state before the transaction; do not silently repair it.
             $role = $this->db->selectOne("SELECT r.rolsuper, r.rolbypassrls,
-                pg_has_role(current_user, c.relowner, 'MEMBER') AS owns_table
+                pg_has_role(current_user, c.relowner, 'MEMBER') AS owns_table,
+                current_setting('app.tenant_id', true) AS inherited_tenant,
+                current_setting('row_security') AS row_security
                 FROM pg_roles r CROSS JOIN pg_class c
                 WHERE r.rolname = current_user AND c.oid = 'public.crm_auth_credentials'::regclass");
-            if (!$role || $role->rolsuper || $role->rolbypassrls || $role->owns_table) {
+            if (!$role || $role->rolsuper || $role->rolbypassrls || $role->owns_table
+                || ($role->inherited_tenant !== null && $role->inherited_tenant !== '')
+                || $role->row_security !== 'on') {
                 throw new LogicException('Unsafe IAM runtime role.');
             }
         } elseif ($this->db->getDriverName() !== 'sqlite' || !app()->environment('testing')) {
