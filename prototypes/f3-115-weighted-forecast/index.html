@@ -95,7 +95,10 @@ th,td{border-bottom:1px solid #e2ecef;padding:11px 12px;font-size:.9rem}thead{ba
     const a=item.amount_cents,bp=item.win_probability_bp;
     if(!Number.isSafeInteger(a)||a<0||a>Number.MAX_SAFE_INTEGER||
        !Number.isInteger(bp)||bp<0||bp>10000)throw new Error('Probabilidade ou valor inválido');
-    return Math.trunc(a/10000)*bp+Math.trunc(((a%10000)*bp+5000)/10000);
+    // BigInt keeps every half-cent tie exact, including values near 2^53−1.
+    const result=(BigInt(a)*BigInt(bp)+5000n)/10000n;
+    if(result>BigInt(Number.MAX_SAFE_INTEGER))throw new Error('Valor ponderado fora do limite');
+    return Number(result);
   }
   function calculate(){
     let raw=0,forecast=0;
