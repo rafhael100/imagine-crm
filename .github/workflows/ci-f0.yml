@@ -82,6 +82,9 @@ jobs:
       - name: Browser smoke test of integrated fictional commercial journey (1100px and 320px)
         run: php scripts/ci/check-offline-commercial-journey-browser.php
 
+      - name: Browser smoke test of offline commercial workload triage (1100px and 320px)
+        run: php scripts/ci/check-offline-workload-browser.php
+
       - name: Browser smoke test of CSV checklist (1100px and 320px)
         run: php scripts/ci/check-offline-csv-checklist-browser.php
 
