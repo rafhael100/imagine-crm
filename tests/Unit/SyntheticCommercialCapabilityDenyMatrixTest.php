@@ -17,6 +17,8 @@ use App\Core\Plans\TrialWindowAdvisory;
 use App\Core\Sales\SyntheticCommercialDiscountReview;
 use App\Core\Sales\SyntheticCommercialJourneyInspector;
 use App\Core\Sales\SyntheticSalesAggregatePrivacyPreview;
+use App\Core\Sales\SyntheticStageAggregateCsvPreview;
+use App\Core\Sales\SyntheticReportDeliveryCompositeInspector;
 use App\Core\Sales\SyntheticLineItemSubtotalPreview;
 use App\Core\Sales\SyntheticOpportunityOutcomeInspector;
 use App\Core\Sales\SyntheticOpportunityTransitionLedger;
@@ -193,6 +195,33 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
                     ],
                 ),
             'full_sales_journey_claimed_won' => self::journeyFromOfflineFixture(),
+            'stage_csv_preview_unexportable' => (new SyntheticStageAggregateCsvPreview())->preview([
+                ['stage' => 'new', 'claimed_value_cents' => 100],
+                ['stage' => 'new', 'claimed_value_cents' => 200],
+                ['stage' => 'new', 'claimed_value_cents' => 300],
+                ['stage' => 'won', 'claimed_value_cents' => 987654],
+            ], 3),
+            'report_hand_off_bytes_withheld' => (new SyntheticReportDeliveryCompositeInspector())->inspect(
+                [
+                    ['stage' => 'new', 'claimed_value_cents' => 100],
+                    ['stage' => 'new', 'claimed_value_cents' => 200],
+                    ['stage' => 'new', 'claimed_value_cents' => 300],
+                    ['stage' => 'won', 'claimed_value_cents' => 987654],
+                ],
+                3,
+                [
+                    'at_utc' => '2026-11-01T10:00:00Z',
+                    'recipient_access' => true,
+                    'policy_revision' => 1,
+                    'requested_fields' => ['stage', 'claimed_value_cents'],
+                ],
+                [
+                    'at_utc' => '2026-11-02T10:00:00Z',
+                    'recipient_access' => true,
+                    'policy_revision' => 1,
+                    'report_state' => 'ready',
+                ],
+            ),
             'trial_review_window' => (new SyntheticTrialRetentionTimeline(
                 new TrialWindowAdvisory(2000000, 2000000 + 14 * 86400),
             ))->readout(),
@@ -236,10 +265,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             ->inspect($cases[0]['input']);
     }
 
-    public function test_all_twenty_three_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_twenty_five_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(23, $reports);
+        self::assertCount(25, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -320,6 +349,14 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         self::assertSame(0, $reports['full_sales_journey_claimed_won']['recognized_revenue_cents']);
         self::assertFalse($reports['full_sales_journey_claimed_won']['can_send_proposal']);
         self::assertFalse($reports['full_sales_journey_claimed_won']['can_charge']);
+        self::assertSame(1, $reports['stage_csv_preview_unexportable']['visible_line_count']);
+        self::assertSame(1, $reports['stage_csv_preview_unexportable']['suppressed_bucket_count']);
+        self::assertFalse($reports['stage_csv_preview_unexportable']['can_download']);
+        self::assertFalse($reports['stage_csv_preview_unexportable']['can_export']);
+        self::assertSame(1, $reports['report_hand_off_bytes_withheld']['visible_aggregate_lines']);
+        self::assertFalse($reports['report_hand_off_bytes_withheld']['csv_text_returned']);
+        self::assertFalse($reports['report_hand_off_bytes_withheld']['can_deliver']);
+        self::assertSame(0, $reports['report_hand_off_bytes_withheld']['recognized_revenue_cents']);
         self::assertSame('second_marker_elapsed', $reports['delinquency_day_thirty']['phase']);
         self::assertFalse($reports['delinquency_day_thirty']['can_suspend_service']);
     }
@@ -350,6 +387,8 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticSalesAggregatePrivacyPreview',
             'SyntheticScheduledReportDeliveryPreflight',
             'SyntheticCommercialJourneyInspector',
+            'SyntheticStageAggregateCsvPreview',
+            'SyntheticReportDeliveryCompositeInspector',
         ] as $class) {
             self::assertStringNotContainsString($class, $routes);
         }
