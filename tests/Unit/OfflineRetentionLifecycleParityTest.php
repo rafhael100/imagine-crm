@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Core\Plans\SyntheticCancellationRetentionTimeline;
+use App\Core\Plans\SyntheticDelinquencyReviewTimeline;
 use App\Core\Plans\SyntheticTrialRetentionTimeline;
 use App\Core\Plans\TrialWindowAdvisory;
 use PHPUnit\Framework\TestCase;
@@ -37,7 +38,7 @@ final class OfflineRetentionLifecycleParityTest extends TestCase
         ));
         $cases = json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
         self::assertIsArray($cases);
-        self::assertCount(9, $cases);
+        self::assertCount(16, $cases);
         self::assertTrue(array_is_list($cases));
 
         return $cases;
@@ -48,13 +49,14 @@ final class OfflineRetentionLifecycleParityTest extends TestCase
         $seen = [];
         $trials = 0;
         $cancellations = 0;
+        $billings = 0;
 
         foreach (self::cases() as $case) {
             self::assertSame(
                 ['id', 'kind', 'start', 'now', 'phase', 'ends_at', 'remaining_seconds', 'days'],
                 array_keys($case),
             );
-            self::assertMatchesRegularExpression('/\A(?:trial|cancel)-[a-z]+\z/D', $case['id']);
+            self::assertMatchesRegularExpression('/\A(?:trial|cancel|billing)-[a-z-]+\z/D', $case['id']);
             self::assertArrayNotHasKey($case['id'], $seen);
             $seen[$case['id']] = true;
 
@@ -83,6 +85,20 @@ final class OfflineRetentionLifecycleParityTest extends TestCase
                 foreach (['can_delete_customer_data', 'can_restore_data', 'can_reactivate_service', 'can_grant_access', 'can_charge'] as $capability) {
                     self::assertFalse($result[$capability]);
                 }
+            } elseif ($case['kind'] === 'billing') {
+                ++$billings;
+                $result = (new SyntheticDelinquencyReviewTimeline(
+                    $case['start'], $case['now'],
+                ))->readout();
+                self::assertSame($result['phase'], $case['phase']);
+                self::assertSame($result['second_marker_at_epoch'], $case['ends_at']);
+                self::assertSame($result['remaining_seconds_to_next_marker'], $case['remaining_seconds']);
+                self::assertSame($result['remaining_days_rounded_up'], $case['days']);
+                self::assertSame($case['start'] + 7 * 86400, $result['first_marker_at_epoch']);
+                self::assertFalse($result['unpaid_status_verified']);
+                foreach (['can_send_collection', 'can_suspend_service', 'can_charge', 'can_grant_access', 'can_delete_customer_data'] as $capability) {
+                    self::assertFalse($result[$capability]);
+                }
             } else {
                 self::fail('Unknown synthetic lifecycle type.');
             }
@@ -90,6 +106,7 @@ final class OfflineRetentionLifecycleParityTest extends TestCase
 
         self::assertSame(5, $trials);
         self::assertSame(4, $cancellations);
+        self::assertSame(7, $billings);
     }
 
     public function test_offline_page_never_captures_personal_data_or_uses_live_clock(): void
@@ -97,9 +114,11 @@ final class OfflineRetentionLifecycleParityTest extends TestCase
         $html = self::html();
         self::assertLessThanOrEqual(16000, strlen($html));
         self::assertSame(1, substr_count($html, '</body>'));
-        self::assertSame(9, preg_match_all('/<button type="button" data-case="[^"]+" aria-pressed="(?:true|false)">/', $html));
+        self::assertSame(16, preg_match_all('/<button type="button" data-case="[^"]+" aria-pressed="(?:true|false)">/', $html));
         self::assertStringContainsString('PROTÓTIPO — DADOS FICTÍCIOS.', $html);
         self::assertStringContainsString('id="denials"', $html);
+        self::assertStringContainsString('id="first-marker-date"', $html);
+        self::assertStringContainsString('não comprovam falta de pagamento', $html);
         self::assertStringContainsString('id="status" class="state" role="status" aria-live="polite"', $html);
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringContainsString("form-action 'none'", $html);
