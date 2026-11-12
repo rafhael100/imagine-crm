@@ -64,6 +64,10 @@ final class SyntheticCsvReviewReportV1
 
         $formula = self::pairs($preview->potentialFormulaPositions, 'row', 'column', $rows, $columns);
         self::uniqueCoordinatePairs($formula, 'row', 'column');
+        $formulaCoordinates = [];
+        foreach ($formula as $cell) {
+            $formulaCoordinates[$cell['row'].':'.$cell['column']] = true;
+        }
         $repeats = [];
         if ($preflight->repeatPreview !== null) {
             if ($preflight->repeatPreview->csvPreview != $preview) {
@@ -102,7 +106,9 @@ final class SyntheticCsvReviewReportV1
                 self::invalid();
             }
             foreach ($requiredEmpty as $cell) {
-                if (!in_array($cell['column'], $requiredSource, true)) {
+                if (!in_array($cell['column'], $requiredSource, true)
+                    || isset($formulaCoordinates[$cell['row'].':'.$cell['column']])) {
+                    // One physical cell cannot be both empty and a formula.
                     self::invalid();
                 }
             }
