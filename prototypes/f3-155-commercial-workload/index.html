@@ -67,6 +67,8 @@ button[aria-pressed="true"],button[aria-pressed=true],
 color:var(--imagine-orange-text);border-color:#e9c79c}
 input[type=range],input[type=checkbox]{accent-color:var(--imagine-orange)}
 .number{background:var(--imagine-orange-soft);color:var(--imagine-orange-text)}
+#pressure:focus-visible~.tabs label[for=pressure],#balanced:focus-visible~.tabs label[for=balanced],#trend:focus-visible~.tabs label[for=trend],#triage:focus-visible~.tabs label[for=triage]{outline:3px solid var(--imagine-focus);outline-offset:3px}
+#pressure:checked~.tabs label[for=pressure],#balanced:checked~.tabs label[for=balanced],#trend:checked~.tabs label[for=trend],#triage:checked~.tabs label[for=triage]{background:var(--imagine-orange-soft);color:var(--imagine-orange-text);border-color:#e9c79c}
 </style>
 </head>
 <body>
