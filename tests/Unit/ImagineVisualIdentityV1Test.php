@@ -41,7 +41,7 @@ final class ImagineVisualIdentityV1Test extends TestCase
             $name = '--imagine-'.$name;
             $canonical = preg_replace('/\\s+/', '', $tokens);
             self::assertIsString($canonical);
-            self::assertStringContainsString($name.':'.$value.';', strtolower($canonical));
+            self::assertStringContainsString(strtolower($name.':'.$value.';'), strtolower($canonical));
         }
         foreach (self::SURFACES as $surface) {
             $html = file_get_contents($root.'/'.$surface);
