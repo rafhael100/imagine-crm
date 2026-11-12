@@ -81,6 +81,27 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
 @media(max-width:1000px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.board{grid-template-columns:minmax(0,1fr)}.toolbar{align-items:stretch}.toolbar>div{width:100%}.stats{gap:8px}.stat{padding:12px}button{min-height:42px}main{padding:18px 14px}header{padding:14px 16px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* IMAGINE-DS-V1: historical Node palette, fictional data and offline CSP retained. */
+:root{--imagine-orange:#f9941d;--imagine-ink:#171b19;--imagine-white:#fff;--imagine-surface:#f7f7f8;--imagine-muted:#737373;--imagine-border:#e8e8e8;--imagine-orange-soft:#fff1e0;--imagine-orange-text:#9b4d00;--imagine-focus:#b75c00;--imagine-radius-control:6px;--imagine-radius-card:9px;--imagine-sidebar-width:240px;--imagine-font-ui:Arial,Helvetica,sans-serif;font-family:var(--imagine-font-ui);color:var(--imagine-ink);background:var(--imagine-surface)}
+body{background:var(--imagine-surface)}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--imagine-focus);outline-offset:3px}
+
+input[type=search],button{border-radius:var(--imagine-radius-control)}
+header{background:var(--imagine-white);color:var(--imagine-ink);border-bottom:1px solid var(--imagine-border)}
+header a,.brand small,.eyebrow{color:var(--imagine-orange-text)}
+h1{color:var(--imagine-ink)}
+.lead,.stat span,.activity p,footer{color:#595959}
+.notice{background:var(--imagine-orange-soft);color:#7b3d00;border-color:#e9c79c;border-radius:var(--imagine-radius-card)}
+.stat,.toolbar,.ticket,.activity,.status{border-color:var(--imagine-border);border-radius:var(--imagine-radius-card)}
+button{background:var(--imagine-white);border-color:#c7c7c7;color:var(--imagine-ink)}
+button:hover{background:var(--imagine-orange-soft)}
+.filters button[aria-pressed="true"],.selection-toggle[aria-pressed="true"]{background:var(--imagine-orange-soft);color:var(--imagine-orange-text);border-color:#e9c79c}
+.lane{background:var(--imagine-surface);border-color:var(--imagine-border);border-radius:var(--imagine-radius-card)}
+.lane[data-drag-over="true"]{outline-color:var(--imagine-focus)}
+.ticket .value{color:var(--imagine-orange-text)}
+.csv-demo{background:var(--imagine-surface);border-color:var(--imagine-border)}
 </style>
 </head>
 <body>
