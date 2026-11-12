@@ -15,6 +15,7 @@ use App\Core\Plans\SyntheticDelinquencyReviewTimeline;
 use App\Core\Plans\SyntheticTrialRetentionTimeline;
 use App\Core\Plans\TrialWindowAdvisory;
 use App\Core\Sales\SyntheticCommercialDiscountReview;
+use App\Core\Sales\SyntheticCommercialJourneyInspector;
 use App\Core\Sales\SyntheticSalesAggregatePrivacyPreview;
 use App\Core\Sales\SyntheticLineItemSubtotalPreview;
 use App\Core\Sales\SyntheticOpportunityOutcomeInspector;
@@ -191,6 +192,7 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
                         'report_state' => 'ready',
                     ],
                 ),
+            'full_sales_journey_claimed_won' => self::journeyFromOfflineFixture(),
             'trial_review_window' => (new SyntheticTrialRetentionTimeline(
                 new TrialWindowAdvisory(2000000, 2000000 + 14 * 86400),
             ))->readout(),
@@ -203,10 +205,41 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         ];
     }
 
-    public function test_all_twenty_two_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    /**
+     * Read the very fixture shipped in the offline browser prototype, so the
+     * transversal no-authorization matrix also checks the composed journey.
+     *
+     * @return array<string,mixed>
+     */
+    private static function journeyFromOfflineFixture(): array
+    {
+        $html = file_get_contents(
+            dirname(__DIR__, 2).'/prototypes/f3-138-commercial-journey/index.html',
+        );
+        if (!is_string($html)
+            || preg_match(
+                '/const SCENARIOS=Object\.freeze\((.*?)\);\s*const LABELS=/s',
+                $html,
+                $matches,
+            ) !== 1) {
+            throw new \RuntimeException('Offline journey fixture unavailable.');
+        }
+        $cases = json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
+        if (!is_array($cases) || count($cases) !== 2
+            || ($cases[0]['id'] ?? null) !== 'consistent'
+            || !isset($cases[0]['input'])
+            || !is_array($cases[0]['input'])) {
+            throw new \RuntimeException('Offline journey fixture contract changed.');
+        }
+
+        return (new SyntheticCommercialJourneyInspector())
+            ->inspect($cases[0]['input']);
+    }
+
+    public function test_all_twenty_three_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(22, $reports);
+        self::assertCount(23, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -281,6 +314,12 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         self::assertTrue($reports['report_delivery_access_revoked']['access_revoked_since_schedule']);
         self::assertContains('access_not_claimed_at_delivery', $reports['report_delivery_access_revoked']['blocker_codes']);
         self::assertFalse($reports['report_delivery_access_revoked']['can_deliver']);
+        self::assertSame('won', $reports['full_sales_journey_claimed_won']['opportunity_claimed_status']);
+        self::assertSame('accepted', $reports['full_sales_journey_claimed_won']['proposal_claimed_status']);
+        self::assertSame(0, $reports['full_sales_journey_claimed_won']['recognized_wins']);
+        self::assertSame(0, $reports['full_sales_journey_claimed_won']['recognized_revenue_cents']);
+        self::assertFalse($reports['full_sales_journey_claimed_won']['can_send_proposal']);
+        self::assertFalse($reports['full_sales_journey_claimed_won']['can_charge']);
         self::assertSame('second_marker_elapsed', $reports['delinquency_day_thirty']['phase']);
         self::assertFalse($reports['delinquency_day_thirty']['can_suspend_service']);
     }
@@ -310,6 +349,7 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticTaskLifecycleInspector',
             'SyntheticSalesAggregatePrivacyPreview',
             'SyntheticScheduledReportDeliveryPreflight',
+            'SyntheticCommercialJourneyInspector',
         ] as $class) {
             self::assertStringNotContainsString($class, $routes);
         }
