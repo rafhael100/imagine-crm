@@ -458,6 +458,109 @@ final class PostgresMembershipRlsTest extends TestCase
         }
     }
 
+    /**
+     * SEGDBA F3-180: a reusable connection's mutable search_path cannot
+     * decide which table supplies a membership snapshot or its metadata.
+     * The context setter does not authenticate; authorization stays denied.
+     */
+    public function test_membership_lookup_is_schema_qualified_under_hostile_search_path(): void
+    {
+        $probe = DB::connection('pgsql_rls_probe');
+        $before = $probe->selectOne("SELECT current_setting('search_path') AS value");
+        $probe->statement('SET search_path TO pg_catalog');
+
+        try {
+            $current = $probe->selectOne("SELECT current_setting('search_path') AS value");
+            $this->assertSame('pg_catalog', $current->value);
+            $snapshot = $this->store()->within(
+                new PrincipalReference(self::PRINCIPAL),
+                self::ORG_A,
+                fn ($membership) => [$membership->tenantId, $membership->principalId, $membership->version],
+            );
+            $this->assertSame([self::ORG_A, self::PRINCIPAL, 1], $snapshot);
+
+            try {
+                $this->store()->within(
+                    new PrincipalReference(self::OTHER_PRINCIPAL),
+                    self::ORG_A,
+                    fn () => $this->fail('Unlinked principal must not execute.'),
+                );
+                $this->fail('A valid-looking tenant and search_path cannot grant membership.');
+            } catch (AuthorizationException) {
+                $this->assertSame(0, $probe->transactionLevel());
+            }
+        } finally {
+            $probe->statement('RESET search_path');
+        }
+
+        $restored = $probe->selectOne("SELECT current_setting('search_path') AS value");
+        $this->assertSame($before->value, $restored->value);
+        $this->assertSame(0, $probe->transactionLevel());
+        $this->assertSame(0, $probe->table('public.crm_memberships')->count());
+    }
+
+    /**
+     * Reproduces the database name-resolution ambiguity within a disposable
+     * session. An attacker-controlled TEMP table must never shadow the real
+     * membership registry or trick either metadata or the row lookup.
+     *
+     * The temporary table is created and dropped ONLY in PostgreSQL CI.
+     */
+    public function test_temporary_table_shadow_cannot_supply_membership_or_approval(): void
+    {
+        $probe = DB::connection('pgsql_rls_probe');
+        $tempAllowed = $probe->selectOne(
+            "SELECT has_database_privilege(current_user, current_database(), 'TEMPORARY') AS allowed"
+        );
+        if (!$tempAllowed->allowed) {
+            $this->markTestSkipped('Database role has no TEMP privilege; shadow attack cannot be staged.');
+        }
+
+        $probe->statement(
+            'CREATE TEMP TABLE crm_memberships (
+                organization_id uuid, global_identity_id uuid,
+                status varchar(16), version integer
+            ) ON COMMIT PRESERVE ROWS'
+        );
+
+        try {
+            $probe->insert(
+                "INSERT INTO pg_temp.crm_memberships
+                 (organization_id, global_identity_id, status, version)
+                 VALUES (?::uuid, ?::uuid, 'active', 999)",
+                [self::ORG_A, self::OTHER_PRINCIPAL],
+            );
+            $resolution = $probe->selectOne(
+                "SELECT to_regclass('crm_memberships') <>
+                        to_regclass('public.crm_memberships') AS is_shadowed"
+            );
+            $this->assertTrue($resolution->is_shadowed);
+
+            // The real registry contains the legitimate principal, not the
+            // forged active row for the unrelated principal.
+            $snapshot = $this->store()->within(
+                new PrincipalReference(self::PRINCIPAL), self::ORG_A,
+                fn ($membership) => [$membership->principalId, $membership->version],
+            );
+            $this->assertSame([self::PRINCIPAL, 1], $snapshot);
+            try {
+                $this->store()->within(
+                    new PrincipalReference(self::OTHER_PRINCIPAL),
+                    self::ORG_A,
+                    fn () => $this->fail('Forged TEMP membership must never execute.'),
+                );
+                $this->fail('A temporary shadow table cannot grant membership.');
+            } catch (AuthorizationException) {
+                $this->assertSame(0, $probe->transactionLevel());
+            }
+        } finally {
+            $probe->statement('DROP TABLE IF EXISTS pg_temp.crm_memberships');
+        }
+
+        $this->assertSame(0, $probe->transactionLevel());
+        $this->assertSame(0, $probe->table('public.crm_memberships')->count());
+    }
+
     private function store(): PostgresActiveMembershipStore
     {
         return new PostgresActiveMembershipStore(DB::connection('pgsql_rls_probe'));
