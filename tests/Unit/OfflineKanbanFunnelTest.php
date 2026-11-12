@@ -189,7 +189,7 @@ final class OfflineKanbanFunnelTest extends TestCase
             'id="complete-visible-followups"',
             'Concluir pendentes visíveis (simulação)',
             "const pendingVisible=subset.filter(",
-            "byId('complete-visible-followups').disabled=pendingVisible.length===0;",
+            "byId('complete-visible-followups').disabled=eligibleVisible(pendingVisible).length===0;",
             "history.push({kind:'batch-followup',states:selected.map(",
             "selected.forEach(function(item){item.followup='done';});",
             "previous.kind==='batch-followup'",
@@ -278,7 +278,7 @@ final class OfflineKanbanFunnelTest extends TestCase
             'id="advance-visible-stage"',
             'Avançar etapas visíveis (simulação)',
             "const movableVisible=subset.filter(function(item){return item.stage<STAGES.length-1;});",
-            "byId('advance-visible-stage').disabled=movableVisible.length===0;",
+            "byId('advance-visible-stage').disabled=eligibleVisible(movableVisible).length===0;",
             "focus==='batch-move'?",
             "history.push({kind:'batch-move',states:selected.map(",
             "return {id:item.id,from:item.stage};",
@@ -317,7 +317,7 @@ final class OfflineKanbanFunnelTest extends TestCase
             'id="return-visible-stage"',
             'Retornar etapas visíveis (simulação)',
             "const returnableVisible=subset.filter(function(item){return item.stage>0;});",
-            "byId('return-visible-stage').disabled=returnableVisible.length===0;",
+            "byId('return-visible-stage').disabled=eligibleVisible(returnableVisible).length===0;",
             "byId('return-visible-stage').setAttribute('aria-label'",
             "focus==='batch-return'?",
             "function moveVisibleStage(direction){",
@@ -483,6 +483,35 @@ final class OfflineKanbanFunnelTest extends TestCase
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringNotContainsString('localStorage', $html);
         self::assertStringNotContainsString('fetch(', $html);
+    }
+
+    public function test_explicit_batch_selection_never_includes_hidden_or_unselected_cards(): void
+    {
+        $html = self::html();
+        foreach ([
+            'id="count-selected" aria-live="polite" aria-atomic="true"',
+            'id="select-visible"',
+            'id="clear-selection" disabled',
+            'let selectedIds=new Set();',
+            "selectButton.dataset.select=item.id;",
+            "selectButton.setAttribute('aria-pressed',String(selectedIds.has(item.id)))",
+            "const selectedVisible=subset.filter(function(item){return selectedIds.has(item.id);});",
+            "selectedIds.size===0?items:items.filter(function(item){return selectedIds.has(item.id);});",
+            "&& (selectedIds.size===0||selectedIds.has(item.id))",
+            "selectedIds=new Set(Array.from(document.querySelectorAll('#board [data-card-id]')",
+            "selectedIds.clear();",
+            "focus.startsWith('select:')",
+            "selectedIds.delete(item.id);",
+        ] as $contract) {
+            self::assertStringContainsString($contract, $html);
+        }
+        self::assertSame(2, substr_count($html, '&& (selectedIds.size===0||selectedIds.has(item.id))'));
+        self::assertSame(1, substr_count($html, "selectedIds=new Set();"));
+        self::assertStringContainsString("connect-src 'none'", $html);
+        foreach (['localStorage', 'sessionStorage', 'fetch(', 'navigator.sendBeacon',
+            'WebSocket', '<form', '.innerHTML', 'indexedDB'] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
+        }
     }
 
     public function test_accessible_actions_and_mobile_layout_are_present(): void
