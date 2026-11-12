@@ -461,6 +461,30 @@ final class OfflineKanbanFunnelTest extends TestCase
         }
     }
 
+    public function test_global_shortcuts_exclude_form_fields_composition_and_modifier_collisions(): void
+    {
+        $html = self::html();
+        foreach ([
+            'Atalhos locais: Ctrl/Cmd+Z para desfazer;',
+            "document.addEventListener('keydown',function(event){",
+            'event.defaultPrevented||event.isComposing||event.repeat||event.altKey',
+            'event.ctrlKey===event.metaKey',
+            "active.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(active.tagName)",
+            "const undo=key==='z'&&!event.shiftKey;",
+            "const redo=(key==='z'&&event.shiftKey)||(key==='y'&&!event.shiftKey);",
+            "const action=byId(undo?'undo-change':'redo-change');",
+            "if(action.disabled)return;",
+            'event.preventDefault();',
+            'action.click();',
+        ] as $code) {
+            self::assertStringContainsString($code, $html);
+        }
+        self::assertSame(1, substr_count($html, "document.addEventListener('keydown',function(event){"));
+        self::assertStringContainsString("connect-src 'none'", $html);
+        self::assertStringNotContainsString('localStorage', $html);
+        self::assertStringNotContainsString('fetch(', $html);
+    }
+
     public function test_accessible_actions_and_mobile_layout_are_present(): void
     {
         $html = self::html();
