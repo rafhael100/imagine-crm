@@ -50,13 +50,28 @@ final class OfflinePrototypeResourceBoundaryTest extends TestCase
             self::assertSame(0, $document->getElementsByTagName($tag)->length, $tag.' must remain absent');
         }
 
+        // The one permitted resource is the original Imagine logo, embedded
+        // as a data URI; its bytes must equal the pinned local PNG asset.
+        self::assertStringContainsString('img-src data:', $policy);
+        $logoBytes = file_get_contents(dirname(__DIR__, 2).'/prototypes/assets/logo-imagine.png');
+        self::assertIsString($logoBytes);
+        $expectedLogo = 'data:image/png;base64,'.base64_encode($logoBytes);
+        $logoCount = 0;
         $elements = $xpath->query('//*');
         self::assertNotFalse($elements);
         foreach ($elements as $element) {
             if (!$element instanceof DOMElement) {
                 continue;
             }
-            foreach (['src', 'srcset', 'action', 'formaction', 'poster', 'data'] as $attribute) {
+            if ($element->hasAttribute('src')) {
+                self::assertSame('img', strtolower($element->tagName));
+                self::assertSame('brand-mark brand-logo', $element->getAttribute('class'));
+                self::assertSame('Imagine', $element->getAttribute('alt'));
+                self::assertSame($expectedLogo, $element->getAttribute('src'),
+                    'Only the exact original local PNG is permitted as an embedded image');
+                ++$logoCount;
+            }
+            foreach (['srcset', 'action', 'formaction', 'poster', 'data'] as $attribute) {
                 self::assertFalse($element->hasAttribute($attribute), $element->tagName.'@'.$attribute.' may introduce a resource or action');
             }
             if ($element->hasAttribute('href')) {
@@ -69,6 +84,7 @@ final class OfflinePrototypeResourceBoundaryTest extends TestCase
             }
         }
 
+        self::assertSame(1, $logoCount, 'Exactly one vetted offline brand image is permitted');
         self::assertSame(9, $xpath->query('//section[@data-screen]')->length);
     }
 }
