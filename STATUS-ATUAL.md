@@ -8,6 +8,13 @@
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
+
+## OPS-59 — Kanban offline: destinos seguros, ordenação por valor e paridade CSV (12/11/2026)
+
+**Snapshot DEV após F3-191:** `9f053226988ee02a22c20b871cf1f0ac63aaa510` (consultar HEAD atual, não fixar como referência permanente); `main` verificada sem alterações em `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012`. Quatro PRs integradas exclusivamente na DEV: [F3-188 #409](https://github.com/rafhael100/imagine-crm/pull/409) (nega destinos de drop inválidos, inclusive `''`), [F3-189 #410](https://github.com/rafhael100/imagine-crm/pull/410) (um destaque de destino de arraste), [F3-190 #411](https://github.com/rafhael100/imagine-crm/pull/411) (ordenação por valor fictício) e [F3-191 #412](https://github.com/rafhael100/imagine-crm/pull/412) (prévia CSV segue a ordem dos cartões realmente renderizados).
+
+**Evidências:** [OPS-59](docs/desenvolvimento/CRM-OPS-59-evidencias-kanban-csv-offline-2026-11-12.md) contém 16 links de workflow `success` nas SHAs finais, commits de merge, testes Chromium/QA e explicação da falha intermediária na #412 corrigida antes do merge. São somente oportunidades fictícias em navegador offline; sem exportação, API, credencial, dados reais, `ALLOW`, `main`, VPS ou produção. [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) e [CORE/SEG/DBA/LGPD #259](https://github.com/rafhael100/imagine-crm/issues/259) seguem **ABERTAS / NO-GO**.
+
 ## OPS-58 — Conexões IAM/tenant seguras e Kanban com arrastar individual/grupo (12/11/2026)
 
 **DEV no fim de F3-187 (snapshot histórico):** b302deeb41a486bc676607c0dd82c2f2b70897d9; reconsultar a HEAD antes de novas PRs. **Main conferida:** e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012, inalterada. **Cinco PRs de código integradas só DEV** após quatro workflows success na HEAD final, diff integral revisto, behind_by=0 e mergeable. Sem deploy ou acesso a clientes.
