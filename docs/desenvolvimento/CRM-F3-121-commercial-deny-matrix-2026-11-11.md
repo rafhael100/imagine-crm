@@ -1,12 +1,12 @@
 # CRM F3-121 — Matriz de negação integrada das funcionalidades comerciais
 
-**Data:** 11/11/2026. **Escopo:** teste PHPUnit que conecta **vinte e dois** componentes de laboratório existentes, sem endpoint nem dados reais.
+**Data:** 11/11/2026. **Escopo:** teste PHPUnit que conecta **vinte e três** componentes de laboratório existentes, sem endpoint nem dados reais.
 
 ## Objetivo
 
 A evolução paralela de cadastro de itens, versões e transições de propostas, previsão ponderada, etapas de funil e seus campos obrigatórios, reaberturas, unicidade de eventos, validade, scoring, recorrência de tarefas e janelas de assinatura não pode permitir que a alegação positiva de um módulo vire **permissão operacional** em outro.
 
-`SyntheticCommercialCapabilityDenyMatrixTest` executa **vinte e dois componentes PHP reais** com exemplos artificiais de estados que parecem favoráveis: proposta `accepted`, negócio `won`, probabilidade 100%, evento único, proposta dentro da vigência, score quente, janela de trial ativa, cancelamento informado e 30 dias após vencimento. A expansão F3-126 inclui sequência de proposta declarada aceita, transição de oportunidade declarada ganha, todos os campos de etapa ilustrativamente preenchidos e recorrências futuras; F3-129 acrescenta desconto fora da política com aprovação gerencial meramente alegada e pré-validação de envio com bloqueios. Nenhuma situação concede direito de aceitar, mover, reconhecer receita, enviar propostas ou agendar serviços.
+`SyntheticCommercialCapabilityDenyMatrixTest` executa **vinte e três componentes PHP reais** com exemplos artificiais de estados que parecem favoráveis: proposta `accepted`, negócio `won`, probabilidade 100%, evento único, proposta dentro da vigência, score quente, janela de trial ativa, cancelamento informado e 30 dias após vencimento. A expansão F3-126 inclui sequência de proposta declarada aceita, transição de oportunidade declarada ganha, todos os campos de etapa ilustrativamente preenchidos e recorrências futuras; F3-129 acrescenta desconto fora da política com aprovação gerencial meramente alegada e pré-validação de envio com bloqueios. Nenhuma situação concede direito de aceitar, mover, reconhecer receita, enviar propostas ou agendar serviços.
 
 A suíte verifica todas as capacidades `can_*` permanentemente falsas, marcas de verificação/proveniência sempre negadas, `recognized_*` e `verified_event_count` sempre zero, além de impedir IDs/PII no JSON da saída. Garante também que as classes não aparecem como endpoints no `routes/web.php` atual.
 
@@ -47,3 +47,10 @@ A matriz de segurança integrada agora cobre **22 componentes PHP reais**, após
 A outra nova prova modela um destinatário que tinha acesso na programação, mas **perdeu o direito no instante de entrega**. O relatório precisa mostrar o bloqueio access_not_claimed_at_delivery e manter can_deliver=false, independentemente de qual era a autorização antiga.
 
 A suíte permanece baseada exclusivamente em dados anônimos inventados. Essas verificações não substituem RLS real, autenticação, provas de acesso por destinatário, política de filtros, proteção contra differencing, trilha de auditoria ou homologação SEG/DBA/LGPD.
+
+
+## Expansão F3-139 — 12/11/2026
+
+A matriz integrada acrescenta o módulo \`SyntheticCommercialJourneyInspector\` como o **23º componente**, com evidência cruzada da própria jornada de cinco módulos da interface offline F3-138. O teste extrai o cenário \`consistent\` diretamente do JSON embutido no HTML, executa novamente o PHP e exige que alegações de negócio ganho e proposta aceita **nunca** resultem em \`recognized_wins\`, receita confirmada, envio, cobrança ou qualquer flag \`can_*\` verdadeira.
+
+A adição evita que o novo orquestrador consiga burlar a proteção previamente aplicada aos módulos individuais. **A matriz não comprova identidade, não libera uma aplicação CRM conectada nem substitui os gates CORE/SEG/DBA/LGPD**. O teste também verifica que a classe de jornada não está registrada como endpoint público.
