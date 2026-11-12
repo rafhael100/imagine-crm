@@ -38,7 +38,7 @@ button{background:#f5fafb;border:1px solid #aecbd1;color:#235367;border-radius:1
 button:hover{background:#e4f3f3}
 button[disabled]{opacity:.47;cursor:not-allowed}
 .filters button[aria-pressed="true"]{background:#184c5c;color:white;border-color:#184c5c}
-#undo-change{background:#fff8e6;border-color:#d2b983;color:#674d18}
+#undo-change,#redo-change{background:#fff8e6;border-color:#d2b983;color:#674d18}
 #reset-demo{background:#fff}
 .board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;align-items:start}
 .lane{min-width:0;background:#e9f1f5;border:1px solid #d9e7ec;border-radius:15px;padding:13px;min-height:240px}
@@ -86,7 +86,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
 <main id="conteudo">
   <span class="eyebrow">Funil de vendas · Simulação local</span>
   <h1>Quadro de oportunidades fictícias</h1>
-  <p class="lead">Mova oportunidades fictícias, conclua acompanhamentos simulados e desfaça ações nesta aba.</p>
+  <p class="lead">Mova oportunidades fictícias, conclua acompanhamentos simulados, desfaça e refaça ações nesta aba.</p>
   <div class="notice">PROTÓTIPO — DADOS FICTÍCIOS. Nenhuma alteração é salva no CRM, enviada ao servidor ou comunicada a clientes.</div>
   <section class="stats" aria-label="Indicadores da simulação">
   <div class="stat"><span>Oportunidades visíveis</span><b id="count-visible" aria-live="polite" aria-atomic="true">0</b></div>
@@ -131,6 +131,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   <button type="button" id="return-visible-stage">Retornar etapas visíveis (simulação)</button>
   <button type="button" id="add-fiction">Adicionar oportunidade fictícia</button>
   <button type="button" id="undo-change" disabled>Desfazer ação</button>
+  <button type="button" id="redo-change" disabled>Refazer ação</button>
   <button type="button" id="reset-demo">Reiniciar simulação</button>
   </div>
   </div>
@@ -183,6 +184,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   let stageFilter='all';
   let searchText='';
   let history=[];
+  let redoStack=[];
   let moves=0;
   let order='default';
   let activity=[];
@@ -200,6 +202,10 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const MAX_UNDO_ACTIONS=64;
   function trimUndoHistory(){
   if(history.length>MAX_UNDO_ACTIONS)history.splice(0,history.length-MAX_UNDO_ACTIONS);
+  }
+  function recordRedo(entry){
+  redoStack.push(entry);
+  if(redoStack.length>MAX_UNDO_ACTIONS)redoStack.splice(0,redoStack.length-MAX_UNDO_ACTIONS);
   }
   function matchesSearch(item){
   return searchText===''||item.id.toLowerCase().includes(searchText)
@@ -325,6 +331,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   byId('complete-visible-followups').disabled=pendingVisible.length===0;
   byId('complete-visible-followups').setAttribute('aria-label','Concluir '+pendingVisible.length+' acompanhamentos fictícios pendentes visíveis. Ação reversível e local.');
   byId('undo-change').disabled=history.length===0;
+  byId('redo-change').disabled=redoStack.length===0;
   byId('add-fiction').disabled=opportunities.length>=12;
   byId('add-fiction').setAttribute('aria-label', opportunities.length>=12?'Limite de doze oportunidades fictícias atingido':'Adicionar oportunidade fictícia somente na memória');
   if(focus){
@@ -342,6 +349,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   :byId('complete-visible-followups')):
   focus==='csv'?byId('toggle-csv-demo'):
   focus==='undo'?byId('undo-change'):
+  focus==='redo'?(byId('redo-change').disabled?byId('undo-change'):byId('redo-change')):
   focus==='add'?byId('add-fiction'):
   focus==='reset'?byId('reset-demo'):
   focus==='filter'?document.querySelector('[data-priority="'+priority+'"]'):
@@ -373,6 +381,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   if(followButton){
   const item=opportunities.find(function(entry){return entry.id===followButton.dataset.followup;});
   if(!item)return;
+  redoStack=[];
   history.push({kind:'followup',id:item.id,from:item.followup});
   trimUndoHistory();
   item.followup=item.followup==='done'?'pending':'done';
@@ -388,6 +397,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   if(!item)return;
   const next=item.stage+(button.dataset.move==='next'?1:-1);
   if(next<0||next>=STAGES.length)return;
+  redoStack=[];
   history.push({kind:'move',id:item.id,from:item.stage});
   trimUndoHistory();
   remember(item.label+' movida de '+STAGES[item.stage]+' para '+STAGES[next]+'.');
@@ -406,6 +416,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   && item.stage+direction>=0&&item.stage+direction<STAGES.length;
   });
   if(selected.length===0)return;
+  redoStack=[];
   history.push({kind:'batch-move',states:selected.map(function(item){
     return {id:item.id,from:item.stage};
   })});
@@ -428,6 +439,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   && item.followup==='pending';
   });
   if(selected.length===0)return;
+  redoStack=[];
   history.push({kind:'batch-followup',states:selected.map(function(item){return {id:item.id,from:item.followup};})});
   trimUndoHistory();
   selected.forEach(function(item){item.followup='done';});
@@ -457,6 +469,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   followup:'pending'
   };
   opportunities.push(item);
+  redoStack=[];
   history.push({kind:'add',id:item.id});
   trimUndoHistory();
   remember(item.label+' criada na etapa Entrada.');
@@ -473,6 +486,10 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   if(!history.length)return;
   const previous=history.pop();
   if(previous.kind==='batch-move'){
+  recordRedo({kind:'batch-move',undo:previous,states:previous.states.map(function(state){
+    const match=opportunities.find(function(entry){return entry.id===state.id;});
+    return {id:state.id,to:match.stage};
+  })});
   previous.states.forEach(function(state){
   const match=opportunities.find(function(entry){return entry.id===state.id;});
   if(match)match.stage=state.from;
@@ -484,6 +501,10 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   return;
   }
   if(previous.kind==='batch-followup'){
+  recordRedo({kind:'batch-followup',undo:previous,states:previous.states.map(function(state){
+    const match=opportunities.find(function(entry){return entry.id===state.id;});
+    return {id:state.id,to:match.followup};
+  })});
   previous.states.forEach(function(state){
   const match=opportunities.find(function(entry){return entry.id===state.id;});
   if(match)match.followup=state.from;
@@ -495,7 +516,12 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   return;
   }
   const item=opportunities.find(function(entry){return entry.id===previous.id;});
-  if(!item)return;
+  if(!item||!['add','move','followup'].includes(previous.kind))return;
+  recordRedo({
+    kind:previous.kind,undo:previous,
+    after:previous.kind==='add'?Object.assign({},item):
+      previous.kind==='move'?item.stage:item.followup
+  });
   if(previous.kind==='add'){
   opportunities=opportunities.filter(function(entry){return entry.id!==item.id;});
   remember('Criação simulada de '+item.label+' desfeita.');
@@ -514,9 +540,42 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   moves++;
   render('undo');
   });
+  byId('redo-change').addEventListener('click',function(){
+  if(!redoStack.length)return;
+  const forward=redoStack.pop();
+  if(forward.kind==='batch-move'){
+    forward.states.forEach(function(state){
+      const match=opportunities.find(function(item){return item.id===state.id;});
+      if(match)match.stage=state.to;
+    });
+  }else if(forward.kind==='batch-followup'){
+    forward.states.forEach(function(state){
+      const match=opportunities.find(function(item){return item.id===state.id;});
+      if(match)match.followup=state.to;
+    });
+  }else if(forward.kind==='add'){
+    if(opportunities.length>=12||opportunities.some(function(item){return item.id===forward.after.id;}))return;
+    opportunities.push(Object.assign({},forward.after));
+  }else if(forward.kind==='move'||forward.kind==='followup'){
+    const item=opportunities.find(function(entry){return entry.id===forward.undo.id;});
+    if(!item)return;
+    if(forward.kind==='move')item.stage=forward.after;
+    else item.followup=forward.after;
+  }else{
+    return;
+  }
+  // Undo/redo are two views of the same bounded, in-memory history.
+  history[history.length]=forward.undo;
+  trimUndoHistory();
+  moves++;
+  remember('Ação fictícia refeita nesta aba.');
+  render('redo');
+  describe('Ação fictícia refeita; nenhuma operação real foi executada.');
+  });
   byId('reset-demo').addEventListener('click',function(){
   opportunities=FIXTURES.map(function(item){return Object.assign({},item);});
   history=[];
+  redoStack=[];
   moves=0;
   priority='all';
   followupFilter='all';
