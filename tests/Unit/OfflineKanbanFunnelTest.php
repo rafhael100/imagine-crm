@@ -422,8 +422,8 @@ final class OfflineKanbanFunnelTest extends TestCase
         ] as $contract) {
             self::assertStringContainsString($contract, $html);
         }
-        self::assertSame(5, substr_count($html, 'history.push('));
-        self::assertSame(6, substr_count($html, 'trimUndoHistory();'));
+        self::assertSame(6, substr_count($html, 'history.push('));
+        self::assertSame(7, substr_count($html, 'trimUndoHistory();'));
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringNotContainsString('localStorage', $html);
         self::assertStringNotContainsString('sessionStorage', $html);
@@ -452,8 +452,8 @@ final class OfflineKanbanFunnelTest extends TestCase
             self::assertStringContainsString($contract, $html);
         }
         self::assertSame(7, substr_count($html, 'redoStack=[];'));
-        self::assertSame(5, substr_count($html, 'history.push('));
-        self::assertSame(6, substr_count($html, 'trimUndoHistory();'));
+        self::assertSame(6, substr_count($html, 'history.push('));
+        self::assertSame(7, substr_count($html, 'trimUndoHistory();'));
         self::assertStringContainsString("connect-src 'none'", $html);
         foreach (['localStorage', 'sessionStorage', 'fetch(', 'navigator.sendBeacon',
             'WebSocket', '<form', 'indexedDB', '.innerHTML'] as $forbidden) {
@@ -541,11 +541,35 @@ final class OfflineKanbanFunnelTest extends TestCase
             self::assertStringContainsString($contract, $html);
         }
         self::assertSame(1, substr_count($html, "byId('board').addEventListener('drop'"));
-        self::assertSame(5, substr_count($html, 'history.push('));
+        self::assertSame(6, substr_count($html, 'history.push('));
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringContainsString("form-action 'none'", $html);
         foreach (['<form', 'fetch(', 'localStorage', 'sessionStorage',
             'navigator.sendBeacon', '.innerHTML', 'download='] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
+        }
+    }
+
+    public function test_dragging_selected_card_only_moves_visible_selected_group_and_reuses_undo(): void
+    {
+        $html = self::html();
+        foreach ([
+            'Ao arrastar um cartão selecionado, apenas os selecionados visíveis',
+            "if(selectedIds.has(id)){",
+            "const visible=new Set(Array.from(document.querySelectorAll('#board [data-card-id]')",
+            "selectedIds.has(entry.id)&&visible.has(entry.id)&&entry.stage!==target;",
+            "history.push({kind:'batch-move',states:group.map(function(entry){",
+            "group.forEach(function(entry){entry.stage=target;});",
+            "remember('Arrastar em grupo: '+group.length+' oportunidades fictícias visíveis.');",
+            "render('batch-move');",
+            "moveToStage(item,target);",
+        ] as $contract) {
+            self::assertStringContainsString($contract, $html);
+        }
+        self::assertSame(6, substr_count($html, 'history.push('));
+        self::assertSame(7, substr_count($html, 'trimUndoHistory();'));
+        self::assertStringContainsString("connect-src 'none'", $html);
+        foreach (['<form', 'fetch(', 'localStorage', 'sessionStorage', '.innerHTML'] as $forbidden) {
             self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
         }
     }
