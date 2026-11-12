@@ -6,6 +6,7 @@ namespace Tests\Unit;
 
 use App\Core\Sales\SyntheticCommercialWorkloadInspector;
 use App\Core\Sales\SyntheticCommercialWorkloadTrendReview;
+use App\Core\Sales\SyntheticSalesTriageWorkQueueInspector;
 use PHPUnit\Framework\TestCase;
 
 final class OfflineCommercialWorkloadPrototypeTest extends TestCase
@@ -19,21 +20,22 @@ final class OfflineCommercialWorkloadPrototypeTest extends TestCase
         return $html;
     }
 
-    public function test_three_offline_scenarios_are_accessible_and_every_action_denied(): void
+    public function test_four_offline_scenarios_are_accessible_and_every_action_denied(): void
     {
         $html = self::html();
-        foreach (['pressure','balanced','trend'] as $key) {
+        foreach (['pressure','balanced','trend','triage'] as $key) {
             self::assertStringContainsString('id="'.$key.'"', $html);
             self::assertStringContainsString('for="'.$key.'"', $html);
         }
-        self::assertSame(3, substr_count($html, 'type="radio"'));
-        self::assertSame(3, substr_count($html, 'Atribuir: bloqueado'));
-        self::assertSame(3, substr_count($html, 'Enviar aviso: bloqueado'));
-        self::assertSame(3, substr_count($html, 'Gravar: bloqueado'));
+        self::assertSame(4, substr_count($html, 'type="radio"'));
+        self::assertSame(4, substr_count($html, 'Atribuir: bloqueado'));
+        self::assertSame(4, substr_count($html, 'Enviar aviso: bloqueado'));
+        self::assertSame(4, substr_count($html, 'Gravar: bloqueado'));
         self::assertStringContainsString('fictional_lead_capacity_shortfall', $html);
         self::assertStringContainsString('fictional_overdue_tasks', $html);
         self::assertStringContainsString('cross_module_identity_unverified', $html);
         self::assertStringContainsString('href="../index.html"', $html);
+        self::assertStringContainsString('#triage:focus-visible~.tabs label[for=triage]', $html);
     }
 
     public function test_csp_offline_and_mobile_protections_are_present(): void
@@ -122,5 +124,69 @@ final class OfflineCommercialWorkloadPrototypeTest extends TestCase
         foreach (['authorized','can_assign','can_reschedule','can_notify','can_persist'] as $field) {
             self::assertFalse($result[$field]);
         }
+    }
+
+    public function test_fourth_tab_matches_prioritized_php_leads_and_task_positions(): void
+    {
+        $signals = [
+            'profile_complete' => false, 'recent_engagement' => false,
+            'requested_quote' => false, 'scheduled_demo' => false,
+            'stale_response' => false,
+        ];
+        $profile = $signals;
+        $profile['profile_complete'] = true;
+        $quote = $signals;
+        $quote['requested_quote'] = true;
+        $stale = $signals;
+        $stale['stale_response'] = true;
+
+        $task = static fn (string $due, string $priority): array => [[
+            'revision' => 1, 'action' => 'create',
+            'occurred_at_utc' => '2026-11-01T10:00:00Z',
+            'due_at_utc' => $due, 'priority' => $priority,
+            'reason_code' => null,
+        ]];
+        $result = (new SyntheticSalesTriageWorkQueueInspector())->inspect([
+            'lead_batch' => [
+                'agents' => [
+                    ['enabled' => true,'has_required_skill' => true,'open_leads' => 0,'capacity' => 1],
+                    ['enabled' => true,'has_required_skill' => true,'open_leads' => 0,'capacity' => 1],
+                ],
+                'leads' => [
+                    ['state' => 'unassigned', 'signals' => $profile],
+                    ['state' => 'unassigned', 'signals' => $quote],
+                    ['state' => 'unassigned', 'signals' => $stale],
+                    ['state' => 'engaged', 'signals' => $quote],
+                ],
+                'weights' => [
+                    'profile_complete' => 20, 'recent_engagement' => 10,
+                    'requested_quote' => 30, 'scheduled_demo' => 25,
+                    'stale_response' => -20,
+                ],
+                'base_score' => 20,
+                'start_cursor' => 0,
+            ],
+            'task_histories' => [
+                $task('2026-11-09T12:00:00Z', 'high'),
+                $task('2026-11-11T12:00:00Z', 'urgent'),
+                $task('2026-11-10T12:00:00Z', 'low'),
+            ],
+            'observed_at_utc' => '2026-11-10T12:00:00Z',
+        ]);
+        self::assertSame([1, 0, 2], $result['lead_priority_positions']);
+        self::assertSame([0, 2, 1], $result['task_priority_positions']);
+        self::assertSame(2, $result['fictional_planned_assignments']);
+        self::assertSame(1, $result['fictional_waiting_leads']);
+        self::assertSame(1, $result['fictional_overdue_tasks']);
+        self::assertSame(1, $result['fictional_due_now_tasks']);
+        $html = self::html();
+        self::assertStringContainsString('posição 2, posição 1, posição 3', $html);
+        self::assertStringContainsString('posição 1, posição 3, posição 2', $html);
+        foreach ($result['warning_codes'] as $code) {
+            self::assertStringContainsString($code, $html);
+        }
+        self::assertFalse($result['authorized']);
+        self::assertFalse($result['can_assign']);
+        self::assertFalse($result['can_notify']);
     }
 }
