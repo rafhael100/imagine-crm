@@ -142,10 +142,20 @@ $driver = <<<'HTML'
    check(stageZeroOrder()==='F05,F03,F01,F02','highest fictitious value first');
    check(d.querySelector('[data-order="value"]').getAttribute('aria-pressed')==='true',
      'value order announced to assistive technology');
+   by('toggle-csv-demo').click();
+   const csvIds=()=>by('csv-preview').textContent.trim().split('\n').slice(1)
+     .map(row=>row.split(';')[0]);
+   check(csvIds().slice(0,4).join(',')===stageZeroOrder(),
+     'CSV preview mirrors displayed value order');
    d.querySelector('[data-order="score"]').click();
    check(stageZeroOrder()==='F01,F05,F03,F02','score order distinct from value order');
+   check(csvIds().slice(0,4).join(',')===stageZeroOrder(),
+     'CSV preview mirrors displayed score order');
    d.querySelector('[data-order="default"]').click();
    check(stageZeroOrder()==='F01,F02,F03,F05','original order restored');
+   check(csvIds().slice(0,4).join(',')===stageZeroOrder(),
+     'CSV preview mirrors displayed original order');
+   by('toggle-csv-demo').click();
    check(by('count-moves').textContent==='2','sorting does not create extra actions');
    by('reset-demo').click();
    check(by('undo-change').disabled,'reset after sorting clears actions');
