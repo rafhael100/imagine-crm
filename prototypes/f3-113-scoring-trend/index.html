@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; img-src 'none'; font-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — Evolução fictícia de scoring</title>
+<style>
+:root{font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:#f3f7fa;color:#183549}*{box-sizing:border-box}
+body{margin:0;min-width:0}a{color:#136978}a:focus-visible,button:focus-visible{outline:3px solid #15a99b;outline-offset:3px}
+.skip{position:absolute;top:-6rem;left:1rem;background:#fff;padding:12px}.skip:focus{top:1rem}
+header{background:#173b51;color:#fff;padding:18px clamp(16px,4vw,48px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}header a{color:#e0faf6}
+main{max-width:1060px;padding:clamp(18px,3vw,36px);margin:auto}h1{font-size:clamp(1.65rem,4vw,2.5rem);line-height:1.15;margin:6px 0}h2{font-size:1.14rem;margin:0 0 12px}
+.kicker{color:#157f75;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800}.lead{color:#536e7d;max-width:810px}
+.notice{padding:14px 16px;background:#e8f7f2;border:1px solid #acd9ce;border-radius:11px;color:#215b53;font-weight:680;margin:18px 0}
+.card{background:white;border:1px solid #d8e8ec;border-radius:16px;padding:clamp(16px,2.5vw,24px);margin:18px 0;min-width:0}
+.controls{display:flex;flex-wrap:wrap;gap:8px}button{font:inherit;font-weight:700;cursor:pointer;background:#f6fbfc;color:#25596c;border:1px solid #a7c9d0;border-radius:10px;padding:10px 14px}
+button[aria-pressed="true"]{background:#194e5d;color:#fff;border-color:#194e5d}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.stat{min-width:0;border:1px solid #d9e8ed;background:#f8fbfc;border-radius:11px;padding:13px}
+.stat span{display:block;color:#5c7684;font-size:.77rem}.stat strong{display:block;font-size:clamp(1.1rem,2.5vw,1.65rem);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.state{background:#eef7f8;border:1px solid #bfdbe0;border-radius:10px;color:#21596a;padding:12px 14px;font-weight:710}
+.chart-wrap{max-width:100%;overflow-x:auto;border:1px solid #dce9ee;background:#f8fbfc;border-radius:12px;padding:16px;margin:15px 0}
+.chart{display:flex;gap:14px;align-items:flex-end;min-height:205px;padding:5px;min-width:0}
+.bar-item{min-width:78px;flex:1 0 78px;text-align:center}.bar-shell{height:150px;display:flex;align-items:flex-end;justify-content:center;border-bottom:2px solid #a7c7cc}
+.bar{width:42px;max-width:100%;border-radius:7px 7px 0 0;background:#1d8790}.bar-item strong{display:block;margin-top:9px;font-variant-numeric:tabular-nums;font-size:.95rem}
+.bar-item span{font-size:.73rem;color:#516d7c}.empty{padding:18px;border:1px dashed #b3d1d6;border-radius:10px;color:#55737d}
+.small{font-size:.84rem;color:#597581}
+footer{max-width:1060px;margin:auto;padding:0 24px 34px;color:#677e8a;font-size:.81rem}
+[hidden]{display:none!important}
+@media(max-width:780px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){main{padding:16px 12px}.card{padding:14px}.controls{display:grid;grid-template-columns:minmax(0,1fr)}.controls button{width:100%}.metrics{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header><strong>imagine CRM · Laboratório comercial</strong><a href="../index.html">Voltar ao laboratório</a></header>
+<main id="conteudo">
+  <p class="kicker">Leads · Evolução de pontuação</p>
+  <h1>Histórico fictício de lead scoring</h1>
+  <p class="lead">Explore como uma pontuação de 0 a 100 pode evoluir entre faixas ilustrativas de frio, morno e quente. Esta tela não consulta leads nem escolhe pontuações reais.</p>
+  <div class="notice" role="note">PROTÓTIPO — DADOS FICTÍCIOS. Nenhum evento de lead, usuário, empresa ou política de pontuação foi verificado. Nada é reclassificado, notificado ou automatizado.</div>
+  <section class="card" aria-labelledby="cases-title">
+    <h2 id="cases-title">Selecione a evolução inventada</h2>
+    <div class="controls" role="group" aria-label="Cenários de pontuação fictícia">
+      <button type="button" data-case="growth" aria-pressed="true">A · Crescimento</button>
+      <button type="button" data-case="mixed" aria-pressed="false">B · Oscilações</button>
+      <button type="button" data-case="decline" aria-pressed="false">C · Queda</button>
+      <button type="button" data-case="empty" aria-pressed="false">D · Sem eventos</button>
+    </div>
+    <p class="small">As faixas ilustrativas usam frio até 39, morno até 69 e quente a partir de 70, não uma regra homologada para determinada empresa.</p>
+  </section>
+  <section class="card" aria-labelledby="metrics-title">
+    <h2 id="metrics-title">Resumo descritivo</h2>
+    <div class="metrics">
+      <div class="stat"><span>Amostras</span><strong id="sample-count">—</strong></div>
+      <div class="stat"><span>Pontuação inicial → final</span><strong id="score-range">—</strong></div>
+      <div class="stat"><span>Variação total</span><strong id="score-delta">—</strong></div>
+      <div class="stat"><span>Mudanças de faixa</span><strong id="band-changes">—</strong></div>
+    </div>
+    <p id="status" class="state" role="status" aria-live="polite" aria-atomic="true">Carregando cenário.</p>
+    <p id="step-summary" class="small">Altas: 0 · Quedas: 0 · Estáveis: 0</p>
+    <p id="bands" class="small">Faixa inicial: — · Faixa final: —</p>
+  </section>
+  <section class="card" aria-labelledby="chart-title">
+    <h2 id="chart-title">Pontuações ordenadas por data UTC fictícia</h2>
+    <p id="empty-note" class="empty" role="status" hidden>Nenhum evento de pontuação foi fornecido na amostra. Isso não prova ausência de atividades reais.</p>
+    <div id="chart-wrap" class="chart-wrap">
+      <div id="score-chart" class="chart" role="img" aria-label="Gráfico de barras com pontuações fictícias"></div>
+    </div>
+    <p class="small">O gráfico usa apenas quatro a seis números inventados; não é um histórico de auditoria nem uma recomendação automática ao vendedor.</p>
+  </section>
+  <section class="card" aria-labelledby="gates-title">
+    <h2 id="gates-title">Ações e permissões</h2>
+    <p id="rights" class="state">Reclassificar: NÃO · Notificar: NÃO · Automatizar: NÃO · Gravar: NÃO</p>
+    <p class="small">Os pesos, a origem dos eventos, a política de cada empresa e o isolamento por tenant precisam de aprovação antes de qualquer implementação operacional.</p>
+  </section>
+</main>
+<footer>Imagine CRM · Visualização local sem API, contato, armazenamento, cliente ou decisão automática.</footer>
+<script>
+(function(){
+  'use strict';
+  const SCENARIOS=Object.freeze([
+    {"id":"growth","samples":[{"observed_at_utc":"2026-11-01T12:00:00Z","score":15},{"observed_at_utc":"2026-11-02T12:00:00Z","score":35},{"observed_at_utc":"2026-11-03T12:00:00Z","score":55},{"observed_at_utc":"2026-11-04T12:00:00Z","score":75}],"expected":{"first_score":15,"last_score":75,"score_delta":60,"first_band":"frio","last_band":"quente","upward_steps":3,"downward_steps":0,"unchanged_steps":0,"band_changes":2}},
+    {"id":"mixed","samples":[{"observed_at_utc":"2026-11-01T12:00:00Z","score":20},{"observed_at_utc":"2026-11-02T12:00:00Z","score":45},{"observed_at_utc":"2026-11-03T12:00:00Z","score":76},{"observed_at_utc":"2026-11-04T12:00:00Z","score":74},{"observed_at_utc":"2026-11-05T12:00:00Z","score":74},{"observed_at_utc":"2026-11-06T12:00:00Z","score":42}],"expected":{"first_score":20,"last_score":42,"score_delta":22,"first_band":"frio","last_band":"morno","upward_steps":2,"downward_steps":2,"unchanged_steps":1,"band_changes":3}},
+    {"id":"decline","samples":[{"observed_at_utc":"2026-11-01T12:00:00Z","score":90},{"observed_at_utc":"2026-11-02T12:00:00Z","score":70},{"observed_at_utc":"2026-11-03T12:00:00Z","score":30}],"expected":{"first_score":90,"last_score":30,"score_delta":-60,"first_band":"quente","last_band":"frio","upward_steps":0,"downward_steps":2,"unchanged_steps":0,"band_changes":1}},
+    {"id":"empty","samples":[],"expected":{"first_score":null,"last_score":null,"score_delta":null,"first_band":null,"last_band":null,"upward_steps":0,"downward_steps":0,"unchanged_steps":0,"band_changes":0}}
+  ]);
+  const get=id=>document.getElementById(id);
+  const put=(id,value)=>{get(id).textContent=String(value);};
+  const band=score=>score<=39?'frio':score<=69?'morno':'quente';
+  function inspect(samples){
+    let prev=null,first=null,initialBand=null,lastBand=null,up=0,down=0,same=0,changes=0;
+    samples.forEach(item=>{
+      const score=item.score;
+      if(!Number.isInteger(score)||score<0||score>100)throw new Error('Pontuação fictícia inválida');
+      const currentBand=band(score);
+      if(first===null){first=score;initialBand=currentBand;}
+      else{
+        if(score>prev)++up;else if(score<prev)++down;else ++same;
+        if(currentBand!==lastBand)++changes;
+      }
+      prev=score;lastBand=currentBand;
+    });
+    return {first_score:first,last_score:prev,score_delta:first===null?null:prev-first,
+      first_band:initialBand,last_band:lastBand,upward_steps:up,downward_steps:down,
+      unchanged_steps:same,band_changes:changes};
+  }
+  function show(id){
+    const sample=SCENARIOS.find(value=>value.id===id);
+    if(!sample)throw new Error('Amostra desconhecida');
+    const result=inspect(sample.samples);
+    if(JSON.stringify(result)!==JSON.stringify(sample.expected))throw new Error('Resumo fictício inconsistente');
+    put('sample-count',sample.samples.length);
+    put('score-range',result.first_score===null?'Sem amostras':result.first_score+' → '+result.last_score);
+    put('score-delta',result.score_delta===null?'—':(result.score_delta>0?'+':'')+result.score_delta);
+    put('band-changes',result.band_changes);
+    put('step-summary','Altas: '+result.upward_steps+' · Quedas: '+result.downward_steps+' · Estáveis: '+result.unchanged_steps);
+    put('bands','Faixa inicial: '+(result.first_band??'—')+' · Faixa final: '+(result.last_band??'—'));
+    const chart=get('score-chart');chart.replaceChildren();
+    sample.samples.forEach((item,index)=>{
+      const block=document.createElement('div');block.className='bar-item';
+      const shell=document.createElement('div');shell.className='bar-shell';
+      const bar=document.createElement('div');bar.className='bar';bar.style.height=item.score+'%';
+      shell.appendChild(bar);
+      const value=document.createElement('strong');value.textContent=String(item.score);
+      const date=document.createElement('span');date.textContent='Amostra '+(index+1);
+      block.append(shell,value,date);chart.appendChild(block);
+    });
+    chart.setAttribute('aria-label',sample.samples.length+' pontuações fictícias em sequência UTC');
+    get('empty-note').hidden=sample.samples.length!==0;
+    get('chart-wrap').hidden=sample.samples.length===0;
+    put('status','Amostra '+id+' · Valores inventados, sem evento real verificado.');
+    put('rights','Reclassificar: NÃO · Notificar: NÃO · Automatizar: NÃO · Gravar: NÃO');
+    document.querySelectorAll('[data-case]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.case===id)));
+  }
+  document.querySelectorAll('[data-case]').forEach(button=>button.addEventListener('click',()=>show(button.dataset.case)));
+  show('growth');
+})();
+</script>
+</body>
+</html>
