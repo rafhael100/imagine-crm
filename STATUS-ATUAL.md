@@ -21,7 +21,9 @@
 
 **Efeito operacional: nenhum.** Todas as tabelas, roles, constraints, mappings e políticas verificadas são do CI PostgreSQL descartável; a CI continua dependente do superusuário \`postgres\` apenas para migrations do laboratório. Os três novos testes são somente leitura e não demonstram rollback/restauração em base persistente, isolamento de rede/volumes real, credencial de serviço, LGPD ou uma política de acesso positiva segura. Nenhum endpoint público, importação/captação real, login comercial, \`ALLOW\`, migração operacional, VPS ou alteração de \`main\` foi autorizado por OPS-53.
 
-**Nota de manutenção do CI:** a inclusão futura de novo login, política RLS ou migration exige revisão específica de propósito e atualização dos testes de inventário; os resultados atuais não constituem uma allowlist de produção.\n\n**Gates ainda bloqueados:** [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27), [CORE/SEG/DBA/LGPD #259](https://github.com/rafhael100/imagine-crm/issues/259), contratos de IAM, isolamento real, backups/recovery e aceite competente **não concluídos**. Revisores independentes ainda não estão designados. A próxima decisão **não pode** ser inferida de CI verde ou de um parecer emitido pelo autor. Ver o dossiê OPS-52 para requisitos itemizados e matriz de responsabilização.
+**Nota de manutenção do CI:** a inclusão futura de novo login, política RLS ou migration exige revisão específica de propósito e atualização dos testes de inventário; os resultados atuais não constituem uma allowlist de produção.
+
+**Gates ainda bloqueados:** [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27), [CORE/SEG/DBA/LGPD #259](https://github.com/rafhael100/imagine-crm/issues/259), contratos de IAM, isolamento real, backups/recovery e aceite competente **não concluídos**. Revisores independentes ainda não estão designados. A próxima decisão **não pode** ser inferida de CI verde ou de um parecer emitido pelo autor. Ver o dossiê OPS-52 para requisitos itemizados e matriz de responsabilização.
 
 ## OPS-51 — Simulação de capacidade integrada e matriz deny-only (12/11/2026)
 
