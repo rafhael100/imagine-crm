@@ -561,6 +561,59 @@ final class PostgresMembershipRlsTest extends TestCase
         $this->assertSame(0, $probe->table('public.crm_memberships')->count());
     }
 
+    public function test_row_security_off_cannot_start_tenant_membership_callback(): void
+    {
+        $probe = DB::connection('pgsql_rls_probe');
+        $original = $probe->selectOne(
+            "SELECT current_setting('row_security') AS setting"
+        );
+        $calls = 0;
+        $probe->statement('SET row_security = off');
+
+        try {
+            $this->assertSame(
+                'off',
+                $probe->selectOne(
+                    "SELECT current_setting('row_security') AS setting"
+                )->setting,
+            );
+            try {
+                $this->store()->within(
+                    new PrincipalReference(self::PRINCIPAL),
+                    self::ORG_A,
+                    function () use (&$calls): void { ++$calls; },
+                );
+                $this->fail('Disabled RLS must fail before reading membership.');
+            } catch (LogicException $e) {
+                $this->assertSame('Unsafe tenant connection.', $e->getMessage());
+            }
+
+            $this->assertSame(0, $calls);
+            $this->assertSame(0, $probe->transactionLevel());
+            $this->assertSame(
+                'off',
+                $probe->selectOne("SELECT current_setting('row_security') AS setting")->setting,
+                'A dirty connection must be reset by its owner rather than repaired secretly.',
+            );
+        } finally {
+            $probe->selectOne(
+                "SELECT set_config('row_security', ?, false)",
+                [$original->setting],
+            );
+        }
+
+        $this->assertSame(
+            1,
+            $this->store()->within(
+                new PrincipalReference(self::PRINCIPAL),
+                self::ORG_A,
+                fn ($membership): int => $membership->version,
+            ),
+        );
+        $this->assertSame(0, $probe->transactionLevel());
+        $this->assertSame(0, $probe->table('public.crm_memberships')->count());
+    }
+
     private function store(): PostgresActiveMembershipStore
     {
         return new PostgresActiveMembershipStore(DB::connection('pgsql_rls_probe'));
