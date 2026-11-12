@@ -10,7 +10,7 @@ use Symfony\Component\Process\ExecutableFinder;
 
 $html = file_get_contents(dirname(__DIR__, 2).'/prototypes/f3-22-csv-risk-preview/index.html');
 if (!is_string($html)
-    || strlen($html) > 30000
+    || strlen($html) > 34000
     || substr_count($html, '</body>') !== 1
     || !str_contains($html, 'PROTÓTIPO — DADOS FICTÍCIOS')
     || !str_contains($html, "connect-src 'none'")

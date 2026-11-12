@@ -32,6 +32,39 @@ footer{max-width:1060px;margin:auto;padding:0 24px 34px;color:#677e8a;font-size:
 [hidden]{display:none!important}
 @media(max-width:780px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:390px){main{padding:16px 12px}.card{padding:14px}.controls{display:grid;grid-template-columns:minmax(0,1fr)}.controls button{width:100%}.metrics{grid-template-columns:minmax(0,1fr)}}
+
+/* IMAGINE-DS-V1 — identical aliases, approved Node Portal palette, offline only. */
+:root{--imagine-orange:#f9941d;--imagine-ink:#171b19;--imagine-white:#ffffff;
+--imagine-surface:#f7f7f8;--imagine-muted:#737373;--imagine-border:#e8e8e8;
+--imagine-orange-soft:#fff1e0;--imagine-orange-text:#9b4d00;--imagine-focus:#b75c00;
+--imagine-radius-control:6px;--imagine-radius-card:9px;--imagine-sidebar-width:240px;
+--imagine-font-ui:Arial,Helvetica,sans-serif;
+font-family:var(--imagine-font-ui);background:var(--imagine-surface);color:var(--imagine-ink)}
+body{background:var(--imagine-surface)}
+header{background:var(--imagine-white);color:var(--imagine-ink);
+border-bottom:1px solid var(--imagine-border)}
+header a,a{color:var(--imagine-orange-text)}
+a:focus-visible,button:focus-visible,input:focus-visible,
+input:focus-visible+label{outline:3px solid var(--imagine-focus);outline-offset:3px}
+h1{color:var(--imagine-ink)}
+.kicker,.eyebrow{color:var(--imagine-orange-text)}
+.card,.metric,.stat,.panel{border-color:var(--imagine-border);border-radius:var(--imagine-radius-card)}
+.notice{background:var(--imagine-orange-soft);color:#7b3d00;
+border-color:#e9c79c;border-radius:var(--imagine-radius-card)}
+.controls button,.choices button,.tabs button{background:var(--imagine-white);
+color:var(--imagine-ink);border-color:#c7c7c7;border-radius:var(--imagine-radius-control)}
+button[aria-pressed="true"],button[aria-pressed=true],
+.choices label[aria-pressed="true"]{background:var(--imagine-orange-soft);
+color:var(--imagine-orange-text);border-color:#e9c79c}
+input[type=range],input[type=checkbox]{accent-color:var(--imagine-orange)}
+.number{background:var(--imagine-orange-soft);color:var(--imagine-orange-text)}
+
+/* Imagine UX Experience v1: neutral supporting chrome; semantic states untouched. */
+.lead,.intro,.sub,.small,.hint,.caption{color:#606060}
+.stat,.metric,.control,.table-wrap{border-color:var(--imagine-border)}
+.stat,.metric,.control{background:var(--imagine-white)}
+.tabs label,.choices label{border-color:#cecece;border-radius:var(--imagine-radius-control)}
+.metric strong,.stat strong{color:var(--imagine-orange-text)}
 </style>
 </head>
 <body>

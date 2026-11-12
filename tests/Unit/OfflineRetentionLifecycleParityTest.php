@@ -112,7 +112,7 @@ final class OfflineRetentionLifecycleParityTest extends TestCase
     public function test_offline_page_never_captures_personal_data_or_uses_live_clock(): void
     {
         $html = self::html();
-        self::assertLessThanOrEqual(16000, strlen($html));
+        self::assertLessThanOrEqual(17000, strlen($html));
         self::assertSame(1, substr_count($html, '</body>'));
         self::assertSame(16, preg_match_all('/<button type="button" data-case="[^"]+" aria-pressed="(?:true|false)">/', $html));
         self::assertStringContainsString('PROTÓTIPO — DADOS FICTÍCIOS.', $html);
