@@ -35,7 +35,7 @@ final readonly class LaboratoryProvisioner
             $step = $this->totp->matchStep($factor, $proof, now()->getTimestamp());
             if ($step === null) { $this->deny(); }
             $db = $this->registry->db;
-            $existing = $db->table('crm_auth_credentials')->where('identity_id', $target)->lockForUpdate()->first();
+            $existing = $db->table($this->registry->tableName('crm_auth_credentials'))->where('identity_id', $target)->lockForUpdate()->first();
             if (($expectedVersion === 0 && $existing) || ($expectedVersion > 0
                 && (!$existing || !$this->registry->validCredential($existing) || (int) $existing->version !== $expectedVersion))) { $this->deny(); }
             $version = $expectedVersion + 1;
@@ -46,12 +46,12 @@ final readonly class LaboratoryProvisioner
                 'factor_confirmed_at' => now()->getTimestamp(), 'last_totp_step' => $step,
             ];
             if ($existing) {
-                $db->table('crm_auth_credentials')->where('identity_id', $target)->update($values);
-                $db->table('crm_auth_sessions')->where('identity_id', $target)->update(['state' => 'revoked']);
+                $db->table($this->registry->tableName('crm_auth_credentials'))->where('identity_id', $target)->update($values);
+                $db->table($this->registry->tableName('crm_auth_sessions'))->where('identity_id', $target)->update(['state' => 'revoked']);
             } else {
-                if ($db->table('crm_global_identities')->where('id', $target)->exists()) { $this->deny(); }
-                $db->table('crm_global_identities')->insert(['id' => $target]);
-                $db->table('crm_auth_credentials')->insert(['identity_id' => $target] + $values);
+                if ($db->table($this->registry->tableName('crm_global_identities'))->where('id', $target)->exists()) { $this->deny(); }
+                $db->table($this->registry->tableName('crm_global_identities'))->insert(['id' => $target]);
+                $db->table($this->registry->tableName('crm_auth_credentials'))->insert(['identity_id' => $target] + $values);
             }
             return ['version' => $version, 'recovery_codes' => $this->codes($target, $version)];
         });
@@ -61,11 +61,11 @@ final readonly class LaboratoryProvisioner
     {
         return $this->authorized($mandateId, $operationId, $target, 'issue_recovery', function () use ($target, $expectedVersion): array {
             $db = $this->registry->db;
-            $c = $db->table('crm_auth_credentials')->where('identity_id', $target)->lockForUpdate()->first();
+            $c = $db->table($this->registry->tableName('crm_auth_credentials'))->where('identity_id', $target)->lockForUpdate()->first();
             if (!$c || !$this->registry->validCredential($c) || (int) $c->version !== $expectedVersion) { $this->deny(); }
             $version = $expectedVersion + 1;
-            $db->table('crm_auth_credentials')->where('identity_id', $target)->update(['version' => $version]);
-            $db->table('crm_auth_sessions')->where('identity_id', $target)->update(['state' => 'revoked']);
+            $db->table($this->registry->tableName('crm_auth_credentials'))->where('identity_id', $target)->update(['version' => $version]);
+            $db->table($this->registry->tableName('crm_auth_sessions'))->where('identity_id', $target)->update(['state' => 'revoked']);
             return ['version' => $version, 'recovery_codes' => $this->codes($target, $version)];
         });
     }
@@ -74,17 +74,17 @@ final readonly class LaboratoryProvisioner
     {
         return $this->authorized($mandateId, $requestId, $target, 'reconcile', function () use ($target, $operationId): array {
             $db = $this->registry->db;
-            $db->table('crm_auth_credentials')->where('identity_id', $target)->lockForUpdate()->first();
-            $op = $db->table('crm_auth_operations')->where('id', $operationId)->lockForUpdate()->first();
+            $db->table($this->registry->tableName('crm_auth_credentials'))->where('identity_id', $target)->lockForUpdate()->first();
+            $op = $db->table($this->registry->tableName('crm_auth_operations'))->where('id', $operationId)->lockForUpdate()->first();
             if (!$op || $op->state === 'completed') { $this->deny(); }
-            $related = $db->table('crm_auth_sessions')->where('identity_id', $target)->where(function ($q) use ($operationId): void {
+            $related = $db->table($this->registry->tableName('crm_auth_sessions'))->where('identity_id', $target)->where(function ($q) use ($operationId): void {
                 $q->where('operation_id', $operationId)->orWhere('security_hold', $operationId);
             })->exists();
             if ($op->subject_id !== $target && !$related) { $this->deny(); }
-            $db->table('crm_auth_sessions')->where('identity_id', $target)->where(function ($q) use ($operationId): void {
+            $db->table($this->registry->tableName('crm_auth_sessions'))->where('identity_id', $target)->where(function ($q) use ($operationId): void {
                 $q->where('operation_id', $operationId)->orWhere('security_hold', $operationId);
             })->update(['state' => 'revoked', 'security_hold' => null]);
-            $db->table('crm_auth_operations')->where('id', $operationId)->update(['state' => 'compensated']);
+            $db->table($this->registry->tableName('crm_auth_operations'))->where('id', $operationId)->update(['state' => 'compensated']);
             return ['reconciled_operation' => $operationId];
         });
     }
@@ -105,19 +105,19 @@ final readonly class LaboratoryProvisioner
                 if ($actor->principalId === $target) { $this->deny(); }
                 return $this->registry->transaction(function () use ($actor, $mandateId, $operationId, $target, $action, $operation): array {
                     $db = $this->registry->db;
-                    $mandate = $db->table('crm_auth_mandates')->where('id', $mandateId)->lockForUpdate()->first();
-                    $version = $db->table('crm_auth_credentials')->where('identity_id', $actor->principalId)->value('version');
+                    $mandate = $db->table($this->registry->tableName('crm_auth_mandates'))->where('id', $mandateId)->lockForUpdate()->first();
+                    $version = $db->table($this->registry->tableName('crm_auth_credentials'))->where('identity_id', $actor->principalId)->value('version');
                     if (!$mandate || $mandate->actor_id !== $actor->principalId || $mandate->subject_id !== $target
                         || $mandate->action !== $action || $mandate->revoked_at !== null
                         || (int) $mandate->expires_at <= now()->getTimestamp() || (int) $mandate->actor_version !== (int) $version) { $this->deny(); }
-                    $prior = $db->table('crm_auth_operations')->where('id', $operationId)->lockForUpdate()->first();
+                    $prior = $db->table($this->registry->tableName('crm_auth_operations'))->where('id', $operationId)->lockForUpdate()->first();
                     if ($prior) {
                         if ($prior->state !== 'completed' || $prior->actor_id !== $actor->principalId
                             || $prior->subject_id !== $target || $prior->action !== $action || $prior->mandate_id !== $mandateId) { $this->deny(); }
                         // Retries report completion; they never regenerate/reveal a secret.
                         return ['status' => 'already_completed'];
                     }
-                    $db->table('crm_auth_operations')->insert([
+                    $db->table($this->registry->tableName('crm_auth_operations'))->insert([
                         'id' => $operationId, 'action' => $action, 'actor_id' => $actor->principalId,
                         'subject_id' => $target, 'mandate_id' => $mandateId, 'state' => 'prepared', 'created_at' => now()->getTimestamp(),
                     ]);
@@ -125,7 +125,7 @@ final readonly class LaboratoryProvisioner
                     $result = $operation();
                     $this->audit->append($db, $operationId, $action, 'succeeded', $actor->principalId, $target);
                     if (isset($result['recovery_codes'])) { $this->audit->append($db, $operationId, 'issue_recovery', 'succeeded', $actor->principalId, $target); }
-                    $db->table('crm_auth_operations')->where('id', $operationId)->update(['state' => 'completed']);
+                    $db->table($this->registry->tableName('crm_auth_operations'))->where('id', $operationId)->update(['state' => 'completed']);
                     return ['status' => 'completed'] + $result;
                 });
             }, true); // Real current session + recent MFA, not an actor/role field from input.
@@ -142,7 +142,7 @@ final readonly class LaboratoryProvisioner
         $codes = [];
         for ($i = 0; $i < 6; $i++) {
             $code = bin2hex(random_bytes(24));
-            $this->registry->db->table('crm_auth_recovery_codes')->insert([
+            $this->registry->db->table($this->registry->tableName('crm_auth_recovery_codes'))->insert([
                 'id' => (string) Str::uuid(), 'identity_id' => $target,
                 'code_hash' => $this->hasher->make($code), 'credential_version' => $version,
             ]);
