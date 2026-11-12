@@ -103,7 +103,7 @@ final class PostgresLabRoleInventoryAndPublicAclTest extends TestCase
              CROSS JOIN LATERAL aclexplode(
                  COALESCE(c.relacl,
                      acldefault(
-                         CASE WHEN c.relkind = 'S' THEN 'S' ELSE 'r' END,
+                         (CASE WHEN c.relkind = 'S' THEN 'S' ELSE 'r' END)::\"char\",
                          c.relowner
                      )
                  )
