@@ -7,6 +7,7 @@ namespace Tests\Unit;
 use App\Core\Activities\SyntheticFollowUpQueue;
 use App\Core\Activities\SyntheticRecurringTaskSchedule;
 use App\Core\Activities\SyntheticTaskLifecycleInspector;
+use App\Core\Activities\SyntheticTaskPortfolioInspector;
 use App\Core\Leads\SyntheticLeadRoundRobinPreview;
 use App\Core\Leads\SyntheticLeadRuleScorePreview;
 use App\Core\Leads\SyntheticScoreTrendPreview;
@@ -16,6 +17,7 @@ use App\Core\Plans\SyntheticTrialRetentionTimeline;
 use App\Core\Plans\TrialWindowAdvisory;
 use App\Core\Sales\SyntheticCommercialDiscountReview;
 use App\Core\Sales\SyntheticCommercialJourneyInspector;
+use App\Core\Sales\SyntheticCommercialWorkloadInspector;
 use App\Core\Sales\SyntheticSalesAggregatePrivacyPreview;
 use App\Core\Sales\SyntheticStageAggregateCsvPreview;
 use App\Core\Sales\SyntheticReportDifferencingRiskInspector;
@@ -257,6 +259,35 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
                     ['new' => 8, 'qualified' => 0, 'proposal' => 0, 'won' => 0, 'lost' => 0],
                     ['new' => 4, 'qualified' => 0, 'proposal' => 0, 'won' => 0, 'lost' => 0],
                 ], 3),
+            'task_portfolio_overdue_inert' => (new SyntheticTaskPortfolioInspector())->inspect([
+                [[
+                'revision' => 1,
+                'action' => 'create',
+                'occurred_at_utc' => '2026-11-01T10:00:00Z',
+                'due_at_utc' => '2026-11-02T10:00:00Z',
+                'priority' => 'urgent',
+                'reason_code' => null,
+            ]],
+            ], '2026-11-10T12:00:00Z'),
+            'commercial_capacity_and_overdue_inert' => (new SyntheticCommercialWorkloadInspector())->inspect([
+                'agents' => [[
+                    'enabled' => true,
+                    'has_required_skill' => true,
+                    'open_leads' => 0,
+                    'capacity' => 0,
+                ]],
+                'lead_states' => ['unassigned'],
+                'start_cursor' => 0,
+                'task_histories' => [[[
+                'revision' => 1,
+                'action' => 'create',
+                'occurred_at_utc' => '2026-11-01T10:00:00Z',
+                'due_at_utc' => '2026-11-02T10:00:00Z',
+                'priority' => 'urgent',
+                'reason_code' => null,
+            ]]],
+                'observed_at_utc' => '2026-11-10T12:00:00Z',
+            ]),
             'trial_review_window' => (new SyntheticTrialRetentionTimeline(
                 new TrialWindowAdvisory(2000000, 2000000 + 14 * 86400),
             ))->readout(),
@@ -300,10 +331,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             ->inspect($cases[0]['input']);
     }
 
-    public function test_all_twenty_nine_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_thirty_one_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(29, $reports);
+        self::assertCount(31, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -415,6 +446,19 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         );
         self::assertFalse($reports['historical_report_pairwise_differencing_denied']['can_publish']);
         self::assertFalse($reports['historical_report_pairwise_differencing_denied']['can_deliver']);
+        self::assertSame(1, $reports['task_portfolio_overdue_inert']['overdue_count']);
+        self::assertSame([0], $reports['task_portfolio_overdue_inert']['ordered_open_positions']);
+        self::assertFalse($reports['task_portfolio_overdue_inert']['can_update_task']);
+        self::assertContains(
+            'fictional_lead_capacity_shortfall',
+            $reports['commercial_capacity_and_overdue_inert']['workload_warning_codes'],
+        );
+        self::assertContains(
+            'fictional_overdue_tasks',
+            $reports['commercial_capacity_and_overdue_inert']['workload_warning_codes'],
+        );
+        self::assertFalse($reports['commercial_capacity_and_overdue_inert']['can_assign']);
+        self::assertFalse($reports['commercial_capacity_and_overdue_inert']['can_notify']);
         self::assertSame('second_marker_elapsed', $reports['delinquency_day_thirty']['phase']);
         self::assertFalse($reports['delinquency_day_thirty']['can_suspend_service']);
     }
@@ -451,6 +495,8 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticPrivateStageDistributionPreview',
             'SyntheticStageDashboardSnapshotReview',
             'SyntheticReportHistoryPairwiseRiskInspector',
+            'SyntheticTaskPortfolioInspector',
+            'SyntheticCommercialWorkloadInspector',
         ] as $class) {
             self::assertStringNotContainsString($class, $routes);
         }
