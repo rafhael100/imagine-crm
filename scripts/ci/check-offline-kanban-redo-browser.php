@@ -113,6 +113,47 @@ $driver = <<<'HTML'
       undo(); check(card('F09')===null,'creation redo itself can be undone');
       by('reset-demo').click();
 
+      // Accessible keyboard shortcuts must never hijack an editable input.
+      const key=(symbol,modifiers,target)=>{
+        const event=new win.KeyboardEvent('keydown',
+          Object.assign({key:symbol,bubbles:true,cancelable:true},modifiers));
+        (target||doc).dispatchEvent(event);
+        return event.defaultPrevented;
+      };
+      check(!key('z',{ctrlKey:true}),'disabled undo leaves browser shortcut untouched');
+      follow('F01');
+      check(key('z',{ctrlKey:true}),'Ctrl+Z handled after mutation');
+      check(card('F01').querySelector('.followup-label').textContent.includes('pendente'),
+        'Ctrl+Z reverses followup');
+      check(key('z',{ctrlKey:true,shiftKey:true}),'Ctrl+Shift+Z handled');
+      check(card('F01').querySelector('.followup-label').textContent.includes('concluído'),
+        'Ctrl+Shift+Z reapplies followup');
+      check(key('z',{metaKey:true}),'Cmd+Z handled');
+      check(card('F01').querySelector('.followup-label').textContent.includes('pendente'),
+        'Cmd+Z reverses followup');
+      check(key('y',{ctrlKey:true}),'Ctrl+Y handled');
+      check(card('F01').querySelector('.followup-label').textContent.includes('concluído'),
+        'Ctrl+Y reapplies followup');
+      check(key('z',{metaKey:true}),'Cmd+Z handled second time');
+      check(key('z',{metaKey:true,shiftKey:true}),'Cmd+Shift+Z handled');
+      const field=by('fiction-search');
+      field.focus();
+      check(!key('z',{ctrlKey:true},field),'search input keeps native Ctrl+Z');
+      check(!key('z',{metaKey:true},field),'search input keeps native Cmd+Z');
+      check(!key('z',{ctrlKey:true,shiftKey:true},field),'search input keeps native redo');
+      check(!key('z',{ctrlKey:true,altKey:true},field),'Alt shortcut not hijacked');
+      check(card('F01').querySelector('.followup-label').textContent.includes('concluído'),
+        'typing focus cannot change Kanban state');
+      by('reset-demo').click();
+      check(!key('y',{ctrlKey:true}),'empty redo stack is not captured');
+      follow('F01');
+      check(!key('z',{ctrlKey:true,repeat:true}),'repeated shortcut ignored');
+      check(!key('z',{ctrlKey:true,metaKey:true}),'ambiguous Ctrl+Cmd ignored');
+      check(!key('z',{ctrlKey:true,altKey:true}),'Alt-modified shortcut ignored');
+      check(card('F01').querySelector('.followup-label').textContent.includes('concluído'),
+        'ignored modifiers have no side effect');
+      by('reset-demo').click();
+
       // Long sessions: undo only the latest 64 of 70 mutations, and redo
       // those exact 64. Counters may grow; stacks must remain bounded.
       for(let i=0;i<70;i++)follow('F01');

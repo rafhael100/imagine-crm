@@ -40,6 +40,7 @@ button[disabled]{opacity:.47;cursor:not-allowed}
 .filters button[aria-pressed="true"]{background:#184c5c;color:white;border-color:#184c5c}
 #undo-change,#redo-change{background:#fff8e6;border-color:#d2b983;color:#674d18}
 #reset-demo{background:#fff}
+.shortcut-hint{font-size:.77rem;color:#456171;flex:1 1 100%;overflow-wrap:anywhere}
 .board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;align-items:start}
 .lane{min-width:0;background:#e9f1f5;border:1px solid #d9e7ec;border-radius:15px;padding:13px;min-height:240px}
 .lane-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
@@ -133,6 +134,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   <button type="button" id="undo-change" disabled>Desfazer ação</button>
   <button type="button" id="redo-change" disabled>Refazer ação</button>
   <button type="button" id="reset-demo">Reiniciar simulação</button>
+  <span class="shortcut-hint">Atalhos locais: Ctrl/Cmd+Z para desfazer; Ctrl/Cmd+Shift+Z ou Ctrl+Y para refazer. Na busca, os atalhos não são capturados.</span>
   </div>
   </div>
   <div class="board" id="board" aria-label="Funil fictício de quatro etapas">
@@ -586,6 +588,20 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   activity=[];
   render('reset');
   describe('Quadro fictício reiniciado.');
+  });
+  document.addEventListener('keydown',function(event){
+  if(event.defaultPrevented||event.isComposing||event.repeat||event.altKey
+    ||event.ctrlKey===event.metaKey)return;
+  const active=document.activeElement;
+  if(active&&(active.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(active.tagName)))return;
+  const key=event.key.toLowerCase();
+  const undo=key==='z'&&!event.shiftKey;
+  const redo=(key==='z'&&event.shiftKey)||(key==='y'&&!event.shiftKey);
+  if(!undo&&!redo)return;
+  const action=byId(undo?'undo-change':'redo-change');
+  if(action.disabled)return;
+  event.preventDefault();
+  action.click();
   });
   byId('fiction-search').addEventListener('input',function(){
   // The HTML maxlength applies to typing; cap programmatic input as well.
