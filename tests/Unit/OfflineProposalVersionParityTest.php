@@ -80,6 +80,7 @@ final class OfflineProposalVersionParityTest extends TestCase
             'PROTÓTIPO — DADOS FICTÍCIOS.', "connect-src 'none'",
             "form-action 'none'", 'aria-live="polite"',
             'button:focus-visible', 'href="../f3-109-sales-quote-subtotal/index.html"',
+            'href="../f3-120-proposal-validity/index.html"',
             "table.replaceChildren();", 'cell.textContent=value',
             'prior_claimed_accepted_versions',
             'viewed_without_claimed_acceptance',

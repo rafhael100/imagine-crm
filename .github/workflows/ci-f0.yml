@@ -91,6 +91,9 @@ jobs:
       - name: Browser smoke test of fictional proposal-version review (1100px and 320px)
         run: php scripts/ci/check-offline-proposal-version-browser.php
 
+      - name: Browser smoke test of offline proposal validity boundaries (1100px and 320px)
+        run: php scripts/ci/check-offline-proposal-validity-browser.php
+
       - name: Browser smoke test of offline scoring trend charts (1100px and 320px)
         run: php scripts/ci/check-offline-scoring-trend-browser.php
 
