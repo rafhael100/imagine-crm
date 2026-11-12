@@ -468,8 +468,12 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   });
   byId('board').addEventListener('dragover',function(event){
   const lane=event.target.closest('.lane[data-drop-stage]');
-  if(!dragId||!lane||lane.hidden)return;
+  if(!dragId||!lane||lane.hidden||!/^[0-3]$/.test(lane.dataset.dropStage))return;
   event.preventDefault();
+  // Keep at most one active target even when dragleave is skipped by the browser.
+  document.querySelectorAll('.lane[data-drag-over]').forEach(function(el){
+    if(el!==lane)delete el.dataset.dragOver;
+  });
   lane.dataset.dragOver='true';
   if(event.dataTransfer)event.dataTransfer.dropEffect='move';
   });

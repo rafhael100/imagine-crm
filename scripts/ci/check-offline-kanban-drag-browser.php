@@ -86,6 +86,29 @@ $driver = <<<'HTML'
    check(card('F01').closest('.lane')===lane(0),'external drag data ignored');
    check(by('undo-change').disabled,'external drop creates no history');
 
+   // Browsers can skip dragleave when moving between nested lane children.
+   // Only the current valid destination may retain a visual drop highlight.
+   const hoverTransfer=dt();
+   fire(card('F01'),'dragstart',hoverTransfer);
+   fire(lane(1),'dragover',hoverTransfer);
+   check(lane(1).dataset.dragOver==='true','first lane highlighted');
+   fire(lane(2),'dragover',hoverTransfer);
+   check(lane(2).dataset.dragOver==='true','second lane highlighted');
+   check(!lane(1).hasAttribute('data-drag-over'),'previous lane highlight cleared');
+   check(d.querySelectorAll('.lane[data-drag-over]').length===1,'one highlighted lane maximum');
+   fire(card('F01'),'dragend',hoverTransfer);
+   check(d.querySelectorAll('.lane[data-drag-over]').length===0,'drag cancellation clears highlight');
+   check(by('undo-change').disabled,'hover and cancel create no history');
+
+   const invalidHover=dt(), invalidHoverLane=lane(3), originalHoverStage=invalidHoverLane.dataset.dropStage;
+   fire(card('F01'),'dragstart',invalidHover);
+   invalidHoverLane.dataset.dropStage='NaN';
+   fire(invalidHoverLane,'dragover',invalidHover);
+   check(!invalidHoverLane.hasAttribute('data-drag-over'),'invalid target has no highlight');
+   invalidHoverLane.dataset.dropStage=originalHoverStage;
+   fire(card('F01'),'dragend',invalidHover);
+   check(by('undo-change').disabled,'invalid hover is inert');
+
    // Mutated lane data must be rejected before either individual or group edits.
    const tamperedLane=lane(3);
    for(const invalid of ['NaN','4','-1','1.5','']) {
