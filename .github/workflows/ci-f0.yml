@@ -97,6 +97,9 @@ jobs:
       - name: Browser smoke test of fictional weighted sales forecast (1100px and 320px)
         run: php scripts/ci/check-offline-weighted-forecast-browser.php
 
+      - name: Browser smoke test of offline opportunity outcomes and loss reasons (1100px and 320px)
+        run: php scripts/ci/check-offline-opportunity-outcomes-browser.php
+
       - name: Browser smoke test of synthetic technical submission review (1100px and 320px)
         run: php scripts/ci/check-offline-submission-review-browser.php
 
