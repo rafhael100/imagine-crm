@@ -11,10 +11,12 @@ use App\Core\Plans\SyntheticCancellationRetentionTimeline;
 use App\Core\Plans\SyntheticDelinquencyReviewTimeline;
 use App\Core\Plans\SyntheticTrialRetentionTimeline;
 use App\Core\Plans\TrialWindowAdvisory;
+use App\Core\Sales\SyntheticCommercialDiscountReview;
 use App\Core\Sales\SyntheticLineItemSubtotalPreview;
 use App\Core\Sales\SyntheticOpportunityOutcomeInspector;
 use App\Core\Sales\SyntheticOpportunityTransitionLedger;
 use App\Core\Sales\SyntheticProposalLifecycleInspector;
+use App\Core\Sales\SyntheticProposalSendPreflight;
 use App\Core\Sales\SyntheticProposalValidityPreview;
 use App\Core\Sales\SyntheticProposalVersionReview;
 use App\Core\Sales\SyntheticSalesEventUniquenessInspector;
@@ -102,6 +104,21 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'task_recurrence_upcoming' => (new SyntheticRecurringTaskSchedule())->preview(
                 '2026-11-01T12:00:00Z', 'daily', 2, '2026-10-31T12:00:00Z',
             ),
+            'discount_manager_claimed_approval' => (new SyntheticCommercialDiscountReview())->inspect([
+                ['quantity' => 1, 'unit_price_cents' => 10000, 'discount_bp' => 4000],
+            ], 1000, true),
+            'proposal_send_preflight_blocked' => (new SyntheticProposalSendPreflight())->inspect(
+                [[
+                    'version' => 1, 'action' => 'create',
+                    'occurred_at_utc' => '2026-11-01T10:00:00Z',
+                    'expires_at_utc' => null,
+                ]],
+                [[
+                    'quantity' => 1, 'unit_price_cents' => 10000, 'discount_bp' => 4000,
+                ]],
+                1000,
+                true,
+            ),
             'trial_review_window' => (new SyntheticTrialRetentionTimeline(
                 new TrialWindowAdvisory(2000000, 2000000 + 14 * 86400),
             ))->readout(),
@@ -114,10 +131,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         ];
     }
 
-    public function test_all_fourteen_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_sixteen_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(14, $reports);
+        self::assertCount(16, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -166,6 +183,15 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         self::assertFalse($reports['stage_requirements_satisfied']['can_move']);
         self::assertSame(2, $reports['task_recurrence_upcoming']['upcoming_count']);
         self::assertFalse($reports['task_recurrence_upcoming']['can_schedule_job']);
+        self::assertTrue($reports['discount_manager_claimed_approval']['manager_approval_claimed']);
+        self::assertFalse($reports['discount_manager_claimed_approval']['manager_approval_verified']);
+        self::assertFalse($reports['discount_manager_claimed_approval']['can_issue_proposal']);
+        self::assertTrue($reports['proposal_send_preflight_blocked']['requires_manager_review']);
+        self::assertContains(
+            'manager_approval_unverified',
+            $reports['proposal_send_preflight_blocked']['blocker_codes'],
+        );
+        self::assertFalse($reports['proposal_send_preflight_blocked']['can_send']);
         self::assertSame('second_marker_elapsed', $reports['delinquency_day_thirty']['phase']);
         self::assertFalse($reports['delinquency_day_thirty']['can_suspend_service']);
     }
@@ -187,6 +213,8 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticOpportunityTransitionLedger',
             'SyntheticStageFieldRequirementsInspector',
             'SyntheticRecurringTaskSchedule',
+            'SyntheticCommercialDiscountReview',
+            'SyntheticProposalSendPreflight',
         ] as $class) {
             self::assertStringNotContainsString($class, $routes);
         }
