@@ -31,6 +31,7 @@ final readonly class PostgresActiveMembershipStore implements ActiveMembershipSt
             // Qualify BOTH metadata and data lookup: an untrusted search_path
             // or temporary-table shadow must not replace the tenant table.
             $state = $db->selectOne("SELECT current_setting('app.tenant_id', true) AS tenant,
+                current_setting('row_security') AS row_security,
                 r.rolsuper, r.rolbypassrls,
                 pg_has_role(current_user, c.relowner, 'MEMBER') AS owns_table,
                 c.relrowsecurity, c.relforcerowsecurity
@@ -42,7 +43,8 @@ final readonly class PostgresActiveMembershipStore implements ActiveMembershipSt
             }
             if (!$state
                 || $state->rolsuper || $state->rolbypassrls || $state->owns_table
-                || !$state->relrowsecurity || !$state->relforcerowsecurity) {
+                || !$state->relrowsecurity || !$state->relforcerowsecurity
+                || $state->row_security !== 'on') {
                 throw new LogicException('Unsafe tenant connection.');
             }
 
