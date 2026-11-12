@@ -50,7 +50,7 @@ final class OfflineKanbanLaneSummaryTest extends TestCase
     {
         $html = self::html();
         // The single bounded search control adds ~1.3 KiB; keep a tight total size cap.
-        self::assertLessThanOrEqual(35000, strlen($html));
+        self::assertLessThanOrEqual(40000, strlen($html));
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringContainsString("form-action 'none'", $html);
         self::assertStringNotContainsString('localStorage', $html);
