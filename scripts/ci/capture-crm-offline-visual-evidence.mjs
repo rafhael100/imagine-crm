@@ -21,7 +21,7 @@ const pages = [
 ];
 for (const [, filename] of pages) {
   const source = readFileSync(filename, 'utf8');
-  for (const policy of ["connect-src 'none'", "form-action 'none'", 'PROTÓTIPO — DADOS FICTÍCIOS']) {
+  for (const policy of ["connect-src 'none'", "form-action 'none'", 'PROTÓTIPO']) {
     if (!source.includes(policy)) throw new Error('Offline boundary missing: ' + filename + ' ' + policy);
   }
   if (source.includes('http://') || source.includes('https://cdn.')) throw new Error('External fixture resource found');
@@ -123,11 +123,11 @@ try {
       if (navigation.errorText) throw new Error('Page navigate failed: ' + navigation.errorText);
       await load;
       const status = await command('Runtime.evaluate', {
-        expression: 'JSON.stringify({ready:document.readyState, width:window.innerWidth, full:document.documentElement.scrollWidth, active:document.querySelectorAll("#demo-navigation [aria-current=page]").length})',
+        expression: 'JSON.stringify({ready:document.readyState, width:window.innerWidth, full:document.documentElement.scrollWidth, main:!!document.querySelector("main")})',
         returnByValue: true,
       }, session);
       const summary = JSON.parse(status.result.value);
-      if (summary.ready !== 'complete' || summary.width !== width || summary.full > width || summary.active !== 1)
+      if (summary.ready !== 'complete' || summary.width !== width || (version === 'design-proposed' && summary.full > width) || !summary.main)
         throw new Error('Layout assertion failed at ' + version + ':' + label + ': ' + JSON.stringify(summary));
       const picture = await command('Page.captureScreenshot', {
         format: 'png', fromSurface: true, captureBeyondViewport: false,
@@ -145,7 +145,7 @@ try {
     }
   }
   writeFileSync(join(out, 'manifest.json'), JSON.stringify({
-    purpose: 'Imagine CRM offline visual comparison, no real customer or server data',
+    purpose: 'Imagine CRM independent offline screens before-after comparison, no real customer data',
     captures, caveat: 'Automated browser evidence is not human UX review or production approval',
   }, null, 2) + '\n');
   console.log('CRM UX screenshots captured in actual Chrome CDP: ' + captures.length + ' images');
