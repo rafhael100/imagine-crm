@@ -95,10 +95,24 @@ $driver = <<<'HTML'
 
       const buttons=Array.from(doc.querySelectorAll('#demo-navigation button[data-page]'));
       check(buttons.length===9,'all navigation buttons exist');
+      const groups=Array.from(doc.querySelectorAll('#demo-navigation .nav-group'));
+      check(groups.length===3,'mobile navigation remains grouped');
+      check(groups.every(x=>win.getComputedStyle(x).display==='flex'),
+        'mobile groups are horizontally scrollable');
+      check(buttons.every(x=>x.getBoundingClientRect().height>=44),
+        'all nine mobile navigation targets are at least 44 CSS px high');
+      check(doc.getElementById('nav-section').textContent==='Início',
+        'mobile breadcrumb names active group');
       const leads=buttons.find(node=>node.getAttribute('data-page')==='leads');
       const pipeline=buttons.find(node=>node.getAttribute('data-page')==='pipeline');
       const monitor=buttons.find(node=>node.getAttribute('data-page')==='monitor');
       monitor.click();
+      check(nav.scrollLeft>0,'mobile menu scrolls to selected commercial group without leaving the page');
+      const currentRect=monitor.getBoundingClientRect(), visibleRect=nav.getBoundingClientRect();
+      check(currentRect.left>=visibleRect.left-1&&currentRect.right<=visibleRect.right+1,
+        'selected mobile navigation button remains inside scroll viewport');
+      check(doc.getElementById('nav-section').textContent==='Operação comercial',
+        'mobile breadcrumb follows second navigation group');
       check(doc.getElementById('page-title').textContent==='Monitoramento de leads','page switch at 320');
       check(doc.activeElement===doc.getElementById('page-title'),'heading focus');
       check(doc.querySelectorAll('[data-screen]:not([hidden])').length===1,'one active screen');

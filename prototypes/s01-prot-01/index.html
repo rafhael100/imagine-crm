@@ -120,6 +120,24 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
 .pipeline-review-link{background:var(--imagine-orange-soft);border-color:#e9c79c;color:var(--imagine-orange-text)}
 .pipeline-review-link:hover{background:#ffe4c4}
 @media(max-width:900px){.shell{grid-template-columns:minmax(0,1fr)}.sidebar{border-right:0;border-bottom:1px solid var(--imagine-border)}}
+
+/* CRM UX Experience v1 — grouped, lightweight navigation and touch accessibility. */
+.side-nav{gap:16px}
+.nav-group{display:grid;gap:5px;min-width:0}
+.nav-section-label{font-size:.65rem;font-weight:800;text-transform:uppercase;
+ letter-spacing:1.2px;color:var(--imagine-muted);margin:6px 12px 5px}
+.nav-button{min-height:44px}
+.crumb{overflow-wrap:anywhere}
+.lead,.step p,.caption,.soft,.field-label,.demo-ticket span,.bottom,.disclaimer{color:#626262}
+.help{background:var(--imagine-surface);border-color:var(--imagine-border);color:#484848}
+@media(max-width:900px){
+ .side-nav{gap:8px}
+ .nav-group{display:flex;align-items:center;flex:0 0 auto;gap:6px;padding:0 6px 0 0;
+   border-right:1px solid var(--imagine-border)}
+ .nav-group:last-child{border-right:0}
+ .nav-section-label{display:none}
+ .nav-button{flex:0 0 auto;min-height:44px;padding:10px 12px}
+}
 </style>
 </head>
 <body>
@@ -130,22 +148,31 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
     <div>
       <p class="side-label">Demonstração</p>
       <nav class="side-nav" id="demo-navigation" aria-label="Telas de demonstração">
-        <button class="nav-button" type="button" data-page="welcome" aria-controls="screen-welcome" aria-current="page"><span class="dot" aria-hidden="true"></span>Boas-vindas</button>
-        <button class="nav-button" type="button" data-page="organization" aria-controls="screen-organization"><span class="dot" aria-hidden="true"></span>Minha organização</button>
-        <button class="nav-button" type="button" data-page="dashboard" aria-controls="screen-dashboard"><span class="dot" aria-hidden="true"></span>Visão geral</button>
-        <button class="nav-button" type="button" data-page="leads" aria-controls="screen-leads"><span class="dot" aria-hidden="true"></span>Leads fictícios</button>
-        <button class="nav-button" type="button" data-page="pipeline" aria-controls="screen-pipeline"><span class="dot" aria-hidden="true"></span>Funil ilustrativo</button>
-        <button class="nav-button" type="button" data-page="monitor" aria-controls="screen-monitor"><span class="dot" aria-hidden="true"></span>Monitoramento de leads</button>
-        <button class="nav-button" type="button" data-page="import" aria-controls="screen-import"><span class="dot" aria-hidden="true"></span>Prévia de importação</button>
-        <button class="nav-button" type="button" data-page="states" aria-controls="screen-states"><span class="dot" aria-hidden="true"></span>Estados da tela</button>
-        <button class="nav-button" type="button" data-page="about" aria-controls="screen-about"><span class="dot" aria-hidden="true"></span>Sobre o protótipo</button>
+        <div class="nav-group" role="group" aria-label="Início">
+          <p class="nav-section-label" aria-hidden="true">Início</p>
+          <button class="nav-button" type="button" data-page="welcome" aria-controls="screen-welcome" aria-current="page"><span class="dot" aria-hidden="true"></span>Boas-vindas</button>
+          <button class="nav-button" type="button" data-page="organization" aria-controls="screen-organization"><span class="dot" aria-hidden="true"></span>Minha organização</button>
+          <button class="nav-button" type="button" data-page="dashboard" aria-controls="screen-dashboard"><span class="dot" aria-hidden="true"></span>Visão geral</button>
+        </div>
+        <div class="nav-group" role="group" aria-label="Operação comercial">
+          <p class="nav-section-label" aria-hidden="true">Operação comercial</p>
+          <button class="nav-button" type="button" data-page="leads" aria-controls="screen-leads"><span class="dot" aria-hidden="true"></span>Leads fictícios</button>
+          <button class="nav-button" type="button" data-page="pipeline" aria-controls="screen-pipeline"><span class="dot" aria-hidden="true"></span>Funil ilustrativo</button>
+          <button class="nav-button" type="button" data-page="monitor" aria-controls="screen-monitor"><span class="dot" aria-hidden="true"></span>Monitoramento de leads</button>
+        </div>
+        <div class="nav-group" role="group" aria-label="Revisão e suporte">
+          <p class="nav-section-label" aria-hidden="true">Revisão e suporte</p>
+          <button class="nav-button" type="button" data-page="import" aria-controls="screen-import"><span class="dot" aria-hidden="true"></span>Prévia de importação</button>
+          <button class="nav-button" type="button" data-page="states" aria-controls="screen-states"><span class="dot" aria-hidden="true"></span>Estados da tela</button>
+          <button class="nav-button" type="button" data-page="about" aria-controls="screen-about"><span class="dot" aria-hidden="true"></span>Sobre o protótipo</button>
+        </div>
       </nav>
       <p class="mobile-nav-hint">Deslize horizontalmente para ver todas as telas. Use Tab ou as setas para navegar.</p>
     </div>
     <div class="side-note"><strong>Ambiente ilustrativo</strong>Sem login, conexão com servidores ou dados de clientes. As informações são inteiramente fictícias.</div>
   </aside>
   <main class="main" id="conteudo" tabindex="-1">
-    <header class="topbar"><span class="crumb">Imagine CRM <span aria-hidden="true">/</span> Demonstração</span><span class="pill">PROTÓTIPO — DADOS FICTÍCIOS</span></header>
+    <header class="topbar"><span class="crumb">Imagine CRM <span aria-hidden="true">/</span> <span id="nav-section">Início</span> <span aria-hidden="true">/</span> <span id="nav-current">Boas-vindas</span></span><span class="pill">PROTÓTIPO — DADOS FICTÍCIOS</span></header>
     <div class="content">
       <div class="heading-row">
         <div><p class="eyebrow">S01-PROT-01 · Experiência visual</p><h1 id="page-title" tabindex="-1">Boas-vindas</h1></div>
@@ -469,8 +496,16 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
 (function(){
   'use strict';
   const names = Object.freeze({welcome:'Boas-vindas',organization:'Minha organização',dashboard:'Visão geral',leads:'Leads fictícios',pipeline:'Funil ilustrativo',monitor:'Monitoramento de leads',import:'Prévia de importação',states:'Estados da tela',about:'Sobre o protótipo'});
+  const sections = Object.freeze({
+    welcome:'Início',organization:'Início',dashboard:'Início',
+    leads:'Operação comercial',pipeline:'Operação comercial',monitor:'Operação comercial',
+    import:'Revisão e suporte',states:'Revisão e suporte',about:'Revisão e suporte'
+  });
+  const sectionHeading = document.getElementById('nav-section');
+  const pageCrumb = document.getElementById('nav-current');
   const screens = Array.from(document.querySelectorAll('[data-screen]'));
   const nav = Array.from(document.querySelectorAll('[data-page]'));
+  const menuViewport = document.getElementById('demo-navigation');
   const heading = document.getElementById('page-title');
   const trialPhaseButtons = Array.from(document.querySelectorAll('#screen-dashboard [data-trial-phase]'));
   const trialQuotaButtons = Array.from(document.querySelectorAll('#screen-dashboard [data-trial-quota]'));
@@ -551,6 +586,18 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(-
       else node.removeAttribute('aria-current');
     });
     heading.textContent=names[page];
+    sectionHeading.textContent=sections[page];
+    pageCrumb.textContent=names[page];
+    // Keep the current item visible within the horizontal mobile menu only.
+    // Never scroll the document itself, steal focus or navigate a URL.
+    if (window.innerWidth<=900) {
+      const active=nav.find(function(node){return node.getAttribute('data-page')===page;});
+      if (active) {
+        const item=active.getBoundingClientRect(), viewport=menuViewport.getBoundingClientRect();
+        if (item.right>viewport.right-8) menuViewport.scrollLeft+=item.right-viewport.right+12;
+        else if (item.left<viewport.left+8) menuViewport.scrollLeft-=viewport.left-item.left+12;
+      }
+    }
     if(page!=='leads') showLeadDetail(null);
     if (moveFocus) heading.focus();
   }

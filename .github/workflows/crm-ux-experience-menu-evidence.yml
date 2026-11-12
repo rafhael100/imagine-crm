@@ -1,0 +1,77 @@
+name: CRM Imagine - UX Experience Menu QA and Screenshots
+
+on:
+  push:
+    branches:
+      - dev/ui-crm-experience-navigation-2026-11-12
+  pull_request:
+    branches:
+      - dev/ui-ds-v1-crm-shell-2026-11-12
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-ux-experience-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-experience:
+    name: PHP tests, Chrome 320px and comparative screenshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - name: Checkout isolated PR branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Node 22 for built-in CDP WebSocket
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install ephemeral PHP test dependencies
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring,dom,xml,curl,zip,pdo_sqlite,sqlite3
+          tools: composer:v2
+          coverage: none
+      - name: Run synthetic CRM navigation and security boundary tests
+        run: |
+          set -euo pipefail
+          composer validate --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+          cp .env.example .env
+          php artisan key:generate --force
+          php artisan test --no-ansi --filter=ImagineExperienceNavigationV1Test
+          php artisan test --no-ansi --filter=OfflinePrototypeResourceBoundaryTest
+          php scripts/ci/check-offline-prototype-browser.php
+          php scripts/ci/check-offline-prototype-320.php
+      - name: Capture six historical DEV versus approved design screenshots
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/crm-ux-evidence
+          git show 691f93ce2a147f253a2dac6fbafa482227f354c0:prototypes/s01-prot-01/index.html > .tmp/crm-ux-evidence/legacy-dev.html
+          node scripts/ci/capture-crm-experience-visual-evidence.mjs \
+            .tmp/crm-ux-evidence/legacy-dev.html \
+            prototypes/s01-prot-01/index.html \
+            .tmp/crm-ux-evidence/screenshots
+      - name: Upload local-only comparative screenshots for human review
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crm-ux-experience-visual-${{ github.sha }}
+          path: .tmp/crm-ux-evidence/screenshots/
+          if-no-files-found: error
+          retention-days: 7
