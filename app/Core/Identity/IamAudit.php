@@ -22,7 +22,7 @@ class IamAudit
             throw new InvalidArgumentException('Invalid IAM audit envelope.');
         }
         // No free-form metadata, exception messages, login, IP, tokens or factors.
-        $db->table('crm_iam_audit_events')->insert([
+        $db->table(IamRegistryTable::name($db, 'crm_iam_audit_events'))->insert([
             'id' => (string) Str::uuid(), 'correlation_id' => $correlation,
             'action' => $action, 'outcome' => $outcome, 'actor_id' => $actor,
             'subject_id' => $subject, 'origin_key' => $origin, 'occurred_at' => now()->getTimestamp(),
