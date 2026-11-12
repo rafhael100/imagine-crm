@@ -111,11 +111,15 @@ footer{max-width:1050px;margin:auto;padding:0 24px 34px;color:#617a88;font-size:
       for(const delta of [-1,1]){
         const button=document.createElement('button');
         button.type='button';button.textContent=delta===-1?'−':'+';
+        button.dataset.index=String(index);button.dataset.delta=String(delta);
         button.setAttribute('aria-label',(delta===-1?'Diminuir':'Aumentar')+' quantidade de '+line.label);
         button.disabled=delta===-1?line.quantity<=1:line.quantity>=10;
         button.addEventListener('click',()=>{
           line.quantity+=delta;
           render();
+          const same=document.querySelector('[data-index="'+index+'"][data-delta="'+delta+'"]');
+          const opposite=document.querySelector('[data-index="'+index+'"][data-delta="'+(-delta)+'"]');
+          if(same&&!same.disabled)same.focus();else if(opposite)opposite.focus();
           put('feedback','Quantidade ilustrativa atualizada. Nenhuma proposta ou cobrança gerada.');
         });
         wrap.appendChild(button);
