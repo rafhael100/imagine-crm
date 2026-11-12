@@ -112,7 +112,7 @@ final class SyntheticSalesGoalProgressPreviewTest extends TestCase
             [self::claim(self::A, 20000), ['event_reference' => 'not-a-uuid', 'amount_cents' => 20000]],
             [self::claim(self::A, 20000), ['event_reference' => self::B, 'amount_cents' => '20000']],
             [array_merge(self::claim(self::A, 20000), ['tenant' => 'private@example.test'])],
-            [self::claim(self::A, $preview::class === 'x' ? 1 : PHP_INT_MAX)],
+            [self::claim(self::A, PHP_INT_MAX)],
         ];
         foreach ($bad as $claims) {
             try {
