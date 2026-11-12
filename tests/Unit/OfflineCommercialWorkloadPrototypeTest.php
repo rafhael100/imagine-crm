@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Core\Sales\SyntheticCommercialWorkloadInspector;
+use App\Core\Sales\SyntheticCommercialWorkloadTrendReview;
 use PHPUnit\Framework\TestCase;
 
 final class OfflineCommercialWorkloadPrototypeTest extends TestCase
@@ -18,17 +19,17 @@ final class OfflineCommercialWorkloadPrototypeTest extends TestCase
         return $html;
     }
 
-    public function test_two_offline_scenarios_are_accessible_and_every_action_denied(): void
+    public function test_three_offline_scenarios_are_accessible_and_every_action_denied(): void
     {
         $html = self::html();
-        foreach (['pressure','balanced'] as $key) {
+        foreach (['pressure','balanced','trend'] as $key) {
             self::assertStringContainsString('id="'.$key.'"', $html);
             self::assertStringContainsString('for="'.$key.'"', $html);
         }
-        self::assertSame(2, substr_count($html, 'type="radio"'));
-        self::assertSame(2, substr_count($html, 'Atribuir: bloqueado'));
-        self::assertSame(2, substr_count($html, 'Enviar aviso: bloqueado'));
-        self::assertSame(2, substr_count($html, 'Gravar: bloqueado'));
+        self::assertSame(3, substr_count($html, 'type="radio"'));
+        self::assertSame(3, substr_count($html, 'Atribuir: bloqueado'));
+        self::assertSame(3, substr_count($html, 'Enviar aviso: bloqueado'));
+        self::assertSame(3, substr_count($html, 'Gravar: bloqueado'));
         self::assertStringContainsString('fictional_lead_capacity_shortfall', $html);
         self::assertStringContainsString('fictional_overdue_tasks', $html);
         self::assertStringContainsString('cross_module_identity_unverified', $html);
@@ -89,5 +90,37 @@ final class OfflineCommercialWorkloadPrototypeTest extends TestCase
         }
         self::assertFalse($out['authorized']);
         self::assertFalse($out['can_notify']);
+    }
+
+    public function test_visual_improvement_matches_real_php_trend_without_permissions(): void
+    {
+        $earlier = [
+            'agents' => [[
+                'enabled'=>true,'has_required_skill'=>true,
+                'open_leads'=>0,'capacity'=>0,
+            ]],
+            'lead_states' => ['unassigned','unassigned'],
+            'start_cursor' => 0,
+            'task_histories' => [[[
+                'revision'=>1,'action'=>'create',
+                'occurred_at_utc'=>'2026-11-01T10:00:00Z',
+                'due_at_utc'=>'2026-11-09T12:00:00Z',
+                'priority'=>'high','reason_code'=>null,
+            ]]],
+            'observed_at_utc'=>'2026-11-10T12:00:00Z',
+        ];
+        $later = $earlier;
+        $later['agents'][0]['capacity'] = 2;
+        $later['task_histories'][0][0]['due_at_utc'] = '2026-11-11T12:00:00Z';
+        $result = (new SyntheticCommercialWorkloadTrendReview())->inspect($earlier, $later);
+        self::assertSame(-2, $result['fictional_capacity_shortfall_delta']);
+        self::assertSame(-1, $result['fictional_overdue_task_delta']);
+        self::assertSame('reduced_pressure', $result['pressure_trend']);
+        foreach ($result['warning_codes'] as $code) {
+            self::assertStringContainsString($code, self::html());
+        }
+        foreach (['authorized','can_assign','can_reschedule','can_notify','can_persist'] as $field) {
+            self::assertFalse($result[$field]);
+        }
     }
 }
