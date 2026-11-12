@@ -85,11 +85,20 @@ final class ImagineVisualIdentityV1Test extends TestCase
         $hub = (string) file_get_contents($root.'index.html');
         self::assertStringContainsString('.card a{background:var(--imagine-orange);color:var(--imagine-ink)', $hub);
         self::assertStringContainsString('script-src \'none\'', $hub);
-        self::assertStringContainsString('img-src \'none\'', $hub);
+        self::assertStringContainsString("img-src 'self'", $hub);
 
         $board = (string) file_get_contents($root.'f3-59-offline-kanban/index.html');
         self::assertStringContainsString('.filters button[aria-pressed="true"],.selection-toggle[aria-pressed="true"]{background:var(--imagine-orange-soft);color:var(--imagine-orange-text)', $board);
         self::assertStringContainsString('outline:3px solid var(--imagine-focus)', $board);
         self::assertStringContainsString('frame-src \'none\'', $board);
+        self::assertStringContainsString("img-src 'self' data:", $board);
+        foreach (['index.html'=>'assets/logo-imagine.png', 'f3-59-offline-kanban/index.html'=>'../assets/logo-imagine.png'] as $path=>$logo) {
+            $document=(string)file_get_contents($root.$path);
+            self::assertSame(1,substr_count($document, 'src="'.$logo.'"'));
+            self::assertSame(1,substr_count($document, 'alt="Imagine Comunicação Digital"'));
+            self::assertStringNotContainsString('data:image/png;base64', $document);
+        }
+        $asset=(string)file_get_contents($root.'assets/logo-imagine.png');
+        self::assertSame('678adeceb3a8ecdaeb6b576b9ee18d1bf0396f77',sha1('blob '.strlen($asset).chr(0).$asset));
     }
 }

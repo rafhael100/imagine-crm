@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; font-src 'none'; connect-src 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Imagine CRM — Funil de oportunidades fictícias</title>
 <style>
@@ -102,12 +102,14 @@ button:hover{background:var(--imagine-orange-soft)}
 .lane[data-drag-over="true"]{outline-color:var(--imagine-focus)}
 .ticket .value{color:var(--imagine-orange-text)}
 .csv-demo{background:var(--imagine-surface);border-color:var(--imagine-border)}
+.brand{display:flex;align-items:center;gap:12px;min-height:46px}.brand-logo{display:block;width:162px;max-width:58vw;height:auto;object-fit:contain}.brand small{margin:0;border-left:1px solid var(--imagine-border);padding-left:12px;font-size:.75rem;letter-spacing:.1em}
+@media(max-width:520px){.brand-logo{width:138px}}
 </style>
 </head>
 <body>
 <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 <header>
-  <div class="brand">imagine <small>CRM</small></div>
+  <div class="brand"><img class="brand-logo" src="../assets/logo-imagine.png" alt="Imagine Comunicação Digital" width="162" height="45" decoding="async"> <small>CRM</small></div>
   <a href="../s01-prot-01/index.html">Voltar ao protótipo principal</a>
 </header>
 <main id="conteudo">
