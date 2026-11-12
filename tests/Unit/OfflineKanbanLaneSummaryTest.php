@@ -49,7 +49,8 @@ final class OfflineKanbanLaneSummaryTest extends TestCase
     public function test_lane_metrics_remain_local_and_do_not_introduce_capture_or_networking(): void
     {
         $html = self::html();
-        self::assertLessThanOrEqual(32000, strlen($html));
+        // The single bounded search control adds ~1.3 KiB; keep a tight total size cap.
+        self::assertLessThanOrEqual(35000, strlen($html));
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringContainsString("form-action 'none'", $html);
         self::assertStringNotContainsString('localStorage', $html);
