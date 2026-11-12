@@ -132,6 +132,24 @@ $driver = <<<'HTML'
    by('reset-demo').click();
    check(by('undo-change').disabled&&by('redo-change').disabled,'reset clears history');
 
+   // Sort within each stage using synthetic values only. Sorting never edits records.
+   drag('F03',0);
+   drag('F05',0);
+   const stageZeroOrder=()=>Array.from(lane(0).querySelectorAll('[data-card-id]'))
+     .map(item=>item.dataset.cardId).join(',');
+   check(stageZeroOrder()==='F01,F02,F03,F05','original insertion order before value sort');
+   d.querySelector('[data-order="value"]').click();
+   check(stageZeroOrder()==='F05,F03,F01,F02','highest fictitious value first');
+   check(d.querySelector('[data-order="value"]').getAttribute('aria-pressed')==='true',
+     'value order announced to assistive technology');
+   d.querySelector('[data-order="score"]').click();
+   check(stageZeroOrder()==='F01,F05,F03,F02','score order distinct from value order');
+   d.querySelector('[data-order="default"]').click();
+   check(stageZeroOrder()==='F01,F02,F03,F05','original order restored');
+   check(by('count-moves').textContent==='2','sorting does not create extra actions');
+   by('reset-demo').click();
+   check(by('undo-change').disabled,'reset after sorting clears actions');
+
    // Same-lane drop is a no-op; adjacent keyboard button still works.
    drag('F01',0);
    check(by('undo-change').disabled,'dropping on current lane is inert');
