@@ -74,6 +74,10 @@ $testScript = <<<'JS'
     const monitor=nav.find(x=>x.dataset.page==='monitor');
     monitor.click();
     check(document.getElementById('page-title').textContent==='Monitoramento de leads','click switches screen');
+    check(document.getElementById('nav-section').textContent==='Operação comercial',
+      'breadcrumb tracks commercial navigation');
+    check(document.getElementById('nav-current').textContent==='Monitoramento de leads',
+      'breadcrumb tracks active title');
     check(document.activeElement===document.getElementById('page-title'),'click focuses heading');
     check(!document.getElementById('screen-monitor').hidden,'active screen visible');
     check(document.querySelectorAll('[data-screen]:not([hidden])').length===1,'one screen visible');
