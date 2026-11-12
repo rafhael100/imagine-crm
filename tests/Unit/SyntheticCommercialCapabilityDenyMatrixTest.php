@@ -19,6 +19,7 @@ use App\Core\Sales\SyntheticCommercialJourneyInspector;
 use App\Core\Sales\SyntheticSalesAggregatePrivacyPreview;
 use App\Core\Sales\SyntheticStageAggregateCsvPreview;
 use App\Core\Sales\SyntheticReportDifferencingRiskInspector;
+use App\Core\Sales\SyntheticReportHistoryPairwiseRiskInspector;
 use App\Core\Sales\SyntheticPrivateStageDistributionPreview;
 use App\Core\Sales\SyntheticStageDashboardSnapshotReview;
 use App\Core\Sales\SyntheticReportDeliveryCompositeInspector;
@@ -250,6 +251,12 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
                 ],
                 3,
             ),
+            'historical_report_pairwise_differencing_denied' =>
+                (new SyntheticReportHistoryPairwiseRiskInspector())->inspect([
+                    ['new' => 3, 'qualified' => 0, 'proposal' => 0, 'won' => 0, 'lost' => 0],
+                    ['new' => 8, 'qualified' => 0, 'proposal' => 0, 'won' => 0, 'lost' => 0],
+                    ['new' => 4, 'qualified' => 0, 'proposal' => 0, 'won' => 0, 'lost' => 0],
+                ], 3),
             'trial_review_window' => (new SyntheticTrialRetentionTimeline(
                 new TrialWindowAdvisory(2000000, 2000000 + 14 * 86400),
             ))->readout(),
@@ -293,10 +300,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             ->inspect($cases[0]['input']);
     }
 
-    public function test_all_twenty_eight_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_twenty_nine_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(28, $reports);
+        self::assertCount(29, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -398,6 +405,16 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         self::assertTrue($reports['cross_snapshot_dashboard_withheld']['all_ratios_withheld']);
         self::assertFalse($reports['cross_snapshot_dashboard_withheld']['can_deliver']);
         self::assertSame(0, $reports['cross_snapshot_dashboard_withheld']['recognized_revenue_cents']);
+        self::assertSame(
+            [[0, 2]],
+            $reports['historical_report_pairwise_differencing_denied']['risk_pair_positions'],
+        );
+        self::assertContains(
+            'small_delta_across_history',
+            $reports['historical_report_pairwise_differencing_denied']['risk_codes'],
+        );
+        self::assertFalse($reports['historical_report_pairwise_differencing_denied']['can_publish']);
+        self::assertFalse($reports['historical_report_pairwise_differencing_denied']['can_deliver']);
         self::assertSame('second_marker_elapsed', $reports['delinquency_day_thirty']['phase']);
         self::assertFalse($reports['delinquency_day_thirty']['can_suspend_service']);
     }
@@ -433,6 +450,7 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticReportDifferencingRiskInspector',
             'SyntheticPrivateStageDistributionPreview',
             'SyntheticStageDashboardSnapshotReview',
+            'SyntheticReportHistoryPairwiseRiskInspector',
         ] as $class) {
             self::assertStringNotContainsString($class, $routes);
         }
