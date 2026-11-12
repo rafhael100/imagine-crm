@@ -39,8 +39,9 @@ final class ImagineVisualIdentityV1Test extends TestCase
         self::assertStringContainsString('historical Node Portal', $tokens);
         foreach (self::TOKENS as $name => $value) {
             $name = '--imagine-'.$name;
-            $canonical = '/'.preg_quote($name, '/').'\s*:\s*'.preg_quote($value, '/').'\s*;/i';
-            self::assertMatchesRegularExpression($canonical, $tokens);
+            $canonical = preg_replace('/\\s+/', '', $tokens);
+            self::assertIsString($canonical);
+            self::assertStringContainsString($name.':'.$value.';', strtolower($canonical));
         }
         foreach (self::SURFACES as $surface) {
             $html = file_get_contents($root.'/'.$surface);
