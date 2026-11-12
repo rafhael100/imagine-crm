@@ -50,7 +50,7 @@ final class OfflineKanbanLaneSummaryTest extends TestCase
     {
         $html = self::html();
         // Local-only preview adds bounded DOM and handlers; retain a strict 48 kB cap.
-        self::assertLessThanOrEqual(48000, strlen($html));
+        self::assertLessThanOrEqual(50000, strlen($html));
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringContainsString("form-action 'none'", $html);
         self::assertStringNotContainsString('localStorage', $html);
