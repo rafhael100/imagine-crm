@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; font-src 'none'; frame-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'">
+<title>Imagine CRM — Triagem comercial interativa fictícia</title>
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f0f6f9;color:#17384a;line-height:1.5}
+body{margin:0;min-width:0}
+header{background:#19374e;color:#fff;padding:17px clamp(16px,4vw,44px);display:flex;justify-content:space-between;gap:13px;flex-wrap:wrap}
+header a{color:#c5eaf0}
+main{max-width:1150px;margin:auto;padding:clamp(18px,4vw,42px)}
+.kicker{text-transform:uppercase;letter-spacing:.14em;font-size:.75rem;font-weight:850;color:#127e79}
+h1{font-size:clamp(1.8rem,4vw,2.65rem);line-height:1.17;margin:9px 0}
+h2{font-size:1.18rem;margin:0 0 12px}
+p{color:#587382;max-width:860px}
+.notice{background:#e6f5f0;color:#20594e;border:1px solid #bbddd2;padding:15px 17px;border-radius:12px;font-weight:720;margin:20px 0}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:18px}
+.card{min-width:0;background:#fff;padding:clamp(18px,3vw,26px);border:1px solid #dbe7ef;border-radius:16px;margin:0 0 18px}
+.control{margin:16px 0;padding:16px;background:#f5fafb;border-radius:12px;border:1px solid #dce9ef}
+.control label{display:block;font-weight:750}
+.control strong{font-variant-numeric:tabular-nums;color:#16706c}
+input[type=range]{display:block;width:100%;accent-color:#137f7a;margin:14px 0 8px;cursor:pointer}
+button{font:inherit;cursor:pointer;background:#19626d;color:#fff;border:0;border-radius:10px;padding:12px 16px;font-weight:750}
+button:hover{background:#0d7478}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #0e9990;outline-offset:4px}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.metric{min-width:0;background:#f5fafb;border:1px solid #deeaed;border-radius:12px;padding:14px}
+.metric span{display:block;color:#5e7a87;font-size:.77rem}
+.metric strong{font-size:1.55rem;font-variant-numeric:tabular-nums}
+.column-titles{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+ol{margin:9px 0;padding-left:22px}
+li{margin:9px 0;overflow-wrap:anywhere}
+code{font-size:.85em}
+.sequence{font-weight:700;color:#146a68;overflow-wrap:anywhere}
+.status{padding:13px;border-radius:10px;background:#f2f8fa;border:1px solid #d9e9eb;color:#23586a;font-weight:700}
+.prohibition{color:#8b3f40;font-weight:790}
+.hint{font-size:.83rem;color:#67808d}
+footer{max-width:1150px;margin:auto;padding:0 22px 40px;color:#6a8190;font-size:.8rem}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:440px){.metrics,.column-titles{grid-template-columns:1fr}main{padding:18px 14px}}
+</style>
+</head>
+<body>
+<header><strong>imagine CRM · Laboratório interativo</strong><a href="../index.html">Voltar aos protótipos</a></header>
+<main>
+<p class="kicker">Pontuação · Capacidade · Ordem estável</p>
+<h1>Simule a fila de triagem de leads</h1>
+<p>Altere a capacidade de dois agentes fictícios e acompanhe como um lote de cinco leads inventados é priorizado. A pontuação está fixa para demonstrar o desempate e a distribuição por rodízio, sem utilizar dados de contato.</p>
+<aside class="notice">PROTÓTIPO — DADOS FICTÍCIOS. Os controles só alteram esta página em memória. Não existe login, conexão, envio, armazenamento ou atribuição real.</aside>
+<div class="layout">
+<section class="card" aria-labelledby="controls">
+<h2 id="controls">Capacidade disponível</h2>
+<p class="hint">Ajuste o máximo de novos leads que cada vaga fictícia consegue receber neste exemplo.</p>
+<div class="control">
+<label for="capacity0">Agente fictício 1 · capacidade: <strong><output id="capacity0-value" for="capacity0">1</output></strong></label>
+<input type="range" id="capacity0" min="0" max="4" step="1" value="1">
+</div>
+<div class="control">
+<label for="capacity1">Agente fictício 2 · capacidade: <strong><output id="capacity1-value" for="capacity1">1</output></strong></label>
+<input type="range" id="capacity1" min="0" max="4" step="1" value="1">
+</div>
+<button type="button" id="reset">Reiniciar simulação</button>
+<p class="hint">A distribuição começa pela vaga fictícia 2 e alterna entre vagas disponíveis. Nenhum resultado é salvo.</p>
+<h2>Entradas inteiramente fictícias</h2>
+<ol>
+<li>Posição 1 — score 40 · não atribuído</li>
+<li>Posição 2 — score 50 · não atribuído</li>
+<li>Posição 3 — score 50 · não atribuído</li>
+<li>Posição 4 — em atendimento · não redistribuir</li>
+<li>Posição 5 — score 0 · não atribuído</li>
+</ol>
+</section>
+<section aria-label="Resultados da simulação">
+<div class="card">
+<h2>Prévia da fila comercial</h2>
+<div class="metrics">
+<div class="metric"><span>Leads analisados</span><strong id="metric-total">5</strong></div>
+<div class="metric"><span>Pré-atribuições</span><strong id="metric-planned">2</strong></div>
+<div class="metric"><span>Aguardando vaga</span><strong id="metric-waiting">2</strong></div>
+<div class="metric"><span>Já em atendimento</span><strong id="metric-handled">1</strong></div>
+</div>
+<p class="hint">Ordem por pontuação (posições locais):</p>
+<p class="sequence" id="ranking">2 → 3 → 1 → 5</p>
+<div class="column-titles">
+<section aria-labelledby="assigned-heading">
+<h2 id="assigned-heading">Planejado</h2>
+<ol id="assigned">
+<li>Posição 2 → vaga fictícia 2</li>
+<li>Posição 3 → vaga fictícia 1</li>
+</ol>
+</section>
+<section aria-labelledby="waiting-heading">
+<h2 id="waiting-heading">Aguardando capacidade</h2>
+<ol id="waiting">
+<li>Posição 1</li>
+<li>Posição 5</li>
+</ol>
+</section>
+</div>
+<p class="hint">Carga local simulada das vagas: <strong id="loads">1 / 1</strong></p>
+<p class="status" id="simulation-status" role="status" aria-live="polite">Simulação local calculada. Nenhuma ação real executada.</p>
+<p class="prohibition">Atribuir: bloqueado · Notificar: bloqueado · Gravar: bloqueado</p>
+</div>
+</section>
+</div>
+</main>
+<footer>Imagine CRM · Apenas laboratório local F3-164. Sem identidade, permissão, persistência, acesso real ou política comercial verificada.</footer>
+<script>
+(function(){
+  'use strict';
+  // Local fixture positions only: no names, emails, IDs, tenants or data input.
+  const leads=Object.freeze([
+    {position:0,score:40,state:'unassigned'},
+    {position:1,score:50,state:'unassigned'},
+    {position:2,score:50,state:'unassigned'},
+    {position:3,score:45,state:'engaged'},
+    {position:4,score:0,state:'unassigned'}
+  ]);
+  const first=document.getElementById('capacity0');
+  const second=document.getElementById('capacity1');
+  const $=id=>document.getElementById(id);
+  const rank=leads.filter(x=>x.state==='unassigned')
+    .sort((a,b)=>(b.score-a.score)||(a.position-b.position));
+  function fillList(node,values){
+    node.replaceChildren();
+    for(const value of values){
+      const item=document.createElement('li');
+      item.textContent=value;
+      node.appendChild(item);
+    }
+  }
+  function render(){
+    const capacities=[Number(first.value),Number(second.value)];
+    const loads=[0,0];
+    const planned=[];
+    const waiting=[];
+    let cursor=1;
+    for(const lead of rank){
+      let slot=null;
+      for(let offset=0;offset<2;offset++){
+        const candidate=(cursor+offset)%2;
+        if(loads[candidate]<capacities[candidate]){slot=candidate;break;}
+      }
+      if(slot===null){waiting.push('Posição '+(lead.position+1));continue;}
+      planned.push('Posição '+(lead.position+1)+' → vaga fictícia '+(slot+1));
+      loads[slot]++;
+      cursor=(slot+1)%2;
+    }
+    $('capacity0-value').textContent=String(capacities[0]);
+    $('capacity1-value').textContent=String(capacities[1]);
+    $('metric-total').textContent=String(leads.length);
+    $('metric-planned').textContent=String(planned.length);
+    $('metric-waiting').textContent=String(waiting.length);
+    $('metric-handled').textContent=String(leads.length-rank.length);
+    $('ranking').textContent=rank.map(x=>x.position+1).join(' → ');
+    $('loads').textContent=loads.join(' / ');
+    fillList($('assigned'),planned);
+    fillList($('waiting'),waiting);
+    $('simulation-status').textContent='Simulação local atualizada. Nenhuma atribuição, notificação ou gravação real.';
+  }
+  first.addEventListener('input',render);
+  second.addEventListener('input',render);
+  $('reset').addEventListener('click',function(){
+    first.value='1';
+    second.value='1';
+    render();
+    first.focus();
+  });
+  render();
+})();
+</script>
+</body>
+</html>
