@@ -57,6 +57,8 @@ button[disabled]{opacity:.47;cursor:not-allowed}
 .tag.high{background:#fff1d5;color:#79581e}
 .followup-label{display:block;font-size:.75rem;font-weight:750;color:#3c6071;margin-top:9px}
 .followup-toggle{background:#e4f4ed;border-color:#a2cfbf;color:#125f50;width:100%;margin-top:10px}
+.selection-toggle{width:100%;margin-top:8px}
+.selection-toggle[aria-pressed="true"]{background:#163f67;border-color:#163f67;color:#fff}
 .moves{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
 .moves button{font-size:.73rem;flex:1 1 85px;padding:8px}
 .empty{border:1px dashed #a8c0c9;background:#f8fbfc;border-radius:11px;color:#677e8c;padding:16px;font-size:.8rem}
@@ -126,6 +128,13 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   <label for="fiction-search"><strong>Buscar cartão fictício:</strong></label>
   <input type="search" id="fiction-search" maxlength="32" autocomplete="off" spellcheck="false" placeholder="F01 ou oportunidade">
   </div>
+  <div class="filters" role="group" aria-label="Seleção local para operações em lote">
+  <strong>Seleção:</strong>
+  <span id="count-selected" aria-live="polite" aria-atomic="true">0 selecionados</span>
+  <button type="button" id="select-visible">Selecionar visíveis</button>
+  <button type="button" id="clear-selection" disabled>Limpar seleção</button>
+  <span class="shortcut-hint">Sem seleção: lote age em todos os visíveis. Com seleção: apenas cartões escolhidos e visíveis.</span>
+  </div>
   <div class="filters" role="group" aria-label="Controle da simulação">
   <button type="button" id="complete-visible-followups">Concluir pendentes visíveis (simulação)</button>
   <button type="button" id="advance-visible-stage">Avançar etapas visíveis (simulação)</button>
@@ -187,6 +196,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   let searchText='';
   let history=[];
   let redoStack=[];
+  let selectedIds=new Set();
   let moves=0;
   let order='default';
   let activity=[];
@@ -238,6 +248,13 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   followButton.dataset.followup=item.id;
   followButton.setAttribute('aria-label',(item.followup==='done'?'Reabrir':'Concluir')+' acompanhamento fictício de '+item.label);
   card.appendChild(followButton);
+  const selectButton=node('button','selection-toggle',
+    selectedIds.has(item.id)?'Remover da seleção':'Selecionar para lote');
+  selectButton.type='button';
+  selectButton.dataset.select=item.id;
+  selectButton.setAttribute('aria-pressed',String(selectedIds.has(item.id)));
+  selectButton.setAttribute('aria-label',(selectedIds.has(item.id)?'Remover ':'Selecionar ')+item.label+' da seleção fictícia em lote');
+  card.appendChild(selectButton);
   return card;
   }
   function csvFromVisible(items){
@@ -323,15 +340,22 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   document.querySelectorAll('[data-order]').forEach(function(button){
   button.setAttribute('aria-pressed',String(button.dataset.order===order));
   });
+  const selectedVisible=subset.filter(function(item){return selectedIds.has(item.id);});
+  put('count-selected',selectedVisible.length+' selecionados visíveis de '+selectedIds.size+' no total');
+  byId('select-visible').disabled=subset.length===0;
+  byId('clear-selection').disabled=selectedIds.size===0;
+  const eligibleVisible=function(items){
+    return selectedIds.size===0?items:items.filter(function(item){return selectedIds.has(item.id);});
+  };
   const pendingVisible=subset.filter(function(item){return item.followup==='pending';});
   const movableVisible=subset.filter(function(item){return item.stage<STAGES.length-1;});
   const returnableVisible=subset.filter(function(item){return item.stage>0;});
-  byId('return-visible-stage').disabled=returnableVisible.length===0;
-  byId('return-visible-stage').setAttribute('aria-label','Retornar '+returnableVisible.length+' oportunidades fictícias visíveis uma etapa. Ação reversível.');
-  byId('advance-visible-stage').disabled=movableVisible.length===0;
-  byId('advance-visible-stage').setAttribute('aria-label','Avançar '+movableVisible.length+' oportunidades fictícias visíveis em uma etapa. Ação reversível.');
-  byId('complete-visible-followups').disabled=pendingVisible.length===0;
-  byId('complete-visible-followups').setAttribute('aria-label','Concluir '+pendingVisible.length+' acompanhamentos fictícios pendentes visíveis. Ação reversível e local.');
+  byId('return-visible-stage').disabled=eligibleVisible(returnableVisible).length===0;
+  byId('return-visible-stage').setAttribute('aria-label','Retornar '+eligibleVisible(returnableVisible).length+' oportunidades fictícias visíveis uma etapa. Ação reversível.');
+  byId('advance-visible-stage').disabled=eligibleVisible(movableVisible).length===0;
+  byId('advance-visible-stage').setAttribute('aria-label','Avançar '+eligibleVisible(movableVisible).length+' oportunidades fictícias visíveis em uma etapa. Ação reversível.');
+  byId('complete-visible-followups').disabled=eligibleVisible(pendingVisible).length===0;
+  byId('complete-visible-followups').setAttribute('aria-label','Concluir '+eligibleVisible(pendingVisible).length+' acompanhamentos fictícios pendentes visíveis. Ação reversível e local.');
   byId('undo-change').disabled=history.length===0;
   byId('redo-change').disabled=redoStack.length===0;
   byId('add-fiction').disabled=opportunities.length>=12;
@@ -339,6 +363,9 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   if(focus){
   const element=focus.startsWith('followup:')
   ?document.querySelector('[data-card-id="'+focus.slice(9)+'"] button[data-followup]'):
+  focus.startsWith('select:')?document.querySelector('[data-card-id="'+focus.slice(7)+'"] button[data-select]'):
+  focus==='select-visible'?byId('select-visible'):
+  focus==='clear-selection'?byId('select-visible'):
   focus==='stage'?document.querySelector('[data-stage-filter="'+stageFilter+'"]'):
   focus==='batch-return'?(byId('return-visible-stage').disabled
     ?document.querySelector('[data-stage-filter="'+stageFilter+'"]')
@@ -379,6 +406,16 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   describe('Cartão fictício '+button.dataset.queueCard+' localizado no funil.');
   });
   byId('board').addEventListener('click',function(event){
+  const selectButton=event.target.closest('button[data-select]');
+  if(selectButton){
+    const id=selectButton.dataset.select;
+    if(!opportunities.some(function(item){return item.id===id;}))return;
+    if(selectedIds.has(id))selectedIds.delete(id);
+    else if(selectedIds.size<12)selectedIds.add(id);
+    render('select:'+id);
+    describe('Seleção local de cartões fictícios atualizada.');
+    return;
+  }
   const followButton=event.target.closest('button[data-followup]');
   if(followButton){
   const item=opportunities.find(function(entry){return entry.id===followButton.dataset.followup;});
@@ -415,6 +452,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   && (followupFilter==='all'||item.followup===followupFilter)
   && (stageFilter==='all'||item.stage===stageFilter)
   && matchesSearch(item)
+  && (selectedIds.size===0||selectedIds.has(item.id))
   && item.stage+direction>=0&&item.stage+direction<STAGES.length;
   });
   if(selected.length===0)return;
@@ -430,6 +468,17 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   render(direction===1?'batch-move':'batch-return');
   describe(description+' fictício em lote de '+selected.length+' oportunidades. Reversível nesta aba.');
   }
+  byId('select-visible').addEventListener('click',function(){
+  selectedIds=new Set(Array.from(document.querySelectorAll('#board [data-card-id]'),
+    function(card){return card.dataset.cardId;}));
+  render('select-visible');
+  describe('Somente cartões atualmente visíveis foram selecionados para lote.');
+  });
+  byId('clear-selection').addEventListener('click',function(){
+  selectedIds.clear();
+  render('clear-selection');
+  describe('Seleção fictícia em lote limpa.');
+  });
   byId('advance-visible-stage').addEventListener('click',function(){moveVisibleStage(1);});
   byId('return-visible-stage').addEventListener('click',function(){moveVisibleStage(-1);});
   byId('complete-visible-followups').addEventListener('click',function(){
@@ -438,6 +487,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   && (followupFilter==='all'||item.followup===followupFilter)
   && (stageFilter==='all'||item.stage===stageFilter)
   && matchesSearch(item)
+  && (selectedIds.size===0||selectedIds.has(item.id))
   && item.followup==='pending';
   });
   if(selected.length===0)return;
@@ -472,6 +522,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   };
   opportunities.push(item);
   redoStack=[];
+  selectedIds.clear();
   history.push({kind:'add',id:item.id});
   trimUndoHistory();
   remember(item.label+' criada na etapa Entrada.');
@@ -525,6 +576,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
       previous.kind==='move'?item.stage:item.followup
   });
   if(previous.kind==='add'){
+  selectedIds.delete(item.id);
   opportunities=opportunities.filter(function(entry){return entry.id!==item.id;});
   remember('Criação simulada de '+item.label+' desfeita.');
   describe('Criação simulada desfeita: '+item.label+'.');
@@ -578,6 +630,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   opportunities=FIXTURES.map(function(item){return Object.assign({},item);});
   history=[];
   redoStack=[];
+  selectedIds.clear();
   moves=0;
   priority='all';
   followupFilter='all';
