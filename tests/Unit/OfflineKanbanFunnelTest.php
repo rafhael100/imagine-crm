@@ -18,6 +18,17 @@ final class OfflineKanbanFunnelTest extends TestCase
         return $html;
     }
 
+    private const APPROVED_SEARCH = '<input type="search" id="fiction-search" maxlength="32" autocomplete="off" spellcheck="false" placeholder="F01 ou oportunidade">';
+
+    private static function withoutApprovedSearchInput(string $html): string
+    {
+        // One short text search is intentionally permitted. All other inputs
+        // and every form, upload, network and persistence path remain denied.
+        self::assertSame(1, substr_count($html, self::APPROVED_SEARCH));
+
+        return str_replace(self::APPROVED_SEARCH, '', $html);
+    }
+
     public function test_fiction_only_four_stage_board_with_eight_opportunities(): void
     {
         $html = self::html();
@@ -66,7 +77,7 @@ final class OfflineKanbanFunnelTest extends TestCase
             'insertAdjacentHTML', 'document.write', '<script src=',
             '@import', 'url(', 'download=', 'onload=', 'onclick=',
         ] as $forbidden) {
-            self::assertStringNotContainsString($forbidden, $html);
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
         }
         preg_match_all('/\bhref="([^"]+)"/', $html, $links);
         self::assertSame(['#conteudo', '../s01-prot-01/index.html'], $links[1]);
@@ -92,7 +103,7 @@ final class OfflineKanbanFunnelTest extends TestCase
             self::assertStringContainsString($contract, $html);
         }
         foreach (['<form', '<input', '<textarea', 'localStorage', 'fetch('] as $forbidden) {
-            self::assertStringNotContainsString($forbidden, $html);
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
         }
     }
 
@@ -166,7 +177,7 @@ final class OfflineKanbanFunnelTest extends TestCase
             'localStorage', 'sessionStorage', 'Notification(', 'navigator.sendBeacon',
             'indexedDB', 'setTimeout(', 'onClick=', '.innerHTML', 'document.cookie',
         ] as $forbidden) {
-            self::assertStringNotContainsString($forbidden, $html);
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
         }
         self::assertStringContainsString("connect-src 'none'", $html);
     }
@@ -197,7 +208,7 @@ final class OfflineKanbanFunnelTest extends TestCase
             'XMLHttpRequest', 'localStorage', 'sessionStorage', 'indexedDB',
             'window.open(', 'Notification(', '.innerHTML',
         ] as $forbidden) {
-            self::assertStringNotContainsString($forbidden, $html);
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
         }
     }
 
@@ -223,7 +234,7 @@ final class OfflineKanbanFunnelTest extends TestCase
         self::assertStringContainsString("connect-src 'none'", $html);
         foreach (['<form', '<input', '<textarea', 'fetch(', 'localStorage',
             'sessionStorage', 'XMLHttpRequest', 'indexedDB', '.innerHTML'] as $forbidden) {
-            self::assertStringNotContainsString($forbidden, $html);
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
         }
     }
 
@@ -256,7 +267,7 @@ final class OfflineKanbanFunnelTest extends TestCase
         ));
         self::assertStringContainsString("connect-src 'none'", $html);
         foreach (['<form', '<input', '<textarea', 'fetch(', 'localStorage'] as $forbidden) {
-            self::assertStringNotContainsString($forbidden, $html);
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
         }
     }
 
@@ -295,7 +306,7 @@ final class OfflineKanbanFunnelTest extends TestCase
         self::assertStringContainsString("form-action 'none'", $html);
         foreach (['<form', '<input', '<textarea', 'fetch(', 'localStorage',
             'sessionStorage', 'XMLHttpRequest', 'indexedDB', '.innerHTML'] as $forbidden) {
-            self::assertStringNotContainsString($forbidden, $html);
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
         }
     }
 
@@ -333,7 +344,7 @@ final class OfflineKanbanFunnelTest extends TestCase
         self::assertStringContainsString("form-action 'none'", $html);
         foreach (['<form', '<input', '<textarea', 'fetch(', 'localStorage',
             'sessionStorage', 'XMLHttpRequest', 'indexedDB', '.innerHTML'] as $forbidden) {
-            self::assertStringNotContainsString($forbidden, $html);
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
         }
     }
 
@@ -369,7 +380,7 @@ final class OfflineKanbanFunnelTest extends TestCase
             'navigator.clipboard', 'download=', '.innerHTML',
             'document.write', 'navigator.sendBeacon', 'window.open(',
         ] as $forbidden) {
-            self::assertStringNotContainsString($forbidden, $html);
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
         }
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringContainsString("form-action 'none'", $html);
@@ -432,5 +443,27 @@ final class OfflineKanbanFunnelTest extends TestCase
         self::assertStringContainsString('grid-template-columns:minmax(0,1fr)', $html);
         self::assertStringContainsString('prefers-reduced-motion:reduce', $html);
         self::assertSame(1, substr_count($html, '</body>'));
+    }
+
+    public function test_local_search_is_bounded_accessible_and_scopes_all_bulk_actions(): void
+    {
+        $html = self::html();
+        self::assertSame(1, substr_count($html, self::APPROVED_SEARCH));
+        self::assertStringContainsString('role="search" aria-label="Busca local em oportunidades fictícias"', $html);
+        self::assertStringContainsString('<label for="fiction-search">', $html);
+        self::assertStringContainsString("let searchText='';", $html);
+        self::assertStringContainsString("function matchesSearch(item){", $html);
+        self::assertStringContainsString("item.id.toLowerCase().includes(searchText)", $html);
+        self::assertStringContainsString("item.label.toLocaleLowerCase('pt-BR').includes(searchText)", $html);
+        self::assertStringContainsString("searchText=this.value.trim().toLocaleLowerCase('pt-BR');", $html);
+        self::assertStringContainsString("byId('fiction-search').addEventListener('input'", $html);
+        self::assertSame(3, substr_count($html, '&& matchesSearch(item)'));
+        self::assertSame(2, substr_count($html, "byId('fiction-search').value='';"));
+        self::assertStringContainsString('input[type=search]:focus-visible', $html);
+        foreach (['<form', '<textarea', 'fetch(', 'localStorage', 'sessionStorage',
+            'document.cookie', 'XMLHttpRequest', 'navigator.sendBeacon', '.innerHTML',
+            'download=', 'createObjectURL', 'new URL('] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
+        }
     }
 }
