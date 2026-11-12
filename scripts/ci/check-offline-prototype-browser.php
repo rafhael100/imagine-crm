@@ -59,6 +59,15 @@ $testScript = <<<'JS'
       'original Node Portal logo shown without a network dependency');
     const nav=Array.from(document.querySelectorAll('#demo-navigation button[data-page]'));
     check(nav.length===9,'nine navigation buttons');
+    const groups=Array.from(document.querySelectorAll('#demo-navigation .nav-group[role="group"]'));
+    check(groups.length===3,'three task groups in desktop navigation');
+    check(groups.map(x=>x.getAttribute('aria-label')).join('|')===
+      'Início|Operação comercial|Revisão e suporte','semantic labels match experience system');
+    check(groups.every(x=>x.querySelectorAll('button[data-page]').length===3),
+      'exact three real actions per group');
+    check(nav.every(x=>x.getBoundingClientRect().height>=44),'minimum 44px desktop touch target');
+    check(document.getElementById('nav-section').textContent==='Início','initial section breadcrumb');
+    check(document.getElementById('nav-current').textContent==='Boas-vindas','initial page breadcrumb');
     check(document.querySelectorAll('[data-screen]').length===9,'nine demo screens');
     check(document.getElementById('page-title').textContent==='Boas-vindas','initial screen');
 
