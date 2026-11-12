@@ -107,6 +107,12 @@ $driver = <<<'HTML'
       const pipeline=buttons.find(node=>node.getAttribute('data-page')==='pipeline');
       const monitor=buttons.find(node=>node.getAttribute('data-page')==='monitor');
       monitor.click();
+      check(nav.scrollLeft>0,'mobile menu scrolls to selected commercial group without leaving the page');
+      const currentRect=monitor.getBoundingClientRect(), visibleRect=nav.getBoundingClientRect();
+      check(currentRect.left>=visibleRect.left-1&&currentRect.right<=visibleRect.right+1,
+        'selected mobile navigation button remains inside scroll viewport');
+      check(doc.getElementById('nav-section').textContent==='Operação comercial',
+        'mobile breadcrumb follows second navigation group');
       check(doc.getElementById('page-title').textContent==='Monitoramento de leads','page switch at 320');
       check(doc.activeElement===doc.getElementById('page-title'),'heading focus');
       check(doc.querySelectorAll('[data-screen]:not([hidden])').length===1,'one active screen');
