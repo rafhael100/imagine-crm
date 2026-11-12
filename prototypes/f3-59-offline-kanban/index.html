@@ -201,12 +201,9 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   function trimUndoHistory(){
   if(history.length>MAX_UNDO_ACTIONS)history.splice(0,history.length-MAX_UNDO_ACTIONS);
   }
-  function matchesVisible(item){
-  return (priority==='all'||item.priority===priority)
-  && (followupFilter==='all'||item.followup===followupFilter)
-  && (stageFilter==='all'||item.stage===stageFilter)
-  && (searchText===''||item.id.toLowerCase().includes(searchText)
-  ||item.label.toLocaleLowerCase('pt-BR').includes(searchText));
+  function matchesSearch(item){
+  return searchText===''||item.id.toLowerCase().includes(searchText)
+  ||item.label.toLocaleLowerCase('pt-BR').includes(searchText);
   }
   function ticket(item){
   const card=node('article','ticket');
@@ -252,7 +249,12 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   }).join('\n')+(items.length?'\n':'');
   }
   function render(focus){
-  const subset=opportunities.filter(matchesVisible);
+  const subset=opportunities.filter(function(item){
+  return (priority==='all'||item.priority===priority)
+  && (followupFilter==='all'||item.followup===followupFilter)
+  && (stageFilter==='all'||item.stage===stageFilter)
+  && matchesSearch(item);
+  });
   put('count-visible',subset.length);
   put('count-high',subset.filter(function(item){return item.priority==='high';}).length);
   put('count-pending',subset.filter(function(item){return item.followup==='pending';}).length);
@@ -397,7 +399,10 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   function moveVisibleStage(direction){
   if(direction!==1&&direction!==-1)return;
   const selected=opportunities.filter(function(item){
-  return matchesVisible(item)
+  return (priority==='all'||item.priority===priority)
+  && (followupFilter==='all'||item.followup===followupFilter)
+  && (stageFilter==='all'||item.stage===stageFilter)
+  && matchesSearch(item)
   && item.stage+direction>=0&&item.stage+direction<STAGES.length;
   });
   if(selected.length===0)return;
@@ -416,7 +421,11 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   byId('return-visible-stage').addEventListener('click',function(){moveVisibleStage(-1);});
   byId('complete-visible-followups').addEventListener('click',function(){
   const selected=opportunities.filter(function(item){
-  return matchesVisible(item)&&item.followup==='pending';
+  return (priority==='all'||item.priority===priority)
+  && (followupFilter==='all'||item.followup===followupFilter)
+  && (stageFilter==='all'||item.stage===stageFilter)
+  && matchesSearch(item)
+  && item.followup==='pending';
   });
   if(selected.length===0)return;
   history.push({kind:'batch-followup',states:selected.map(function(item){return {id:item.id,from:item.followup};})});
