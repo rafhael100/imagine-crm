@@ -60,6 +60,9 @@ final class ImagineExperienceNavigationV1Test extends TestCase
         self::assertStringContainsString('pageCrumb.textContent=names[page];', $html);
         self::assertStringContainsString("if (!Object.prototype.hasOwnProperty.call(names,page)) return;", $html);
         self::assertStringContainsString('.nav-button{min-height:44px}', $html);
+        self::assertStringContainsString('menuViewport.scrollLeft+=item.right-viewport.right+12;', $html);
+        self::assertStringContainsString('menuViewport.scrollLeft-=viewport.left-item.left+12;', $html);
+        self::assertStringContainsString('.lead,.step p,.caption,.soft,.field-label,.demo-ticket span,.bottom,.disclaimer{color:#626262}', $html);
         self::assertStringContainsString('.nav-group{display:flex;align-items:center;flex:0 0 auto', $html);
         self::assertStringContainsString('.side-nav{gap:8px}', $html);
         self::assertStringContainsString('prefers-reduced-motion:reduce', $html);
