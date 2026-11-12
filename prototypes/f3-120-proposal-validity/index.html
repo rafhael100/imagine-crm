@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; img-src 'none'; font-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — Validade ilustrativa de proposta</title>
+<style>
+:root{font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:#f4f8fa;color:#183747}
+*{box-sizing:border-box}body{margin:0;min-width:0}a{color:#0c6877}a:focus-visible,button:focus-visible{outline:3px solid #0ba58f;outline-offset:3px}
+.skip{position:absolute;top:-5rem;left:1rem;background:white;padding:12px}.skip:focus{top:1rem}
+header{background:#193a53;color:white;padding:18px clamp(16px,4vw,44px);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}header a{color:#d9f8f2}
+main{max-width:1080px;padding:clamp(18px,3vw,35px);margin:auto}h1{font-size:clamp(1.7rem,4vw,2.5rem);line-height:1.16;margin:6px 0}h2{font-size:1.17rem;margin:0 0 12px}
+.kicker{color:#127b73;font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.77rem}.lead{color:#55717f;max-width:830px}
+.notice{background:#e9f7f2;border:1px solid #b0dacd;color:#235b52;border-radius:11px;padding:14px 16px;margin:17px 0;font-weight:700}
+.card{background:white;border:1px solid #d9e7eb;border-radius:16px;padding:clamp(16px,2.5vw,24px);margin:18px 0}
+.controls{display:flex;gap:9px;flex-wrap:wrap}button{font:inherit;font-weight:680;cursor:pointer;border:1px solid #a5c8ce;border-radius:10px;background:#f6fbfc;color:#205468;padding:10px 14px}button[aria-pressed="true"]{background:#1a5262;border-color:#1a5262;color:white}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.stat{border:1px solid #dbe9ed;background:#f7fafc;border-radius:11px;min-width:0;padding:13px}.stat span{display:block;font-size:.79rem;color:#567383}.stat strong{display:block;font-size:clamp(1.1rem,2.5vw,1.6rem);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.state{background:#eef7f9;border:1px solid #bedce3;border-radius:10px;padding:12px 14px;color:#215869;font-weight:710}
+.dates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:14px}.date{padding:13px;background:#f7fafb;border-radius:10px;border:1px solid #e0eaed;overflow-wrap:anywhere}.date dt{font-size:.78rem;color:#546f7e}.date dd{margin:4px 0 0;font-weight:720;font-size:.9rem;font-variant-numeric:tabular-nums}
+.small{font-size:.84rem;color:#5b7681}footer{max-width:1080px;margin:auto;padding:0 24px 34px;font-size:.82rem;color:#637f8b}
+@media(max-width:760px){.metrics,.dates{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){main{padding:16px 12px}.card{padding:14px}.controls{display:grid;grid-template-columns:minmax(0,1fr)}.controls button{width:100%}.metrics,.dates{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header><strong>imagine CRM · Laboratório comercial</strong><a href="../f3-111-proposal-versions/index.html">Voltar às versões da proposta</a></header>
+<main id="conteudo">
+  <p class="kicker">Propostas · Janela temporal fictícia</p>
+  <h1>Validade e expiração de uma versão</h1>
+  <p class="lead">Acompanhe cinco momentos de uma proposta inventada: antes de começar, durante a vigência, no último segundo e após expirar. Datas fixas e em UTC.</p>
+  <div class="notice" role="note">PROTÓTIPO — DADOS FICTÍCIOS. Nenhum destinatário, proposta, assinatura, link ou direito de aceite foi verificado. Estar no prazo não significa que seja possível aceitar.</div>
+  <section class="card" aria-labelledby="cases-title">
+    <h2 id="cases-title">Momentos de laboratório</h2>
+    <div class="controls" role="group" aria-label="Cenários fictícios de validade da proposta">
+      <button type="button" data-case="before" aria-pressed="true">Antes da emissão</button>
+      <button type="button" data-case="start" aria-pressed="false">Início da vigência</button>
+      <button type="button" data-case="last" aria-pressed="false">Último segundo</button>
+      <button type="button" data-case="expired" aria-pressed="false">Expiração exata</button>
+      <button type="button" data-case="after" aria-pressed="false">Após expiração</button>
+    </div>
+    <p class="small">O período de sete dias é um exemplo técnico, não a validade de um contrato ou plano.</p>
+  </section>
+  <section class="card" aria-labelledby="summary-title">
+    <h2 id="summary-title">Resultado ilustrativo</h2>
+    <div class="metrics">
+      <div class="stat"><span>Fase descritiva</span><strong id="phase">—</strong></div>
+      <div class="stat"><span>Segundos até a emissão</span><strong id="to-issue">—</strong></div>
+      <div class="stat"><span>Segundos até a expiração</span><strong id="to-expiry">—</strong></div>
+    </div>
+    <p id="status" class="state" role="status" aria-live="polite" aria-atomic="true">Carregando situação fictícia.</p>
+    <dl class="dates">
+      <div class="date"><dt>Emissão inventada (UTC)</dt><dd id="issued">—</dd></div>
+      <div class="date"><dt>Expiração inventada (UTC)</dt><dd id="expires">—</dd></div>
+      <div class="date"><dt>Observado no exemplo (UTC)</dt><dd id="observed">—</dd></div>
+    </dl>
+  </section>
+  <section class="card" aria-labelledby="gates-title">
+    <h2 id="gates-title">Bloqueios operacionais</h2>
+    <p id="rights" class="state">Enviar: NÃO · Aceitar: NÃO · Renovar: NÃO · Assinar: NÃO · Cobrar: NÃO · Gravar: NÃO</p>
+    <p class="small">O vencimento técnico não confere identidade, aprovação gerencial, link válido ou possibilidade de renovação. Uma implementação real depende de governança, segurança, cadastro da empresa e auditoria.</p>
+  </section>
+</main>
+<footer>Imagine CRM • Demonstração local, sem backend, banco, cliente, documentos reais ou efeitos comerciais.</footer>
+<script>
+(function(){
+  'use strict';
+  const SCENARIOS=Object.freeze([
+    {"id":"before","issued":"2026-11-01T12:00:00Z","expires":"2026-11-08T12:00:00Z","observed":"2026-11-01T11:59:59Z","expected":{"phase":"before_issue","seconds_until_issue":1,"seconds_until_expiry":604801}},
+    {"id":"start","issued":"2026-11-01T12:00:00Z","expires":"2026-11-08T12:00:00Z","observed":"2026-11-01T12:00:00Z","expected":{"phase":"within_validity","seconds_until_issue":0,"seconds_until_expiry":604800}},
+    {"id":"last","issued":"2026-11-01T12:00:00Z","expires":"2026-11-08T12:00:00Z","observed":"2026-11-08T11:59:59Z","expected":{"phase":"within_validity","seconds_until_issue":0,"seconds_until_expiry":1}},
+    {"id":"expired","issued":"2026-11-01T12:00:00Z","expires":"2026-11-08T12:00:00Z","observed":"2026-11-08T12:00:00Z","expected":{"phase":"expired","seconds_until_issue":0,"seconds_until_expiry":0}},
+    {"id":"after","issued":"2026-11-01T12:00:00Z","expires":"2026-11-08T12:00:00Z","observed":"2026-11-09T12:00:00Z","expected":{"phase":"expired","seconds_until_issue":0,"seconds_until_expiry":0}}
+  ]);
+  const PHASE=Object.freeze({before_issue:'Antes da vigência',within_validity:'Dentro do prazo ilustrativo',expired:'Expirada'});
+  const get=id=>document.getElementById(id),put=(id,val)=>{get(id).textContent=String(val);};
+  function calculate(item){
+    const issued=Date.parse(item.issued)/1000,expires=Date.parse(item.expires)/1000,now=Date.parse(item.observed)/1000;
+    if(!Number.isSafeInteger(issued)||!Number.isSafeInteger(expires)||!Number.isSafeInteger(now)||expires<=issued)throw new Error('Datas fictícias inválidas');
+    return {
+      phase:now<issued?'before_issue':now<expires?'within_validity':'expired',
+      seconds_until_issue:Math.max(0,issued-now),
+      seconds_until_expiry:Math.max(0,expires-now)
+    };
+  }
+  function show(id){
+    const item=SCENARIOS.find(x=>x.id===id);if(!item)throw new Error('Caso inexistente');
+    const result=calculate(item);
+    if(JSON.stringify(result)!==JSON.stringify(item.expected))throw new Error('Instantes de laboratório incompatíveis');
+    put('phase',PHASE[result.phase]);put('to-issue',result.seconds_until_issue);put('to-expiry',result.seconds_until_expiry);
+    put('issued',item.issued);put('expires',item.expires);put('observed',item.observed);
+    put('status','Exemplo '+id+' · Prazo ilustrativo não autoriza aceite nem assinatura.');
+    put('rights','Enviar: NÃO · Aceitar: NÃO · Renovar: NÃO · Assinar: NÃO · Cobrar: NÃO · Gravar: NÃO');
+    document.querySelectorAll('[data-case]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.case===id)));
+  }
+  document.querySelectorAll('[data-case]').forEach(button=>button.addEventListener('click',()=>show(button.dataset.case)));
+  show('before');
+})();
+</script>
+</body>
+</html>
