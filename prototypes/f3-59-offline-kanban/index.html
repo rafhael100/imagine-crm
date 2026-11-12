@@ -483,7 +483,11 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   dragId=null;
   document.querySelectorAll('.lane[data-drag-over]').forEach(function(el){delete el.dataset.dragOver;});
   if(!id||!lane||lane.hidden)return;
-  const target=Number(lane.dataset.dropStage);
+  // Validate raw attribute before coercion: Number('') is 0, not a valid lane.
+  const rawTarget=lane.dataset.dropStage;
+  if(!/^[0-3]$/.test(rawTarget))return;
+  const target=Number(rawTarget);
+  if(!Number.isInteger(target)||target>=STAGES.length)return;
   const item=opportunities.find(function(entry){return entry.id===id;});
   if(!item||!document.querySelector('[data-card-id="'+id+'"]'))return;
   event.preventDefault();

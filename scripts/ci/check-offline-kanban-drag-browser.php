@@ -85,6 +85,19 @@ $driver = <<<'HTML'
    fire(lane(2),'drop',fake);
    check(card('F01').closest('.lane')===lane(0),'external drag data ignored');
    check(by('undo-change').disabled,'external drop creates no history');
+
+   // Mutated lane data must be rejected before either individual or group edits.
+   const tamperedLane=lane(3);
+   for(const invalid of ['NaN','4','-1','1.5','']) {
+     const original=tamperedLane.dataset.dropStage;
+     tamperedLane.dataset.dropStage=invalid;
+     const transfer=dt();
+     fire(card('F01'),'dragstart',transfer);
+     fire(tamperedLane,'drop',transfer);
+     tamperedLane.dataset.dropStage=original;
+     check(card('F01').closest('.lane')===lane(0),'invalid stage '+invalid+' did not move card');
+     check(by('undo-change').disabled,'invalid stage '+invalid+' did not create history');
+   }
    drag('F01',3);
    check(card('F01').closest('.lane')===lane(3),'drag from Entrada to Proposta');
    check(by('count-moves').textContent==='1','drag increments simulated moves once');
