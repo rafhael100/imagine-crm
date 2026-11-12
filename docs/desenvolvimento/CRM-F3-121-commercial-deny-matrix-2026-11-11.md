@@ -1,12 +1,12 @@
 # CRM F3-121 — Matriz de negação integrada das funcionalidades comerciais
 
-**Data:** 11/11/2026. **Escopo:** teste PHPUnit que conecta **vinte e três** componentes de laboratório existentes, sem endpoint nem dados reais.
+**Data:** 11/11/2026. **Escopo:** teste PHPUnit que conecta **vinte e cinco** componentes de laboratório existentes, sem endpoint nem dados reais.
 
 ## Objetivo
 
 A evolução paralela de cadastro de itens, versões e transições de propostas, previsão ponderada, etapas de funil e seus campos obrigatórios, reaberturas, unicidade de eventos, validade, scoring, recorrência de tarefas e janelas de assinatura não pode permitir que a alegação positiva de um módulo vire **permissão operacional** em outro.
 
-`SyntheticCommercialCapabilityDenyMatrixTest` executa **vinte e três componentes PHP reais** com exemplos artificiais de estados que parecem favoráveis: proposta `accepted`, negócio `won`, probabilidade 100%, evento único, proposta dentro da vigência, score quente, janela de trial ativa, cancelamento informado e 30 dias após vencimento. A expansão F3-126 inclui sequência de proposta declarada aceita, transição de oportunidade declarada ganha, todos os campos de etapa ilustrativamente preenchidos e recorrências futuras; F3-129 acrescenta desconto fora da política com aprovação gerencial meramente alegada e pré-validação de envio com bloqueios. Nenhuma situação concede direito de aceitar, mover, reconhecer receita, enviar propostas ou agendar serviços.
+`SyntheticCommercialCapabilityDenyMatrixTest` executa **vinte e cinco componentes PHP reais** com exemplos artificiais de estados que parecem favoráveis: proposta `accepted`, negócio `won`, probabilidade 100%, evento único, proposta dentro da vigência, score quente, janela de trial ativa, cancelamento informado e 30 dias após vencimento. A expansão F3-126 inclui sequência de proposta declarada aceita, transição de oportunidade declarada ganha, todos os campos de etapa ilustrativamente preenchidos e recorrências futuras; F3-129 acrescenta desconto fora da política com aprovação gerencial meramente alegada e pré-validação de envio com bloqueios. Nenhuma situação concede direito de aceitar, mover, reconhecer receita, enviar propostas ou agendar serviços.
 
 A suíte verifica todas as capacidades `can_*` permanentemente falsas, marcas de verificação/proveniência sempre negadas, `recognized_*` e `verified_event_count` sempre zero, além de impedir IDs/PII no JSON da saída. Garante também que as classes não aparecem como endpoints no `routes/web.php` atual.
 
@@ -54,3 +54,14 @@ A suíte permanece baseada exclusivamente em dados anônimos inventados. Essas v
 A matriz integrada acrescenta o módulo \`SyntheticCommercialJourneyInspector\` como o **23º componente**, com evidência cruzada da própria jornada de cinco módulos da interface offline F3-138. O teste extrai o cenário \`consistent\` diretamente do JSON embutido no HTML, executa novamente o PHP e exige que alegações de negócio ganho e proposta aceita **nunca** resultem em \`recognized_wins\`, receita confirmada, envio, cobrança ou qualquer flag \`can_*\` verdadeira.
 
 A adição evita que o novo orquestrador consiga burlar a proteção previamente aplicada aos módulos individuais. **A matriz não comprova identidade, não libera uma aplicação CRM conectada nem substitui os gates CORE/SEG/DBA/LGPD**. O teste também verifica que a classe de jornada não está registrada como endpoint público.
+
+
+## Expansão F3-142 — 12/11/2026
+
+A matriz agora cruza **25 componentes reais do Core PHP**, acrescentando F3-140 (prévia de CSV por grupos) e F3-141 (pacote de relatório e revalidação de destinatário). Confirma que:
+- o CSV textual fictício só tem contagens de grupos visíveis, mas \`can_download=false\` e \`can_export=false\`;
+- a integração de entrega nunca retorna o texto CSV, mantendo \`csv_text_returned=false\` e \`can_deliver=false\` mesmo quando ambas as fotografias alegam acesso do destinatário;
+- as quantias de venda alegadas continuam com \`recognized_revenue_cents=0\`;
+- nenhuma das classes foi registrada em rotas públicas.
+
+Esse teste não prova isolamento multiempresa, política de acesso por coluna, proteção contra ataques de comparação, sessão autenticada ou trânsito seguro. CORE/SEG/DBA/LGPD e VEN-P12 permanecem NO-GO.
