@@ -12,7 +12,9 @@
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#1a3146;background:#f3f7fa;line-height:1.5}
 body{margin:0;min-width:0}
 [hidden]{display:none!important}
-a,button{font:inherit}
+a,button,input{font:inherit}
+input[type=search]{border:1px solid #aecbd1;border-radius:10px;padding:10px 12px;max-width:100%;width:230px;background:#fff;color:#1a3146}
+input[type=search]:focus-visible{outline:3px solid #0c8587;outline-offset:3px}
 a:focus-visible,button:focus-visible{outline:3px solid #0c8587;outline-offset:3px}
 .skip{position:absolute;left:-10000px;top:9px;background:#fff;padding:9px;border:2px solid #0c8587;z-index:10}
 .skip:focus{left:12px}
@@ -119,6 +121,10 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   <button type="button" data-order="default" aria-pressed="true">Ordem original</button>
   <button type="button" data-order="score" aria-pressed="false">Maior pontuação</button>
   </div>
+  <div class="filters" role="search" aria-label="Busca local em oportunidades fictícias">
+  <label for="fiction-search"><strong>Buscar cartão fictício:</strong></label>
+  <input type="search" id="fiction-search" maxlength="32" autocomplete="off" spellcheck="false" placeholder="F01 ou oportunidade">
+  </div>
   <div class="filters" role="group" aria-label="Controle da simulação">
   <button type="button" id="complete-visible-followups">Concluir pendentes visíveis (simulação)</button>
   <button type="button" id="advance-visible-stage">Avançar etapas visíveis (simulação)</button>
@@ -175,6 +181,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   let priority='all';
   let followupFilter='all';
   let stageFilter='all';
+  let searchText='';
   let history=[];
   let moves=0;
   let order='default';
@@ -193,6 +200,13 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const MAX_UNDO_ACTIONS=64;
   function trimUndoHistory(){
   if(history.length>MAX_UNDO_ACTIONS)history.splice(0,history.length-MAX_UNDO_ACTIONS);
+  }
+  function matchesVisible(item){
+  return (priority==='all'||item.priority===priority)
+  && (followupFilter==='all'||item.followup===followupFilter)
+  && (stageFilter==='all'||item.stage===stageFilter)
+  && (searchText===''||item.id.toLowerCase().includes(searchText)
+  ||item.label.toLocaleLowerCase('pt-BR').includes(searchText));
   }
   function ticket(item){
   const card=node('article','ticket');
@@ -238,11 +252,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   }).join('\n')+(items.length?'\n':'');
   }
   function render(focus){
-  const subset=opportunities.filter(function(item){
-  return (priority==='all'||item.priority===priority)
-  && (followupFilter==='all'||item.followup===followupFilter)
-  && (stageFilter==='all'||item.stage===stageFilter);
-  });
+  const subset=opportunities.filter(matchesVisible);
   put('count-visible',subset.length);
   put('count-high',subset.filter(function(item){return item.priority==='high';}).length);
   put('count-pending',subset.filter(function(item){return item.followup==='pending';}).length);
@@ -387,9 +397,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   function moveVisibleStage(direction){
   if(direction!==1&&direction!==-1)return;
   const selected=opportunities.filter(function(item){
-  return (priority==='all'||item.priority===priority)
-  && (followupFilter==='all'||item.followup===followupFilter)
-  && (stageFilter==='all'||item.stage===stageFilter)
+  return matchesVisible(item)
   && item.stage+direction>=0&&item.stage+direction<STAGES.length;
   });
   if(selected.length===0)return;
@@ -408,10 +416,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   byId('return-visible-stage').addEventListener('click',function(){moveVisibleStage(-1);});
   byId('complete-visible-followups').addEventListener('click',function(){
   const selected=opportunities.filter(function(item){
-  return (priority==='all'||item.priority===priority)
-  && (followupFilter==='all'||item.followup===followupFilter)
-  && (stageFilter==='all'||item.stage===stageFilter)
-  && item.followup==='pending';
+  return matchesVisible(item)&&item.followup==='pending';
   });
   if(selected.length===0)return;
   history.push({kind:'batch-followup',states:selected.map(function(item){return {id:item.id,from:item.followup};})});
@@ -450,6 +455,8 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   priority='all';
   followupFilter='all';
   stageFilter='all';
+  searchText='';
+  byId('fiction-search').value='';
   render(item.id);
   describe(item.label+' criada apenas nesta aba.');
   });
@@ -506,9 +513,16 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   followupFilter='all';
   stageFilter='all';
   order='default';
+  searchText='';
+  byId('fiction-search').value='';
   activity=[];
   render('reset');
   describe('Quadro fictício reiniciado.');
+  });
+  byId('fiction-search').addEventListener('input',function(){
+  searchText=this.value.trim().toLocaleLowerCase('pt-BR');
+  render();
+  describe('Busca local atualizada, sem enviar texto nem alterar clientes.');
   });
   document.querySelectorAll('[data-priority]').forEach(function(button){
   button.addEventListener('click',function(){
