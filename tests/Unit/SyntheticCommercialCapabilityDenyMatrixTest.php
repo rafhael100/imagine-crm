@@ -15,6 +15,7 @@ use App\Core\Plans\SyntheticDelinquencyReviewTimeline;
 use App\Core\Plans\SyntheticTrialRetentionTimeline;
 use App\Core\Plans\TrialWindowAdvisory;
 use App\Core\Sales\SyntheticCommercialDiscountReview;
+use App\Core\Sales\SyntheticSalesAggregatePrivacyPreview;
 use App\Core\Sales\SyntheticLineItemSubtotalPreview;
 use App\Core\Sales\SyntheticOpportunityOutcomeInspector;
 use App\Core\Sales\SyntheticOpportunityTransitionLedger;
@@ -24,6 +25,7 @@ use App\Core\Sales\SyntheticProposalValidityPreview;
 use App\Core\Sales\SyntheticProposalVersionReview;
 use App\Core\Sales\SyntheticSalesEventUniquenessInspector;
 use App\Core\Sales\SyntheticSalesGoalProgressPreview;
+use App\Core\Sales\SyntheticScheduledReportDeliveryPreflight;
 use App\Core\Sales\SyntheticStageFieldRequirementsInspector;
 use App\Core\Sales\SyntheticWeightedSalesForecast;
 use PHPUnit\Framework\TestCase;
@@ -172,6 +174,23 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
                 ],
                 '2026-11-04T12:00:00Z',
             ),
+            'report_small_bucket_suppressed' => (new SyntheticSalesAggregatePrivacyPreview())
+                ->summarize([['stage' => 'won', 'claimed_value_cents' => 60000]], 3),
+            'report_delivery_access_revoked' => (new SyntheticScheduledReportDeliveryPreflight())
+                ->inspect(
+                    [
+                        'at_utc' => '2026-11-01T10:00:00Z',
+                        'recipient_access' => true,
+                        'policy_revision' => 3,
+                        'requested_fields' => ['stage', 'score'],
+                    ],
+                    [
+                        'at_utc' => '2026-11-02T10:00:00Z',
+                        'recipient_access' => false,
+                        'policy_revision' => 3,
+                        'report_state' => 'ready',
+                    ],
+                ),
             'trial_review_window' => (new SyntheticTrialRetentionTimeline(
                 new TrialWindowAdvisory(2000000, 2000000 + 14 * 86400),
             ))->readout(),
@@ -184,10 +203,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         ];
     }
 
-    public function test_all_twenty_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_twenty_two_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(20, $reports);
+        self::assertCount(22, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -255,6 +274,13 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         self::assertFalse($reports['goal_claimed_complete']['can_pay_commissions']);
         self::assertSame('completed', $reports['task_completed_claim']['latest_claimed_status']);
         self::assertFalse($reports['task_completed_claim']['can_complete_task']);
+        self::assertSame(1, $reports['report_small_bucket_suppressed']['suppressed_bucket_count']);
+        self::assertSame(0, $reports['report_small_bucket_suppressed']['visible_claimed_sum_cents']);
+        self::assertNull($reports['report_small_bucket_suppressed']['cells'][3]['claimed_sum_cents']);
+        self::assertFalse($reports['report_small_bucket_suppressed']['can_export']);
+        self::assertTrue($reports['report_delivery_access_revoked']['access_revoked_since_schedule']);
+        self::assertContains('access_not_claimed_at_delivery', $reports['report_delivery_access_revoked']['blocker_codes']);
+        self::assertFalse($reports['report_delivery_access_revoked']['can_deliver']);
         self::assertSame('second_marker_elapsed', $reports['delinquency_day_thirty']['phase']);
         self::assertFalse($reports['delinquency_day_thirty']['can_suspend_service']);
     }
@@ -282,6 +308,8 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticLeadRuleScorePreview',
             'SyntheticSalesGoalProgressPreview',
             'SyntheticTaskLifecycleInspector',
+            'SyntheticSalesAggregatePrivacyPreview',
+            'SyntheticScheduledReportDeliveryPreflight',
         ] as $class) {
             self::assertStringNotContainsString($class, $routes);
         }
