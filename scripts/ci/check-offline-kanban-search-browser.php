@@ -57,6 +57,8 @@ $driver = <<<'HTML'
       check(d&&w&&w.innerWidth===width,'real '+width+'px local viewport');
       const field=d.getElementById('fiction-search');
       check(field&&field.type==='search'&&field.maxLength===32,'search input length bound');
+      check(d.getElementById('count-visible').getAttribute('aria-live')==='polite',
+        'search count announced accessibly');
       check(field.getAttribute('autocomplete')==='off','no saved search suggestions');
       check(d.getElementById('count-visible').textContent==='8','eight fictitious cards initially');
       const search=function(value){
@@ -64,6 +66,14 @@ $driver = <<<'HTML'
         field.dispatchEvent(new w.Event('input',{bubbles:true}));
       };
       field.focus();
+      search('x'.repeat(200));
+      check(field.value.length===32,'programmatic oversized search truncated to 32');
+      check(d.getElementById('count-visible').textContent==='0','oversized query cannot match hidden cards');
+      const attack='<img src=x onerror=alert(1)>';
+      search(attack);
+      check(d.querySelectorAll('img').length===0,'search cannot inject an image node');
+      check(!d.getElementById('simulation-status').textContent.includes(attack),
+        'search never echoes untrusted text into status');
       search('f01');
       check(d.activeElement===field,'keyboard input retained focus');
       check(d.getElementById('count-visible').textContent==='1','case insensitive ID search');
@@ -100,6 +110,12 @@ $driver = <<<'HTML'
       check(d.getElementById('complete-visible-followups').disabled,'no-match cannot run bulk action');
       d.getElementById('reset-demo').click();
       check(field.value===''&&d.getElementById('count-visible').textContent==='8','reset clears filter and restores board');
+      search('F01');
+      field.focus();
+      field.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
+      check(field.value===''&&d.getElementById('count-visible').textContent==='8',
+        'Escape clears search without resetting the board');
+      check(d.activeElement===field,'Escape retains search input focus');
       search('F01');
       d.getElementById('add-fiction').click();
       check(field.value===''&&d.getElementById('count-visible').textContent==='9','fictional creation clears local search');
