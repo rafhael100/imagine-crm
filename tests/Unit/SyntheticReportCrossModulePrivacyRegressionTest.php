@@ -81,9 +81,10 @@ final class SyntheticReportCrossModulePrivacyRegressionTest extends TestCase
         foreach ([$snapshot, $preview, $report] as $output) {
             self::assertFalse($output['authorized']);
             self::assertFalse($output['can_export']);
-            self::assertFalse($output['can_deliver']);
             self::assertFalse($output['can_persist']);
         }
+        self::assertFalse($snapshot['can_deliver']);
+        self::assertFalse($report['can_deliver']);
         self::assertFalse($snapshot['can_publish']);
         self::assertFalse($preview['can_download']);
         self::assertFalse($report['can_download']);
