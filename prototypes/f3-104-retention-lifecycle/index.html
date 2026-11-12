@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; img-src 'none'; font-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — Ciclo de vida de assinatura (laboratório)</title>
+<style>
+:root{font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#193548;background:#f3f7fa}
+*{box-sizing:border-box}body{margin:0;min-width:0}a{color:#0a626a}a:focus-visible,button:focus-visible{outline:3px solid #118e83;outline-offset:3px}
+.skip{position:absolute;top:-6rem;left:1rem;background:white;padding:12px}.skip:focus{top:1rem}
+header{background:#163750;color:#f4ffff;padding:18px clamp(16px,4vw,48px);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header a{color:#e0f7f3}main{max-width:1160px;margin:auto;padding:clamp(18px,3vw,34px)}h1{font-size:clamp(1.6rem,4vw,2.5rem);margin:.3rem 0}h2{font-size:1.16rem;margin:0 0 12px}
+.kicker{font-size:.76rem;font-weight:800;color:#0c7b73;letter-spacing:.12em;text-transform:uppercase}
+.lead{max-width:830px;color:#536e7f;margin:8px 0 20px}.notice{background:#e8f7f2;border:1px solid #acd8cc;border-radius:11px;padding:14px 16px;font-weight:700;color:#225b54;margin:16px 0}
+.card{min-width:0;background:white;border:1px solid #d9e7ec;border-radius:16px;padding:clamp(16px,2.5vw,25px);margin:18px 0;box-shadow:0 6px 20px rgba(20,55,78,.025)}
+.controls{display:flex;flex-wrap:wrap;gap:9px;margin:11px 0 4px}button{font:inherit;border:1px solid #a8c8cd;border-radius:10px;background:#f5fbfc;color:#24566b;padding:10px 13px;font-weight:680;cursor:pointer}
+button[aria-pressed="true"]{background:#184d5f;border-color:#184d5f;color:white}button:hover{border-color:#0b817b}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.stat{min-width:0;border:1px solid #d9e8ed;background:#f7fafc;border-radius:11px;padding:14px}
+.stat span{display:block;font-size:.79rem;color:#4e6b7a}.stat strong{display:block;font-size:clamp(1.12rem,2.4vw,1.65rem);line-height:1.35;margin-top:5px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.row{padding:12px 0;border-bottom:1px solid #e0ebef;min-width:0}.row:last-child{border-bottom:0}
+.row dt{font-size:.82rem;color:#536b7b}.row dd{margin:4px 0 0;font-weight:710;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.state{padding:13px 15px;border:1px solid #b6d5db;background:#eff7f8;border-radius:10px;color:#235267;font-weight:720}
+.small{font-size:.84rem;color:#5b7483}.pill{display:inline-block;background:#e9f3f3;border-radius:100px;padding:5px 11px;font-size:.76rem;color:#16585d;font-weight:780}
+[hidden]{display:none!important}footer{max-width:1160px;margin:auto;padding:0 24px 38px;color:#667e8d;font-size:.8rem}
+@media(max-width:760px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){main{padding:16px 12px}.card{padding:14px}.two{grid-template-columns:minmax(0,1fr)}button{width:100%}.controls{display:grid;grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header><strong>imagine CRM · Laboratório</strong><a href="../index.html">Voltar ao laboratório</a></header>
+<main id="conteudo">
+  <p class="kicker">Assinatura · Simulação offline</p>
+  <h1>Trial, encerramento e revisão de dados</h1>
+  <p class="lead">Compare os limites de uma janela ilustrativa de 14 dias de teste, 60 dias pós-trial e 120 dias pós-cancelamento. Os relógios abaixo são datas fixas de exemplo, não datas atuais ou contratuais.</p>
+  <div class="notice" role="note">PROTÓTIPO — DADOS FICTÍCIOS. Nenhuma assinatura, CNPJ ou pessoa real foi consultada. Estes prazos não definem retenção legal e jamais autorizam cobrar, liberar acesso, excluir ou restaurar dados.</div>
+  <section class="card" aria-labelledby="choose-title">
+    <h2 id="choose-title">Escolha uma situação de laboratório</h2>
+    <p class="small">O trial e o cancelamento são cenários distintos, sem relação com o status real de um cliente.</p>
+    <p class="pill">Trial: 14 dias + janela ilustrativa de 60 dias</p>
+    <div class="controls" role="group" aria-label="Cenários fictícios de trial">
+      <button type="button" data-case="trial-before" aria-pressed="true">Antes do trial</button>
+      <button type="button" data-case="trial-active" aria-pressed="false">Trial ativo</button>
+      <button type="button" data-case="trial-review" aria-pressed="false">Revisão iniciada</button>
+      <button type="button" data-case="trial-final" aria-pressed="false">Último segundo</button>
+      <button type="button" data-case="trial-elapsed" aria-pressed="false">Janela encerrada</button>
+    </div>
+    <p class="pill">Cancelamento: janela ilustrativa de 120 dias</p>
+    <div class="controls" role="group" aria-label="Cenários fictícios de cancelamento">
+      <button type="button" data-case="cancel-before" aria-pressed="false">Antes do cancelamento</button>
+      <button type="button" data-case="cancel-review" aria-pressed="false">Cancelamento informado</button>
+      <button type="button" data-case="cancel-final" aria-pressed="false">Último segundo</button>
+      <button type="button" data-case="cancel-elapsed" aria-pressed="false">Janela encerrada</button>
+    </div>
+  </section>
+  <section class="card" aria-labelledby="metrics-title">
+    <h2 id="metrics-title">Linha do tempo do exemplo</h2>
+    <p id="status" class="state" role="status" aria-live="polite" aria-atomic="true">Carregando cenário fictício.</p>
+    <div class="metrics">
+      <div class="stat"><span>Tipo</span><strong id="kind">Trial</strong></div>
+      <div class="stat"><span>Fase do exemplo</span><strong id="phase">Antes da revisão</strong></div>
+      <div class="stat"><span>Dias restantes (arredondados)</span><strong id="days">60</strong></div>
+      <div class="stat"><span>Segundos restantes</span><strong id="seconds">5184000</strong></div>
+    </div>
+  </section>
+  <section class="card" aria-labelledby="instants-title">
+    <h2 id="instants-title">Instantes UTC da simulação</h2>
+    <dl class="two">
+      <div class="row"><dt>Início informado do exemplo</dt><dd id="start-date">—</dd></div>
+      <div class="row"><dt>Instante observado no exemplo</dt><dd id="observed-date">—</dd></div>
+      <div class="row"><dt>Fim da janela ilustrativa</dt><dd id="end-date">—</dd></div>
+      <div class="row"><dt>Regra de apresentação</dt><dd id="duration-rule">—</dd></div>
+    </dl>
+    <p class="small">Dia = 86.400 segundos UTC. A janela de 60 dias começa após 14 dias de trial; a de 120 dias começa no instante informado de cancelamento. Nenhuma dessas regras decide exclusão por LGPD.</p>
+  </section>
+  <section class="card" aria-labelledby="gates-title">
+    <h2 id="gates-title">Permissões operacionais</h2>
+    <p id="denials" class="state">Acesso: NÃO · Cobrança: NÃO · Exclusão: NÃO · Restauração: NÃO · Reativação: NÃO</p>
+    <p class="small">Dados exclusivos de laboratório. Uma política real requer identidade, contrato, fundamento legal, auditoria, backups, aprovação de segurança e decisão de produto.</p>
+  </section>
+</main>
+<footer>Imagine CRM • Simulação somente leitura. Sem API, storage, dados de clientes ou decisões automáticas.</footer>
+<script>
+(function(){
+  'use strict';
+  // Fixed synthetic PHP-parity fixtures; no user input, live clock or local storage.
+  const SCENARIOS=Object.freeze([
+    {"id":"trial-before","kind":"trial","start":1793534400,"now":1793534399,"phase":"before_review_window","ends_at":1799928000,"remaining_seconds":5184000,"days":60},
+    {"id":"trial-active","kind":"trial","start":1793534400,"now":1793620800,"phase":"before_review_window","ends_at":1799928000,"remaining_seconds":5184000,"days":60},
+    {"id":"trial-review","kind":"trial","start":1793534400,"now":1794744000,"phase":"within_review_window","ends_at":1799928000,"remaining_seconds":5184000,"days":60},
+    {"id":"trial-final","kind":"trial","start":1793534400,"now":1799927999,"phase":"within_review_window","ends_at":1799928000,"remaining_seconds":1,"days":1},
+    {"id":"trial-elapsed","kind":"trial","start":1793534400,"now":1799928000,"phase":"review_window_elapsed","ends_at":1799928000,"remaining_seconds":0,"days":0},
+    {"id":"cancel-before","kind":"cancel","start":1793880000,"now":1793879999,"phase":"before_cancellation","ends_at":1804248000,"remaining_seconds":10368000,"days":120},
+    {"id":"cancel-review","kind":"cancel","start":1793880000,"now":1793880000,"phase":"within_review_window","ends_at":1804248000,"remaining_seconds":10368000,"days":120},
+    {"id":"cancel-final","kind":"cancel","start":1793880000,"now":1804247999,"phase":"within_review_window","ends_at":1804248000,"remaining_seconds":1,"days":1},
+    {"id":"cancel-elapsed","kind":"cancel","start":1793880000,"now":1804248000,"phase":"review_window_elapsed","ends_at":1804248000,"remaining_seconds":0,"days":0}
+  ]);
+  const LABELS=Object.freeze({
+    before_review_window:"Antes da revisão",within_review_window:"Em revisão ilustrativa",
+    review_window_elapsed:"Janela ilustrativa encerrada",before_cancellation:"Antes do cancelamento"
+  });
+  const byId=id=>document.getElementById(id);
+  const put=(id,value)=>{byId(id).textContent=String(value);};
+  function show(id){
+    const scenario=SCENARIOS.find(item=>item.id===id);
+    if(!scenario||!["trial","cancel"].includes(scenario.kind)||!Object.hasOwn(LABELS,scenario.phase))throw new Error('Cenário de laboratório inválido');
+    if(!Number.isSafeInteger(scenario.start)||!Number.isSafeInteger(scenario.now)||!Number.isSafeInteger(scenario.ends_at)
+       ||!Number.isSafeInteger(scenario.remaining_seconds)||!Number.isSafeInteger(scenario.days)
+       ||scenario.remaining_seconds<0||scenario.days<0)throw new Error('Relógio de laboratório inválido');
+    put('kind',scenario.kind==='trial'?'Trial':'Cancelamento');
+    put('phase',LABELS[scenario.phase]);
+    put('days',scenario.days);
+    put('seconds',scenario.remaining_seconds);
+    put('start-date',new Date(scenario.start*1000).toISOString());
+    put('observed-date',new Date(scenario.now*1000).toISOString());
+    put('end-date',new Date(scenario.ends_at*1000).toISOString());
+    put('duration-rule',scenario.kind==='trial'?'14 dias + 60 dias de revisão':'120 dias após cancelamento');
+    put('status','Somente simulação fictícia · '+LABELS[scenario.phase]+'. Nenhuma ação operacional autorizada.');
+    put('denials','Acesso: NÃO · Cobrança: NÃO · Exclusão: NÃO · Restauração: NÃO · Reativação: NÃO');
+    document.querySelectorAll('[data-case]').forEach(button=>{
+      button.setAttribute('aria-pressed',String(button.dataset.case===id));
+    });
+  }
+  document.querySelectorAll('[data-case]').forEach(button=>{
+    button.addEventListener('click',()=>show(button.dataset.case));
+  });
+  show('trial-before');
+})();
+</script>
+</body>
+</html>
