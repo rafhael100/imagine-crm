@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'none'; img-src 'none'; connect-src 'none'; font-src 'none'; frame-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — Painel do funil com privacidade (offline)</title>
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f3f7fa;color:#17354a;line-height:1.5}
+body{margin:0;min-width:0}
+a{color:inherit}
+a:focus-visible,input:focus-visible+label{outline:3px solid #0a9b94;outline-offset:4px}
+header{background:#17384e;color:#fff;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:18px clamp(16px,4vw,48px);flex-wrap:wrap}
+header a{color:#c9e9ef}
+main{max-width:1100px;margin:auto;padding:clamp(18px,4vw,42px)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:.75rem;color:#128077;font-weight:850}
+h1{font-size:clamp(1.75rem,4vw,2.8rem);line-height:1.15;margin:10px 0 14px}
+.intro{color:#546e80;max-width:740px}
+.notice{background:#eaf7f2;border:1px solid #b5ddd0;color:#20594d;padding:16px;border-radius:14px;font-weight:720;margin:22px 0}
+input[type=radio]{position:absolute;width:1px;height:1px;opacity:0}
+.choices{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 20px}
+.choices label{display:inline-block;border:1px solid #acc7d3;border-radius:11px;padding:12px 17px;cursor:pointer;background:white;font-weight:740}
+#stable:checked~.choices label[for=stable],#changed:checked~.choices label[for=changed],#hidden:checked~.choices label[for=hidden]{background:#195d67;color:white;border-color:#195d67}
+.panel{display:none}
+#stable:checked~.panels .stable,#changed:checked~.panels .changed,#hidden:checked~.panels .hidden{display:block}
+.card{background:#fff;border:1px solid #dbe6ed;border-radius:16px;padding:clamp(17px,3vw,25px);margin-bottom:18px}
+h2{font-size:1.22rem;margin:0 0 10px}
+.hint{color:#647d88;font-size:.89rem;margin:4px 0 18px}
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.metric{background:#f3f8fa;border:1px solid #dce9ee;border-radius:12px;padding:15px}
+.metric span{display:block;font-size:.8rem;color:#627f8c}
+.metric strong{font-size:1.4rem;font-variant-numeric:tabular-nums}
+.stages{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px}
+.stage{background:#f4f9fb;border:1px solid #dbe7ee;border-radius:12px;padding:14px;min-width:0;text-align:center}
+.stage b{display:block;font-size:.84rem;min-height:40px}
+.stage .pct{display:block;font-size:1.5rem;font-weight:850;font-variant-numeric:tabular-nums;margin:8px 0}
+.stage small{color:#5d7583}
+.bar{height:7px;background:#dbe9ef;border-radius:100px;overflow:hidden;margin-top:12px}
+.bar i{display:block;height:100%;background:#168782;width:var(--percentage,0%)}
+.private{background:#fff4e8;border:1px solid #edd2af;color:#7d4b21;border-radius:10px;padding:13px 16px;margin:16px 0}
+.denied{border-color:#edcfcb;background:#fff3f1;color:#863c37}
+.rights{font-weight:740;color:#823f41}
+footer{max-width:1100px;margin:auto;padding:0 18px 36px;font-size:.79rem;color:#687e88}
+@media(max-width:800px){.stages{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.summary{grid-template-columns:1fr 1fr}.stages{grid-template-columns:repeat(2,minmax(0,1fr))}.choices{display:grid}.choices label{width:100%}}
+@media(max-width:360px){.summary,.stages{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><strong>imagine CRM · Painel de funil</strong><a href="../index.html">Voltar aos protótipos</a></header>
+<main>
+<p class="eyebrow">Revisão visual · Dados inventados</p>
+<h1>Distribuição do funil com proteção de privacidade</h1>
+<p class="intro">Compare três situações fictícias: indicadores completos, uma mudança pequena entre fotografias e um grupo oculto. Os resultados representam os contratos dos laboratórios F3-143, F3-145 e F3-146, sem execução PHP neste arquivo.</p>
+<aside class="notice">PROTÓTIPO OFFLINE. Não existe banco, login, análise de clientes reais, persistência, exportação ou envio. Percentuais não significam permissão de acesso.</aside>
+<section aria-label="Cenários simulados">
+<input type="radio" name="scenario" id="stable" checked>
+<input type="radio" name="scenario" id="changed">
+<input type="radio" name="scenario" id="hidden">
+<div class="choices" role="group" aria-label="Escolher situação do funil">
+<label for="stable">Sem mudança entre fotografias</label>
+<label for="changed">Mudança pequena detectada</label>
+<label for="hidden">Grupo pequeno oculto</label>
+</div>
+<div class="panels">
+<div class="panel stable card" aria-label="Cenário estável">
+<h2>Indicadores ilustrativos sem supressão</h2>
+<p class="hint">Duas fotografias fictícias idênticas, três registros em “Novo” e três em “Ganho”. O histórico real não está verificado.</p>
+<div class="summary"><div class="metric"><span>Etapas mostradas</span><strong>5</strong></div><div class="metric"><span>Percentuais</span><strong>Visíveis</strong></div><div class="metric"><span>Autorização real</span><strong>Não</strong></div></div>
+<div class="stages">
+<div class="stage"><b>Novo</b><span class="pct">50%</span><small>Grupo fictício</small><div class="bar"><i style="--percentage:50%"></i></div></div>
+<div class="stage"><b>Qualificado</b><span class="pct">0%</span><small>Sem registros</small><div class="bar"></div></div>
+<div class="stage"><b>Proposta</b><span class="pct">0%</span><small>Sem registros</small><div class="bar"></div></div>
+<div class="stage"><b>Ganho</b><span class="pct">50%</span><small>Grupo fictício</small><div class="bar"><i style="--percentage:50%"></i></div></div>
+<div class="stage"><b>Perdido</b><span class="pct">0%</span><small>Sem registros</small><div class="bar"></div></div>
+</div><p class="private">Histórico e identidade não verificados: visualização de laboratório, não licença para liberar dados.</p>
+<p class="rights">Exportar: bloqueado · Enviar: bloqueado · Gravar: bloqueado</p>
+</div>
+<div class="panel changed card" aria-label="Cenário com mudança pequena">
+<h2>Comparação bloqueada por alteração pequena</h2>
+<p class="hint">“Novo” muda de três para quatro registros inventados; uma diferença de apenas uma unidade pode revelar informações quando fotografias são comparadas.</p>
+<div class="summary"><div class="metric"><span>Mudança detectada</span><strong>1</strong></div><div class="metric"><span>Percentuais</span><strong>Ocultos</strong></div><div class="metric"><span>Autorização real</span><strong>Não</strong></div></div>
+<div class="stages">
+<div class="stage"><b>Novo</b><span class="pct">—</span><small>Percentual oculto</small></div>
+<div class="stage"><b>Qualificado</b><span class="pct">—</span><small>Percentual oculto</small></div>
+<div class="stage"><b>Proposta</b><span class="pct">—</span><small>Percentual oculto</small></div>
+<div class="stage"><b>Ganho</b><span class="pct">—</span><small>Percentual oculto</small></div>
+<div class="stage"><b>Perdido</b><span class="pct">—</span><small>Percentual oculto</small></div>
+</div><p class="private denied">Alerta: small_cross_snapshot_delta. Nenhum percentual deve aparecer nesta visualização.</p>
+<p class="rights">Exportar: bloqueado · Enviar: bloqueado · Gravar: bloqueado</p>
+</div>
+<div class="panel hidden card" aria-label="Cenário com grupo oculto">
+<h2>Grupo pequeno ocultado</h2>
+<p class="hint">Três exemplos em “Novo” e apenas um em “Ganho”. Como há um grupo menor que o limite ilustrativo de três, todos os percentuais são ocultos.</p>
+<div class="summary"><div class="metric"><span>Grupos ocultos</span><strong>1</strong></div><div class="metric"><span>Percentuais</span><strong>Ocultos</strong></div><div class="metric"><span>Autorização real</span><strong>Não</strong></div></div>
+<div class="stages">
+<div class="stage"><b>Novo</b><span class="pct">—</span><small>Percentual oculto</small></div>
+<div class="stage"><b>Qualificado</b><span class="pct">—</span><small>Percentual oculto</small></div>
+<div class="stage"><b>Proposta</b><span class="pct">—</span><small>Percentual oculto</small></div>
+<div class="stage"><b>Ganho</b><span class="pct">—</span><small>Grupo protegido</small></div>
+<div class="stage"><b>Perdido</b><span class="pct">—</span><small>Percentual oculto</small></div>
+</div><p class="private denied">Alerta: suppression_or_empty_denominator. O total e a participação de cada etapa não são divulgados.</p>
+<p class="rights">Exportar: bloqueado · Enviar: bloqueado · Gravar: bloqueado</p>
+</div>
+</div>
+</section>
+</main>
+<footer>Imagine CRM · Revisão UX isolada. O conteúdo é uma demonstração estática, sem dados externos e sem qualquer política de acesso operacional.</footer>
+</body>
+</html>
