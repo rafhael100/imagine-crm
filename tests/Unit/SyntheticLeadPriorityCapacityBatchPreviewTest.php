@@ -64,7 +64,7 @@ final class SyntheticLeadPriorityCapacityBatchPreviewTest extends TestCase
         self::assertSame(4, $out['unassigned_reviewed']);
         self::assertSame(1, $out['already_owned_or_handled']);
         self::assertSame([1, 2, 0, 4], $out['ranked_unassigned_positions']);
-        self::assertSame(['warm', 'warm', 'warm', 'cold'], $out['ranked_score_bands']);
+        self::assertSame(['morno', 'morno', 'morno', 'frio'], $out['ranked_score_bands']);
         self::assertSame([
             ['lead_position' => 1, 'agent_slot' => 1],
             ['lead_position' => 2, 'agent_slot' => 0],
