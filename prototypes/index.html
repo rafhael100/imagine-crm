@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'none'; img-src 'none'; connect-src 'none'; font-src 'none'; frame-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'none'; img-src 'self'; connect-src 'none'; font-src 'none'; frame-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Imagine CRM — Laboratório navegável offline</title>
 <style>
@@ -56,12 +56,14 @@ h1{color:var(--imagine-ink)}
 .card a{background:var(--imagine-orange);color:var(--imagine-ink);border-radius:var(--imagine-radius-control)}
 .card a:hover{background:#e88713;color:var(--imagine-ink)}
 .meta span{background:var(--imagine-orange-soft);color:var(--imagine-orange-text)}
+.brand{display:flex;align-items:center;gap:13px;min-height:48px}.brand-logo{display:block;width:170px;max-width:min(170px,65vw);height:auto;object-fit:contain}.brand small{margin:0;border-left:1px solid var(--imagine-border);padding-left:12px;font-size:.75rem;letter-spacing:.1em}
+@media(max-width:620px){.brand-logo{width:140px}}
 </style>
 </head>
 <body>
 <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 <header>
-  <div class="brand">imagine <small>CRM</small></div>
+  <div class="brand"><img class="brand-logo" src="assets/logo-imagine.png" alt="Imagine Comunicação Digital" width="170" height="47" decoding="async"> <small>CRM</small></div>
   <span>Ambiente de revisão offline • Sem conexão com clientes</span>
 </header>
 <main id="conteudo">
