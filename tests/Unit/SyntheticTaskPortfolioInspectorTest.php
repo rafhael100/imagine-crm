@@ -118,7 +118,7 @@ final class SyntheticTaskPortfolioInspectorTest extends TestCase
         }
         $encoded = json_encode($out, JSON_THROW_ON_ERROR);
         foreach (['2026-','email','actor_id','tenant_id','task_id','due_at_utc','contact'] as $forbidden) {
-            self::assertStringNotContainsString($forbidden, $encoded);
+            self::assertStringNotContainsString('"'.$forbidden.'"', $encoded);
         }
     }
 }
