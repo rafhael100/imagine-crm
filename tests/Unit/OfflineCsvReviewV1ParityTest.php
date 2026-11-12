@@ -106,7 +106,7 @@ final class OfflineCsvReviewV1ParityTest extends TestCase
             'aria-live="polite"', 'a:focus-visible',
             'button:focus-visible', 'get(\'alerts\').replaceChildren();',
             'a.textContent=label;b.textContent=position',
-            'Nenhuma empresa foi autenticada.', 'Importação proibida',
+            'nenhuma empresa foi autenticada.', 'Importação proibida',
             '@media(max-width:390px)',
             'href="../f3-72-csv-checklist/index.html"',
         ] as $required) {
