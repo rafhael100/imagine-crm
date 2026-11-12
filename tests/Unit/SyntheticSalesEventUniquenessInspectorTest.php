@@ -115,11 +115,14 @@ final class SyntheticSalesEventUniquenessInspectorTest extends TestCase
             'can_update_targets', 'can_invoice', 'can_persist',
         ], array_keys($result));
         $json = json_encode($result, JSON_THROW_ON_ERROR);
+        self::assertStringNotContainsString(self::A, $json);
         foreach ([
-            self::A, 'tenant', 'email', 'phone', 'customer', 'event_reference',
+            'tenant', 'email', 'phone', 'customer', 'event_reference',
             'lead_id', 'opportunity_id', 'payment', 'invoice_id', 'actor',
         ] as $field) {
-            self::assertStringNotContainsString($field, $json);
+            // Match a complete JSON key, not part of the permitted
+            // metadata flag "tenant_verified": that flag must remain false.
+            self::assertStringNotContainsString('"'.$field.'"', $json);
         }
     }
 }
