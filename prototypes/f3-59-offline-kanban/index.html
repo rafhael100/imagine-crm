@@ -484,6 +484,8 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   document.querySelectorAll('.lane[data-drag-over]').forEach(function(el){delete el.dataset.dragOver;});
   if(!id||!lane||lane.hidden)return;
   const target=Number(lane.dataset.dropStage);
+  // A tampered or malformed target must never enter the group mutation path.
+  if(!Number.isInteger(target)||target<0||target>=STAGES.length)return;
   const item=opportunities.find(function(entry){return entry.id===id;});
   if(!item||!document.querySelector('[data-card-id="'+id+'"]'))return;
   event.preventDefault();
