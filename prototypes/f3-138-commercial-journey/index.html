@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; font-src 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — Jornada comercial integrada fictícia</title>
+<style>
+*{box-sizing:border-box} :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;color:#173447;background:#f3f8fa}
+body{min-width:0;margin:0}a{color:#bce7e5}a:focus-visible,button:focus-visible{outline:3px solid #08a88e;outline-offset:3px}
+.skip{position:absolute;left:-5000px;top:10px;background:white;color:#133d53;padding:10px}.skip:focus{left:12px}
+header{background:#17374d;color:white;padding:18px clamp(16px,4vw,44px);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+main{max-width:1120px;margin:auto;padding:clamp(16px,3vw,36px)}
+.kicker{text-transform:uppercase;letter-spacing:.12em;color:#0d7b76;font-size:.77rem;font-weight:850}
+h1{font-size:clamp(1.7rem,4vw,2.5rem);line-height:1.12;margin:9px 0}h2{font-size:1.12rem;margin:0 0 14px}p{margin-top:8px}
+.lead{max-width:780px;color:#567482}
+.notice{margin:18px 0;background:#edf7f2;border:1px solid #b9ddce;border-radius:12px;padding:16px;color:#225a51;font-weight:760}
+.card{background:white;border-radius:16px;border:1px solid #d9e7eb;padding:clamp(16px,2.5vw,24px);margin:17px 0}
+.choices{display:flex;gap:12px;flex-wrap:wrap}button{font:inherit;cursor:pointer;background:#f4fafb;border:1px solid #a6c9d0;border-radius:12px;color:#23556a;padding:12px 16px;font-weight:750}button[aria-pressed="true"]{background:#20596a;border-color:#20596a;color:white}
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.step{min-width:0;padding:14px 11px;border:1px solid #dfeaed;border-radius:12px;background:#f8fbfd}
+.step .number{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;border-radius:50%;background:#dcefeb;color:#176159;font-size:.8rem;font-weight:850}
+.step dt{margin:9px 0 5px;color:#5b7483;font-size:.79rem}.step dd{margin:0;font-weight:770;overflow-wrap:anywhere;font-size:.95rem}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.metric{background:#f6fafb;border:1px solid #dfebef;padding:13px;border-radius:12px}.metric span{display:block;color:#647a88;font-size:.77rem}.metric strong{font-variant-numeric:tabular-nums;font-size:1.3rem}
+.status{background:#f1f7f9;border:1px solid #d1e5eb;color:#245b67;padding:12px 14px;border-radius:10px;font-weight:720}
+ul{margin:0;padding-left:20px}li{margin:7px 0;overflow-wrap:anywhere}
+.hint{font-size:.84rem;color:#5c7988}.rights{color:#7d3136;background:#fff4f2;border-color:#e5c9c5}
+footer{max-width:1120px;padding:0 24px 36px;margin:auto;font-size:.81rem;color:#637d89}
+@media(max-width:900px){.flow{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){.flow,.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){.flow,.metrics{grid-template-columns:minmax(0,1fr)}.choices{display:grid;grid-template-columns:minmax(0,1fr)}button{width:100%}main{padding:16px 12px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header><strong>imagine CRM · Laboratório de jornada</strong><a href="../index.html">Voltar à página de protótipos</a></header>
+<main id="conteudo">
+<p class="kicker">Fluxo comercial · Cinco módulos</p>
+<h1>Do lead à proposta e ao acompanhamento</h1>
+<p class="lead">Compare um fluxo ilustrativo sem conflitos de consistência com outro que apresenta impedimentos. Os dados são fixos e inventados; não existe conexão com clientes.</p>
+<aside class="notice" role="note">PROTÓTIPO — DADOS FICTÍCIOS. Nenhum lead é criado, vendedor real é atribuído, venda é reconhecida, proposta é enviada ou tarefa é executada.</aside>
+<section class="card" aria-labelledby="cases">
+<h2 id="cases">Escolha um cenário</h2>
+<div class="choices" role="group" aria-label="Cenário ilustrativo de jornada">
+<button type="button" data-case="consistent" aria-pressed="true">Fluxo sem conflitos</button>
+<button type="button" data-case="conflict" aria-pressed="false">Fluxo com conflitos</button>
+</div>
+<p class="hint" id="story">Exemplo fictício de uma jornada comercial.</p>
+</section>
+<section class="card" aria-labelledby="flow-title">
+<h2 id="flow-title">Jornada integrada</h2>
+<dl class="flow">
+<div class="step"><span class="number">01</span><dt>Lead scoring</dt><dd id="lead-score">—</dd></div>
+<div class="step"><span class="number">02</span><dt>Distribuição</dt><dd id="assignment">—</dd></div>
+<div class="step"><span class="number">03</span><dt>Oportunidade</dt><dd id="opportunity">—</dd></div>
+<div class="step"><span class="number">04</span><dt>Proposta</dt><dd id="proposal">—</dd></div>
+<div class="step"><span class="number">05</span><dt>Atividade</dt><dd id="task">—</dd></div>
+</dl>
+</section>
+<section class="card" aria-labelledby="review-title">
+<h2 id="review-title">Revisão de consistência</h2>
+<div class="metrics">
+<div class="metric"><span>Alertas ilustrativos</span><strong id="warning-count">—</strong></div>
+<div class="metric"><span>Total da proposta fictícia</span><strong id="quote-total">—</strong></div>
+<div class="metric"><span>Receita comprovada</span><strong id="recognized">R$ 0,00</strong></div>
+</div>
+<p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Revisando cenário inventado.</p>
+<ul id="warnings" aria-label="Alertas do fluxo"></ul>
+</section>
+<section class="card" aria-labelledby="rights-title">
+<h2 id="rights-title">Bloqueios de operação</h2>
+<p id="rights" class="status rights">Criar lead: NÃO · Atribuir: NÃO · Mover: NÃO · Enviar: NÃO · Cobrar: NÃO · Gravar: NÃO</p>
+<p class="hint">Sem alertas na comparação não significa aprovação. Política de empresa, identidade, permissão, fonte de dados, documento e auditoria continuam sem verificação.</p>
+</section>
+</main>
+<footer>Imagine CRM • Interface local sem servidor, rede, conta, assinatura, agendamento, pagamentos ou dados reais.</footer>
+<script>
+(function(){
+'use strict';
+const SCENARIOS=Object.freeze([{"id":"consistent","title":"Jornada sem alertas de consistência","subtitle":"Oportunidade, proposta e atividade fictícias coerentes entre si","input":{"agents":[{"enabled":true,"has_required_skill":true,"open_leads":0,"capacity":2}],"approval_claimed":false,"base_score":20,"discount_limit_bp":1000,"discount_lines":[{"quantity":2,"unit_price_cents":10000,"discount_bp":500}],"observed_at_utc":"2026-11-05T10:00:00Z","opportunity_events":[{"revision":1,"action":"create","stage":0,"confirmed":false,"loss_reason_code":null,"reopen_reason_code":null,"occurred_at_utc":"2026-11-01T10:00:00Z"},{"revision":2,"action":"move","stage":1,"confirmed":false,"loss_reason_code":null,"reopen_reason_code":null,"occurred_at_utc":"2026-11-01T10:01:00Z"},{"revision":3,"action":"win","stage":1,"confirmed":true,"loss_reason_code":null,"reopen_reason_code":null,"occurred_at_utc":"2026-11-01T10:02:00Z"}],"proposal_events":[{"version":1,"action":"create","occurred_at_utc":"2026-11-01T10:00:00Z","expires_at_utc":null},{"version":1,"action":"send","occurred_at_utc":"2026-11-01T10:10:00Z","expires_at_utc":"2026-11-08T10:10:00Z"},{"version":1,"action":"accept","occurred_at_utc":"2026-11-02T11:00:00Z","expires_at_utc":null}],"scoring_signals":{"profile_complete":true,"recent_engagement":true,"requested_quote":true,"scheduled_demo":false,"stale_response":false},"scoring_weights":{"profile_complete":10,"recent_engagement":20,"requested_quote":40,"scheduled_demo":10,"stale_response":-20},"task_events":[{"revision":1,"action":"create","occurred_at_utc":"2026-11-01T09:00:00Z","due_at_utc":"2026-11-03T09:00:00Z","priority":"high","reason_code":null},{"revision":2,"action":"start","occurred_at_utc":"2026-11-01T09:01:00Z","due_at_utc":null,"priority":null,"reason_code":null},{"revision":3,"action":"complete","occurred_at_utc":"2026-11-02T09:00:00Z","due_at_utc":null,"priority":null,"reason_code":null}]},"expected":{"scoring_score":90,"scoring_band":"quente","lead_assignment_slot":0,"opportunity_claimed_status":"won","opportunity_claimed_win_count":1,"proposal_claimed_status":"accepted","proposal_discounted_total_cents":19000,"proposal_preflight_blockers":["current_draft_required","discount_policy_unverified","sender_identity_unverified","proposal_version_unverified","recipient_access_unverified"],"task_claimed_status":"completed","task_due_phase":"closed","journey_warning_codes":[],"fictional_consistency_warnings":0,"recognized_wins":0,"recognized_revenue_cents":0}},{"id":"conflict","title":"Jornada com conflitos","subtitle":"Sem vendedor disponível, ganho sem aceite, desconto elevado e atividade vencida","input":{"agents":[{"enabled":false,"has_required_skill":true,"open_leads":0,"capacity":2}],"approval_claimed":false,"base_score":20,"discount_limit_bp":1000,"discount_lines":[{"quantity":2,"unit_price_cents":10000,"discount_bp":4000}],"observed_at_utc":"2026-11-05T10:00:00Z","opportunity_events":[{"revision":1,"action":"create","stage":0,"confirmed":false,"loss_reason_code":null,"reopen_reason_code":null,"occurred_at_utc":"2026-11-01T10:00:00Z"},{"revision":2,"action":"move","stage":1,"confirmed":false,"loss_reason_code":null,"reopen_reason_code":null,"occurred_at_utc":"2026-11-01T10:01:00Z"},{"revision":3,"action":"win","stage":1,"confirmed":true,"loss_reason_code":null,"reopen_reason_code":null,"occurred_at_utc":"2026-11-01T10:02:00Z"}],"proposal_events":[{"version":1,"action":"create","occurred_at_utc":"2026-11-01T10:00:00Z","expires_at_utc":null}],"scoring_signals":{"profile_complete":true,"recent_engagement":true,"requested_quote":true,"scheduled_demo":false,"stale_response":false},"scoring_weights":{"profile_complete":10,"recent_engagement":20,"requested_quote":40,"scheduled_demo":10,"stale_response":-20},"task_events":[{"revision":1,"action":"create","occurred_at_utc":"2026-11-01T09:00:00Z","due_at_utc":"2026-11-03T09:00:00Z","priority":"high","reason_code":null}]},"expected":{"scoring_score":90,"scoring_band":"quente","lead_assignment_slot":null,"opportunity_claimed_status":"won","opportunity_claimed_win_count":1,"proposal_claimed_status":"draft","proposal_discounted_total_cents":12000,"proposal_preflight_blockers":["manager_review_required","discount_policy_unverified","sender_identity_unverified","proposal_version_unverified","recipient_access_unverified"],"task_claimed_status":"pending","task_due_phase":"overdue","journey_warning_codes":["no_fictional_agent_capacity","won_claim_without_latest_proposal_acceptance_claim","fictional_discount_requires_review","fictional_task_overdue"],"fictional_consistency_warnings":4,"recognized_wins":0,"recognized_revenue_cents":0}}]);
+const LABELS=Object.freeze({
+no_fictional_agent_capacity:'Nenhum vendedor de laboratório elegível por capacidade',
+won_claim_without_latest_proposal_acceptance_claim:'Oportunidade declarada ganha sem aceite da última proposta',
+fictional_discount_requires_review:'Desconto fictício requer revisão gerencial',
+fictional_task_overdue:'Tarefa fictícia está vencida'
+});
+const text=(id,value)=>{document.getElementById(id).textContent=String(value);};
+const currency=value=>'R$ '+(value/100).toFixed(2).replace('.',',');
+function show(id){
+ const scenario=SCENARIOS.find(x=>x.id===id);
+ if(!scenario)throw new Error('Cenário inexistente');
+ const r=scenario.expected;
+ text('story',scenario.subtitle);
+ text('lead-score',r.scoring_score+' / 100 · '+r.scoring_band);
+ text('assignment',r.lead_assignment_slot===null?'Sem posição disponível':'Posição '+(r.lead_assignment_slot+1)+' (fictícia)');
+ text('opportunity',r.opportunity_claimed_status==='won'?'Ganha (alegada)':r.opportunity_claimed_status||'Nenhuma');
+ text('proposal',r.proposal_claimed_status==='accepted'?'Aceita (alegada)':r.proposal_claimed_status==='draft'?'Rascunho fictício':r.proposal_claimed_status||'Nenhuma');
+ text('task',r.task_due_phase==='closed'?'Encerrada (alegada)':r.task_due_phase==='overdue'?'Vencida (alegada)':r.task_due_phase);
+ text('warning-count',r.fictional_consistency_warnings);
+ text('quote-total',currency(r.proposal_discounted_total_cents));
+ text('recognized',currency(r.recognized_revenue_cents));
+ text('status',r.fictional_consistency_warnings===0?'Sem alertas de consistência neste exemplo. Direitos operacionais continuam negados.':'Há '+r.fictional_consistency_warnings+' alertas ilustrativos. Nenhuma ação real é autorizada.');
+ const warnings=document.getElementById('warnings');
+ warnings.replaceChildren();
+ if(r.journey_warning_codes.length===0){
+  const item=document.createElement('li');item.textContent='Nenhum alerta ilustrativo neste cenário. Envio permanece bloqueado.';warnings.appendChild(item);
+ }else{
+  r.journey_warning_codes.forEach(code=>{const item=document.createElement('li');item.textContent=LABELS[code]||'Conflito não classificado';warnings.appendChild(item);});
+ }
+ text('rights','Criar lead: NÃO · Atribuir: NÃO · Mover: NÃO · Enviar: NÃO · Cobrar: NÃO · Gravar: NÃO');
+ document.querySelectorAll('[data-case]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.case===id)));
+}
+document.querySelectorAll('[data-case]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.case)));
+show('consistent');
+})();
+</script>
+</body>
+</html>
