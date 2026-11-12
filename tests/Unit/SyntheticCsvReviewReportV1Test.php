@@ -283,4 +283,38 @@ final class SyntheticCsvReviewReportV1Test extends TestCase
         $this->expectExceptionMessage('Relatorio CSV sintetico invalido.');
         (new SyntheticCsvReviewReportV1())->build($bad);
     }
+
+    public function test_one_csv_cell_cannot_be_both_marked_empty_and_a_possible_formula(): void
+    {
+        $good = self::preflight();
+        $original = $good->preview->csvPreview;
+        // Both coordinates are individually valid, but contradictory when
+        // claimed for the same row/column in two separate reports.
+        $forged = new SyntheticImportPreviewSummary(
+            $original->rowsInspected,
+            $original->columnsInspected,
+            $original->emptyCells,
+            [['row' => 1, 'column' => 1]],
+        );
+        $required = new SyntheticCsvRequiredCellsSummary(
+            $forged,
+            [1, 2],
+            [3],
+            [['row' => 1, 'column' => 1]],
+        );
+        $preflight = new SyntheticCsvImportPreflightSummary(
+            new SyntheticImportMappedPreviewSummary($forged, $good->preview->mappingPreview),
+            $good->decision,
+            null,
+            $required,
+        );
+
+        try {
+            (new SyntheticCsvReviewReportV1())->build($preflight);
+            self::fail('Contradictory formula and empty cell warnings were serialized.');
+        } catch (InvalidArgumentException $error) {
+            self::assertSame('Relatorio CSV sintetico invalido.', $error->getMessage());
+            self::assertStringNotContainsString('private@example.test', $error->getMessage());
+        }
+    }
 }
