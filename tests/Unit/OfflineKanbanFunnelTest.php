@@ -514,6 +514,42 @@ final class OfflineKanbanFunnelTest extends TestCase
         }
     }
 
+    public function test_dragged_cards_keep_in_memory_undo_and_keyboard_movement_alternative(): void
+    {
+        $html = self::html();
+        self::assertSame(4, substr_count($html, 'data-drop-stage="'));
+        foreach ([
+            'card.draggable=true;',
+            "card.setAttribute('aria-description'",
+            "byId('board').addEventListener('dragstart'",
+            "byId('board').addEventListener('dragover'",
+            "byId('board').addEventListener('dragleave'",
+            "byId('board').addEventListener('drop'",
+            "byId('board').addEventListener('dragend'",
+            "event.target.closest('button')",
+            "event.dataTransfer.setData('text/plain',dragId);",
+            "if(!id||!lane||lane.hidden)return;",
+            "if(!item||!Number.isInteger(next)||next<0||next>=STAGES.length||next===item.stage)return;",
+            "moveToStage(item,target);",
+            "moveToStage(item,item.stage+(button.dataset.move==='next'?1:-1));",
+            "history.push({kind:'move',id:item.id,from:item.stage});",
+            "item.stage=next;",
+            "if(event.dataTransfer)event.dataTransfer.dropEffect='move';",
+            "Arraste cartões fictícios entre as quatro etapas",
+            "botões Etapa anterior/Próxima etapa",
+        ] as $contract) {
+            self::assertStringContainsString($contract, $html);
+        }
+        self::assertSame(1, substr_count($html, "byId('board').addEventListener('drop'"));
+        self::assertSame(5, substr_count($html, 'history.push('));
+        self::assertStringContainsString("connect-src 'none'", $html);
+        self::assertStringContainsString("form-action 'none'", $html);
+        foreach (['<form', 'fetch(', 'localStorage', 'sessionStorage',
+            'navigator.sendBeacon', '.innerHTML', 'download='] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
+        }
+    }
+
     public function test_accessible_actions_and_mobile_layout_are_present(): void
     {
         $html = self::html();
