@@ -139,7 +139,7 @@ final class OfflineCsvDiagnosticsChecklistTest extends TestCase
 
         preg_match_all('/\bhref="([^"]+)"/', $html, $matches);
         self::assertSame(
-            ['#conteudo', '../f3-22-csv-risk-preview/index.html', '../f3-81-submission-review/index.html'],
+            ['#conteudo', '../f3-22-csv-risk-preview/index.html', '../f3-81-submission-review/index.html', '../f3-106-csv-review-v1/index.html'],
             $matches[1],
         );
         self::assertFileExists(
@@ -147,6 +147,9 @@ final class OfflineCsvDiagnosticsChecklistTest extends TestCase
         );
         self::assertFileExists(
             dirname(__DIR__, 2).'/prototypes/f3-81-submission-review/index.html',
+        );
+        self::assertFileExists(
+            dirname(__DIR__, 2).'/prototypes/f3-106-csv-review-v1/index.html',
         );
         self::assertStringContainsString('@media(max-width:390px)', $html);
     }

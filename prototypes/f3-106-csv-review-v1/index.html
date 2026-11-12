@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; img-src 'none'; font-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — Revisão de CSV versionada (laboratório)</title>
+<style>
+:root{font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#173749;background:#f4f8fb}
+*{box-sizing:border-box}body{margin:0;min-width:0}a{color:#126578}a:focus-visible,button:focus-visible{outline:3px solid #11a28f;outline-offset:3px}
+.skip{position:absolute;top:-6rem;left:1rem;padding:12px;background:#fff}.skip:focus{top:1rem}
+header{background:#173851;color:#f2f9fc;padding:18px clamp(16px,4vw,44px);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}header a{color:#e0f8f5}
+main{max-width:1050px;margin:auto;padding:clamp(18px,3vw,35px)}h1{font-size:clamp(1.65rem,3.5vw,2.55rem);line-height:1.15;margin:.2rem 0 14px}h2{font-size:1.15rem;margin:0 0 10px}
+.kicker{font-size:.77rem;color:#187e72;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
+.lead{color:#526e7e;max-width:790px}.notice{padding:14px 16px;background:#e6f5ef;border:1px solid #abd8c8;border-radius:13px;color:#22594e;font-weight:700}
+.card{background:#fff;border:1px solid #d8e8eb;border-radius:16px;padding:clamp(16px,2.5vw,24px);margin:18px 0;min-width:0}
+.controls{display:flex;flex-wrap:wrap;gap:9px}button{border:1px solid #a5c8cf;background:#f4fbfc;color:#24566b;font:inherit;font-weight:690;border-radius:10px;cursor:pointer;padding:10px 14px}
+button[aria-pressed="true"]{background:#184f5e;color:#fff;border-color:#184f5e}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.stat{border:1px solid #d9e7ec;border-radius:11px;background:#f7fafb;min-width:0;padding:13px}
+.stat span{display:block;font-size:.78rem;color:#557180}.stat strong{display:block;font-size:clamp(1.1rem,2.2vw,1.65rem);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.state{border-radius:9px;padding:12px 14px;background:#f2f7f8;color:#235566;font-weight:710;margin:14px 0}
+.table-wrap{max-width:100%;overflow-x:auto}table{width:100%;min-width:430px;border-collapse:collapse;text-align:left}
+th,td{padding:11px 12px;border-bottom:1px solid #e4edf0;vertical-align:top;font-size:.88rem}thead{background:#eff6f7}
+.small{font-size:.83rem;color:#5c7483}.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.meta{background:#f7fafb;border:1px solid #dce8ed;border-radius:10px;padding:10px 13px}.meta dt{font-size:.75rem;color:#557180}.meta dd{margin:0;font-weight:750;overflow-wrap:anywhere}
+footer{max-width:1050px;margin:auto;padding:0 24px 35px;font-size:.8rem;color:#667d89}
+@media(max-width:700px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){main{padding:16px 12px}.card{padding:14px}.controls{display:grid;grid-template-columns:minmax(0,1fr)}button{width:100%}.two{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header><strong>imagine CRM · Laboratório</strong><a href="../f3-72-csv-checklist/index.html">Voltar ao checklist CSV</a></header>
+<main id="conteudo">
+  <p class="kicker">Importação · Prévia estrita de metadados</p>
+  <h1>Relatório CSV versionado</h1>
+  <p class="lead">Explore três resultados de conferência estruturados como o contrato PHP v1. Eles não contêm cabeçalhos, dados de células, nomes, contatos ou identificadores de cliente.</p>
+  <div class="notice" role="note">PROTÓTIPO — DADOS FICTÍCIOS. Não há importação, exportação, backup, autorização de empresa, upload ou acesso a registros. Todos os cenários são NEGADOS.</div>
+  <section class="card" aria-labelledby="cases-title">
+    <h2 id="cases-title">Escolha um resultado inventado</h2>
+    <div class="controls" role="group" aria-label="Cenários do relatório CSV v1">
+      <button type="button" data-case="clean" aria-pressed="true">A · Sem alertas estruturais</button>
+      <button type="button" data-case="warnings" aria-pressed="false">B · Alertas de fórmula e repetição</button>
+      <button type="button" data-case="scope" aria-pressed="false">C · Escopo declarado divergente</button>
+    </div>
+    <p class="small">Avisos e mapeamentos mostram somente posições numéricas e estados de negação. Sem alertas não significa que uma importação seja permitida.</p>
+  </section>
+  <section class="card" aria-labelledby="summary-title">
+    <h2 id="summary-title">Resumo estrutural fictício</h2>
+    <div class="metrics">
+      <div class="stat"><span>Linhas examinadas</span><strong id="rows">—</strong></div>
+      <div class="stat"><span>Colunas examinadas</span><strong id="columns">—</strong></div>
+      <div class="stat"><span>Células vazias</span><strong id="empty">—</strong></div>
+      <div class="stat"><span>Avisos posicionais</span><strong id="findings">—</strong></div>
+    </div>
+    <p id="status" class="state" role="status" aria-live="polite" aria-atomic="true">Carregando relatório fictício.</p>
+    <div class="two">
+      <dl class="meta"><dt>Versão do contrato</dt><dd id="version">—</dd></dl>
+      <dl class="meta"><dt>Código de negativa</dt><dd id="denial">—</dd></dl>
+      <dl class="meta"><dt>Repetições analisadas</dt><dd id="repeat-analysis">—</dd></dl>
+      <dl class="meta"><dt>Obrigatoriedade analisada</dt><dd id="required-analysis">—</dd></dl>
+    </div>
+  </section>
+  <section class="card" aria-labelledby="alerts-title">
+    <h2 id="alerts-title">Avisos somente por posição</h2>
+    <div class="table-wrap">
+      <table><caption>Posições sintéticas com índice iniciado em 1</caption>
+      <thead><tr><th scope="col">Categoria</th><th scope="col">Posição técnica</th></tr></thead>
+      <tbody id="alerts"></tbody></table>
+    </div>
+    <p class="small">Esta tabela nunca revela valores de células; um digest e um mapeamento de cabeçalhos também não comprovam permissão de importar.</p>
+  </section>
+  <p id="permissions" class="notice">Importar: NÃO · Persistir: NÃO · Habilitar rota: NÃO · Autorização: NÃO</p>
+</main>
+<footer>Imagine CRM • Contrato versionado somente em memória local. Política LGPD e homologação operacional ainda necessárias.</footer>
+<script>
+(function(){
+  'use strict';
+  // Literal metadata extracted and parity-checked against SyntheticCsvReviewReportV1.
+  const SCENARIOS=Object.freeze([
+  {
+    "id": "clean",
+    "title": "A · Estrutura sem alertas",
+    "report": {
+      "protocol": "imagine.crm.synthetic_csv_review",
+      "schema_version": 1,
+      "status": "REVIEW_ONLY_DENIED",
+      "rows_inspected": 1,
+      "columns_inspected": 3,
+      "empty_cells": 0,
+      "mapping": {
+        "mapped_source_to_target_positions": [
+          {
+            "source": 1,
+            "target": 1
+          },
+          {
+            "source": 2,
+            "target": 2
+          },
+          {
+            "source": 3,
+            "target": 3
+          }
+        ],
+        "unmapped_source_positions": [],
+        "unmapped_target_positions": []
+      },
+      "warnings": {
+        "potential_formula_positions": [],
+        "repeated_row_positions": [],
+        "required_source_positions": [],
+        "missing_required_header_positions": [],
+        "empty_required_cell_positions": []
+      },
+      "analysis_performed": {
+        "repeated_rows": true,
+        "required_cells": false
+      },
+      "denial_reason": "SCOPE_NOT_VERIFIED",
+      "allowed": false,
+      "can_import": false,
+      "can_persist_lead": false,
+      "can_enable_import_route": false
+    }
+  },
+  {
+    "id": "warnings",
+    "title": "B · Avisos de estrutura",
+    "report": {
+      "protocol": "imagine.crm.synthetic_csv_review",
+      "schema_version": 1,
+      "status": "REVIEW_ONLY_DENIED",
+      "rows_inspected": 2,
+      "columns_inspected": 3,
+      "empty_cells": 2,
+      "mapping": {
+        "mapped_source_to_target_positions": [
+          {
+            "source": 1,
+            "target": 1
+          },
+          {
+            "source": 2,
+            "target": 2
+          },
+          {
+            "source": 3,
+            "target": 3
+          }
+        ],
+        "unmapped_source_positions": [],
+        "unmapped_target_positions": []
+      },
+      "warnings": {
+        "potential_formula_positions": [
+          {
+            "row": 1,
+            "column": 3
+          },
+          {
+            "row": 2,
+            "column": 3
+          }
+        ],
+        "repeated_row_positions": [
+          {
+            "firstRow": 1,
+            "repeatedRow": 2
+          }
+        ],
+        "required_source_positions": [
+          1,
+          2
+        ],
+        "missing_required_header_positions": [
+          3
+        ],
+        "empty_required_cell_positions": [
+          {
+            "row": 1,
+            "column": 1
+          },
+          {
+            "row": 2,
+            "column": 1
+          }
+        ]
+      },
+      "analysis_performed": {
+        "repeated_rows": true,
+        "required_cells": true
+      },
+      "denial_reason": "SCOPE_NOT_VERIFIED",
+      "allowed": false,
+      "can_import": false,
+      "can_persist_lead": false,
+      "can_enable_import_route": false
+    }
+  },
+  {
+    "id": "scope",
+    "title": "C · Escopo divergente",
+    "report": {
+      "protocol": "imagine.crm.synthetic_csv_review",
+      "schema_version": 1,
+      "status": "REVIEW_ONLY_DENIED",
+      "rows_inspected": 2,
+      "columns_inspected": 3,
+      "empty_cells": 2,
+      "mapping": {
+        "mapped_source_to_target_positions": [
+          {
+            "source": 1,
+            "target": 1
+          },
+          {
+            "source": 2,
+            "target": 2
+          },
+          {
+            "source": 3,
+            "target": 3
+          }
+        ],
+        "unmapped_source_positions": [],
+        "unmapped_target_positions": []
+      },
+      "warnings": {
+        "potential_formula_positions": [
+          {
+            "row": 1,
+            "column": 3
+          },
+          {
+            "row": 2,
+            "column": 3
+          }
+        ],
+        "repeated_row_positions": [
+          {
+            "firstRow": 1,
+            "repeatedRow": 2
+          }
+        ],
+        "required_source_positions": [
+          1,
+          2
+        ],
+        "missing_required_header_positions": [
+          3
+        ],
+        "empty_required_cell_positions": [
+          {
+            "row": 1,
+            "column": 1
+          },
+          {
+            "row": 2,
+            "column": 1
+          }
+        ]
+      },
+      "analysis_performed": {
+        "repeated_rows": true,
+        "required_cells": true
+      },
+      "denial_reason": "CONTRACT_INVALID",
+      "allowed": false,
+      "can_import": false,
+      "can_persist_lead": false,
+      "can_enable_import_route": false
+    }
+  }
+]);
+  const get=id=>document.getElementById(id);
+  const put=(id,value)=>{get(id).textContent=String(value);};
+  const addRow=(label,position)=>{
+    const tr=document.createElement('tr'),a=document.createElement('td'),b=document.createElement('td');
+    a.textContent=label;b.textContent=position;tr.appendChild(a);tr.appendChild(b);get('alerts').appendChild(tr);
+  };
+  function show(id){
+    const item=SCENARIOS.find(s=>s.id===id);
+    if(!item||!item.report)throw new Error('Relatório de laboratório inexistente');
+    const r=item.report;
+    if(r.protocol!=='imagine.crm.synthetic_csv_review'||r.schema_version!==1||r.status!=='REVIEW_ONLY_DENIED'
+       ||r.allowed!==false||r.can_import!==false||r.can_persist_lead!==false||r.can_enable_import_route!==false)throw new Error('Importação não autorizada');
+    const w=r.warnings;
+    const positions=w.potential_formula_positions.length+w.repeated_row_positions.length+
+      w.missing_required_header_positions.length+w.empty_required_cell_positions.length;
+    put('rows',r.rows_inspected);put('columns',r.columns_inspected);put('empty',r.empty_cells);put('findings',positions);
+    put('version','v'+r.schema_version);put('denial',r.denial_reason);
+    put('repeat-analysis',r.analysis_performed.repeated_rows?'Sim':'Não');
+    put('required-analysis',r.analysis_performed.required_cells?'Sim':'Não');
+    get('alerts').replaceChildren();
+    w.potential_formula_positions.forEach(p=>addRow('Possível fórmula','Linha '+p.row+', coluna '+p.column));
+    w.repeated_row_positions.forEach(p=>addRow('Linha repetida','Primeira '+p.firstRow+'; repetida '+p.repeatedRow));
+    w.missing_required_header_positions.forEach(n=>addRow('Cabeçalho requerido ausente','Coluna '+n));
+    w.empty_required_cell_positions.forEach(p=>addRow('Campo obrigatório vazio','Linha '+p.row+', coluna '+p.column));
+    if(positions===0)addRow('Nenhum alerta estrutural','Importação continua proibida');
+    put('status',(positions?'Amostra com '+positions+' aviso(s).':'Amostra sem avisos.')+' Importação proibida; nenhuma empresa foi autenticada.');
+    put('permissions','Importar: NÃO · Persistir: NÃO · Habilitar rota: NÃO · Autorização: NÃO');
+    document.querySelectorAll('[data-case]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.case===id)));
+  }
+  document.querySelectorAll('[data-case]').forEach(button=>button.addEventListener('click',()=>show(button.dataset.case)));
+  show('clean');
+})();
+</script>
+</body>
+</html>
