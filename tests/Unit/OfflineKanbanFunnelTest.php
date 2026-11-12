@@ -580,6 +580,32 @@ final class OfflineKanbanFunnelTest extends TestCase
         }
     }
 
+    public function test_impact_preview_tracks_visible_selection_without_authorization_or_persistence(): void
+    {
+        $html = self::html();
+        self::assertSame(4, substr_count($html, 'data-impact-stage="'));
+        foreach ([
+            'id="impact-result" role="status" aria-live="polite" aria-atomic="true"',
+            'Prévia de impacto do lote fictício (sem executar)',
+            'Esta prévia não valida campos ou permissões reais.',
+            'let impactStage=null;',
+            'const scope=selectedIds.size===0?subset:subset.filter(',
+            'const movable=scope.filter(function(item){return item.stage!==impactStage;});',
+            'const hiddenSelected=selectedIds.size===0?0:selectedIds.size-scope.length;',
+            'Sem autorização ou gravação.',
+            'impactStage=Number(raw);',
+            'impactStage=null;',
+        ] as $needle) {
+            self::assertStringContainsString($needle, $html);
+        }
+        foreach (['fetch(', 'localStorage', 'sessionStorage', 'indexedDB',
+            'navigator.sendBeacon', 'XMLHttpRequest', 'download=', '.innerHTML'] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
+        }
+        self::assertStringContainsString("connect-src 'none'", $html);
+        self::assertStringContainsString("form-action 'none'", $html);
+    }
+
     public function test_accessible_actions_and_mobile_layout_are_present(): void
     {
         $html = self::html();

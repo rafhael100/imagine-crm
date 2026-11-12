@@ -151,6 +151,17 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   </div>
   </div>
   <p class="shortcut-hint">Arraste cartões fictícios entre as quatro etapas. Ao arrastar um cartão selecionado, apenas os selecionados visíveis serão movidos em grupo. Use os botões Etapa anterior/Próxima etapa para teclado; todas as movimentações podem ser desfeitas.</p>
+  <section class="activity" aria-labelledby="impact-heading">
+  <h2 id="impact-heading">Prévia de impacto do lote fictício (sem executar)</h2>
+  <p>Confira quantos cartões selecionados e visíveis mudariam de etapa. Sem seleção, considera todos os visíveis. Esta prévia não valida campos ou permissões reais.</p>
+  <div class="filters" id="impact-targets" role="group" aria-label="Etapa-alvo apenas para prévia">
+    <button type="button" data-impact-stage="0" aria-pressed="false">Simular Entrada</button>
+    <button type="button" data-impact-stage="1" aria-pressed="false">Simular Em contato</button>
+    <button type="button" data-impact-stage="2" aria-pressed="false">Simular Qualificação</button>
+    <button type="button" data-impact-stage="3" aria-pressed="false">Simular Proposta</button>
+  </div>
+  <p id="impact-result" role="status" aria-live="polite" aria-atomic="true">Escolha uma etapa-alvo para ver a prévia. Nenhuma ação será executada.</p>
+  </section>
   <div class="board" id="board" aria-label="Funil fictício de quatro etapas">
   <section class="lane" data-drop-stage="0" aria-labelledby="lane-title-0"><div class="lane-header"><h2 id="lane-title-0">Entrada</h2><span id="lane-count-0" class="lane-count">0</span></div><p id="lane-value-0" class="lane-total">Valor fictício nesta etapa: R$ 0</p><p id="lane-detail-0" class="lane-detail">Alta: 0 · Pendentes: 0</p><div class="stack" id="lane-0"></div></section>
   <section class="lane" data-drop-stage="1" aria-labelledby="lane-title-1"><div class="lane-header"><h2 id="lane-title-1">Em contato</h2><span id="lane-count-1" class="lane-count">0</span></div><p id="lane-value-1" class="lane-total">Valor fictício nesta etapa: R$ 0</p><p id="lane-detail-1" class="lane-detail">Alta: 0 · Pendentes: 0</p><div class="stack" id="lane-1"></div></section>
@@ -203,6 +214,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   let redoStack=[];
   let selectedIds=new Set();
   let dragId=null;
+  let impactStage=null;
   let moves=0;
   let order='default';
   let activity=[];
@@ -294,6 +306,17 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const visibleValue=subset.reduce(function(sum,item){return sum+item.value;},0);
   put('sum-visible',Number.isSafeInteger(visibleValue)?money.format(visibleValue):'Valor fictício indisponível');
   put('count-moves',moves);
+  document.querySelectorAll('[data-impact-stage]').forEach(function(button){
+    button.setAttribute('aria-pressed',String(button.dataset.impactStage===String(impactStage)));
+  });
+  if(impactStage!==null){
+    const scope=selectedIds.size===0?subset:subset.filter(function(item){return selectedIds.has(item.id);});
+    const movable=scope.filter(function(item){return item.stage!==impactStage;});
+    const hiddenSelected=selectedIds.size===0?0:selectedIds.size-scope.length;
+    put('impact-result','Prévia '+STAGES[impactStage]+': '+movable.length+' de '+scope.length+
+      ' cartões fictícios visíveis mudariam de etapa; '+(scope.length-movable.length)+
+      ' já estão nela; '+hiddenSelected+' selecionados ocultos ignorados. Sem autorização ou gravação.');
+  }
   const displayOrder=[];
   STAGES.forEach(function(stage,index){
   const target=byId('lane-'+index);
@@ -715,6 +738,8 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   redoStack=[];
   selectedIds.clear();
   dragId=null;
+  impactStage=null;
+  put('impact-result','Escolha uma etapa-alvo para ver a prévia. Nenhuma ação será executada.');
   document.querySelectorAll('.lane[data-drag-over]').forEach(function(el){delete el.dataset.dragOver;});
   moves=0;
   priority='all';
@@ -783,6 +808,16 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   order=button.dataset.order;
   render('sort');
   describe('Ordenação fictícia atualizada.');
+  });
+  });
+  document.querySelectorAll('[data-impact-stage]').forEach(function(button){
+  button.addEventListener('click',function(){
+    const raw=button.dataset.impactStage;
+    if(!/^[0-3]$/.test(raw))return;
+    impactStage=Number(raw);
+    render();
+    button.focus();
+    describe('Prévia de impacto atualizada; sem modificar cartões fictícios.');
   });
   });
   render();

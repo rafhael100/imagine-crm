@@ -10,7 +10,7 @@ use Symfony\Component\Process\ExecutableFinder;
 
 $html = file_get_contents(dirname(__DIR__, 2).'/prototypes/f3-59-offline-kanban/index.html');
 if (!is_string($html)
-    || strlen($html) > 46000
+    || strlen($html) > 48000
     || substr_count($html, '</body>') !== 1
     || !str_contains($html, 'PROTÓTIPO — DADOS FICTÍCIOS.')
     || !str_contains($html, "connect-src 'none'")
@@ -59,6 +59,29 @@ $checks = <<<'JS'
     check(document.getElementById('count-visible').textContent==='8','initial metric');
     check(document.getElementById('count-high').textContent==='4','priority metric');
     check(document.getElementById('count-moves').textContent==='0','no edits initially');
+    const impact=()=>byId('impact-result').textContent;
+    check(document.querySelectorAll('[data-impact-stage]').length===4,'four preview target buttons');
+    check(impact().includes('Nenhuma ação será executada'),'preview initially inert');
+    const proposal=()=>document.querySelector('[data-impact-stage="3"]');
+    proposal().click();
+    check(impact().includes('6 de 8 cartões fictícios visíveis'),'preview counts six movable of eight');
+    check(impact().includes('2 já estão nela'),'preview counts existing final-stage cards');
+    check(proposal().getAttribute('aria-pressed')==='true','preview target announced');
+    check(byId('count-moves').textContent==='0'&&byId('undo-change').disabled,
+      'preview creates no mutation/history');
+    document.querySelector('[data-card-id="F01"] button[data-select]').click();
+    document.querySelector('[data-card-id="F03"] button[data-select]').click();
+    check(impact().includes('2 de 2 cartões fictícios visíveis'),'preview scopes selected visible cards');
+    document.querySelector('[data-priority="normal"]').click();
+    check(impact().includes('0 de 0 cartões fictícios visíveis'),'preview excludes filtered selected cards');
+    check(impact().includes('2 selecionados ocultos ignorados'),'preview counts hidden selection');
+    document.querySelector('[data-priority="all"]').click();
+    check(impact().includes('2 de 2 cartões fictícios visíveis'),'preview recomputes after unfilter');
+    byId('reset-demo').click();
+    check(impact().includes('Escolha uma etapa-alvo'),'reset clears stale preview');
+    check(proposal().getAttribute('aria-pressed')==='false','reset clears preview target');
+    check(byId('count-moves').textContent==='0'&&byId('undo-change').disabled,
+      'preview remains nonmutating after reset');
     check(document.querySelector('[data-card-id="F01"] button[data-move="back"]').disabled,'first stage cannot move backward');
     check(document.querySelector('[data-card-id="F07"] button[data-move="next"]').disabled,'final stage cannot move forward');
     check(document.getElementById('undo-change').disabled,'undo starts disabled');
@@ -607,6 +630,15 @@ try {
       check(doc.querySelector('#lane-3 [data-card-id="F08"]')!==null,'mobile undo restores backward stage');
       doc.getElementById('reset-demo').click();
       check(doc.documentElement.scrollWidth<=320,'mobile bulk return controls no overflow');
+      doc.querySelector('[data-impact-stage="2"]').click();
+      check(doc.getElementById('impact-result').textContent.includes('6 de 8 cartões fictícios visíveis'),
+        'mobile preview of qualification ignores already-targeted stage');
+      check(doc.getElementById('count-moves').textContent==='0',
+        'mobile preview creates no extra actions');
+      check(doc.documentElement.scrollWidth<=320,'mobile preview causes no horizontal overflow');
+      doc.getElementById('reset-demo').click();
+      check(doc.getElementById('impact-result').textContent.includes('Escolha uma etapa-alvo'),
+        'mobile reset clears preview');
       const mobileCsvButton=doc.getElementById('toggle-csv-demo');
       const mobileCsv=doc.getElementById('csv-preview');
       mobileCsvButton.focus();mobileCsvButton.click();
