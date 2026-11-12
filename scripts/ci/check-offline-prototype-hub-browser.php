@@ -67,6 +67,12 @@ $driver = <<<'HTML'
       check(doc&&win,'local frame contents available');
       check(win.innerWidth===width,'real requested CSS viewport');
       check(doc.querySelectorAll('.card').length===12,'twelve prototype cards rendered');
+      check(win.getComputedStyle(doc.body).backgroundColor==='rgb(247, 247, 248)',
+        'hub Node surface at '+width+'px');
+      check(win.getComputedStyle(doc.querySelector('header')).backgroundColor==='rgb(255, 255, 255)',
+        'hub white header at '+width+'px');
+      check(win.getComputedStyle(doc.querySelector('.card a')).backgroundColor==='rgb(249, 148, 29)',
+        'hub orange action at '+width+'px');
       check(doc.body.textContent.includes('PROTÓTIPO — DADOS FICTÍCIOS.'),'local-only warning visible');
       const links=Array.from(doc.querySelectorAll('.cards a'));
       check(links.length===12,'twelve navigable links');
