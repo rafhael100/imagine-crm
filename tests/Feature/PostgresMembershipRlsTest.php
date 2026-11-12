@@ -490,7 +490,7 @@ final class PostgresMembershipRlsTest extends TestCase
                 $this->assertSame(0, $probe->transactionLevel());
             }
         } finally {
-            $probe->statement('RESET search_path');
+            $probe->selectOne("SELECT set_config('search_path', ?, false)", [$before->value]);
         }
 
         $restored = $probe->selectOne("SELECT current_setting('search_path') AS value");
