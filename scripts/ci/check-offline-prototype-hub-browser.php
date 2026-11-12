@@ -19,7 +19,7 @@ if (!is_string($html)
     fwrite(STDERR, "F3-60: invalid hub HTML/CSP.\n");
     exit(1);
 }
-$paths = ['s01-prot-01/index.html', 'f3-59-offline-kanban/index.html', 'f3-22-csv-risk-preview/index.html', 'f3-104-retention-lifecycle/index.html', 'f3-109-sales-quote-subtotal/index.html', 'f3-113-scoring-trend/index.html', 'f3-115-weighted-forecast/index.html', 'f3-117-opportunity-outcomes/index.html', 'f3-138-commercial-journey/index.html', 'f3-148-private-stage-dashboard/index.html', 'f3-155-commercial-workload/index.html'];
+$paths = ['s01-prot-01/index.html', 'f3-59-offline-kanban/index.html', 'f3-22-csv-risk-preview/index.html', 'f3-104-retention-lifecycle/index.html', 'f3-109-sales-quote-subtotal/index.html', 'f3-113-scoring-trend/index.html', 'f3-115-weighted-forecast/index.html', 'f3-117-opportunity-outcomes/index.html', 'f3-138-commercial-journey/index.html', 'f3-148-private-stage-dashboard/index.html', 'f3-155-commercial-workload/index.html', 'f3-164-interactive-lead-triage/index.html'];
 foreach ($paths as $path) {
     if (!is_file($root.'/prototypes/'.$path)) {
         fwrite(STDERR, "F3-60: a local destination is absent; refusing a false navigation PASS.\n");
@@ -66,10 +66,10 @@ $driver = <<<'HTML'
       const doc=frame.contentDocument,win=frame.contentWindow;
       check(doc&&win,'local frame contents available');
       check(win.innerWidth===width,'real requested CSS viewport');
-      check(doc.querySelectorAll('.card').length===11,'eleven prototype cards rendered');
+      check(doc.querySelectorAll('.card').length===12,'twelve prototype cards rendered');
       check(doc.body.textContent.includes('PROTÓTIPO — DADOS FICTÍCIOS.'),'local-only warning visible');
       const links=Array.from(doc.querySelectorAll('.cards a'));
-      check(links.length===11,'eleven navigable links');
+      check(links.length===12,'twelve navigable links');
       check(JSON.stringify(links.map(x=>x.getAttribute('href')))===JSON.stringify([
         's01-prot-01/index.html',
         'f3-59-offline-kanban/index.html',
@@ -81,7 +81,8 @@ $driver = <<<'HTML'
         'f3-117-opportunity-outcomes/index.html',
         'f3-138-commercial-journey/index.html',
         'f3-148-private-stage-dashboard/index.html',
-        'f3-155-commercial-workload/index.html'
+        'f3-155-commercial-workload/index.html',
+        'f3-164-interactive-lead-triage/index.html'
       ]),'exact local destinations');
       check(links.every(x=>x.getAttribute('aria-label')!==null),'accessible link labels');
       links[1].focus();
@@ -91,7 +92,7 @@ $driver = <<<'HTML'
         const grid=win.getComputedStyle(doc.querySelector('.cards')).gridTemplateColumns;
         check(grid.split(' ').length===1,'mobile cards stack into one column');
       }
-      finish('PASS','eleven local destinations rendered at '+width+' CSS px');
+      finish('PASS','twelve local destinations rendered at '+width+' CSS px');
     }catch(error){finish('FAIL',error.message);}
   });
   frame.src=__TARGET__;
@@ -127,4 +128,4 @@ foreach ([1100, 320] as $width) {
     }
 }
 
-echo "F3-60 real Chromium hub: PASS eleven cards at desktop (1100px) and mobile (320px).\n";
+echo "F3-60 real Chromium hub: PASS twelve cards at desktop (1100px) and mobile (320px).\n";
