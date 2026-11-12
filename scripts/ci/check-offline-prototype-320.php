@@ -68,6 +68,12 @@ $driver = <<<'HTML'
       const win=frame.contentWindow;
       check(doc&&win,'same-origin srcdoc frame');
       check(win.innerWidth===320,'actual CSS viewport '+win.innerWidth+' not 320');
+      check(win.getComputedStyle(doc.body).backgroundColor==='rgb(247, 247, 248)',
+        'mobile Node background');
+      check(win.getComputedStyle(doc.querySelector('.sidebar')).backgroundColor==='rgb(255, 255, 255)',
+        'mobile Node white navigation');
+      check(win.getComputedStyle(doc.querySelector('.hero')).backgroundColor==='rgb(23, 27, 25)',
+        'mobile Node graphite hero');
       check(doc.querySelectorAll('[data-screen]').length===9,'all nine screens exist');
       const pageWidth=doc.documentElement.scrollWidth;
       if(pageWidth>win.innerWidth){
