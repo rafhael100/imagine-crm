@@ -18,4 +18,13 @@ final class GlobalIdentity extends Authenticatable
     public $incrementing = false;
 
     protected $guarded = ['*'];
+
+    /**
+     * The same test-only model runs on SQLite and PostgreSQL. On PostgreSQL,
+     * never let a caller-controlled search_path/pg_temp shadow global IDs.
+     */
+    public function getTable(): string
+    {
+        return IamRegistryTable::name($this->getConnection(), 'crm_global_identities');
+    }
 }

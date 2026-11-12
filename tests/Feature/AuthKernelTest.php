@@ -332,6 +332,109 @@ final class AuthKernelTest extends TestCase
         $this->app->make(ExperimentalAuthenticator::class);
     }
 
+    public function test_registry_table_resolver_allowlists_exact_known_identifiers(): void
+    {
+        $expectedPrefix = $this->db->getDriverName() === 'pgsql' ? 'public.' : '';
+        foreach ([
+            'crm_global_identities','crm_auth_credentials','crm_auth_sessions',
+            'crm_auth_recovery_codes','crm_auth_operations','crm_auth_mandates',
+            'crm_iam_audit_events',
+        ] as $table) {
+            $this->assertSame(
+                $expectedPrefix.$table,
+                \App\Core\Identity\IamRegistryTable::name($this->db, $table),
+            );
+        }
+        foreach ([
+            '', 'crm_memberships', 'crm_auth_credentials; DROP TABLE x',
+            'public.crm_auth_credentials', 'crm_auth_credentials" OR 1=1',
+            'crm_auth_credentials ', 'CRM_AUTH_CREDENTIALS',
+        ] as $invalid) {
+            try {
+                \App\Core\Identity\IamRegistryTable::name($this->db, $invalid);
+                $this->fail('Unlisted IAM table identifier was accepted.');
+            } catch (\LogicException $e) {
+                $this->assertSame('Unknown IAM registry table.', $e->getMessage());
+                if ($invalid !== '') { $this->assertStringNotContainsString($invalid, $e->getMessage()); }
+            }
+        }
+    }
+
+    public function test_postgres_iam_login_ignores_hostile_connection_search_path(): void
+    {
+        if ($this->db->getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('PostgreSQL-only session search_path probe.');
+        }
+
+        $prior = $this->db->selectOne("SELECT current_setting('search_path') AS value");
+        $this->db->statement('SET search_path TO pg_catalog');
+        try {
+            $this->assertSame(
+                'pg_catalog',
+                $this->db->selectOne("SELECT current_setting('search_path') AS value")->value,
+            );
+            $this->login();
+            $this->assertSame(self::A, $this->guard->user()?->getAuthIdentifier());
+            $this->assertSame(0, $this->db->transactionLevel());
+        } finally {
+            $this->db->selectOne(
+                "SELECT set_config('search_path', ?, false)",
+                [$prior->value],
+            );
+        }
+        $this->assertSame(
+            $prior->value,
+            $this->db->selectOne("SELECT current_setting('search_path') AS value")->value,
+        );
+    }
+
+    public function test_postgres_iam_registry_cannot_be_replaced_by_temporary_shadow_tables(): void
+    {
+        if ($this->db->getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('PostgreSQL-only temporary shadow probe.');
+        }
+        $permission = $this->db->selectOne(
+            "SELECT has_database_privilege(current_user, current_database(), 'TEMPORARY') AS allowed"
+        );
+        if (!$permission->allowed) {
+            $this->markTestSkipped('Runtime IAM role has no TEMP privilege.');
+        }
+
+        // Name-only decoys, intentionally missing actual credential/session
+        // columns. Any accidental unqualified IAM lookup or audit write fails.
+        $this->db->statement('CREATE TEMP TABLE crm_auth_credentials (id uuid) ON COMMIT PRESERVE ROWS');
+        $this->db->statement('CREATE TEMP TABLE crm_global_identities (id uuid) ON COMMIT PRESERVE ROWS');
+        $this->db->statement('CREATE TEMP TABLE crm_iam_audit_events (id uuid) ON COMMIT PRESERVE ROWS');
+
+        try {
+            foreach ([
+                'crm_auth_credentials','crm_global_identities','crm_iam_audit_events',
+            ] as $table) {
+                $resolution = $this->db->selectOne(
+                    "SELECT to_regclass(?) <> to_regclass(?) AS shadowed",
+                    [$table, 'public.'.$table],
+                );
+                $this->assertTrue($resolution->shadowed, $table);
+            }
+
+            $this->login();
+            $this->assertSame(self::A, $this->guard->user()?->getAuthIdentifier());
+            $this->assertSame(0, $this->db->transactionLevel());
+            $this->assertSame(0, $this->db->table('public.crm_auth_credentials')
+                ->where('identity_id', self::B)
+                ->where('version', 999)
+                ->count());
+        } finally {
+            foreach ([
+                'crm_iam_audit_events','crm_global_identities','crm_auth_credentials',
+            ] as $table) {
+                $this->db->statement('DROP TABLE IF EXISTS pg_temp.'.$table);
+            }
+        }
+
+        $this->assertSame(0, $this->db->transactionLevel());
+    }
+
     public function test_postgres_iam_and_business_roles_are_segregated(): void
     {
         if ($this->db->getDriverName() !== 'pgsql') { $this->markTestSkipped('PostgreSQL ACL proof only.'); }

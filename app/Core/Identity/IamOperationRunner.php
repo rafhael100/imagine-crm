@@ -53,22 +53,22 @@ final readonly class IamOperationRunner
                     $raw = $this->session->get($key);
                     if (is_string($raw) && preg_match('/\A[a-f0-9]{64}\z/D', $raw)) { $hashes[] = hash('sha256', $raw); }
                 }
-                $rows = $db->table('crm_auth_sessions')->whereIn('token_hash', $hashes)
+                $rows = $db->table($this->registry->tableName('crm_auth_sessions'))->whereIn('token_hash', $hashes)
                     ->where('binding', hash('sha256', $this->session->getId()))->get();
                 $subjects = $rows->pluck('identity_id')->unique()->sort()->values()->all();
-                $db->table('crm_auth_credentials')->whereIn('identity_id', $subjects)->orderBy('identity_id')->lockForUpdate()->get();
+                $db->table($this->registry->tableName('crm_auth_credentials'))->whereIn('identity_id', $subjects)->orderBy('identity_id')->lockForUpdate()->get();
                 $subject = $loginKey !== null
-                    ? $db->table('crm_auth_credentials')->where('login_key', $loginKey)->value('identity_id')
+                    ? $db->table($this->registry->tableName('crm_auth_credentials'))->where('login_key', $loginKey)->value('identity_id')
                     : ($subjects[0] ?? null);
-                $db->table('crm_auth_operations')->insert([
+                $db->table($this->registry->tableName('crm_auth_operations'))->insert([
                     'id' => $id, 'action' => $action, 'subject_id' => $subject,
                     'state' => 'prepared', 'created_at' => now()->getTimestamp(),
                 ]);
                 foreach ($rows as $hint) {
-                    $row = $db->table('crm_auth_sessions')->where('id', $hint->id)->lockForUpdate()->first();
+                    $row = $db->table($this->registry->tableName('crm_auth_sessions'))->where('id', $hint->id)->lockForUpdate()->first();
                     // Never overwrite another unresolved hold; that would erase a failure barrier.
                     if ($row->security_hold !== null) { throw new AuthenticationException('CRM authentication required.'); }
-                    $db->table('crm_auth_sessions')->where('id', $row->id)->update(['security_hold' => $id]);
+                    $db->table($this->registry->tableName('crm_auth_sessions'))->where('id', $row->id)->update(['security_hold' => $id]);
                 }
                 $this->audit->append($db, $id, $action, 'attempted', null, $subject);
             });
@@ -86,8 +86,8 @@ final readonly class IamOperationRunner
                 $db = $this->registry->db;
                 $actor = in_array($action, ['password', 'logout'], true) ? null : $subject;
                 $this->audit->append($db, $id, $action, 'succeeded', $actor, $subject, $origin);
-                $db->table('crm_auth_sessions')->where('security_hold', $id)->update(['security_hold' => null]);
-                $db->table('crm_auth_operations')->where('id', $id)->update(['state' => 'completed', 'actor_id' => $actor]);
+                $db->table($this->registry->tableName('crm_auth_sessions'))->where('security_hold', $id)->update(['security_hold' => null]);
+                $db->table($this->registry->tableName('crm_auth_operations'))->where('id', $id)->update(['state' => 'completed', 'actor_id' => $actor]);
             });
             return $result;
         } catch (Throwable) {
@@ -97,12 +97,12 @@ final readonly class IamOperationRunner
                 try {
                     $this->registry->transaction(function () use ($id, $action, $subject, $origin, $preserve): void {
                         $db = $this->registry->db;
-                        $db->table('crm_auth_sessions')->where(function ($q) use ($id): void {
+                        $db->table($this->registry->tableName('crm_auth_sessions'))->where(function ($q) use ($id): void {
                             $q->where('operation_id', $id)->orWhere('security_hold', $id);
                         })->update($preserve ? ['security_hold' => null] : ['state' => 'revoked', 'security_hold' => null]);
                         $this->audit->append($db, $id, $action, 'denied', null, $subject, $origin);
                         $this->audit->append($db, $id, $action, 'compensated', null, $subject, $origin);
-                        $db->table('crm_auth_operations')->where('id', $id)->update(['state' => 'compensated']);
+                        $db->table($this->registry->tableName('crm_auth_operations'))->where('id', $id)->update(['state' => 'compensated']);
                     });
                     $compensated = true;
                 } catch (Throwable) {
