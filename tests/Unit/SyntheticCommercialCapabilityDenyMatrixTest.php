@@ -6,6 +6,9 @@ namespace Tests\Unit;
 
 use App\Core\Activities\SyntheticFollowUpQueue;
 use App\Core\Activities\SyntheticRecurringTaskSchedule;
+use App\Core\Activities\SyntheticTaskLifecycleInspector;
+use App\Core\Leads\SyntheticLeadRoundRobinPreview;
+use App\Core\Leads\SyntheticLeadRuleScorePreview;
 use App\Core\Leads\SyntheticScoreTrendPreview;
 use App\Core\Plans\SyntheticCancellationRetentionTimeline;
 use App\Core\Plans\SyntheticDelinquencyReviewTimeline;
@@ -20,6 +23,7 @@ use App\Core\Sales\SyntheticProposalSendPreflight;
 use App\Core\Sales\SyntheticProposalValidityPreview;
 use App\Core\Sales\SyntheticProposalVersionReview;
 use App\Core\Sales\SyntheticSalesEventUniquenessInspector;
+use App\Core\Sales\SyntheticSalesGoalProgressPreview;
 use App\Core\Sales\SyntheticStageFieldRequirementsInspector;
 use App\Core\Sales\SyntheticWeightedSalesForecast;
 use PHPUnit\Framework\TestCase;
@@ -119,6 +123,55 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
                 1000,
                 true,
             ),
+            'lead_distribution_planned' => (new SyntheticLeadRoundRobinPreview())->preview(
+                [
+                    [
+                        'enabled' => true, 'has_required_skill' => true,
+                        'open_leads' => 0, 'capacity' => 3,
+                    ],
+                ],
+                ['unassigned', 'engaged'],
+            ),
+            'scoring_rule_hot' => (new SyntheticLeadRuleScorePreview())->preview(
+                [
+                    'profile_complete' => true, 'recent_engagement' => false,
+                    'requested_quote' => false, 'scheduled_demo' => false,
+                    'stale_response' => false,
+                ],
+                [
+                    'profile_complete' => 20, 'recent_engagement' => 0,
+                    'requested_quote' => 0, 'scheduled_demo' => 0,
+                    'stale_response' => -20,
+                ],
+                80,
+            ),
+            'goal_claimed_complete' => (new SyntheticSalesGoalProgressPreview())->preview(
+                [['event_reference' => self::EVENT, 'amount_cents' => 10000]],
+                10000,
+            ),
+            'task_completed_claim' => (new SyntheticTaskLifecycleInspector())->inspect(
+                [
+                    [
+                        'revision' => 1, 'action' => 'create',
+                        'occurred_at_utc' => '2026-11-01T10:00:00Z',
+                        'due_at_utc' => '2026-11-02T10:00:00Z',
+                        'priority' => 'normal', 'reason_code' => null,
+                    ],
+                    [
+                        'revision' => 2, 'action' => 'start',
+                        'occurred_at_utc' => '2026-11-01T11:00:00Z',
+                        'due_at_utc' => null, 'priority' => null,
+                        'reason_code' => null,
+                    ],
+                    [
+                        'revision' => 3, 'action' => 'complete',
+                        'occurred_at_utc' => '2026-11-01T12:00:00Z',
+                        'due_at_utc' => null, 'priority' => null,
+                        'reason_code' => null,
+                    ],
+                ],
+                '2026-11-04T12:00:00Z',
+            ),
             'trial_review_window' => (new SyntheticTrialRetentionTimeline(
                 new TrialWindowAdvisory(2000000, 2000000 + 14 * 86400),
             ))->readout(),
@@ -131,10 +184,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         ];
     }
 
-    public function test_all_sixteen_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_twenty_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(16, $reports);
+        self::assertCount(20, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -192,6 +245,16 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             $reports['proposal_send_preflight_blocked']['blocker_codes'],
         );
         self::assertFalse($reports['proposal_send_preflight_blocked']['can_send']);
+        self::assertSame(1, $reports['lead_distribution_planned']['planned_assignments']);
+        self::assertFalse($reports['lead_distribution_planned']['can_assign']);
+        self::assertSame(100, $reports['scoring_rule_hot']['score']);
+        self::assertSame('quente', $reports['scoring_rule_hot']['band']);
+        self::assertFalse($reports['scoring_rule_hot']['can_trigger_automation']);
+        self::assertSame(10000, $reports['goal_claimed_complete']['claimed_progress_bp_capped']);
+        self::assertSame(0, $reports['goal_claimed_complete']['recognized_progress_bp']);
+        self::assertFalse($reports['goal_claimed_complete']['can_pay_commissions']);
+        self::assertSame('completed', $reports['task_completed_claim']['latest_claimed_status']);
+        self::assertFalse($reports['task_completed_claim']['can_complete_task']);
         self::assertSame('second_marker_elapsed', $reports['delinquency_day_thirty']['phase']);
         self::assertFalse($reports['delinquency_day_thirty']['can_suspend_service']);
     }
@@ -215,6 +278,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticRecurringTaskSchedule',
             'SyntheticCommercialDiscountReview',
             'SyntheticProposalSendPreflight',
+            'SyntheticLeadRoundRobinPreview',
+            'SyntheticLeadRuleScorePreview',
+            'SyntheticSalesGoalProgressPreview',
+            'SyntheticTaskLifecycleInspector',
         ] as $class) {
             self::assertStringNotContainsString($class, $routes);
         }
