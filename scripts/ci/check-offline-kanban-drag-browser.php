@@ -124,11 +124,53 @@ $driver = <<<'HTML'
    fire(lane(2),'drop',dt());
    check(card('F01').closest('.lane')===lane(0),'button dragstart ignored');
 
+   // Group drag: selected+visible cards move together as a single undo.
+   by('reset-demo').click();
+   card('F01').querySelector('[data-select]').click();
+   card('F03').querySelector('[data-select]').click();
+   check(by('count-selected').textContent.includes('2 selecionados visíveis'),
+     'two selected fake opportunities');
+   drag('F01',3);
+   check(card('F01').closest('.lane')===lane(3),'selected F01 moved to destination');
+   check(card('F03').closest('.lane')===lane(3),'selected F03 moved with F01');
+   check(card('F02').closest('.lane')===lane(0),'unselected F02 unaffected');
+   check(card('F04').closest('.lane')===lane(1),'unselected F04 unaffected');
+   check(by('count-moves').textContent==='1','group drag recorded as one action');
+   by('undo-change').click();
+   check(card('F01').closest('.lane')===lane(0)&&card('F03').closest('.lane')===lane(1),
+     'single group undo restores both stages');
+   by('redo-change').click();
+   check(card('F01').closest('.lane')===lane(3)&&card('F03').closest('.lane')===lane(3),
+     'single group redo restores both stages');
+
+   // Selected but HIDDEN card is not changed by another selected drag.
+   by('reset-demo').click();
+   card('F01').querySelector('[data-select]').click();
+   card('F02').querySelector('[data-select]').click();
+   d.querySelector('[data-priority="high"]').click();
+   check(card('F02')===null,'normal selected F02 is hidden');
+   drag('F01',2);
+   check(card('F01').closest('.lane')===lane(2),'visible selected F01 moved');
+   d.querySelector('[data-priority="all"]').click();
+   check(card('F02').closest('.lane')===lane(0),'hidden selected F02 never moved');
+   by('undo-change').click();
+   check(card('F01').closest('.lane')===lane(0),'filtered group move undo');
+   by('reset-demo').click();
+
+   // Dragging an UNSELECTED card stays individual even if another is selected.
+   card('F01').querySelector('[data-select]').click();
+   drag('F02',3);
+   check(card('F02').closest('.lane')===lane(3),'unselected dragged F02 moves alone');
+   check(card('F01').closest('.lane')===lane(0),'selected but not dragged F01 untouched');
+   by('undo-change').click();
+   check(card('F02').closest('.lane')===lane(0),'unselected drag undo');
+   by('reset-demo').click();
+
    check(d.documentElement.scrollWidth<=width,'no horizontal overflow');
    check(d.querySelectorAll('form').length===0,'no forms');
    check(d.querySelectorAll('input').length===1,'only bounded local search input');
    check(by('count-visible').textContent==='8','eight fake cards after reset');
-   done('PASS','internal-only drag, undo/redo, hidden lane, same-lane, keyboard at '+width+'px');
+   done('PASS','single/group visible-only drag, undo/redo, hidden lane, keyboard at '+width+'px');
   }catch(error){done('FAIL',error.message);}
  });
  frame.src=__SOURCE__;
