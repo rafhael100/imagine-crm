@@ -1,12 +1,12 @@
 # CRM F3-121 — Matriz de negação integrada das funcionalidades comerciais
 
-**Data:** 11/11/2026. **Escopo:** teste PHPUnit que conecta **dezesseis** componentes de laboratório existentes, sem endpoint nem dados reais.
+**Data:** 11/11/2026. **Escopo:** teste PHPUnit que conecta **vinte** componentes de laboratório existentes, sem endpoint nem dados reais.
 
 ## Objetivo
 
 A evolução paralela de cadastro de itens, versões e transições de propostas, previsão ponderada, etapas de funil e seus campos obrigatórios, reaberturas, unicidade de eventos, validade, scoring, recorrência de tarefas e janelas de assinatura não pode permitir que a alegação positiva de um módulo vire **permissão operacional** em outro.
 
-`SyntheticCommercialCapabilityDenyMatrixTest` executa **dezesseis componentes PHP reais** com exemplos artificiais de estados que parecem favoráveis: proposta `accepted`, negócio `won`, probabilidade 100%, evento único, proposta dentro da vigência, score quente, janela de trial ativa, cancelamento informado e 30 dias após vencimento. A expansão F3-126 inclui sequência de proposta declarada aceita, transição de oportunidade declarada ganha, todos os campos de etapa ilustrativamente preenchidos e recorrências futuras; F3-129 acrescenta desconto fora da política com aprovação gerencial meramente alegada e pré-validação de envio com bloqueios. Nenhuma situação concede direito de aceitar, mover, reconhecer receita, enviar propostas ou agendar serviços.
+`SyntheticCommercialCapabilityDenyMatrixTest` executa **vinte componentes PHP reais** com exemplos artificiais de estados que parecem favoráveis: proposta `accepted`, negócio `won`, probabilidade 100%, evento único, proposta dentro da vigência, score quente, janela de trial ativa, cancelamento informado e 30 dias após vencimento. A expansão F3-126 inclui sequência de proposta declarada aceita, transição de oportunidade declarada ganha, todos os campos de etapa ilustrativamente preenchidos e recorrências futuras; F3-129 acrescenta desconto fora da política com aprovação gerencial meramente alegada e pré-validação de envio com bloqueios. Nenhuma situação concede direito de aceitar, mover, reconhecer receita, enviar propostas ou agendar serviços.
 
 A suíte verifica todas as capacidades `can_*` permanentemente falsas, marcas de verificação/proveniência sempre negadas, `recognized_*` e `verified_event_count` sempre zero, além de impedir IDs/PII no JSON da saída. Garante também que as classes não aparecem como endpoints no `routes/web.php` atual.
 
@@ -24,4 +24,17 @@ Esta extensão só protege contra regressões determinísticas dos redutores em 
 
 ## Expansão F3-129 — 11/11/2026
 
-A matriz agora exerce 16 componentes Core PHP, com casos positivos declarados mas não autenticados de preço/desconto: `manager_approval_claimed=true` e proposta em rascunho. Confirma que `manager_approval_verified=false`, o bloqueio `manager_approval_unverified` permanece presente e `can_issue_proposal/can_send=false`. A validação não substitui aprovação gerencial independente, comprovação de identidade ou contrato de pagamento.
+Na etapa F3-129, a matriz exercia 16 componentes Core PHP, com casos positivos declarados mas não autenticados de preço/desconto: `manager_approval_claimed=true` e proposta em rascunho. Confirma que `manager_approval_verified=false`, o bloqueio `manager_approval_unverified` permanece presente e `can_issue_proposal/can_send=false`. A validação não substitui aprovação gerencial independente, comprovação de identidade ou contrato de pagamento.
+
+
+## Expansão F3-133 — 11/11/2026
+
+A suíte passa de 16 para **20 componentes reais do Core PHP**, com as entregas F3-129 (distribuição circular de leads), F3-130 (scoring por pesos), F3-131 (meta comercial em centavos e eventos únicos) e F3-132 (ciclo de tarefas comerciais).
+
+Os novos testes cruzados exercitam deliberadamente os casos que poderiam produzir falso positivo de autorização:
+- Uma distribuição fictícia planejada retorna \`planned_assignments=1\`, mas \`can_assign=false\`.
+- Uma pontuação fictícia de 100 (quente) mantém \`can_trigger_automation=false\`.
+- Uma meta de vendas alegadamente atingida a 100% mantém \`recognized_progress_bp=0\` e \`can_pay_commissions=false\`.
+- Uma tarefa fictícia marcada \`completed\` mantém \`can_complete_task=false\`, sem prova de conclusão ou disparo de aviso.
+
+Os componentes continuam sem rotas reais, identidade, banco ou agendamento, e as aprovações CORE/SEG/DBA/LGPD permanecem NO-GO.
