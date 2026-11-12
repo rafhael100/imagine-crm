@@ -123,7 +123,7 @@ final class SyntheticKanbanBatchStagePreviewTest extends TestCase
         $hidden = self::card('F02', 0, false, false);
         $bad = [
             [[], 'F01', 2],
-            [[...array_fill(0, 13, $base)], 'F01', 2],
+            [array_fill(0, 13, $base), 'F01', 2],
             [[$base, $base], 'F01', 2],
             [[$base], 'F13', 2],
             [[$base], 'private@example.test', 2],
