@@ -355,7 +355,7 @@ final class AuthKernelTest extends TestCase
                 $this->fail('Unlisted IAM table identifier was accepted.');
             } catch (\LogicException $e) {
                 $this->assertSame('Unknown IAM registry table.', $e->getMessage());
-                $this->assertStringNotContainsString($invalid, $e->getMessage());
+                if ($invalid !== '') { $this->assertStringNotContainsString($invalid, $e->getMessage()); }
             }
         }
     }
