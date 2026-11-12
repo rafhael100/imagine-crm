@@ -1,0 +1,72 @@
+name: CRM Imagine — QA local da logomarca original
+
+on:
+  push:
+    branches:
+      - design/crm-logo-catalog-kanban-2026-11-12
+    paths:
+      - 'prototypes/**'
+      - 'tests/Unit/ImagineVisualIdentityV1Test.php'
+      - 'tests/Unit/OfflineKanbanLaneSummaryTest.php'
+      - 'scripts/ci/check-offline-prototype-hub-browser.php'
+      - 'scripts/ci/check-offline-kanban-browser.php'
+      - '.github/workflows/crm-original-logo-offline-qa.yml'
+  pull_request:
+    paths:
+      - 'prototypes/**'
+      - 'tests/Unit/ImagineVisualIdentityV1Test.php'
+      - 'scripts/ci/check-offline-prototype-hub-browser.php'
+      - 'scripts/ci/check-offline-kanban-browser.php'
+      - '.github/workflows/crm-original-logo-offline-qa.yml'
+
+permissions:
+  contents: read
+concurrency:
+  group: crm-original-logo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qa-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring,dom,xml,zip,pdo_sqlite,sqlite3
+          tools: composer:v2
+          coverage: none
+      - name: Validar dependências e sintaxe sem serviços externos
+        run: |
+          set -euo pipefail
+          composer validate --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress --no-scripts --no-plugins
+          php -l scripts/ci/check-offline-kanban-browser.php
+          php -l scripts/ci/check-offline-prototype-hub-browser.php
+          php -l tests/Unit/ImagineVisualIdentityV1Test.php
+          cp .env.example .env
+          php artisan key:generate --force --no-interaction
+      - name: Asserções da identidade original e limite do Kanban
+        run: |
+          php artisan test --no-ansi --filter=ImagineVisualIdentityV1Test
+          php artisan test --no-ansi --filter=OfflineKanbanLaneSummaryTest
+      - name: Logo e navegação em Chromium real (desktop e celular)
+        run: |
+          set -euo pipefail
+          command -v google-chrome || command -v chromium || command -v chromium-browser
+          php scripts/ci/check-offline-prototype-hub-browser.php
+          php scripts/ci/check-offline-kanban-browser.php
+      - name: Fronteira operacional
+        run: echo 'Somente PNG original e UI fictícia offline. Sem banco real, clientes, provedor ou deploy.'
