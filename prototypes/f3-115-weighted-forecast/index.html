@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; img-src 'none'; font-src 'none'; frame-src 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — Previsão de vendas fictícia</title>
+<style>
+:root{font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:#f2f7fa;color:#183749}
+*{box-sizing:border-box}body{margin:0;min-width:0}a{color:#0d6773}a:focus-visible,button:focus-visible{outline:3px solid #0fa794;outline-offset:3px}
+.skip{position:absolute;top:-6rem;left:1rem;background:white;padding:12px}.skip:focus{top:1rem}
+header{padding:18px clamp(16px,4vw,44px);background:#193950;color:#fff;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}header a{color:#e1f8f4}
+main{max-width:1090px;margin:auto;padding:clamp(18px,3vw,35px)}h1{font-size:clamp(1.7rem,4vw,2.6rem);line-height:1.16;margin:6px 0}h2{font-size:1.17rem;margin:0 0 12px}
+.kicker{font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#137f76}.lead{max-width:870px;color:#557080}
+.notice{border:1px solid #b1dacf;border-radius:12px;background:#e8f7f2;color:#225c54;font-weight:700;padding:14px 16px;margin:17px 0}
+.card{background:white;border:1px solid #d8e7ec;border-radius:16px;padding:clamp(16px,2.5vw,24px);margin:18px 0}
+.controls{display:flex;flex-wrap:wrap;gap:9px}button{border:1px solid #a8c8d0;border-radius:10px;background:#f6fbfc;color:#22576b;font:inherit;font-weight:690;padding:9px 13px;cursor:pointer}
+button[aria-pressed="true"]{background:#185367;color:white;border-color:#185367}button:disabled{opacity:.48;cursor:not-allowed}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.stat{padding:13px;background:#f7fafc;border:1px solid #dbe8ed;border-radius:11px;min-width:0}
+.stat span{display:block;font-size:.78rem;color:#577281}.stat strong{display:block;font-size:clamp(1.08rem,2.6vw,1.7rem);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.table-wrap{max-width:100%;overflow-x:auto;border:1px solid #dfeaec;border-radius:11px;margin:16px 0}table{min-width:660px;width:100%;border-collapse:collapse;text-align:left}
+th,td{border-bottom:1px solid #e2ecef;padding:11px 12px;font-size:.9rem}thead{background:#f1f7f8}tbody tr:last-child td{border-bottom:0}
+.money{white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:750}.prob{display:flex;align-items:center;gap:7px}.prob button{padding:4px 11px;min-width:36px}
+.prob output{min-width:52px;text-align:center;font-variant-numeric:tabular-nums;font-weight:700}
+.state{padding:12px 14px;color:#20556a;background:#eef7f8;border:1px solid #c4dce2;border-radius:10px;font-weight:710}
+.empty{padding:17px;color:#567382;border:1px dashed #a9cbd3;border-radius:10px}
+.small{font-size:.84rem;color:#597581}footer{max-width:1090px;margin:auto;padding:0 24px 34px;color:#637f8b;font-size:.81rem}
+[hidden]{display:none!important}
+@media(max-width:780px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){main{padding:16px 12px}.card{padding:14px}.controls{display:grid;grid-template-columns:minmax(0,1fr)}.controls button{width:100%}.metrics{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header><strong>imagine CRM · Laboratório comercial</strong><a href="../index.html">Voltar ao laboratório</a></header>
+<main id="conteudo">
+  <p class="kicker">Funil comercial · Visão matemática fictícia</p>
+  <h1>Previsão ponderada de oportunidades</h1>
+  <p class="lead">Compare o valor bruto e a projeção ponderada por probabilidades inventadas. Ajuste as probabilidades localmente de 0% a 100% em passos de 5%, sem modificar oportunidades reais.</p>
+  <div class="notice" role="note">PROTÓTIPO — DADOS FICTÍCIOS. Nenhuma oportunidade, empresa, cliente, receita ou probabilidade real foi verificada. Esta conta não gera meta, comissão, venda, nota fiscal ou cobrança.</div>
+  <section class="card" aria-labelledby="cases-title">
+    <h2 id="cases-title">Amostras comerciais inteiramente inventadas</h2>
+    <div class="controls" role="group" aria-label="Exemplos fictícios de previsão ponderada">
+      <button type="button" data-case="standard" aria-pressed="true">A · Três oportunidades</button>
+      <button type="button" data-case="conservative" aria-pressed="false">B · Cenário conservador</button>
+      <button type="button" data-case="optimistic" aria-pressed="false">C · Cenário otimista</button>
+      <button type="button" data-case="empty" aria-pressed="false">D · Nenhuma oportunidade</button>
+    </div>
+    <p class="small">Trocar de exemplo restaura seus números iniciais. Probabilidades são suposições, não evidência de conversão.</p>
+  </section>
+  <section class="card" aria-labelledby="projection-title">
+    <h2 id="projection-title">Projeção matemática dos valores fictícios</h2>
+    <div class="metrics">
+      <div class="stat"><span>Oportunidades</span><strong id="count">—</strong></div>
+      <div class="stat"><span>Total bruto hipotético</span><strong id="raw-total">—</strong></div>
+      <div class="stat"><span>Total ponderado hipotético</span><strong id="weighted-total">—</strong></div>
+    </div>
+    <p id="feedback" class="state" role="status" aria-live="polite" aria-atomic="true">Carregando amostra.</p>
+    <p id="empty-note" class="empty" role="status" hidden>Não há oportunidades no exemplo. Nenhuma receita real foi calculada.</p>
+    <div id="table-wrap" class="table-wrap">
+      <table><caption>Valores fictícios em centavos exatos, arredondados por linha; sem receita confirmada</caption>
+      <thead><tr><th scope="col">Exemplo</th><th scope="col">Valor bruto</th><th scope="col">Probabilidade</th><th scope="col">Valor ponderado</th></tr></thead>
+      <tbody id="opportunity-rows"></tbody>
+      </table>
+    </div>
+    <p class="small">Os valores são arredondados para o centavo mais próximo, metade para cima, em cada linha. Não são preços finais, faturas nem resultados financeiros apurados.</p>
+  </section>
+  <section class="card" aria-labelledby="limits-title">
+    <h2 id="limits-title">Permissões e aprovação</h2>
+    <p id="rights" class="state">Marcar ganha: NÃO · Faturar: NÃO · Cobrar: NÃO · Gravar: NÃO</p>
+    <p class="small">Para prever vendas com dados reais, são necessários regras de previsão, identidade por empresa, permissões, trilha auditável, calibração de probabilidades e aprovação dos controles comerciais e jurídicos.</p>
+  </section>
+</main>
+<footer>Imagine CRM · Laboratório sem API, rede, banco, faturamento, dados pessoais ou autenticação.</footer>
+<script>
+(function(){
+  'use strict';
+  const SCENARIOS=Object.freeze([
+    {"id":"standard","opportunities":[{"label":"Negócio fictício A","amount_cents":12990,"win_probability_bp":5000},{"label":"Negócio fictício B","amount_cents":7999,"win_probability_bp":2500},{"label":"Negócio fictício C","amount_cents":60000,"win_probability_bp":7500}],"expected_raw_cents":80989,"expected_weighted_cents":53495},
+    {"id":"conservative","opportunities":[{"label":"Negócio fictício D","amount_cents":25000,"win_probability_bp":1000},{"label":"Negócio fictício E","amount_cents":4250,"win_probability_bp":0}],"expected_raw_cents":29250,"expected_weighted_cents":2500},
+    {"id":"optimistic","opportunities":[{"label":"Negócio fictício F","amount_cents":15000,"win_probability_bp":10000},{"label":"Negócio fictício G","amount_cents":10001,"win_probability_bp":5000}],"expected_raw_cents":25001,"expected_weighted_cents":20001},
+    {"id":"empty","opportunities":[],"expected_raw_cents":0,"expected_weighted_cents":0}
+  ]);
+  let chosen='standard',items=[];
+  const get=id=>document.getElementById(id);
+  const put=(id,value)=>{get(id).textContent=String(value);};
+  const money=cents=>{
+    if(!Number.isSafeInteger(cents)||cents<0)throw new Error('Valor fictício inválido');
+    return 'R$ '+new Intl.NumberFormat('pt-BR').format(Math.trunc(cents/100))+','+String(cents%100).padStart(2,'0');
+  };
+  function weighted(item){
+    const a=item.amount_cents,bp=item.win_probability_bp;
+    if(!Number.isSafeInteger(a)||a<0||a>Number.MAX_SAFE_INTEGER||
+       !Number.isInteger(bp)||bp<0||bp>10000)throw new Error('Probabilidade ou valor inválido');
+    // BigInt keeps every half-cent tie exact, including values near 2^53−1.
+    const result=(BigInt(a)*BigInt(bp)+5000n)/10000n;
+    if(result>BigInt(Number.MAX_SAFE_INTEGER))throw new Error('Valor ponderado fora do limite');
+    return Number(result);
+  }
+  function calculate(){
+    let raw=0,forecast=0;
+    for(const item of items){
+      const next=weighted(item);
+      if(item.amount_cents>Number.MAX_SAFE_INTEGER-raw||next>Number.MAX_SAFE_INTEGER-forecast)throw new Error('Total fora do limite');
+      raw+=item.amount_cents;forecast+=next;
+    }
+    return {raw,forecast};
+  }
+  function render(){
+    const body=get('opportunity-rows');body.replaceChildren();
+    items.forEach((item,index)=>{
+      const tr=document.createElement('tr');
+      const label=document.createElement('td');label.textContent=item.label;
+      const amount=document.createElement('td');amount.className='money';amount.textContent=money(item.amount_cents);
+      const prob=document.createElement('td');
+      const wrap=document.createElement('div');wrap.className='prob';
+      for(const delta of [-500,500]){
+        const button=document.createElement('button');button.type='button';
+        button.textContent=delta<0?'−':'+';
+        button.dataset.index=String(index);button.dataset.delta=String(delta);
+        button.setAttribute('aria-label',(delta<0?'Diminuir':'Aumentar')+' probabilidade de '+item.label);
+        button.disabled=delta<0?item.win_probability_bp<=0:item.win_probability_bp>=10000;
+        button.addEventListener('click',()=>{
+          item.win_probability_bp+=delta;render();
+          const same=document.querySelector('[data-index="'+index+'"][data-delta="'+delta+'"]');
+          const opposite=document.querySelector('[data-index="'+index+'"][data-delta="'+(-delta)+'"]');
+          if(same&&!same.disabled)same.focus();else if(opposite)opposite.focus();
+          put('feedback','Probabilidade fictícia alterada. Nenhuma venda ou cobrança foi gerada.');
+        });
+        wrap.appendChild(button);
+        if(delta<0){
+          const number=document.createElement('output');number.textContent=(item.win_probability_bp/100)+'%';
+          number.setAttribute('aria-label','Probabilidade inventada');wrap.appendChild(number);
+        }
+      }
+      prob.appendChild(wrap);
+      const result=document.createElement('td');result.className='money';result.textContent=money(weighted(item));
+      tr.append(label,amount,prob,result);body.appendChild(tr);
+    });
+    const total=calculate();
+    put('count',items.length);
+    put('raw-total',money(total.raw));
+    put('weighted-total',money(total.forecast));
+    get('empty-note').hidden=items.length!==0;
+    get('table-wrap').hidden=items.length===0;
+    put('rights','Marcar ganha: NÃO · Faturar: NÃO · Cobrar: NÃO · Gravar: NÃO');
+  }
+  function choose(id){
+    const example=SCENARIOS.find(x=>x.id===id);
+    if(!example)throw new Error('Exemplo desconhecido');
+    chosen=id;
+    items=example.opportunities.map(row=>({label:row.label,amount_cents:row.amount_cents,win_probability_bp:row.win_probability_bp}));
+    const result=calculate();
+    if(result.raw!==example.expected_raw_cents||result.forecast!==example.expected_weighted_cents)throw new Error('Projeção fictícia inconsistente');
+    render();
+    put('feedback','Amostra '+id+' selecionada. Sem receita, faturamento ou direito confirmado.');
+    document.querySelectorAll('[data-case]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.case===id)));
+  }
+  document.querySelectorAll('[data-case]').forEach(button=>button.addEventListener('click',()=>choose(button.dataset.case)));
+  choose(chosen);
+})();
+</script>
+</body>
+</html>
