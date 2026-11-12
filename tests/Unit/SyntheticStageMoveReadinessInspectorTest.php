@@ -98,7 +98,7 @@ final class SyntheticStageMoveReadinessInspectorTest extends TestCase
     {
         $events = [self::event(1, 'create', 0, '00')];
         for ($revision = 2; $revision <= 24; ++$revision) {
-            $events[] = self::event($revision, 'move', $revision % 2, sprintf('%02d', $revision - 1));
+            $events[] = self::event($revision, 'move', $revision % 2 === 0 ? 1 : 0, sprintf('%02d', $revision - 1));
         }
         $out = (new SyntheticStageMoveReadinessInspector())
             ->inspect($events, 24, 3, self::presence(true), self::policy());
