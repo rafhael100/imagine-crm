@@ -18,6 +18,7 @@ use App\Core\Plans\TrialWindowAdvisory;
 use App\Core\Sales\SyntheticCommercialDiscountReview;
 use App\Core\Sales\SyntheticCommercialJourneyInspector;
 use App\Core\Sales\SyntheticCommercialWorkloadInspector;
+use App\Core\Sales\SyntheticCommercialWorkloadTrendReview;
 use App\Core\Sales\SyntheticSalesAggregatePrivacyPreview;
 use App\Core\Sales\SyntheticStageAggregateCsvPreview;
 use App\Core\Sales\SyntheticReportDifferencingRiskInspector;
@@ -288,6 +289,39 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             ]]],
                 'observed_at_utc' => '2026-11-10T12:00:00Z',
             ]),
+            'workload_improvement_does_not_allow_action' =>
+                (new SyntheticCommercialWorkloadTrendReview())->inspect(
+                    [
+                    'agents' => [[
+                        'enabled' => true, 'has_required_skill' => true,
+                        'open_leads' => 0, 'capacity' => 0,
+                    ]],
+                    'lead_states' => ['unassigned', 'unassigned'],
+                    'start_cursor' => 0,
+                    'task_histories' => [[[
+                        'revision' => 1, 'action' => 'create',
+                        'occurred_at_utc' => '2026-11-01T10:00:00Z',
+                        'due_at_utc' => '2026-11-09T12:00:00Z',
+                        'priority' => 'urgent', 'reason_code' => null,
+                    ]]],
+                    'observed_at_utc' => '2026-11-10T12:00:00Z',
+                ],
+                    [
+                    'agents' => [[
+                        'enabled' => true, 'has_required_skill' => true,
+                        'open_leads' => 0, 'capacity' => 1,
+                    ]],
+                    'lead_states' => ['unassigned', 'unassigned'],
+                    'start_cursor' => 0,
+                    'task_histories' => [[[
+                        'revision' => 1, 'action' => 'create',
+                        'occurred_at_utc' => '2026-11-01T10:00:00Z',
+                        'due_at_utc' => '2026-11-09T12:00:00Z',
+                        'priority' => 'urgent', 'reason_code' => null,
+                    ]]],
+                    'observed_at_utc' => '2026-11-10T12:00:00Z',
+                ],
+                ),
             'trial_review_window' => (new SyntheticTrialRetentionTimeline(
                 new TrialWindowAdvisory(2000000, 2000000 + 14 * 86400),
             ))->readout(),
@@ -331,10 +365,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             ->inspect($cases[0]['input']);
     }
 
-    public function test_all_thirty_one_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_thirty_two_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(31, $reports);
+        self::assertCount(32, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -459,6 +493,13 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         );
         self::assertFalse($reports['commercial_capacity_and_overdue_inert']['can_assign']);
         self::assertFalse($reports['commercial_capacity_and_overdue_inert']['can_notify']);
+        self::assertSame(
+            'reduced_pressure',
+            $reports['workload_improvement_does_not_allow_action']['pressure_trend'],
+        );
+        self::assertFalse($reports['workload_improvement_does_not_allow_action']['authorized']);
+        self::assertFalse($reports['workload_improvement_does_not_allow_action']['can_reschedule']);
+        self::assertFalse($reports['workload_improvement_does_not_allow_action']['can_notify']);
         self::assertSame('second_marker_elapsed', $reports['delinquency_day_thirty']['phase']);
         self::assertFalse($reports['delinquency_day_thirty']['can_suspend_service']);
     }
@@ -497,6 +538,7 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticReportHistoryPairwiseRiskInspector',
             'SyntheticTaskPortfolioInspector',
             'SyntheticCommercialWorkloadInspector',
+            'SyntheticCommercialWorkloadTrendReview',
         ] as $class) {
             self::assertStringNotContainsString($class, $routes);
         }
