@@ -363,6 +363,10 @@ $checks = <<<'JS'
     check(!csvView.hidden&&csvButton.getAttribute('aria-expanded')==='true','CSV preview opens read only');
     check(document.activeElement===csvButton,'CSV reveal preserves button focus');
     const csvLines=()=>csvView.textContent.trim().split('\n');
+    const csvIds=()=>csvLines().slice(1).map(row=>row.split(';')[0]);
+    const boardIds=()=>Array.from(document.querySelectorAll('#board [data-card-id]'),
+      card=>card.dataset.cardId);
+    const csvMatchesVisibleBoard=()=>csvIds().join(',')===boardIds().join(',');
     check(csvLines()[0]==='id;etapa;prioridade;acompanhamento;valor_ficticio;pontuacao','strict technical CSV header');
     check(csvLines().length===9,'CSV preview has eight invented rows');
     check(csvLines()[1]==='F01;0;high;pending;1800;92','first CSV fixture is technical only');
@@ -382,7 +386,8 @@ $checks = <<<'JS'
     check(byId('lane-detail-0').textContent==='Alta: 1 · Pendentes: 1','initial entry counts match actual fixtures');
     check(byId('lane-detail-3').textContent==='Alta: 1 · Pendentes: 2','initial proposal counts match actual fixtures');
     byId('add-fiction').click();
-    check(csvLines().length===10&&csvLines()[9]==='F09;0;high;pending;1850;59','new generated fictitious card enters CSV');
+    check(csvLines().length===10&&csvLines().includes('F09;0;high;pending;1850;59')
+      &&csvMatchesVisibleBoard(),'new generated fictitious card enters CSV in visible board order');
     check(byId('lane-detail-0').textContent==='Alta: 2 · Pendentes: 2','fictional card creation updates lane breakdown');
     byId('undo-change').click();
     check(csvLines().length===9,'undo creation removes generated CSV entry');
@@ -407,12 +412,14 @@ $checks = <<<'JS'
     check(['F09','F10','F11','F12'].every(id=>document.querySelector('[data-card-id="'+id+'"]')!==null),'four generated IDs unique');
     check(document.querySelector('[data-card-id="F13"]')===null,'no ID exceeds fixed synthetic contract');
     byId('toggle-csv-demo').click();
-    check(csvLines().length===13&&csvLines()[12].startsWith('F12;'),'CSV remains valid for max twelve fixtures');
+    check(csvLines().length===13&&csvIds().includes('F12')&&csvMatchesVisibleBoard(),
+      'CSV mirrors visible order at max twelve fixtures');
     byId('undo-change').click();
     check(visible()===11&&!addForIds.disabled,'undo frees latest F12 slot');
     addForIds.click();
     check(visible()===12&&document.querySelector('[data-card-id="F12"]')!==null,'readding reuses F12 after undo');
-    check(csvLines().length===13&&csvLines()[12].startsWith('F12;'),'CSV stays valid after reclaimed F12');
+    check(csvLines().length===13&&csvIds().includes('F12')&&csvMatchesVisibleBoard(),
+      'CSV mirrors visible board after reclaimed F12');
     check(!csvView.textContent.includes('indisponível'),'CSV never fails due to burnt ID counter');
     byId('reset-demo').click();
     check(visible()===8&&csvLines().length===9,'reset restores original IDs and CSV');
