@@ -1,0 +1,71 @@
+name: CRM Imagine - DS-V1 Ten Screens Visual Evidence
+
+on:
+  push:
+    branches:
+      - dev/ui-ds-v1-crm-extended-2026-11-12
+    paths:
+      - 'prototypes/**'
+      - 'scripts/ci/capture-crm-offline-visual-evidence.mjs'
+      - '.github/workflows/crm-ds-v1-ten-screens-evidence.yml'
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'prototypes/**'
+      - 'scripts/ci/capture-crm-offline-visual-evidence.mjs'
+      - '.github/workflows/crm-ds-v1-ten-screens-evidence.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-ds-v1-ten-evidence-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    name: Ten offline screens - before and after - 1440, 768, 320px
+    if: github.head_ref == 'dev/ui-ds-v1-crm-extended-2026-11-12' || github.ref == 'refs/heads/dev/ui-ds-v1-crm-extended-2026-11-12'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout review-only branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Node 22 - local Chrome CDP without third-party packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Capture ten independent offline screens at three exact viewport sizes
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/crm-ds-v1/old .tmp/crm-ds-v1/screenshots
+          for name in \
+            f3-22-csv-risk-preview \
+            f3-104-retention-lifecycle \
+            f3-109-sales-quote-subtotal \
+            f3-113-scoring-trend \
+            f3-115-weighted-forecast \
+            f3-117-opportunity-outcomes \
+            f3-138-commercial-journey \
+            f3-148-private-stage-dashboard \
+            f3-155-commercial-workload \
+            f3-164-interactive-lead-triage
+          do
+            git show "691f93ce2a147f253a2dac6fbafa482227f354c0:prototypes/$name/index.html" \
+              > ".tmp/crm-ds-v1/old/$name.html"
+            node scripts/ci/capture-crm-offline-visual-evidence.mjs \
+              ".tmp/crm-ds-v1/old/$name.html" "prototypes/$name/index.html" \
+              ".tmp/crm-ds-v1/screenshots/$name"
+          done
+      - name: Publish screenshots and sha256 manifest for visual review only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crm-ds-v1-ten-screens-${{ github.sha }}
+          path: .tmp/crm-ds-v1/screenshots/
+          if-no-files-found: error
+          retention-days: 7
