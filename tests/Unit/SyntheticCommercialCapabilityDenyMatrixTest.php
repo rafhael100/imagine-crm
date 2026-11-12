@@ -42,6 +42,7 @@ use App\Core\Sales\SyntheticSalesEventUniquenessInspector;
 use App\Core\Sales\SyntheticSalesGoalProgressPreview;
 use App\Core\Sales\SyntheticScheduledReportDeliveryPreflight;
 use App\Core\Sales\SyntheticStageFieldRequirementsInspector;
+use App\Core\Sales\SyntheticStageMoveReadinessInspector;
 use App\Core\Sales\SyntheticWeightedSalesForecast;
 use PHPUnit\Framework\TestCase;
 
@@ -141,6 +142,20 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
                     'occurred_at_utc' => '2026-11-01T11:00:00Z',
                 ],
             ]),
+            'stage_move_fields_complete_still_denied' => (new SyntheticStageMoveReadinessInspector())->inspect(
+                [[
+                    'revision' => 1, 'action' => 'create', 'stage' => 0,
+                    'confirmed' => false, 'loss_reason_code' => null,
+                    'reopen_reason_code' => null,
+                    'occurred_at_utc' => '2026-11-01T10:00:00Z',
+                ]],
+                1, 2,
+                [
+                    'amount' => true, 'assignee' => true, 'contact' => true,
+                    'expected_close' => true, 'source' => true,
+                ],
+                [[], [], ['contact', 'assignee', 'amount'], []],
+            ),
             'stage_requirements_satisfied' => (new SyntheticStageFieldRequirementsInspector())->inspect(
                 0,
                 2,
@@ -421,10 +436,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             ->inspect($cases[0]['input']);
     }
 
-    public function test_all_thirty_seven_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_thirty_eight_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(37, $reports);
+        self::assertCount(38, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -469,6 +484,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         self::assertFalse($reports['proposal_lifecycle_accepted']['can_accept']);
         self::assertSame('won', $reports['opportunity_transition_won']['latest_claimed_status']);
         self::assertSame(0, $reports['opportunity_transition_won']['recognized_wins']);
+        self::assertSame('FIELDS_PRESENT_UNVERIFIED', $reports['stage_move_fields_complete_still_denied']['reason_code']);
+        self::assertTrue($reports['stage_move_fields_complete_still_denied']['fields_present_claimed']);
+        self::assertFalse($reports['stage_move_fields_complete_still_denied']['can_move']);
+        self::assertFalse($reports['stage_move_fields_complete_still_denied']['can_persist']);
         self::assertTrue($reports['stage_requirements_satisfied']['requirements_met']);
         self::assertFalse($reports['stage_requirements_satisfied']['can_move']);
         self::assertSame(2, $reports['task_recurrence_upcoming']['upcoming_count']);
@@ -600,6 +619,7 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticProposalLifecycleInspector',
             'SyntheticOpportunityTransitionLedger',
             'SyntheticStageFieldRequirementsInspector',
+            'SyntheticStageMoveReadinessInspector',
             'SyntheticRecurringTaskSchedule',
             'SyntheticCommercialDiscountReview',
             'SyntheticProposalSendPreflight',
