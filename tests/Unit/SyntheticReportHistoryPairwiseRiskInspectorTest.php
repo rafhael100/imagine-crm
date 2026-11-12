@@ -35,7 +35,7 @@ final class SyntheticReportHistoryPairwiseRiskInspectorTest extends TestCase
         $out = (new SyntheticReportHistoryPairwiseRiskInspector())->inspect([
             self::counts(0), self::counts(6), self::counts(2),
         ], 3);
-        self::assertSame([[0, 2]], $out['risk_pair_positions']);
+        self::assertSame([[0, 2], [1, 2]], $out['risk_pair_positions']);
         self::assertContains('suppression_boundary_across_history', $out['risk_codes']);
         self::assertFalse($out['can_publish']);
         self::assertFalse($out['can_deliver']);
@@ -44,7 +44,7 @@ final class SyntheticReportHistoryPairwiseRiskInspectorTest extends TestCase
     public function test_no_detected_small_pair_still_produces_no_release_permission(): void
     {
         $out = (new SyntheticReportHistoryPairwiseRiskInspector())->inspect([
-            self::counts(0), self::counts(5), self::counts(10), self::counts(15),
+            self::counts(5), self::counts(10), self::counts(15), self::counts(20),
         ]);
         self::assertSame(6, $out['pair_count_checked']);
         self::assertSame([], $out['risk_pair_positions']);
