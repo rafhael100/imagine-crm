@@ -70,9 +70,16 @@ $driver = <<<'HTML'
         ['cancel-before','Antes do cancelamento','120','10368000','Cancelamento'],
         ['cancel-review','Em revisão ilustrativa','120','10368000','Cancelamento'],
         ['cancel-final','Em revisão ilustrativa','1','1','Cancelamento'],
-        ['cancel-elapsed','Janela ilustrativa encerrada','0','0','Cancelamento']
+        ['cancel-elapsed','Janela ilustrativa encerrada','0','0','Cancelamento'],
+        ['billing-before','Antes do vencimento','8','604801','Vencimento fictício'],
+        ['billing-due','Antes de 7 dias','7','604800','Vencimento fictício'],
+        ['billing-first-final','Antes de 7 dias','1','1','Vencimento fictício'],
+        ['billing-first','Entre os marcos de 7 e 30 dias','23','1987200','Vencimento fictício'],
+        ['billing-second-final','Entre os marcos de 7 e 30 dias','1','1','Vencimento fictício'],
+        ['billing-second','Marco de 30 dias alcançado','0','0','Vencimento fictício'],
+        ['billing-elapsed','Marco de 30 dias alcançado','0','0','Vencimento fictício']
       ];
-      check(doc.querySelectorAll('[data-case]').length===9,'nine fixed scenarios');
+      check(doc.querySelectorAll('[data-case]').length===16,'sixteen fixed scenarios');
       check(doc.querySelectorAll('[data-case][aria-pressed="true"]').length===1,'one default selection');
       for(const [id,phase,days,seconds,kind] of cases){
         const button=doc.querySelector('[data-case="'+id+'"]');
@@ -85,10 +92,12 @@ $driver = <<<'HTML'
         check(text('status').includes('Nenhuma ação operacional autorizada.'),'no operational authority');
         check(text('denials')==='Acesso: NÃO · Cobrança: NÃO · Exclusão: NÃO · Restauração: NÃO · Reativação: NÃO','no authorization appears in any state');
         check(text('start-date').endsWith('Z')&&text('end-date').endsWith('Z'),'absolute dates in UTC');
+        check(kind!=='Vencimento fictício'?text('first-marker-date')==='Não aplicável':text('first-marker-date')==='2026-11-14T12:00:00.000Z','seven-day review marker shown only for billing cases');
+        check(kind!=='Vencimento fictício'||text('duration-rule').includes('sem cobrança ou bloqueio'),'unverified bill cannot trigger collection');
         check(doc.documentElement.scrollWidth<=width,'no horizontal overflow '+id);
       }
       check(doc.querySelector('a[href="../index.html"]')!==null,'relative hub navigation');
-      done('PASS','nine scenarios in real '+width+'px Chromium');
+      done('PASS','sixteen scenarios in real '+width+'px Chromium');
     }catch(error){done('FAIL',error.message);}
   });
   frame.src=__TARGET__;
