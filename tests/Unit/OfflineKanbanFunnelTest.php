@@ -451,7 +451,7 @@ final class OfflineKanbanFunnelTest extends TestCase
         ] as $contract) {
             self::assertStringContainsString($contract, $html);
         }
-        self::assertSame(7, substr_count($html, 'redoStack=[];'));
+        self::assertSame(8, substr_count($html, 'redoStack=[];'));
         self::assertSame(6, substr_count($html, 'history.push('));
         self::assertSame(7, substr_count($html, 'trimUndoHistory();'));
         self::assertStringContainsString("connect-src 'none'", $html);
