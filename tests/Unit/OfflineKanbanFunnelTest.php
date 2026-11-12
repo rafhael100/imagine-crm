@@ -126,6 +126,10 @@ final class OfflineKanbanFunnelTest extends TestCase
         foreach ([
             'data-order="default" aria-pressed="true"',
             'data-order="score" aria-pressed="false"',
+            'data-order="value" aria-pressed="false"',
+            'Maior valor fictício',
+            "if(order==='value')items.sort(",
+            "b.value-a.value||a.id.localeCompare(b.id)",
             'id="activity-list"',
             'Atividade simulada nesta aba',
             "if(order==='score')items.sort(",
