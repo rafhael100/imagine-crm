@@ -85,6 +85,9 @@ jobs:
       - name: Browser smoke test of offline commercial workload triage (1100px and 320px)
         run: php scripts/ci/check-offline-workload-browser.php
 
+      - name: Browser smoke test of interactive fictional lead triage (1100px and 320px)
+        run: php scripts/ci/check-offline-interactive-triage-browser.php
+
       - name: Browser smoke test of CSV checklist (1100px and 320px)
         run: php scripts/ci/check-offline-csv-checklist-browser.php
 
