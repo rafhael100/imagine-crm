@@ -54,6 +54,9 @@ $testScript = <<<'JS'
     check(css(document.querySelector('.hero .action')).backgroundColor==='rgb(249, 148, 29)','Node orange primary CTA');
     check(css(document.querySelector('[aria-current="page"].nav-button')).backgroundColor==='rgb(255, 241, 224)','Node selected navigation');
     check(css(document.documentElement).fontFamily.includes('Arial'),'Node font applied');
+    const brandLogo=document.querySelector('.brand-logo');
+    check(brandLogo&&brandLogo.alt==='Imagine'&&brandLogo.src.startsWith('data:image/png;base64,'),
+      'original Node Portal logo shown without a network dependency');
     const nav=Array.from(document.querySelectorAll('#demo-navigation button[data-page]'));
     check(nav.length===9,'nine navigation buttons');
     check(document.querySelectorAll('[data-screen]').length===9,'nine demo screens');
