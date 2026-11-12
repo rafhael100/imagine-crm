@@ -94,11 +94,7 @@ $payload = json_encode(
     JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR,
 );
 foreach ([1100, 320] as $width) {
-    $file = tempnam(sys_get_temp_dir(), 'imagine-ds-v1-');
-    if ($file === false) {
-        fwrite(STDERR, 'Imagine DS-V1 could not create temporary driver.'.PHP_EOL);
-        exit(1);
-    }
+    $file = sys_get_temp_dir().'/imagine-ds-v1-'.bin2hex(random_bytes(12)).'.html';
     try {
         $page = str_replace(
             ['__WIDTH__', '__URLS__'], [(string) $width, $payload], $driver,
