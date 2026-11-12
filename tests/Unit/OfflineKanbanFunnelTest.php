@@ -423,7 +423,7 @@ final class OfflineKanbanFunnelTest extends TestCase
             self::assertStringContainsString($contract, $html);
         }
         self::assertSame(5, substr_count($html, 'history.push('));
-        self::assertSame(5, substr_count($html, 'trimUndoHistory();'));
+        self::assertSame(6, substr_count($html, 'trimUndoHistory();'));
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringNotContainsString('localStorage', $html);
         self::assertStringNotContainsString('sessionStorage', $html);
