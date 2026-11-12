@@ -35,7 +35,7 @@ final class SyntheticReportHistoryPairwiseRiskInspectorTest extends TestCase
         $out = (new SyntheticReportHistoryPairwiseRiskInspector())->inspect([
             self::counts(0), self::counts(6), self::counts(2),
         ], 3);
-        self::assertSame([[0, 2], [1, 2]], $out['risk_pair_positions']);
+        self::assertSame([[0, 1], [0, 2], [1, 2]], $out['risk_pair_positions']);
         self::assertContains('suppression_boundary_across_history', $out['risk_codes']);
         self::assertFalse($out['can_publish']);
         self::assertFalse($out['can_deliver']);
