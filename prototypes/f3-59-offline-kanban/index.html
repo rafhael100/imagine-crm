@@ -89,7 +89,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   <p class="lead">Mova oportunidades fictícias, conclua acompanhamentos simulados e desfaça ações nesta aba.</p>
   <div class="notice">PROTÓTIPO — DADOS FICTÍCIOS. Nenhuma alteração é salva no CRM, enviada ao servidor ou comunicada a clientes.</div>
   <section class="stats" aria-label="Indicadores da simulação">
-  <div class="stat"><span>Oportunidades visíveis</span><b id="count-visible">0</b></div>
+  <div class="stat"><span>Oportunidades visíveis</span><b id="count-visible" aria-live="polite" aria-atomic="true">0</b></div>
   <div class="stat"><span>Prioridade alta visível</span><b id="count-high">0</b></div>
   <div class="stat"><span>Acompanhamentos pendentes visíveis</span><b id="count-pending">0</b></div>
   <div class="stat"><span>Valor fictício visível</span><b id="sum-visible">R$ 0</b></div>
@@ -529,9 +529,19 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   describe('Quadro fictício reiniciado.');
   });
   byId('fiction-search').addEventListener('input',function(){
+  // The HTML maxlength applies to typing; cap programmatic input as well.
+  this.value=this.value.slice(0,32);
   searchText=this.value.trim().toLocaleLowerCase('pt-BR');
   render();
   describe('Busca local atualizada, sem enviar texto nem alterar clientes.');
+  });
+  byId('fiction-search').addEventListener('keydown',function(event){
+  if(event.key!=='Escape'||this.value==='')return;
+  event.preventDefault();
+  this.value='';
+  searchText='';
+  render();
+  describe('Busca local limpa; todos os filtros anteriores foram preservados.');
   });
   document.querySelectorAll('[data-priority]').forEach(function(button){
   button.addEventListener('click',function(){
