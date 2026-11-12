@@ -16,10 +16,10 @@ final class OfflinePrototypeHubTest extends TestCase
         return $content;
     }
 
-    public function test_hub_connects_exactly_ten_existing_offline_prototypes(): void
+    public function test_hub_connects_exactly_eleven_existing_offline_prototypes(): void
     {
         $html = self::hub();
-        self::assertSame(10, substr_count($html, '<article class="card">'));
+        self::assertSame(11, substr_count($html, '<article class="card">'));
         self::assertStringContainsString('PROTÓTIPO — DADOS FICTÍCIOS.', $html);
         self::assertStringContainsString('Funil Kanban', $html);
         self::assertStringContainsString('Prévia de CSV', $html);
@@ -30,6 +30,7 @@ final class OfflinePrototypeHubTest extends TestCase
         self::assertStringContainsString('Ganhos e perdas', $html);
         self::assertStringContainsString('Jornada comercial integrada', $html);
         self::assertStringContainsString('Painel de funil com privacidade', $html);
+        self::assertStringContainsString('Carga comercial e tarefas', $html);
 
         preg_match_all('/\bhref="([^"]+)"/', $html, $links);
         self::assertSame([
@@ -44,6 +45,7 @@ final class OfflinePrototypeHubTest extends TestCase
             'f3-117-opportunity-outcomes/index.html',
             'f3-138-commercial-journey/index.html',
             'f3-148-private-stage-dashboard/index.html',
+            'f3-155-commercial-workload/index.html',
         ], $links[1]);
         foreach (array_slice($links[1], 1) as $relative) {
             self::assertFileExists(dirname(__DIR__, 2).'/prototypes/'.$relative);
