@@ -22,9 +22,9 @@ h1{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.15;margin:8px 0}
 .tabs{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
 .tabs label{cursor:pointer;background:white;border:1px solid #aac3cd;padding:12px 17px;border-radius:11px;font-weight:750}
 .radio:focus-visible + .tabs label{outline:3px solid #078d84;outline-offset:4px}
-#pressure:checked~.tabs label[for=pressure],#balanced:checked~.tabs label[for=balanced]{background:#155c69;color:#fff}
+#pressure:checked~.tabs label[for=pressure],#balanced:checked~.tabs label[for=balanced],#trend:checked~.tabs label[for=trend]{background:#155c69;color:#fff}
 .panel{display:none}
-#pressure:checked~.panels .pressure,#balanced:checked~.panels .balanced{display:block}
+#pressure:checked~.panels .pressure,#balanced:checked~.panels .balanced,#trend:checked~.panels .trend{display:block}
 .card{background:#fff;border-radius:16px;border:1px solid #dce8ed;padding:clamp(16px,3vw,25px);margin:16px 0}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
 .metric{background:#f4f9fb;border:1px solid #d9e8ef;border-radius:12px;padding:14px}
@@ -53,9 +53,11 @@ footer{max-width:1130px;padding:0 20px 34px;margin:auto;color:#657b88;font-size:
 <section aria-label="Comparar cenários da carga comercial">
 <input class="radio" type="radio" id="pressure" name="case" checked>
 <input class="radio" type="radio" id="balanced" name="case">
+<input class="radio" type="radio" id="trend" name="case">
 <div class="tabs" role="group" aria-label="Cenários">
 <label for="pressure">Capacidade insuficiente</label>
 <label for="balanced">Capacidade ilustrativamente disponível</label>
+<label for="trend">Evolução da carga de trabalho</label>
 </div>
 <div class="panels">
 <article class="panel pressure card" aria-label="Cenário com excesso de pendências">
@@ -88,6 +90,22 @@ footer{max-width:1130px;padding:0 20px 34px;margin:auto;color:#657b88;font-size:
 <section><h3>Alertas estruturados</h3><ul><li><code>cross_module_identity_unverified</code></li><li>Nenhuma operação é liberada</li><li>Sem verificação de política comercial</li></ul></section>
 </div>
 <p class="alert safe">Mesmo sem alerta de capacidade ou atraso, a demonstração não comprova privilégios ou disponibilidade real.</p>
+<p class="prohibition">Atribuir: bloqueado · Enviar aviso: bloqueado · Gravar: bloqueado</p>
+</article>
+<article class="panel trend card" aria-label="Cenário comparativo da carga comercial">
+<h2>Evolução ilustrativa da pressão comercial</h2>
+<p>Duas fotografias inventadas do mesmo formato: a capacidade para novos leads cresce, enquanto uma tarefa vencida fictícia deixa de estar atrasada.</p>
+<div class="grid">
+<div class="metric"><span>Mudança da falta de capacidade</span><strong>−2</strong></div>
+<div class="metric"><span>Mudança de tarefas vencidas</span><strong>−1</strong></div>
+<div class="metric"><span>Classificação fictícia</span><strong>Melhora</strong></div>
+<div class="metric"><span>Ações autorizadas</span><strong>0</strong></div>
+</div>
+<div class="rows">
+<section><h3>Comparação de laboratório</h3><ul><li>Cenário anterior: sem capacidade para dois leads</li><li>Cenário atual: capacidade para dois leads</li><li>Atrasos anteriores: um; atuais: zero</li></ul></section>
+<section><h3>Códigos de revisão</h3><ul><li><code>capacity_shortfall_reduced_claim</code></li><li><code>overdue_backlog_reduced_claim</code></li><li><code>snapshot_cohort_and_identity_unverified</code></li></ul></section>
+</div>
+<p class="alert safe">Melhora inventada não comprova que os mesmos usuários, leads ou tarefas foram observados; nenhuma ação real é liberada.</p>
 <p class="prohibition">Atribuir: bloqueado · Enviar aviso: bloqueado · Gravar: bloqueado</p>
 </article>
 </div>
