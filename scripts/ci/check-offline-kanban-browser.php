@@ -10,7 +10,7 @@ use Symfony\Component\Process\ExecutableFinder;
 
 $html = file_get_contents(dirname(__DIR__, 2).'/prototypes/f3-59-offline-kanban/index.html');
 if (!is_string($html)
-    || strlen($html) > 48000
+    || strlen($html) > 50000
     || substr_count($html, '</body>') !== 1
     || !str_contains($html, 'PROTÓTIPO — DADOS FICTÍCIOS.')
     || !str_contains($html, "connect-src 'none'")
@@ -51,6 +51,12 @@ $checks = <<<'JS'
   }
   try{
     check(document.querySelector('main')!==null,'main landmark');
+    check(getComputedStyle(document.body).backgroundColor==='rgb(247, 247, 248)',
+      'Kanban Node surface');
+    check(getComputedStyle(document.querySelector('header')).backgroundColor==='rgb(255, 255, 255)',
+      'Kanban Node white header');
+    check(getComputedStyle(document.querySelector('[data-priority="all"]')).backgroundColor==='rgb(255, 241, 224)',
+      'Kanban selected orange-soft filter');
     check(document.body.textContent.includes('PROTÓTIPO — DADOS FICTÍCIOS.'),'fiction banner');
     check(document.querySelectorAll('.lane').length===4,'exact four stages');
     check(visible()===8,'eight invented opportunities');
