@@ -435,6 +435,90 @@ final class AuthKernelTest extends TestCase
         $this->assertSame(0, $this->db->transactionLevel());
     }
 
+    /**
+     * Pool reuse must not inherit a business tenant's writable session GUC
+     * or row_security=off, even when the IAM login role itself is safe.
+     */
+    public function test_postgres_iam_rejects_dirty_pooled_tenant_marker_before_callback(): void
+    {
+        if ($this->db->getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('PostgreSQL connection state only.');
+        }
+
+        $original = $this->db->selectOne(
+            "SELECT current_setting('app.tenant_id', true) AS tenant"
+        );
+        $calls = 0;
+        $registry = new DatabaseSessionAuthority($this->db, $this->browserSession);
+
+        $this->db->selectOne(
+            "SELECT set_config('app.tenant_id', ?, false)", [self::C]
+        );
+        try {
+            try {
+                $registry->transaction(function () use (&$calls): void {
+                    ++$calls;
+                });
+                $this->fail('Inherited tenant claim must reject IAM operation.');
+            } catch (\LogicException $e) {
+                $this->assertSame('Unsafe IAM runtime role.', $e->getMessage());
+            }
+            $this->assertSame(0, $calls);
+            $this->assertSame(0, $this->db->transactionLevel());
+            $this->assertSame(
+                self::C,
+                $this->db->selectOne(
+                    "SELECT current_setting('app.tenant_id', true) AS tenant"
+                )->tenant,
+                'The IAM boundary must not silently repair a contaminated pooled session.',
+            );
+        } finally {
+            $this->db->selectOne(
+                "SELECT set_config('app.tenant_id', ?, false)",
+                [$original->tenant ?? ''],
+            );
+        }
+        $this->assertSame(1, $registry->transaction(fn () => 1));
+    }
+
+    public function test_postgres_iam_rejects_row_security_off_before_callback(): void
+    {
+        if ($this->db->getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('PostgreSQL RLS session setting only.');
+        }
+
+        $original = $this->db->selectOne(
+            "SELECT current_setting('row_security') AS setting"
+        );
+        $calls = 0;
+        $registry = new DatabaseSessionAuthority($this->db, $this->browserSession);
+        $this->db->statement('SET row_security = off');
+        try {
+            $this->assertSame(
+                'off',
+                $this->db->selectOne(
+                    "SELECT current_setting('row_security') AS setting"
+                )->setting,
+            );
+            try {
+                $registry->transaction(function () use (&$calls): void {
+                    ++$calls;
+                });
+                $this->fail('Disabled PostgreSQL RLS must reject IAM operations.');
+            } catch (\LogicException $e) {
+                $this->assertSame('Unsafe IAM runtime role.', $e->getMessage());
+            }
+            $this->assertSame(0, $calls);
+            $this->assertSame(0, $this->db->transactionLevel());
+        } finally {
+            $this->db->selectOne(
+                "SELECT set_config('row_security', ?, false)",
+                [$original->setting],
+            );
+        }
+        $this->assertSame(1, $registry->transaction(fn () => 1));
+    }
+
     public function test_postgres_iam_and_business_roles_are_segregated(): void
     {
         if ($this->db->getDriverName() !== 'pgsql') { $this->markTestSkipped('PostgreSQL ACL proof only.'); }
