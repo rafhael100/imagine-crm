@@ -80,7 +80,46 @@
     @media(max-width:900px){.shell{grid-template-columns:minmax(0,1fr)}.sidebar{min-width:0;padding:14px 20px;gap:12px}.sidebar > div{min-width:0}.brand{padding:0}.side-label,.side-note{display:none}.side-nav{display:flex;min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin;padding:2px 0 8px;gap:6px}.mobile-nav-hint{display:block;margin:5px 0 0;color:#b7d1e0;font-size:11px;line-height:1.4}.nav-button{white-space:nowrap;width:auto;padding:9px 11px}.topbar{min-height:66px}.two-col{grid-template-columns:1fr}}
     @media(max-width:420px){.topbar{align-items:flex-start;flex-direction:column}.pill{font-size:10px}.content{padding:23px 17px}.card{border-radius:14px}.hero{border-radius:16px}.nav-button{font-size:12px}.field-value{font-size:22px}.state-surface{padding:18px}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
-  </style>
+  
+
+/* IMAGINE-DS-V1: aliases locais do contrato visual Node, sem alterar operações. */
+:root{--imagine-orange:#f9941d;--imagine-ink:#171b19;--imagine-white:#fff;--imagine-surface:#f7f7f8;--imagine-muted:#737373;--imagine-border:#e8e8e8;--imagine-orange-soft:#fff1e0;--imagine-orange-text:#9b4d00;--imagine-focus:#b75c00;--imagine-radius-control:6px;--imagine-radius-card:9px;--imagine-sidebar-width:240px;--imagine-font-ui:Arial,Helvetica,sans-serif;font-family:var(--imagine-font-ui);color:var(--imagine-ink);background:var(--imagine-surface)}
+body{background:var(--imagine-surface)}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--imagine-focus);outline-offset:3px}
+
+.shell{grid-template-columns:var(--imagine-sidebar-width) minmax(0,1fr)}
+.sidebar{background:var(--imagine-white);color:var(--imagine-ink);border-right:1px solid var(--imagine-border)}
+.brand-mark{background:var(--imagine-orange);color:var(--imagine-ink);border-radius:var(--imagine-radius-control)}
+.brand-name span,.side-label,.mobile-nav-hint{color:var(--imagine-muted)}
+.nav-button{color:var(--imagine-ink);border-radius:var(--imagine-radius-control)}
+.nav-button .dot{background:#b0b0b0}
+.nav-button:hover{background:var(--imagine-surface);color:var(--imagine-ink)}
+.nav-button[aria-current="page"]{background:var(--imagine-orange-soft);color:var(--imagine-orange-text);border-color:#e9c79c}
+.nav-button[aria-current="page"] .dot{background:var(--imagine-focus)}
+.side-note{background:var(--imagine-surface);border-color:var(--imagine-border);color:#555}
+.side-note strong{color:var(--imagine-ink)}
+.topbar{border-color:var(--imagine-border)}
+.crumb,h1,.field-value{color:var(--imagine-ink)}
+.eyebrow{color:var(--imagine-orange-text)}
+.hero{background:var(--imagine-ink);border-radius:var(--imagine-radius-card)}
+.hero:after{border-color:rgba(249,148,29,.22)}
+.hero .eyebrow{color:var(--imagine-orange)}
+.hero p{color:#eee}
+.action,.hero .action{background:var(--imagine-orange);color:var(--imagine-ink);border:1px solid var(--imagine-orange);border-radius:var(--imagine-radius-control)}
+.card,.state-surface,.demo-ticket{border-color:var(--imagine-border);border-radius:var(--imagine-radius-card)}
+.card{box-shadow:0 4px 14px rgba(23,27,25,.035)}
+.metric,.number{color:var(--imagine-orange-text)}
+.number,.label-soft{background:var(--imagine-orange-soft);color:var(--imagine-orange-text)}
+.state-button[aria-pressed="true"]{background:var(--imagine-orange-soft);border-color:#e9c79c;color:var(--imagine-orange-text)}
+.state-button:hover{border-color:var(--imagine-focus)}
+.demo-column{background:var(--imagine-surface);border-color:var(--imagine-border);border-radius:var(--imagine-radius-card)}
+.demo-table th{background:var(--imagine-surface);color:#555}
+.table-scroll,.demo-table td,.demo-table th{border-color:var(--imagine-border)}
+.lead-detail-trigger{color:var(--imagine-orange-text)}
+.pipeline-review-link{background:var(--imagine-orange-soft);border-color:#e9c79c;color:var(--imagine-orange-text)}
+.pipeline-review-link:hover{background:#ffe4c4}
+@media(max-width:900px){.shell{grid-template-columns:minmax(0,1fr)}.sidebar{border-right:0;border-bottom:1px solid var(--imagine-border)}}
+</style>
 </head>
 <body>
 <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
