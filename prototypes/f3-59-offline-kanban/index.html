@@ -126,6 +126,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   <strong>Ordenação:</strong>
   <button type="button" data-order="default" aria-pressed="true">Ordem original</button>
   <button type="button" data-order="score" aria-pressed="false">Maior pontuação</button>
+  <button type="button" data-order="value" aria-pressed="false">Maior valor fictício</button>
   </div>
   <div class="filters" role="search" aria-label="Busca local em oportunidades fictícias">
   <label for="fiction-search"><strong>Buscar cartão fictício:</strong></label>
@@ -300,6 +301,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   target.replaceChildren();
   const items=subset.filter(function(item){return item.stage===index;});
   if(order==='score')items.sort(function(a,b){return b.score-a.score||a.id.localeCompare(b.id);});
+  if(order==='value')items.sort(function(a,b){return b.value-a.value||a.id.localeCompare(b.id);});
   put('lane-count-'+index,items.length);
   const highInLane=items.filter(function(item){return item.priority==='high';}).length;
   const pendingInLane=items.filter(function(item){return item.followup==='pending';}).length;
