@@ -95,6 +95,14 @@ $driver = <<<'HTML'
 
       const buttons=Array.from(doc.querySelectorAll('#demo-navigation button[data-page]'));
       check(buttons.length===9,'all navigation buttons exist');
+      const groups=Array.from(doc.querySelectorAll('#demo-navigation .nav-group'));
+      check(groups.length===3,'mobile navigation remains grouped');
+      check(groups.every(x=>win.getComputedStyle(x).display==='flex'),
+        'mobile groups are horizontally scrollable');
+      check(buttons.every(x=>x.getBoundingClientRect().height>=44),
+        'all nine mobile navigation targets are at least 44 CSS px high');
+      check(doc.getElementById('nav-section').textContent==='Início',
+        'mobile breadcrumb names active group');
       const leads=buttons.find(node=>node.getAttribute('data-page')==='leads');
       const pipeline=buttons.find(node=>node.getAttribute('data-page')==='pipeline');
       const monitor=buttons.find(node=>node.getAttribute('data-page')==='monitor');
