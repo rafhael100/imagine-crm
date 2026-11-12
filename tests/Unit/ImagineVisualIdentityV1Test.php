@@ -65,6 +65,17 @@ final class ImagineVisualIdentityV1Test extends TestCase
     {
         $root = dirname(__DIR__, 2).'/prototypes/';
         $shell = (string) file_get_contents($root.'s01-prot-01/index.html');
+        // The embedded PNG must be byte-identical to the original binary asset.
+        self::assertSame(1, preg_match(
+            '/<img class="brand-mark brand-logo"[^>]+src="data:image\\/png;base64,([A-Za-z0-9+\\/=]+)"/',
+            $shell, $match,
+        ));
+        $decodedLogo = base64_decode($match[1], true);
+        self::assertIsString($decodedLogo);
+        self::assertSame(
+            file_get_contents($root.'assets/logo-imagine.png'),
+            $decodedLogo,
+        );
         self::assertStringContainsString('.sidebar{background:var(--imagine-white);color:var(--imagine-ink)', $shell);
         self::assertStringContainsString('.nav-button[aria-current="page"]{background:var(--imagine-orange-soft);color:var(--imagine-orange-text)', $shell);
         self::assertStringContainsString('.hero{background:var(--imagine-ink)', $shell);
