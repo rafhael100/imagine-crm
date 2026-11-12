@@ -8,6 +8,16 @@
 **HEAD `main`:** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` — sem merge dos recortes experimentais.  
 **VPS/produção:** **não implantadas nesta sequência**; nenhuma API de cliente, lead real, cadastro funcional, `ALLOW`, SQL operacional ou serviço pago adicional habilitado.
 
+## OPS-56 — Contrato de superfície de funções e views PostgreSQL (12/11/2026)
+
+**Snapshot DEV verificado:** a5ead3661bd599f62f7c91a430ffd31ff2fcee01 (merge #397, referência histórica, não uma HEAD fixa). **Main verificada:** e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012 — inalterada.
+
+**PR integrada:** [SEGDBA F3-179 #397](https://github.com/rafhael100/imagine-crm/pull/397), commit a5ead3661bd599f62f7c91a430ffd31ff2fcee01. Teste read-only PostgresLabRoutineAndViewPrivilegeInventoryTest em PostgreSQL 16 descartável: nenhuma rotina SECURITY DEFINER no schema público; nenhuma função/procedure prefixada crm_ não revisada em schemas não sistêmicos; nenhuma ACL padrão **explícita** de EXECUTE ao PUBLIC; nenhuma ACL PUBLIC em views, views materializadas e tabelas estrangeiras prefixadas crm_. **O PostgreSQL pode conceder EXECUTE implicitamente a PUBLIC em funções futuras**: qualquer rotina CRM nova requer revisão própria, não basta ausência de ALTER DEFAULT PRIVILEGES.
+
+**Quatro workflows success na HEAD exata:** [F0 #43267767541](https://github.com/rafhael100/imagine-crm/actions/runs/43267767541), [PG16/RLS #43267767459](https://github.com/rafhael100/imagine-crm/actions/runs/43267767459), [Sites #43267767518](https://github.com/rafhael100/imagine-crm/actions/runs/43267767518), [Agentes #43267767545](https://github.com/rafhael100/imagine-crm/actions/runs/43267767545). Diff revisado, behind_by=0 e mergeable; somente DEV. Evidência anexada à [issue #27](https://github.com/rafhael100/imagine-crm/issues/27#issuecomment-6830709381).
+
+**NO-GO inalterado:** [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27) e [CORE/SEG/DBA/LGPD #259](https://github.com/rafhael100/imagine-crm/issues/259) exigem parecer independente, identidade e permissão real, segurança de migration, recuperação e privacidade. Nenhum teste desta PR executou na VPS e nenhuma operação com clientes, dados pessoais, IAM/ALLOW, SQL operacional, main ou produção foi liberada. O [dossiê OPS-52](docs/desenvolvimento/CRM-OPS-52-dossie-revisao-P0-SEG-DBA-CORE-LGPD-2026-11-12.md) lista os critérios de revisão pendentes.
+
 ## OPS-55 — Kanban com refazer, seleção em lote e contraprova real de RLS (12/11/2026)
 
 **Snapshot DEV após F3-178:** 120a4deb666d09cf282b6901523d43c06cf922e7 (referência de data, reconsultar a HEAD do GitHub); **main conferida:** e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012, inalterada. Quatro PRs integradas somente DEV após revisão de diff, behind_by=0, mergeable e quatro workflows success na SHA de cada PR.
