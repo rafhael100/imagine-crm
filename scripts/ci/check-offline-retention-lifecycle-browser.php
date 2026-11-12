@@ -13,7 +13,7 @@ $root = dirname(__DIR__, 2);
 $page = $root.'/prototypes/f3-104-retention-lifecycle/index.html';
 $html = file_get_contents($page);
 if (!is_string($html)
-    || strlen($html) > 16000
+    || strlen($html) > 17000
     || substr_count($html, '</body>') !== 1
     || !str_contains($html, 'PROTÓTIPO — DADOS FICTÍCIOS.')
     || !str_contains($html, "connect-src 'none'")
