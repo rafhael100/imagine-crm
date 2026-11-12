@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; img-src data:; font-src 'none'; frame-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — revisão fictícia de possíveis duplicidades</title>
+<style>
+:root{--imagine-orange:#f9941d;--imagine-ink:#171b19;--imagine-white:#ffffff;--imagine-surface:#f7f7f8;--imagine-muted:#737373;--imagine-border:#e8e8e8;--imagine-orange-soft:#fff1e0;--imagine-orange-text:#9b4d00;--imagine-focus:#b75c00;font-family:Arial,Helvetica,sans-serif;color:var(--imagine-ink);background:var(--imagine-surface);line-height:1.5}
+*{box-sizing:border-box}body{margin:0;min-width:0;background:var(--imagine-surface)}
+[hidden]{display:none!important}
+button{font:inherit;cursor:pointer;min-height:44px;border:1px solid #c9c9c9;border-radius:6px;background:white;color:var(--imagine-ink);padding:9px 14px}
+button:disabled{cursor:not-allowed;opacity:.55}
+button:hover:not(:disabled){background:var(--imagine-orange-soft)}
+button:focus-visible,a:focus-visible{outline:3px solid var(--imagine-focus);outline-offset:3px}
+.skip{position:absolute;top:8px;left:-9999px;padding:10px;background:white}.skip:focus{left:12px}
+header{background:var(--imagine-white);border-bottom:1px solid var(--imagine-border);padding:18px max(18px,calc((100vw - 1080px)/2));display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;font-weight:900;font-size:21px;color:var(--imagine-ink);letter-spacing:-.5px}
+.brand-logo{display:block;width:160px;max-width:100%;height:auto;object-fit:contain;background:white}
+.brand span{font-size:12px;color:var(--imagine-orange-text);margin-left:9px;letter-spacing:.7px}
+header small{color:#606060}
+main{max-width:1100px;margin:auto;padding:clamp(18px,4vw,40px) clamp(16px,4vw,30px)}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:1.3px;color:var(--imagine-orange-text);text-transform:uppercase}
+h1{font-size:clamp(27px,3vw,36px);margin:7px 0 10px;line-height:1.15}
+.lead{max-width:780px;color:#585858;margin:0 0 20px}
+.notice{background:var(--imagine-orange-soft);border:1px solid #e9c79c;border-radius:9px;padding:15px 17px;margin-bottom:23px;color:#713b00;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:23px}
+.stat,.panel{border:1px solid var(--imagine-border);border-radius:9px;background:var(--imagine-white);padding:18px;min-width:0}
+.stat b{display:block;font-size:29px;line-height:1.2;color:var(--imagine-orange-text)}
+.stat span{font-size:13px;color:#585858}
+h2{font-size:19px;margin:0 0 12px}
+.filters{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 17px}
+.filters button[aria-pressed="true"]{background:var(--imagine-orange-soft);border-color:#d7a66d;color:var(--imagine-orange-text);font-weight:700}
+ol{padding:0;margin:0;list-style:none;display:grid;gap:10px}
+li{border:1px solid var(--imagine-border);border-radius:9px;padding:14px;display:grid;gap:6px;min-width:0}
+li strong{font-size:15px;overflow-wrap:anywhere}
+li .reason{font-size:12px;color:var(--imagine-orange-text);font-weight:750}
+li p{margin:0;color:#555;font-size:13px;overflow-wrap:anywhere}
+.pager{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:9px;margin-top:18px}
+.pager button{min-width:105px}
+#page-info{color:#555;font-size:13px;font-weight:700}
+#result-summary{font-size:13px;color:#555;margin-bottom:13px}
+.empty{padding:25px;border:1px dashed #bbb;border-radius:9px;color:#555}
+footer{font-size:12px;color:#626262;margin-top:22px;line-height:1.6}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.stat{padding:15px}}
+@media(max-width:400px){header{padding:15px 16px}.pager button{flex:1}.filters button{flex:1 1 140px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header><div class="brand"><img class="brand-logo" alt="Imagine" width="160" height="44" src="data:image/png;base64,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"><span>CRM</span></div><small>Laboratório isolado de revisão</small></header>
+<main id="conteudo">
+  <p class="eyebrow">F3-197 · revisão sem mesclagem</p>
+  <h1>Possíveis duplicidades — prévia de revisão</h1>
+  <p class="lead">Examine exemplos fictícios de reenvio e coincidência de contatos. A posição de cada par é ilustrativa, não identifica nenhuma pessoa ou cliente.</p>
+  <aside class="notice" role="note">PROTÓTIPO — DADOS FICTÍCIOS. Nenhuma conta é acessada. Revisar um alerta não autoriza mesclar, importar, confirmar entrega ou salvar.</aside>
+  <section class="grid" aria-label="Resumo fictício">
+    <div class="stat"><b id="total-pairs">0</b><span>comparações sintéticas</span></div>
+    <div class="stat"><b id="priority-pairs">0</b><span>revisões de maior prioridade</span></div>
+    <div class="stat"><b id="filtered-pairs">0</b><span>comparações no filtro</span></div>
+  </section>
+  <section class="panel" aria-label="Fila de revisão fictícia">
+    <h2>Fila por prioridade</h2>
+    <div class="filters" role="group" aria-label="Filtrar comparações fictícias">
+      <button type="button" data-reason="all" aria-pressed="true">Todas</button>
+      <button type="button" data-reason="CONFLICTING_RETRY_CLAIM" aria-pressed="false">Envio contraditório</button>
+      <button type="button" data-reason="POSSIBLE_PERSON_MATCH" aria-pressed="false">Possível coincidência</button>
+      <button type="button" data-reason="RETRY_CLAIM_UNVERIFIED" aria-pressed="false">Reenvio não verificado</button>
+      <button type="button" data-reason="INSUFFICIENT_EVIDENCE" aria-pressed="false">Evidência insuficiente</button>
+    </div>
+    <p id="result-summary" role="status" aria-live="polite"></p>
+    <ol id="review-items" aria-label="Comparações em análise"></ol>
+    <p id="empty-state" class="empty" hidden>Nenhum exemplo fictício corresponde ao filtro.</p>
+    <div class="pager">
+      <button id="page-previous" type="button" disabled>Anterior</button>
+      <span id="page-info" aria-live="polite"></span>
+      <button id="page-next" type="button">Próxima</button>
+    </div>
+  </section>
+  <footer>Somente posições locais e códigos permitidos. Não há dados pessoais, credenciais, envio de informações, armazenamento ou integração com o CRM real. Páginas, filtros e prioridades são ilustrativos.</footer>
+</main>
+<script>
+(function(){
+'use strict';
+// Mirror only the closed, invented F3-195 pair evidence contract; no PII.
+const PAIRS=Object.freeze([
+ {left:0,right:1,submission_relation:'same',email_relation:'unavailable',phone_relation:'unavailable'},
+ {left:0,right:2,submission_relation:'different',email_relation:'same',phone_relation:'unavailable'},
+ {left:1,right:2,submission_relation:'same',email_relation:'different',phone_relation:'unavailable'},
+ {left:1,right:3,submission_relation:'different',email_relation:'different',phone_relation:'different'},
+ {left:2,right:4,submission_relation:'different',email_relation:'unavailable',phone_relation:'same'},
+ {left:2,right:3,submission_relation:'same',email_relation:'same',phone_relation:'different'},
+ {left:3,right:4,submission_relation:'same',email_relation:'unavailable',phone_relation:'unavailable'},
+ {left:3,right:5,submission_relation:'different',email_relation:'unavailable',phone_relation:'unavailable'}
+]);
+const ORDER=Object.freeze({CONFLICTING_RETRY_CLAIM:0,POSSIBLE_PERSON_MATCH:1,RETRY_CLAIM_UNVERIFIED:2,INSUFFICIENT_EVIDENCE:3});
+const LABELS=Object.freeze({
+ CONFLICTING_RETRY_CLAIM:'Envio declarado com contato divergente',
+ POSSIBLE_PERSON_MATCH:'Possível coincidência de pessoa',
+ RETRY_CLAIM_UNVERIFIED:'Reenvio lógico declarado, não verificado',
+ INSUFFICIENT_EVIDENCE:'Evidência insuficiente'
+});
+function classification(p){
+ if(p.submission_relation==='same'){
+  return p.email_relation==='different'||p.phone_relation==='different'?
+   'CONFLICTING_RETRY_CLAIM':'RETRY_CLAIM_UNVERIFIED';
+ }
+ if(p.email_relation==='same'||p.phone_relation==='same')return 'POSSIBLE_PERSON_MATCH';
+ return 'INSUFFICIENT_EVIDENCE';
+}
+const sorted=PAIRS.map(function(p,index){return Object.freeze({position:index,left:p.left,right:p.right,code:classification(p)});})
+ .sort(function(a,b){return ORDER[a.code]-ORDER[b.code]||a.position-b.position;});
+const buttons=Array.from(document.querySelectorAll('[data-reason]'));
+const list=document.getElementById('review-items');
+const previous=document.getElementById('page-previous');
+const next=document.getElementById('page-next');
+const pageInfo=document.getElementById('page-info');
+const result=document.getElementById('result-summary');
+const empty=document.getElementById('empty-state');
+const filteredCount=document.getElementById('filtered-pairs');
+const PAGE_SIZE=3;
+let selected='all',page=0;
+document.getElementById('total-pairs').textContent=String(sorted.length);
+document.getElementById('priority-pairs').textContent=String(sorted.filter(p=>ORDER[p.code]<=1).length);
+function render(){
+ const scoped=sorted.filter(p=>selected==='all'||p.code===selected);
+ const pages=Math.ceil(scoped.length/PAGE_SIZE);
+ page=Math.max(0,Math.min(page,Math.max(0,pages-1)));
+ const visible=scoped.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);
+ buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.reason===selected)));
+ filteredCount.textContent=String(scoped.length);
+ result.textContent=String(scoped.length)+' comparações fictícias; nenhuma conclusão sobre identidade ou permissão.';
+ pageInfo.textContent=pages===0?'Página 0 de 0':'Página '+String(page+1)+' de '+String(pages);
+ previous.disabled=page===0;
+ next.disabled=pages===0||page>=pages-1;
+ list.replaceChildren();
+ empty.hidden=visible.length!==0;
+ visible.forEach(function(item){
+  const row=document.createElement('li');
+  const title=document.createElement('strong');
+  title.textContent='Exemplo '+String(item.left+1)+' e exemplo '+String(item.right+1);
+  const code=document.createElement('span');
+  code.className='reason';code.textContent=LABELS[item.code];
+  const note=document.createElement('p');
+  note.textContent='Posições fictícias; nenhum registro foi mesclado, confirmado ou alterado.';
+  row.append(title,code,note);list.appendChild(row);
+ });
+}
+buttons.forEach(b=>b.addEventListener('click',function(){selected=b.dataset.reason;page=0;render();}));
+previous.addEventListener('click',function(){if(page>0){page-=1;render();}});
+next.addEventListener('click',function(){if(!next.disabled){page+=1;render();}});
+render();
+})();
+</script>
+</body>
+</html>
