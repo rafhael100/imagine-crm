@@ -149,7 +149,7 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   <span class="shortcut-hint">Atalhos locais: Ctrl/Cmd+Z para desfazer; Ctrl/Cmd+Shift+Z ou Ctrl+Y para refazer. Na busca, os atalhos não são capturados.</span>
   </div>
   </div>
-  <p class="shortcut-hint">Arraste cartões fictícios entre as quatro etapas ou use os botões Etapa anterior/Próxima etapa para operar com teclado. Todas as movimentações podem ser desfeitas.</p>
+  <p class="shortcut-hint">Arraste cartões fictícios entre as quatro etapas. Ao arrastar um cartão selecionado, apenas os selecionados visíveis serão movidos em grupo. Use os botões Etapa anterior/Próxima etapa para teclado; todas as movimentações podem ser desfeitas.</p>
   <div class="board" id="board" aria-label="Funil fictício de quatro etapas">
   <section class="lane" data-drop-stage="0" aria-labelledby="lane-title-0"><div class="lane-header"><h2 id="lane-title-0">Entrada</h2><span id="lane-count-0" class="lane-count">0</span></div><p id="lane-value-0" class="lane-total">Valor fictício nesta etapa: R$ 0</p><p id="lane-detail-0" class="lane-detail">Alta: 0 · Pendentes: 0</p><div class="stack" id="lane-0"></div></section>
   <section class="lane" data-drop-stage="1" aria-labelledby="lane-title-1"><div class="lane-header"><h2 id="lane-title-1">Em contato</h2><span id="lane-count-1" class="lane-count">0</span></div><p id="lane-value-1" class="lane-total">Valor fictício nesta etapa: R$ 0</p><p id="lane-detail-1" class="lane-detail">Alta: 0 · Pendentes: 0</p><div class="stack" id="lane-1"></div></section>
@@ -487,7 +487,29 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   const item=opportunities.find(function(entry){return entry.id===id;});
   if(!item||!document.querySelector('[data-card-id="'+id+'"]'))return;
   event.preventDefault();
-  moveToStage(item,target);
+  if(selectedIds.has(id)){
+    // The dragged, selected card is the explicit intent for a group move.
+    // Intersect with DOM-visible cards: never move a hidden selected record.
+    const visible=new Set(Array.from(document.querySelectorAll('#board [data-card-id]'),
+      function(card){return card.dataset.cardId;}));
+    const group=opportunities.filter(function(entry){
+      return selectedIds.has(entry.id)&&visible.has(entry.id)&&entry.stage!==target;
+    });
+    if(group.length){
+      redoStack=[];
+      history.push({kind:'batch-move',states:group.map(function(entry){
+        return {id:entry.id,from:entry.stage};
+      })});
+      trimUndoHistory();
+      group.forEach(function(entry){entry.stage=target;});
+      moves++;
+      remember('Arrastar em grupo: '+group.length+' oportunidades fictícias visíveis.');
+      render('batch-move');
+      describe('Grupo fictício movido para '+STAGES[target]+'; reversível em uma ação.');
+    }
+  }else{
+    moveToStage(item,target);
+  }
   });
   byId('board').addEventListener('dragend',function(){
   dragId=null;
