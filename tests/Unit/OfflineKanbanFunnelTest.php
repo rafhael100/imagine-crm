@@ -460,6 +460,11 @@ final class OfflineKanbanFunnelTest extends TestCase
         self::assertSame(3, substr_count($html, '&& matchesSearch(item)'));
         self::assertSame(2, substr_count($html, "byId('fiction-search').value='';"));
         self::assertStringContainsString('input[type=search]:focus-visible', $html);
+        self::assertStringContainsString('id="count-visible" aria-live="polite" aria-atomic="true"', $html);
+        self::assertStringContainsString("this.value=this.value.slice(0,32);", $html);
+        self::assertStringContainsString("byId('fiction-search').addEventListener('keydown'", $html);
+        self::assertStringContainsString("event.key!=='Escape'", $html);
+        self::assertStringContainsString("describe('Busca local limpa;", $html);
         foreach (['<form', '<textarea', 'fetch(', 'localStorage', 'sessionStorage',
             'document.cookie', 'XMLHttpRequest', 'navigator.sendBeacon', '.innerHTML',
             'download=', 'createObjectURL', 'new URL('] as $forbidden) {
