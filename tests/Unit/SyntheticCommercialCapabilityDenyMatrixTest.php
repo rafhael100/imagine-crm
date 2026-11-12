@@ -544,6 +544,8 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         );
         self::assertSame(0, $reports['priority_scoring_capacity_denied']['planned_count']);
         self::assertFalse($reports['priority_scoring_capacity_denied']['can_assign']);
+        self::assertFalse($reports['priority_scoring_capacity_denied']['concurrency_verified']);
+        self::assertFalse($reports['priority_scoring_capacity_denied']['agent_identity_verified']);
         self::assertSame(
             ['fictional_lead_capacity_shortfall', 'cross_module_authorization_unverified'],
             $reports['sales_triage_queue_denied']['warning_codes'],
@@ -551,6 +553,8 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         self::assertSame([], $reports['sales_triage_queue_denied']['task_priority_positions']);
         self::assertFalse($reports['sales_triage_queue_denied']['can_read_customers']);
         self::assertFalse($reports['sales_triage_queue_denied']['can_notify']);
+        self::assertFalse($reports['sales_triage_queue_denied']['source_history_verified']);
+        self::assertFalse($reports['sales_triage_queue_denied']['assignment_policy_verified']);
         self::assertSame('second_marker_elapsed', $reports['delinquency_day_thirty']['phase']);
         self::assertFalse($reports['delinquency_day_thirty']['can_suspend_service']);
     }
