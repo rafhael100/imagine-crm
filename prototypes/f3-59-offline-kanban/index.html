@@ -679,6 +679,8 @@ footer{max-width:1370px;margin:auto;color:#657a89;font-size:.78rem;padding:0 28p
   history=[];
   redoStack=[];
   selectedIds.clear();
+  dragId=null;
+  document.querySelectorAll('.lane[data-drag-over]').forEach(function(el){delete el.dataset.dragOver;});
   moves=0;
   priority='all';
   followupFilter='all';
