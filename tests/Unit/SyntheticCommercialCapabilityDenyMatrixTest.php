@@ -11,6 +11,8 @@ use App\Core\Activities\SyntheticTaskPortfolioInspector;
 use App\Core\Leads\SyntheticLeadRoundRobinPreview;
 use App\Core\Leads\SyntheticLeadRuleScorePreview;
 use App\Core\Leads\SyntheticLeadPriorityCapacityBatchPreview;
+use App\Core\Leads\SyntheticLeadCapacityScenarioCompare;
+use App\Core\Leads\SyntheticLeadCapacityOptionsInspector;
 use App\Core\Leads\SyntheticScoreTrendPreview;
 use App\Core\Plans\SyntheticCancellationRetentionTimeline;
 use App\Core\Plans\SyntheticDelinquencyReviewTimeline;
@@ -21,6 +23,7 @@ use App\Core\Sales\SyntheticCommercialJourneyInspector;
 use App\Core\Sales\SyntheticCommercialWorkloadInspector;
 use App\Core\Sales\SyntheticCommercialWorkloadTrendReview;
 use App\Core\Sales\SyntheticSalesTriageWorkQueueInspector;
+use App\Core\Sales\SyntheticSalesQueueCapacityPlanningInspector;
 use App\Core\Sales\SyntheticSalesAggregatePrivacyPreview;
 use App\Core\Sales\SyntheticStageAggregateCsvPreview;
 use App\Core\Sales\SyntheticReportDifferencingRiskInspector;
@@ -361,6 +364,20 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
                     'task_histories' => [],
                     'observed_at_utc' => '2026-11-10T12:00:00Z',
                 ]),
+            'capacity_scenario_deny' =>
+                (new SyntheticLeadCapacityScenarioCompare())->compare(
+                    self::priorityBatch(), [1],
+                ),
+            'capacity_option_selection_deny' =>
+                (new SyntheticLeadCapacityOptionsInspector())->inspect(
+                    self::priorityBatch(), [[0], [1]],
+                ),
+            'work_queue_capacity_planning_deny' =>
+                (new SyntheticSalesQueueCapacityPlanningInspector())->inspect([
+                    'lead_batch' => self::priorityBatch(),
+                    'task_histories' => [],
+                    'observed_at_utc' => '2026-11-10T12:00:00Z',
+                ], [1]),
             'trial_review_window' => (new SyntheticTrialRetentionTimeline(
                 new TrialWindowAdvisory(2000000, 2000000 + 14 * 86400),
             ))->readout(),
@@ -404,10 +421,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             ->inspect($cases[0]['input']);
     }
 
-    public function test_all_thirty_four_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_thirty_seven_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(34, $reports);
+        self::assertCount(37, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -555,6 +572,14 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         self::assertFalse($reports['sales_triage_queue_denied']['can_notify']);
         self::assertFalse($reports['sales_triage_queue_denied']['source_history_verified']);
         self::assertFalse($reports['sales_triage_queue_denied']['assignment_policy_verified']);
+        self::assertSame(1, $reports['capacity_scenario_deny']['scenario_planned_count']);
+        self::assertSame(0, $reports['capacity_scenario_deny']['scenario_waiting_count']);
+        self::assertFalse($reports['capacity_scenario_deny']['can_reassign']);
+        self::assertSame(1, $reports['capacity_option_selection_deny']['lowest_extra_slots_clearing_candidate_position']);
+        self::assertFalse($reports['capacity_option_selection_deny']['can_hire']);
+        self::assertSame(1, $reports['work_queue_capacity_planning_deny']['scenario_leads_planned']);
+        self::assertSame(0, $reports['work_queue_capacity_planning_deny']['fictional_tasks_reviewed']);
+        self::assertFalse($reports['work_queue_capacity_planning_deny']['can_reschedule_task']);
         self::assertSame('second_marker_elapsed', $reports['delinquency_day_thirty']['phase']);
         self::assertFalse($reports['delinquency_day_thirty']['can_suspend_service']);
     }
@@ -596,6 +621,9 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticCommercialWorkloadTrendReview',
             'SyntheticLeadPriorityCapacityBatchPreview',
             'SyntheticSalesTriageWorkQueueInspector',
+            'SyntheticLeadCapacityScenarioCompare',
+            'SyntheticLeadCapacityOptionsInspector',
+            'SyntheticSalesQueueCapacityPlanningInspector',
         ] as $class) {
             self::assertStringNotContainsString($class, $routes);
         }
