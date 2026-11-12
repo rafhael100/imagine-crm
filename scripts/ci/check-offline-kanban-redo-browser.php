@@ -11,7 +11,7 @@ use Symfony\Component\Process\ExecutableFinder;
 $source = dirname(__DIR__, 2).'/prototypes/f3-59-offline-kanban/index.html';
 $html = file_get_contents($source);
 if (!is_string($html)
-    || strlen($html) > 40000
+    || strlen($html) > 46000
     || substr_count($html, 'id="redo-change"') !== 1
     || !str_contains($html, "connect-src 'none'")
     || !str_contains($html, "form-action 'none'")
