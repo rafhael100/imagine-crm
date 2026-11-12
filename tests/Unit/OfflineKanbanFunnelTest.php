@@ -423,11 +423,42 @@ final class OfflineKanbanFunnelTest extends TestCase
             self::assertStringContainsString($contract, $html);
         }
         self::assertSame(5, substr_count($html, 'history.push('));
-        self::assertSame(5, substr_count($html, 'trimUndoHistory();'));
+        self::assertSame(6, substr_count($html, 'trimUndoHistory();'));
         self::assertStringContainsString("connect-src 'none'", $html);
         self::assertStringNotContainsString('localStorage', $html);
         self::assertStringNotContainsString('sessionStorage', $html);
         self::assertStringNotContainsString('fetch(', $html);
+    }
+
+    public function test_redo_is_bounded_in_memory_and_invalidated_by_every_new_mutation(): void
+    {
+        $html = self::html();
+        foreach ([
+            'id="redo-change" disabled>Refazer ação',
+            "let redoStack=[];",
+            'function recordRedo(entry){',
+            'if(redoStack.length>MAX_UNDO_ACTIONS)redoStack.splice(0,redoStack.length-MAX_UNDO_ACTIONS);',
+            "byId('redo-change').disabled=redoStack.length===0;",
+            "byId('redo-change').addEventListener('click'",
+            "recordRedo({kind:'batch-move',undo:previous,states:previous.states.map(",
+            "recordRedo({kind:'batch-followup',undo:previous,states:previous.states.map(",
+            "kind:previous.kind,undo:previous,",
+            "history[history.length]=forward.undo;",
+            "if(forward.kind==='move')item.stage=forward.after;",
+            "if(forward.kind==='add'){",
+            "opportunities.push(Object.assign({},forward.after));",
+            "focus==='redo'?",
+        ] as $contract) {
+            self::assertStringContainsString($contract, $html);
+        }
+        self::assertSame(7, substr_count($html, 'redoStack=[];'));
+        self::assertSame(5, substr_count($html, 'history.push('));
+        self::assertSame(6, substr_count($html, 'trimUndoHistory();'));
+        self::assertStringContainsString("connect-src 'none'", $html);
+        foreach (['localStorage', 'sessionStorage', 'fetch(', 'navigator.sendBeacon',
+            'WebSocket', '<form', 'indexedDB', '.innerHTML'] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, self::withoutApprovedSearchInput($html));
+        }
     }
 
     public function test_accessible_actions_and_mobile_layout_are_present(): void
