@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'; img-src 'none'; font-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Imagine CRM — Ganhas e perdidas fictícias</title>
+<style>
+:root{font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:#f4f8fa;color:#173849}
+*{box-sizing:border-box}body{margin:0;min-width:0}a{color:#0b6876}a:focus-visible,button:focus-visible{outline:3px solid #0da18e;outline-offset:3px}
+.skip{position:absolute;top:-5rem;left:1rem;background:white;padding:12px}.skip:focus{top:1rem}
+header{background:#1b3c54;color:white;padding:18px clamp(16px,4vw,44px);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}header a{color:#e1f9f2}
+main{max-width:1050px;margin:auto;padding:clamp(18px,3vw,35px)}h1{font-size:clamp(1.7rem,4vw,2.5rem);line-height:1.15;margin:5px 0}h2{font-size:1.16rem;margin:0 0 12px}
+.kicker{font-size:.77rem;color:#137b74;letter-spacing:.12em;font-weight:800;text-transform:uppercase}.lead{max-width:830px;color:#566f7d}
+.notice{background:#e9f6f1;color:#245e54;border:1px solid #b2d9cd;border-radius:12px;font-weight:700;padding:14px 16px;margin:17px 0}
+.card{background:white;border:1px solid #d7e7ec;border-radius:15px;padding:clamp(16px,2.5vw,24px);margin:18px 0}
+.controls{display:flex;gap:9px;flex-wrap:wrap}button{font:inherit;font-weight:690;cursor:pointer;border:1px solid #a9c9d0;border-radius:10px;background:#f6fbfc;color:#20566a;padding:10px 14px}button[aria-pressed="true"]{background:#185266;border-color:#185266;color:white}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.stat{background:#f7fafb;border:1px solid #d9e7ec;border-radius:11px;padding:13px;min-width:0}.stat span{display:block;font-size:.78rem;color:#577280}.stat strong{display:block;font-size:clamp(1.1rem,2.4vw,1.65rem);font-variant-numeric:tabular-nums}
+.table-wrap{max-width:100%;overflow-x:auto}table{min-width:430px;width:100%;border-collapse:collapse;text-align:left}th,td{border-bottom:1px solid #e4ecef;padding:10px 12px;font-size:.89rem}thead{background:#f0f6f8}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.state{background:#eef7f8;border:1px solid #c1dce0;border-radius:9px;padding:12px 14px;color:#22586b;font-weight:710}
+.small{color:#5c7380;font-size:.85rem}footer{max-width:1050px;padding:0 24px 34px;margin:auto;color:#6a7e88;font-size:.82rem}
+@media(max-width:750px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:390px){main{padding:16px 12px}.card{padding:14px}.metrics{grid-template-columns:minmax(0,1fr)}.controls{display:grid;grid-template-columns:minmax(0,1fr)}.controls button{width:100%}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header><strong>imagine CRM · Laboratório comercial</strong><a href="../index.html">Voltar ao laboratório</a></header>
+<main id="conteudo">
+  <p class="kicker">Funil · Resultados e motivos</p>
+  <h1>Oportunidades ganhas e perdidas</h1>
+  <p class="lead">Explore contagens de resultados inventados. A regra de demonstração exige motivo estruturado quando uma oportunidade é marcada como perdida. Nenhum resultado é validado no CRM real.</p>
+  <div class="notice" role="note">PROTÓTIPO — DADOS FICTÍCIOS. Ganhos apresentados são somente alegações inventadas; nenhuma venda, meta, receita ou perda real foi confirmada.</div>
+  <section class="card" aria-labelledby="cases-title">
+    <h2 id="cases-title">Selecione os resultados fictícios</h2>
+    <div class="controls" role="group" aria-label="Cenários de resultados de oportunidades">
+      <button type="button" data-case="mixed" aria-pressed="true">A · Resultados variados</button>
+      <button type="button" data-case="losses" aria-pressed="false">B · Motivos de perda</button>
+      <button type="button" data-case="wins" aria-pressed="false">C · Ganhos declarados</button>
+      <button type="button" data-case="empty" aria-pressed="false">D · Nenhum resultado</button>
+    </div>
+    <p class="small">A classificação de motivos é ilustrativa, não representa o dicionário nem a política de qualquer empresa.</p>
+  </section>
+  <section class="card" aria-labelledby="summary-title">
+    <h2 id="summary-title">Contagem de alegações, não de vendas comprovadas</h2>
+    <div class="metrics">
+      <div class="stat"><span>Registros inventados</span><strong id="total">—</strong></div>
+      <div class="stat"><span>Em aberto</span><strong id="open">—</strong></div>
+      <div class="stat"><span>Ganhos declarados</span><strong id="won">—</strong></div>
+      <div class="stat"><span>Perdas declaradas</span><strong id="lost">—</strong></div>
+    </div>
+    <p id="status" class="state" role="status" aria-live="polite" aria-atomic="true">Carregando dados fictícios.</p>
+    <p id="verified" class="small">Vendas reconhecidas: 0 · Resultados verificados: NÃO</p>
+  </section>
+  <section class="card" aria-labelledby="reasons-title">
+    <h2 id="reasons-title">Motivos estruturados de perda (códigos de laboratório)</h2>
+    <div class="two">
+      <div class="table-wrap">
+        <table><caption>Totais de cada motivo fictício</caption>
+        <thead><tr><th scope="col">Motivo ilustrativo</th><th scope="col">Quantidade</th></tr></thead>
+        <tbody id="reason-rows"></tbody></table>
+      </div>
+      <div>
+        <p class="small">Uma perda sem código de motivo é recusada pelo Core PHP. Códigos internos de demonstração: preço, prazo, concorrência, falta de resposta ou outro (sem texto livre).</p>
+        <p class="small">Ganhos declarados não comprovam pagamento, assinatura, atividade comercial ou autorização por tenant. Reabertura, alteração de etapa e histórico continuam indisponíveis.</p>
+      </div>
+    </div>
+  </section>
+  <section class="card" aria-labelledby="rights-title">
+    <h2 id="rights-title">Limites de autorização</h2>
+    <p id="rights" class="state">Marcar ganha: NÃO · Marcar perdida: NÃO · Reabrir: NÃO · Contar receita: NÃO · Gravar: NÃO</p>
+  </section>
+</main>
+<footer>Imagine CRM • Laboratório local, sem API, banco, cliente, pessoa ou confirmação comercial.</footer>
+<script>
+(function(){
+  'use strict';
+  const SCENARIOS=Object.freeze([
+    {"id":"mixed","records":[{"outcome":"open","loss_reason_code":null},{"outcome":"won","loss_reason_code":null},{"outcome":"lost","loss_reason_code":"price"},{"outcome":"lost","loss_reason_code":"competition"},{"outcome":"lost","loss_reason_code":"price"}],"expected":{"open":1,"won":1,"lost":3,"price":2,"timing":0,"competition":1,"no_response":0,"other":0}},
+    {"id":"losses","records":[{"outcome":"lost","loss_reason_code":"timing"},{"outcome":"lost","loss_reason_code":"no_response"},{"outcome":"lost","loss_reason_code":"other"}],"expected":{"open":0,"won":0,"lost":3,"price":0,"timing":1,"competition":0,"no_response":1,"other":1}},
+    {"id":"wins","records":[{"outcome":"won","loss_reason_code":null},{"outcome":"won","loss_reason_code":null}],"expected":{"open":0,"won":2,"lost":0,"price":0,"timing":0,"competition":0,"no_response":0,"other":0}},
+    {"id":"empty","records":[],"expected":{"open":0,"won":0,"lost":0,"price":0,"timing":0,"competition":0,"no_response":0,"other":0}}
+  ]);
+  const REASONS=Object.freeze({price:'Preço',timing:'Prazo',competition:'Concorrência',no_response:'Sem resposta',other:'Outro (sem texto)'});
+  const get=id=>document.getElementById(id),put=(id,value)=>{get(id).textContent=String(value);};
+  function inspect(records){
+    const result={open:0,won:0,lost:0,price:0,timing:0,competition:0,no_response:0,other:0};
+    records.forEach(record=>{
+      if(!['open','won','lost'].includes(record.outcome))throw new Error('Resultado não reconhecido');
+      if(record.outcome==='lost'){
+        if(!Object.hasOwn(REASONS,record.loss_reason_code))throw new Error('Motivo obrigatório');
+        result[record.loss_reason_code]++;
+      }else if(record.loss_reason_code!==null)throw new Error('Motivo contraditório');
+      result[record.outcome]++;
+    });
+    return result;
+  }
+  function show(id){
+    const scenario=SCENARIOS.find(x=>x.id===id);if(!scenario)throw new Error('Cenário inválido');
+    const result=inspect(scenario.records);
+    if(JSON.stringify(result)!==JSON.stringify(scenario.expected))throw new Error('Contagem incompatível');
+    put('total',scenario.records.length);put('open',result.open);put('won',result.won);put('lost',result.lost);
+    const table=get('reason-rows');table.replaceChildren();
+    Object.keys(REASONS).forEach(reason=>{
+      const tr=document.createElement('tr'),name=document.createElement('td'),count=document.createElement('td');
+      name.textContent=REASONS[reason];count.textContent=String(result[reason]);
+      tr.append(name,count);table.appendChild(tr);
+    });
+    put('status','Cenário '+id+' · Nenhum resultado, venda ou histórico foi verificado.');
+    put('verified','Vendas reconhecidas: 0 · Resultados verificados: NÃO');
+    put('rights','Marcar ganha: NÃO · Marcar perdida: NÃO · Reabrir: NÃO · Contar receita: NÃO · Gravar: NÃO');
+    document.querySelectorAll('[data-case]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.case===id)));
+  }
+  document.querySelectorAll('[data-case]').forEach(button=>button.addEventListener('click',()=>show(button.dataset.case)));
+  show('mixed');
+})();
+</script>
+</body>
+</html>
