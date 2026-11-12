@@ -16,6 +16,12 @@ final readonly class DatabaseSessionAuthority implements SessionAuthority
 {
     public function __construct(public Connection $db, private Session $session, private ?IamOperationContext $operation = null, private ?IamAudit $audit = null) {}
 
+    /** A static identifier, never derived from an HTTP request or tenant claim. */
+    public function tableName(string $table): string
+    {
+        return IamRegistryTable::name($this->db, $table);
+    }
+
     public function transaction(Closure $operation): mixed
     {
         if (!config('identity.experimental') || !app()->environment('local', 'testing')
@@ -26,7 +32,7 @@ final readonly class DatabaseSessionAuthority implements SessionAuthority
             $role = $this->db->selectOne("SELECT r.rolsuper, r.rolbypassrls,
                 pg_has_role(current_user, c.relowner, 'MEMBER') AS owns_table
                 FROM pg_roles r CROSS JOIN pg_class c
-                WHERE r.rolname = current_user AND c.oid = 'crm_auth_credentials'::regclass");
+                WHERE r.rolname = current_user AND c.oid = 'public.crm_auth_credentials'::regclass");
             if (!$role || $role->rolsuper || $role->rolbypassrls || $role->owns_table) {
                 throw new LogicException('Unsafe IAM runtime role.');
             }
@@ -60,7 +66,7 @@ final readonly class DatabaseSessionAuthority implements SessionAuthority
 
     private function lockedCurrent(string $identityId, bool $recent = false): stdClass
     {
-        $credential = $this->db->table('crm_auth_credentials')->where('identity_id', $identityId)->lockForUpdate()->first();
+        $credential = $this->db->table($this->tableName('crm_auth_credentials'))->where('identity_id', $identityId)->lockForUpdate()->first();
         $row = $this->sessionRow('crm.auth.token');
         $now = now()->getTimestamp();
         if ($credential && $row && $row->identity_id === $identityId
@@ -77,7 +83,7 @@ final readonly class DatabaseSessionAuthority implements SessionAuthority
             || ($recent && (int) $row->mfa_verified_at + config('identity.step_up_seconds') <= $now)) {
             throw new AuthenticationException('CRM authentication required.');
         }
-        $this->db->table('crm_auth_sessions')->where('id', $row->id)->update([
+        $this->db->table($this->tableName('crm_auth_sessions'))->where('id', $row->id)->update([
             'last_seen_at' => $now,
             'expires_at' => min($now + config('identity.idle_seconds'), (int) $row->absolute_expires_at),
         ]);
@@ -106,7 +112,7 @@ final readonly class DatabaseSessionAuthority implements SessionAuthority
             return null;
         }
 
-        return $this->db->table('crm_auth_sessions')->where('token_hash', hash('sha256', $token))->lockForUpdate()->first();
+        return $this->db->table($this->tableName('crm_auth_sessions'))->where('token_hash', hash('sha256', $token))->lockForUpdate()->first();
     }
 
     public function validCredential(stdClass $credential): bool
@@ -120,7 +126,7 @@ final readonly class DatabaseSessionAuthority implements SessionAuthority
     public function usable(stdClass $row): bool
     {
         if ($row->security_hold !== null && $row->security_hold !== $this->operation?->id) { return false; }
-        return $row->operation_id === null || $this->db->table('crm_auth_operations')
+        return $row->operation_id === null || $this->db->table($this->tableName('crm_auth_operations'))
             ->where('id', $row->operation_id)->where('state', 'completed')->exists();
     }
 }
