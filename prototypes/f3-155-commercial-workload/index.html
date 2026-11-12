@@ -21,10 +21,10 @@ h1{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.15;margin:8px 0}
 .radio{position:absolute;opacity:0;width:1px;height:1px}
 .tabs{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
 .tabs label{cursor:pointer;background:white;border:1px solid #aac3cd;padding:12px 17px;border-radius:11px;font-weight:750}
-.radio:focus-visible + .tabs label{outline:3px solid #078d84;outline-offset:4px}
-#pressure:checked~.tabs label[for=pressure],#balanced:checked~.tabs label[for=balanced],#trend:checked~.tabs label[for=trend]{background:#155c69;color:#fff}
+#pressure:focus-visible~.tabs label[for=pressure],#balanced:focus-visible~.tabs label[for=balanced],#trend:focus-visible~.tabs label[for=trend],#triage:focus-visible~.tabs label[for=triage]{outline:3px solid #078d84;outline-offset:4px}
+#pressure:checked~.tabs label[for=pressure],#balanced:checked~.tabs label[for=balanced],#trend:checked~.tabs label[for=trend],#triage:checked~.tabs label[for=triage]{background:#155c69;color:#fff}
 .panel{display:none}
-#pressure:checked~.panels .pressure,#balanced:checked~.panels .balanced,#trend:checked~.panels .trend{display:block}
+#pressure:checked~.panels .pressure,#balanced:checked~.panels .balanced,#trend:checked~.panels .trend,#triage:checked~.panels .triage{display:block}
 .card{background:#fff;border-radius:16px;border:1px solid #dce8ed;padding:clamp(16px,3vw,25px);margin:16px 0}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
 .metric{background:#f4f9fb;border:1px solid #d9e8ef;border-radius:12px;padding:14px}
@@ -48,16 +48,18 @@ footer{max-width:1130px;padding:0 20px 34px;margin:auto;color:#657b88;font-size:
 <main>
 <p class="eyebrow">Planejamento comercial · Dados inventados</p>
 <h1>Capacidade e pendências em uma visão</h1>
-<p class="sub">Demonstração offline dos contratos PHP F3-152 e F3-153. Compare a necessidade de redistribuição fictícia com tarefas de acompanhamento. Não há nenhuma ligação com pessoas, vendedores ou clientes reais.</p>
+<p class="sub">Demonstração offline dos contratos PHP F3-152, F3-153, F3-159 e F3-160. Compare a necessidade de redistribuição fictícia com tarefas de acompanhamento. Não há nenhuma ligação com pessoas, vendedores ou clientes reais.</p>
 <aside class="notice">PROTÓTIPO — DADOS FICTÍCIOS. Nenhuma tarefa, lead ou atribuição é criada. Não existe login, rede, banco de dados, notificação nem persistência.</aside>
 <section aria-label="Comparar cenários da carga comercial">
 <input class="radio" type="radio" id="pressure" name="case" checked>
 <input class="radio" type="radio" id="balanced" name="case">
 <input class="radio" type="radio" id="trend" name="case">
+<input class="radio" type="radio" id="triage" name="case">
 <div class="tabs" role="group" aria-label="Cenários">
 <label for="pressure">Capacidade insuficiente</label>
 <label for="balanced">Capacidade ilustrativamente disponível</label>
 <label for="trend">Evolução da carga de trabalho</label>
+<label for="triage">Triagem por score e tarefas</label>
 </div>
 <div class="panels">
 <article class="panel pressure card" aria-label="Cenário com excesso de pendências">
@@ -106,6 +108,34 @@ footer{max-width:1130px;padding:0 20px 34px;margin:auto;color:#657b88;font-size:
 <section><h3>Códigos de revisão</h3><ul><li><code>capacity_shortfall_reduced_claim</code></li><li><code>overdue_backlog_reduced_claim</code></li><li><code>snapshot_cohort_and_identity_unverified</code></li></ul></section>
 </div>
 <p class="alert safe">Melhora inventada não comprova que os mesmos usuários, leads ou tarefas foram observados; nenhuma ação real é liberada.</p>
+<p class="prohibition">Atribuir: bloqueado · Enviar aviso: bloqueado · Gravar: bloqueado</p>
+</article>
+<article class="panel triage card" aria-label="Exemplo de triagem comercial ordenada">
+<h2>Fila única de leads priorizados e tarefas</h2>
+<p>Com quatro leads inventados (três não atribuídos e um em atendimento), o scoring ordena as posições locais por prioridade. Dois vendedores fictícios têm uma vaga cada.</p>
+<div class="grid">
+<div class="metric"><span>Leads avaliados</span><strong>4</strong></div>
+<div class="metric"><span>Atribuições planejadas</span><strong>2</strong></div>
+<div class="metric"><span>Leads aguardando vaga</span><strong>1</strong></div>
+<div class="metric"><span>Tarefas avaliadas</span><strong>3</strong></div>
+</div>
+<div class="rows">
+<section><h3>Priorização ilustrativa</h3><ul>
+<li>Ordem por score: posição 2, posição 1, posição 3</li>
+<li>Vagas locais planejadas: posições 2 e 1</li>
+<li>Posição 3 aguarda capacidade</li>
+<li>Lead já em atendimento não é redistribuído</li>
+</ul></section>
+<section><h3>Fila de tarefas fictícias</h3><ul>
+<li>Prioridade dos prazos: posição 1, posição 3, posição 2</li>
+<li>1 tarefa vencida e 1 vencendo agora</li>
+<li><code>fictional_lead_capacity_shortfall</code></li>
+<li><code>fictional_task_backlog_overdue</code></li>
+<li><code>fictional_task_due_now</code></li>
+<li><code>cross_module_authorization_unverified</code></li>
+</ul></section>
+</div>
+<p class="alert">As posições são apenas índices de exemplos, não identificadores de clientes ou funcionários. Score e prazos fictícios não comprovam autorização.</p>
 <p class="prohibition">Atribuir: bloqueado · Enviar aviso: bloqueado · Gravar: bloqueado</p>
 </article>
 </div>
