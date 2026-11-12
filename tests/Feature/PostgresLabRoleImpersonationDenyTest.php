@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 /**
  * SEGDBA-03: behavioral negative proof that five low-privilege CI roles
- * cannot assume an elevated PostgreSQL identity using SQL session commands.
+ * cannot assume elevated PostgreSQL identity or disable replication-trigger checks.
  *
  * Only the isolated GitHub PG16 lab is eligible. Commands are attempted
  * within transactions and rolled back, never touching objects, privileges,
@@ -28,6 +28,7 @@ final class PostgresLabRoleImpersonationDenyTest extends TestCase
         'SET ROLE pg_read_all_data',
         'SET ROLE pg_write_all_data',
         'SET SESSION AUTHORIZATION postgres',
+        'SET session_replication_role = replica',
     ];
 
     protected function setUp(): void
@@ -90,11 +91,14 @@ final class PostgresLabRoleImpersonationDenyTest extends TestCase
                     $after = $connection->selectOne(
                         "SELECT current_user AS effective_user,
                                 session_user AS login_user,
-                                current_setting('app.tenant_id', true) AS tenant_claim"
+                                current_setting('app.tenant_id', true) AS tenant_claim,
+                                current_setting('session_replication_role') AS replication_role"
                     );
                     self::assertSame($role, $after->effective_user);
                     self::assertSame($role, $after->login_user);
                     self::assertContains($after->tenant_claim, [null, '']);
+                    self::assertSame('origin', $after->replication_role,
+                        'An unprivileged CI role must never suppress triggers or FK checks.');
                     self::assertSame(0, $connection->transactionLevel());
                     ++$attempts;
                 }
@@ -103,6 +107,6 @@ final class PostgresLabRoleImpersonationDenyTest extends TestCase
             }
         }
 
-        self::assertSame(20, $attempts);
+        self::assertSame(25, $attempts);
     }
 }
