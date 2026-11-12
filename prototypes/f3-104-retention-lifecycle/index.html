@@ -35,7 +35,7 @@ button[aria-pressed="true"]{background:#184d5f;border-color:#184d5f;color:white}
 <main id="conteudo">
   <p class="kicker">Assinatura · Simulação offline</p>
   <h1>Trial, encerramento e revisão de dados</h1>
-  <p class="lead">Compare os limites de uma janela ilustrativa de 14 dias de teste, 60 dias pós-trial e 120 dias pós-cancelamento. Os relógios abaixo são datas fixas de exemplo, não datas atuais ou contratuais.</p>
+  <p class="lead">Compare os limites de uma janela ilustrativa de 14 dias de teste, 60 dias pós-trial, 120 dias pós-cancelamento e dois marcos de revisão de vencimento (7 e 30 dias). Os relógios abaixo são datas fixas de exemplo, não datas atuais ou contratuais.</p>
   <div class="notice" role="note">PROTÓTIPO — DADOS FICTÍCIOS. Nenhuma assinatura, CNPJ ou pessoa real foi consultada. Estes prazos não definem retenção legal e jamais autorizam cobrar, liberar acesso, excluir ou restaurar dados.</div>
   <section class="card" aria-labelledby="choose-title">
     <h2 id="choose-title">Escolha uma situação de laboratório</h2>
@@ -55,6 +55,16 @@ button[aria-pressed="true"]{background:#184d5f;border-color:#184d5f;color:white}
       <button type="button" data-case="cancel-final" aria-pressed="false">Último segundo</button>
       <button type="button" data-case="cancel-elapsed" aria-pressed="false">Janela encerrada</button>
     </div>
+    <p class="pill">Vencimento: marcos informativos de 7 e 30 dias</p>
+    <div class="controls" role="group" aria-label="Cenários fictícios de vencimento de cobrança">
+      <button type="button" data-case="billing-before" aria-pressed="false">Antes do vencimento</button>
+      <button type="button" data-case="billing-due" aria-pressed="false">No vencimento</button>
+      <button type="button" data-case="billing-first-final" aria-pressed="false">Segundo final antes de 7 dias</button>
+      <button type="button" data-case="billing-first" aria-pressed="false">Marco de 7 dias</button>
+      <button type="button" data-case="billing-second-final" aria-pressed="false">Segundo final antes de 30 dias</button>
+      <button type="button" data-case="billing-second" aria-pressed="false">Marco de 30 dias</button>
+      <button type="button" data-case="billing-elapsed" aria-pressed="false">Após 30 dias</button>
+    </div>
   </section>
   <section class="card" aria-labelledby="metrics-title">
     <h2 id="metrics-title">Linha do tempo do exemplo</h2>
@@ -71,10 +81,11 @@ button[aria-pressed="true"]{background:#184d5f;border-color:#184d5f;color:white}
     <dl class="two">
       <div class="row"><dt>Início informado do exemplo</dt><dd id="start-date">—</dd></div>
       <div class="row"><dt>Instante observado no exemplo</dt><dd id="observed-date">—</dd></div>
-      <div class="row"><dt>Fim da janela ilustrativa</dt><dd id="end-date">—</dd></div>
+      <div class="row"><dt>Fim da janela ilustrativa / marco de 30 dias</dt><dd id="end-date">—</dd></div>
+      <div class="row"><dt>Primeiro marco informativo (7 dias)</dt><dd id="first-marker-date">Não aplicável</dd></div>
       <div class="row"><dt>Regra de apresentação</dt><dd id="duration-rule">—</dd></div>
     </dl>
-    <p class="small">Dia = 86.400 segundos UTC. A janela de 60 dias começa após 14 dias de trial; a de 120 dias começa no instante informado de cancelamento. Nenhuma dessas regras decide exclusão por LGPD.</p>
+    <p class="small">Dia = 86.400 segundos UTC. A janela de 60 dias começa após 14 dias de trial; a de 120 dias começa no instante informado de cancelamento. Os marcos de 7/30 dias usam vencimento fictício e não comprovam falta de pagamento. Nenhuma dessas regras decide exclusão por LGPD.</p>
   </section>
   <section class="card" aria-labelledby="gates-title">
     <h2 id="gates-title">Permissões operacionais</h2>
@@ -96,28 +107,38 @@ button[aria-pressed="true"]{background:#184d5f;border-color:#184d5f;color:white}
     {"id":"cancel-before","kind":"cancel","start":1793880000,"now":1793879999,"phase":"before_cancellation","ends_at":1804248000,"remaining_seconds":10368000,"days":120},
     {"id":"cancel-review","kind":"cancel","start":1793880000,"now":1793880000,"phase":"within_review_window","ends_at":1804248000,"remaining_seconds":10368000,"days":120},
     {"id":"cancel-final","kind":"cancel","start":1793880000,"now":1804247999,"phase":"within_review_window","ends_at":1804248000,"remaining_seconds":1,"days":1},
-    {"id":"cancel-elapsed","kind":"cancel","start":1793880000,"now":1804248000,"phase":"review_window_elapsed","ends_at":1804248000,"remaining_seconds":0,"days":0}
+    {"id":"cancel-elapsed","kind":"cancel","start":1793880000,"now":1804248000,"phase":"review_window_elapsed","ends_at":1804248000,"remaining_seconds":0,"days":0},
+    {"id":"billing-before","kind":"billing","start":1794052800,"now":1794052799,"phase":"before_due","ends_at":1796644800,"remaining_seconds":604801,"days":8},
+    {"id":"billing-due","kind":"billing","start":1794052800,"now":1794052800,"phase":"before_first_marker","ends_at":1796644800,"remaining_seconds":604800,"days":7},
+    {"id":"billing-first-final","kind":"billing","start":1794052800,"now":1794657599,"phase":"before_first_marker","ends_at":1796644800,"remaining_seconds":1,"days":1},
+    {"id":"billing-first","kind":"billing","start":1794052800,"now":1794657600,"phase":"between_markers","ends_at":1796644800,"remaining_seconds":1987200,"days":23},
+    {"id":"billing-second-final","kind":"billing","start":1794052800,"now":1796644799,"phase":"between_markers","ends_at":1796644800,"remaining_seconds":1,"days":1},
+    {"id":"billing-second","kind":"billing","start":1794052800,"now":1796644800,"phase":"second_marker_elapsed","ends_at":1796644800,"remaining_seconds":0,"days":0},
+    {"id":"billing-elapsed","kind":"billing","start":1794052800,"now":1796644801,"phase":"second_marker_elapsed","ends_at":1796644800,"remaining_seconds":0,"days":0}
   ]);
   const LABELS=Object.freeze({
     before_review_window:"Antes da revisão",within_review_window:"Em revisão ilustrativa",
-    review_window_elapsed:"Janela ilustrativa encerrada",before_cancellation:"Antes do cancelamento"
+    review_window_elapsed:"Janela ilustrativa encerrada",before_cancellation:"Antes do cancelamento",
+    before_due:"Antes do vencimento",before_first_marker:"Antes de 7 dias",
+    between_markers:"Entre os marcos de 7 e 30 dias",second_marker_elapsed:"Marco de 30 dias alcançado"
   });
   const byId=id=>document.getElementById(id);
   const put=(id,value)=>{byId(id).textContent=String(value);};
   function show(id){
     const scenario=SCENARIOS.find(item=>item.id===id);
-    if(!scenario||!["trial","cancel"].includes(scenario.kind)||!Object.hasOwn(LABELS,scenario.phase))throw new Error('Cenário de laboratório inválido');
+    if(!scenario||!["trial","cancel","billing"].includes(scenario.kind)||!Object.hasOwn(LABELS,scenario.phase))throw new Error('Cenário de laboratório inválido');
     if(!Number.isSafeInteger(scenario.start)||!Number.isSafeInteger(scenario.now)||!Number.isSafeInteger(scenario.ends_at)
        ||!Number.isSafeInteger(scenario.remaining_seconds)||!Number.isSafeInteger(scenario.days)
        ||scenario.remaining_seconds<0||scenario.days<0)throw new Error('Relógio de laboratório inválido');
-    put('kind',scenario.kind==='trial'?'Trial':'Cancelamento');
+    put('kind',scenario.kind==='trial'?'Trial':scenario.kind==='cancel'?'Cancelamento':'Vencimento fictício');
     put('phase',LABELS[scenario.phase]);
     put('days',scenario.days);
     put('seconds',scenario.remaining_seconds);
     put('start-date',new Date(scenario.start*1000).toISOString());
     put('observed-date',new Date(scenario.now*1000).toISOString());
     put('end-date',new Date(scenario.ends_at*1000).toISOString());
-    put('duration-rule',scenario.kind==='trial'?'14 dias + 60 dias de revisão':'120 dias após cancelamento');
+    put('first-marker-date',scenario.kind==='billing'?new Date((scenario.start+604800)*1000).toISOString():'Não aplicável');
+    put('duration-rule',scenario.kind==='trial'?'14 dias + 60 dias de revisão':scenario.kind==='cancel'?'120 dias após cancelamento':'7/30 dias de revisão; sem cobrança ou bloqueio');
     put('status','Somente simulação fictícia · '+LABELS[scenario.phase]+'. Nenhuma ação operacional autorizada.');
     put('denials','Acesso: NÃO · Cobrança: NÃO · Exclusão: NÃO · Restauração: NÃO · Reativação: NÃO');
     document.querySelectorAll('[data-case]').forEach(button=>{
