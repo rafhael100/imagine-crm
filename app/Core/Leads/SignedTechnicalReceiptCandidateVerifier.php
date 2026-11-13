@@ -4,24 +4,19 @@ declare(strict_types=1);
 namespace App\Core\Leads;
 
 /**
- * Verifies a synthetic metadata-only receiver attestation.
- * MAC integrity is not proof of an operational CRM commit, live origin,
- * authenticated tenant, customer consent, delivery or go-live approval.
+ * A four-field MAC attestation bound to the EXPECTED local metadata frame.
+ * A receipt never echoes tenant/submission identifiers or contact content.
+ * Verification is only cryptographic consistency, NOT an operational CRM ACK.
  */
 final class SignedTechnicalReceiptCandidateVerifier
 {
     private const DOMAIN='imagine.crm.f362.synthetic-receipt.v1';
-    private const SCHEMA='imagine.crm.f362.synthetic-technical-receipt.v1';
     private const STATE='SYNTHETIC_COMMITTED_NO_REAL_LEAD';
     private const REFERENCES=[
         'organization_reference','binding_reference','submission_reference',
         'site_reference','form_reference','destination_reference'
     ];
-    private const RECEIPT_KEYS=[
-        'schema','organization_reference','binding_reference','submission_reference',
-        'site_reference','form_reference','destination_reference','state',
-        'issued_at','expires_at','nonce','mac'
-    ];
+    private const RECEIPT_KEYS=['issued_at','expires_at','nonce','mac'];
     private const FRAME_KEYS=[
         'protocol','schema_version','organization_reference','binding_reference',
         'submission_reference','site_reference','form_reference','destination_reference'
@@ -33,14 +28,11 @@ final class SignedTechnicalReceiptCandidateVerifier
             ||$expectedFrame['protocol']!=='imagine.lead-intake'
             ||$expectedFrame['schema_version']!==1
             ||array_keys($receipt)!==self::RECEIPT_KEYS
-            ||$receipt['schema']!==self::SCHEMA
-            ||$receipt['state']!==self::STATE
             ||strlen($receiptKey)<32||strlen($receiptKey)>128) {
             return self::denied('RECEIPT_CONTRACT_DENIED');
         }
-        foreach(self::REFERENCES as $name){
-            if(!self::uuid($expectedFrame[$name])||!self::uuid($receipt[$name])
-                ||!hash_equals($expectedFrame[$name],$receipt[$name])){
+        foreach(self::REFERENCES as $field){
+            if(!self::uuid($expectedFrame[$field])) {
                 return self::denied('RECEIPT_CONTEXT_DENIED');
             }
         }
@@ -55,16 +47,17 @@ final class SignedTechnicalReceiptCandidateVerifier
             ||!is_string($mac)||preg_match('/\A[a-f0-9]{64}\z/D',$mac)!==1) {
             return self::denied('RECEIPT_FRESHNESS_DENIED');
         }
-        if(!hash_equals(hash_hmac('sha256',self::canonical($receipt),$receiptKey),$mac)){
+        $expected=hash_hmac('sha256',self::canonical($expectedFrame,$receipt),$receiptKey);
+        if(!hash_equals($expected,$mac)){
             return self::denied('RECEIPT_MAC_DENIED');
         }
         return self::denied('SYNTHETIC_RECEIPT_INTEGRITY_ONLY');
     }
 
-    public static function canonical(array $receipt):string
+    public static function canonical(array $expectedFrame,array $receipt):string
     {
-        $fields=[self::DOMAIN,self::SCHEMA];
-        foreach(self::REFERENCES as $key)$fields[]=(string)$receipt[$key];
+        $fields=[self::DOMAIN];
+        foreach(self::REFERENCES as $field)$fields[]=(string)$expectedFrame[$field];
         $fields[]=self::STATE;
         foreach(['issued_at','expires_at','nonce'] as $field)$fields[]=(string)$receipt[$field];
         return implode("\n",$fields);
