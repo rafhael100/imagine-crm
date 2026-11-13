@@ -61,6 +61,7 @@ final class SyntheticRestoreReadinessInspectorTest extends TestCase
         self::assertSame(13, $out['declared_record_total']);
         self::assertSame('complete', $out['declared_package_kind']);
         self::assertSame([
+            'PORTABILITY_BACKUP_MANIFEST_NOT_VERIFIED',
             'MANIFEST_COMPLETE_PACKAGE_SCOPE_UNVERIFIED',
             'MANIFEST_DIGEST_BYTES_NOT_VERIFIED',
             'MANIFEST_ENCRYPTION_UNVERIFIED',
@@ -87,6 +88,7 @@ final class SyntheticRestoreReadinessInspectorTest extends TestCase
         self::assertSame([
             'EXISTING_TARGET_REQUIRES_CONFLICT_DECISIONS',
             'DUPLICATE_REVIEW_CANNOT_BE_AUTOMATED',
+            'PORTABILITY_BACKUP_MANIFEST_NOT_VERIFIED',
             'PORTABILITY_DUPLICATE_CONFLICT_REVIEW_REQUIRED',
             'PORTABILITY_TARGET_HAS_EXISTING_RECORDS',
             'MANIFEST_COMPLETE_PACKAGE_SCOPE_UNVERIFIED',
@@ -146,8 +148,12 @@ final class SyntheticRestoreReadinessInspectorTest extends TestCase
         foreach (['export_csv','export_xlsx','import_csv','import_xlsx','backup_complete'] as $operation) {
             $req = self::request($operation);
             $req['declared_package'] = $operation === 'backup_complete' ? 'complete' : 'table';
-            $this->expectException(InvalidArgumentException::class);
-            (new SyntheticRestoreReadinessInspector())->inspect($req, self::manifest());
+            try {
+                (new SyntheticRestoreReadinessInspector())->inspect($req, self::manifest());
+                self::fail('Non-restore action accepted: '.$operation);
+            } catch (InvalidArgumentException $e) {
+                self::assertSame('Revisao sintetica de restauracao invalida.', $e->getMessage());
+            }
         }
     }
 
