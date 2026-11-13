@@ -3,16 +3,19 @@ declare(strict_types=1);
 /** Disposable PHP HTTP router. NEVER register as a Laravel route. */
 require_once dirname(__DIR__,3).'/app/Core/Leads/SignedServiceHandoffBoundary.php';
 require_once dirname(__DIR__,3).'/app/Core/Leads/TrustedServiceBindingCandidateResolver.php';
+require_once dirname(__DIR__,3).'/app/Core/Leads/SignedTechnicalReceiptCandidateVerifier.php';
+require_once __DIR__.'/../F3_62/SyntheticTechnicalReceiptSigner.php';
 require_once __DIR__.'/../F3_55/SignedSyntheticReadback.php';
 use App\Core\Leads\SignedServiceHandoffBoundary;
 use App\Core\Leads\TrustedServiceBindingCandidateResolver;
+use Tests\Labs\F3_62\SyntheticTechnicalReceiptSigner;
 use Tests\Labs\F3_55\SignedSyntheticReadback;
-function reply(int $code,string $reason,bool $found=false):void {
+function reply(int $code,string $reason,bool $found=false,?array $technicalReceipt=null):void {
     http_response_code($code);
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store');
     header('X-Content-Type-Options: nosniff');
-    echo json_encode([
+    $response=[
         'schema'=>'imagine.crm.f356.synthetic-http.v1',
         'reasonCode'=>$reason,
         'syntheticMetadataLocated'=>$found,
@@ -21,7 +24,9 @@ function reply(int $code,string $reason,bool $found=false):void {
         'canAcknowledgeVisitor'=>false,
         'canAutoRetryUnknownOutcome'=>false,
         'canDeploy'=>false,
-    ],JSON_THROW_ON_ERROR);
+    ];
+    if($technicalReceipt!==null)$response['technicalReceipt']=$technicalReceipt;
+    echo json_encode($response,JSON_THROW_ON_ERROR);
 }
 if(PHP_SAPI!=='cli-server'
     ||getenv('GITHUB_ACTIONS')!=='true'
@@ -68,15 +73,20 @@ $auth=[
 ];
 $requestHex=getenv('CRM_F356_REQUEST_KEY_HEX');
 $lookupHex=getenv('CRM_F356_LOOKUP_KEY_HEX');
-if(!is_string($requestHex)||!is_string($lookupHex)
+$receiptHex=getenv('CRM_F362_RECEIPT_KEY_HEX');
+if(!is_string($requestHex)||!is_string($lookupHex)||!is_string($receiptHex)
     ||preg_match('/\A[a-f0-9]{96}\z/D',$requestHex)!==1
     ||preg_match('/\A[a-f0-9]{96}\z/D',$lookupHex)!==1
-    ||hash_equals($requestHex,$lookupHex)){
+    ||preg_match('/\A[a-f0-9]{96}\z/D',$receiptHex)!==1
+    ||hash_equals($requestHex,$lookupHex)
+    ||hash_equals($receiptHex,$lookupHex)
+    ||hash_equals($receiptHex,$requestHex)){
     reply(503,'CI_KEYS_UNAVAILABLE');return;
 }
 $requestKey=hex2bin($requestHex);
 $lookupKey=hex2bin($lookupHex);
-if(!is_string($requestKey)||!is_string($lookupKey)){
+$receiptKey=hex2bin($receiptHex);
+if(!is_string($requestKey)||!is_string($lookupKey)||!is_string($receiptKey)){
     reply(503,'CI_KEYS_UNAVAILABLE');return;
 }
 // F3-61: no binding values are copied from request headers or an envelope.
@@ -109,7 +119,10 @@ try{
             'READBACK_AUTH_DENIED'=>401,
             default=>503
         };
-        reply($code,$reason,$result['syntheticMetadataLocated']);return;
+        $receipt=$result['syntheticMetadataLocated']
+           ? SyntheticTechnicalReceiptSigner::sign($frame,$receiptKey,$now)
+           : null;
+        reply($code,$reason,$result['syntheticMetadataLocated'],$receipt);return;
     }
     $decision=(new SignedServiceHandoffBoundary())->inspect(
         $frame,$binding,$auth,$requestKey,$now
@@ -154,7 +167,8 @@ try{
     if(($_SERVER['HTTP_X_LAB_DROP_REPLY']??null)==='1'){
         reply(503,'COMMITTED_REPLY_LOST_READBACK_REQUIRED');return;
     }
-    reply(202,'SYNTHETIC_METADATA_COMMITTED_NO_REAL_LEAD',true);
+    reply(202,'SYNTHETIC_METADATA_COMMITTED_NO_REAL_LEAD',true,
+        SyntheticTechnicalReceiptSigner::sign($frame,$receiptKey,$now));
 } catch(PDOException $e){
     if(isset($db)&&$db->inTransaction())$db->rollBack();
     if($e->getCode()==='23505')reply(409,'LOGICAL_DUPLICATE_HOLD_READBACK');
