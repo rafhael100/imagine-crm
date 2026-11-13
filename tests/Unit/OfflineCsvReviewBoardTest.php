@@ -79,7 +79,7 @@ final class OfflineCsvReviewBoardTest extends TestCase
             '<main id="conteudo">', 'aria-label=', '<h1>',
             'REVISÃO SOMENTE', 'NO-GO OPERACIONAL',
             'Nenhum arquivo é carregado', 'nenhuma alteração é executada',
-            '@media(max-width:480px)', '@media(max-width:900px)',
+            'overflow-wrap:anywhere', '@media(max-width:480px)', '@media(max-width:900px)',
             '@media(prefers-reduced-motion:reduce)',
         ] as $required) {
             self::assertStringContainsString($required, $html);
