@@ -1,0 +1,7 @@
+# CRM F3-251 — Evidência conjunta OTP + trial de 14 dias no workflow CI
+
+Amplia o workflow F3-248 já validado em DEV, sem alterar seu gatilho ou permissão `contents: read`. O mesmo job agora exercita também `TrialEnrollmentLifecycleSandboxTest` (F3-249) e `CompositeSignupTrialFunctionalLabCliTest` (F3-250) e chama o CLI de onboarding sintético integrado. As verificações cruzadas de OTP, replay, duplicidade CNPJ alfanumérico, fronteira dos 14 dias, sete quotas e todos os flags NO-GO são realizadas por `jq -e`.
+
+Produz no artifact privado temporário `crm-f3-248-otp-lifecycle-offline` três arquivos: `otp-lifecycle-offline.json`, `otp-trial-composite-offline.json` e `manifest.sha256`. Ambos os JSON são redigidos, limitados a 4096 bytes e uma linha cada, conferidos por lista conservadora de palavras proibidas e verificáveis por `sha256sum --check`. A retenção permanece **sete dias**, sem deploy, conta real, OTP, CNPJ, e-mail, telefone, PII ou acesso a provedor. O hash protege a integridade dos arquivos do artifact, **não constitui assinatura de homologação nem autenticação de cliente**.
+
+O workflow continua um laboratório, com PHP/Composer `autoload-dev` e SQLite em memória apenas como env padrão de CI; não executa transação real de OTP+trial, RLS de produção, envio e persistência distribuída. Nenhum `main`, VPS ou produção é afetado. Exige 5/5 CI na HEAD exata da PR, incluindo workflow dedicado, revisão do diff e manutenção dos gates #27 SEG/DBA, #259 CORE/LGPD e #416 UX. As PRs PG16 #468/#470/#477 permanecem DRAFT/NO-MERGE.
