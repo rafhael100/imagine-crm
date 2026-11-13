@@ -1,0 +1,45 @@
+name: CRM Imagine - F3-263 Private Staging Blueprint Static Review
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'infra/staging/**'
+      - 'tests/Unit/StagingSmokeBlueprintContractTest.php'
+      - '.github/workflows/ci-crm-private-staging-blueprint.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-compose:
+    name: Compose syntax only — no build, pull, launch or deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact review revision
+        uses: actions/checkout@v4
+      - name: Confirm Docker Compose is available without connecting to a daemon
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose version
+      - name: Validate candidate YAML only, without pulling images or starting services
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose -f infra/staging/compose.yaml config --quiet
+          # No build, up, pull or any container runtime.
+          # The candidate remains DRAFT/NO-GO even on success.
+      - name: Explain scope in CI job summary
+        shell: bash
+        run: |
+          {
+            echo '### CRM F3-263 — staging candidate lint only'
+            echo '- docker compose config: syntax and references only'
+            echo '- No container built, pulled, launched or deployed'
+            echo '- No VPS, network service, DB, real identity or credentials'
+            echo '- SEG/DBA, CORE/LGPD and UX remain NO-GO'
+          } >> "$GITHUB_STEP_SUMMARY"
