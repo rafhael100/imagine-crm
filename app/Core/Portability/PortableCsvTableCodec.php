@@ -189,11 +189,12 @@ final class PortableCsvTableCodec
 
     private static function hasFormulaPrefix(string $value): bool
     {
-        // Strict refusal, not universal formula neutralization. Includes
-        // whitespace, BOM, NBSP, Unicode format controls and fullwidth
-        // compatibility symbols. May refuse legitimate negative numbers.
+        // Conservative refusal, NOT proof of cross-client formula safety.
+        // Unicode separators, format/combining marks and repeated leading
+        // apostrophes may hide spreadsheet operators. Benign negative
+        // numbers and some text can be refused by this strict policy.
         return preg_match(
-            '/\A(?:[\x01-\x20\x7F]|\x{00A0}|[\x{200B}-\x{200F}]|[\x{202A}-\x{202E}]|[\x{2060}-\x{2069}]|\x{FEFF})*(?:[=+\-@]|[＝＋－＠]|\x27[=+\-@＝＋－＠])/u',
+            '/\A(?:[\x01-\x20\x7F-\x9F]|\p{Z}|\p{Cf}|\p{M}|\x27)*[=+\-@＝＋－＠]/u',
             $value,
         ) === 1;
     }
