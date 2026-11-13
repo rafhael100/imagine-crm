@@ -199,6 +199,27 @@ final class StagingRenderedComposePolicyTest extends TestCase
         }
     }
 
+    public function test_only_harmless_normalized_network_defaults_are_accepted(): void
+    {
+        $model = self::validModel();
+        $model['networks']['crm_private'] += [
+            'driver' => 'bridge',
+            'attachable' => false,
+            'external' => false,
+            'enable_ipv4' => true,
+            'enable_ipv6' => false,
+            'driver_opts' => [],
+            'ipam' => [],
+            'labels' => [],
+        ];
+        self::assertSame([], self::policy($model));
+
+        $model['networks']['crm_private']['driver_opts'] = [
+            'com.docker.network.bridge.enable_ip_masquerade' => 'true',
+        ];
+        self::assertContains('network_not_private', self::policy($model));
+    }
+
     public function test_malformed_service_shape_is_denied_without_php_type_errors(): void
     {
         foreach ([null, 'not-a-service', false, 0, []] as $malformed) {
