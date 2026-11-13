@@ -1,0 +1,62 @@
+# F3-263 REVIEW/NO-GO: smoke-only, private, no operational CRM.
+# Never run on a VPS before infrastructure and SEG/DBA release gates.
+name: imagine-crm-stage-review
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: infra/staging/Dockerfile
+    environment:
+      APP_NAME: "CRM Imagine - Staging Smoke"
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: http://127.0.0.1:18080
+      CRM_AUTH_EXPERIMENTAL: "false"
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ":memory:"
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+      FILESYSTEM_DISK: local
+    user: "33:33"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,noexec,size=16m,mode=1777
+      - /run:rw,nosuid,noexec,size=1m
+      - /usr/local/var/run:rw,nosuid,noexec,size=1m
+      - /var/www/html/storage:rw,nosuid,noexec,size=16m,uid=33,gid=33
+      - /var/www/html/bootstrap/cache:rw,nosuid,noexec,size=2m,uid=33,gid=33
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - crm_private
+
+  web:
+    image: nginx:1.29-alpine
+    user: "101:101"
+    entrypoint: ["nginx", "-g", "daemon off;"]
+    ports:
+      - "127.0.0.1:18080:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../../public:/var/www/html/public:ro
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,noexec,size=8m,mode=1777
+      - /var/cache/nginx:rw,nosuid,noexec,size=8m,uid=101,gid=101
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    depends_on:
+      - app
+    networks:
+      - crm_private
+
+networks:
+  crm_private:
+    internal: true
