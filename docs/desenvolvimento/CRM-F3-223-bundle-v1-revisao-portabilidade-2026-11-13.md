@@ -6,4 +6,4 @@ O pacote transmite somente contadores de riscos ASCII, separadores de linha, mar
 
 A futura interface local de revisão poderá consumir esse contrato separado; **não** há endpoint, importação, exportação, persistência, autenticação real, tenant, acesso de cliente, arquivo nem deploy. Dados de teste são exclusivamente fictícios. Gates #27 SEG/DBA, #259 CORE/LGPD, #416 UX e IN-118 permanecem NO-GO.
 
-`PortableCsvReviewBundleV1Test` verifica composição sem mutar V1, omissões, quebras de linha, campos declarados e não vazamento. PR empilhada sobre F3-222 até integração; CI F0, PG16/RLS, Sites e AIA em SHA exata e revisão de diff exigidas antes de qualquer merge DEV.
+`PortableCsvReviewBundleV1Test` verifica composição sem mutar V1, omissões, quebras de linha, campos declarados e não vazamento. F3-222 foi integrada na DEV por PR #459. A PR F3-223 foi realinhada diretamente à DEV; CI F0, PG16/RLS, Sites e AIA em SHA exata e revisão de diff exigidas antes de qualquer merge DEV.
