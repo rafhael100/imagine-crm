@@ -1,4 +1,4 @@
-name: CRM CORE-INT-02 - Real Portal and CRM PHP disposable cross-db lab
+name: CRM F3-52 - Four-project synthetic boundary matrix (NO-GO)
 
 on:
   push:
@@ -11,6 +11,7 @@ on:
       - 'tests/Labs/F3_42/**'
       - 'tests/Labs/F3_49/**'
       - 'tests/Labs/F3_50/**'
+      - 'docs/QA-F352-FOUR-REPO-BOUNDARIES.md'
       - '.github/workflows/ci-crm-portal-cross-db-ci-isolation.yml'
   workflow_dispatch:
 
@@ -19,7 +20,7 @@ permissions:
 
 jobs:
   portal-php-pg18-to-crm-php-pg16:
-    name: PHP ${{ matrix.php }} - real Portal PHP / CRM PHP / separate PG containers
+    name: PHP ${{ matrix.php }} - Comercial/Portal/CRM plus Portal/Sites/CRM synthetic checks
     runs-on: ubuntu-24.04
     timeout-minutes: 14
     strategy:
@@ -88,6 +89,30 @@ jobs:
           ref: fe42b6c0683ff66d836dc58677f25a8fed2d793d
           path: comercial-source
           persist-credentials: false
+      - name: Checkout EXACT pinned Sites PHP source for independent synthetic contracts
+        uses: actions/checkout@v5
+        with:
+          repository: rafhael100/imagine-sites
+          ref: 057b6f859df5050c842a86d18676e6332a79d1f9
+          path: _synthetic_sites_fixture
+          persist-credentials: false
+      - name: Checkout separate pinned Portal candidate for Portal-to-Sites PHP contract
+        uses: actions/checkout@v5
+        with:
+          repository: rafhael100/imagine-portal
+          ref: bf1b2794de4d6000f120ffa2b1e6dd557f34c35e
+          path: portal-sites-candidate
+          persist-credentials: false
+      - name: Verify both independent source pins and their lab-only entrypoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _synthetic_sites_fixture rev-parse HEAD)" = "057b6f859df5050c842a86d18676e6332a79d1f9"
+          test "$(git -C portal-sites-candidate rev-parse HEAD)" = "bf1b2794de4d6000f120ffa2b1e6dd557f34c35e"
+          test -f _synthetic_sites_fixture/tests/f23-cross-repo.php
+          test -f _synthetic_sites_fixture/src/Integration/SyntheticCrmLeadEnvelopeV1Draft.php
+          test -f portal-sites-candidate/apps/portal/app/Domain/SitesIntegration/SyntheticSitesEnvelopeSigner.php
+          test -f scripts/ci/check-sites-crm-envelope-authority-witness.php
       - name: Verify immutable Portal provenance and no cross-import into runtime
         shell: bash
         run: |
@@ -178,3 +203,26 @@ jobs:
           php tests/Labs/F3_42/test_real_portal_crm_cross_repo.php
           php -l tests/Labs/F3_49/test_real_core_portal_crm_e2e.php
           php tests/Labs/F3_49/test_real_core_portal_crm_e2e.php
+      - name: Prove independent REAL Portal-to-Sites PHP candidate compatibility (F1-23)
+        shell: bash
+        env:
+          SITES_F1_23_CROSS_REPO: '1'
+          SITES_F1_23_PORTAL_PATH: ${{ github.workspace }}/portal-sites-candidate
+        run: |
+          set -euo pipefail
+          php -l _synthetic_sites_fixture/tests/f23-cross-repo.php
+          php -l portal-sites-candidate/apps/portal/app/Domain/SitesIntegration/SyntheticSitesEnvelopeSigner.php
+          php _synthetic_sites_fixture/tests/f23-cross-repo.php
+      - name: Prove independent REAL Sites-to-CRM PHP shape and authority-denial (F3-51)
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l scripts/ci/check-sites-crm-envelope-authority-witness.php
+          php -l app/Core/Leads/SyntheticLeadEnvelopeV1Inspector.php
+          php -l _synthetic_sites_fixture/src/Integration/SyntheticCrmLeadEnvelopeV1Draft.php
+          php scripts/ci/check-sites-crm-envelope-authority-witness.php
+      - name: Retain fail-closed release status
+        if: always()
+        run: |
+          echo "NO-GO: synthetic independent seams are not one operational four-system transaction."
+          echo "NO VPS, staging credentials, real leads, client login, publication, billing or deploy."
