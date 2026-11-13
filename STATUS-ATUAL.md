@@ -1,5 +1,12 @@
 # CRM Imagine — STATUS ATUAL
 
+## OPS-68 — Dupla prova Composer --no-dev e HTTP kernel (13/11/2026)
+
+**DEV observada:** 22e2dd0a5ad5ed11f718ea106389a8e4f464f3a1. F3-260 [#513](https://github.com/rafhael100/imagine-crm/pull/513) e F3-261 [#514](https://github.com/rafhael100/imagine-crm/pull/514) foram integradas **somente DEV**, cinco workflows completed/success na SHA exata de cada PR. A CI no-dev inventaria somente GET/HEAD /up nos ambientes testing e production **simulados**; o segundo recorte executa também **11 requisições pelo kernel Laravel real no runner efêmero**, exigindo /up 200 e nove caminhos signup/trial/OTP/fixture 404, sem cookie nem redirect. [Dossiê OPS-68](docs/desenvolvimento/CRM-OPS-68-no-dev-kernel-http-evidencias-2026-11-13.md) apresenta SHA, limites e dez logs. **Main** e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012 inalterada; nenhum uso de VPS, produção, API pública, dados reais ou custo.
+
+**NO-GO:** [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27), [CORE/LGPD #259](https://github.com/rafhael100/imagine-crm/issues/259), [UX #416](https://github.com/rafhael100/imagine-crm/issues/416) seguem abertos. APP_ENV=production **não** representa um ambiente real de produção.
+
+
 ## OPS-67 — Fluxo HTTP OTP → trial e quotas de 14 dias (13/11/2026)
 
 **DEV conferida:** 44801218d0b28d83658e2f0b7117d00a339c946a. F3-258 [#510](https://github.com/rafhael100/imagine-crm/pull/510) e F3-259 [#511](https://github.com/rafhael100/imagine-crm/pull/511) foram confirmadas merged=true **somente DEV**, com **5/5 CI success na SHA de cada PR**. O código Laravel HTTP de PHPUnit exige OTP fictício válido antes do marcador trial em memória, expira o sinal local aos 900 segundos e impede reutilização; PHPUnit observa janela de 14 dias e sete quotas ilustrativas sem revelá-las no HTTP. [Dossiê OPS-67](docs/desenvolvimento/CRM-OPS-67-otp-trial-http-14dias-evidencias-2026-11-13.md) traz SHAs, URLs CI e escopo. **Main:** e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012 preservada; nenhum deploy, rota pública de cadastro, dados reais, WhatsApp/SMTP, criação de usuário, reserva durável, cobrança ou VPS.
