@@ -1,0 +1,51 @@
+name: CRM F3-53 - Atomic nonce PostgreSQL isolation (synthetic)
+on:
+  pull_request:
+    paths:
+      - 'tests/Labs/F3_53/**'
+      - '.github/workflows/crm-f353-atomic-nonce-pg-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  disposable-nonce-db:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: f353-superuser-synthetic-only
+          POSTGRES_DB: f353_nonce_ci
+        ports:
+          - '127.0.0.1:5432:5432'
+        options: >-
+          --health-cmd "pg_isready -U postgres -d f353_nonce_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      GITHUB_ACTIONS: 'true'
+      CRM_F353_NONCE_PG_LAB: '1'
+      DB_HOST: 127.0.0.1
+      DB_DATABASE: f353_nonce_ci
+      PGPASSWORD: f353-superuser-synthetic-only
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql,pgsql
+          tools: none
+          coverage: none
+      - name: Prepare CI-only roles and RLS
+        run: |
+          set -euo pipefail
+          psql -h 127.0.0.1 -U postgres -d f353_nonce_ci -f tests/Labs/F3_53/nonce_pg16.sql
+      - name: Verify transactional nonce claims and cross-tenant denial
+        run: |
+          php -l tests/Labs/F3_53/test_atomic_nonce_pg.php
+          php tests/Labs/F3_53/test_atomic_nonce_pg.php
