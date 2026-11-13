@@ -49,6 +49,9 @@ if(!is_string($raw)||strlen($raw)>2048){reply(413,'BODY_TOO_LARGE');return;}
 try {$frame=json_decode($raw,true,16,JSON_THROW_ON_ERROR);}
 catch(Throwable){reply(400,'INVALID_JSON');return;}
 if(!is_array($frame)){reply(422,'CONTRACT_DENIED');return;}
+$canonical=(new SignedServiceHandoffBoundary())->decodeCanonicalJson($raw);
+if($canonical===null){reply(422,'CANONICAL_JSON_REQUIRED');return;}
+$frame=$canonical;
 function stamp(string $name):?int {
     $v=$_SERVER[$name]??null;
     if(!is_string($v)||preg_match('/\A[1-9][0-9]{0,11}\z/D',$v)!==1)return null;
