@@ -98,10 +98,10 @@ jobs:
           export CRM_F363_REVOCATION_LAB=1
           php -l tests/Labs/F3_63/test_hot_revocation_http.php
           # Same running server and signed keys; DBA-only synthetic change.
-          psql -h 127.0.0.1 -U postgres -d f353_nonce_ci -v ON_ERROR_STOP=1 \\
+          psql -h 127.0.0.1 -U postgres -d f353_nonce_ci -v ON_ERROR_STOP=1 \
             -c "UPDATE public.crm_service_bindings SET state='revoked' WHERE principal_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'::uuid"
           php tests/Labs/F3_63/test_hot_revocation_http.php
           # Expired but otherwise active binding remains fail-closed.
-          psql -h 127.0.0.1 -U postgres -d f353_nonce_ci -v ON_ERROR_STOP=1 \\
+          psql -h 127.0.0.1 -U postgres -d f353_nonce_ci -v ON_ERROR_STOP=1 \
             -c "UPDATE public.crm_service_bindings SET state='active', expires_at_epoch=1762000000 WHERE principal_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'::uuid"
           php tests/Labs/F3_63/test_hot_revocation_http.php
