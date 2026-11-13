@@ -98,6 +98,15 @@ checkResult(send('/__lab/f356/deliver',[...$frame,'email'=>'synthetic@example.in
   422,'CANONICAL_JSON_REQUIRED');
 checkResult(send('/__lab/f356/deliver',$frame,$delivery,false,'GET'),
   404,'NO_OPERATIONAL_ROUTE');
+$canonical=json_encode($frame,JSON_THROW_ON_ERROR);
+$dup='{"protocol":"imagine.lead-intake",'.substr($canonical,1);
+checkResult(send('/__lab/f356/deliver',$frame,$delivery,false,'POST',$dup),
+  422,'CANONICAL_JSON_REQUIRED');
+checkResult(send('/__lab/f356/readback',$frame,$readback,false,'POST',' '.$canonical),
+  422,'CANONICAL_JSON_REQUIRED');
+$reordered=json_encode(array_reverse($frame,true),JSON_THROW_ON_ERROR);
+checkResult(send('/__lab/f356/deliver',$frame,$delivery,false,'POST',$reordered),
+  422,'CANONICAL_JSON_REQUIRED');
 $db=new PDO('pgsql:host=127.0.0.1;port=5432;dbname=f353_nonce_ci',
   'f353_sender_a','f353-synthetic-a-only',[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
 $n=(int)$db->query('SELECT count(*) FROM crm_f353_nonce_lab.request_nonces')->fetchColumn();
