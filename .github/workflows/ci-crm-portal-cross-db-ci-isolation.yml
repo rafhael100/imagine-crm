@@ -12,6 +12,7 @@ on:
       - 'tests/Labs/F3_49/**'
       - 'tests/Labs/F3_50/**'
       - 'docs/QA-F352-FOUR-REPO-BOUNDARIES.md'
+      - 'scripts/ci/f352_source_evidence.py'
       - '.github/workflows/ci-crm-portal-cross-db-ci-isolation.yml'
   workflow_dispatch:
 
@@ -221,6 +222,20 @@ jobs:
           php -l app/Core/Leads/SyntheticLeadEnvelopeV1Inspector.php
           php -l _synthetic_sites_fixture/src/Integration/SyntheticCrmLeadEnvelopeV1Draft.php
           php scripts/ci/check-sites-crm-envelope-authority-witness.php
+      - name: Attest exact source pins, independent seams and NO-GO status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/f352_source_evidence.py --self-test
+          python3 scripts/ci/f352_source_evidence.py --out "$RUNNER_TEMP/f352-review-evidence.json"
+          python3 scripts/ci/f352_source_evidence.py --verify "$RUNNER_TEMP/f352-review-evidence.json"
+      - name: Preserve private review-only source evidence (not a deployment package)
+        uses: actions/upload-artifact@v5
+        with:
+          name: imagine-f352-four-project-review-php${{ matrix.php }}
+          path: ${{ runner.temp }}/f352-review-evidence.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Retain fail-closed release status
         if: always()
         run: |
