@@ -86,13 +86,13 @@ try {
  check(txt('operation-display')==='Backup completo','backup mode');
  pick('operation','restore_complete');
  pick('target','populated');
- check(txt('warning-count')==='3','existing target must be separately reviewed');
+ check(txt('warning-count')==='4','existing target must be separately reviewed');
  check(txt('warning-list').includes('não mesclar automaticamente'),'no automatic merge');
  pick('target','unknown');
- check(txt('warning-count')==='3','unknown target not treated as empty');
+ check(txt('warning-count')==='4','unknown target not treated as empty');
  check(txt('warning-list').includes('desconhecido'),'unknown target warning');
  pick('operation','migrate_account');
- check(txt('warning-count')==='4','cross account secret warning');
+ check(txt('warning-count')==='5','cross account secret warning');
  check(txt('warning-list').includes('Segredos e credenciais'),'secrets exclusion');
  pick('operation','import_xlsx');
  check(txt('warning-count')==='2','spreadsheet import preview requires field review');
