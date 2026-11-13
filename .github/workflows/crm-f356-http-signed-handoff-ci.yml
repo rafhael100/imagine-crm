@@ -2,6 +2,7 @@ name: CRM F3-56 - Signed HTTP handoff and PG16 readback CI
 on:
   pull_request:
     paths:
+      - 'app/Core/Leads/SignedServiceHandoffBoundary.php'
       - 'tests/Labs/F3_52/**'
       - 'tests/Labs/F3_53/**'
       - 'tests/Labs/F3_54/**'
@@ -52,6 +53,7 @@ jobs:
       - name: Start loopback HTTP router and test signed reconciliation
         run: |
           set -euo pipefail
+          php -l app/Core/Leads/SignedServiceHandoffBoundary.php
           php -l tests/Labs/F3_56/router_synthetic_handoff.php
           php -l tests/Labs/F3_56/test_http_lost_ack.php
           export CRM_F356_REQUEST_KEY_HEX="$(openssl rand -hex 48)"
