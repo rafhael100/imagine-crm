@@ -7,6 +7,7 @@ declare(strict_types=1);
  * One static JSON review to stdout. Never an operational registration route.
  */
 use App\Core\Identity\OfflineSignupOtpChallenge;
+use App\Core\Identity\OfflineSignupOtpAbuseBudgetPreview;
 use App\Core\Identity\OfflineSignupOtpWhatsAppDraft;
 use App\Mail\OfflineSignupOtpMail;
 use App\Core\Identity\OfflineSignupContactHmacBinding;
@@ -107,12 +108,43 @@ try {
     $whatsNoTransport = $whatsModel['can_send'] === false
         && $whatsModel['template_approved_by_provider'] === false;
 
+    // Budget claims are fixed synthetic snapshots, never durable enforcement.
+    $abuse = new OfflineSignupOtpAbuseBudgetPreview();
+    $originBinding = hash_hmac(
+        'sha256', 'synthetic-origin-never-a-real-ip', $contactKey,
+    );
+    $fresh = ['window_start' => $startedAt, 'events' => 0, 'latest_at' => $startedAt];
+    $limitedIssue = ['window_start' => $startedAt, 'events' => 3, 'latest_at' => $startedAt];
+    $limitedOrigin = ['window_start' => $startedAt, 'events' => 20, 'latest_at' => $startedAt];
+    $limitedVerify = [
+        'window_start' => $startedAt,
+        'events' => OfflineSignupOtpChallenge::MAX_CANDIDATE_ATTEMPTS,
+        'latest_at' => $startedAt,
+    ];
+    $normalBudget = $abuse->inspect(
+        'issue', $emailBinding, $originBinding, $checkedAt, $fresh, $fresh,
+    );
+    $contactBlocked = $abuse->inspect(
+        'issue', $emailBinding, $originBinding, $checkedAt, $limitedIssue, $fresh,
+    );
+    $originBlocked = $abuse->inspect(
+        'issue', $phoneBinding, $originBinding, $checkedAt, $fresh, $limitedOrigin,
+    );
+    $verifyBlocked = $abuse->inspect(
+        'verify', $emailBinding, $originBinding, $checkedAt, $limitedVerify, $fresh,
+    );
+
     $report = [
         'protocol' => 'imagine.crm.synthetic_signup_trial_review',
         'schema_version' => 1,
         'status' => 'REVIEW_ONLY_DENIED',
         'otp_code_digits' => OfflineSignupOtpChallenge::CODE_DIGITS,
         'otp_validity_seconds' => OfflineSignupOtpChallenge::VALIDITY_SECONDS,
+        'sample_issue_budget_observation' => $normalBudget['reason_code'],
+        'sample_contact_limit_observation' => $contactBlocked['reason_code'],
+        'sample_origin_limit_observation' => $originBlocked['reason_code'],
+        'sample_verify_limit_observation' => $verifyBlocked['reason_code'],
+        'durable_otp_abuse_enforcement_verified' => false,
         'email_template_otp_matches_in_memory' => $emailMatches,
         'whatsapp_template_otp_matches_in_memory' => $whatsMatches,
         'email_whatsapp_validity_parity' => $sameValidity,
@@ -160,6 +192,12 @@ try {
         || $alphanumericCnpj['status_code'] !== 'structurally_valid_only'
         || !hash_equals($one, $same) || hash_equals($one, $other)
         || !$emailMatches || !$whatsMatches || !$sameValidity || !$whatsNoTransport
+        || $normalBudget['reason_code'] !== 'sample_within_illustrative_budget'
+        || $contactBlocked['reason_code'] !== 'sample_contact_budget_exhausted'
+        || $originBlocked['reason_code'] !== 'sample_origin_budget_exhausted'
+        || $verifyBlocked['reason_code'] !== 'sample_contact_budget_exhausted'
+        || $normalBudget['can_send'] !== false
+        || $contactBlocked['can_register'] !== false
         || count($meters) !== 7
         || $overview['authorized'] !== false) {
         throw new \LogicException('Synthetic evidence inconsistent.');

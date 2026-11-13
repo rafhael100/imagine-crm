@@ -30,6 +30,11 @@ final class OfflineSignupTrialFlowDemoTest extends TestCase
         self::assertSame('REVIEW_ONLY_DENIED', $report['status']);
         self::assertSame(6, $report['otp_code_digits']);
         self::assertSame(900, $report['otp_validity_seconds']);
+        self::assertSame('sample_within_illustrative_budget', $report['sample_issue_budget_observation']);
+        self::assertSame('sample_contact_budget_exhausted', $report['sample_contact_limit_observation']);
+        self::assertSame('sample_origin_budget_exhausted', $report['sample_origin_limit_observation']);
+        self::assertSame('sample_contact_budget_exhausted', $report['sample_verify_limit_observation']);
+        self::assertFalse($report['durable_otp_abuse_enforcement_verified']);
         self::assertTrue($report['email_template_otp_matches_in_memory']);
         self::assertTrue($report['whatsapp_template_otp_matches_in_memory']);
         self::assertTrue($report['email_whatsapp_validity_parity']);
@@ -64,6 +69,7 @@ final class OfflineSignupTrialFlowDemoTest extends TestCase
             'one_trial_per_company_verified',
             'identity_and_contact_binding_verified',
             'atomic_otp_consume_verified',
+            'durable_otp_abuse_enforcement_verified',
             'tenant_and_membership_verified',
             'consent_and_lgpd_verified',
             'notification_transport_verified',
@@ -73,7 +79,7 @@ final class OfflineSignupTrialFlowDemoTest extends TestCase
         ] as $flag) {
             self::assertFalse($report[$flag], $flag);
         }
-        foreach (['delivery_code', 'digest', 'nonce', 'opaque', '"cnpj":', 'email_address', 'phone_number', 'fixture-key', '11222333000181', '12ABC34501DE35', 'trial_binding_digest', 'demo.one@example.com', 'demo.two@example.com', '+5511999988888', 'synthetic_parameter_code', 'synthetic_preview', 'utility_template_candidate'] as $secret) {
+        foreach (['delivery_code', 'digest', 'nonce', 'opaque', '"cnpj":', 'email_address', 'phone_number', 'fixture-key', '11222333000181', '12ABC34501DE35', 'trial_binding_digest', 'demo.one@example.com', 'demo.two@example.com', '+5511999988888', 'synthetic_parameter_code', 'synthetic_preview', 'utility_template_candidate', 'synthetic-origin-never-a-real-ip'] as $secret) {
             self::assertStringNotContainsString($secret, $json);
         }
         $b = new Process([PHP_BINARY, self::script()]);
