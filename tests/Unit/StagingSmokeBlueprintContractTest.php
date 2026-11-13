@@ -29,8 +29,7 @@ final class StagingSmokeBlueprintContractTest extends TestCase
             'internal: true', 'cap_drop:', '- ALL',
             'no-new-privileges:true', '127.0.0.1:18080:8080',
             'dockerfile: infra/staging/Dockerfile',
-            'nginx.conf:/etc/nginx/nginx.conf:ro',
-            '../../public:/var/www/html/public:ro',
+            'dockerfile: infra/staging/Dockerfile.web',
         ] as $required) {
             self::assertStringContainsString($required, $compose, $required);
         }
@@ -40,6 +39,7 @@ final class StagingSmokeBlueprintContractTest extends TestCase
             'DB_PASSWORD', 'APP_KEY:', 'CRM_IAM_PASSWORD',
             'CRM_PROVISION_PASSWORD', 'AUTH_GUARD:',
             'env_file:', 'privileged:', 'network_mode: host',
+            'volumes:', '../../public', './nginx.conf:',
             'docker.sock', 'secrets:', 'volumes_from:',
             'command: php artisan migrate', 'php artisan serve',
             'image: postgres', 'image: redis',
@@ -74,6 +74,30 @@ final class StagingSmokeBlueprintContractTest extends TestCase
             'APP_KEY=', 'ARG PASSWORD', 'ARG TOKEN',
             'RUN php artisan migrate', 'RUN php artisan serve',
             'EXPOSE 80', 'EXPOSE 443',
+        ] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, $file);
+        }
+    }
+
+    public function test_nginx_artifact_copies_only_reviewed_public_files_and_config(): void
+    {
+        $file = file_get_contents(
+            dirname(__DIR__, 2).'/infra/staging/Dockerfile.web',
+        );
+        self::assertIsString($file);
+        foreach ([
+            'FROM nginx:1.29-alpine',
+            'COPY infra/staging/nginx.conf /etc/nginx/nginx.conf',
+            'COPY public/ /var/www/html/public/',
+            'USER nginx',
+            'EXPOSE 8080',
+        ] as $required) {
+            self::assertStringContainsString($required, $file);
+        }
+        foreach ([
+            'COPY . .', 'COPY .env', 'COPY tests/',
+            'COPY docs/', 'COPY database/', 'COPY app/',
+            'RUN apk add', 'RUN php artisan', 'EXPOSE 80',
         ] as $forbidden) {
             self::assertStringNotContainsString($forbidden, $file);
         }
