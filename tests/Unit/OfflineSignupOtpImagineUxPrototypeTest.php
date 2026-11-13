@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Process\Process;
 
 final class OfflineSignupOtpImagineUxPrototypeTest extends TestCase
 {
@@ -32,17 +33,45 @@ final class OfflineSignupOtpImagineUxPrototypeTest extends TestCase
             '@media(max-width:880px)', '@media(max-width:440px)',
             '.skip:focus', 'button:focus-visible', 'input:focus-visible',
             'href="#conteudo"', 'role="status" aria-live="polite"',
-            'id="step-two"', 'id="step-three"', 'id="finish"',
+            'id="step-two"', 'id="step-three"', 'id="step-four"', 'id="finish"',
             'id="code"', 'inputmode="numeric"', 'maxlength="6"',
             'PROTÓTIPO — DADOS FICTÍCIOS',
             'CNPJ alfanumérico', 'CNPJ numérico', 'Simular entrega',
             'WhatsApp', 'E-mail', '15 minutos', '012345',
+            'id="activate-trial"', 'id="trial-duplicate"', 'id="trial-expire"',
+            'id="trial-status"', 'id="step-d"', '14 dias',
         ] as $required) {
             self::assertStringContainsString($required, $html);
         }
         self::assertSame(1, substr_count($html, '</body>'));
         self::assertSame(1, substr_count($html, '</html>'));
         self::assertStringContainsString('type="button" disabled id="finish"', $html);
+    }
+
+    public function test_seven_offline_trial_limits_are_equal_to_real_core_cli_fixture(): void
+    {
+        $process = new Process([
+            PHP_BINARY,
+            dirname(__DIR__, 2).'/scripts/ci/emit-composite-signup-trial-lab.php',
+        ]);
+        $process->setTimeout(30);
+        $process->run();
+        self::assertTrue($process->isSuccessful(), $process->getErrorOutput());
+        $report = json_decode(trim($process->getOutput()), true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame('REVIEW_ONLY_DENIED', $report['status']);
+        self::assertSame(14, $report['trial_days_illustrative']);
+        $html = file_get_contents(self::root().'index.html');
+        self::assertIsString($html);
+        self::assertCount(7, $report['trial_quota_illustrative_limits']);
+        self::assertSame(7, substr_count($html, 'class="quota"'));
+        foreach ($report['trial_quota_illustrative_limits'] as $meter => $limit) {
+            self::assertStringContainsString(
+                'data-meter="'.$meter.'" data-limit="'.$limit.'"',
+                $html,
+            );
+        }
+        self::assertStringContainsString('type="button" disabled id="activate-trial"', $html);
+        self::assertStringContainsString("location.hash==='#previsualizar-trial'", $html);
     }
 
     public function test_offline_csp_and_no_transport_storage_or_real_signup_are_enforced(): void

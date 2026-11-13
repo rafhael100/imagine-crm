@@ -66,7 +66,8 @@ $driver = <<<'HTML'
       check(doc.documentElement.scrollWidth<=width+1,'horizontal overflow '+doc.documentElement.scrollWidth+'/'+width);
       check(doc.querySelector('img[alt="Logomarca original da Imagine"]')!==null,'original Imagine logo');
       check(doc.getElementById('step-two').hidden,'OTP step hidden initially');
-      check(doc.getElementById('step-three').hidden,'final step hidden initially');
+      check(doc.getElementById('step-three').hidden,'review step hidden initially');
+      check(doc.getElementById('step-four').hidden,'trial step hidden initially');
       check(doc.getElementById('finish').disabled,'real registration always unavailable');
       const find=(selector,value)=>Array.from(doc.querySelectorAll(selector)).find(x=>x.getAttribute(value.attr)===value.value);
       const alpha=doc.querySelector('[data-company="alpha"]');
@@ -92,14 +93,27 @@ $driver = <<<'HTML'
       check(!doc.getElementById('step-three').hidden,'synthetic matching code shows review');
       check(doc.getElementById('finish').disabled,'matching fixture cannot register');
       check(doc.activeElement===doc.getElementById('third-title'),'focus on review heading');
+      doc.getElementById('show-trial').click();
+      check(!doc.getElementById('step-four').hidden,'trial preview displayed');
+      check(doc.activeElement===doc.getElementById('fourth-title'),'focus on trial heading');
+      check(doc.querySelectorAll('.quota[data-meter][data-limit]').length===7,'all seven quota cards visible');
+      check(doc.getElementById('trial-company').textContent.includes('alfanumérico'),'selected company follows preview');
+      check(doc.getElementById('step-d').classList.contains('current'),'fourth step is active');
+      check(doc.getElementById('activate-trial').disabled,'trial activation always unavailable');
+      doc.getElementById('trial-duplicate').click();
+      check(doc.getElementById('trial-status').textContent.includes('Duplicidade simulada'),'duplicate simulated only');
+      doc.getElementById('trial-expire').click();
+      check(doc.getElementById('trial-status').textContent.includes('Fim dos 14 dias simulado'),'expiration simulated only');
       doc.getElementById('expire').click();
       check(doc.getElementById('step-three').hidden,'expiry closes review');
+      check(doc.getElementById('step-four').hidden,'expiry closes trial preview');
       check(doc.getElementById('code-status').textContent.includes('Expiração'),'expiry status');
       doc.getElementById('validate').click();
       check(doc.getElementById('step-three').hidden,'expired code cannot re-open review');
       doc.getElementById('restart').click();
       check(doc.getElementById('step-two').hidden,'restart closes OTP step');
       check(doc.getElementById('step-three').hidden,'restart closes review');
+      check(doc.getElementById('step-four').hidden,'restart closes trial preview');
       check(doc.getElementById('code').value==='','restart clears OTP digits');
       check(doc.querySelector('[data-company="legacy"]').getAttribute('aria-pressed')==='true','company reset');
       check(doc.querySelector('[data-channel="email"]').getAttribute('aria-pressed')==='true','channel reset');
@@ -149,4 +163,4 @@ foreach ([1100, 550, 320] as $width) {
     }
 }
 
-echo "F3-240 PASS: real Chromium 1100/550/320px, fixture-only OTP/channel steps, no registration or external calls.\n";
+echo "F3-240 PASS: real Chromium 1100/550/320px, OTP and seven trial quotas, no registration or network.\n";
