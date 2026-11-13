@@ -15,7 +15,7 @@ As provas são **três fronteiras independentes**, não uma jornada operacional 
 - Portal (Comercial/CRM): `af414ed7aece433e65b4f813be12ba3546cc5c8a`.
 - CRM Core candidate: `881ebbf0ddf486f8a85c4848f85719a2f4207f6c`.
 - Comercial: `fe42b6c0683ff66d836dc58677f25a8fed2d793d`.
-- Portal (Sites F1-23): `bf1b2794de4d6000f120ffa2b1e6dd557f34c35e`.
+- Portal (Sites F1-23): `8d1e20bc5c39dc4106b549c5e979351b5c766615`.
 - Sites (F1-23 e F3-51): `057b6f859df5050c842a86d18676e6332a79d1f9`.
 
 As cinco verificações de `git rev-parse HEAD` impedem substituição silenciosa. Checkouts desativam persistência de credenciais; o workflow tem `contents: read`; não utiliza credenciais de clientes, API externa, GitHub Secrets, deploy, VPS, Cloudflare, domínio ou cobrança. As portas locais e usuários PostgreSQL são **somente de fixtures descartáveis da CI**. Este teste não valida segurança ou integridade de produção.
