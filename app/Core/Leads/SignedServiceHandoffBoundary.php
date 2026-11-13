@@ -21,6 +21,25 @@ final class SignedServiceHandoffBoundary
     ];
     private const REQUEST_DOMAIN='imagine.portal.operational-preparation.v1';
 
+    /**
+     * Byte-canonical metadata-only JSON wire form, intentionally strict.
+     * Refuses duplicate JSON keys, escaped aliases, whitespace variants,
+     * reordered fields and all non-eight-field payloads before HMAC checks.
+     * Do not apply this to arbitrary user content or contact records.
+     */
+    public function decodeCanonicalJson(string $raw):?array
+    {
+        if($raw===''||strlen($raw)>2048)return null;
+        try{
+            $value=json_decode($raw,true,16,JSON_THROW_ON_ERROR);
+            if(!is_array($value)||array_keys($value)!==self::FRAME_KEYS)return null;
+            $encoded=json_encode($value,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
+            return $encoded===$raw?$value:null;
+        }catch(\JsonException){
+            return null;
+        }
+    }
+
     public function inspect(
         array $frame,array $trustedServerBinding,array $auth,string $requestKey,int $now
     ):array {

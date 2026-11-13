@@ -8,6 +8,7 @@ on:
       - 'tests/Labs/F3_54/**'
       - 'tests/Labs/F3_55/**'
       - 'tests/Labs/F3_56/**'
+      - 'tests/Labs/F3_59/**'
       - '.github/workflows/crm-f356-http-signed-handoff-ci.yml'
   workflow_dispatch:
 permissions:
@@ -54,6 +55,7 @@ jobs:
         run: |
           set -euo pipefail
           php -l app/Core/Leads/SignedServiceHandoffBoundary.php
+          php tests/Labs/F3_59/test_canonical_json.php
           php -l tests/Labs/F3_56/router_synthetic_handoff.php
           php -l tests/Labs/F3_56/test_http_lost_ack.php
           export CRM_F356_REQUEST_KEY_HEX="$(openssl rand -hex 48)"
