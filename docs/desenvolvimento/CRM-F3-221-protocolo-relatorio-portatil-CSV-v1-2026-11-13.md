@@ -1,0 +1,9 @@
+# F3-221 — Protocolo versionado de relatório de CSV em memória
+
+A classe `PortableCsvReviewReportV1` fornece `build` (array de estrutura fechada) e `encode` (JSON determinístico limitado a 8 KiB) utilizando o analisador funcional F3-219. Esse contrato prepara o consumo posterior por uma interface **exclusivamente offline**, sem criar endpoint nem exportação de dados. Protocolo: `imagine.crm.portable_csv_review`, `schema_version: 1`, `status: REVIEW_ONLY_DENIED`. O formato contém apenas contadores derivados, códigos fixos de avisos e gates, opções de formatação declaradas e negativas explícitas a toda operação de negócio.
+
+**Segurança:** a saída é reconstruída a partir de uma whitelist rígida; nenhuma linha CSV, nome de coluna, campo de destino, e-mail, id, hash, timestamp, tenant ou valor pessoal pode aparecer. Recusa warnings inesperados, dimensões impossíveis, gates diferentes dos seis aprovados como **pendentes** e qualquer saída que sugira liberação. Argumentos inválidos geram erro genérico sem eco. O quinto argumento opcional de campos alegadamente obrigatórios é compatível com a F3-219 e devolve somente quatro contadores adicionais quando presente.
+
+**Status:** código reutilizável somente em memória e com fixtures sintéticas. Não autoriza `ALLOW`, importação, exportação, tratamento de dados reais, arquivo de download, migração, operação SQL, rota web, autenticação, tenant, consentimento ou produção. Gates SEG/DBA #27, CORE/LGPD #259, UX #416 e especificação operacional IN-118 permanecem abertos.
+
+**QA:** `PortableCsvReviewReportV1Test` cobre formato, versionamento, invariantes, tamanho, deterministicidade, não vazamento, retrocompatibilidade e casos inválidos. Exigir os quatro workflows na SHA exata e revisão integral do diff antes de qualquer merge somente na DEV.
