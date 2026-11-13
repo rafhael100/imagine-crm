@@ -197,6 +197,51 @@ $portalKey=random_bytes(48);
 $timestamp=time();
 $sub='f9f9f9f9-f9f9-4f9f-8f9f-f9f9f9f9f9f9';
 $frame=envelope($sub);
+// F3-50: consume the actual Comercial P0 validator's exported technical
+// envelope. It contains NO contact details and is never an authenticated
+// tenant assertion or permission to collect a visitor's data.
+if (getenv('CRM_F350_COMERCIAL_CI_LAB') === '1') {
+    $runnerTmp=getenv('RUNNER_TEMP');
+    check(is_string($runnerTmp)
+        && str_starts_with($runnerTmp,'/home/runner/work/_temp'),
+        'F3-50 restricted to a disposable GitHub-hosted temp directory');
+    $bridgePath=$runnerTmp.'/crm-f350-comercial-envelope.json';
+    $stat=@lstat($bridgePath);
+    check(is_array($stat) && ($stat['mode'] & 0170000)===0100000
+        && ($stat['mode'] & 0777)===0600 && $stat['nlink']===1,
+        'F3-50 private bridge must be regular, single-linked and mode 0600');
+    $bridgeRaw=file_get_contents($bridgePath);
+    check(is_string($bridgeRaw) && strlen($bridgeRaw)>0
+        && strlen($bridgeRaw)<2048,'F3-50 bounded technical-only frame');
+    $bridge=json_decode($bridgeRaw,true,8,JSON_THROW_ON_ERROR);
+    check(is_array($bridge)
+        && array_keys($bridge)===[
+            'schema','provenance','preflight_code','envelope','claims'
+        ],'F3-50 exact envelope wrapper keys');
+    check($bridge['schema']==='imagine.comercial.portal-crm-ci-frame.v1'
+        && $bridge['provenance']==='REAL_COMERCIAL_PREFLIGHT_SYNTHETIC_ONLY'
+        && $bridge['preflight_code']==='STRUCTURAL_PREVIEW_ONLY_NO_AUTHORITY',
+        'F3-50 actual Comercial validator provides a structural NON-GO only');
+    $denyFlags=[
+        'publicIntakeAllowed','consentProvenanceVerified','serverAntiBotVerified',
+        'authenticatedTenantVerified','durableCrmReceiptVerified','canPersist',
+        'canSendToPortal','canSendToCrm','canAcknowledgeVisitor',
+        'canReplaceLegacyBudgetForm','canDeploy'
+    ];
+    check(is_array($bridge['claims'])
+        && array_keys($bridge['claims'])===$denyFlags,
+        'F3-50 deny flags must be complete');
+    foreach($denyFlags as $denyFlag) {
+        check($bridge['claims'][$denyFlag]===false,
+            'F3-50 no authority may cross boundary: '.$denyFlag);
+    }
+    check(is_array($bridge['envelope']) && $bridge['envelope']===$frame,
+        'F3-50 exact technical envelope matches independent pinned fixture');
+    check(!str_contains($bridgeRaw,'@example.invalid')
+        && !str_contains($bridgeRaw,'Pessoa Inteiramente Fictícia'),
+        'F3-50 never passes visitor fields to Portal or CRM lab');
+    $frame=$bridge['envelope']; // Actual Node output drives PHP/PG E2E.
+}
 $raw=json_encode($frame,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES);
 $sent=auth($frame,$requestKey,'imagine.portal.synthetic-service-request.v1',
     'c9c9c9c9-c9c9-4c9c-8c9c-c9c9c9c9c9c9',$timestamp);

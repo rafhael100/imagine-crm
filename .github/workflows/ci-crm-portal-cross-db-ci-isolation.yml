@@ -10,6 +10,7 @@ on:
       - 'tests/Labs/F3_41/**'
       - 'tests/Labs/F3_42/**'
       - 'tests/Labs/F3_49/**'
+      - 'tests/Labs/F3_50/**'
       - '.github/workflows/ci-crm-portal-cross-db-ci-isolation.yml'
   workflow_dispatch:
 
@@ -56,6 +57,7 @@ jobs:
       CRM_F340_LAB: '1'
       CRM_F341_HTTP_LAB: '1'
       CRM_F342_CROSS_REPO_LAB: '1'
+      CRM_F350_COMERCIAL_CI_LAB: '1'
       PORTAL_F119_PG_LAB: '1'
       DB_HOST: 127.0.0.1
       DB_DATABASE: portal_commercial_lab
@@ -78,6 +80,13 @@ jobs:
           repository: rafhael100/imagine-crm
           ref: 881ebbf0ddf486f8a85c4848f85719a2f4207f6c
           path: crm-core-source
+          persist-credentials: false
+      - name: Checkout pinned public Imagine Comercial integration revision (read-only)
+        uses: actions/checkout@v5
+        with:
+          repository: rafhael100/imagine-comercial
+          ref: fe42b6c0683ff66d836dc58677f25a8fed2d793d
+          path: comercial-source
           persist-credentials: false
       - name: Verify immutable Portal provenance and no cross-import into runtime
         shell: bash
@@ -116,6 +125,18 @@ jobs:
           extensions: pdo_pgsql,pgsql
           tools: none
           coverage: none
+      - name: Use Node 22 for the REAL Comercial P0 preflight
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build metadata-only Comercial to Portal-CRM laboratory bridge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C comercial-source rev-parse HEAD)" = "fe42b6c0683ff66d836dc58677f25a8fed2d793d"
+          test -f comercial-source/src/lib/private-budget-preflight.mjs
+          node tests/Labs/F3_50/prove_comercial_preflight.mjs
+          test -s "$RUNNER_TEMP/crm-f350-comercial-envelope.json"
       - name: Create both databases with independently versioned schemas
         shell: bash
         run: |
