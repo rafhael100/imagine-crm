@@ -7,3 +7,9 @@ O código usa entropia criptográfica real do OTP e pode criar valores distintos
 **Precisão:** se dois OTP de seis dígitos sorteados independentemente forem numericamente idênticos, o código anterior pode coincidir com o desafio atual; o teste evita declarar uma garantia impossível de ausência de colisão. O reenvio substitui o verificador em memória e nunca é prova de invalidação atômica distribuída. Todas as flags de emissão, registro, acesso e persistência permanecem **false**.
 
 Não há acesso a SQL, Mail, WhatsApp, Rede, APIs, VPS ou produção, nenhuma identidade/trial elegível, nem implementação de rate-limit durável. Os testes de sandbox são uma etapa de validação técnica, não uma homologação funcional operacional. Gates SEG/DBA #27, CORE/LGPD #259, visual #416 continuam NO-GO. Merge somente na DEV após testes e diff revisados.
+
+## Critérios de aprovação automática
+
+O teste falha se qualquer um dos seguintes itens ocorrer: reenvio antes dos 60 segundos, reuso do desafio na mesma instância, verificação cruzada de contato ou canal, sexta tentativa após cinco erros, validade após 900 segundos, vigésima primeira emissão no mesmo contexto de origem ou compartilhamento involuntário de estado entre instâncias. A saída do CLI deve manter uma linha JSON com protocolo e versão conhecidos, no máximo 4096 bytes, e dois resultados idênticos em execuções independentes. O teste também rejeita argumentos em linha de comando e verifica que nenhum dado de contato, OTP ou chave foi serializado.
+
+Os limites e a validade são apenas **critérios de ensaio**, não SLA, decisão de risco, política empresarial ou evidência de aprovação do canal de envio.
