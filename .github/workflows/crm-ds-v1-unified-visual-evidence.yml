@@ -1,0 +1,71 @@
+name: CRM Imagine - DS-V1 Unified Visual Review Evidence
+
+on:
+  push:
+    branches:
+      - dev/ui-ds-v1-crm-integrated-review-2026-11-12
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-ds-v1-unified-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    name: Real Chrome screenshots - 11 screens x before/after x 3 viewports
+    if: github.ref == 'refs/heads/dev/ui-ds-v1-crm-integrated-review-2026-11-12' || github.head_ref == 'dev/ui-ds-v1-crm-integrated-review-2026-11-12'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout candidate with baseline history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Node 22 - standard WebSocket CDP support
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Capture all eleven offline screens in real Chrome with external HTTP blocked
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/visual-approval/before .tmp/visual-approval/images
+          git show f19e0323b36d9fe5670c4157ab45f7737a6155c4:prototypes/s01-prot-01/index.html \
+            > .tmp/visual-approval/before/primary.html
+          node scripts/ci/capture-crm-experience-visual-evidence.mjs \
+            .tmp/visual-approval/before/primary.html \
+            prototypes/s01-prot-01/index.html \
+            .tmp/visual-approval/images/main-nine-screen-shell
+          for name in \
+            f3-22-csv-risk-preview \
+            f3-104-retention-lifecycle \
+            f3-109-sales-quote-subtotal \
+            f3-113-scoring-trend \
+            f3-115-weighted-forecast \
+            f3-117-opportunity-outcomes \
+            f3-138-commercial-journey \
+            f3-148-private-stage-dashboard \
+            f3-155-commercial-workload \
+            f3-164-interactive-lead-triage
+          do
+            git show "f19e0323b36d9fe5670c4157ab45f7737a6155c4:prototypes/$name/index.html" \
+              > ".tmp/visual-approval/before/$name.html"
+            node scripts/ci/capture-crm-offline-visual-evidence.mjs \
+              ".tmp/visual-approval/before/$name.html" \
+              "prototypes/$name/index.html" \
+              ".tmp/visual-approval/images/$name"
+          done
+      - name: Upload 66 before-after images and SHA-256 manifests for human approval
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crm-ds-v1-unified-visual-${{ github.sha }}
+          path: .tmp/visual-approval/images/
+          if-no-files-found: error
+          retention-days: 7
