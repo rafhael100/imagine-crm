@@ -26,6 +26,7 @@ try {
         'Tests\\Support\\SignupTrialHttpFixture',
         'Tests\\Support\\SignupTrialSequencedHttpLab',
         'Tests\\Feature\\SignupTrialSequencedHttpLabTest',
+        'Tests\\Feature\\SignupTrialWindowQuotaHttpLabTest',
         'Tests\\Support\\SignupOtpLifecycleSandbox',
         'Tests\\Support\\TrialEnrollmentLifecycleSandbox',
         'Tests\\Feature\\SignupTrialHttpFixtureFlowTest',
