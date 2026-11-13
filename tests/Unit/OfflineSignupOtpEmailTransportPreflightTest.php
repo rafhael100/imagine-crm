@@ -68,6 +68,45 @@ final class OfflineSignupOtpEmailTransportPreflightTest extends TestCase
         }
     }
 
+    public function test_unknown_tls_and_delivery_settings_can_never_be_ignored(): void
+    {
+        $engine = new OfflineSignupOtpEmailTransportPreflight();
+        foreach ([
+            ['verify_peer_name' => false],
+            ['auto_tls' => false],
+            ['tls_required' => false],
+            ['encryption' => null],
+            ['verify_peer' => true],
+            ['allow_self_signed' => false],
+            ['options' => ['ssl' => ['verify_peer' => false]]],
+            ['failover' => null],
+            ['from' => 'attacker@example.org'],
+            ['bcc' => 'attacker@example.org'],
+            ['host_override' => 'attacker.example.org'],
+            [0 => 'unrecognized-option'],
+        ] as $additional) {
+            $view = $engine->inspect(array_replace(self::mailer(), $additional), self::sender());
+            self::assertSame('unsafe_or_ambiguous_transport', $view['reason_code']);
+            self::assertFalse($view['offline_configuration_candidate']);
+            self::assertFalse($view['can_send']);
+        }
+        foreach ([
+            ['extra' => 'changed-header'],
+            ['reply_to' => 'attacker@example.org'],
+            [0 => 'unknown-sender-key'],
+        ] as $additional) {
+            $view = $engine->inspect(self::mailer(), array_replace(self::sender(), $additional));
+            self::assertSame('invalid_sender', $view['reason_code']);
+            self::assertFalse($view['can_send']);
+        }
+        $noHost = self::mailer();
+        unset($noHost['host']);
+        self::assertSame(
+            'unsafe_or_ambiguous_transport',
+            $engine->inspect($noHost, self::sender())['reason_code'],
+        );
+    }
+
     public function test_plaintext_tls_opportunistic_and_wrong_ports_are_denied(): void
     {
         $engine = new OfflineSignupOtpEmailTransportPreflight();
@@ -91,6 +130,9 @@ final class OfflineSignupOtpEmailTransportPreflightTest extends TestCase
             ['host' => 'smtp.example.org:465'],
             ['host' => 'smtp.mail.example.org/Bcc:foo'],
             ['username' => ''], ['password' => 'weak'],
+            ['username' => "account@example.org\r\nBcc:stolen@example.org"],
+            ['username' => 'account with spaces'],
+            ['password' => "malicious-password-value\r\nBcc:stolen@example.org"],
             ['timeout' => null], ['timeout' => 0], ['timeout' => '10'],
         ] as $changes) {
             $result = $engine->inspect(array_replace(self::mailer(), $changes), self::sender());

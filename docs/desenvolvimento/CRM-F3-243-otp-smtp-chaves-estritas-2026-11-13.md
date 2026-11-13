@@ -1,0 +1,9 @@
+# CRM F3-243 — Preflight SMTP com formato exato e sem opções TLS não avaliadas
+
+Correção do `OfflineSignupOtpEmailTransportPreflight` da F3-237. Antes, o preview inerte reconhecia campos de transporte log/failover, mas uma propriedade TLS desconhecida, como `verify_peer_name=false`, ou um campo de remetente adicional, como `reply_to`, podia estar no mesmo array e passar despercebido pela inspeção. Isso podia produzir um falso rótulo de "candidata offline" para uma configuração cujo significado completo não foi revisado.
+
+A F3-243 faz *allowlist exata de chaves*: o candidato SMTP aceita somente `transport,scheme,host,port,username,password,timeout`, e o remetente apenas `address,name`. Qualquer campo adicional ou ausente impede classificação positiva. Controles `auto_tls`, `verify_peer_name`, `tls_required`, `options`, `encryption`, `fallback`, `bcc`, `reply_to` e chaves numéricas são recusados de forma conservadora. Login e senha de laboratório devem ser ASCII imprimível sem espaços/CRLF para prevenir dados de cabeçalho hostis; a homologação real decidirá formatos e opções suportadas.
+
+Os testes negativos exercitam campos TLS maliciosos e desconhecidos, campos de remetente não revisados, bytes de controle em credenciais, ausência de host e as verificações anteriores de esquema/porta. O relatório continua retornando exclusivamente códigos fixos, com `can_send=false`, `can_queue=false`, `can_log_code=false`, `can_register=false` em qualquer hipótese. O preview **não** lê `config/mail.php`, não valida certificados, DNS, provedor, credenciais, SPF/DKIM/DMARC ou entrega. É uma melhoria de defesa do laboratório, não autorização de envio.
+
+Sem migrations, endpoints, jobs, DNS, SMTP, mensagens ou dados reais. Integrar apenas DEV após diff revisto e quatro workflows success na HEAD; gates #27 SEG/DBA, #259 CORE/LGPD e #416 visual permanecem NO-GO. Não tocar `main`, VPS ou produção.
