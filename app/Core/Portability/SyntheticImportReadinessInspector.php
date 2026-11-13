@@ -46,6 +46,10 @@ final class SyntheticImportReadinessInspector
         if ($operationRequest['target_account_state'] !== $mappingRequest['target_state']) {
             $warnings[] = 'TARGET_STATE_CLAIMS_DISAGREE';
         }
+        if ($operationRequest['target_account_state'] === 'unknown'
+            || $mappingRequest['target_state'] === 'unknown') {
+            $warnings[] = 'TARGET_STATE_UNVERIFIED';
+        }
         if ($operationRequest['duplicate_warning_count']
             !== $mapping['declared_duplicate_candidate_count']) {
             $warnings[] = 'DUPLICATE_COUNTS_DISAGREE';
