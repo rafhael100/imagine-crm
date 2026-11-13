@@ -1,0 +1,9 @@
+# F3-226 — Pré-fundação OTP de cadastro (6 dígitos, 15 min), sem rota ou entrega
+
+O novo `OfflineSignupOtpChallenge` prepara a verificação do cadastro trial Imagine CRM usando código de **seis dígitos** e validade **900 segundos (15 minutos)**. É uma implementação PHP Core de laboratório, independente do TOTP MFA existente: gera código com `random_int` e nonce com `random_bytes`, armazena apenas um registro verificável `nonce/digest/issued_at/expires_at` separado da saída transitória `delivery_code` e usa HMAC-SHA256 com segredo externo e igualdade de tempo constante `hash_equals`. O MAC vincula código, nonce, canal `email`/`phone`, identificador opaco e dois timestamps para impedir extensão falsificada da validade.
+
+A análise `inspect` distingue correspondência, divergência, pré-início, expiração exata, orçamento ilustrativo de cinco tentativas e indicação de consumo anterior. **Nenhuma correspondência autoriza criação de empresa/usuário, autenticação, convite, envio ou acesso**. O estado de tentativas e consumo recebido pelo método **não é confiável e não é persistente**: rate limit atômico, replay prevention entre processos, vínculo verificado entre hash opaco/empresa/e-mail/telefone, envio real, trilha de auditoria, elegibilidade CNPJ, LGPD e entrega via SMS/WhatsApp/e-mail exigem desenho e revisão independentes. A saída nunca inclui código ou hash do registro analisado.
+
+Testes unitários cobrem seis dígitos, 15 minutos, fronteira em 900s, HMAC vinculado, nonce aleatório, campos alterados, tentativas, replay alegado e mensagens de falha sem revelar entrada. Sem migration, banco, mailer, endpoint, sessão, cobrança, credenciais reais, main, VPS ou produção. Gates #27 SEG/DBA, #259 CORE/LGPD e #416 visual continuam abertos.
+
+Esta etapa não implementa onboarding nem prova autenticação fim a fim; sua finalidade é reduzir o trabalho e as decisões necessárias para uma futura homologação privada.
