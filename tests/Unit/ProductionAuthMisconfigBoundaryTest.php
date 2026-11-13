@@ -26,7 +26,7 @@ final class ProductionAuthMisconfigBoundaryTest extends TestCase
             "config('identity.experimental') !== true",
             "config('auth.guards.crm_identity') !== null",
             "config('auth.providers.crm_global_identities') !== null",
-            'DenyByDefaultAuthorizer::class',
+            'DenyByDefaultAuthorizer',
             'GuardPrincipalSource::class',
             'AuthenticationException',
             'ExperimentalAuthenticator::class',
