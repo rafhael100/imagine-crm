@@ -5,14 +5,17 @@
 ## Arquivos
 
 - infra/staging/Dockerfile — pacote PHP 8.4 FPM com extensões SQLite e PGSQL; Composer --no-dev; fontes explicitamente selecionadas para **não copiar .env, testes, scripts ou migrations experimentais de IAM**.
-- infra/staging/compose.yaml — aplicação PHP-FPM e Nginx, rede interna única, sem serviço de PostgreSQL, sem volumes de banco ou acesso a dados reais; Nginx associado exclusivamente a **127.0.0.1:18080** no host, sem porta pública; auth experimental false, SQLite :memory:, cache, fila, sessão e mailer locais.
+- infra/staging/compose.yaml — aplicação PHP-FPM e Nginx, rede interna única, **sem bind mounts do host** ou serviço PostgreSQL; Nginx associado exclusivamente a **127.0.0.1:18080** no host, sem porta pública; auth experimental false, SQLite :memory:, cache, fila, sessão e mailer locais.
+- infra/staging/Dockerfile.web — artefato Nginx candidato: copia somente nginx.conf e public/ do mesmo checkout em vez de consumir diretórios montados do host.
 - infra/staging/nginx.conf — único entrypoint FastCGI index.php, proibição de outros PHP e dotfiles, headers de segurança e limite de request curto.
 - tests/Unit/StagingSmokeBlueprintContractTest.php — tripwires de segurança de fonte: portas, containers, conexões, serviços e migrações.
-- .github/workflows/ci-crm-private-staging-blueprint.yml — **apenas** docker compose config --quiet e leitura do GitHub; não executa compose up, build, pull, run nem deploy.
+- scripts/ci/verify-staging-rendered-compose.php — política fail-closed que recebe o JSON normalizado do Compose e recusa rede não interna, serviços extras, publicação em 0.0.0.0, mounts do host, configuração IAM/DB/SMTP não fictícia, usuários privilegiados, imagens não declaradas e contextos de build fora do repositório.
+- tests/Unit/StagingRenderedComposePolicyTest.php — cenários negativos para alterações adversariais de portas, volumes, segredos, banco, flag IAM e permissões.
+- .github/workflows/ci-crm-private-staging-blueprint.yml — **apenas** docker compose config --quiet/--format json + política PHP e leitura do GitHub; não executa compose up, build, pull, run nem deploy.
 
 ## Escopo demonstrável
 
-CI pode provar sintaxe da configuração Compose e consistência estática do contrato. **Não** confirma disponibilidade da imagem, build PHP, boot de FPM, healthcheck via Nginx, permissões efetivas, rede de uma VPS, isolamento Docker real, TLS/Cloudflare, segurança do host ou homologação privada completa.
+CI pode provar sintaxe da configuração Compose, modelo normalizado e consistência estática do contrato. **Não** confirma disponibilidade da imagem, build PHP, boot de FPM, healthcheck via Nginx, permissões efetivas, rede de uma VPS, isolamento Docker real, TLS/Cloudflare, segurança do host ou homologação privada completa.
 
 A conexão de banco do container está propositalmente inerte (SQLite em memória). O PostgreSQL da homologação **não está configurado**: só será desenhado após definição de papéis de runtime não superusuários, migrações, back-up/restore, segredos, RLS e aprovação especializada.
 
