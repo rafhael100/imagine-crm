@@ -40,7 +40,7 @@ final class PortableCsvHeaderRiskSummaryTest extends TestCase
 
     public function test_no_header_claim_does_not_interpret_first_record_as_titles(): void
     {
-        $out = (new PortableCsvHeaderRiskSummary())->inspect('a,a\n1,2', 'comma', false);
+        $out = (new PortableCsvHeaderRiskSummary())->inspect("a,a\n1,2", 'comma', false);
         self::assertSame(0, $out['local_duplicate_exact_header_count']);
         self::assertSame(2, $out['local_data_row_count']);
         self::assertContains('NO_HEADER_DECLARED', $out['warning_codes']);
