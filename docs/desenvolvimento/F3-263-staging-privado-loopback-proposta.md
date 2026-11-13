@@ -13,6 +13,17 @@
 - tests/Unit/StagingRenderedComposePolicyTest.php — cenários negativos para alterações adversariais de portas, volumes, segredos, banco, flag IAM e permissões.
 - .github/workflows/ci-crm-private-staging-blueprint.yml — **apenas** docker compose config --quiet/--format json + política PHP e leitura do GitHub; não executa compose up, build, pull, run nem deploy.
 
+## F3-265 — fechamento adicional de build e rede, com prova CLI negativa
+
+A política que recebe o **JSON normalizado do Docker Compose** passou a rejeitar:
+- qualquer chave adicional na configuração de build (incluindo additional_contexts, target, dockerfile_inline, cache_from, pull e tags), e não apenas parâmetros args/secrets anteriores;
+- configurações adicionais na rede crm_private, como attachable, external, driver_opts, driver alternativo ou nome inesperado;
+- serviços malformados ou não representados por um mapa de configuração.
+
+Os testes PHPUnit de StagingRenderedComposePolicyTest verificam alterações adversariais **com valores exclusivamente fictícios** e também executam o **validador PHP como processo CLI separado**: modelo válido retorna 0; DB_HOST extra, JSON malformado e carga acima do limite retornam erro; rejeições não imprimem o conteúdo enviado.
+
+**Isso continua sendo uma prova estática de configuração e da CLI de CI**, sem imagem executada, sem daemon Docker, sem acesso à VPS e sem liberação operacional. O PR continua em rascunho.
+
 ## Escopo demonstrável
 
 CI pode provar sintaxe da configuração Compose, modelo normalizado e consistência estática do contrato. **Não** confirma disponibilidade da imagem, build PHP, boot de FPM, healthcheck via Nginx, permissões efetivas, rede de uma VPS, isolamento Docker real, TLS/Cloudflare, segurança do host ou homologação privada completa.
