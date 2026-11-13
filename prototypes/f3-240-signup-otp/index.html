@@ -57,8 +57,14 @@ h1{font-size:clamp(1.9rem,3vw,2.65rem);line-height:1.15;letter-spacing:-.04em;ma
 #status,#code-status{margin-top:13px;background:#f4f8f3;border-left:4px solid #f9941d;border-radius:8px;padding:12px;color:#425a46;font-weight:690;font-size:.88rem}
 .locked{font-size:.86rem;color:#8a4630;font-weight:730}
 .meta{text-align:center;color:#657066;font-size:.78rem;margin-top:22px}
+.quota-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.quota{border:1px solid #e2e7e2;background:#f9faf9;border-radius:11px;padding:12px;min-width:0}
+.quota strong{font-size:1.1rem;letter-spacing:-.02em;display:block;color:#171b19}
+.quota span{font-size:.79rem;color:#59665d;display:block;overflow-wrap:anywhere}
+.quota-note{font-size:.79rem;color:#5e6c60}
+.trial-outcome{margin-top:14px;padding:12px;background:#fff8ed;border-left:4px solid #f9941d;border-radius:8px;color:#6c4c21;font-weight:680}
 @media(max-width:880px){.shell{grid-template-columns:1fr;min-height:0}.brand{gap:15px;padding:24px}.brand h2{font-size:2rem;max-width:660px}.brand p{margin:0}.brand footer{display:none}.content{padding:28px 22px}}
-@media(max-width:440px){.brand{padding:16px;gap:8px}.logo{max-width:188px;padding:7px 10px}.brand h2,.brand p,.perks{display:none}.eyebrow{font-size:.7rem;letter-spacing:.09em}.content{padding:18px 12px}.choices{grid-template-columns:1fr}.panel{padding:17px 14px}.steps li{padding:7px 9px}.action-row button{width:100%}h1{font-size:1.9rem}}
+@media(max-width:440px){.brand{padding:16px;gap:8px}.logo{max-width:188px;padding:7px 10px}.brand h2,.brand p,.perks{display:none}.eyebrow{font-size:.7rem;letter-spacing:.09em}.content{padding:18px 12px}.choices,.quota-grid{grid-template-columns:1fr}.panel{padding:17px 14px}.steps li{padding:7px 9px}.action-row button{width:100%}h1{font-size:1.9rem}}
 </style>
 </head>
 <body>
@@ -77,7 +83,7 @@ h1{font-size:clamp(1.9rem,3vw,2.65rem);line-height:1.15;letter-spacing:-.04em;ma
   <h1>Uma confirmação clara, sem complicação.</h1>
   <p class="intro">Escolha os exemplos de empresa e canal, simule a entrega de um código e teste a interação. Tudo funciona apenas na memória desta página.</p>
   <aside class="notice" role="note">PROTÓTIPO — DADOS FICTÍCIOS. Não digite documentos, e-mails, telefones ou códigos reais. Nenhuma mensagem é enviada, nenhum cadastro é criado e nenhum dado é salvo.</aside>
-  <ol class="steps" aria-label="Etapas demonstrativas"><li class="current" id="step-a">01 · Empresa</li><li id="step-b">02 · Código</li><li id="step-c">03 · Revisão</li></ol>
+  <ol class="steps" aria-label="Etapas demonstrativas"><li class="current" id="step-a">01 · Empresa</li><li id="step-b">02 · Código</li><li id="step-c">03 · Revisão</li><li id="step-d">04 · Trial</li></ol>
   <section class="panel" id="step-one" aria-labelledby="first-title">
     <h2 id="first-title">1. Escolha uma empresa fictícia</h2>
     <p>Dados de exemplo fixos, sem campo para documento real.</p>
@@ -110,7 +116,30 @@ h1{font-size:clamp(1.9rem,3vw,2.65rem);line-height:1.15;letter-spacing:-.04em;ma
     <h2 id="third-title" tabindex="-1">3. Revisão concluída no protótipo</h2>
     <p>O código de demonstração coincidiu, mas nenhuma identidade, empresa ou permissão foi confirmada.</p>
     <p class="locked">Cadastro real: bloqueado até revisão de segurança, identidade, consentimento e infraestrutura.</p>
+    <div class="action-row"><button class="secondary" type="button" id="show-trial">Ver prévia do trial fictício</button></div>
     <button class="primary" type="button" disabled id="finish">Concluir cadastro (indisponível)</button>
+  </section>
+  <section class="panel" id="step-four" aria-labelledby="fourth-title" hidden>
+    <h2 id="fourth-title" tabindex="-1">4. Conheça o trial fictício</h2>
+    <p id="trial-company">Empresa de exemplo: CNPJ numérico. Nenhuma titularidade foi verificada.</p>
+    <div class="value">Janela demonstrativa de <strong>14 dias</strong> · Não há contratação, elegibilidade ou acesso ativo.</div>
+    <div class="group-title">Franquias ilustrativas do plano de teste</div>
+    <div class="quota-grid" aria-label="Sete franquias ilustrativas, sem consumo real">
+      <div class="quota" data-meter="users" data-limit="2"><strong>2</strong><span>Usuários</span></div>
+      <div class="quota" data-meter="leads" data-limit="20"><strong>20</strong><span>Leads</span></div>
+      <div class="quota" data-meter="automations" data-limit="2"><strong>2</strong><span>Automações</span></div>
+      <div class="quota" data-meter="pipelines" data-limit="2"><strong>2</strong><span>Funis</span></div>
+      <div class="quota" data-meter="attachments_bytes" data-limit="20971520"><strong>20 MB</strong><span>Anexos</span></div>
+      <div class="quota" data-meter="ai_initial_credits" data-limit="10"><strong>10</strong><span>Créditos IA iniciais</span></div>
+      <div class="quota" data-meter="ai_bonus_credits" data-limit="10"><strong>10</strong><span>Créditos IA bônus</span></div>
+    </div>
+    <p class="quota-note">Todos os limites acima são exemplos do Core Imagine CRM; nenhum saldo foi concedido.</p>
+    <div class="action-row">
+      <button class="secondary" type="button" id="trial-duplicate">Simular tentativa duplicada</button>
+      <button class="secondary" type="button" id="trial-expire">Simular fim de 14 dias</button>
+    </div>
+    <p class="trial-outcome" id="trial-status" role="status" aria-live="polite">Prévia apenas: nenhum trial foi iniciado.</p>
+    <button class="primary" type="button" disabled id="activate-trial">Ativar trial real (indisponível)</button>
   </section>
   <div class="action-row"><button class="secondary" type="button" id="restart">Reiniciar demonstração</button><span class="small">Nenhum dado sai deste navegador.</span></div>
   <p class="meta">Imagine CRM · Interface para revisão visual · Sem integração, rede, armazenamento ou cobrança</p>
@@ -129,12 +158,13 @@ h1{font-size:clamp(1.9rem,3vw,2.65rem);line-height:1.15;letter-spacing:-.04em;ma
   groups.company.forEach(btn=>btn.addEventListener('click',()=>setPressed('company',btn.dataset.company)));
   groups.channel.forEach(btn=>btn.addEventListener('click',()=>setPressed('channel',btn.dataset.channel)));
   function stage(stage){
-    ['step-a','step-b','step-c'].forEach((id,i)=>byId(id).classList.toggle('current',i===stage));
+    ['step-a','step-b','step-c','step-d'].forEach((id,i)=>byId(id).classList.toggle('current',i===stage));
   }
   byId('simulate').addEventListener('click',()=>{
     state.expired=false;
     byId('step-two').hidden=false;
     byId('step-three').hidden=true;
+    byId('step-four').hidden=true;
     byId('code').value='';
     byId('code-status').textContent='Aguardando o código de exemplo. Nenhum envio ocorreu.';
     byId('status').textContent='Simulação realizada. Não houve e-mail, WhatsApp ou SMS real.';
@@ -152,19 +182,38 @@ h1{font-size:clamp(1.9rem,3vw,2.65rem);line-height:1.15;letter-spacing:-.04em;ma
     }
     if(byId('code').value!=='012345'){
       byId('step-three').hidden=true;
+      byId('step-four').hidden=true;
       byId('code-status').textContent='O exemplo não coincide. Utilize somente 012345.';
       return;
     }
     byId('code-status').textContent='Correspondência visual simulada. Nenhum cadastro foi autorizado.';
     byId('step-three').hidden=false;
+    byId('step-four').hidden=true;
     stage(2);
     byId('third-title').focus();
   });
   byId('expire').addEventListener('click',()=>{
     state.expired=true;
     byId('step-three').hidden=true;
+    byId('step-four').hidden=true;
     stage(1);
     byId('code-status').textContent='Expiração de 15 minutos simulada. Nenhum código permite cadastro.';
+  });
+  byId('show-trial').addEventListener('click',()=>{
+    if(byId('step-three').hidden || state.expired)return;
+    byId('step-four').hidden=false;
+    byId('trial-company').textContent=state.company==='alpha'
+      ?'Empresa de exemplo: CNPJ alfanumérico. Nenhuma titularidade foi verificada.'
+      :'Empresa de exemplo: CNPJ numérico. Nenhuma titularidade foi verificada.';
+    byId('trial-status').textContent='Prévia apenas: nenhum trial foi iniciado.';
+    stage(3);
+    byId('fourth-title').focus();
+  });
+  byId('trial-duplicate').addEventListener('click',()=>{
+    byId('trial-status').textContent='Duplicidade simulada: um segundo trial seria recusado. Nenhum CNPJ real foi consultado.';
+  });
+  byId('trial-expire').addEventListener('click',()=>{
+    byId('trial-status').textContent='Fim dos 14 dias simulado: nenhuma conta foi suspensa, ativada ou cobrada.';
   });
   byId('restart').addEventListener('click',()=>{
     setPressed('company','legacy');
@@ -173,10 +222,19 @@ h1{font-size:clamp(1.9rem,3vw,2.65rem);line-height:1.15;letter-spacing:-.04em;ma
     byId('code').value='';
     byId('step-two').hidden=true;
     byId('step-three').hidden=true;
+    byId('step-four').hidden=true;
     byId('status').textContent='Pronto para simular; nenhum dado será enviado.';
     stage(0);
     byId('simulate').focus();
   });
+  // Local screenshot fixture only. The URL fragment never reaches a server.
+  if(location.hash==='#previsualizar-trial'){
+    setPressed('company','alpha');
+    byId('simulate').click();
+    byId('code').value='012345';
+    byId('validate').click();
+    byId('show-trial').click();
+  }
 })();
 </script>
 </body>
