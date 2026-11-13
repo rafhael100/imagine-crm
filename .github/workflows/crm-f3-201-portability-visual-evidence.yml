@@ -37,7 +37,9 @@ jobs:
           node scripts/ci/capture-crm-portability-center-evidence.mjs \
             prototypes/f3-201-portability-center/index.html \
             .tmp/visual-review/f3-201
-      - name: Upload screenshots and SHA-256 manifest for human review
+          cp prototypes/f3-201-portability-center/index.html \
+            .tmp/visual-review/f3-201/central-portabilidade-demo.html
+      - name: Upload runnable self-contained HTML, 8 PNGs and SHA-256 manifest for human review
         if: success()
         uses: actions/upload-artifact@v4
         with:
