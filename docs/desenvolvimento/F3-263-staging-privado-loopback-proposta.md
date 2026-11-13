@@ -9,7 +9,7 @@
 - infra/staging/Dockerfile.web — artefato Nginx candidato: copia somente nginx.conf e public/ do mesmo checkout em vez de consumir diretórios montados do host.
 - infra/staging/nginx.conf — único entrypoint FastCGI index.php, proibição de outros PHP e dotfiles, headers de segurança e limite de request curto.
 - tests/Unit/StagingSmokeBlueprintContractTest.php — tripwires de segurança de fonte: portas, containers, conexões, serviços e migrações.
-- scripts/ci/verify-staging-rendered-compose.php — política fail-closed que recebe o JSON normalizado do Compose e recusa rede não interna, serviços extras, publicação em 0.0.0.0, mounts do host, configuração IAM/DB/SMTP não fictícia, usuários privilegiados, imagens não declaradas e contextos de build fora do repositório.
+- scripts/ci/verify-staging-rendered-compose.php — política fail-closed que recebe o JSON normalizado do Compose e recusa rede não interna, serviços extras, publicação em 0.0.0.0, mounts do host, configuração IAM/DB/SMTP não fictícia, usuários privilegiados, adições de capabilities, políticas seccomp enfraquecidas, comandos/entrypoints substituídos, imagens não declaradas e contextos de build fora do repositório.
 - tests/Unit/StagingRenderedComposePolicyTest.php — cenários negativos para alterações adversariais de portas, volumes, segredos, banco, flag IAM e permissões.
 - .github/workflows/ci-crm-private-staging-blueprint.yml — **apenas** docker compose config --quiet/--format json + política PHP e leitura do GitHub; não executa compose up, build, pull, run nem deploy.
 
