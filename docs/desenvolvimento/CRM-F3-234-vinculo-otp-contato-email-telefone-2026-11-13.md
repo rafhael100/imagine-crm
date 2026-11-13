@@ -1,0 +1,9 @@
+# F3-234 — Vincular OTP de cadastro a um contato específico, sem transporte real
+
+A assinatura HMAC da F3-226 exige um identificador opaco, mas não comprova de onde vem esse identificador. O componente `OfflineSignupContactHmacBinding` prepara a derivação em memória de um vínculo de contexto **pseudônimo e vinculado ao canal**, a partir de um e-mail de formato conservador ASCII ou de um telefone no formato internacional E.164 estrito. A chave HMAC dedicada de 32–128 bytes e o domínio fixo `imagine.crm.signup_contact_binding.v1` impedem usar o hash simples do contato como índice enumerável.
+
+Para e-mail, apenas o domínio DNS em ASCII é colocado em minúsculas; o local-part mantém maiúsculas, pontos, aliases com `+` e suas distinções, porque colapsá-los poderia ligar caixas diferentes. Não tenta converter IDN, validar MX, entregar e-mail ou adivinhar propriedade. Para telefone, aceita somente `+[código do país][número]` em E.164, sem tentar normalizar números locais ou afirmar que existe WhatsApp, SMS ou titularidade.
+
+**Prova funcional:** PHPUnit usa a classe OTP real para emitir código efêmero para um contato, depois verifica que o mesmo código falha se apresentado com vínculo de outro contato ou com canal trocado. Não considera o sucesso com vínculo correto como autorização de signup, login, acesso ou envio.
+
+Sem endpoint, mailer, gateway WhatsApp/SMS, autenticação, armazenamento de destinatários, taxa, cobrança, cadastro ou dados reais. O HMAC retornado é pseudônimo sensível e não deve ser exposto em logs/URL/resposta ao usuário. A verificação do controle do e-mail/telefone, LGPD, rate-limit, segurança da chave e assinatura segura do transporte exigem homologação. Gates #27 SEG/DBA, #259 CORE/LGPD e #416 visual seguem NO-GO. Apenas DEV após CI F0/PG16/Sites/AIA e revisão de diff.
