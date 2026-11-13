@@ -49,11 +49,11 @@ final class StagingRenderedComposePolicy
             }
             $require(($svc['read_only'] ?? null) === true, $name.'_writable_root');
             $require(
-                in_array('ALL', $svc['cap_drop'] ?? [], true),
+                ($svc['cap_drop'] ?? null) === ['ALL'],
                 $name.'_capabilities',
             );
             $require(
-                in_array('no-new-privileges:true', $svc['security_opt'] ?? [], true),
+                ($svc['security_opt'] ?? null) === ['no-new-privileges:true'],
                 $name.'_privilege_escalation',
             );
             $require(
@@ -71,6 +71,8 @@ final class StagingRenderedComposePolicy
             foreach ([
                 'volumes', 'devices', 'secrets', 'configs', 'env_file', 'network_mode',
                 'privileged', 'pid', 'ipc', 'extra_hosts', 'dns', 'dns_search',
+                'cap_add', 'volumes_from', 'device_cgroup_rules', 'userns_mode',
+                'extends', 'profiles', 'links', 'sysctls', 'hostname',
                 'ports' /* app only, web handled below */,
             ] as $forbidden) {
                 if ($forbidden === 'ports' && $name === 'web') {
@@ -84,6 +86,18 @@ final class StagingRenderedComposePolicy
                     $name.'_forbidden_'.$forbidden,
                 );
             }
+            // A changed entrypoint/command could invoke migrations or
+            // bypass the reviewed nginx/FPM startup without opening a port.
+            $require(
+                ($name === 'app'
+                    ? !isset($svc['entrypoint']) || $svc['entrypoint'] === []
+                    : ($svc['entrypoint'] ?? null) === ['nginx', '-g', 'daemon off;']),
+                $name.'_unreviewed_entrypoint',
+            );
+            $require(
+                !isset($svc['command']) || $svc['command'] === [],
+                $name.'_unreviewed_command',
+            );
             $build = $svc['build'] ?? null;
             $require(
                 is_array($build)
