@@ -5,7 +5,7 @@ namespace Tests\Labs\F3_62;
 
 use App\Core\Leads\SignedTechnicalReceiptCandidateVerifier;
 
-/** CI-only signer: never import into runtime or operational HTTP routes. */
+/** CI-only signer: it must never be imported into operational Laravel routes. */
 final class SyntheticTechnicalReceiptSigner
 {
     public static function sign(array $frame,string $key,int $now):array
@@ -16,21 +16,13 @@ final class SyntheticTechnicalReceiptSigner
         $nonce=substr($hex,0,8).'-'.substr($hex,8,4).'-'.substr($hex,12,4)
             .'-'.substr($hex,16,4).'-'.substr($hex,20,12);
         $receipt=[
-            'schema'=>'imagine.crm.f362.synthetic-technical-receipt.v1',
-            'organization_reference'=>$frame['organization_reference'],
-            'binding_reference'=>$frame['binding_reference'],
-            'submission_reference'=>$frame['submission_reference'],
-            'site_reference'=>$frame['site_reference'],
-            'form_reference'=>$frame['form_reference'],
-            'destination_reference'=>$frame['destination_reference'],
-            'state'=>'SYNTHETIC_COMMITTED_NO_REAL_LEAD',
             'issued_at'=>$now,
             'expires_at'=>$now+60,
             'nonce'=>$nonce,
             'mac'=>'',
         ];
         $receipt['mac']=hash_hmac('sha256',
-            SignedTechnicalReceiptCandidateVerifier::canonical($receipt),$key);
+            SignedTechnicalReceiptCandidateVerifier::canonical($frame,$receipt),$key);
         return $receipt;
     }
 }
