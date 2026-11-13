@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 /** Disposable PHP HTTP router. NEVER register as a Laravel route. */
-require_once __DIR__.'/../F3_52/AuthenticatedHandoffBoundary.php';
+require_once dirname(__DIR__,3).'/app/Core/Leads/SignedServiceHandoffBoundary.php';
 require_once __DIR__.'/../F3_55/SignedSyntheticReadback.php';
-use Tests\Labs\F3_52\AuthenticatedHandoffBoundary;
+use App\Core\Leads\SignedServiceHandoffBoundary;
 use Tests\Labs\F3_55\SignedSyntheticReadback;
 function reply(int $code,string $reason,bool $found=false):void {
     http_response_code($code);
@@ -104,14 +104,14 @@ try{
         };
         reply($code,$reason,$result['syntheticMetadataLocated']);return;
     }
-    $decision=(new AuthenticatedHandoffBoundary())->inspect(
+    $decision=(new SignedServiceHandoffBoundary())->inspect(
         $frame,$binding,$auth,$requestKey,$now
     );
     $reason=$decision['reasonCode'];
-    if($reason!=='SIGNED_FRAME_REQUIRES_ATOMIC_NONCE_CLAIM'){
+    if($reason!=='SIGNED_TECHNICAL_FRAME_ONLY'){
         reply(match($reason){
-            'CONTRACT_REJECTED','SUBMISSION_REJECTED'=>422,
-            'PINNED_CONTEXT_REJECTED'=>403,
+            'FRAME_CONTRACT_DENIED'=>422,
+            'SERVER_TENANT_CONTEXT_DENIED'=>403,
             default=>401
         },$reason);return;
     }
