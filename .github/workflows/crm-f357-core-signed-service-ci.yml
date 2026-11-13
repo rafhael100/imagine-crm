@@ -1,0 +1,32 @@
+name: CRM F3-57 - Signed Core boundary syntax and negative tests
+on:
+  pull_request:
+    paths:
+      - 'app/Core/Leads/SignedServiceHandoffBoundary.php'
+      - 'tests/Labs/F3_57/**'
+      - '.github/workflows/crm-f357-core-signed-service-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  core-negative-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3','8.4']
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+          coverage: none
+      - name: Verify Core boundary and negative cases
+        run: |
+          php -l app/Core/Leads/SignedServiceHandoffBoundary.php
+          php -l tests/Labs/F3_57/test_core_signed_service_boundary.php
+          php tests/Labs/F3_57/test_core_signed_service_boundary.php
