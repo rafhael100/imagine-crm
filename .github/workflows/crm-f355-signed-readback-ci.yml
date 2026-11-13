@@ -1,0 +1,54 @@
+name: CRM F3-55 - Signed synthetic PostgreSQL reconciliation
+on:
+  pull_request:
+    paths:
+      - 'tests/Labs/F3_53/**'
+      - 'tests/Labs/F3_54/**'
+      - 'tests/Labs/F3_55/**'
+      - '.github/workflows/crm-f355-signed-readback-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-reconciliation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: f353-superuser-synthetic-only
+          POSTGRES_DB: f353_nonce_ci
+        ports:
+          - '127.0.0.1:5432:5432'
+        options: >-
+          --health-cmd "pg_isready -U postgres -d f353_nonce_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      CRM_F355_READBACK_LAB: '1'
+      DB_HOST: 127.0.0.1
+      DB_DATABASE: f353_nonce_ci
+      PGPASSWORD: f353-superuser-synthetic-only
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql,pgsql
+          tools: none
+          coverage: none
+      - name: Provision disposable roles and transaction tables
+        run: |
+          set -euo pipefail
+          psql -h 127.0.0.1 -U postgres -d f353_nonce_ci -f tests/Labs/F3_53/nonce_pg16.sql
+          psql -h 127.0.0.1 -U postgres -d f353_nonce_ci -f tests/Labs/F3_54/transaction_pg16.sql
+      - name: Verify signed readback, loss recovery and tenant isolation
+        run: |
+          php -l tests/Labs/F3_55/SignedSyntheticReadback.php
+          php -l tests/Labs/F3_55/test_signed_readback_pg.php
+          php tests/Labs/F3_55/test_signed_readback_pg.php
