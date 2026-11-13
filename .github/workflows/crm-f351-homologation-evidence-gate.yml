@@ -1,0 +1,25 @@
+name: CRM F3-51 - Offline operational evidence completeness gate
+on:
+  pull_request:
+    paths:
+      - 'tests/Labs/F3_51/**'
+      - '.github/workflows/crm-f351-homologation-evidence-gate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fail-closed-evidence-checker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and negative path tests
+        run: |
+          node --check tests/Labs/F3_51/homologation-gate.mjs
+          node --check tests/Labs/F3_51/homologation-gate.test.mjs
+          node --test tests/Labs/F3_51/homologation-gate.test.mjs
