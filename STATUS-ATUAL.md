@@ -1,5 +1,12 @@
 # CRM Imagine — STATUS ATUAL
 
+## OPS-66 — Defesa JSON duplicado e limites OTP via HTTP de testes (13/11/2026)
+
+**DEV validada:** dc39c805ca883bf6885e60c6bccc8cfd01c05556 após [PR #507](https://github.com/rafhael100/imagine-crm/pull/507) e [PR #508](https://github.com/rafhael100/imagine-crm/pull/508), ambos **merged somente DEV**. A [F3-256](https://github.com/rafhael100/imagine-crm/pull/507) recusa JSON com chaves duplicadas antes de emitir/verificar OTP ou marcar trial no laboratório; **6/6 workflows success** na HEAD verificada. A [F3-257](https://github.com/rafhael100/imagine-crm/pull/508) comprova por HTTP do PHPUnit os limites locais de cinco tentativas, 60 verificações por origem e três emissões por contato; **4/4 workflows success**. [Dossiê OPS-66](docs/desenvolvimento/CRM-OPS-66-http-otp-regressao-evidencias-2026-11-13.md) contém SHAs, arquivos e links individuais de CI. **Main** e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012 **inalterada**. Não existem rotas públicas de cadastro/trial nem envio externo, dados reais, VPS ou release.
+
+**NO-GO permanece:** [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27), [CORE/LGPD #259](https://github.com/rafhael100/imagine-crm/issues/259), [UX #416](https://github.com/rafhael100/imagine-crm/issues/416). Testes de processo PHP e runner GitHub não comprovam durabilidade, identidade real ou segurança de staging/produção.
+
+
 ## OPS-65 — Cadastro HTTP de testes e prova de isolamento Composer (13/11/2026)
 
 **Snapshot DEV:** `6ae2a3eb97e8ede33ec4fdd00ccccd792daf63ac` após [PR #505](https://github.com/rafhael100/imagine-crm/pull/505), `main` permanece `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012`. Três PRs [#502](https://github.com/rafhael100/imagine-crm/pull/502), [#503](https://github.com/rafhael100/imagine-crm/pull/503) e [#505](https://github.com/rafhael100/imagine-crm/pull/505) foram integradas **somente DEV**, cada uma com **5/5 checks success na HEAD da PR** — [dossiê OPS-65](docs/desenvolvimento/CRM-OPS-65-http-dois-canais-e-isolamento-no-dev-2026-11-13.md). O kernel Laravel de PHPUnit simula código OTP nos canais e-mail/telefone, reenvio e expiração 900s; a CI Composer `--no-dev` demonstra que classes `Tests\\` não são autocarregáveis e somente a rota `/up` aparece no pacote. **Não há endpoint publicado de cadastro/trial, envio de e-mail/WhatsApp, usuário, acesso, cobrança ou dados reais.**
