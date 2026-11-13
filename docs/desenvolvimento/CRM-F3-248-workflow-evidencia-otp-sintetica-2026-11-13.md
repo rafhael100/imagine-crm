@@ -7,3 +7,7 @@ Após os testes, cria um arquivo `evidence/otp-lifecycle-offline.json` estritame
 **Limitação importante:** a CI pode instalar dependências Composer pela internet (como qualquer job convencional), mas **o executor do aplicativo não faz chamadas externas**. O workflow não usa credenciais, não instala banco persistente, não faz deploy, não envia mensagens, não atualiza `main` ou VPS e não fornece evidência de acesso real. O ambiente configura cache/sessão em memória e mailer `array` apenas como defesa adicional. O JSON é relatório de **laboratório**, não ativação de trial ou homologação final.
 
 A PR deve permanecer DRAFT até o F3-247 integrar a DEV e ser rebaseada com diff limitado ao workflow/teste/docs. A própria CI deve passar 5/5 (4 gerais + 1 dedicada) na SHA exata. Gates #27 SEG/DBA, #259 CORE/LGPD e #416 UX continuam NO-GO.
+
+## Uso de revisão
+
+Abra a execução `CRM Imagine - F3-248 OTP Lifecycle Synthetic Evidence` na aba Actions da própria PR e confira que o job `Real Core OTP lifecycle in isolated PHP sandbox — NO-GO` terminou com sucesso. O ZIP contém apenas `otp-lifecycle-offline.json` e `manifest.sha256`; compare com `sha256sum --check manifest.sha256` quando inspecionar a evidência baixada. O arquivo **não** é um token, nem um recibo de homologação e não deve ser aplicado na VPS. Se o artifact expirar, uma nova execução dos testes da PR pode gerar outra evidência sintética.
