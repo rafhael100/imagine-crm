@@ -24,6 +24,8 @@ try {
     }
     foreach ([
         'Tests\\Support\\SignupTrialHttpFixture',
+        'Tests\\Support\\SignupTrialSequencedHttpLab',
+        'Tests\\Feature\\SignupTrialSequencedHttpLabTest',
         'Tests\\Support\\SignupOtpLifecycleSandbox',
         'Tests\\Support\\TrialEnrollmentLifecycleSandbox',
         'Tests\\Feature\\SignupTrialHttpFixtureFlowTest',
