@@ -74,6 +74,31 @@ final class OfflineSignupOtpImagineUxPrototypeTest extends TestCase
         self::assertStringContainsString("location.hash==='#previsualizar-trial'", $html);
     }
 
+    public function test_navigable_preview_package_preserves_original_logo_offline_and_no_go(): void
+    {
+        $workflow = file_get_contents(
+            dirname(__DIR__, 2).'/.github/workflows/crm-f3-240-signup-ux-browser.yml',
+        );
+        self::assertIsString($workflow);
+        foreach ([
+            'offline-review/index.html',
+            'offline-review/assets/logo-imagine.png',
+            'offline-review/LEIA-ME.txt',
+            'sha256sum --check manifest.sha256',
+            'f3-240-imagine-cadastro-trial-navegavel',
+            'retention-days: 7',
+            'otp-trial-$width.png',
+        ] as $required) {
+            self::assertStringContainsString($required, $workflow);
+        }
+        foreach ([
+            'secrets.', 'deploy:', 'SSH_', 'git push',
+            'MAIL_MAILER: smtp', 'pull_request_target:',
+        ] as $forbidden) {
+            self::assertStringNotContainsString($forbidden, $workflow);
+        }
+    }
+
     public function test_offline_csp_and_no_transport_storage_or_real_signup_are_enforced(): void
     {
         $html = file_get_contents(self::root().'index.html');

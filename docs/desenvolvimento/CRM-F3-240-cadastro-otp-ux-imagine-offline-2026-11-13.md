@@ -17,3 +17,9 @@ O PHPUnit agora executa o CLI real `scripts/ci/emit-composite-signup-trial-lab.p
 Para revisão sem backend, o fragmento `#previsualizar-trial` do arquivo local inicia **apenas os cliques fictícios da própria interface**, permitindo capturas da quarta etapa. O workflow gera screenshots do início em 1100/550/320 px e do trial em 1100/320 px, retidas por 7 dias. A identidade Imagine/PNG original permanece byte a byte inalterada, com CSP offline e nenhum formulário, rede, cookies, sessão, banco, envio, cobrança ou persistência.
 
 **Gate visual #416 ainda exige aceite humano** da legibilidade, contraste e navegação. Esta PR permanece DRAFT/NO-MERGE mesmo após 5/5 CI. Não existe aprovação para publicar o protótipo na VPS ou ativar login, cadastro ou trial.
+
+## Pacote navegável para revisão (sem VPS)
+
+O job Chromium da PR agora publica também o artifact **`f3-240-imagine-cadastro-trial-navegavel`**, contendo `index.html`, a logomarca original em `assets/logo-imagine.png`, `LEIA-ME.txt` com a jornada e `manifest.sha256`. Basta baixar e extrair o ZIP e abrir `index.html` no navegador. A sequência percorre empresa e canal fictícios, código `012345`, revisão, prévia do trial de 14 dias, simulação de duplicidade e encerramento; **todos os botões que criariam conta ou trial reais estão desabilitados**. O fragmento local `#previsualizar-trial` abre diretamente a etapa final para revisão de layout. Nenhum servidor, localhost, VPN ou endpoint público é necessário.
+
+O pacote é sanitizado, imutável para fins de homologação e retido por sete dias; a CI verifica seu SHA-256. Uma verificação unitária impede que a automação passe a fazer deploy, transmitir secrets ou habilitar SMTP sem revisão. A publicação do artifact em GitHub Actions **não é publicação da aplicação**. A PR permanece DRAFT e exige o aceite humano da issue #416 antes de qualquer merge visual.
