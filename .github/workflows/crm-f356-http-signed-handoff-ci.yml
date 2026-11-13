@@ -1,0 +1,72 @@
+name: CRM F3-56 - Signed HTTP handoff and PG16 readback CI
+on:
+  pull_request:
+    paths:
+      - 'tests/Labs/F3_52/**'
+      - 'tests/Labs/F3_53/**'
+      - 'tests/Labs/F3_54/**'
+      - 'tests/Labs/F3_55/**'
+      - 'tests/Labs/F3_56/**'
+      - '.github/workflows/crm-f356-http-signed-handoff-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  http-transport-reconciliation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: f353-superuser-synthetic-only
+          POSTGRES_DB: f353_nonce_ci
+        ports:
+          - '127.0.0.1:5432:5432'
+        options: >-
+          --health-cmd "pg_isready -U postgres -d f353_nonce_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      CRM_F356_HTTP_LAB: '1'
+      DB_HOST: 127.0.0.1
+      DB_DATABASE: f353_nonce_ci
+      PGPASSWORD: f353-superuser-synthetic-only
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql,pgsql
+          tools: none
+          coverage: none
+      - name: Provision restricted disposable PostgreSQL schema
+        run: |
+          set -euo pipefail
+          psql -h 127.0.0.1 -U postgres -d f353_nonce_ci -f tests/Labs/F3_53/nonce_pg16.sql
+          psql -h 127.0.0.1 -U postgres -d f353_nonce_ci -f tests/Labs/F3_54/transaction_pg16.sql
+      - name: Start loopback HTTP router and test signed reconciliation
+        run: |
+          set -euo pipefail
+          php -l tests/Labs/F3_56/router_synthetic_handoff.php
+          php -l tests/Labs/F3_56/test_http_lost_ack.php
+          export CRM_F356_REQUEST_KEY_HEX="$(openssl rand -hex 48)"
+          export CRM_F356_LOOKUP_KEY_HEX="$(openssl rand -hex 48)"
+          test "$CRM_F356_REQUEST_KEY_HEX" != "$CRM_F356_LOOKUP_KEY_HEX"
+          php -S 127.0.0.1:19156 tests/Labs/F3_56/router_synthetic_handoff.php >/dev/null 2>&1 &
+          pid=$!
+          trap 'kill "$pid" >/dev/null 2>&1 || true' EXIT
+          ready=0
+          for i in $(seq 1 30); do
+            if php -r '$s=@fsockopen("127.0.0.1",19156,$e,$m,0.2);if($s){fclose($s);exit(0);}exit(1);'; then
+              ready=1
+              break
+            fi
+            sleep 0.2
+          done
+          test "$ready" -eq 1
+          php tests/Labs/F3_56/test_http_lost_ack.php
