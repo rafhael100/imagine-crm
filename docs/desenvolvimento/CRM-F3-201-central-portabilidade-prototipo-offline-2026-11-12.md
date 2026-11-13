@@ -12,7 +12,7 @@ Identidade: cor Imagine `#F9941D`, grafite `#171B19`, branco, superfície `#F7F7
 ## Evidência técnica
 - PHPUnit: nomes e quantidades dos controles, PNG byte a byte, contrato de CSP sem network/file/storage/PII e ausência de operação real.
 - BrowserSmokeRunner + Chromium real: largura de 1100, 550 (referência de reflow ao equivalente de 200% de layout, **não prova de zoom nativo**), 320 px; planos e sete operações clicáveis, alertas de restauração e destino, teclado, alvo 44px, logo decodificado e falta de overflow.
-- Workflow dedicado em `.github/workflows/crm-f3-201-portability-visual-evidence.yml` grava oito capturas (4 viewports × dois estados fictícios) com hashes SHA256. Como a tela é **nova**, não existe imagem "antes" válida: não foi inventado baseline.
+- Workflow dedicado em `.github/workflows/crm-f3-201-portability-visual-evidence.yml` grava oito capturas (4 viewports × dois estados fictícios) com hashes SHA256 **e uma cópia HTML autônoma** (`central-portabilidade-demo.html`) para abrir localmente, sem servidor e sem conexão. Como a tela é **nova**, não existe imagem "antes" válida: não foi inventado baseline.
 - Regressões gerais F0, PG16/RLS, Sites e AIA devem passar na HEAD exata.
 
 ## Bloqueios e relação com o Core
