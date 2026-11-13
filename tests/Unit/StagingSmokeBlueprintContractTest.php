@@ -97,10 +97,11 @@ final class StagingSmokeBlueprintContractTest extends TestCase
         foreach ([
             'COPY . .', 'COPY .env', 'COPY tests/',
             'COPY docs/', 'COPY database/', 'COPY app/',
-            'RUN apk add', 'RUN php artisan', 'EXPOSE 80',
+            'RUN apk add', 'RUN php artisan',
         ] as $forbidden) {
             self::assertStringNotContainsString($forbidden, $file);
         }
+        self::assertDoesNotMatchRegularExpression('/^EXPOSE 80$/m', $file);
     }
 
     public function test_nginx_never_publishes_php_files_except_front_controller(): void
