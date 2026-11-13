@@ -35,7 +35,7 @@ final class SignedServiceHandoffBoundary
             if(!is_array($value)||array_keys($value)!==self::FRAME_KEYS)return null;
             $encoded=json_encode($value,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);
             return $encoded===$raw?$value:null;
-        }catch(\\JsonException){
+        }catch(\JsonException){
             return null;
         }
     }
