@@ -7,10 +7,14 @@ on:
     paths:
       - '.github/workflows/crm-f3-248-otp-lifecycle-evidence.yml'
       - 'tests/Support/SignupOtpLifecycleSandbox.php'
+      - 'tests/Support/TrialEnrollmentLifecycleSandbox.php'
       - 'tests/Unit/SignupOtpLifecycleSandboxTest.php'
+      - 'tests/Unit/TrialEnrollmentLifecycleSandboxTest.php'
       - 'tests/Unit/SignupOtpLifecycleEvidenceCliTest.php'
+      - 'tests/Unit/CompositeSignupTrialFunctionalLabCliTest.php'
       - 'tests/Unit/SignupOtpLifecycleEvidenceWorkflowContractTest.php'
       - 'scripts/ci/emit-signup-otp-lifecycle-evidence.php'
+      - 'scripts/ci/emit-composite-signup-trial-lab.php'
   workflow_dispatch:
 
 permissions:
@@ -49,17 +53,23 @@ jobs:
       - name: PHP syntax of sandbox and evidence generator
         run: |
           php -l tests/Support/SignupOtpLifecycleSandbox.php
+          php -l tests/Support/TrialEnrollmentLifecycleSandbox.php
           php -l tests/Unit/SignupOtpLifecycleSandboxTest.php
+          php -l tests/Unit/TrialEnrollmentLifecycleSandboxTest.php
           php -l tests/Unit/SignupOtpLifecycleEvidenceCliTest.php
+          php -l tests/Unit/CompositeSignupTrialFunctionalLabCliTest.php
           php -l scripts/ci/emit-signup-otp-lifecycle-evidence.php
+          php -l scripts/ci/emit-composite-signup-trial-lab.php
 
       - name: Execute functional lifecycle and no-leak PHPunit tests
         run: |
           vendor/bin/phpunit tests/Unit/SignupOtpLifecycleSandboxTest.php
+          vendor/bin/phpunit tests/Unit/TrialEnrollmentLifecycleSandboxTest.php
           vendor/bin/phpunit tests/Unit/SignupOtpLifecycleEvidenceCliTest.php
+          vendor/bin/phpunit tests/Unit/CompositeSignupTrialFunctionalLabCliTest.php
           vendor/bin/phpunit tests/Unit/SignupOtpLifecycleEvidenceWorkflowContractTest.php
 
-      - name: Build one sanitized JSON report and sha256 manifest
+      - name: Build two sanitized JSON reports and sha256 manifest
         shell: bash
         run: |
           set -euo pipefail
@@ -91,9 +101,44 @@ jobs:
             echo 'F3-248: prohibited field in test-only artifact' >&2
             exit 1
           fi
-          (cd evidence && sha256sum otp-lifecycle-offline.json > manifest.sha256)
+          # F3-251: second proof combines OTP (no identity) with trial CNPJ
+          # (no durable eligibility); every mutation remains prohibited.
+          php scripts/ci/emit-composite-signup-trial-lab.php > evidence/otp-trial-composite-offline.json
+          jq -e '
+            .protocol == "imagine.crm.synthetic_otp_trial_functional_lab" and
+            .schema_version == 1 and
+            .status == "REVIEW_ONLY_DENIED" and
+            .otp_match_status == "sandbox_match_consumed_in_memory" and
+            .otp_replay_status == "sandbox_replay_denied" and
+            .same_company_case_insensitive_duplicate_status == "sandbox_duplicate_trial_claim" and
+            .trial_during_phase == "within_window" and
+            .trial_after_exact_boundary_phase == "after_window" and
+            .trial_days_remaining_after_boundary == 0 and
+            .trial_days_illustrative == 14 and
+            (.trial_quota_illustrative_limits | length) == 7 and
+            .otp_in_memory_is_not_identity == true and
+            .one_trial_per_cnpj_not_durably_verified == true and
+            .atomic_trial_reservation_verified == false and
+            .transport_verified == false and
+            .can_send == false and
+            .can_create_company == false and
+            .can_reserve_trial == false and
+            .can_register == false and
+            .can_authenticate == false and
+            .can_allocate_quota == false and
+            .can_charge == false and
+            .can_persist == false
+          ' evidence/otp-trial-composite-offline.json > /dev/null
+          test "$(wc -c < evidence/otp-trial-composite-offline.json)" -le 4096
+          test "$(wc -l < evidence/otp-trial-composite-offline.json)" -eq 1
+          if grep -Eqi 'delivery_code|nonce|digest|@|https?://|cnpj[[:space:]]*":|token|secret' \
+            evidence/otp-trial-composite-offline.json; then
+            echo 'F3-251: prohibited field in composite test artifact' >&2
+            exit 1
+          fi
+          (cd evidence && sha256sum otp-lifecycle-offline.json otp-trial-composite-offline.json > manifest.sha256)
           (cd evidence && sha256sum --check manifest.sha256)
-          echo 'F3-248: sanitized JSON evidence and sha256 manifest verified.'
+          echo 'F3-251: both sanitized JSON reports and sha256 manifest verified.'
 
       - name: Upload review-only evidence with short retention
         uses: actions/upload-artifact@v4
