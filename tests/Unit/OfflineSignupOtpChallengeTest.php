@@ -104,6 +104,7 @@ final class OfflineSignupOtpChallengeTest extends TestCase
         self::assertInvalid($engine, $mutated, $code);
         $mutated = $record;
         $mutated['issued_at']--;
+        $mutated['expires_at']--; // Keep the 900s window; detect MAC tampering.
         self::assertSame(
             'candidate_mismatch',
             $engine->inspect($mutated, $code, self::KEY, self::BINDING, 'email', 1250, 0, false)['status_code'],
