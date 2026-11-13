@@ -61,6 +61,7 @@ final class StagingRenderedComposePolicyTest extends TestCase
                 ]),
                 'web' => array_merge($base, [
                     'user' => '101:101',
+                    'entrypoint' => ['nginx', '-g', 'daemon off;'],
                     'build' => [
                         'context' => '/review/checkout',
                         'dockerfile' => 'infra/staging/Dockerfile.web',
