@@ -5,3 +5,5 @@ Esta etapa conecta a prova de repetições de F3-216 ao relatório de leitura de
 Nenhum título, valor, linha, documento, hash ou identidade sai da execução; a comparação de valores acontece somente na memória limitada pelo codec F3-210. Todos os resultados são informativos e os sinalizadores de autorização, importação, deduplicação, mesclagem, exportação e persistência permanecem **false**. Contagens não são provas de duplicidade de pessoas.
 
 `PortableCsvImportCollisionSummaryTest.php` protege três cenários: duplicata + colisão no fluxo agregado; linhas únicas; falha de validação sem exposição de entrada. Exigir revisão integral de diff e workflows F0, PostgreSQL/RLS, paridade Sites e Agentes na HEAD exata antes de merge isolado DEV. Gates SEG/DBA #27, CORE/LGPD #259 e UX #416 continuam abertos.
+
+**Limitação adicional:** igualdade exata é medida apenas sobre valores de um exemplo local; registros diferentes podem representar a mesma pessoa, e registros idênticos podem não autorizar mesclagem. A decisão permanece sempre NO-GO.
