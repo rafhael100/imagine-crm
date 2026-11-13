@@ -30,6 +30,9 @@ final class OfflineSignupTrialFlowDemoTest extends TestCase
         self::assertSame('REVIEW_ONLY_DENIED', $report['status']);
         self::assertSame(6, $report['otp_code_digits']);
         self::assertSame(900, $report['otp_validity_seconds']);
+        self::assertSame('earlier_challenge_superseded_claim', $report['resend_old_code_superseded_observation']);
+        self::assertSame('latest_challenge_claim_only', $report['resend_new_code_latest_observation']);
+        self::assertFalse($report['atomic_resend_invalidation_verified']);
         self::assertSame('sample_within_illustrative_budget', $report['sample_issue_budget_observation']);
         self::assertSame('sample_contact_budget_exhausted', $report['sample_contact_limit_observation']);
         self::assertSame('sample_origin_budget_exhausted', $report['sample_origin_limit_observation']);
@@ -72,6 +75,7 @@ final class OfflineSignupTrialFlowDemoTest extends TestCase
             'one_trial_per_company_verified',
             'identity_and_contact_binding_verified',
             'atomic_otp_consume_verified',
+            'atomic_resend_invalidation_verified',
             'durable_otp_abuse_enforcement_verified',
             'tenant_and_membership_verified',
             'consent_and_lgpd_verified',

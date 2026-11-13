@@ -9,6 +9,7 @@ declare(strict_types=1);
 use App\Core\Identity\OfflineSignupOtpChallenge;
 use App\Core\Identity\OfflineSignupOtpAbuseBudgetPreview;
 use App\Core\Identity\OfflineSignupOtpPublicFeedbackPreview;
+use App\Core\Identity\OfflineSignupOtpSupersessionPreview;
 use App\Core\Identity\OfflineSignupOtpWhatsAppDraft;
 use App\Mail\OfflineSignupOtpMail;
 use App\Core\Identity\OfflineSignupContactHmacBinding;
@@ -149,12 +150,27 @@ try {
     $verifyUniform = $verifyNeutral === $verifyWrongNeutral
         && $verifyWrongNeutral === $verifyExpiredNeutral;
 
+    // A resend creates a new independent verifier; older code must be
+    // superseded by a future DURABLE per-contact latest-challenge pointer.
+    // This demonstration has no such pointer and grants no rights.
+    $resend = $challenge->issue($key, $emailBinding, 'email', $startedAt + 60);
+    $supersession = new OfflineSignupOtpSupersessionPreview();
+    $oldClaim = $supersession->inspect(
+        $email['challenge'], $resend['challenge'], $checkedAt,
+    );
+    $newClaim = $supersession->inspect(
+        $resend['challenge'], $resend['challenge'], $checkedAt,
+    );
+
     $report = [
         'protocol' => 'imagine.crm.synthetic_signup_trial_review',
         'schema_version' => 1,
         'status' => 'REVIEW_ONLY_DENIED',
         'otp_code_digits' => OfflineSignupOtpChallenge::CODE_DIGITS,
         'otp_validity_seconds' => OfflineSignupOtpChallenge::VALIDITY_SECONDS,
+        'resend_old_code_superseded_observation' => $oldClaim['reason_code'],
+        'resend_new_code_latest_observation' => $newClaim['reason_code'],
+        'atomic_resend_invalidation_verified' => false,
         'sample_issue_budget_observation' => $normalBudget['reason_code'],
         'sample_contact_limit_observation' => $contactBlocked['reason_code'],
         'sample_origin_limit_observation' => $originBlocked['reason_code'],
@@ -214,6 +230,10 @@ try {
         || $contactBlocked['reason_code'] !== 'sample_contact_budget_exhausted'
         || $originBlocked['reason_code'] !== 'sample_origin_budget_exhausted'
         || $verifyBlocked['reason_code'] !== 'sample_contact_budget_exhausted'
+        || $oldClaim['reason_code'] !== 'earlier_challenge_superseded_claim'
+        || $newClaim['reason_code'] !== 'latest_challenge_claim_only'
+        || $oldClaim['can_consume'] !== false
+        || $newClaim['latest_pointer_durable_verified'] !== false
         || !$issueUniform || !$verifyUniform
         || $issueNeutral['can_send'] !== false
         || $verifyNeutral['can_register'] !== false
