@@ -92,6 +92,44 @@ jobs:
             test -s "review-screenshots/otp-trial-$width.png"
           done
 
+      - name: Build standalone navigable review package without network
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p offline-review/assets
+          cp prototypes/f3-240-signup-otp/index.html offline-review/index.html
+          cp prototypes/f3-240-signup-otp/assets/logo-imagine.png offline-review/assets/logo-imagine.png
+          cat > offline-review/LEIA-ME.txt <<'EOF'
+          IMAGINE CRM — Jornada de cadastro e trial ficticios
+          ====================================================
+          1. Extraia todos os arquivos ZIP juntos, mantendo a pasta assets.
+          2. Abra index.html no navegador, sem servidor nem internet.
+          3. Escolha um CNPJ EXCLUSIVAMENTE ficticio e um canal.
+          4. Clique em "Simular entrega do codigo".
+          5. Digite apenas o codigo de exemplo 012345.
+          6. Clique em "Ver previa do trial ficticio" para examinar
+             as sete franquias, duplicidade e encerramento em 14 dias.
+          7. Use "Reiniciar demonstracao" para testar o fluxo novamente.
+
+          Nao insira dados reais. Este pacote NAO envia mensagens, NAO
+          cria usuario/empresa, NAO verifica titularidade e NAO concede
+          acesso, trial ou franquia. Nenhum formulario ou rede e usado.
+          "Ativar trial real" e "Concluir cadastro" ficam desabilitados.
+          Para visualizar a tela final diretamente, abra index.html#previsualizar-trial
+          Gate visual, SEG/DBA e LGPD permanecem bloqueados (NO-GO).
+          EOF
+          (cd offline-review && sha256sum index.html assets/logo-imagine.png > manifest.sha256)
+          (cd offline-review && sha256sum --check manifest.sha256)
+          echo 'F3-240 offline navigable review package passed integrity check.'
+
+      - name: Upload navigable offline Imagine CRM trial preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: f3-240-imagine-cadastro-trial-navegavel
+          path: offline-review/
+          retention-days: 7
+          if-no-files-found: error
+
       - name: Upload short-retention fictional screenshots for manual visual review
         uses: actions/upload-artifact@v4
         with:
