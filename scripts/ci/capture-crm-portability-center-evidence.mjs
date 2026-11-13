@@ -145,7 +145,7 @@ try {
         returnByValue: true,
       }, session);
       const post = JSON.parse(edited.result.value);
-      if (post.selected !== 'true' || post.count !== '3'
+      if (post.selected !== 'true' || post.count !== '4'
           || !post.blocked.includes('nenhuma operação autorizada')) {
         throw new Error('Restoration warning state failed: '+JSON.stringify(post));
       }
