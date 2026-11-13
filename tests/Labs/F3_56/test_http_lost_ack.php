@@ -35,12 +35,13 @@ function token(array $frame,string $kind,string $key,int $iat,string $nonce):arr
  return ['issued_at'=>$iat,'expires_at'=>$exp,'nonce'=>$nonce,
    'mac'=>hash_hmac('sha256',$message,$key)];
 }
-function send(string $route,array $frame,array $token,bool $drop=false,string $method='POST',?string $rawOverride=null):array {
+function send(string $route,array $frame,array $token,bool $drop=false,string $method='POST',?string $rawOverride=null,array $extraHeaders=[]):array {
  $headers=['Content-Type: application/json','Connection: close'];
  foreach(['issued_at'=>'X-Lab-Issued-At','expires_at'=>'X-Lab-Expires-At',
           'nonce'=>'X-Lab-Nonce','mac'=>'X-Lab-Signature'] as $key=>$name)
   $headers[]=$name.': '.$token[$key];
  if($drop)$headers[]='X-Lab-Drop-Reply: 1';
+ foreach($extraHeaders as $extra) $headers[]=$extra;
  $ctx=stream_context_create(['http'=>[
     'method'=>$method,'header'=>implode("\r\n",$headers),
     'content'=>$rawOverride??json_encode($frame,JSON_THROW_ON_ERROR),
@@ -94,6 +95,13 @@ checkResult(send('/__lab/f356/readback',$missing,token($missing,'readback',$look
 $forged=[...$frame,'organization_reference'=>'99999999-9999-4999-8999-999999999999'];
 checkResult(send('/__lab/f356/deliver',$forged,token($forged,'deliver',$request,$now,'abababab-abab-4aba-8aba-abababababab')),
   403,'SERVER_TENANT_CONTEXT_DENIED');
+// F3-61: client-supplied pseudo-principal cannot override DB-backed server identity.
+checkResult(send('/__lab/f356/deliver',$forged,token($forged,'deliver',$request,$now,'bcbcbcbc-bcbc-4bcb-8bcb-bcbcbcbcbcbc'),false,'POST',null,
+ ['X-Verified-Service-Principal: bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb']),
+  403,'SERVER_TENANT_CONTEXT_DENIED');
+checkResult(send('/__lab/f356/readback',$frame,$readback,false,'POST',null,
+ ['X-Verified-Service-Principal: bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb']),
+  200,'SYNTHETIC_METADATA_FOUND_NO_REAL_LEAD',true);
 checkResult(send('/__lab/f356/deliver',[...$frame,'email'=>'synthetic@example.invalid'],$delivery),
   422,'CANONICAL_JSON_REQUIRED');
 checkResult(send('/__lab/f356/deliver',$frame,$delivery,false,'GET'),
