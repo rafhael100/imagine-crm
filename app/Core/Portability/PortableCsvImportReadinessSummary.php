@@ -26,6 +26,9 @@ final class PortableCsvImportReadinessSummary
             $headers = (new PortableCsvHeaderRiskSummary())->inspect(
                 $csv, $delimiter, $hasHeader,
             );
+            $duplicates = (new PortableCsvDuplicateReview())->inspect(
+                $csv, $delimiter, $bindings, $hasHeader,
+            );
         } catch (InvalidArgumentException) {
             throw new InvalidArgumentException('Revisao agregada CSV local invalida.');
         }
@@ -33,13 +36,18 @@ final class PortableCsvImportReadinessSummary
         // The two independent inspectors must agree on the record shape.
         if ($preview['local_source_column_count'] !== $headers['local_source_column_count']
             || $preview['local_data_row_count'] !== $headers['local_data_row_count']
-            || $preview['header_claimed'] !== $headers['header_claimed']) {
+            || $preview['header_claimed'] !== $headers['header_claimed']
+            || $preview['local_source_column_count'] !== $duplicates['local_source_column_count']
+            || $preview['local_data_row_count'] !== $duplicates['local_data_row_count']
+            || $preview['local_selected_field_count'] !== $duplicates['local_selected_field_count']
+            || $preview['header_claimed'] !== $duplicates['header_claimed']) {
             throw new InvalidArgumentException('Revisao agregada CSV local invalida.');
         }
 
         $warnings = array_values(array_unique(array_merge(
             $preview['warning_codes'],
             $headers['warning_codes'],
+            $duplicates['warning_codes'],
         )));
 
         return [
@@ -54,6 +62,9 @@ final class PortableCsvImportReadinessSummary
             'local_empty_header_count' => $headers['local_empty_header_count'],
             'local_duplicate_exact_header_count' => $headers['local_duplicate_exact_header_count'],
             'local_header_refused_cell_count' => $headers['local_header_refused_cell_count'],
+            'local_exact_source_repeated_row_count' => $duplicates['local_exact_source_repeated_row_count'],
+            'local_exact_mapped_repeated_row_count' => $duplicates['local_exact_mapped_repeated_row_count'],
+            'local_projection_collision_extra_row_count' => $duplicates['local_projection_collision_extra_row_count'],
             'warning_codes' => $warnings,
             'warning_count' => count($warnings),
             'unfulfilled_gate_codes' => $preview['unfulfilled_gate_codes'],
@@ -62,9 +73,11 @@ final class PortableCsvImportReadinessSummary
             'tenant_scope_verified' => false,
             'authorization_verified' => false,
             'consent_evidence_verified' => false,
+            'duplicate_person_identity_verified' => false,
             'can_import' => false,
             'can_export' => false,
             'can_merge' => false,
+            'can_deduplicate' => false,
             'can_persist' => false,
         ];
     }
