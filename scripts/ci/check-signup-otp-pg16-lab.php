@@ -25,6 +25,17 @@ const TABLE = 'public.crm_otp_f3227_ephemeral';
 const TEST_KEY = 'never-production-otp-key-fixture-32-bytes-minimum';
 const BINDING = 'abababababababababababababababababababababababababababababababab';
 
+function pgBool(mixed $value): bool
+{
+    if ($value === true || $value === 't' || $value === '1') {
+        return true;
+    }
+    if ($value === false || $value === 'f' || $value === '0') {
+        return false;
+    }
+    throw new RuntimeException('Unexpected PostgreSQL boolean shape.');
+}
+
 function verify(bool $condition): void
 {
     if (!$condition) {
@@ -98,7 +109,7 @@ try {
     $read->execute([$challenge['nonce']]);
     $locked = $read->fetch();
     verify(is_array($locked) && (int) $locked['attempts_used'] === 0
-        && $locked['consumed'] === false);
+        && pgBool($locked['consumed']) === false);
 
     $firstAssessment = $engine->inspect(
         [
@@ -108,7 +119,7 @@ try {
             'expires_at' => (int) $locked['expires_at'],
         ],
         $code, TEST_KEY, BINDING, 'email', 100100,
-        (int) $locked['attempts_used'], (bool) $locked['consumed'],
+        (int) $locked['attempts_used'], pgBool($locked['consumed']),
     );
     verify($firstAssessment['candidate_matches'] === true);
     verify($firstAssessment['can_authenticate'] === false);
@@ -136,7 +147,7 @@ try {
     $peerRead = $peer->prepare("SELECT consumed,attempts_used FROM ".TABLE." WHERE nonce=?");
     $peerRead->execute([$challenge['nonce']]);
     $current = $peerRead->fetch();
-    verify((bool) $current['consumed'] === true);
+    verify(pgBool($current['consumed']) === true);
     verify((int) $current['attempts_used'] === 1);
     $replay = $engine->inspect(
         $challenge, $code, TEST_KEY, BINDING, 'email', 100101, 1, true,
@@ -181,7 +192,7 @@ try {
         $another['expires_at'], 0, false,
     );
     verify($expire['status_code'] === 'expired');
-    verify($main->query("SELECT count(*) FROM ".TABLE)->fetchColumn() === 2);
+    verify((int) $main->query("SELECT count(*) FROM ".TABLE)->fetchColumn() === 2);
 
     $passed = true;
 } catch (Throwable) {
