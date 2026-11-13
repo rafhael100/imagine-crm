@@ -1,0 +1,106 @@
+name: CRM CORE-INT-01 - Isolated Portal technical ingress Core
+
+on:
+  push:
+    branches:
+      - review/crm-portal-ingress-core-isolated-2026-11-11
+  pull_request:
+    paths:
+      - 'app/Core/Leads/PortalIngressPreparation**'
+      - 'app/Core/Leads/PortalServiceHandoff**'
+      - 'app/Core/Leads/PortalTechnicalEnvelopeDecoder.php'
+      - 'tests/Unit/PortalIngressPreparationBoundaryTest.php'
+      - 'tests/Unit/PortalTechnicalEnvelopeDecoderTest.php'
+      - 'tests/Unit/PortalServiceHandoffInspectorTest.php'
+      - 'tests/Labs/F3_47/**'
+      - 'tests/Labs/F3_48/**'
+      - 'tests/Labs/CORE_INT_01/**'
+      - '.github/workflows/ci-portal-ingress-core-isolation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  single-contract-pipeline:
+    name: PHP ${{ matrix.php }} / composed JSON HMAC tenant fail-close
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3','8.4']
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Checkout exact pinned Portal real source for pure interoperability
+        uses: actions/checkout@v5
+        with:
+          repository: rafhael100/imagine-portal
+          ref: af414ed7aece433e65b4f813be12ba3546cc5c8a
+          path: portal-source
+          persist-credentials: false
+      - name: Verify pinned Portal source is CI-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C portal-source rev-parse HEAD)" = "af414ed7aece433e65b4f813be12ba3546cc5c8a"
+          test -f portal-source/apps/portal/labs/commercial-intake-f117/PortalCommercialMetadataInspector.php
+          test -f portal-source/apps/portal/labs/commercial-intake-f119/PortalF119SyntheticServiceReservation.php
+          if grep -R -E 'portal-source|CORE_INT_01' app routes bootstrap database/migrations 2>/dev/null; then
+            echo 'Cross-repo lab code cannot be imported into CRM runtime' >&2
+            exit 1
+          fi
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring,dom,xml,pdo_sqlite,sqlite3,curl,zip
+          tools: composer:v2
+          coverage: none
+      - name: Check syntax and run PHP 8.3-compatible pure pipeline
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l app/Core/Leads/PortalServiceHandoffAssessment.php
+          php -l app/Core/Leads/PortalServiceHandoffInspector.php
+          php -l app/Core/Leads/PortalTechnicalEnvelopeDecoder.php
+          php -l app/Core/Leads/PortalIngressPreparationAssessment.php
+          php -l app/Core/Leads/PortalIngressPreparationBoundary.php
+          php -l tests/Unit/PortalServiceHandoffInspectorTest.php
+          php -l tests/Unit/PortalTechnicalEnvelopeDecoderTest.php
+          php -l tests/Unit/PortalIngressPreparationBoundaryTest.php
+          php -l tests/Labs/F3_48/php83_composed_ingress_smoke.php
+          php -l tests/Labs/F3_47/php83_json_decoder_smoke.php
+          php tests/Labs/F3_47/php83_json_decoder_smoke.php
+          php tests/Labs/F3_48/php83_composed_ingress_smoke.php
+          php -l tests/Labs/CORE_INT_01/real_portal_crm_pure_interop.php
+          php tests/Labs/CORE_INT_01/real_portal_crm_pure_interop.php
+      - name: Install locked framework (current lock requires PHP 8.4)
+        if: matrix.php == '8.4'
+        run: |
+          composer validate --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+      - name: Run composition and public-route safety tests in Laravel
+        if: matrix.php == '8.4'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .env.example .env
+          php artisan key:generate --force
+          php artisan test --filter=PortalIngressPreparationBoundaryTest --no-ansi
+          php artisan test --filter=PortalTechnicalEnvelopeDecoderTest --no-ansi
+          php artisan test --filter=PortalServiceHandoffInspectorTest --no-ansi
+          php artisan test --filter=PublicRouteSurfaceSealTest --no-ansi
+          php artisan test --filter=LeadIntakeReleaseGateTest --no-ansi
+          php artisan test --filter=IntegrationBoundariesRemainClosedTest --no-ansi
