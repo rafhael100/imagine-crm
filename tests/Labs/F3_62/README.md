@@ -1,7 +1,9 @@
 # CRM F3-62 — independently signed synthetic technical receipt
 
-Introduces a **dormant CRM Core verifier** for an exact twelve-field, metadata-only receipt with an independent MAC domain and key, expiring in no more than two minutes. The signer exists **only under tests/Labs**, and the CI-only HTTP receiver uses it for a committed technical metadata fixture or a post-commit readback.
+This increment introduces a dormant CRM Core verifier for a **four-field receipt**: `issued_at`, `expires_at`, `nonce` and `mac`. The MAC is domain-separated and binds to all **six metadata identifiers from the locally expected frame**, which are **never echoed back in the HTTP response**. It expires in at most two minutes.
 
-The Portal/client simulation verifies MAC integrity against the original six technical identifiers using a separate receipt key. Tests cover tampering, alternate destination, wrong key, expiration, missing signature, wrong state, and the distinction between an absent receipt after response loss and a later readback. A request signing key is **not** allowed to verify the receiver's receipt.
+A signer exists **only under tests/Labs**, and the disposable PHP HTTP receiver uses it only after a committed synthetic technical receipt or its PG-backed readback. The client checks integrity with an independent receipt key, not the sender's request or lookup key.
 
-A matched MAC returns `SYNTHETIC_RECEIPT_INTEGRITY_ONLY`, with all claims about real leads, operational tenant identity, visitor acknowledgment, automatic retry or deploy **false**. This is not an operational CRM receipt or proof of real lead durability; signing source, secret handling, replay ledger, principal identity, TLS, staging and independent review still need validation. Do not include the laboratory signer in any deployed application or copy its methods into production.
+Tests cover wrong keys, expiration, tampering, wrong destination, missing signature, unexpected fields, and lost HTTP response after commit. After a lost response, there is **no** signed receipt in the 503 reply; only a subsequent authorized readback returns one. Every response keeps flags for real CRM lead, tenant authentication, visitor acknowledgment, automatic retry and deployment **false**.
+
+This is not an operational CRM receipt or proof of lead durability. The signer must never be deployed as a production handler; key rotation, genuine service identity, durable CRM lead storage, receipt replay policy, TLS, staging and independent AppSec/DBA reviews are still required. **NO-GO**.
