@@ -1,0 +1,53 @@
+name: CRM F3-60 - Trusted service binding candidate in disposable PG16
+on:
+  pull_request:
+    paths:
+      - 'app/Core/Leads/TrustedServiceBindingCandidateResolver.php'
+      - 'app/Core/Leads/SignedServiceHandoffBoundary.php'
+      - 'tests/Labs/F3_60/**'
+      - '.github/workflows/crm-f360-binding-candidate-pg.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scoped-service-binding:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: f360-admin-synthetic-only
+          POSTGRES_DB: f360_binding_ci
+        ports:
+          - '127.0.0.1:5432:5432'
+        options: >-
+          --health-cmd "pg_isready -U postgres -d f360_binding_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      CRM_F360_BINDING_CI: '1'
+      DB_HOST: 127.0.0.1
+      DB_DATABASE: f360_binding_ci
+      PGPASSWORD: f360-admin-synthetic-only
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql,pgsql
+          tools: none
+          coverage: none
+      - name: Provision private synthetic tenant bindings
+        run: |
+          set -euo pipefail
+          psql -h 127.0.0.1 -U postgres -d f360_binding_ci -f tests/Labs/F3_60/service_bindings_pg16.sql
+      - name: Exercise server-owned binding resolver and fail-closed Core
+        run: |
+          php -l app/Core/Leads/TrustedServiceBindingCandidateResolver.php
+          php -l tests/Labs/F3_60/test_service_binding_pg.php
+          php tests/Labs/F3_60/test_service_binding_pg.php
