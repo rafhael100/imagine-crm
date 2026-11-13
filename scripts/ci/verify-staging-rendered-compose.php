@@ -205,9 +205,15 @@ if (isset($_SERVER['SCRIPT_FILENAME'])
     try {
         $data = json_decode($raw, true, 64, JSON_THROW_ON_ERROR);
         $root = realpath(__DIR__.'/../..');
-        if (!is_array($data) || !is_string($root)
-            || StagingRenderedComposePolicy::violations($data, $root) !== []) {
+        if (!is_array($data) || !is_string($root)) {
             throw new RuntimeException('Unsafe staging candidate.');
+        }
+        $codes = StagingRenderedComposePolicy::violations($data, $root);
+        if ($codes !== []) {
+            // Codes are static literals produced by the policy itself,
+            // never input values, environment content, paths or credentials.
+            fwrite(STDERR, 'F3-265 NO-GO policy codes: '.implode(',', $codes)."\n");
+            exit(1);
         }
         fwrite(STDOUT, "F3-264 PASS: rendered Compose is loopback-only, no host mounts, no external DB or live auth; DRAFT/NO-DEPLOY.\n");
     } catch (Throwable) {
