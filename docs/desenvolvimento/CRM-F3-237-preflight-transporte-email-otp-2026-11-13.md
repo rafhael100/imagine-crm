@@ -1,0 +1,9 @@
+# CRM F3-237 — pré-verificação isolada de transporte OTP por e-mail
+
+A F3-236 implementa somente um modelo Laravel Mail com `Mail::fake()`. Se uma futura implementação usar transporte `log` ou fallback `smtp → log`, ela poderá registrar códigos de autenticação em arquivos de log; se aceitar SMTP sem TLS obrigatório, poderá expor credenciais e códigos. Esta entrega acrescenta um componente Core de **avaliação de configuração fornecida ao teste**, nunca uma implementação de envio.
+
+O `OfflineSignupOtpEmailTransportPreflight` não acessa `config/mail.php`, ambiente, contas, SMTP, rede ou credenciais reais. Classifica apenas uma candidata estrutural: transporte `smtp` direto, `smtps` na porta 465, host DNS formato conservador, usuário/senha preenchidos, timeout explícito e remetente válido. Recusa `log`, `array`, `sendmail`, fallback/roundrobin, `url` ou `stream` ambiguamente configurados, TLS oportunista, host interno e tentativas de afrouxar a validação do certificado.
+
+**Todo resultado é sempre NO-GO:** mesmo o código `offline_candidate_only` significa apenas uma análise de formato. Todos os indicadores de certificado, DNS real, SPF/DKIM/DMARC, controle de destinatário, rate-limit, consentimento LGPD, revisão independente, envio, fila, log de OTP, cadastro e autenticação permanecem **false**. A saída jamais reflete host, remetente, usuário, segredo ou código. Os testes PHP usam valores fictícios e nenhuma comunicação externa.
+
+O transporte real exige revisão independente de segurança, identidade e titularidade dos destinatários, contratos de provedor, SPF/DKIM/DMARC, monitoramento, tratamento de falhas e retenção. Gates SEG/DBA #27, CORE/LGPD #259 e visual #416 continuam abertos. Não cria rota, não altera mailer, `main`, VPS ou produção; eventual merge somente DEV após 4/4 workflows e diff revisado.
