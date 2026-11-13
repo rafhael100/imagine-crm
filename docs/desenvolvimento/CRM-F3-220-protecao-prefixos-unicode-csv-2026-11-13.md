@@ -5,3 +5,5 @@ Melhoria defensiva do `PortableCsvTableCodec::encode` existente (sem alterar `de
 O novo teste `PortableCsvUnicodePrefixHardeningTest.php` verifica rejeição de oito variantes fictícias, preservação de texto comum com Unicode e propagação da contagem de recusa para o relatório F3-213 quando a coluna arriscada é omitida. Não assume que a ausência de alerta valida Excel, Sheets ou LibreOffice. Não valida identidade, tenant, LGPD, direito de exportar nem operação com dados reais. Sem rota, migração, file I/O, SaaS operacional ou produção.
 
 Gates #27, #259, #416 e IN-118 permanecem abertos. Integrar só na DEV após revisão de diff e quatro workflows CI na HEAD exata.
+
+**Retrocompatibilidade:** texto neutro contendo separadores ou marcas Unicode continua serializado sem modificação; rejeições acontecem apenas quando uma sequência inicial de marcadores é seguida de operadores de fórmula. O teste de round-trip cobre esse caso.
