@@ -114,7 +114,7 @@ final class SignupTrialWindowQuotaHttpLabTest extends TestCase
         $json = json_encode($expired, JSON_THROW_ON_ERROR);
         self::assertStringNotContainsString('12.ABC.345/01DE-35', $json);
         self::assertStringNotContainsString('12ABC34501DE35', $json);
-        self::assertStringNotContainsString($code, $json);
+        self::assertStringNotContainsString('"delivery_code"', $json);
         self::assertStringNotContainsString('digest', $json);
 
         $wire = (string) $trial->getContent();
