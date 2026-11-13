@@ -16,7 +16,7 @@ $html = file_get_contents(dirname(__DIR__, 2).'/prototypes/s01-prot-01/index.htm
 if (!is_string($html)
     || !str_contains($html, "connect-src 'none'")
     || !str_contains($html, "form-action 'none'")
-    || strlen($html) > 100000) {
+    || strlen($html) > 108000) {
     fwrite(STDERR, "UX-F3-13: unexpected local demo or missing offline CSP.\n");
     exit(1);
 }
@@ -68,7 +68,17 @@ $driver = <<<'HTML'
       const win=frame.contentWindow;
       check(doc&&win,'same-origin srcdoc frame');
       check(win.innerWidth===320,'actual CSS viewport '+win.innerWidth+' not 320');
+      check(win.getComputedStyle(doc.body).backgroundColor==='rgb(247, 247, 248)',
+        'mobile Node background');
+      check(win.getComputedStyle(doc.querySelector('.sidebar')).backgroundColor==='rgb(255, 255, 255)',
+        'mobile Node white navigation');
+      check(win.getComputedStyle(doc.querySelector('.hero')).backgroundColor==='rgb(23, 27, 25)',
+        'mobile Node graphite hero');
       check(doc.querySelectorAll('[data-screen]').length===9,'all nine screens exist');
+      const logo=doc.querySelector('.brand-logo');
+      check(logo&&logo.alt==='Imagine'&&logo.src.startsWith('data:image/png;base64,'),
+        'mobile original Imagine logo embedded without network');
+      check(logo.getBoundingClientRect().width<=160,'mobile brand logo bounded');
       const pageWidth=doc.documentElement.scrollWidth;
       if(pageWidth>win.innerWidth){
         const suspects=Array.from(doc.querySelectorAll('body *')).map(el=>{
@@ -85,10 +95,24 @@ $driver = <<<'HTML'
 
       const buttons=Array.from(doc.querySelectorAll('#demo-navigation button[data-page]'));
       check(buttons.length===9,'all navigation buttons exist');
+      const groups=Array.from(doc.querySelectorAll('#demo-navigation .nav-group'));
+      check(groups.length===3,'mobile navigation remains grouped');
+      check(groups.every(x=>win.getComputedStyle(x).display==='flex'),
+        'mobile groups are horizontally scrollable');
+      check(buttons.every(x=>x.getBoundingClientRect().height>=44),
+        'all nine mobile navigation targets are at least 44 CSS px high');
+      check(doc.getElementById('nav-section').textContent==='Início',
+        'mobile breadcrumb names active group');
       const leads=buttons.find(node=>node.getAttribute('data-page')==='leads');
       const pipeline=buttons.find(node=>node.getAttribute('data-page')==='pipeline');
       const monitor=buttons.find(node=>node.getAttribute('data-page')==='monitor');
       monitor.click();
+      check(nav.scrollLeft>0,'mobile menu scrolls to selected commercial group without leaving the page');
+      const currentRect=monitor.getBoundingClientRect(), visibleRect=nav.getBoundingClientRect();
+      check(currentRect.left>=visibleRect.left-1&&currentRect.right<=visibleRect.right+1,
+        'selected mobile navigation button remains inside scroll viewport');
+      check(doc.getElementById('nav-section').textContent==='Operação comercial',
+        'mobile breadcrumb follows second navigation group');
       check(doc.getElementById('page-title').textContent==='Monitoramento de leads','page switch at 320');
       check(doc.activeElement===doc.getElementById('page-title'),'heading focus');
       check(doc.querySelectorAll('[data-screen]:not([hidden])').length===1,'one active screen');
