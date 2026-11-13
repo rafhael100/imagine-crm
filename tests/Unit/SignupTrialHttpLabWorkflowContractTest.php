@@ -19,10 +19,11 @@ final class SignupTrialHttpLabWorkflowContractTest extends TestCase
             'APP_ENV: testing', "DB_DATABASE: ':memory:'",
             'MAIL_MAILER: array', "php-version: '8.4'",
             'SignupTrialHttpFixtureFlowTest.php',
+            'SignupTrialHttpFixtureResendTest.php',
             'PublicRouteSurfaceSealTest.php',
             'SignupTrialHttpLabWorkflowContractTest.php',
             'php artisan route:list --json',
-            '.uri == "up"', "'__ci/f3-252'",
+            '.uri == "up"', "'__ci/f3-252'", "'__ci/f3-254'",
             'grep -RFq', 'routes app bootstrap',
             'NO-GO', '$GITHUB_STEP_SUMMARY',
         ] as $required) {
