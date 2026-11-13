@@ -1,0 +1,33 @@
+name: CRM F3-62 - Synthetic receipt verification Core regression
+on:
+  pull_request:
+    paths:
+      - 'app/Core/Leads/SignedTechnicalReceiptCandidateVerifier.php'
+      - 'tests/Labs/F3_62/**'
+      - '.github/workflows/crm-f362-technical-receipt-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  receipt-boundary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3','8.4']
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+          coverage: none
+      - name: Verify signed technical receipt and negative cases
+        run: |
+          php -l app/Core/Leads/SignedTechnicalReceiptCandidateVerifier.php
+          php -l tests/Labs/F3_62/SyntheticTechnicalReceiptSigner.php
+          php -l tests/Labs/F3_62/test_receipt_integrity.php
+          php tests/Labs/F3_62/test_receipt_integrity.php
