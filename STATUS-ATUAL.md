@@ -1,5 +1,12 @@
 # CRM Imagine — STATUS ATUAL
 
+## OPS-67 — Fluxo HTTP OTP → trial e quotas de 14 dias (13/11/2026)
+
+**DEV conferida:** 44801218d0b28d83658e2f0b7117d00a339c946a. F3-258 [#510](https://github.com/rafhael100/imagine-crm/pull/510) e F3-259 [#511](https://github.com/rafhael100/imagine-crm/pull/511) foram confirmadas merged=true **somente DEV**, com **5/5 CI success na SHA de cada PR**. O código Laravel HTTP de PHPUnit exige OTP fictício válido antes do marcador trial em memória, expira o sinal local aos 900 segundos e impede reutilização; PHPUnit observa janela de 14 dias e sete quotas ilustrativas sem revelá-las no HTTP. [Dossiê OPS-67](docs/desenvolvimento/CRM-OPS-67-otp-trial-http-14dias-evidencias-2026-11-13.md) traz SHAs, URLs CI e escopo. **Main:** e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012 preservada; nenhum deploy, rota pública de cadastro, dados reais, WhatsApp/SMTP, criação de usuário, reserva durável, cobrança ou VPS.
+
+**NO-GO:** [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27), [CORE/LGPD #259](https://github.com/rafhael100/imagine-crm/issues/259), [UX #416](https://github.com/rafhael100/imagine-crm/issues/416) seguem abertos; sinais em memória não constituem identidade, persistência, homologação nem autorização. Verificações pós-merge de DEV devem ser avaliadas separadamente das SHAs das PRs.
+
+
 ## OPS-66 — Defesa JSON duplicado e limites OTP via HTTP de testes (13/11/2026)
 
 **DEV validada:** dc39c805ca883bf6885e60c6bccc8cfd01c05556 após [PR #507](https://github.com/rafhael100/imagine-crm/pull/507) e [PR #508](https://github.com/rafhael100/imagine-crm/pull/508), ambos **merged somente DEV**. A [F3-256](https://github.com/rafhael100/imagine-crm/pull/507) recusa JSON com chaves duplicadas antes de emitir/verificar OTP ou marcar trial no laboratório; **6/6 workflows success** na HEAD verificada. A [F3-257](https://github.com/rafhael100/imagine-crm/pull/508) comprova por HTTP do PHPUnit os limites locais de cinco tentativas, 60 verificações por origem e três emissões por contato; **4/4 workflows success**. [Dossiê OPS-66](docs/desenvolvimento/CRM-OPS-66-http-otp-regressao-evidencias-2026-11-13.md) contém SHAs, arquivos e links individuais de CI. **Main** e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012 **inalterada**. Não existem rotas públicas de cadastro/trial nem envio externo, dados reais, VPS ou release.
