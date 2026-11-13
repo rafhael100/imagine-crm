@@ -15,7 +15,10 @@ $names=[
     'IMAGINE_SYNTHETIC_DATA_ONLY','DB_CONNECTION'
 ];
 $configuration=[];
-foreach($names as $name)$configuration[$name]=getenv($name)?:'';
+foreach($names as $name){
+    $value=getenv($name);
+    $configuration[$name]=$value===false?'':$value;
+}
 $facts=[];
 $host=getenv('DB_HOST');
 $name=getenv('DB_DATABASE');
