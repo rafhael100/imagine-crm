@@ -198,6 +198,17 @@ final class SignupTrialHttpFixture
             return null;
         }
 
+        // All permitted wire keys and values are fixed ASCII tokens without
+        // a colon. Every ':' in a valid object therefore separates one key
+        // from one value. json_decode() otherwise silently accepts duplicate
+        // keys and keeps only the last occurrence (even when keys are escaped).
+        // Reject that ambiguous wire form before mutating the sandbox state.
+        // This rule belongs ONLY to the restricted PHPUnit fixture, not to
+        // an approved production JSON parser.
+        if (substr_count($raw, ':') !== count($input)) {
+            return null;
+        }
+
         return $input;
     }
 
