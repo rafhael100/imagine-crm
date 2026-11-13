@@ -1,0 +1,9 @@
+# CRM F3-232 — preservar candidatas históricas na rotação de chaves HMAC de trial
+
+A chave HMAC protege o índice de unicidade do CNPJ contra enumeração offline, mas **trocar a chave altera o digest da mesma empresa**. Se uma implementação nova consultar apenas o digest da chave atual, poderá deixar passar um segundo trial concedido sob chave antiga, mesmo com uma UNIQUE constraint perfeita.
+
+`OfflineCnpjTrialKeyRotationCandidates` deriva em memória **até quatro** fingerprints internos, cada qual associado a uma versão numérica crescente e segredo independente, usando o validador CNPJ e a derivação F3-230/231. Rejeita versões repetidas, fora de ordem, segredos iguais, chaves curtas, listas extensas e documentos inválidos. A saída preserva versões e identificadores pseudônimos somente para uso interno de futuro repositório de histórico; **não é API, não deve ser serializada para clientes, logs, telemetria ou URL**.
+
+Os testes mostram explicitamente que a mesma empresa numérica/alfanumérica corresponde a candidatas HMAC diferentes por versão; que abandonar uma versão antiga perde cobertura histórica; e que formatos equivalentes geram os mesmos candidatos por versão. A classe não verifica completude do histórico, custódia/rotação de segredos, titularidade de CNPJ nem consulta armazenamento e **nunca autoriza claim, cadastro, acesso ou persistência**.
+
+Um futuro claim operacional precisará verificar todos os candidatos e reservar o identificador de forma transacional no mesmo controle de concorrência, com desenho aprovado de migração e conservação/eliminação do histórico. Regras de armazenamento seguro, LGPD, segregação de papéis e aceite independente #27 SEG/DBA e #259 CORE/LGPD continuam pendentes. Desenvolvido apenas no PHP Core, fixtures fictícias, sem SQL, migration, rota, e-mail, cobrança, rede, produção ou VPS.
