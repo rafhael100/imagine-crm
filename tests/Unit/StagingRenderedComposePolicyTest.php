@@ -123,6 +123,15 @@ final class StagingRenderedComposePolicyTest extends TestCase
                 'secrets' => ['bad'],
             ], 'app_build_boundary'],
             'custom host mode' => ['web', 'network_mode', 'host', 'web_forbidden_network_mode'],
+            'capability readded' => ['app', 'cap_add', ['SYS_ADMIN'], 'app_forbidden_cap_add'],
+            'unsafe extra security option' => ['web', 'security_opt',
+                ['no-new-privileges:true', 'seccomp:unconfined'], 'web_privilege_escalation'],
+            'capability drop weakened' => ['web', 'cap_drop',
+                ['ALL', 'NET_ADMIN'], 'web_capabilities'],
+            'malicious app command' => ['app', 'command',
+                ['php', 'artisan', 'migrate', '--force'], 'app_unreviewed_command'],
+            'web entrypoint replaced' => ['web', 'entrypoint',
+                ['sh', '-c', 'sleep 3600'], 'web_unreviewed_entrypoint'],
         ];
 
         foreach ($changes as $label => [$service, $key, $value, $expected]) {
