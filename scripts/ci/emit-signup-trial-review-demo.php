@@ -7,6 +7,7 @@ declare(strict_types=1);
  * One static JSON review to stdout. Never an operational registration route.
  */
 use App\Core\Identity\OfflineSignupOtpChallenge;
+use App\Core\Identity\OfflineSignupContactHmacBinding;
 use App\Core\Identity\OfflineCnpjChecksumInspector;
 use App\Core\Identity\OfflineCnpjTrialHmacBinding;
 use App\Core\Plans\QuotaSnapshotReadout;
@@ -23,28 +24,41 @@ require dirname(__DIR__, 2).'/vendor/autoload.php';
 
 try {
     $key = 'fictional-signup-hmac-key-longer-than-thirty-two-bytes';
-    $opaque = str_repeat('ab', 32);
+    $contact = new OfflineSignupContactHmacBinding();
+    $contactKey = 'fictional-only-contact-hmac-binding-key-over-32-bytes';
+    $emailBinding = $contact->derive('demo.one@example.com', 'email', $contactKey);
+    $otherEmailBinding = $contact->derive('demo.two@example.com', 'email', $contactKey);
+    $phoneBinding = $contact->derive('+5511999988888', 'phone', $contactKey);
     $startedAt = 1780000000;
     $checkedAt = $startedAt + 120;
     $challenge = new OfflineSignupOtpChallenge();
 
-    $email = $challenge->issue($key, $opaque, 'email', $startedAt);
-    $phone = $challenge->issue($key, $opaque, 'phone', $startedAt);
+    $email = $challenge->issue($key, $emailBinding, 'email', $startedAt);
+    $phone = $challenge->issue($key, $phoneBinding, 'phone', $startedAt);
     $emailView = $challenge->inspect(
         $email['challenge'], $email['delivery_code'],
-        $key, $opaque, 'email', $checkedAt, 0, false,
+        $key, $emailBinding, 'email', $checkedAt, 0, false,
     );
     $phoneView = $challenge->inspect(
         $phone['challenge'], $phone['delivery_code'],
-        $key, $opaque, 'phone', $checkedAt, 0, false,
+        $key, $phoneBinding, 'phone', $checkedAt, 0, false,
     );
     $wrong = $phone['delivery_code'] === '000000' ? '000001' : '000000';
     $wrongPhoneView = $challenge->inspect(
-        $phone['challenge'], $wrong, $key, $opaque, 'phone', $checkedAt, 1, false,
+        $phone['challenge'], $wrong, $key, $phoneBinding, 'phone', $checkedAt, 1, false,
     );
     $expiredPhoneView = $challenge->inspect(
         $phone['challenge'], $phone['delivery_code'],
-        $key, $opaque, 'phone', $startedAt + 900, 0, false,
+        $key, $phoneBinding, 'phone', $startedAt + 900, 0, false,
+    );
+
+    $wrongEmailContactView = $challenge->inspect(
+        $email['challenge'], $email['delivery_code'],
+        $key, $otherEmailBinding, 'email', $checkedAt, 1, false,
+    );
+    $wrongEmailChannelView = $challenge->inspect(
+        $email['challenge'], $email['delivery_code'],
+        $key, $emailBinding, 'phone', $checkedAt, 1, false,
     );
 
     $trial = new TrialWindowAdvisory($startedAt, $checkedAt);
@@ -89,6 +103,9 @@ try {
         'phone_candidate_observation' => $phoneView['status_code'],
         'wrong_phone_observation' => $wrongPhoneView['status_code'],
         'expired_phone_observation' => $expiredPhoneView['status_code'],
+        'wrong_email_contact_observation' => $wrongEmailContactView['status_code'],
+        'wrong_email_channel_observation' => $wrongEmailChannelView['status_code'],
+        'distinct_channel_bindings_differed' => !hash_equals($emailBinding, $phoneBinding),
         'trial_phase' => $overview['trial']['phase'],
         'numeric_cnpj_check_status' => $numericCnpj['status_code'],
         'alphanumeric_cnpj_check_status' => $alphanumericCnpj['status_code'],
@@ -117,6 +134,9 @@ try {
         || $phoneView['candidate_matches'] !== true
         || $wrongPhoneView['candidate_matches'] !== false
         || $expiredPhoneView['candidate_matches'] !== false
+        || $wrongEmailContactView['candidate_matches'] !== false
+        || $wrongEmailChannelView['candidate_matches'] !== false
+        || hash_equals($emailBinding, $phoneBinding)
         || $overview['trial']['phase'] !== 'within_window'
         || $numericCnpj['status_code'] !== 'structurally_valid_only'
         || $alphanumericCnpj['status_code'] !== 'structurally_valid_only'

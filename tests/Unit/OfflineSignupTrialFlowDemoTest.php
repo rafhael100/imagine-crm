@@ -34,6 +34,9 @@ final class OfflineSignupTrialFlowDemoTest extends TestCase
         self::assertSame('candidate_matches_only', $report['phone_candidate_observation']);
         self::assertSame('candidate_mismatch', $report['wrong_phone_observation']);
         self::assertSame('expired', $report['expired_phone_observation']);
+        self::assertSame('candidate_mismatch', $report['wrong_email_contact_observation']);
+        self::assertSame('candidate_mismatch', $report['wrong_email_channel_observation']);
+        self::assertTrue($report['distinct_channel_bindings_differed']);
         self::assertSame('within_window', $report['trial_phase']);
         self::assertSame('structurally_valid_only', $report['numeric_cnpj_check_status']);
         self::assertSame('structurally_valid_only', $report['alphanumeric_cnpj_check_status']);
@@ -66,7 +69,7 @@ final class OfflineSignupTrialFlowDemoTest extends TestCase
         ] as $flag) {
             self::assertFalse($report[$flag], $flag);
         }
-        foreach (['delivery_code', 'digest', 'nonce', 'opaque', '"cnpj":', 'email_address', 'phone_number', 'fixture-key', '11222333000181', '12ABC34501DE35', 'trial_binding_digest'] as $secret) {
+        foreach (['delivery_code', 'digest', 'nonce', 'opaque', '"cnpj":', 'email_address', 'phone_number', 'fixture-key', '11222333000181', '12ABC34501DE35', 'trial_binding_digest', 'demo.one@example.com', 'demo.two@example.com', '+5511999988888'] as $secret) {
             self::assertStringNotContainsString($secret, $json);
         }
         $b = new Process([PHP_BINARY, self::script()]);
