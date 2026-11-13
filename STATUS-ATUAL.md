@@ -1,5 +1,12 @@
 # CRM Imagine — STATUS ATUAL
 
+## OPS-69 — IAM experimental bloqueado; staging privado ainda DRAFT (13/11/2026)
+
+**DEV verificada:** c26e4d0091081d9e0695160d904b8880deb448a6. F3-262 [#516](https://github.com/rafhael100/imagine-crm/pull/516) integrada **somente na DEV**, 5/5 workflows success na SHA da PR e 4/4 success pós-merge DEV. Prova Laravel no-dev com **APP_ENV=production simulado + CRM_AUTH_EXPERIMENTAL=true** confirma que guard/provisioner/login e ALLOW continuam indisponíveis. **main** e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012 inalterada.
+
+F3-263 [#517](https://github.com/rafhael100/imagine-crm/pull/517) é **proposta DRAFT/NO-MERGE de staging somente localhost 127.0.0.1:18080**, sem DB real e sem deploy. 5/5 checks verdes incluem validação **somente sintática** do Compose; nenhum contêiner construído/iniciado, nenhum teste de segurança real da VPS. [Dossiê OPS-69](docs/desenvolvimento/CRM-OPS-69-IAM-staging-readiness-evidencias-2026-11-13.md) discrimina as evidências e riscos. **Gates SEG/DBA #27, CORE/LGPD #259 e UX #416 continuam NO-GO.**
+
+
 ## OPS-68 — Dupla prova Composer --no-dev e HTTP kernel (13/11/2026)
 
 **DEV observada:** 22e2dd0a5ad5ed11f718ea106389a8e4f464f3a1. F3-260 [#513](https://github.com/rafhael100/imagine-crm/pull/513) e F3-261 [#514](https://github.com/rafhael100/imagine-crm/pull/514) foram integradas **somente DEV**, cinco workflows completed/success na SHA exata de cada PR. A CI no-dev inventaria somente GET/HEAD /up nos ambientes testing e production **simulados**; o segundo recorte executa também **11 requisições pelo kernel Laravel real no runner efêmero**, exigindo /up 200 e nove caminhos signup/trial/OTP/fixture 404, sem cookie nem redirect. [Dossiê OPS-68](docs/desenvolvimento/CRM-OPS-68-no-dev-kernel-http-evidencias-2026-11-13.md) apresenta SHA, limites e dez logs. **Main** e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012 inalterada; nenhum uso de VPS, produção, API pública, dados reais ou custo.
