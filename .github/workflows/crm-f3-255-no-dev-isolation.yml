@@ -69,13 +69,32 @@ jobs:
             fi
           done
           rm -f /tmp/crm-f3-255-routes.json
+      - name: Recheck no-dev route inventory under production environment (CI only)
+        shell: bash
+        env:
+          APP_ENV: production
+          APP_DEBUG: 'false'
+        run: |
+          set -euo pipefail
+          test "$APP_ENV" = production
+          test "$APP_DEBUG" = false
+          php scripts/ci/verify-no-dev-http-fixtures.php
+          php artisan route:list --json > /tmp/crm-f3-260-production-routes.json
+          jq -e '
+            length == 1 and
+            .[0].uri == "up" and
+            (.[0].method == "GET|HEAD" or .[0].method == "HEAD|GET")
+          ' /tmp/crm-f3-260-production-routes.json > /dev/null
+          rm -f /tmp/crm-f3-260-production-routes.json
+          # The 'production' value is ONLY an environment flag on a GitHub
+          # hosted runner. No VPS, prod DB, secrets or deployment exist here.
       - name: Record an explicit NO-GO boundary
         shell: bash
         run: |
           {
             echo '### CRM F3-255 — Read-only autoload proof'
             echo '- Composer --no-dev: test fixtures unavailable'
-            echo '- Laravel routes: only framework health /up'
+            echo '- Laravel route inventory in testing AND simulated production environment: only GET/HEAD /up'
             echo '- Real signup, identity, OTP delivery and trial: **NO-GO**'
             echo '- No production DB, VPS or deployment'
           } >> "$GITHUB_STEP_SUMMARY"

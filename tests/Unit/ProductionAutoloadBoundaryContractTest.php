@@ -27,7 +27,7 @@ final class ProductionAutoloadBoundaryContractTest extends TestCase
         foreach ([
             'on:', 'pull_request:', 'workflow_dispatch:',
             'permissions:', 'contents: read',
-            'APP_ENV: testing', "DB_DATABASE: ':memory:'",
+            'APP_ENV: testing', 'APP_ENV: production', "DB_DATABASE: ':memory:'",
             'MAIL_MAILER: array', "php-version: '8.4'",
             'composer install --no-dev --classmap-authoritative',
             'verify-no-dev-http-fixtures.php',
@@ -47,6 +47,34 @@ final class ProductionAutoloadBoundaryContractTest extends TestCase
         ] as $forbidden) {
             self::assertStringNotContainsString($forbidden, $yaml);
         }
+    }
+
+    public function test_no_dev_ci_checks_only_health_route_again_in_simulated_production_env(): void
+    {
+        $yaml = file_get_contents(
+            dirname(__DIR__, 2).'/.github/workflows/crm-f3-255-no-dev-isolation.yml',
+        );
+        self::assertIsString($yaml);
+        self::assertSame(2, substr_count($yaml, 'php artisan route:list --json'));
+        self::assertSame(2, substr_count($yaml, '.uri == "up"'));
+        self::assertStringContainsString(
+            'Recheck no-dev route inventory under production environment (CI only)',
+            $yaml,
+        );
+        self::assertStringContainsString('test "$APP_ENV" = production', $yaml);
+        self::assertStringContainsString('test "$APP_DEBUG" = false', $yaml);
+        self::assertStringContainsString(
+            'php artisan route:list --json > /tmp/crm-f3-260-production-routes.json',
+            $yaml,
+        );
+        self::assertStringContainsString('APP_DEBUG: '."'false'", $yaml);
+        self::assertStringContainsString('DB_CONNECTION: sqlite', $yaml);
+        self::assertStringContainsString('MAIL_MAILER: array', $yaml);
+        self::assertStringContainsString('permissions:'."\n".'  contents: read', $yaml);
+        self::assertStringNotContainsString('GITHUB_TOKEN', $yaml);
+        self::assertStringNotContainsString('ssh ', $yaml);
+        self::assertStringNotContainsString('php artisan migrate', $yaml);
+        self::assertStringNotContainsString('php artisan serve', $yaml);
     }
 
     public function test_no_dev_probe_is_read_only_and_uses_only_fixture_class_names(): void
