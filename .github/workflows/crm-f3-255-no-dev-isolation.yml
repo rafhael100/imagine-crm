@@ -1,0 +1,79 @@
+name: CRM Imagine - F3-255 No-Dev HTTP Sandbox Isolation
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'composer.json'
+      - 'composer.lock'
+      - 'routes/**'
+      - 'bootstrap/app.php'
+      - 'tests/Support/**'
+      - 'tests/Feature/SignupTrialHttpFixture*'
+      - 'tests/Unit/ProductionAutoloadBoundaryContractTest.php'
+      - 'scripts/ci/verify-no-dev-http-fixtures.php'
+      - '.github/workflows/crm-f3-255-no-dev-isolation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  no-dev-autoload:
+    name: Composer without dev fixtures and public route inventory — NO-GO
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - name: Checkout exact commit in ephemeral runner
+        uses: actions/checkout@v4
+      - name: PHP 8.4 without production services
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, zip
+          tools: composer:v2
+          coverage: none
+      - name: Install production-style Composer classmap without dev
+        run: composer install --no-dev --classmap-authoritative --no-interaction --prefer-dist --no-progress
+      - name: Verify test-only namespace absent in no-dev loader
+        run: |
+          php -l scripts/ci/verify-no-dev-http-fixtures.php
+          php scripts/ci/verify-no-dev-http-fixtures.php
+      - name: Only framework health route may be public
+        shell: bash
+        run: |
+          set -euo pipefail
+          php artisan route:list --json > /tmp/crm-f3-255-routes.json
+          jq -e '
+            length == 1 and
+            .[0].uri == "up" and
+            (.[0].method == "GET|HEAD" or .[0].method == "HEAD|GET")
+          ' /tmp/crm-f3-255-routes.json > /dev/null
+          for name in '__ci/f3-252' '__ci/f3-254' 'SignupTrialHttpFixture'; do
+            if grep -RFq "$name" routes app bootstrap; then
+              echo 'F3-255 NO-GO: test fixture leaked into runtime' >&2
+              exit 1
+            fi
+          done
+          rm -f /tmp/crm-f3-255-routes.json
+      - name: Record an explicit NO-GO boundary
+        shell: bash
+        run: |
+          {
+            echo '### CRM F3-255 — Read-only autoload proof'
+            echo '- Composer --no-dev: test fixtures unavailable'
+            echo '- Laravel routes: only framework health /up'
+            echo '- Real signup, identity, OTP delivery and trial: **NO-GO**'
+            echo '- No production DB, VPS or deployment'
+          } >> "$GITHUB_STEP_SUMMARY"
