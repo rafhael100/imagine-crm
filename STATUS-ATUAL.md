@@ -1,5 +1,12 @@
 # CRM Imagine — STATUS ATUAL
 
+## OPS-65 — Cadastro HTTP de testes e prova de isolamento Composer (13/11/2026)
+
+**Snapshot DEV:** `6ae2a3eb97e8ede33ec4fdd00ccccd792daf63ac` após [PR #505](https://github.com/rafhael100/imagine-crm/pull/505), `main` permanece `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012`. Três PRs [#502](https://github.com/rafhael100/imagine-crm/pull/502), [#503](https://github.com/rafhael100/imagine-crm/pull/503) e [#505](https://github.com/rafhael100/imagine-crm/pull/505) foram integradas **somente DEV**, cada uma com **5/5 checks success na HEAD da PR** — [dossiê OPS-65](docs/desenvolvimento/CRM-OPS-65-http-dois-canais-e-isolamento-no-dev-2026-11-13.md). O kernel Laravel de PHPUnit simula código OTP nos canais e-mail/telefone, reenvio e expiração 900s; a CI Composer `--no-dev` demonstra que classes `Tests\\` não são autocarregáveis e somente a rota `/up` aparece no pacote. **Não há endpoint publicado de cadastro/trial, envio de e-mail/WhatsApp, usuário, acesso, cobrança ou dados reais.**
+
+**Gates:** [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27), [CORE/LGPD #259](https://github.com/rafhael100/imagine-crm/issues/259) e [UX #416](https://github.com/rafhael100/imagine-crm/issues/416) continuam abertos. [Visual DRAFT #485](https://github.com/rafhael100/imagine-crm/pull/485) e provas PG16 [#468](https://github.com/rafhael100/imagine-crm/pull/468)/[#470](https://github.com/rafhael100/imagine-crm/pull/470)/[#477](https://github.com/rafhael100/imagine-crm/pull/477) não foram mescladas. Nenhum deploy, VPS, produção, `ALLOW` ou custo externo.
+
+
 ## OPS-64 — Kernel HTTP em PHPUnit e pacote navegável offline (13/11/2026)
 
 **DEV** `a15023af2d3dbd872a5bd3be1e303e3b8d388c1e` (após [#502](https://github.com/rafhael100/imagine-crm/pull/502)); **main** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` preservada. [#500](https://github.com/rafhael100/imagine-crm/pull/500) integrou HTTP de cadastro/trial **somente dentro de PHPUnit** (4/4 CI success). [#501](https://github.com/rafhael100/imagine-crm/pull/501) integrou vedação de rotas publicadas, exigindo somente `/up` (5/5 CI success). [#502](https://github.com/rafhael100/imagine-crm/pull/502) integrou paralelamente cenários de e-mail/WhatsApp **fictícios** no laboratório. As PRs #501 e #502 têm o mesmo código documental F3-253; usar os números de PR na rastreabilidade.
