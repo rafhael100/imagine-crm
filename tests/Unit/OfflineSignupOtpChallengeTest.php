@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 final class OfflineSignupOtpChallengeTest extends TestCase
 {
     private const KEY = 'fixture-secret-with-32-plus-bytes-long-for-tests-only';
-    private const BINDING = '9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b';
+    private const BINDING = '9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b';
 
     public function test_issue_creates_crypto_random_six_digit_challenge_without_granting_access(): void
     {
