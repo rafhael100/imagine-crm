@@ -164,6 +164,92 @@ final class StagingRenderedComposePolicyTest extends TestCase
         self::assertContains('web_build_boundary', self::policy($model));
     }
 
+    public function test_build_extensions_and_attachable_or_external_network_are_denied(): void
+    {
+        $extensions = [
+            'target' => 'debug',
+            'additional_contexts' => ['other' => 'https://example.invalid/example.git'],
+            'dockerfile_inline' => 'FROM scratch',
+            'cache_from' => ['example.invalid/external-cache'],
+            'tags' => ['example.invalid/public-image'],
+            'pull' => true,
+        ];
+        foreach ($extensions as $name => $value) {
+            foreach (['app', 'web'] as $service) {
+                $model = self::validModel();
+                $model['services'][$service]['build'][$name] = $value;
+                self::assertContains(
+                    $service.'_build_boundary',
+                    self::policy($model),
+                    $service.': '.$name,
+                );
+            }
+        }
+
+        foreach ([
+            'attachable' => true,
+            'external' => true,
+            'driver_opts' => ['com.docker.network.bridge.enable_ip_masquerade' => 'true'],
+            'driver' => 'overlay',
+            'name' => 'another-organization_private',
+        ] as $name => $value) {
+            $model = self::validModel();
+            $model['networks']['crm_private'][$name] = $value;
+            self::assertContains('network_not_private', self::policy($model), $name);
+        }
+    }
+
+    public function test_malformed_service_shape_is_denied_without_php_type_errors(): void
+    {
+        foreach ([null, 'not-a-service', false, 0, []] as $malformed) {
+            $model = self::validModel();
+            $model['services']['app'] = $malformed;
+            $result = self::policy($model);
+            self::assertNotSame([], $result);
+            if (!is_array($malformed)) {
+                self::assertContains('invalid_service_shape', $result);
+            }
+        }
+    }
+
+    public function test_actual_cli_accepts_only_review_fixture_and_never_echoes_rejected_input(): void
+    {
+        $root = realpath(dirname(__DIR__, 2));
+        self::assertIsString($root);
+        $script = $root.'/scripts/ci/verify-staging-rendered-compose.php';
+        $model = self::validModel();
+        foreach (['app', 'web'] as $service) {
+            $model['services'][$service]['build']['context'] = $root;
+        }
+
+        $run = static function (string $input) use ($script, $root): \Symfony\Component\Process\Process {
+            $process = new \Symfony\Component\Process\Process([PHP_BINARY, $script], $root);
+            $process->setInput($input);
+            $process->run();
+
+            return $process;
+        };
+
+        $valid = $run(json_encode($model, JSON_THROW_ON_ERROR));
+        self::assertSame(0, $valid->getExitCode(), $valid->getErrorOutput());
+        self::assertStringContainsString('DRAFT/NO-DEPLOY', $valid->getOutput());
+
+        $model['services']['app']['environment']['DB_HOST'] = 'SYNTHETIC_DO_NOT_ECHO_265';
+        $denied = $run(json_encode($model, JSON_THROW_ON_ERROR));
+        self::assertSame(1, $denied->getExitCode());
+        self::assertSame('', $denied->getOutput());
+        self::assertStringContainsString('NO-GO', $denied->getErrorOutput());
+        self::assertStringNotContainsString('SYNTHETIC_DO_NOT_ECHO_265', $denied->getErrorOutput());
+
+        $invalid = $run('{broken-json');
+        self::assertSame(1, $invalid->getExitCode());
+        self::assertStringContainsString('NO-GO', $invalid->getErrorOutput());
+
+        $oversized = $run(str_repeat('x', 262145));
+        self::assertSame(2, $oversized->getExitCode());
+        self::assertStringContainsString('NO-GO', $oversized->getErrorOutput());
+    }
+
     public function test_rendered_policy_is_not_deployed_as_part_of_application_image(): void
     {
         $dockerfile = file_get_contents(dirname(__DIR__, 2).'/infra/staging/Dockerfile');
