@@ -35,9 +35,22 @@ final class StagingRenderedComposePolicy
             is_array($networks) && $keys($networks) === ['crm_private']
             && is_array($privateNetwork)
             && ($privateNetwork['internal'] ?? null) === true
-            && array_diff(array_keys($privateNetwork), ['internal', 'name']) === []
-            && (!array_key_exists('name', $privateNetwork)
-                || $privateNetwork['name'] === 'imagine-crm-stage-review_crm_private'),
+            && array_diff(
+                array_keys($privateNetwork),
+                ['internal', 'name', 'driver', 'attachable', 'external',
+                    'driver_opts', 'ipam', 'labels', 'enable_ipv4', 'enable_ipv6'],
+            ) === []
+            && (!isset($privateNetwork['name'])
+                || $privateNetwork['name'] === 'imagine-crm-stage-review_crm_private')
+            && (!isset($privateNetwork['driver']) || $privateNetwork['driver'] === 'bridge')
+            && (!isset($privateNetwork['attachable']) || $privateNetwork['attachable'] === false)
+            && (!isset($privateNetwork['external']) || $privateNetwork['external'] === false)
+            && (!isset($privateNetwork['enable_ipv4']) || $privateNetwork['enable_ipv4'] === true)
+            && (!isset($privateNetwork['enable_ipv6']) || $privateNetwork['enable_ipv6'] === false)
+            && (!isset($privateNetwork['driver_opts']) || $privateNetwork['driver_opts'] === [])
+            && (!isset($privateNetwork['labels']) || $privateNetwork['labels'] === [])
+            && (!isset($privateNetwork['ipam']) || $privateNetwork['ipam'] === []
+                || $privateNetwork['ipam'] === ['driver' => 'default', 'config' => []]),
             'network_not_private',
         );
 
