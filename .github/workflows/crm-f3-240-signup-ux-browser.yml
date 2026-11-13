@@ -52,7 +52,7 @@ jobs:
       - name: Real Chromium interaction and layout checks at 1100px 550px and 320px
         run: php scripts/ci/check-offline-signup-otp-browser.php
 
-      - name: Capture static desktop tablet and mobile images for human visual gate
+      - name: Capture welcome and trial review images for human visual gate
         shell: bash
         run: |
           set -euo pipefail
@@ -74,11 +74,28 @@ jobs:
             rm -rf "$profile"
             test -s "review-screenshots/otp-signup-$width.png"
           done
+          # Hash fragment triggers fixture-only state for screenshot review.
+          # No document, code, contact or credential is sent over HTTP.
+          for width in 1100 320; do
+            case "$width" in
+              1100) height=1700 ;;
+              320) height=2600 ;;
+            esac
+            profile="$(mktemp -d)"
+            "$BROWSER" --headless --no-sandbox --disable-gpu --hide-scrollbars \
+              --disable-background-networking --no-first-run \
+              --user-data-dir="$profile" --window-size="$width,$height" \
+              --virtual-time-budget=700 \
+              --screenshot="$PWD/review-screenshots/otp-trial-$width.png" \
+              "file://$PWD/prototypes/f3-240-signup-otp/index.html#previsualizar-trial"
+            rm -rf "$profile"
+            test -s "review-screenshots/otp-trial-$width.png"
+          done
 
       - name: Upload short-retention fictional screenshots for manual visual review
         uses: actions/upload-artifact@v4
         with:
           name: f3-240-imagine-otp-offline-desktop-mobile
-          path: review-screenshots/otp-signup-*.png
+          path: review-screenshots/*.png
           retention-days: 7
           if-no-files-found: error

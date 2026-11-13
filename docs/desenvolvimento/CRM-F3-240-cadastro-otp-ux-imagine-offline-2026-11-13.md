@@ -7,3 +7,13 @@ A interface mostra duas empresas **fictícias** (CNPJ numérico ou alfanumérico
 Experiência visual utiliza espaços generosos, cartões claros, menu de etapas, foco visível, teclado nativo, textos acessíveis, status com `aria-live`, coluna de marca adaptável e grades de resposta para 880px/440px e 320px. A navegação/estados são limitados à memória do documento, sem registrar dados pessoais; não digitar dados reais.
 
 **Aceite:** esta PR permanece **DRAFT/NO-MERGE** até revisão humana visual comparativa da [issue #416](https://github.com/rafhael100/imagine-crm/issues/416). O browser smoke em Chromium deve exercitar desktop e mobile com o logo local. Nada desta interface altera o runtime Laravel ou libera endpoint. Gates SEG/DBA #27 e CORE/LGPD #259 continuam abertos; `main`/VPS/produção não são tocadas.
+
+## F3-254 — Prévia navegável de trial e paridade com o Core (13/11/2026)
+
+O protótipo agora inclui a quarta etapa **Trial de 14 dias** após a confirmação do código fictício. O usuário pode selecionar empresa numérica/alfanumérica, escolher o canal, digitar o exemplo `012345`, chegar à revisão e abrir um painel elegante de **sete franquias** (usuários 2; leads 20; automações 2; funis 2; anexos 20 MB; IA inicial 10 e bônus 10). Dois controles demonstram, exclusivamente no navegador, a duplicidade de trial e a transição ao fim dos 14 dias. A opção de **ativar trial real** permanece explicitamente desabilitada.
+
+O PHPUnit agora executa o CLI real `scripts/ci/emit-composite-signup-trial-lab.php` e compara, para cada `data-meter`, os limites exibidos com `trial_quota_illustrative_limits` produzidos pelo Core. Assim, uma mudança no plano de teste que torne a interface incoerente **reprova automaticamente a CI**, em vez de deixar números estáticos desatualizados. O navegador Chromium exercita a quarta etapa, seus estados de duplicidade/expiração, foco por teclado e a ausência de cadastro em 1100, 550 e 320 CSS px.
+
+Para revisão sem backend, o fragmento `#previsualizar-trial` do arquivo local inicia **apenas os cliques fictícios da própria interface**, permitindo capturas da quarta etapa. O workflow gera screenshots do início em 1100/550/320 px e do trial em 1100/320 px, retidas por 7 dias. A identidade Imagine/PNG original permanece byte a byte inalterada, com CSP offline e nenhum formulário, rede, cookies, sessão, banco, envio, cobrança ou persistência.
+
+**Gate visual #416 ainda exige aceite humano** da legibilidade, contraste e navegação. Esta PR permanece DRAFT/NO-MERGE mesmo após 5/5 CI. Não existe aprovação para publicar o protótipo na VPS ou ativar login, cadastro ou trial.
