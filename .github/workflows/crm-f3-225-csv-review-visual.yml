@@ -1,0 +1,60 @@
+name: CRM Imagine - F3-225 Offline CSV Review Visual Evidence
+
+on:
+  pull_request:
+    paths:
+      - 'prototypes/f3-225-csv-review-board/**'
+      - 'scripts/ci/check-offline-csv-review-board-browser.php'
+      - 'tests/Unit/OfflineCsvReviewBoardTest.php'
+      - '.github/workflows/crm-f3-225-csv-review-visual.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  review-browser:
+    name: Chromium 1100/550/320 and draft evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+
+      - name: PHP 8.4 and Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, curl, zip, pdo_sqlite, sqlite3
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Verify real Chromium responsive and focus behavior
+        run: php scripts/ci/check-offline-csv-review-board-browser.php
+
+      - name: Capture offline design evidence
+        run: |
+          mkdir -p artifacts/f3-225
+          CHROME="$(command -v google-chrome || command -v chromium || true)"
+          test -n "$CHROME"
+          for W in 1100 550 320; do
+            "$CHROME" --headless --disable-gpu --disable-background-networking \
+              --no-first-run --no-default-browser-check --disable-dev-shm-usage \
+              --user-data-dir="$RUNNER_TEMP/imagine-csv-review-$W" \
+              --window-size="$W,1000" \
+              --screenshot="$GITHUB_WORKSPACE/artifacts/f3-225/board-$W.png" \
+              "file://$GITHUB_WORKSPACE/prototypes/f3-225-csv-review-board/index.html"
+            test -s "artifacts/f3-225/board-$W.png"
+          done
+          (cd artifacts/f3-225 && sha256sum board-*.png > manifest.sha256)
+
+      - name: Upload review PNGs and manifest (not deployment)
+        uses: actions/upload-artifact@v4
+        with:
+          name: crm-f3-225-offline-visual-review
+          path: artifacts/f3-225/
+          if-no-files-found: error
+          retention-days: 7
