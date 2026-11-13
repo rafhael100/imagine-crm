@@ -1,0 +1,53 @@
+name: CRM F3-64 - Shared service principal across sites PG16
+on:
+  pull_request:
+    paths:
+      - 'app/Core/Leads/SharedServiceSiteBindingCandidateResolver.php'
+      - 'app/Core/Leads/SignedServiceHandoffBoundary.php'
+      - 'tests/Labs/F3_64/**'
+      - '.github/workflows/crm-f364-shared-principal-sites-pg.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  shared-principal-sites:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: f364-synthetic-admin-only
+          POSTGRES_DB: f364_shared_ci
+        ports:
+          - '127.0.0.1:5432:5432'
+        options: >-
+          --health-cmd "pg_isready -U postgres -d f364_shared_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      CRM_F364_SHARED_PRINCIPAL_LAB: '1'
+      DB_HOST: 127.0.0.1
+      DB_DATABASE: f364_shared_ci
+      PGPASSWORD: f364-synthetic-admin-only
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql,pgsql
+          tools: none
+          coverage: none
+      - name: Provision synthetic shared-service scoped roles
+        run: |
+          set -euo pipefail
+          psql -h 127.0.0.1 -U postgres -d f364_shared_ci -f tests/Labs/F3_64/site_bindings_pg16.sql
+      - name: Verify tenant boundaries for shared service principal
+        run: |
+          php -l app/Core/Leads/SharedServiceSiteBindingCandidateResolver.php
+          php -l tests/Labs/F3_64/test_shared_principal_pg.php
+          php tests/Labs/F3_64/test_shared_principal_pg.php
