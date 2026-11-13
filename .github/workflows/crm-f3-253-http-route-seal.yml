@@ -7,6 +7,7 @@ on:
     paths:
       - 'tests/Support/SignupTrialHttpFixture.php'
       - 'tests/Feature/SignupTrialHttpFixtureFlowTest.php'
+      - 'tests/Feature/SignupTrialHttpFixtureResendTest.php'
       - 'tests/Unit/SignupTrialHttpLabWorkflowContractTest.php'
       - '.github/workflows/crm-f3-253-http-route-seal.yml'
       - 'routes/**'
@@ -50,8 +51,10 @@ jobs:
         run: |
           php -l tests/Support/SignupTrialHttpFixture.php
           php -l tests/Feature/SignupTrialHttpFixtureFlowTest.php
+          php -l tests/Feature/SignupTrialHttpFixtureResendTest.php
           php -l tests/Unit/SignupTrialHttpLabWorkflowContractTest.php
           vendor/bin/phpunit tests/Feature/SignupTrialHttpFixtureFlowTest.php
+          vendor/bin/phpunit tests/Feature/SignupTrialHttpFixtureResendTest.php
           vendor/bin/phpunit tests/Feature/PublicRouteSurfaceSealTest.php
           vendor/bin/phpunit tests/Unit/SignupTrialHttpLabWorkflowContractTest.php
 
@@ -65,7 +68,7 @@ jobs:
             .[0].uri == "up" and
             (.[0].method == "GET|HEAD" or .[0].method == "HEAD|GET")
           ' /tmp/crm-f3-253-route-list.json > /dev/null
-          if grep -RFq '__ci/f3-252' routes app bootstrap; then
+          if grep -RFq '__ci/f3-252' routes app bootstrap || grep -RFq '__ci/f3-254' routes app bootstrap; then
             echo 'F3-253 NO-GO: test fixture path leaked into public source' >&2
             exit 1
           fi

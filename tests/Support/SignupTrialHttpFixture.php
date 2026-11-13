@@ -121,6 +121,18 @@ final class SignupTrialHttpFixture
         return $this->testCodes[$channel] ?? null;
     }
 
+    /**
+     * Simulate a future instant within a single PHPUnit request sequence.
+     * No production time control, HTTP route, durable clock or persistence.
+     */
+    public function advanceClockForTestOnly(int $seconds): void
+    {
+        if ($seconds < 1 || $seconds > 900 || $this->tick > 900) {
+            throw new \InvalidArgumentException('Relogio ficticio de OTP invalido.');
+        }
+        $this->tick += $seconds;
+    }
+
     /** @return list<string> */
     public function traceForTestOnly(): array
     {
