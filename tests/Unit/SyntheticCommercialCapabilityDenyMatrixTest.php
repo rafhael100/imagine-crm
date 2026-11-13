@@ -23,6 +23,7 @@ use App\Core\Portability\SyntheticImportColumnMappingInspector;
 use App\Core\Portability\SyntheticImportReadinessInspector;
 use App\Core\Portability\SyntheticSpreadsheetFormulaSignalInspector;
 use App\Core\Portability\SyntheticCsvStructureInspector;
+use App\Core\Portability\SyntheticCsvImportCrossCheck;
 use App\Core\Plans\SyntheticCancellationRetentionTimeline;
 use App\Core\Plans\SyntheticDelinquencyReviewTimeline;
 use App\Core\Plans\SyntheticTrialRetentionTimeline;
@@ -406,6 +407,37 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
                     'left' => 0, 'right' => 2, 'submission_relation' => 'different',
                     'email_relation' => 'same', 'phone_relation' => 'unavailable',
                 ]], 1, 0),
+            'csv_and_import_mapping_agree_but_still_denied' =>
+                (new SyntheticCsvImportCrossCheck())->inspect(
+                    "name,email\nFictitious,Sample",
+                    'comma',
+                    true,
+                    [
+                        'plan' => 'basic',
+                        'operation' => 'import_csv',
+                        'attachment_quota_percent' => 100,
+                        'confirmation_claimed' => true,
+                        'declared_package' => 'table',
+                        'duplicate_warning_count' => 0,
+                        'formula_warning_count' => 0,
+                        'secret_fields_claimed' => false,
+                        'entity_kinds' => ['leads'],
+                        'target_account_state' => 'empty',
+                    ],
+                    [
+                        'entity_kind' => 'leads',
+                        'declared_row_count' => 1,
+                        'declared_duplicate_candidates' => 0,
+                        'target_state' => 'empty',
+                        'review_claimed' => true,
+                        'columns' => [
+                            ['source_position' => 0, 'target_code' => 'name',
+                                'nonempty_count' => 1, 'formula_warning_count' => 0],
+                            ['source_position' => 1, 'target_code' => 'email',
+                                'nonempty_count' => 1, 'formula_warning_count' => 0],
+                        ],
+                    ],
+                ),
             'csv_structure_looks_valid_but_still_unapproved' =>
                 (new SyntheticCsvStructureInspector())->inspect(
                     "kind,description\r\n1,\"FICTIONAL\"\r\n",
@@ -593,10 +625,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             ->inspect($cases[0]['input']);
     }
 
-    public function test_all_forty_eight_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_forty_nine_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(48, $reports);
+        self::assertCount(49, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -629,6 +661,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         self::assertSame('CONFLICTING_RETRY_CLAIM', $reports['collision_worklist_prioritized_never_authorized']['page_items'][0]['reason_code']);
         self::assertFalse($reports['collision_worklist_prioritized_never_authorized']['can_assign_reviewer']);
         self::assertFalse($reports['collision_worklist_prioritized_never_authorized']['can_merge']);
+        self::assertSame(1, $reports['csv_and_import_mapping_agree_but_still_denied']['synthetic_sample_data_row_count']);
+        self::assertSame(2, $reports['csv_and_import_mapping_agree_but_still_denied']['synthetic_sample_column_count']);
+        self::assertFalse($reports['csv_and_import_mapping_agree_but_still_denied']['can_import']);
+        self::assertFalse($reports['csv_and_import_mapping_agree_but_still_denied']['authorization_verified']);
         self::assertSame(2, $reports['csv_structure_looks_valid_but_still_unapproved']['synthetic_record_count']);
         self::assertSame([], $reports['csv_structure_looks_valid_but_still_unapproved']['warning_codes']);
         self::assertFalse($reports['csv_structure_looks_valid_but_still_unapproved']['can_import']);
@@ -839,6 +875,7 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticImportReadinessInspector',
             'SyntheticSpreadsheetFormulaSignalInspector',
             'SyntheticCsvStructureInspector',
+            'SyntheticCsvImportCrossCheck',
             'SyntheticLeadRuleScorePreview',
             'SyntheticSalesGoalProgressPreview',
             'SyntheticTaskLifecycleInspector',
