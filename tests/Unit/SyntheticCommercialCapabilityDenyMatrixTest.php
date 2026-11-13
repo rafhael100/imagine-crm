@@ -17,6 +17,7 @@ use App\Core\Leads\SyntheticLeadCapacityScenarioCompare;
 use App\Core\Leads\SyntheticLeadCapacityOptionsInspector;
 use App\Core\Leads\SyntheticScoreTrendPreview;
 use App\Core\Portability\SyntheticPortabilityOperationPreflight;
+use App\Core\Portability\SyntheticBackupManifestContractInspector;
 use App\Core\Plans\SyntheticCancellationRetentionTimeline;
 use App\Core\Plans\SyntheticDelinquencyReviewTimeline;
 use App\Core\Plans\SyntheticTrialRetentionTimeline;
@@ -400,6 +401,20 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
                     'left' => 0, 'right' => 2, 'submission_relation' => 'different',
                     'email_relation' => 'same', 'phone_relation' => 'unavailable',
                 ]], 1, 0),
+            'backup_manifest_syntax_never_grants_restore' =>
+                (new SyntheticBackupManifestContractInspector())->inspect([
+                    'format_version' => 1,
+                    'target_reader_version' => 1,
+                    'package_kind' => 'complete',
+                    'parts' => [
+                        ['kind' => 'leads', 'record_count' => 3, 'declared_bytes' => 100],
+                    ],
+                    'declared_digest_algorithm' => 'sha256',
+                    'digest_present_claimed' => true,
+                    'encryption_claimed' => true,
+                    'secret_fields_claimed' => false,
+                    'claimed_archive_bytes' => 120,
+                ]),
             'portability_all_plans_still_without_access' =>
                 (new SyntheticPortabilityOperationPreflight())->inspect([
                     'plan' => 'basic',
@@ -491,10 +506,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             ->inspect($cases[0]['input']);
     }
 
-    public function test_all_forty_two_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_forty_three_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(42, $reports);
+        self::assertCount(43, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -527,6 +542,12 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         self::assertSame('CONFLICTING_RETRY_CLAIM', $reports['collision_worklist_prioritized_never_authorized']['page_items'][0]['reason_code']);
         self::assertFalse($reports['collision_worklist_prioritized_never_authorized']['can_assign_reviewer']);
         self::assertFalse($reports['collision_worklist_prioritized_never_authorized']['can_merge']);
+        self::assertContains(
+            'COMPLETE_PACKAGE_SCOPE_UNVERIFIED',
+            $reports['backup_manifest_syntax_never_grants_restore']['warning_codes'],
+        );
+        self::assertFalse($reports['backup_manifest_syntax_never_grants_restore']['content_integrity_verified']);
+        self::assertFalse($reports['backup_manifest_syntax_never_grants_restore']['can_restore']);
         self::assertTrue($reports['portability_all_plans_still_without_access']['functional_feature_documented_for_all_four_plans']);
         self::assertFalse($reports['portability_all_plans_still_without_access']['portability_blocked_by_attachment_quota']);
         self::assertFalse($reports['portability_all_plans_still_without_access']['can_restore']);
@@ -699,6 +720,7 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticLeadDuplicateEvidenceInspector',
             'SyntheticLeadCollisionReviewWorklist',
             'SyntheticPortabilityOperationPreflight',
+            'SyntheticBackupManifestContractInspector',
             'SyntheticLeadRuleScorePreview',
             'SyntheticSalesGoalProgressPreview',
             'SyntheticTaskLifecycleInspector',
