@@ -19,6 +19,7 @@ final class OfflineKanbanFunnelTest extends TestCase
     }
 
     private const APPROVED_SEARCH = '<input type="search" id="fiction-search" maxlength="32" autocomplete="off" spellcheck="false" placeholder="F01 ou oportunidade">';
+    private const APPROVED_BRAND_LOGO = '<img class="brand-logo" src="../assets/logo-imagine.png" alt="Imagine Comunicação Digital" width="162" height="45" decoding="async">';
 
     private static function withoutApprovedSearchInput(string $html): string
     {
@@ -26,7 +27,11 @@ final class OfflineKanbanFunnelTest extends TestCase
         // and every form, upload, network and persistence path remain denied.
         self::assertSame(1, substr_count($html, self::APPROVED_SEARCH));
 
-        return str_replace(self::APPROVED_SEARCH, '', $html);
+        // The only extra resource permitted is the exact local original Imagine
+        // logo. Other images, scripts, forms and network paths remain banned.
+        self::assertSame(1, substr_count($html, self::APPROVED_BRAND_LOGO));
+
+        return str_replace([self::APPROVED_SEARCH, self::APPROVED_BRAND_LOGO], '', $html);
     }
 
     public function test_fiction_only_four_stage_board_with_eight_opportunities(): void
