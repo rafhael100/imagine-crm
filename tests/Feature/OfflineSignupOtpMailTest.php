@@ -76,7 +76,9 @@ final class OfflineSignupOtpMailTest extends TestCase
                 self::fail('Malformed OTP accepted by mail template.');
             } catch (InvalidArgumentException $e) {
                 self::assertSame('Codigo OTP de e-mail invalido.', $e->getMessage());
-                self::assertStringNotContainsString($candidate, $e->getMessage());
+                if ($candidate !== '') {
+                    self::assertStringNotContainsString($candidate, $e->getMessage());
+                }
             }
         }
     }
