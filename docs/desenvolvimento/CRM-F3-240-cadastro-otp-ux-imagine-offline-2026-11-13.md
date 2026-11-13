@@ -1,0 +1,9 @@
+# CRM F3-240 — protótipo de cadastro OTP offline com identidade Imagine original
+
+Protótipo navegável estritamente **estático e offline** em `prototypes/f3-240-signup-otp/index.html`, acompanhado de `assets/logo-imagine.png` copiada **sem alteração binária** do repositório canônico Imagine Portal Node. O teste de proveniência confere o SHA de blob Git `678adeceb3a8ecdaeb6b576b9ee18d1bf0396f77` do logo original. Design utiliza exatamente a paleta Imagine: laranja `#F9941D`, grafite `#171B19`, branco e fundo `#F7F7F8`.
+
+A interface mostra duas empresas **fictícias** (CNPJ numérico ou alfanumérico), permite alternar entre canal e-mail/WhatsApp **sem fornecer destinatários**, simular entrega **sem transmitir mensagem**, digitar o código fixo `012345`, demonstrar erro, expiração simulada de 15 minutos, reiniciar estado de tela e exibir painel de revisão. O botão **Concluir cadastro** permanece desabilitado mesmo quando o exemplo coincide. Não existe formulário que possa ser submetido, login, route/controller Laravel, envio, rede, database, cobrança, sessão ou armazenamento. Uma CSP local bloqueia conexões e envio de formulários.
+
+Experiência visual utiliza espaços generosos, cartões claros, menu de etapas, foco visível, teclado nativo, textos acessíveis, status com `aria-live`, coluna de marca adaptável e grades de resposta para 880px/440px e 320px. A navegação/estados são limitados à memória do documento, sem registrar dados pessoais; não digitar dados reais.
+
+**Aceite:** esta PR permanece **DRAFT/NO-MERGE** até revisão humana visual comparativa da [issue #416](https://github.com/rafhael100/imagine-crm/issues/416). O browser smoke em Chromium deve exercitar desktop e mobile com o logo local. Nada desta interface altera o runtime Laravel ou libera endpoint. Gates SEG/DBA #27 e CORE/LGPD #259 continuam abertos; `main`/VPS/produção não são tocadas.

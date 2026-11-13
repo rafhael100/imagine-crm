@@ -1,0 +1,84 @@
+name: CRM Imagine - F3-240 Signup UX Chromium Offline
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'prototypes/f3-240-signup-otp/**'
+      - 'tests/Unit/OfflineSignupOtpImagineUxPrototypeTest.php'
+      - 'scripts/ci/check-offline-signup-otp-browser.php'
+      - '.github/workflows/crm-f3-240-signup-ux-browser.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  signup-browser:
+    name: Chromium 1100/550/320px Imagine logo and offline OTP UX (NO-GO)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - name: Checkout review-only static prototype
+        uses: actions/checkout@v4
+
+      - name: PHP 8.4 and Composer, no database setup
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Install test dependencies only
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: PHP and original Imagine logo static checks
+        run: |
+          php -l scripts/ci/check-offline-signup-otp-browser.php
+          vendor/bin/phpunit tests/Unit/OfflineSignupOtpImagineUxPrototypeTest.php
+
+      - name: Real Chromium interaction and layout checks at 1100px 550px and 320px
+        run: php scripts/ci/check-offline-signup-otp-browser.php
+
+      - name: Capture static desktop tablet and mobile images for human visual gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          BROWSER="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          mkdir -p review-screenshots
+          for width in 1100 550 320; do
+            case "$width" in
+              1100) height=1100 ;;
+              550) height=1700 ;;
+              320) height=2200 ;;
+            esac
+            profile="$(mktemp -d)"
+            "$BROWSER" --headless --no-sandbox --disable-gpu --hide-scrollbars \
+              --disable-background-networking --no-first-run \
+              --user-data-dir="$profile" --window-size="$width,$height" \
+              --virtual-time-budget=700 \
+              --screenshot="$PWD/review-screenshots/otp-signup-$width.png" \
+              "file://$PWD/prototypes/f3-240-signup-otp/index.html"
+            rm -rf "$profile"
+            test -s "review-screenshots/otp-signup-$width.png"
+          done
+
+      - name: Upload short-retention fictional screenshots for manual visual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: f3-240-imagine-otp-offline-desktop-mobile
+          path: review-screenshots/otp-signup-*.png
+          retention-days: 7
+          if-no-files-found: error
