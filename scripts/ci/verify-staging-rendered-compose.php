@@ -213,6 +213,17 @@ if (isset($_SERVER['SCRIPT_FILENAME'])
             // Codes are static literals produced by the policy itself,
             // never input values, environment content, paths or credentials.
             fwrite(STDERR, 'F3-265 NO-GO policy codes: '.implode(',', $codes)."\n");
+            if (in_array('network_not_private', $codes, true)) {
+                // Only boolean shape probes. Never print a network name,
+                // untrusted option key, path, address or user-provided value.
+                $net = $data['networks']['crm_private'] ?? null;
+                fwrite(STDERR, 'F3-265 network flags: map='. (int) is_array($net)
+                    .',internal='.(int) (($net['internal'] ?? null) === true)
+                    .',known-keys='.(int) (is_array($net) &&
+                        array_diff(array_keys($net), ['internal', 'name']) === [])
+                    .',name='.(int) (($net['name'] ?? null)
+                        === 'imagine-crm-stage-review_crm_private')."\n");
+            }
             exit(1);
         }
         fwrite(STDOUT, "F3-264 PASS: rendered Compose is loopback-only, no host mounts, no external DB or live auth; DRAFT/NO-DEPLOY.\n");
