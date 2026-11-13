@@ -1,5 +1,12 @@
 # CRM Imagine — STATUS ATUAL
 
+## OPS-64 — Kernel HTTP em PHPUnit e pacote navegável offline (13/11/2026)
+
+**DEV** `a15023af2d3dbd872a5bd3be1e303e3b8d388c1e` (após [#502](https://github.com/rafhael100/imagine-crm/pull/502)); **main** `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` preservada. [#500](https://github.com/rafhael100/imagine-crm/pull/500) integrou HTTP de cadastro/trial **somente dentro de PHPUnit** (4/4 CI success). [#501](https://github.com/rafhael100/imagine-crm/pull/501) integrou vedação de rotas publicadas, exigindo somente `/up` (5/5 CI success). [#502](https://github.com/rafhael100/imagine-crm/pull/502) integrou paralelamente cenários de e-mail/WhatsApp **fictícios** no laboratório. As PRs #501 e #502 têm o mesmo código documental F3-253; usar os números de PR na rastreabilidade.
+
+A [PR DRAFT visual #485](https://github.com/rafhael100/imagine-crm/pull/485) passou em 5/5 CI e contém um pacote HTML para **navegar offline** pela jornada 4 etapas, trial 14 dias e sete quotas Imagine. Baixar em [Actions #43477714199](https://github.com/rafhael100/imagine-crm/actions/runs/43477714199), artifact `f3-240-imagine-cadastro-trial-navegavel`, até 20/11/2026. **Visual #416 ainda sem aceite humano**; SEG/DBA #27, CORE/LGPD #259 e PG16 #468/#470/#477 seguem NO-GO. [Dossiê OPS-64](docs/desenvolvimento/CRM-OPS-64-kernel-http-ux-gates-2026-11-13.md) contém os detalhes e links de prova. Sem rota pública de signup, envio, conta, VPS ou produção.
+
+
 ## OPS-63 — Homologação sintética OTP → trial em CI (13/11/2026)
 
 **Snapshot DEV:** `28d7f88d54acd5b60f5565a2b6b1f93dc73c7361` depois da [PR #497](https://github.com/rafhael100/imagine-crm/pull/497), com `main` `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` preservada. Seis entregas integradas **exclusivamente na DEV**: [#492](https://github.com/rafhael100/imagine-crm/pull/492), [#493](https://github.com/rafhael100/imagine-crm/pull/493), [#494](https://github.com/rafhael100/imagine-crm/pull/494), [#495](https://github.com/rafhael100/imagine-crm/pull/495), [#496](https://github.com/rafhael100/imagine-crm/pull/496), [#497](https://github.com/rafhael100/imagine-crm/pull/497). O [dossiê OPS-63](docs/desenvolvimento/CRM-OPS-63-otp-trial-laboratorio-funcional-ci-2026-11-13.md) registra commits e **26/26 workflows `success` nas SHAs testadas das PRs**, incluindo duas evidências dedicadas (uma por evolução).
