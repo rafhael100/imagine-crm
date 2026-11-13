@@ -1,0 +1,9 @@
+# F3-231 — chave HMAC para unicidade de trial sem CNPJ puro no índice
+
+O novo componente `OfflineCnpjTrialHmacBinding` aceita um CNPJ **estruturalmente validado** pelo `OfflineCnpjChecksumInspector` F3-230 (incluindo a regra alfanumérica vigente desde julho de 2026) e usa HMAC-SHA256 sobre o identificador de 14 caracteres ASCII canônico com domínio `imagine.crm.trial.cnpj.v1`. O segredo separado deve ser obtido de armazenamento protegido e com política de rotação apropriada em futura homologação; não é fornecido pela aplicação operacional nesta entrega.
+
+**Propriedades verificáveis:** formatos compacto/pontuado e letras minúsculas/maiúsculas do mesmo CNPJ geram o mesmo fingerprint; chaves distintas geram fingerprints distintos; números diferentes geram fingerprints diferentes; um DV inválido, Unicode confundível ou segredo curto são recusados com mensagem genérica. O digest possui 64 hexadecimais e não contém o número. Diferentemente de hash SHA puro, depende de segredo para impedir enumeração offline trivial de CNPJs.
+
+**Restrições:** isto NÃO comprova existência, situação fiscal, titularidade, identidade ou a política um trial por CNPJ. Não executa deduplicação, nem cria reservas, usuários, tenants ou acesso. Não retorna CNPJ normalizado ao cliente; o fingerprint também não deve ser exibido ao usuário, reutilizado como token, logado ou transferido entre tenants sem revisão de governança de chaves. Rotação de segredo, anti-bruteforce, race, base legal LGPD e auditoria permanecem não implementadas.
+
+Testes `OfflineCnpjTrialHmacBindingTest` cobrem equivalência, separação de chave e domínio, erros e não vazamento. Código PHP Core isolado, sem I/O, rede, DB, migração, env, envio, custo ou deploy. Gates #27 SEG/DBA, #259 CORE/LGPD e #416 UX continuam NO-GO. Integrar somente DEV após os quatro workflows verdes na HEAD exata e diff revisado.
