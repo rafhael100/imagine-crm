@@ -15,6 +15,7 @@ on:
       - 'tests/Feature/SignupTrialWindowQuotaHttpLabTest.php'
       - 'tests/Unit/ProductionAutoloadBoundaryContractTest.php'
       - 'scripts/ci/verify-no-dev-http-fixtures.php'
+      - 'scripts/ci/verify-no-dev-http-kernel.php'
       - '.github/workflows/crm-f3-255-no-dev-isolation.yml'
   workflow_dispatch:
 
@@ -88,6 +89,15 @@ jobs:
           rm -f /tmp/crm-f3-260-production-routes.json
           # The 'production' value is ONLY an environment flag on a GitHub
           # hosted runner. No VPS, prod DB, secrets or deployment exist here.
+      - name: Exercise PHP HTTP kernel without starting a server (production env simulated)
+        shell: bash
+        env:
+          APP_ENV: production
+          APP_DEBUG: 'false'
+        run: |
+          set -euo pipefail
+          php -l scripts/ci/verify-no-dev-http-kernel.php
+          php scripts/ci/verify-no-dev-http-kernel.php
       - name: Record an explicit NO-GO boundary
         shell: bash
         run: |
@@ -95,6 +105,7 @@ jobs:
             echo '### CRM F3-255 — Read-only autoload proof'
             echo '- Composer --no-dev: test fixtures unavailable'
             echo '- Laravel route inventory in testing AND simulated production environment: only GET/HEAD /up'
+            echo '- Simulated production HTTP kernel: /up works; 9 unapproved routes return 404'
             echo '- Real signup, identity, OTP delivery and trial: **NO-GO**'
             echo '- No production DB, VPS or deployment'
           } >> "$GITHUB_STEP_SUMMARY"
