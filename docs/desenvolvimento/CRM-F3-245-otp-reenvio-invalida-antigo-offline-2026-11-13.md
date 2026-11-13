@@ -1,0 +1,9 @@
+# CRM F3-245 — Reenvio OTP deve invalidar a geração anterior (prova offline)
+
+O desafio OTP da F3-226 produz nonce único e validade de 900 segundos por emissão. Sem um apontador persistente de qual desafio é o **mais recente** para um contato, uma senha anterior pode continuar coincidindo com o seu verificador mesmo após novo código ter sido emitido. O teste desta etapa demonstra esse risco usando o Core real com e-mail e horário fictícios.
+
+`OfflineSignupOtpSupersessionPreview` recebe **dois registros sintéticos fornecidos pelo chamador** e responde `earlier_challenge_superseded_claim`, `latest_challenge_claim_only` ou `latest_expired_claim` com semântica de hora e nonce. Recusa registros malformados, nonce repetido com digest alterado, ordem temporal invertida e prazo adulterado. A expiração ocorre na fronteira exata de 900 segundos, sem prolongar o código ao reenviar. A integração ao CLI fictício acrescenta apenas estados, nunca OTP ou nonce.
+
+**Limitação crítica:** a classe NÃO comprova que o registro "mais recente" veio do servidor, nem que ambos pertencem ao mesmo contato, canal ou tenant. Pode ser enganada por claims do chamador; todos os direitos de consumo, envio, verificação real, cadastro, persistência e autenticação permanecem **false**. Isso **não** implementa invalidação real; tal garantia exige índice transacional durável e controle atômico de emissão/consumo, mais revisão de identidade, rate-limit, reenvios concorrentes, auditoria e LGPD. Nenhum usuário, canal, mensagem ou banco real é tocado.
+
+Testes PHPUnit positivos e negativos verificam correspondência isolada do OTP antigo, sua classificação de substituído após reenvio, expiração do código mais recente e falha segura. Gates SEG/DBA #27, CORE/LGPD #259 e UX #416 continuam NO-GO; integrar apenas DEV após quatro workflows success e revisão de diff. Sem `main`, VPS ou produção.
