@@ -7,6 +7,8 @@ on:
     paths:
       - 'infra/staging/**'
       - 'tests/Unit/StagingSmokeBlueprintContractTest.php'
+      - 'tests/Unit/StagingRenderedComposePolicyTest.php'
+      - 'scripts/ci/verify-staging-rendered-compose.php'
       - '.github/workflows/ci-crm-private-staging-blueprint.yml'
   workflow_dispatch:
 
@@ -31,6 +33,9 @@ jobs:
         run: |
           set -euo pipefail
           docker compose -f infra/staging/compose.yaml config --quiet
+          php -l scripts/ci/verify-staging-rendered-compose.php
+          docker compose -f infra/staging/compose.yaml config --format json \
+            | php scripts/ci/verify-staging-rendered-compose.php
           # No build, up, pull or any container runtime.
           # The candidate remains DRAFT/NO-GO even on success.
       - name: Explain scope in CI job summary
@@ -38,7 +43,8 @@ jobs:
         run: |
           {
             echo '### CRM F3-263 — staging candidate lint only'
-            echo '- docker compose config: syntax and references only'
+            echo '- docker compose config: syntax and normalized-network/service/ports policy'
+            echo '- No mutable host public/config bind mounts and no extra service/secret' 
             echo '- No container built, pulled, launched or deployed'
             echo '- No VPS, network service, DB, real identity or credentials'
             echo '- SEG/DBA, CORE/LGPD and UX remain NO-GO'
