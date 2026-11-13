@@ -28,7 +28,8 @@ if(PHP_SAPI!=='cli-server'
     ||getenv('DB_HOST')!=='127.0.0.1'
     ||getenv('DB_DATABASE')!=='f353_nonce_ci'
     ||($_SERVER['REMOTE_ADDR']??'')!=='127.0.0.1'
-    ||($_SERVER['SERVER_ADDR']??'')!=='127.0.0.1') {
+    ||(isset($_SERVER['SERVER_ADDR'])
+        && $_SERVER['SERVER_ADDR']!=='127.0.0.1')) {
     reply(503,'CI_ONLY_LOOPBACK_REQUIRED');return;
 }
 $path=parse_url($_SERVER['REQUEST_URI']??'',PHP_URL_PATH);
