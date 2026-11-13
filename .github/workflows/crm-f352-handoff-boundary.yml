@@ -1,0 +1,30 @@
+name: CRM F3-52 - Signed metadata handoff boundary offline
+on:
+  pull_request:
+    paths:
+      - 'tests/Labs/F3_52/**'
+      - '.github/workflows/crm-f352-handoff-boundary.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  signed-boundary-negative-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3','8.4']
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+          coverage: none
+      - run: |
+          php -l tests/Labs/F3_52/AuthenticatedHandoffBoundary.php
+          php -l tests/Labs/F3_52/test_authenticated_handoff_boundary.php
+          php tests/Labs/F3_52/test_authenticated_handoff_boundary.php
