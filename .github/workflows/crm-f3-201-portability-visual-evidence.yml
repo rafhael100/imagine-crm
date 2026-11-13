@@ -1,0 +1,49 @@
+name: CRM F3-201 - IN-118 Offline Portability UX Evidence
+
+on:
+  push:
+    branches:
+      - design/crm-in118-portability-center-offline-2026-11-12
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-f3-201-visual-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    name: Real Chromium F3-201 - 4 viewports x 2 fictional states
+    if: github.ref == 'refs/heads/design/crm-in118-portability-center-offline-2026-11-12' || github.head_ref == 'design/crm-in118-portability-center-offline-2026-11-12'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout isolated candidate
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup Node without extra npm packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Capture offline center at 1440/768/550/320 CSS px
+        run: |
+          set -euo pipefail
+          command -v google-chrome
+          node scripts/ci/capture-crm-portability-center-evidence.mjs \
+            prototypes/f3-201-portability-center/index.html \
+            .tmp/visual-review/f3-201
+          cp prototypes/f3-201-portability-center/index.html \
+            .tmp/visual-review/f3-201/central-portabilidade-demo.html
+      - name: Upload runnable self-contained HTML, 8 PNGs and SHA-256 manifest for human review
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crm-f3-201-portability-ux-${{ github.sha }}
+          path: .tmp/visual-review/f3-201/
+          if-no-files-found: error
+          retention-days: 7
