@@ -13,3 +13,7 @@ Sem banco, Redis, identidade, CPF/CNPJ real, SMTP, WhatsApp, provedor aprovado, 
 A CI dedicada `CRM Imagine - F3-253 Laravel HTTP Fixture Route Seal` deve executar, além da F3-252/253, o arquivo `SignupTrialHttpFixtureResendTest.php`. O mesmo workflow confirma que somente `/up` aparece na lista de rotas publicadas e que nenhum marcador `__ci/f3-252` ou `__ci/f3-254` está presente em `routes/`, `app/` e `bootstrap/`. O caso positivo de reenvio testa a fronteira exata de 60 segundos; o negativo testa avanço de relógio inválido, acesso por GET e operação desconhecida.
 
 **Aceite técnico estrito:** cinco verificações na mesma SHA — F0, PostgreSQL/RLS, Sites, Agentes e o route seal HTTP — todas `completed/success`. O resultado verde não substitui segurança de rede, antiabuso persistente, prova de telefone ou revisão formal de credenciais.
+
+## Rebase de integração
+
+A branch foi sincronizada com a DEV após atualizações documentais concorrentes, mantendo o diff da F3-254 limitado ao laboratório PHPunit, workflow dedicado, contrato e esta documentação. Antes de qualquer merge, a CI deverá ser reexecutada na **HEAD exata da branch sincronizada**, inclusive a inspeção que mantém apenas /up como rota publicada. A prova de 900 segundos e cooldown de 60 segundos não autoriza transportes reais.
