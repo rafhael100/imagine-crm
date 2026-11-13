@@ -2,8 +2,10 @@
 declare(strict_types=1);
 /** Disposable PHP HTTP router. NEVER register as a Laravel route. */
 require_once dirname(__DIR__,3).'/app/Core/Leads/SignedServiceHandoffBoundary.php';
+require_once dirname(__DIR__,3).'/app/Core/Leads/TrustedServiceBindingCandidateResolver.php';
 require_once __DIR__.'/../F3_55/SignedSyntheticReadback.php';
 use App\Core\Leads\SignedServiceHandoffBoundary;
+use App\Core\Leads\TrustedServiceBindingCandidateResolver;
 use Tests\Labs\F3_55\SignedSyntheticReadback;
 function reply(int $code,string $reason,bool $found=false):void {
     http_response_code($code);
@@ -77,13 +79,8 @@ $lookupKey=hex2bin($lookupHex);
 if(!is_string($requestKey)||!is_string($lookupKey)){
     reply(503,'CI_KEYS_UNAVAILABLE');return;
 }
-$binding=[
-    'organization_reference'=>'11111111-1111-4111-8111-111111111111',
-    'binding_reference'=>'22222222-2222-4222-8222-222222222222',
-    'site_reference'=>'44444444-4444-4444-8444-444444444444',
-    'form_reference'=>'55555555-5555-4555-8555-555555555555',
-    'destination_reference'=>'66666666-6666-4666-8666-666666666666',
-];
+// F3-61: no binding values are copied from request headers or an envelope.
+// Only the server-provisioned principal resolves a binding in independent PG.
 try{
     $db=new PDO('pgsql:host=127.0.0.1;port=5432;dbname=f353_nonce_ci',
         'f353_sender_a','f353-synthetic-a-only',[
@@ -92,6 +89,13 @@ try{
             PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC
         ]);
     $now=time();
+    $principal=getenv('CRM_F361_SERVER_PRINCIPAL_ID');
+    $binding=is_string($principal)
+        ? (new TrustedServiceBindingCandidateResolver())->resolve($db,$principal,$now)
+        : null;
+    if($binding===null){
+        reply(503,'SERVER_BINDING_NOT_VERIFIED');return;
+    }
     if($path==='/__lab/f356/readback'){
         $result=(new SignedSyntheticReadback())->inspect(
             $db,$frame,$binding,$auth,$lookupKey,$now
