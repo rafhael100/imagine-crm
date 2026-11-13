@@ -87,15 +87,15 @@ checkResult(send('/__lab/f356/deliver',$frame,$next),
 checkResult(send('/__lab/f356/readback',$frame,$delivery),
   401,'READBACK_AUTH_DENIED');
 checkResult(send('/__lab/f356/deliver',$frame,$readback),
-  401,'AUTHENTICATION_REJECTED');
+  401,'SIGNED_REQUEST_DENIED');
 $missing=[...$frame,'submission_reference'=>'ffffffff-ffff-4fff-8fff-ffffffffffff'];
 checkResult(send('/__lab/f356/readback',$missing,token($missing,'readback',$lookup,$now,'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee')),
   404,'NOT_FOUND_HOLD_UNKNOWN');
 $forged=[...$frame,'organization_reference'=>'99999999-9999-4999-8999-999999999999'];
 checkResult(send('/__lab/f356/deliver',$forged,token($forged,'deliver',$request,$now,'abababab-abab-4aba-8aba-abababababab')),
-  403,'PINNED_CONTEXT_REJECTED');
+  403,'SERVER_TENANT_CONTEXT_DENIED');
 checkResult(send('/__lab/f356/deliver',[...$frame,'email'=>'synthetic@example.invalid'],$delivery),
-  422,'CONTRACT_REJECTED');
+  422,'FRAME_CONTRACT_DENIED');
 checkResult(send('/__lab/f356/deliver',$frame,$delivery,false,'GET'),
   404,'NO_OPERATIONAL_ROUTE');
 $db=new PDO('pgsql:host=127.0.0.1;port=5432;dbname=f353_nonce_ci',
