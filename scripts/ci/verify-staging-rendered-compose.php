@@ -30,15 +30,23 @@ final class StagingRenderedComposePolicy
         );
         $require(($model['name'] ?? null) === 'imagine-crm-stage-review', 'project_name');
         $networks = $model['networks'] ?? null;
+        $privateNetwork = is_array($networks) ? ($networks['crm_private'] ?? null) : null;
         $require(
             is_array($networks) && $keys($networks) === ['crm_private']
-            && ($networks['crm_private']['internal'] ?? null) === true,
+            && is_array($privateNetwork)
+            && ($privateNetwork['internal'] ?? null) === true
+            && array_diff(array_keys($privateNetwork), ['internal', 'name']) === []
+            && (!array_key_exists('name', $privateNetwork)
+                || $privateNetwork['name'] === 'imagine-crm-stage-review_crm_private'),
             'network_not_private',
         );
 
         $services = $model['services'] ?? null;
         if (!is_array($services) || $keys($services) !== ['app', 'web']) {
             return [...$fail, 'unexpected_service_set'];
+        }
+        if (!is_array($services['app']) || !is_array($services['web'])) {
+            return [...$fail, 'invalid_service_shape'];
         }
 
         foreach (['app', 'web'] as $name) {
@@ -106,10 +114,7 @@ final class StagingRenderedComposePolicy
                    ($name === 'app'
                     ? 'infra/staging/Dockerfile'
                     : 'infra/staging/Dockerfile.web')
-                && !array_key_exists('args', $build)
-                && !array_key_exists('secrets', $build)
-                && !array_key_exists('ssh', $build)
-                && !array_key_exists('network', $build),
+                && $keys($build) === ['context', 'dockerfile'],
                 $name.'_build_boundary',
             );
             $require(
