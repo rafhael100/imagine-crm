@@ -18,6 +18,7 @@ final class PortableCsvImportReadinessSummary
         mixed $delimiter,
         mixed $bindings,
         mixed $hasHeader,
+        mixed $requiredFields = null,
     ): array {
         try {
             $preview = (new PortableCsvImportPreview())->inspect(
@@ -29,6 +30,11 @@ final class PortableCsvImportReadinessSummary
             $duplicates = (new PortableCsvDuplicateReview())->inspect(
                 $csv, $delimiter, $bindings, $hasHeader,
             );
+            // Opt-in only: existing four-argument callers retain their report.
+            $required = $requiredFields === null ? null
+                : (new PortableCsvRequiredFieldsReview())->inspect(
+                    $csv, $delimiter, $bindings, $hasHeader, $requiredFields,
+                );
         } catch (InvalidArgumentException) {
             throw new InvalidArgumentException('Revisao agregada CSV local invalida.');
         }
@@ -40,7 +46,13 @@ final class PortableCsvImportReadinessSummary
             || $preview['local_source_column_count'] !== $duplicates['local_source_column_count']
             || $preview['local_data_row_count'] !== $duplicates['local_data_row_count']
             || $preview['local_selected_field_count'] !== $duplicates['local_selected_field_count']
-            || $preview['header_claimed'] !== $duplicates['header_claimed']) {
+            || $preview['header_claimed'] !== $duplicates['header_claimed']
+            || ($required !== null && (
+                $preview['header_claimed'] !== $required['header_claimed']
+                || $preview['local_source_column_count'] !== $required['local_source_column_count']
+                || $preview['local_selected_field_count'] !== $required['local_selected_field_count']
+                || $preview['local_data_row_count'] !== $required['local_data_row_count']
+            ))) {
             throw new InvalidArgumentException('Revisao agregada CSV local invalida.');
         }
 
@@ -48,9 +60,10 @@ final class PortableCsvImportReadinessSummary
             $preview['warning_codes'],
             $headers['warning_codes'],
             $duplicates['warning_codes'],
+            $required === null ? [] : $required['warning_codes'],
         )));
 
-        return [
+        $report = [
             'header_claimed' => $hasHeader,
             'local_source_column_count' => $preview['local_source_column_count'],
             'local_data_row_count' => $preview['local_data_row_count'],
@@ -80,5 +93,16 @@ final class PortableCsvImportReadinessSummary
             'can_deduplicate' => false,
             'can_persist' => false,
         ];
+
+        if ($required !== null) {
+            // Only aggregate counters; never return the asserted field list.
+            $report['local_claimed_required_field_count'] = $required['local_claimed_required_field_count'];
+            $report['local_unmapped_required_field_count'] = $required['local_unmapped_required_field_count'];
+            $report['local_empty_required_value_count'] = $required['local_empty_required_value_count'];
+            $report['local_rows_with_empty_required_value_count'] = $required['local_rows_with_empty_required_value_count'];
+            $report['required_policy_verified'] = false;
+        }
+
+        return $report;
     }
 }
