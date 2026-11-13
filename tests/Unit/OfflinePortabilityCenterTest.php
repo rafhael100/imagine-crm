@@ -81,7 +81,7 @@ final class OfflinePortabilityCenterTest extends TestCase
     {
         $html = self::html();
         self::assertStringContainsString(
-            "button.dataset.operation===operation", $html,
+            "b.dataset.operation===operation", $html,
         );
         self::assertStringContainsString(
             "el('warning-list').replaceChildren();", $html,
