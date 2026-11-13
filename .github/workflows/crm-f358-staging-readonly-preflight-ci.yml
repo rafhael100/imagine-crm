@@ -1,0 +1,75 @@
+name: CRM F3-58 - Private staging read-only preflight regression
+on:
+  pull_request:
+    paths:
+      - 'app/Core/Operations/PrivateStagingPreflight.php'
+      - 'ops/homologation/**'
+      - 'tests/Labs/F3_58/**'
+      - '.github/workflows/crm-f358-staging-readonly-preflight-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  private-preflight-ci:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: f358-synthetic-superuser-only
+          POSTGRES_DB: f358_preflight_ci
+        ports:
+          - '127.0.0.1:5432:5432'
+        options: >-
+          --health-cmd "pg_isready -U postgres -d f358_preflight_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      PGPASSWORD: f358-synthetic-superuser-only
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql,pgsql
+          tools: none
+          coverage: none
+      - name: Syntax and failure-mode regression
+        run: |
+          php -l app/Core/Operations/PrivateStagingPreflight.php
+          php -l ops/homologation/crm-readonly-preflight.php
+          php -l tests/Labs/F3_58/test_readonly_preflight.php
+          php tests/Labs/F3_58/test_readonly_preflight.php
+      - name: Provision disposable PG16 role and RLS catalog
+        run: |
+          set -euo pipefail
+          psql -h 127.0.0.1 -U postgres -d f358_preflight_ci <<'SQL'
+          CREATE ROLE f358_checker LOGIN PASSWORD 'f358-synthetic-only';
+          CREATE TABLE public.crm_memberships (id uuid PRIMARY KEY,organization_id uuid NOT NULL);
+          ALTER TABLE public.crm_memberships ENABLE ROW LEVEL SECURITY;
+          ALTER TABLE public.crm_memberships FORCE ROW LEVEL SECURITY;
+          SQL
+      - name: Run read-only preflight and prove dangerous modes fail
+        env:
+          APP_ENV: homologation
+          APP_DEBUG: 'false'
+          IMAGINE_HOMOLOGATION_PREPARE: '1'
+          IMAGINE_PUBLIC_INTAKE_ENABLED: '0'
+          IMAGINE_DELIVERY_WORKER_ENABLED: '0'
+          IMAGINE_SYNTHETIC_DATA_ONLY: '1'
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: f358_preflight_ci
+          DB_USERNAME: f358_checker
+          DB_PASSWORD: f358-synthetic-only
+        run: |
+          set -euo pipefail
+          php ops/homologation/crm-readonly-preflight.php
+          if APP_ENV=production php ops/homologation/crm-readonly-preflight.php; then exit 1; fi
+          if APP_DEBUG=true php ops/homologation/crm-readonly-preflight.php; then exit 1; fi
+          if IMAGINE_PUBLIC_INTAKE_ENABLED=1 php ops/homologation/crm-readonly-preflight.php; then exit 1; fi
