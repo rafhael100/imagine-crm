@@ -24,10 +24,12 @@ final class SignupTrialHttpFixture
     private readonly TrialEnrollmentLifecycleSandbox $trial;
     private readonly OfflineSignupOtpPublicFeedbackPreview $neutral;
 
-    private readonly string $contact;
+    /** @var array{email:string,phone:string} Opaque bindings, test-only */
+    private readonly array $contacts;
     private readonly string $origin;
 
-    private ?string $testCode = null;
+    /** @var array<string,string> Ephemeral codes ONLY readable by PHPUnit */
+    private array $testCodes = [];
     private int $tick = 0;
 
     /** @var list<string> Internal only, never serialized to HTTP */
@@ -42,11 +44,19 @@ final class SignupTrialHttpFixture
             'f3-252-fixture-only-trial-hmac-key-32bytes',
         );
         $this->neutral = new OfflineSignupOtpPublicFeedbackPreview();
-        $this->contact = (new OfflineSignupContactHmacBinding())->derive(
-            'only-synthetic-http-lab@example.test',
-            'email',
-            'f3-252-fixture-only-contact-hmac-key-32bytes',
-        );
+        $contactBinding = new OfflineSignupContactHmacBinding();
+        $this->contacts = [
+            'email' => $contactBinding->derive(
+                'only-synthetic-http-lab@example.test',
+                'email',
+                'f3-252-fixture-only-contact-hmac-key-32bytes',
+            ),
+            'phone' => $contactBinding->derive(
+                '+5511999988888',
+                'phone',
+                'f3-252-fixture-only-contact-hmac-key-32bytes',
+            ),
+        ];
         $this->origin = hash_hmac(
             'sha256', 'fixture-loopback-not-a-real-ip',
             'f3-252-fixture-only-origin-hmac-key-32bytes',
@@ -75,17 +85,19 @@ final class SignupTrialHttpFixture
             return self::reply(self::payload($neutral, $operation));
         }
 
+        $channel = $payload['channel'] ?? 'email';
         if ($operation === 'issue') {
             $issued = $this->otp->issue(
-                $this->contact, $this->origin, 'email', self::START + $this->tick++,
+                $this->contacts[$channel], $this->origin, $channel,
+                self::START + $this->tick++,
             );
             $this->trace[] = $issued['status'];
             if ($issued['status'] === 'sandbox_code_created') {
-                $this->testCode = $issued['delivery_code'];
+                $this->testCodes[$channel] = $issued['delivery_code'];
             }
         } elseif ($operation === 'verify') {
             $state = $this->otp->verify(
-                $this->contact, $this->origin, 'email',
+                $this->contacts[$channel], $this->origin, $channel,
                 $payload['code'], self::START + $this->tick++,
             );
             $this->trace[] = $state['status'];
@@ -104,9 +116,9 @@ final class SignupTrialHttpFixture
     /**
      * Only PHPUnit accesses this method. Never place it in an HTTP response.
      */
-    public function otpForTestOnly(): ?string
+    public function otpForTestOnly(string $channel = 'email'): ?string
     {
-        return $this->testCode;
+        return $this->testCodes[$channel] ?? null;
     }
 
     /** @return list<string> */
@@ -144,8 +156,28 @@ final class SignupTrialHttpFixture
         }
         $input = json_decode($raw, true);
         if (!is_array($input) || array_is_list($input)
-            || ($input['fixture'] ?? null) !== 'synthetic'
-            || count($input) !== ($operation === 'verify' ? 2 : 1)) {
+            || ($input['fixture'] ?? null) !== 'synthetic') {
+            return null;
+        }
+
+        // No phone numbers, email addresses, arbitrary IDs or extra fields.
+        // "phone" means a fully invented E.164 contact in this PHP fixture,
+        // NOT a WhatsApp transport approval, a real recipient or delivery.
+        $keys = array_keys($input);
+        sort($keys, SORT_STRING);
+        $allowed = ['fixture'];
+        if ($operation === 'verify') {
+            $allowed[] = 'code';
+        }
+        if ($operation !== 'trial' && array_key_exists('channel', $input)) {
+            $allowed[] = 'channel';
+        }
+        sort($allowed, SORT_STRING);
+        // A present null channel must never collapse to the email default.
+        // Only an *absent* key may use the backward-compatible default.
+        $channel = array_key_exists('channel', $input)
+            ? $input['channel'] : 'email';
+        if ($keys !== $allowed || !in_array($channel, ['email', 'phone'], true)) {
             return null;
         }
         if ($operation === 'verify'

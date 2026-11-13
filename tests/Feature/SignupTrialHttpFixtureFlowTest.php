@@ -144,6 +144,97 @@ final class SignupTrialHttpFixtureFlowTest extends TestCase
         }
     }
 
+
+    public function test_email_and_phone_otp_use_separate_core_scopes_and_identical_public_contracts(): void
+    {
+        $emailIssued = $this->postDemo('issue', ['channel' => 'email'])->assertOk();
+        $emailCode = $this->fixture->otpForTestOnly('email');
+        self::assertIsString($emailCode);
+
+        $phoneIssued = $this->postDemo('issue', ['channel' => 'phone'])->assertOk();
+        $phoneCode = $this->fixture->otpForTestOnly('phone');
+        self::assertIsString($phoneCode);
+        self::assertMatchesRegularExpression('/\A[0-9]{6}\z/D', $phoneCode);
+        self::assertSame($emailIssued->json(), $phoneIssued->json());
+
+        // Presentation is real Core code, but NEVER delivered by Mail or
+        // WhatsApp. Do not pretend provider approval or contact ownership.
+        $emailPresentation = new \App\Mail\OfflineSignupOtpMail($emailCode);
+        $phonePresentation = (new \App\Core\Identity\OfflineSignupOtpWhatsAppDraft())
+            ->compose($phoneCode);
+        self::assertSame($emailCode, $emailPresentation->content()->with['otpCode']);
+        self::assertSame(15, $emailPresentation->content()->with['validityMinutes']);
+        self::assertSame($phoneCode, $phonePresentation['synthetic_parameter_code']);
+        self::assertSame(900, $phonePresentation['validity_seconds']);
+        self::assertFalse($phonePresentation['template_approved_by_provider']);
+        self::assertFalse($phonePresentation['can_send']);
+        self::assertFalse($phonePresentation['recipient_binding_verified']);
+
+        // A six-digit collision is statistically possible. When different,
+        // a code from the email challenge fails for the phone challenge.
+        if ($emailCode !== $phoneCode) {
+            $wrongChannel = $this->postDemo('verify', [
+                'channel' => 'phone', 'code' => $emailCode,
+            ])->assertOk();
+            self::assertSame('sandbox_wrong_code',
+                $this->fixture->traceForTestOnly()[count($this->fixture->traceForTestOnly()) - 1]);
+            self::assertSame($emailIssued->json('can_send'), $wrongChannel->json('can_send'));
+        }
+
+        $phoneOk = $this->postDemo('verify', [
+            'channel' => 'phone', 'code' => $phoneCode,
+        ])->assertOk();
+        $emailOk = $this->postDemo('verify', [
+            'channel' => 'email', 'code' => $emailCode,
+        ])->assertOk();
+        self::assertSame($phoneOk->json(), $emailOk->json());
+        self::assertSame('sandbox_match_consumed_in_memory',
+            $this->fixture->traceForTestOnly()[count($this->fixture->traceForTestOnly()) - 1]);
+        $phoneReplay = $this->postDemo('verify', [
+            'channel' => 'phone', 'code' => $phoneCode,
+        ])->assertOk();
+        self::assertSame($emailOk->json(), $phoneReplay->json());
+
+        foreach ([$emailIssued, $phoneIssued, $phoneOk, $emailOk, $phoneReplay] as $response) {
+            $this->assertSafeResponse($response, $emailCode);
+            $this->assertSafeResponse($response, $phoneCode);
+        }
+        self::assertFalse($emailOk->json('otp_identity_verified'));
+        self::assertFalse($phoneOk->json('can_register'));
+    }
+
+    public function test_fake_channel_validation_rejects_unknown_payloads_without_state_change(): void
+    {
+        $this->postDemo('issue', ['channel' => 'phone'])->assertOk();
+        $code = $this->fixture->otpForTestOnly('phone');
+        self::assertIsString($code);
+
+        $before = count($this->fixture->traceForTestOnly());
+        foreach ([
+            ['fixture' => 'synthetic', 'channel' => 'whatsapp'],
+            ['fixture' => 'synthetic', 'channel' => 'sms'],
+            ['fixture' => 'synthetic', 'channel' => 'phone', 'to' => '+5511999988888'],
+            ['fixture' => 'synthetic', 'channel' => 'email', 'email' => 'real@example.org'],
+            ['fixture' => 'synthetic', 'channel' => ['phone']],
+            ['fixture' => 'synthetic', 'channel' => null],
+        ] as $payload) {
+            $response = $this->postJson($this->endpoint('issue'), $payload)->assertOk();
+            $this->assertSafeResponse($response, $code);
+        }
+
+        self::assertCount($before + 6, $this->fixture->traceForTestOnly());
+        foreach (array_slice($this->fixture->traceForTestOnly(), $before) as $state) {
+            self::assertSame('sandbox_rejected_untrusted_payload', $state);
+        }
+        self::assertSame($code, $this->fixture->otpForTestOnly('phone'));
+        $verify = $this->postDemo('verify', [
+            'channel' => 'phone', 'code' => $code,
+        ])->assertOk();
+        $this->assertSafeResponse($verify, $code);
+        self::assertSame('sandbox_match_consumed_in_memory',
+            $this->fixture->traceForTestOnly()[count($this->fixture->traceForTestOnly()) - 1]);
+    }
+
     private function assertSafeResponse(
         \Illuminate\Testing\TestResponse $response,
         string $code,
