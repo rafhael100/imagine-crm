@@ -33,6 +33,9 @@ final class SignupTrialSequencedHttpLab
     /** @var array{email:bool,phone:bool} */
     private array $localOtpMatched = ['email' => false, 'phone' => false];
 
+    /** @var array{email:int|null,phone:int|null} Local challenge deadline */
+    private array $expiresAt = ['email' => null, 'phone' => null];
+
     /** @var array<string,string> Codes only visible to PHPUnit, never HTTP */
     private array $codes = [];
 
@@ -88,15 +91,18 @@ final class SignupTrialSequencedHttpLab
             // A new local issue request invalidates any previous local proof,
             // including when the anti-abuse sandbox rejects the new issuance.
             $this->localOtpMatched[$channel] = false;
+            $this->expiresAt[$channel] = null;
+            $issuedAt = $this->clock++;
             $issued = $this->otp->issue(
                 $this->contacts[$channel],
                 $this->origin,
                 $channel,
-                $this->clock++,
+                $issuedAt,
             );
             $this->events[] = $issued['status'];
             if ($issued['status'] === 'sandbox_code_created') {
                 $this->codes[$channel] = $issued['delivery_code'];
+                $this->expiresAt[$channel] = $issuedAt + 900;
             }
         } elseif ($operation === 'verify') {
             $verified = $this->otp->verify(
@@ -110,7 +116,11 @@ final class SignupTrialSequencedHttpLab
             // This flag is a local scenario transition, NOT an authority.
             $this->localOtpMatched[$channel] =
                 $verified['status'] === 'sandbox_match_consumed_in_memory';
-        } elseif (!$this->localOtpMatched[$channel]) {
+        } elseif (!$this->localOtpMatched[$channel]
+            || $this->expiresAt[$channel] === null
+            || $this->clock >= $this->expiresAt[$channel]) {
+            // An OTP observation must not remain valid beyond its challenge.
+            $this->localOtpMatched[$channel] = false;
             $this->events[] = 'sandbox_trial_requires_local_otp';
         } else {
             // Consume the local proof before observing uniqueness: even a
