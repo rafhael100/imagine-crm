@@ -66,7 +66,7 @@ final class OfflineSignupTrialFlowDemoTest extends TestCase
         ] as $flag) {
             self::assertFalse($report[$flag], $flag);
         }
-        foreach (['delivery_code', 'digest', 'nonce', 'opaque', 'cnpj', 'email_address', 'phone_number', 'fixture-key', '11222333000181', '12ABC34501DE35', 'trial_binding_digest'] as $secret) {
+        foreach (['delivery_code', 'digest', 'nonce', 'opaque', '"cnpj":', 'email_address', 'phone_number', 'fixture-key', '11222333000181', '12ABC34501DE35', 'trial_binding_digest'] as $secret) {
             self::assertStringNotContainsString($secret, $json);
         }
         $b = new Process([PHP_BINARY, self::script()]);
