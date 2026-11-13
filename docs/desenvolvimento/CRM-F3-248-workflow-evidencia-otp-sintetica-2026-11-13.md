@@ -1,0 +1,9 @@
+# CRM F3-248 — Workflow dedicado de evidência de homologação sintética OTP
+
+A CI tradicional F0 já roda PHPUnit e PostgreSQL/RLS, mas não publicava uma evidência consolidada do novo ciclo OTP do Core. Este incremento adiciona um workflow GitHub Actions **somente de testes** em PRs direcionadas à branch DEV, com PHP 8.4 e dependências de desenvolvimento. Ele executa os testes do sandbox F3-246, o subprocesso CLI F3-247 e um teste de contrato do próprio workflow.
+
+Após os testes, cria um arquivo `evidence/otp-lifecycle-offline.json` estritamente sanitizado, uma linha JSON, no máximo 4096 bytes, flags de autorização todas falsas. Usa `jq` para verificar invariantes de tentativa, reenvio, replay, orçamento e expiração, `grep` conservador para bloquear dados perigosos e `sha256sum --check` para comprovar integridade. Apenas o JSON sanitizado e seu manifesto SHA256 entram no artifact `crm-f3-248-otp-lifecycle-offline` retido por **sete dias**. O artifact permite inspeção objetiva da mesma jornada em qualquer PR relevante, sem vazar contato ou código OTP.
+
+**Limitação importante:** a CI pode instalar dependências Composer pela internet (como qualquer job convencional), mas **o executor do aplicativo não faz chamadas externas**. O workflow não usa credenciais, não instala banco persistente, não faz deploy, não envia mensagens, não atualiza `main` ou VPS e não fornece evidência de acesso real. O ambiente configura cache/sessão em memória e mailer `array` apenas como defesa adicional. O JSON é relatório de **laboratório**, não ativação de trial ou homologação final.
+
+A PR deve permanecer DRAFT até o F3-247 integrar a DEV e ser rebaseada com diff limitado ao workflow/teste/docs. A própria CI deve passar 5/5 (4 gerais + 1 dedicada) na SHA exata. Gates #27 SEG/DBA, #259 CORE/LGPD e #416 UX continuam NO-GO.
