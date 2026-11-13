@@ -4,6 +4,7 @@ on:
     paths:
       - 'app/Core/Leads/SignedServiceHandoffBoundary.php'
       - 'app/Core/Leads/TrustedServiceBindingCandidateResolver.php'
+      - 'app/Core/Leads/SignedTechnicalReceiptCandidateVerifier.php'
       - 'tests/Labs/F3_52/**'
       - 'tests/Labs/F3_53/**'
       - 'tests/Labs/F3_54/**'
@@ -12,6 +13,7 @@ on:
       - 'tests/Labs/F3_59/**'
       - 'tests/Labs/F3_60/**'
       - 'tests/Labs/F3_61/**'
+      - 'tests/Labs/F3_62/**'
       - '.github/workflows/crm-f356-http-signed-handoff-ci.yml'
   workflow_dispatch:
 permissions:
@@ -68,12 +70,17 @@ jobs:
           set -euo pipefail
           php -l app/Core/Leads/SignedServiceHandoffBoundary.php
           php -l app/Core/Leads/TrustedServiceBindingCandidateResolver.php
+          php -l app/Core/Leads/SignedTechnicalReceiptCandidateVerifier.php
+          php -l tests/Labs/F3_62/SyntheticTechnicalReceiptSigner.php
           php tests/Labs/F3_59/test_canonical_json.php
           php -l tests/Labs/F3_56/router_synthetic_handoff.php
           php -l tests/Labs/F3_56/test_http_lost_ack.php
           export CRM_F356_REQUEST_KEY_HEX="$(openssl rand -hex 48)"
           export CRM_F356_LOOKUP_KEY_HEX="$(openssl rand -hex 48)"
+          export CRM_F362_RECEIPT_KEY_HEX="$(openssl rand -hex 48)"
           test "$CRM_F356_REQUEST_KEY_HEX" != "$CRM_F356_LOOKUP_KEY_HEX"
+          test "$CRM_F356_REQUEST_KEY_HEX" != "$CRM_F362_RECEIPT_KEY_HEX"
+          test "$CRM_F356_LOOKUP_KEY_HEX" != "$CRM_F362_RECEIPT_KEY_HEX"
           php -S 127.0.0.1:19156 tests/Labs/F3_56/router_synthetic_handoff.php >/dev/null 2>&1 &
           pid=$!
           trap 'kill "$pid" >/dev/null 2>&1 || true' EXIT
