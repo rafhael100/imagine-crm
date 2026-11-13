@@ -16,6 +16,8 @@ on:
       - 'tests/Unit/ProductionAutoloadBoundaryContractTest.php'
       - 'scripts/ci/verify-no-dev-http-fixtures.php'
       - 'scripts/ci/verify-no-dev-http-kernel.php'
+      - 'scripts/ci/verify-production-auth-misconfig-deny.php'
+      - 'tests/Unit/ProductionAuthMisconfigBoundaryTest.php'
       - '.github/workflows/crm-f3-255-no-dev-isolation.yml'
   workflow_dispatch:
 
@@ -98,6 +100,16 @@ jobs:
           set -euo pipefail
           php -l scripts/ci/verify-no-dev-http-kernel.php
           php scripts/ci/verify-no-dev-http-kernel.php
+      - name: Reject experimental IAM even under hostile production feature flag (CI only)
+        shell: bash
+        env:
+          APP_ENV: production
+          APP_DEBUG: 'false'
+          CRM_AUTH_EXPERIMENTAL: 'true'
+        run: |
+          set -euo pipefail
+          php -l scripts/ci/verify-production-auth-misconfig-deny.php
+          php scripts/ci/verify-production-auth-misconfig-deny.php
       - name: Record an explicit NO-GO boundary
         shell: bash
         run: |
@@ -106,6 +118,7 @@ jobs:
             echo '- Composer --no-dev: test fixtures unavailable'
             echo '- Laravel route inventory in testing AND simulated production environment: only GET/HEAD /up'
             echo '- Simulated production HTTP kernel: /up works; 9 unapproved routes return 404'
+            echo '- Hostile IAM flag: CRM experimental guard, provisioning and business ALLOW remain disabled'
             echo '- Real signup, identity, OTP delivery and trial: **NO-GO**'
             echo '- No production DB, VPS or deployment'
           } >> "$GITHUB_STEP_SUMMARY"
