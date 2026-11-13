@@ -1,0 +1,8 @@
+# F3-263 review-only web artifact. This is a candidate; CI must NOT build it.
+# Copy only public files and the reviewed nginx.conf from the same checkout.
+FROM nginx:1.29-alpine
+COPY infra/staging/nginx.conf /etc/nginx/nginx.conf
+COPY public/ /var/www/html/public/
+USER nginx
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]
