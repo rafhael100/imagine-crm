@@ -7,6 +7,8 @@ declare(strict_types=1);
  * One static JSON review to stdout. Never an operational registration route.
  */
 use App\Core\Identity\OfflineSignupOtpChallenge;
+use App\Core\Identity\OfflineSignupOtpWhatsAppDraft;
+use App\Mail\OfflineSignupOtpMail;
 use App\Core\Identity\OfflineSignupContactHmacBinding;
 use App\Core\Identity\OfflineCnpjChecksumInspector;
 use App\Core\Identity\OfflineCnpjTrialHmacBinding;
@@ -93,12 +95,28 @@ try {
     $same = $binder->derive('12abc34501de35', $cnpjKey);
     $other = $binder->derive('11.222.333/0001-81', $cnpjKey);
 
+    // Only render in memory: no Laravel Mail facade, queue or provider.
+    $emailModel = new OfflineSignupOtpMail($email['delivery_code']);
+    $emailContent = $emailModel->content();
+    $whatsModel = (new OfflineSignupOtpWhatsAppDraft())->compose($phone['delivery_code']);
+    $emailMatches = hash_equals($email['delivery_code'], $emailContent->with['otpCode']);
+    $whatsMatches = hash_equals($phone['delivery_code'], $whatsModel['synthetic_parameter_code']);
+    $sameValidity = $emailContent->with['validityMinutes']
+        === intdiv($whatsModel['validity_seconds'], 60)
+        && $whatsModel['validity_seconds'] === OfflineSignupOtpChallenge::VALIDITY_SECONDS;
+    $whatsNoTransport = $whatsModel['can_send'] === false
+        && $whatsModel['template_approved_by_provider'] === false;
+
     $report = [
         'protocol' => 'imagine.crm.synthetic_signup_trial_review',
         'schema_version' => 1,
         'status' => 'REVIEW_ONLY_DENIED',
         'otp_code_digits' => OfflineSignupOtpChallenge::CODE_DIGITS,
         'otp_validity_seconds' => OfflineSignupOtpChallenge::VALIDITY_SECONDS,
+        'email_template_otp_matches_in_memory' => $emailMatches,
+        'whatsapp_template_otp_matches_in_memory' => $whatsMatches,
+        'email_whatsapp_validity_parity' => $sameValidity,
+        'whatsapp_provider_not_approved' => $whatsNoTransport,
         'email_candidate_observation' => $emailView['status_code'],
         'phone_candidate_observation' => $phoneView['status_code'],
         'wrong_phone_observation' => $wrongPhoneView['status_code'],
@@ -141,6 +159,7 @@ try {
         || $numericCnpj['status_code'] !== 'structurally_valid_only'
         || $alphanumericCnpj['status_code'] !== 'structurally_valid_only'
         || !hash_equals($one, $same) || hash_equals($one, $other)
+        || !$emailMatches || !$whatsMatches || !$sameValidity || !$whatsNoTransport
         || count($meters) !== 7
         || $overview['authorized'] !== false) {
         throw new \LogicException('Synthetic evidence inconsistent.');

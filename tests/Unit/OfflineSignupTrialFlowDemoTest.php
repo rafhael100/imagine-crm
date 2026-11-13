@@ -30,6 +30,10 @@ final class OfflineSignupTrialFlowDemoTest extends TestCase
         self::assertSame('REVIEW_ONLY_DENIED', $report['status']);
         self::assertSame(6, $report['otp_code_digits']);
         self::assertSame(900, $report['otp_validity_seconds']);
+        self::assertTrue($report['email_template_otp_matches_in_memory']);
+        self::assertTrue($report['whatsapp_template_otp_matches_in_memory']);
+        self::assertTrue($report['email_whatsapp_validity_parity']);
+        self::assertTrue($report['whatsapp_provider_not_approved']);
         self::assertSame('candidate_matches_only', $report['email_candidate_observation']);
         self::assertSame('candidate_matches_only', $report['phone_candidate_observation']);
         self::assertSame('candidate_mismatch', $report['wrong_phone_observation']);
@@ -69,7 +73,7 @@ final class OfflineSignupTrialFlowDemoTest extends TestCase
         ] as $flag) {
             self::assertFalse($report[$flag], $flag);
         }
-        foreach (['delivery_code', 'digest', 'nonce', 'opaque', '"cnpj":', 'email_address', 'phone_number', 'fixture-key', '11222333000181', '12ABC34501DE35', 'trial_binding_digest', 'demo.one@example.com', 'demo.two@example.com', '+5511999988888'] as $secret) {
+        foreach (['delivery_code', 'digest', 'nonce', 'opaque', '"cnpj":', 'email_address', 'phone_number', 'fixture-key', '11222333000181', '12ABC34501DE35', 'trial_binding_digest', 'demo.one@example.com', 'demo.two@example.com', '+5511999988888', 'synthetic_parameter_code', 'synthetic_preview', 'utility_template_candidate'] as $secret) {
             self::assertStringNotContainsString($secret, $json);
         }
         $b = new Process([PHP_BINARY, self::script()]);
