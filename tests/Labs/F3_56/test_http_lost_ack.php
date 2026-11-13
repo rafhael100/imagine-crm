@@ -35,7 +35,7 @@ function token(array $frame,string $kind,string $key,int $iat,string $nonce):arr
  return ['issued_at'=>$iat,'expires_at'=>$exp,'nonce'=>$nonce,
    'mac'=>hash_hmac('sha256',$message,$key)];
 }
-function send(string $route,array $frame,array $token,bool $drop=false,string $method='POST'):array {
+function send(string $route,array $frame,array $token,bool $drop=false,string $method='POST',?string $rawOverride=null):array {
  $headers=['Content-Type: application/json','Connection: close'];
  foreach(['issued_at'=>'X-Lab-Issued-At','expires_at'=>'X-Lab-Expires-At',
           'nonce'=>'X-Lab-Nonce','mac'=>'X-Lab-Signature'] as $key=>$name)
@@ -43,7 +43,7 @@ function send(string $route,array $frame,array $token,bool $drop=false,string $m
  if($drop)$headers[]='X-Lab-Drop-Reply: 1';
  $ctx=stream_context_create(['http'=>[
     'method'=>$method,'header'=>implode("\r\n",$headers),
-    'content'=>json_encode($frame,JSON_THROW_ON_ERROR),
+    'content'=>$rawOverride??json_encode($frame,JSON_THROW_ON_ERROR),
     'ignore_errors'=>true,'timeout'=>6,'follow_location'=>0
  ]]);
  $raw=@file_get_contents('http://127.0.0.1:19156'.$route,false,$ctx);
@@ -95,7 +95,7 @@ $forged=[...$frame,'organization_reference'=>'99999999-9999-4999-8999-9999999999
 checkResult(send('/__lab/f356/deliver',$forged,token($forged,'deliver',$request,$now,'abababab-abab-4aba-8aba-abababababab')),
   403,'SERVER_TENANT_CONTEXT_DENIED');
 checkResult(send('/__lab/f356/deliver',[...$frame,'email'=>'synthetic@example.invalid'],$delivery),
-  422,'FRAME_CONTRACT_DENIED');
+  422,'CANONICAL_JSON_REQUIRED');
 checkResult(send('/__lab/f356/deliver',$frame,$delivery,false,'GET'),
   404,'NO_OPERATIONAL_ROUTE');
 $db=new PDO('pgsql:host=127.0.0.1;port=5432;dbname=f353_nonce_ci',
