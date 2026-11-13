@@ -12,6 +12,7 @@ on:
       - 'tests/Support/**'
       - 'tests/Feature/SignupTrialHttpFixture*'
       - 'tests/Feature/SignupTrialSequencedHttpLabTest.php'
+      - 'tests/Feature/SignupTrialWindowQuotaHttpLabTest.php'
       - 'tests/Unit/ProductionAutoloadBoundaryContractTest.php'
       - 'scripts/ci/verify-no-dev-http-fixtures.php'
       - '.github/workflows/crm-f3-255-no-dev-isolation.yml'
@@ -61,7 +62,7 @@ jobs:
             .[0].uri == "up" and
             (.[0].method == "GET|HEAD" or .[0].method == "HEAD|GET")
           ' /tmp/crm-f3-255-routes.json > /dev/null
-          for name in '__ci/f3-252' '__ci/f3-254' '__ci/f3-258' 'SignupTrialHttpFixture' 'SignupTrialSequencedHttpLab'; do
+          for name in '__ci/f3-252' '__ci/f3-254' '__ci/f3-258' '__ci/f3-259' 'SignupTrialHttpFixture' 'SignupTrialSequencedHttpLab'; do
             if grep -RFq "$name" routes app bootstrap; then
               echo 'F3-255 NO-GO: test fixture leaked into runtime' >&2
               exit 1

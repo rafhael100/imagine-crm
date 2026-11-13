@@ -149,6 +149,30 @@ final class SignupTrialSequencedHttpLab
         $this->clock += $seconds;
     }
 
+    /**
+     * Offline observer for PHPUnit only. A fixed fictional company is used,
+     * never a lookup keyed by HTTP data, identity or a client CNPJ.
+     *
+     * @return array<string,mixed>
+     */
+    public function trialReadoutAtForTestOnly(int $observedAt): array
+    {
+        return $this->trial->describe(self::SYNTHETIC_CNPJ, $observedAt);
+    }
+
+    /**
+     * Long time jumps are separated from the OTP clock helper on purpose.
+     * The trial and challenge remain non-durable, process-local fixtures.
+     */
+    public function advanceTrialClockForTestOnly(int $seconds): void
+    {
+        if ($seconds < 1 || $seconds > 15 * 86400
+            || $this->clock > PHP_INT_MAX - $seconds) {
+            throw new InvalidArgumentException('Relogio ficticio de trial invalido.');
+        }
+        $this->clock += $seconds;
+    }
+
     /** @return list<string> */
     public function eventsForTestOnly(): array
     {
