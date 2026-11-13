@@ -1,0 +1,104 @@
+name: CRM Imagine - F3-248 OTP Lifecycle Synthetic Evidence
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - '.github/workflows/crm-f3-248-otp-lifecycle-evidence.yml'
+      - 'tests/Support/SignupOtpLifecycleSandbox.php'
+      - 'tests/Unit/SignupOtpLifecycleSandboxTest.php'
+      - 'tests/Unit/SignupOtpLifecycleEvidenceCliTest.php'
+      - 'tests/Unit/SignupOtpLifecycleEvidenceWorkflowContractTest.php'
+      - 'scripts/ci/emit-signup-otp-lifecycle-evidence.php'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  otp-lifecycle-evidence:
+    name: Real Core OTP lifecycle in isolated PHP sandbox — NO-GO
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - name: Checkout static source and synthetic fixtures
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.4 with development-only dependencies
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Install development test dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: PHP syntax of sandbox and evidence generator
+        run: |
+          php -l tests/Support/SignupOtpLifecycleSandbox.php
+          php -l tests/Unit/SignupOtpLifecycleSandboxTest.php
+          php -l tests/Unit/SignupOtpLifecycleEvidenceCliTest.php
+          php -l scripts/ci/emit-signup-otp-lifecycle-evidence.php
+
+      - name: Execute functional lifecycle and no-leak PHPunit tests
+        run: |
+          vendor/bin/phpunit tests/Unit/SignupOtpLifecycleSandboxTest.php
+          vendor/bin/phpunit tests/Unit/SignupOtpLifecycleEvidenceCliTest.php
+          vendor/bin/phpunit tests/Unit/SignupOtpLifecycleEvidenceWorkflowContractTest.php
+
+      - name: Build one sanitized JSON report and sha256 manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          php scripts/ci/emit-signup-otp-lifecycle-evidence.php > evidence/otp-lifecycle-offline.json
+          jq -e '
+            .protocol == "imagine.crm.signup_otp_lifecycle_sandbox" and
+            .schema_version == 1 and
+            .status == "REVIEW_ONLY_DENIED" and
+            .new_code_verified_in_memory == true and
+            .different_old_code_rejected_if_applicable == true and
+            .replay_status == "sandbox_replay_denied" and
+            .sixth_attempt_status == "sandbox_attempt_limit" and
+            .expiry_boundary_status == "sandbox_expired" and
+            .twenty_first_origin_issue_status == "sandbox_origin_budget_exhausted" and
+            .can_send == false and
+            .can_register == false and
+            .can_authenticate == false and
+            .can_grant_access == false and
+            .can_persist == false and
+            .atomic_replay_prevention_verified == false and
+            .durable_otp_budget_verified == false and
+            .trusted_latest_challenge_verified == false
+          ' evidence/otp-lifecycle-offline.json > /dev/null
+          test "$(wc -c < evidence/otp-lifecycle-offline.json)" -le 4096
+          test "$(wc -l < evidence/otp-lifecycle-offline.json)" -eq 1
+          if grep -Eqi 'delivery_code|nonce|digest|@|https?://|cnpj[[:space:]]*":|token|secret' \
+            evidence/otp-lifecycle-offline.json; then
+            echo 'F3-248: prohibited field in test-only artifact' >&2
+            exit 1
+          fi
+          (cd evidence && sha256sum otp-lifecycle-offline.json > manifest.sha256)
+          (cd evidence && sha256sum --check manifest.sha256)
+          echo 'F3-248: sanitized JSON evidence and sha256 manifest verified.'
+
+      - name: Upload review-only evidence with short retention
+        uses: actions/upload-artifact@v4
+        with:
+          name: crm-f3-248-otp-lifecycle-offline
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 7
