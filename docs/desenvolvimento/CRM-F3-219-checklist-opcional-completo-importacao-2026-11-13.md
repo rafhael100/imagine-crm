@@ -7,3 +7,5 @@ Esta entrega conecta os recortes F3-215, F3-216/217 e F3-218 no `PortableCsvImpo
 **Gates:** nenhuma permissão, deduplicação, importação, exportação, mesclagem, persistência, schema real ou consentimento LGPD passa a ser autorizado. Desenvolvido só em memória sobre dados fictícios; sem I/O, rota, SQL, tenant, VPS ou cliente. Revisão humana dos contratos, #27 SEG/DBA, #259 CORE/LGPD, #416 UX e decisões IN-118 permanecem necessárias.
 
 Testes: `PortableCsvCompleteChecklistTest.php` cobre agregação, opt-in, compatibilidade legada e argumentos inválidos; exigir F0, PostgreSQL/RLS, paridade Sites e Agentes na SHA exata após revisão.
+
+**Critério de aceite de código:** o relatório com cinco argumentos deve manter os mesmos códigos de negação, sem abrir `can_import`, `can_export` ou `can_persist`, e sem introduzir valores de célula na resposta. Os testes originais de quatro argumentos devem continuar idênticos.
