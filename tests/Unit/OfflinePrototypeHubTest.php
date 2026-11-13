@@ -59,12 +59,16 @@ final class OfflinePrototypeHubTest extends TestCase
         $html = self::hub();
         foreach ([
             "default-src 'none'", "script-src 'none'",
-            "img-src 'none'", "connect-src 'none'",
+            "img-src 'self'", "connect-src 'none'",
             "frame-src 'none'", "form-action 'none'",
             'base-uri '."'none'", 'referrer" content="no-referrer"',
         ] as $required) {
             self::assertStringContainsString($required, $html);
         }
+        $logo = '<img class="brand-logo" src="assets/logo-imagine.png" alt="Imagine Comunicação Digital" width="170" height="47" decoding="async">';
+        self::assertSame(1, substr_count($html, $logo), 'Only the official local Imagine logo is permitted.');
+        self::assertFileExists(dirname(__DIR__, 2).'/prototypes/assets/logo-imagine.png');
+        $withoutApprovedLogo = str_replace($logo, '', $html);
         foreach ([
             'http://', 'https://', '//cdn.', '<form', '<input', '<textarea',
             '<iframe', '<script', '<img', '<link', 'fetch(', 'XMLHttpRequest',
@@ -72,7 +76,7 @@ final class OfflinePrototypeHubTest extends TestCase
             'indexedDB', 'onload=', 'onclick=', '@import', 'url(',
             'download=', '.innerHTML',
         ] as $forbidden) {
-            self::assertStringNotContainsString($forbidden, $html);
+            self::assertStringNotContainsString($forbidden, $withoutApprovedLogo);
         }
     }
 

@@ -10,7 +10,7 @@ use Symfony\Component\Process\ExecutableFinder;
 
 $html = file_get_contents(dirname(__DIR__, 2).'/prototypes/f3-59-offline-kanban/index.html');
 if (!is_string($html)
-    || strlen($html) > 48000
+    || strlen($html) > 50000
     || substr_count($html, '</body>') !== 1
     || !str_contains($html, 'PROTÓTIPO — DADOS FICTÍCIOS.')
     || !str_contains($html, "connect-src 'none'")
@@ -51,6 +51,14 @@ $checks = <<<'JS'
   }
   try{
     check(document.querySelector('main')!==null,'main landmark');
+    const brand=document.querySelector('header img.brand-logo');
+    check(brand&&brand.complete&&brand.naturalWidth===200,'official Imagine logo visible in QA fixture');
+    check(getComputedStyle(document.body).backgroundColor==='rgb(247, 247, 248)',
+      'Kanban Node surface');
+    check(getComputedStyle(document.querySelector('header')).backgroundColor==='rgb(255, 255, 255)',
+      'Kanban Node white header');
+    check(getComputedStyle(document.querySelector('[data-priority="all"]')).backgroundColor==='rgb(255, 241, 224)',
+      'Kanban selected orange-soft filter');
     check(document.body.textContent.includes('PROTÓTIPO — DADOS FICTÍCIOS.'),'fiction banner');
     check(document.querySelectorAll('.lane').length===4,'exact four stages');
     check(visible()===8,'eight invented opportunities');
@@ -475,9 +483,19 @@ $checks = <<<'JS'
 })();
 JS;
 
+// Keep the committed Kanban HTML below 50KB; only the temporary Chromium
+// fixture embeds the checked original PNG (the temporary folder has no assets).
+$logo=file_get_contents(dirname(__DIR__,2).'/prototypes/assets/logo-imagine.png');
+if(!is_string($logo) || sha1('blob '.strlen($logo).chr(0).$logo)!=='678adeceb3a8ecdaeb6b576b9ee18d1bf0396f77'
+    || substr_count($html,'src="../assets/logo-imagine.png"')!==1){
+    fwrite(STDERR,"F3-59: original local logo invalid.\n");
+    exit(1);
+}
+$verifiedHtml=str_replace('src="../assets/logo-imagine.png"',
+    'src="data:image/png;base64,'.base64_encode($logo).'"',$html);
 $pageFile = sys_get_temp_dir().'/imagine-kanban-'.bin2hex(random_bytes(12)).'.html';
 $mobileFile = sys_get_temp_dir().'/imagine-kanban-mobile-'.bin2hex(random_bytes(12)).'.html';
-if (file_put_contents($pageFile, str_replace('</body>', '<script>'.$checks.'</script></body>', $html)) === false) {
+if (file_put_contents($pageFile, str_replace('</body>', '<script>'.$checks.'</script></body>', $verifiedHtml)) === false) {
     fwrite(STDERR, "F3-59: unable to create ephemeral browser fixture.\n");
     exit(1);
 }

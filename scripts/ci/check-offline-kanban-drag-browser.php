@@ -10,7 +10,7 @@ use Symfony\Component\Process\ExecutableFinder;
 
 $source = dirname(__DIR__, 2).'/prototypes/f3-59-offline-kanban/index.html';
 $html = file_get_contents($source);
-if (!is_string($html) || strlen($html) > 48000
+if (!is_string($html) || strlen($html) > 50000
     || substr_count($html, 'data-drop-stage="') !== 4
     || !str_contains($html, "connect-src 'none'")
     || !str_contains($html, "form-action 'none'")

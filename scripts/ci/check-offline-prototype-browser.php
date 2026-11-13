@@ -46,14 +46,38 @@ $testScript = <<<'JS'
   document.body.appendChild(output);
   function check(value,message){if(!value) throw new Error(message);}
   try{
+    // IMAGINE-DS-V1: verify actual computed brand, not only static CSS text.
+    const css=el=>getComputedStyle(el);
+    check(css(document.body).backgroundColor==='rgb(247, 247, 248)','Node background applied');
+    check(css(document.querySelector('.sidebar')).backgroundColor==='rgb(255, 255, 255)','Node white sidebar');
+    check(css(document.querySelector('.hero')).backgroundColor==='rgb(23, 27, 25)','Node graphite hero');
+    check(css(document.querySelector('.hero .action')).backgroundColor==='rgb(249, 148, 29)','Node orange primary CTA');
+    check(css(document.querySelector('[aria-current="page"].nav-button')).backgroundColor==='rgb(255, 241, 224)','Node selected navigation');
+    check(css(document.documentElement).fontFamily.includes('Arial'),'Node font applied');
+    const brandLogo=document.querySelector('.brand-logo');
+    check(brandLogo&&brandLogo.alt==='Imagine'&&brandLogo.src.startsWith('data:image/png;base64,'),
+      'original Node Portal logo shown without a network dependency');
     const nav=Array.from(document.querySelectorAll('#demo-navigation button[data-page]'));
     check(nav.length===9,'nine navigation buttons');
+    const groups=Array.from(document.querySelectorAll('#demo-navigation .nav-group[role="group"]'));
+    check(groups.length===3,'three task groups in desktop navigation');
+    check(groups.map(x=>x.getAttribute('aria-label')).join('|')===
+      'Início|Operação comercial|Revisão e suporte','semantic labels match experience system');
+    check(groups.every(x=>x.querySelectorAll('button[data-page]').length===3),
+      'exact three real actions per group');
+    check(nav.every(x=>x.getBoundingClientRect().height>=44),'minimum 44px desktop touch target');
+    check(document.getElementById('nav-section').textContent==='Início','initial section breadcrumb');
+    check(document.getElementById('nav-current').textContent==='Boas-vindas','initial page breadcrumb');
     check(document.querySelectorAll('[data-screen]').length===9,'nine demo screens');
     check(document.getElementById('page-title').textContent==='Boas-vindas','initial screen');
 
     const monitor=nav.find(x=>x.dataset.page==='monitor');
     monitor.click();
     check(document.getElementById('page-title').textContent==='Monitoramento de leads','click switches screen');
+    check(document.getElementById('nav-section').textContent==='Operação comercial',
+      'breadcrumb tracks commercial navigation');
+    check(document.getElementById('nav-current').textContent==='Monitoramento de leads',
+      'breadcrumb tracks active title');
     check(document.activeElement===document.getElementById('page-title'),'click focuses heading');
     check(!document.getElementById('screen-monitor').hidden,'active screen visible');
     check(document.querySelectorAll('[data-screen]:not([hidden])').length===1,'one screen visible');

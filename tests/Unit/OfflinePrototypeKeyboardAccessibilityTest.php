@@ -56,9 +56,12 @@ final class OfflinePrototypeKeyboardAccessibilityTest extends TestCase
     public function test_each_demo_navigation_control_targets_exactly_one_screen(): void
     {
         $xpath = self::xpath();
-        $nav = $xpath->query('//nav[@id="demo-navigation" and @aria-label="Telas de demonstração"]/button[@data-page]');
+        $nav = $xpath->query('//nav[@id="demo-navigation" and @aria-label="Telas de demonstração"]/div[@role="group"]/button[@data-page]');
         self::assertNotFalse($nav);
         self::assertSame(9, $nav->length);
+        $groups = $xpath->query('//nav[@id="demo-navigation"]/div[@role="group"]');
+        self::assertNotFalse($groups);
+        self::assertSame(3, $groups->length, 'Task-group layout retains all nine semantic controls.');
         $selected = 0;
         $screens = [];
 

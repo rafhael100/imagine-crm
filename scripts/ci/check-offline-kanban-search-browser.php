@@ -71,7 +71,12 @@ $driver = <<<'HTML'
       check(d.getElementById('count-visible').textContent==='0','oversized query cannot match hidden cards');
       const attack='<img src=x onerror=alert(1)>';
       search(attack);
-      check(d.querySelectorAll('img').length===0,'search cannot inject an image node');
+      const images=Array.from(d.querySelectorAll('img'));
+      check(images.length===1,'search cannot inject an extra image node');
+      check(images[0].classList.contains('brand-logo')
+        && images[0].getAttribute('src')==='../assets/logo-imagine.png'
+        && images[0].getAttribute('alt')==='Imagine Comunicação Digital',
+        'search must preserve only the approved local Imagine logo');
       check(!d.getElementById('simulation-status').textContent.includes(attack),
         'search never echoes untrusted text into status');
       search('f01');
