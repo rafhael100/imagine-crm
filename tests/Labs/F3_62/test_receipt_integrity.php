@@ -21,6 +21,9 @@ $requestKey=random_bytes(48);
 $verifier=new SignedTechnicalReceiptCandidateVerifier();
 $receipt=SyntheticTechnicalReceiptSigner::sign($frame,$receiptKey,$now);
 $checks=0;
+foreach(['organization_reference','submission_reference','email'] as $private){
+    if(array_key_exists($private,$receipt))throw new RuntimeException('No identity may be echoed by receipt');
+}
 function checkReceipt(array $out,string $reason):void {
     global $checks;
     ++$checks;
@@ -52,10 +55,10 @@ checkReceipt($verifier->verify($frame,[...$receipt,'issued_at'=>$now+31],$receip
     'RECEIPT_FRESHNESS_DENIED');
 foreach(['organization_reference','binding_reference','submission_reference',
          'site_reference','form_reference','destination_reference'] as $field) {
-    $altered=$receipt;
+    $altered=$frame;
     $altered[$field]='99999999-9999-4999-8999-999999999999';
-    checkReceipt($verifier->verify($frame,$altered,$receiptKey,$now),'RECEIPT_CONTEXT_DENIED');
+    checkReceipt($verifier->verify($altered,$receipt,$receiptKey,$now),'RECEIPT_MAC_DENIED');
 }
 $other=[...$frame,'submission_reference'=>'ffffffff-ffff-4fff-8fff-ffffffffffff'];
-checkReceipt($verifier->verify($other,$receipt,$receiptKey,$now),'RECEIPT_CONTEXT_DENIED');
+checkReceipt($verifier->verify($other,$receipt,$receiptKey,$now),'RECEIPT_MAC_DENIED');
 echo "CRM F3-62 PASS: $checks independent MAC/freshness/context checks; never operational ACK.\n";
