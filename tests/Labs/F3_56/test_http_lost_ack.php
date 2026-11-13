@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/../F3_55/SignedSyntheticReadback.php';
+require_once dirname(__DIR__,3).'/app/Core/Leads/SignedTechnicalReceiptCandidateVerifier.php';
 use Tests\Labs\F3_55\SignedSyntheticReadback;
+use App\Core\Leads\SignedTechnicalReceiptCandidateVerifier;
 if(getenv('GITHUB_ACTIONS')!=='true'
     ||getenv('RUNNER_ENVIRONMENT')!=='github-hosted'
     ||getenv('CRM_F356_HTTP_LAB')!=='1'
@@ -9,7 +11,9 @@ if(getenv('GITHUB_ACTIONS')!=='true'
     ||getenv('DB_DATABASE')!=='f353_nonce_ci')throw new RuntimeException('CI only');
 $request=hex2bin((string)getenv('CRM_F356_REQUEST_KEY_HEX'));
 $lookup=hex2bin((string)getenv('CRM_F356_LOOKUP_KEY_HEX'));
-if(!is_string($request)||!is_string($lookup)||strlen($request)!==48||strlen($lookup)!==48)
+$receiptKey=hex2bin((string)getenv('CRM_F362_RECEIPT_KEY_HEX'));
+if(!is_string($request)||!is_string($lookup)||!is_string($receiptKey)
+    ||strlen($request)!==48||strlen($lookup)!==48||strlen($receiptKey)!==48)
     throw new RuntimeException('Synthetic keys required');
 $org='11111111-1111-4111-8111-111111111111';
 $frame=[
@@ -58,6 +62,16 @@ function send(string $route,array $frame,array $token,bool $drop=false,string $m
  foreach(['realCrmLeadPersisted','tenantAuthenticatedForProduction',
           'canAcknowledgeVisitor','canAutoRetryUnknownOutcome','canDeploy'] as $flag)
    if(($body[$flag]??null)!==false)throw new RuntimeException('Unsafe claim: '.$flag);
+ if(isset($body['technicalReceipt'])){
+     $verification=(new SignedTechnicalReceiptCandidateVerifier())->verify(
+         $frame,$body['technicalReceipt'],$GLOBALS['receiptKey'],time());
+     if(($verification['reasonCode']??null)!=='SYNTHETIC_RECEIPT_INTEGRITY_ONLY')
+         throw new RuntimeException('Signed synthetic receipt verification failed');
+     $wrong=(new SignedTechnicalReceiptCandidateVerifier())->verify(
+         $frame,$body['technicalReceipt'],$GLOBALS['request'],time());
+     if(($wrong['reasonCode']??null)!=='RECEIPT_MAC_DENIED')
+         throw new RuntimeException('Request key incorrectly trusted as receipt key');
+ }
  if(str_contains($raw,'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee'))
    throw new RuntimeException('Reply echoes submission identifier');
  return [(int)$match[1],$body];
@@ -76,8 +90,17 @@ $readback=token($frame,'readback',$lookup,$now,'cccccccc-cccc-4ccc-8ccc-cccccccc
 // The transaction committed but response was dropped: never re-send the lead.
 checkResult(send('/__lab/f356/deliver',$frame,$delivery,true),
   503,'COMMITTED_REPLY_LOST_READBACK_REQUIRED');
-checkResult(send('/__lab/f356/readback',$frame,$readback),
-  200,'SYNTHETIC_METADATA_FOUND_NO_REAL_LEAD',true);
+$firstReadback=send('/__lab/f356/readback',$frame,$readback);
+checkResult($firstReadback,200,'SYNTHETIC_METADATA_FOUND_NO_REAL_LEAD',true);
+$proof=$firstReadback[1]['technicalReceipt']??null;
+if(!is_array($proof)||array_keys($proof)!==['issued_at','expires_at','nonce','mac'])
+ throw new RuntimeException('F3-62 missing four-field technical proof');
+$tampered=[...$proof,'mac'=>str_repeat('0',64)];
+if((new SignedTechnicalReceiptCandidateVerifier())->verify($frame,$tampered,$receiptKey,$now)['reasonCode']!=='RECEIPT_MAC_DENIED')
+ throw new RuntimeException('F3-62 accepted forged receipt');
+$otherFrame=[...$frame,'destination_reference'=>'99999999-9999-4999-8999-999999999999'];
+if((new SignedTechnicalReceiptCandidateVerifier())->verify($otherFrame,$proof,$receiptKey,$now)['reasonCode']!=='RECEIPT_MAC_DENIED')
+ throw new RuntimeException('F3-62 accepted receipt for wrong destination');
 checkResult(send('/__lab/f356/readback',$frame,$readback),
   200,'SYNTHETIC_METADATA_FOUND_NO_REAL_LEAD',true);
 checkResult(send('/__lab/f356/deliver',$frame,$delivery),
