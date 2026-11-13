@@ -1,5 +1,12 @@
 # CRM Imagine — STATUS ATUAL
 
+## OPS-61 — Cadastro trial/OTP: implementação local e evidências (13/11/2026)
+
+**Snapshot verificado:** DEV `374a5e1b06f46057f9e7b717bc973f1f67075055` depois da [PR #484](https://github.com/rafhael100/imagine-crm/pull/482), `main` `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012` sem novas entregas. [Dossiê OPS-61](docs/desenvolvimento/CRM-OPS-61-evidencias-cadastro-otp-trial-2026-11-13.md) registra **onze PRs integradas somente DEV** (#465/#474/#475/#472/#476/#478/#479/#480/#481/#482/#484), cada uma com **quatro workflows success na HEAD da PR** e SHA do merge. Implementações inertes: OTP 6 dígitos / 900 segundos, trial 14 dias ilustrativo, CNPJ numérico e alfanumérico, bindings HMAC, contexto e-mail/telefone, e-mail Imagine em `Mail::fake()` e preflight SMTP sem envio e paridade de apresentação de OTP por e-mail/WhatsApp (F3-239). Nenhuma dessas peças autoriza cadastro, concede cotas, envia mensagens ou habilita login.
+
+**PRs condicionadas:** [F3-227 #468](https://github.com/rafhael100/imagine-crm/pull/468), [F3-228 #470](https://github.com/rafhael100/imagine-crm/pull/470) e [F3-233 #477](https://github.com/rafhael100/imagine-crm/pull/477) seguem **DRAFT/NO-MERGE**, mesmo com PG16 descartável verde. [F3-238 #482](https://github.com/rafhael100/imagine-crm/pull/482) foi integrada exclusivamente DEV, com modelo textual WhatsApp offline e 4/4 CI success, sem envio ou template oficial aprovado. Os gates [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27), [CORE/LGPD #259](https://github.com/rafhael100/imagine-crm/issues/259) e [UX #416](https://github.com/rafhael100/imagine-crm/issues/416) permanecem abertos. Nenhuma alteração em produção, VPS, `main`, dados de clientes ou `ALLOW` foi feita.
+
+
 **Atualizado em:** 12/11/2026 (America/Sao_Paulo).  
 **Fonte:** GitHub, PRs, Issues, branches e workflows consultados; este registro é operacional, **não homologação nem autorização de produção**.  
 **Branch de desenvolvimento:** [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04).
