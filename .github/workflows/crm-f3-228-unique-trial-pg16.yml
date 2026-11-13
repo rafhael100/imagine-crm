@@ -1,0 +1,56 @@
+name: CRM Imagine - F3-228 Single Trial Per Company PG16 Lab
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'scripts/ci/check-trial-unique-company-pg16.php'
+      - '.github/workflows/crm-f3-228-unique-trial-pg16.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trial-uniqueness:
+    name: PostgreSQL 16 two-session one-trial invariant (NO-GO)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_trial_lab_ci
+          POSTGRES_USER: trial_lab_ci
+          POSTGRES_PASSWORD: fixture-trial-only-disposable-ci
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd "pg_isready -U trial_lab_ci -d imagine_trial_lab_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      CI: 'true'
+      TRIAL_LAB_HOST: 127.0.0.1
+      TRIAL_LAB_PORT: '5434'
+      TRIAL_LAB_DATABASE: imagine_trial_lab_ci
+      TRIAL_LAB_USERNAME: trial_lab_ci
+      TRIAL_LAB_PASSWORD: fixture-trial-only-disposable-ci
+    steps:
+      - name: Checkout exact PR
+        uses: actions/checkout@v4
+
+      - name: PHP 8.4 with PDO/PostgreSQL
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, pgsql
+          coverage: none
+
+      - name: PHP syntax
+        run: |
+          php -l app/Core/Plans/TrialWindowAdvisory.php
+          php -l scripts/ci/check-trial-unique-company-pg16.php
+
+      - name: Disposable PostgreSQL two-session trial uniqueness
+        run: php scripts/ci/check-trial-unique-company-pg16.php
