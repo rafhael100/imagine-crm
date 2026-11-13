@@ -32,7 +32,7 @@ final class ProductionAutoloadBoundaryContractTest extends TestCase
             'composer install --no-dev --classmap-authoritative',
             'verify-no-dev-http-fixtures.php',
             'php artisan route:list --json', '.uri == "up"',
-            "'__ci/f3-252'", "'__ci/f3-254'",
+            "'__ci/f3-252'", "'__ci/f3-254'", "'__ci/f3-258'", 'SignupTrialSequencedHttpLab',
             'routes app bootstrap', 'NO-GO',
             '$GITHUB_STEP_SUMMARY',
         ] as $part) {
@@ -60,6 +60,8 @@ final class ProductionAutoloadBoundaryContractTest extends TestCase
             'SignupTrialHttpFixture', 'SignupOtpLifecycleSandbox',
             'TrialEnrollmentLifecycleSandbox',
             'SignupTrialHttpFixtureResendTest',
+            'SignupTrialSequencedHttpLab',
+            'SignupTrialSequencedHttpLabTest',
         ] as $required) {
             self::assertStringContainsString($required, $src);
         }
