@@ -5,3 +5,5 @@ O comando `php scripts/ci/emit-portable-csv-review-demo.php` executa **código C
 O CLI **recusa todos os argumentos**, não aceita caminho/arquivo CSV de cliente, não usa .env, rede, banco, permissões, tenant, download, API nem escrita em disco. Ele não processa dados reais; o JSON não ecoa nem os valores fictícios. Não é homologação operacional, não produz backup e não valida Excel/Sheets/LibreOffice.
 
 `PortableCsvReviewDemoCliTest.php` realmente executa PHP em subprocesso usando `PHP_BINARY`, verifica o protocolo e as negações, o tamanho e contadores, inspeciona não vazamento e confirma rejeição de argumentos. Requisitos da CI na SHA exata: F0, PostgreSQL/RLS, Sites e Agents. Gates #27 SEG/DBA, #259 CORE/LGPD, #416 visual e IN-118 seguem NO-GO; sem deploy, produção ou `main`.
+
+**Integração da dependência:** F3-223 / PR #461 já integrada somente à DEV; esta entrega agora mira diretamente a HEAD DEV. A execução de CI deve ser verificada novamente sobre a SHA atual.
