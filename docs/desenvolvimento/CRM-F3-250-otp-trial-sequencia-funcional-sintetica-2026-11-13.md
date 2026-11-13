@@ -7,3 +7,9 @@ Execute `php scripts/ci/emit-composite-signup-trial-lab.php` com dependências C
 **Não há dependência de autorização real entre as duas fases:** um OTP demonstrativo que coincide **NÃO** comprova identidade nem permite iniciar um trial. Os dois objetos de teste são executados sequencialmente apenas para validar a apresentação de regras e detectar inconsistências antes de desenhar o backend homologável. A transição operacional futura exige transação atômica OTP + trial por CNPJ, RLS/tenant, antienumeração, mensagens aprovadas, auditabilidade, LGPD, validação cadastral, proteção de chaves e revisão independente. As provas PostgreSQL concorrentes #468/#470/#477 continuam DRAFT/NO-MERGE. Gates SEG/DBA #27, CORE/LGPD #259 e UX #416 continuam abertos.
 
 Este incremento vive somente em `scripts/ci` e `tests/Unit`: não modifica `app/`, routes, migrations, SMTP, WhatsApp, GitHub main, VPS ou produção. Merge na DEV condicionado a 4/4 CI na HEAD e revisão de diff.
+
+## Matriz de provas executáveis
+
+O subprocesso deve confirmar, sem emitir valores secretos: `sandbox_code_created`, `sandbox_match_consumed_in_memory`, `sandbox_replay_denied`, `sandbox_first_trial_marker`, `sandbox_duplicate_trial_claim`, um segundo marcador de empresa distinta, `within_window` e `after_window` na fronteira do dia 14. Deve retornar exatamente as sete franquias do trial, mas com todas as permissões de alteração, cobrança, emissão e ativação em `false`. Duas execuções em processos novos precisam gerar **JSON idêntico**, mesmo quando os códigos OTP internos forem aleatórios.
+
+A saída pública de eventual API real **não** poderá reutilizar estes nomes de status diagnósticos, que poderiam revelar existência de um CNPJ ou contato; a futura implementação exigirá contrato de resposta genérico, proteção contra canais laterais e parecer LGPD.
