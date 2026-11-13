@@ -1,0 +1,9 @@
+# CRM F3-244 — Prévia offline de resposta uniforme para OTP, sem enumeração
+
+O teste F3-241 produz códigos diagnósticos diferentes para orçamento esgotado por contato ou origem; o F3-226 diferencia coincidência, erro e expiração. Esses códigos são úteis para **testes internos**, mas não devem ser devolvidos diretamente por uma API pública, pois poderiam facilitar enumeração de contas ou oferecer um oracle de verificação de OTP.
+
+`OfflineSignupOtpPublicFeedbackPreview` aceita apenas os resultados conhecidos de `issue` e `verify`, e devolve exatamente **a mesma mensagem e o mesmo conjunto de campos dentro de cada fase**, independentemente do estado interno. Todas as mensagens declaram de modo explícito que o ambiente é de demonstração e não realizou envio, verificação ou cadastro. Campos públicos não incluem e-mail, telefone, IP, contato, nonce, HMAC, contador, prazo restante, razão interna nem OTP. Estados inválidos e injeções falham com erro genérico sem eco.
+
+O teste PHPUnit compara por igualdade de arrays todos os estados de emissão (normal, limite por contato/origem, cooldown) e todos os estados de inspeção do Core (correto, incorreto, anterior, expirado, consumido ou esgotado). A integração ao CLI F3-229/235/239/242 só publica dois **booleanos de paridade** e mantém todo `can_send/can_register/can_authenticate/can_persist=false`.
+
+**Limitação:** uma resposta uniforme é uma proteção parcial, não autenticação, prova de resistência a ataques temporais, antiabuso durável, envio, prova de posse, nem mecanismo de feedback real para usuários. O desenho de uma API efetiva precisa revisão de sessão/tenancy, rate-limit atômico, UX, LGPD, cronologia de respostas, auditoria e proteção contra canais laterais. Gates #27 SEG/DBA, #259 CORE/LGPD e #416 visual permanecem NO-GO. Sem rotas, SMTP, WhatsApp, banco, log de código, dados reais, `main`, VPS ou produção.

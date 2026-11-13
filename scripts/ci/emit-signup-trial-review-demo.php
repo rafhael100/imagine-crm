@@ -8,6 +8,7 @@ declare(strict_types=1);
  */
 use App\Core\Identity\OfflineSignupOtpChallenge;
 use App\Core\Identity\OfflineSignupOtpAbuseBudgetPreview;
+use App\Core\Identity\OfflineSignupOtpPublicFeedbackPreview;
 use App\Core\Identity\OfflineSignupOtpWhatsAppDraft;
 use App\Mail\OfflineSignupOtpMail;
 use App\Core\Identity\OfflineSignupContactHmacBinding;
@@ -134,6 +135,20 @@ try {
         'verify', $emailBinding, $originBinding, $checkedAt, $limitedVerify, $fresh,
     );
 
+    // Uniform presentation for all simulated failures and successes.
+    // The CLI never sends these messages to actual users or HTTP clients.
+    $publicFeedback = new OfflineSignupOtpPublicFeedbackPreview();
+    $issueNeutral = $publicFeedback->preview('issue', $normalBudget['reason_code']);
+    $issueBlockedNeutral = $publicFeedback->preview('issue', $contactBlocked['reason_code']);
+    $issueOriginNeutral = $publicFeedback->preview('issue', $originBlocked['reason_code']);
+    $verifyNeutral = $publicFeedback->preview('verify', $emailView['status_code']);
+    $verifyWrongNeutral = $publicFeedback->preview('verify', $wrongPhoneView['status_code']);
+    $verifyExpiredNeutral = $publicFeedback->preview('verify', $expiredPhoneView['status_code']);
+    $issueUniform = $issueNeutral === $issueBlockedNeutral
+        && $issueBlockedNeutral === $issueOriginNeutral;
+    $verifyUniform = $verifyNeutral === $verifyWrongNeutral
+        && $verifyWrongNeutral === $verifyExpiredNeutral;
+
     $report = [
         'protocol' => 'imagine.crm.synthetic_signup_trial_review',
         'schema_version' => 1,
@@ -145,6 +160,9 @@ try {
         'sample_origin_limit_observation' => $originBlocked['reason_code'],
         'sample_verify_limit_observation' => $verifyBlocked['reason_code'],
         'durable_otp_abuse_enforcement_verified' => false,
+        'uniform_public_issue_feedback' => $issueUniform,
+        'uniform_public_verify_feedback' => $verifyUniform,
+        'public_feedback_is_only_offline' => true,
         'email_template_otp_matches_in_memory' => $emailMatches,
         'whatsapp_template_otp_matches_in_memory' => $whatsMatches,
         'email_whatsapp_validity_parity' => $sameValidity,
@@ -196,6 +214,9 @@ try {
         || $contactBlocked['reason_code'] !== 'sample_contact_budget_exhausted'
         || $originBlocked['reason_code'] !== 'sample_origin_budget_exhausted'
         || $verifyBlocked['reason_code'] !== 'sample_contact_budget_exhausted'
+        || !$issueUniform || !$verifyUniform
+        || $issueNeutral['can_send'] !== false
+        || $verifyNeutral['can_register'] !== false
         || $normalBudget['can_send'] !== false
         || $contactBlocked['can_register'] !== false
         || count($meters) !== 7

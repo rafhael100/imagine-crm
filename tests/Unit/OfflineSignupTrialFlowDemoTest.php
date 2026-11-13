@@ -35,6 +35,9 @@ final class OfflineSignupTrialFlowDemoTest extends TestCase
         self::assertSame('sample_origin_budget_exhausted', $report['sample_origin_limit_observation']);
         self::assertSame('sample_contact_budget_exhausted', $report['sample_verify_limit_observation']);
         self::assertFalse($report['durable_otp_abuse_enforcement_verified']);
+        self::assertTrue($report['uniform_public_issue_feedback']);
+        self::assertTrue($report['uniform_public_verify_feedback']);
+        self::assertTrue($report['public_feedback_is_only_offline']);
         self::assertTrue($report['email_template_otp_matches_in_memory']);
         self::assertTrue($report['whatsapp_template_otp_matches_in_memory']);
         self::assertTrue($report['email_whatsapp_validity_parity']);
@@ -79,7 +82,7 @@ final class OfflineSignupTrialFlowDemoTest extends TestCase
         ] as $flag) {
             self::assertFalse($report[$flag], $flag);
         }
-        foreach (['delivery_code', 'digest', 'nonce', 'opaque', '"cnpj":', 'email_address', 'phone_number', 'fixture-key', '11222333000181', '12ABC34501DE35', 'trial_binding_digest', 'demo.one@example.com', 'demo.two@example.com', '+5511999988888', 'synthetic_parameter_code', 'synthetic_preview', 'utility_template_candidate', 'synthetic-origin-never-a-real-ip'] as $secret) {
+        foreach (['delivery_code', 'digest', 'nonce', 'opaque', '"cnpj":', 'email_address', 'phone_number', 'fixture-key', '11222333000181', '12ABC34501DE35', 'trial_binding_digest', 'demo.one@example.com', 'demo.two@example.com', '+5511999988888', 'synthetic_parameter_code', 'synthetic_preview', 'utility_template_candidate', 'synthetic-origin-never-a-real-ip', 'public_message', 'public_status_code'] as $secret) {
             self::assertStringNotContainsString($secret, $json);
         }
         $b = new Process([PHP_BINARY, self::script()]);
