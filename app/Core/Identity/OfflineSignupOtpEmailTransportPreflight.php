@@ -23,6 +23,18 @@ final class OfflineSignupOtpEmailTransportPreflight
             return self::response('invalid_configuration', false);
         }
 
+        // An exact, allowlisted snapshot is essential. Extra Laravel/Symfony
+        // mailer options may weaken TLS, trigger fallback or change the
+        // recipient without showing up in the fields checked below.
+        if (!self::exactKeys($mailer, [
+            'transport', 'scheme', 'host', 'port', 'username', 'password', 'timeout',
+        ])) {
+            return self::response('unsafe_or_ambiguous_transport', false);
+        }
+        if (!self::exactKeys($sender, ['address', 'name'])) {
+            return self::response('invalid_sender', false);
+        }
+
         // A Laravel log transport leaks plaintext verification codes to
         // persistent logs. Failover/roundrobin can silently select it.
         if (($mailer['transport'] ?? null) !== 'smtp'
@@ -49,8 +61,10 @@ final class OfflineSignupOtpEmailTransportPreflight
         $timeout = $mailer['timeout'] ?? null;
 
         if (!is_string($host) || !self::publicHostShape($host)
-            || !is_string($username) || strlen($username) < 1 || strlen($username) > 254
-            || !is_string($password) || strlen($password) < 16 || strlen($password) > 512
+            || !is_string($username)
+            || preg_match('/\A[\x21-\x7E]{1,254}\z/D', $username) !== 1
+            || !is_string($password)
+            || preg_match('/\A[\x21-\x7E]{16,512}\z/D', $password) !== 1
             || !is_int($timeout) || $timeout < 3 || $timeout > 30) {
             return self::response('invalid_smtp_settings', false);
         }
@@ -66,6 +80,26 @@ final class OfflineSignupOtpEmailTransportPreflight
         }
 
         return self::response('offline_candidate_only', true);
+    }
+
+    /**
+     * Do not silently accept extra mailer fields that the preflight
+     * does not understand (e.g. verify_peer_name=false or auto_tls).
+     *
+     * @param array<mixed> $settings
+     * @param list<string> $fields
+     */
+    private static function exactKeys(array $settings, array $fields): bool
+    {
+        if (count($settings) !== count($fields)) {
+            return false;
+        }
+        foreach ($fields as $name) {
+            if (!array_key_exists($name, $settings)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static function publicHostShape(string $host): bool
