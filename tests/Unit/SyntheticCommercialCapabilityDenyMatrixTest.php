@@ -20,6 +20,7 @@ use App\Core\Portability\SyntheticPortabilityOperationPreflight;
 use App\Core\Portability\SyntheticBackupManifestContractInspector;
 use App\Core\Portability\SyntheticRestoreReadinessInspector;
 use App\Core\Portability\SyntheticImportColumnMappingInspector;
+use App\Core\Portability\SyntheticImportReadinessInspector;
 use App\Core\Plans\SyntheticCancellationRetentionTimeline;
 use App\Core\Plans\SyntheticDelinquencyReviewTimeline;
 use App\Core\Plans\SyntheticTrialRetentionTimeline;
@@ -403,6 +404,34 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
                     'left' => 0, 'right' => 2, 'submission_relation' => 'different',
                     'email_relation' => 'same', 'phone_relation' => 'unavailable',
                 ]], 1, 0),
+            'composed_import_contract_never_authorizes_write' =>
+                (new SyntheticImportReadinessInspector())->inspect(
+                    [
+                        'plan' => 'basic',
+                        'operation' => 'import_csv',
+                        'attachment_quota_percent' => 100,
+                        'confirmation_claimed' => true,
+                        'declared_package' => 'table',
+                        'duplicate_warning_count' => 1,
+                        'formula_warning_count' => 1,
+                        'secret_fields_claimed' => false,
+                        'entity_kinds' => ['leads'],
+                        'target_account_state' => 'populated',
+                    ],
+                    [
+                        'entity_kind' => 'leads',
+                        'declared_row_count' => 3,
+                        'declared_duplicate_candidates' => 1,
+                        'target_state' => 'populated',
+                        'review_claimed' => true,
+                        'columns' => [
+                            ['source_position' => 0, 'target_code' => 'email',
+                                'nonempty_count' => 3, 'formula_warning_count' => 1],
+                            ['source_position' => 1, 'target_code' => 'consent',
+                                'nonempty_count' => 1, 'formula_warning_count' => 0],
+                        ],
+                    ],
+                ),
             'import_columns_with_consent_and_collisions_denied' =>
                 (new SyntheticImportColumnMappingInspector())->inspect([
                     'entity_kind' => 'leads',
@@ -552,10 +581,10 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             ->inspect($cases[0]['input']);
     }
 
-    public function test_all_forty_five_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
+    public function test_all_forty_six_business_laboratories_have_no_operational_capability_even_on_positive_claims(): void
     {
         $reports = self::reports();
-        self::assertCount(45, $reports);
+        self::assertCount(46, $reports);
         foreach ($reports as $name => $report) {
             self::assertTrue($report['informational_only'], $name.' must be informative only');
             foreach ($report as $key => $value) {
@@ -588,6 +617,12 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
         self::assertSame('CONFLICTING_RETRY_CLAIM', $reports['collision_worklist_prioritized_never_authorized']['page_items'][0]['reason_code']);
         self::assertFalse($reports['collision_worklist_prioritized_never_authorized']['can_assign_reviewer']);
         self::assertFalse($reports['collision_worklist_prioritized_never_authorized']['can_merge']);
+        self::assertContains(
+            'MAPPING_CONSENT_EVIDENCE_CANNOT_BE_IMPORTED_AS_AUTHORITY',
+            $reports['composed_import_contract_never_authorizes_write']['warning_codes'],
+        );
+        self::assertFalse($reports['composed_import_contract_never_authorizes_write']['can_import']);
+        self::assertFalse($reports['composed_import_contract_never_authorizes_write']['can_confirm_consent']);
         self::assertSame(1, $reports['import_columns_with_consent_and_collisions_denied']['target_collision_count']);
         self::assertContains(
             'CONSENT_EVIDENCE_CANNOT_BE_IMPORTED_AS_AUTHORITY',
@@ -782,6 +817,7 @@ final class SyntheticCommercialCapabilityDenyMatrixTest extends TestCase
             'SyntheticBackupManifestContractInspector',
             'SyntheticRestoreReadinessInspector',
             'SyntheticImportColumnMappingInspector',
+            'SyntheticImportReadinessInspector',
             'SyntheticLeadRuleScorePreview',
             'SyntheticSalesGoalProgressPreview',
             'SyntheticTaskLifecycleInspector',
