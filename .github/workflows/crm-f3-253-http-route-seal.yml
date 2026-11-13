@@ -1,0 +1,89 @@
+name: CRM Imagine - F3-253 Laravel HTTP Fixture Route Seal
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'tests/Support/SignupTrialHttpFixture.php'
+      - 'tests/Feature/SignupTrialHttpFixtureFlowTest.php'
+      - 'tests/Unit/SignupTrialHttpLabWorkflowContractTest.php'
+      - '.github/workflows/crm-f3-253-http-route-seal.yml'
+      - 'routes/**'
+      - 'bootstrap/app.php'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  http-lab:
+    name: Laravel kernel HTTP sandbox tests and public route seal (NO-GO)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - name: Checkout test-only fixture
+        uses: actions/checkout@v4
+
+      - name: PHP 8.4 without a production database
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Install Composer development dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Lint and run real Laravel kernel request-response tests
+        run: |
+          php -l tests/Support/SignupTrialHttpFixture.php
+          php -l tests/Feature/SignupTrialHttpFixtureFlowTest.php
+          php -l tests/Unit/SignupTrialHttpLabWorkflowContractTest.php
+          vendor/bin/phpunit tests/Feature/SignupTrialHttpFixtureFlowTest.php
+          vendor/bin/phpunit tests/Feature/PublicRouteSurfaceSealTest.php
+          vendor/bin/phpunit tests/Unit/SignupTrialHttpLabWorkflowContractTest.php
+
+      - name: Published Laravel route inventory allows only framework health
+        shell: bash
+        run: |
+          set -euo pipefail
+          php artisan route:list --json > /tmp/crm-f3-253-route-list.json
+          jq -e '
+            length == 1 and
+            .[0].uri == "up" and
+            (.[0].method == "GET|HEAD" or .[0].method == "HEAD|GET")
+          ' /tmp/crm-f3-253-route-list.json > /dev/null
+          if grep -RFq '__ci/f3-252' routes app bootstrap; then
+            echo 'F3-253 NO-GO: test fixture path leaked into public source' >&2
+            exit 1
+          fi
+          if grep -RFq 'SignupTrialHttpFixture' routes app bootstrap; then
+            echo 'F3-253 NO-GO: test fixture class imported into runtime' >&2
+            exit 1
+          fi
+          rm -f /tmp/crm-f3-253-route-list.json
+          echo 'F3-253 PASS: /up only, HTTP fixture exists exclusively inside PHPUnit.'
+
+      - name: Record sanitized CI proof (no artifact, identifiers or OTP)
+        shell: bash
+        run: |
+          {
+            echo '### CRM F3-253 — Laravel test-only HTTP route proof'
+            echo '- Real Laravel kernel test: passed'
+            echo '- Published route inventory: /up only'
+            echo '- OTP and trial route: registered only by PHPUnit'
+            echo '- Code, contact, tenant, provider, DB persistence: absent'
+            echo '- Operational signup and deployment: **NO-GO**'
+          } >> "$GITHUB_STEP_SUMMARY"
