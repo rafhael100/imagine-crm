@@ -94,7 +94,7 @@ final class SyntheticImportReadinessInspectorTest extends TestCase
             'DUPLICATE_COUNTS_DISAGREE',
             'FORMULA_WARNING_COUNTS_DISAGREE',
             'OPERATION_PACKAGE_SCOPE_REQUIRES_REVIEW',
-            'OPERATION_TARGET_STATE_UNVERIFIED',
+            'TARGET_STATE_UNVERIFIED',
         ] as $warning){
             self::assertContains($warning,$out['warning_codes']);
         }
