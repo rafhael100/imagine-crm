@@ -1129,6 +1129,72 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $this->get('/api/tasks')->assertNotFound();
     }
 
+    public function test_integrated_signed_capture_creates_tenant_lead_then_audited_followup_task(): void
+    {
+        $claim = self::siteClaim(self::ORG_A);
+        $this->seedActiveSiteBinding(self::ORG_A, $claim);
+        $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
+        $issued = 1700000000;
+        $expires = $issued + 120;
+        $mac = self::syntheticSiteSignature(
+            $claim, self::LEAD_A, 'DEMO_INTEGRATED01', 'sites',
+            $nonce, $issued, $expires,
+        );
+
+        $earlyTask = $this->tasks()->createSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A,
+            self::LEAD_A, 'TASK_INTEGRATED_01', '2026-12-10',
+        );
+        $this->assertSame('synthetic_task_denied', $earlyTask['status_code']);
+
+        $captured = $this->signedCapture()->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_INTEGRATED01', 'sites', $claim,
+            $nonce, $issued, $expires, $issued + 3, $mac,
+        );
+        $this->assertSame('synthetic_captured', $captured['status_code']);
+        $this->assertNoEffects($captured);
+
+        $task = $this->tasks($this->two)->createSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A,
+            self::LEAD_A, 'TASK_INTEGRATED_01', '2026-12-10',
+        );
+        $this->assertSame('synthetic_task_created', $task['status_code']);
+        $this->assertFalse($task['can_contact']);
+        $this->assertFalse($task['can_notify']);
+
+        $replay = $this->signedCapture($this->two)->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_INTEGRATED01', 'sites', $claim,
+            $nonce, $issued, $expires, $issued + 5, $mac,
+        );
+        $this->assertSame('synthetic_replayed', $replay['status_code']);
+        $this->assertCount(1, $this->tasks()->pendingSynthetic(
+            self::principal(), self::ORG_A,
+        ));
+        $this->assertSame([], $this->tasks()->pendingSynthetic(
+            self::principal(), self::ORG_B,
+        ));
+
+        $resolved = $this->tasks()->resolveSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A, 'done', 1,
+        );
+        $this->assertSame('synthetic_task_resolved', $resolved['status_code']);
+        $this->assertSame(1, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_capture_keys')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_events')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_followup_tasks')->count());
+        $this->assertSame(2, $this->owner->table('crm_lab_task_events')->count());
+
+        foreach (['crm_lab_leads','crm_lab_lead_capture_keys',
+            'crm_lab_lead_events','crm_lab_followup_tasks','crm_lab_task_events'] as $table) {
+            $this->assertSame(self::ORG_A,
+                $this->owner->table($table)->value('organization_id'), $table);
+        }
+        $this->assertSame(0, $this->one->transactionLevel());
+        $this->assertSame(0, $this->two->transactionLevel());
+    }
+
     public function test_wrong_database_role_and_public_endpoints_stay_denied(): void
     {
         try {
