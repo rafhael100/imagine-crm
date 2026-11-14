@@ -86,6 +86,54 @@ final class AsaasWebhookEnvelopeTest extends TestCase
         self::assertStringNotContainsString('private', json_encode($out, JSON_THROW_ON_ERROR));
     }
 
+    public function test_documented_refunds_chargeback_risk_and_restored_events_remain_informational(): void
+    {
+        foreach ([
+            'PAYMENT_CHARGEBACK_DISPUTE',
+            'PAYMENT_AWAITING_CHARGEBACK_REVERSAL',
+            'PAYMENT_REFUND_IN_PROGRESS',
+            'PAYMENT_REFUND_DENIED',
+            'PAYMENT_RECEIVED_IN_CASH_UNDONE',
+            'PAYMENT_RESTORED',
+            'PAYMENT_BANK_SLIP_CANCELLED',
+            'PAYMENT_CREDIT_CARD_CAPTURE_REFUSED',
+            'PAYMENT_AWAITING_RISK_ANALYSIS',
+            'PAYMENT_APPROVED_BY_RISK_ANALYSIS',
+            'PAYMENT_REPROVED_BY_RISK_ANALYSIS',
+            'PAYMENT_AUTHORIZED',
+        ] as $kind) {
+            $envelope = AsaasWebhookEnvelope::parse(
+                self::headers(), self::body(kind: $kind), self::TOKEN, self::KEY,
+            );
+            self::assertSame($kind, $envelope->eventKind);
+            self::assertFalse(method_exists($envelope, 'activateSubscription'));
+            $wire = json_encode($envelope, JSON_THROW_ON_ERROR);
+            self::assertStringNotContainsString('999.9', $wire);
+            self::assertStringNotContainsString('cus_should_not_persist', $wire);
+        }
+    }
+
+    public function test_event_allowlist_is_identical_to_physical_postgresql_check_inventory(): void
+    {
+        // Avoid a deceptively green PHP handler that rejects a known event at
+        // the database boundary, which could halt the Asaas delivery queue.
+        $base = dirname(__DIR__, 2);
+        $php = file_get_contents($base.'/app/Core/Billing/AsaasWebhookEnvelope.php');
+        $sql = file_get_contents($base.'/tests/Labs/billing/asaas-webhook-inbox-ci.sql');
+        self::assertIsString($php);
+        self::assertIsString($sql);
+        self::assertSame(1, preg_match('/private const EVENT_KINDS = \[(.*?)\];/s', $php, $phpArray));
+        self::assertSame(1, preg_match('/AND event_kind IN \((.*?)\)/s', $sql, $sqlArray));
+        preg_match_all("/'([A-Z_]+)'/", $phpArray[1], $phpKinds);
+        preg_match_all("/'([A-Z_]+)'/", $sqlArray[1], $sqlKinds);
+        $allowed = $phpKinds[1];
+        $physical = $sqlKinds[1];
+        sort($allowed, SORT_STRING);
+        sort($physical, SORT_STRING);
+        self::assertSame($allowed, $physical);
+        self::assertCount(count(array_unique($allowed)), $allowed);
+    }
+
     public function test_tokens_headers_and_content_type_are_fail_closed(): void
     {
         foreach ([
