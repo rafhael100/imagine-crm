@@ -59,7 +59,17 @@ services:
       - app
     networks:
       - crm_private
+      - crm_loopback
 
 networks:
+  # PHP-FPM stays entirely on this network, with no default external gateway.
   crm_private:
     internal: true
+  # Separate host-access bridge ONLY for Nginx. Not an app or DB network.
+  # Disable NAT masquerade and bind any published host port to 127.0.0.1.
+  # Real egress policy must still be verified by SEG/infra before VPS use.
+  crm_loopback:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
