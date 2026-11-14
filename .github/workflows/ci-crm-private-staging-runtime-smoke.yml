@@ -17,6 +17,7 @@ on:
       - 'infra/staging/**'
       - 'scripts/ci/verify-staging-rendered-compose.php'
       - 'scripts/ci/verify-private-staging-runtime.sh'
+      - 'scripts/ci/verify-private-staging-isolation.sh'
       - '.github/workflows/ci-crm-private-staging-runtime-smoke.yml'
   workflow_dispatch:
 
@@ -64,6 +65,11 @@ jobs:
         run: |
           set -euo pipefail
           bash scripts/ci/verify-private-staging-runtime.sh
+      - name: Inspect actual container isolation without making external requests
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/ci/verify-private-staging-isolation.sh
       - name: Confirm no customer data or deployment was used
         if: always()
         shell: bash
@@ -74,6 +80,7 @@ jobs:
             echo '- Uses only checkout source and fake/memory-only Laravel configuration'
             echo '- HTTP is bound to 127.0.0.1:18080 inside the ephemeral runner'
             echo '- Probes /up and denial of unpublished business endpoints'
+            echo '- Checks non-root runtime, no dev artifacts, no app default route, and loopback port'
             echo '- No VPS, domain, Docker registry push, deploy, cloud secrets or customer DB'
             echo '- This job does NOT imply release readiness, SEG/DBA approval or merge authorization'
           } >> "$GITHUB_STEP_SUMMARY"
