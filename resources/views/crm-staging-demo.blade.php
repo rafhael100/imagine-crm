@@ -24,9 +24,9 @@
     display:flex; flex-direction:column; gap:30px; }
   .brand { display:flex; align-items:center; gap:10px; text-decoration:none;
     font-size:21px; font-weight:850; letter-spacing:-.07em; padding:0 10px; }
-  .mark { background:var(--orange); border-radius:11px; width:34px; height:34px;
-    display:grid; place-items:center; font-weight:900; font-size:23px; }
-  .brand small { font-size:12px; color:#D27811; letter-spacing:.02em; }
+  .brand-logo { width:128px; max-height:38px; object-fit:contain; flex:0 0 auto; }
+  .brand-product { font-size:12px; color:var(--imagine-orange-text); letter-spacing:.02em;
+    border-left:1px solid var(--border); padding-left:9px; }
   .side-nav { display:grid; gap:6px; }
   .side-nav a { text-decoration:none; padding:13px 15px; border-radius:var(--imagine-radius-navigation);
     min-height:var(--imagine-touch-target); display:flex; align-items:center;
@@ -133,8 +133,10 @@
 <div class="banner" role="status">{{ $copy['eyebrow'] }}</div>
 <div class="shell">
     <aside class="sidebar" aria-label="Demo navigation">
-        <a class="brand" href="/?lang={{ $lang }}"><span class="mark" aria-hidden="true">i</span>
-            <span>imagine <small>CRM</small></span></a>
+        <a class="brand" href="/?lang={{ $lang }}" aria-label="Imagine CRM">
+            <img class="brand-logo" src="/assets/logo-imagine.png" alt="Imagine"
+                 width="128" height="38" decoding="async">
+            <span class="brand-product">CRM</span></a>
         <nav class="side-nav">
             <a class="active" aria-current="location" href="#pipeline">{{ $copy['pipeline'] }}</a>
             <a href="#tasks">{{ $copy['tasks'] }}</a>
