@@ -81,7 +81,7 @@ function ingest(PDOStatement $stmt,array $x,string $org,int $exp,
  ?string $mac=null): string {
  $stmt->execute([
   $org,$x['binding'],$x['submission'],$x['site'],$x['form'],$x['dest'],
-  $revision,$consent,$notice??'ci-notice-1',$email??$x['email'],
+  $revision,$consent?'true':'false',$notice??'ci-notice-1',$email??$x['email'],
   $exp,$mac??scope($x,$org,$exp,$consent,$revision,$notice,$email),
  ]);
  $v=$stmt->fetchColumn();$stmt->closeCursor();
