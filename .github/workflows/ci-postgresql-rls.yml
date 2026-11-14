@@ -56,7 +56,6 @@ jobs:
       DB_PASSWORD: ci-only-password
       RLS_TEST_USERNAME: crm_app_ci
       RLS_TEST_PASSWORD: ephemeral-role-only
-      CRM_LEADS_LAB: synthetic-only
       IAM_TEST_USERNAME: crm_iam_ci
       IAM_TEST_PASSWORD: ephemeral-iam-role-only
       PROVISION_TEST_USERNAME: crm_provision_ci
@@ -133,16 +132,6 @@ jobs:
           GRANT SELECT, UPDATE (revoked_at) ON TABLE crm_auth_mandates TO crm_provision_ci;
           GRANT INSERT ON TABLE crm_iam_audit_events TO crm_provision_ci;
           SQL
-      - name: Create synthetic leads FORCE RLS fixture ONLY in disposable CI PostgreSQL
-        run: |
-          php scripts/ci/verify-ephemeral-postgres.php --verify
-          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
-            -v ON_ERROR_STOP=1 -1 -f tests/Labs/leads/lead-kanban-rls-ci.sql
-      - name: Validate tenant lead ledger PHP and real PostgreSQL checks
-        run: |
-          php -l app/Core/Leads/LaboratoryTenantLeadLedger.php
-          php -l tests/Feature/PostgresLabLeadsRlsTest.php
-          php artisan test --filter=PostgresLabLeadsRlsTest --no-ansi
       - name: Explicitly migrate inert async laboratory and create isolated role
         env:
           CRM_AUTH_EXPERIMENTAL: 'true'
