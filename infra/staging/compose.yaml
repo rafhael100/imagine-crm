@@ -48,7 +48,7 @@ services:
     volumes:
       - crm_staging_app_storage:/var/www/html/storage
       - crm_staging_app_cache:/var/www/html/bootstrap/cache
-    networks: [internal, ingress]
+    networks: [internal]
     read_only: true
     tmpfs:
       - /tmp
@@ -64,7 +64,7 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - app
-    networks: [internal]
+    networks: [internal, ingress]
     read_only: true
     tmpfs:
       - /var/cache/nginx
