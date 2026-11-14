@@ -87,7 +87,8 @@ if [[ "$(docker compose port web 8080)" != '127.0.0.1:18080' ]]; then
   echo 'F3-268 NO-GO: published port is not loopback-only.' >&2
   exit 1
 fi
-if docker compose port app 9000 > /dev/null 2>&1; then
+php_public_port="$(docker compose port app 9000 2>/dev/null || true)"
+if [[ -n "$php_public_port" ]]; then
   echo 'F3-268 NO-GO: PHP-FPM port published on the host.' >&2
   exit 1
 fi
