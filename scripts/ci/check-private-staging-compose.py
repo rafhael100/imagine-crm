@@ -41,7 +41,9 @@ def main() -> None:
         ROOT / "app/Core/Billing/AsaasSandboxSubscriptionPaymentsReview.php",
         ROOT / "app/Core/Billing/AsaasWebhookInboxCandidate.php",
         ROOT / "app/Core/Commercial/StagingMarketingPreview.php",
+        ROOT / "app/Core/Commercial/StagingDemoPreview.php",
         ROOT / "resources/views/crm-staging-marketing.blade.php",
+        ROOT / "resources/views/crm-staging-demo.blade.php",
         ROOT / "tests/Feature/PostgresAsaasBillingIntegratedLedgerTest.php",
         ROOT / "tests/Feature/PostgresLabLeadsRlsTest.php",
     )
@@ -51,6 +53,7 @@ def main() -> None:
     if ("""app()->environment('staging')""" not in route_source
         or """getenv('CRM_STAGING_MARKETING_PREVIEW') === 'true'""" not in route_source
         or "Route::get('/'" not in route_source
+        or "Route::get('/demo'" not in route_source
         or any(token in route_source for token in (
             "Route::post(", "Route::put(", "Route::patch(", "Route::delete(",
         ))):

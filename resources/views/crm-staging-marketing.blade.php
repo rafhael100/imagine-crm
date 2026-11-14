@@ -48,6 +48,11 @@
             margin:0 0 24px; max-width:740px; font-weight:800; }
         h1 span { color:#D97912; }
         .summary { color:var(--soft); font-size:18px; line-height:1.7; max-width:540px; margin:0 0 32px; }
+        .action-row { display:flex; align-items:center; flex-wrap:wrap; gap:16px; }
+        .link-secondary { display:inline-flex; align-items:center; justify-content:center;
+            padding:14px 19px; border:1px solid #D8DCD5; border-radius:12px;
+            background:#fff; color:#35493A; text-decoration:none; font-size:14px; font-weight:750; }
+        .link-secondary:hover { background:#F0F4ED; }
         .link-hero { display:inline-flex; align-items:center; justify-content:center; text-decoration:none;
             border-radius:12px; background:var(--orange); color:#1B241D; padding:15px 22px;
             font-size:14px; font-weight:800; box-shadow:0 12px 30px #F9941D34; }
@@ -149,7 +154,10 @@
                 <p class="eyebrow">{{ $copy['eyebrow'] }}</p>
                 <h1>{{ $copy['headline'] }}</h1>
                 <p class="summary">{{ $copy['summary'] }}</p>
-                <a class="link-hero" href="#plans">{{ $copy['plans_link'] }}</a>
+                <div class="action-row">
+                    <a class="link-hero" href="#plans">{{ $copy['plans_link'] }}</a>
+                    <a class="link-secondary" href="/demo?lang={{ $lang }}">{{ $copy['demo_link'] }}</a>
+                </div>
             </div>
             <div class="mock" aria-label="Illustrative CRM dashboard layout; no customer data" role="img">
                 <div class="mock-head"><span>Imagine CRM</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
