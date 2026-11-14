@@ -23,6 +23,31 @@ CREATE TABLE crm_lab_asaas_order_reservations (
   -- The same order cannot be rebound to another tenant or provider payment.
   CONSTRAINT lab_order_identity UNIQUE (order_ref, organization_ref)
 );
+-- Enforce monotonic state even if a CI reviewer issues SQL directly.
+-- Column grants alone are not an immutable payment ledger.
+CREATE FUNCTION crm_lab_asaas_order_monotonic_guard()
+RETURNS trigger LANGUAGE plpgsql AS $
+BEGIN
+  IF ROW(NEW.order_ref, NEW.organization_ref, NEW.provider_customer_id,
+         NEW.plan_code, NEW.amount_cents, NEW.due_on)
+     IS DISTINCT FROM
+     ROW(OLD.order_ref, OLD.organization_ref, OLD.provider_customer_id,
+         OLD.plan_code, OLD.amount_cents, OLD.due_on)
+     OR OLD.state <> 'reserved'
+     OR NEW.state NOT IN ('linked', 'review_required')
+     OR (NEW.state = 'review_required' AND NEW.provider_payment_id IS NOT NULL)
+     OR (NEW.state = 'linked' AND NEW.provider_payment_id IS NULL)
+  THEN
+    RAISE EXCEPTION 'CI order reservation is immutable or transition denied'
+      USING ERRCODE = '23514';
+  END IF;
+  RETURN NEW;
+END
+$;
+CREATE TRIGGER crm_lab_asaas_order_update_guard
+BEFORE UPDATE ON crm_lab_asaas_order_reservations
+FOR EACH ROW EXECUTE FUNCTION crm_lab_asaas_order_monotonic_guard();
+
 CREATE INDEX lab_order_organization_lookup ON crm_lab_asaas_order_reservations (organization_ref);
 CREATE ROLE crm_billing_order_ci LOGIN PASSWORD 'ephemeral-order-insert-only'
   NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
