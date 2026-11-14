@@ -16,6 +16,7 @@ final class StagingMarketingPreview
 {
     private const COPY = [
         'pt' => [
+            'skip' => 'Ir para o conteúdo',
             'title' => 'Imagine CRM | Transforme oportunidades em resultados',
             'eyebrow' => 'Imagine CRM • Prévia privada',
             'headline' => 'Organize seus contatos. Avance suas vendas.',
@@ -36,6 +37,7 @@ final class StagingMarketingPreview
             'status' => 'Apresentação • Sem contratação',
         ],
         'en' => [
+            'skip' => 'Skip to content',
             'title' => 'Imagine CRM | Turn opportunities into results',
             'eyebrow' => 'Imagine CRM • Private preview',
             'headline' => 'Organize contacts. Move deals forward.',
@@ -56,6 +58,7 @@ final class StagingMarketingPreview
             'status' => 'Preview • No checkout',
         ],
         'es' => [
+            'skip' => 'Saltar al contenido',
             'title' => 'Imagine CRM | Convierte oportunidades en resultados',
             'eyebrow' => 'Imagine CRM • Vista previa privada',
             'headline' => 'Organiza contactos. Impulsa tus ventas.',
