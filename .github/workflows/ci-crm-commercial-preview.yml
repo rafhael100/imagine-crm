@@ -1,0 +1,30 @@
+name: CRM WEB-P0 - previa comercial isolada
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'prototypes/site-comercial-crm/**'
+      - '.github/workflows/ci-crm-commercial-preview.yml'
+  push:
+    branches:
+      - review/crm-web-p0-commercial-preview-2026-11-13
+    paths:
+      - 'prototypes/site-comercial-crm/**'
+      - '.github/workflows/ci-crm-commercial-preview.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  preview-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout pinned
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validar integridade visual e limites sem rede
+        run: python3 prototypes/site-comercial-crm/tests/test_preview.py
