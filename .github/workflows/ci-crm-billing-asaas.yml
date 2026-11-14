@@ -11,6 +11,8 @@ on:
       - 'tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php'
       - 'tests/Feature/PostgresAsaasCustomerLinkTest.php'
       - 'tests/Feature/PostgresAsaasCustomerReconcileTest.php'
+      - 'tests/Feature/PostgresAsaasSubscriptionDraftTest.php'
+      - 'tests/Unit/AsaasSubscriptionDraftSpecTest.php'
       - 'tests/Labs/billing/**'
       - '.github/workflows/ci-crm-billing-asaas.yml'
 
@@ -61,6 +63,9 @@ jobs:
       BILLING_LINK_PASSWORD: ephemeral-billing-link-only
       BILLING_LINK_REVIEW_USERNAME: crm_billing_link_review_ci
       BILLING_LINK_REVIEW_PASSWORD: ephemeral-link-review-only
+      CRM_ASAAS_SUBSCRIPTION_LAB: synthetic-only
+      BILLING_SUBSCRIPTION_USERNAME: crm_billing_subscription_ci
+      BILLING_SUBSCRIPTION_PASSWORD: ephemeral-subscription-draft-only
       CACHE_STORE: array
       SESSION_DRIVER: array
       QUEUE_CONNECTION: sync
@@ -95,12 +100,17 @@ jobs:
           php -l app/Core/Billing/LaboratoryAsaasCustomerLink.php
           php -l app/Core/Billing/LaboratoryAsaasCustomerHandoff.php
           php -l app/Core/Billing/LaboratoryAsaasCustomerReconciler.php
+          php -l app/Core/Billing/AsaasSubscriptionDraftSpec.php
+          php -l app/Core/Billing/LaboratoryAsaasSubscriptionDraft.php
           php -l tests/Feature/PostgresAsaasCustomerLinkTest.php
           php -l tests/Feature/PostgresAsaasCustomerReconcileTest.php
+          php -l tests/Feature/PostgresAsaasSubscriptionDraftTest.php
+          php -l tests/Unit/AsaasSubscriptionDraftSpecTest.php
           php -l tests/Unit/AsaasWebhookEnvelopeTest.php
           php -l tests/Feature/PostgresAsaasWebhookInboxTest.php
           php -l tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php
           php artisan test --filter=AsaasWebhookEnvelopeTest --no-ansi
+          php artisan test --filter=AsaasSubscriptionDraftSpecTest --no-ansi
       - name: Comprovar PostgreSQL 16 CI efemero antes de qualquer DDL
         run: php scripts/ci/verify-ephemeral-postgres.php --verify
       - name: Criar APENAS tabela e papel de laboratorio de cobranca
@@ -119,6 +129,12 @@ jobs:
         run: php artisan test --filter=PostgresAsaasCustomerLinkTest --no-ansi
       - name: Conciliar por GET-only sem criar outro cliente Sandbox
         run: php artisan test --filter=PostgresAsaasCustomerReconcileTest --no-ansi
+      - name: Criar rascunhos de assinatura com papel restrito apenas em PG CI
+        run: |
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-subscription-draft-ci.sql
+      - name: Verificar draft mensal bloqueado, trial, unicidade e permissoes
+        run: php artisan test --filter=PostgresAsaasSubscriptionDraftTest --no-ansi
       - name: Resumo de limitacoes e escopo
         if: always()
         run: |
@@ -132,5 +148,7 @@ jobs:
             echo '- Vínculo org/externalReference/provider ID sintético: PK e UNIQUE em PostgreSQL'
             echo '- Falha do Asaas exige revisão humana; sem segundo POST automático'
             echo '- Conciliador separado usa GET-only; resposta ambigua/ausente nao habilita POST'
+            echo '- Rascunho mensal apenas com pagador vinculado, preco provisorio e trial 14 dias'
+            echo '- Nenhum rascunho aprova contrato, assinatura, transacao ou cobranca'
             echo '- Banco e papeis descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
           } >> "$GITHUB_STEP_SUMMARY"
