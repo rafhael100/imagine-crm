@@ -62,6 +62,8 @@ jobs:
           (cd build/crm-preview && sha256sum index.html assets/logo-imagine.png assets/site.css assets/site.js > manifest.sha256)
           (cd build/crm-preview && sha256sum --check manifest.sha256)
           printf 'Imagine CRM: previa demonstrativa SEM cadastro, login, CNPJ ou cobranca real.\nAbra index.html, preservando assets/.\n' > build/crm-preview/LEIA-ME.txt
+      - name: Validar pacote fechado e manifesto SHA256
+        run: python3 prototypes/site-comercial-crm/staging/verify_bundle.py build/crm-preview
       - name: Anexar prévia sem dados reais
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
