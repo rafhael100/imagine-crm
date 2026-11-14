@@ -7,17 +7,19 @@
 <meta name="robots" content="noindex, nofollow, noarchive">
 <title>{{ $copy['title'] }}</title>
 <style>
-  :root { --orange:#F9941D; --ink:#19201A; --grey:#617066; --border:#E4E9E3;
-    --soft:#F4F7F3; --white:#fff; --green:#30563F; }
+  @include('partials.imagine-staging-tokens')
+  :root { --orange:var(--imagine-orange); --ink:var(--imagine-ink);
+    --grey:#5a635d; --border:var(--imagine-border); --soft:var(--imagine-surface);
+    --white:var(--imagine-white); --green:#30563F; }
   * { box-sizing:border-box; }
   html { scroll-behavior:smooth; }
-  body { margin:0; font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,
-    "Segoe UI",sans-serif; background:#F7F9F6; color:var(--ink); }
+  body { margin:0; font-family:var(--imagine-font-ui); background:var(--imagine-surface); color:var(--ink); }
   a { color:inherit; }
-  a:focus-visible { outline:3px solid var(--orange); outline-offset:3px; border-radius:6px; }
+  a:focus-visible { outline:3px solid var(--imagine-focus); outline-offset:3px; border-radius:6px; }
   .banner { text-align:center; background:#283F32; color:#E9F3EC; padding:12px 20px;
     font-weight:750; letter-spacing:.025em; font-size:11px; }
-  .shell { min-height:calc(100vh - 42px); display:grid; grid-template-columns:235px minmax(0,1fr); }
+  .shell { min-height:calc(100vh - 42px); display:grid;
+    grid-template-columns:var(--imagine-sidebar-width) minmax(0,1fr); }
   .sidebar { background:#fff; border-right:1px solid var(--border); padding:29px 18px;
     display:flex; flex-direction:column; gap:30px; }
   .brand { display:flex; align-items:center; gap:10px; text-decoration:none;
@@ -26,35 +28,41 @@
     display:grid; place-items:center; font-weight:900; font-size:23px; }
   .brand small { font-size:12px; color:#D27811; letter-spacing:.02em; }
   .side-nav { display:grid; gap:6px; }
-  .side-nav a { text-decoration:none; padding:13px 15px; border-radius:11px;
+  .side-nav a { text-decoration:none; padding:13px 15px; border-radius:var(--imagine-radius-navigation);
+    min-height:var(--imagine-touch-target); display:flex; align-items:center;
     color:#4E6254; font-size:14px; font-weight:650; }
   .side-nav a:hover, .side-nav a:focus-visible { background:#FFF2DF; color:#704309; }
-  .side-nav .active { background:#FFF2DF; color:#714B19; }
+  .side-nav .active { background:var(--imagine-orange-soft); color:var(--imagine-ink); }
   .side-bottom { margin-top:auto; padding:15px 12px; background:#FAFBF9;
     border:1px solid var(--border); border-radius:14px; font-size:12px;
     line-height:1.5; color:#677468; }
   .main { padding:34px clamp(22px,4vw,62px) 52px; min-width:0; }
   .top { display:flex; align-items:center; justify-content:space-between;
     gap:18px; margin-bottom:38px; }
-  .back { text-decoration:none; color:#57685C; font-weight:730; font-size:13px; }
+  .back { text-decoration:none; color:#525852; font-weight:730; font-size:13px;
+    display:inline-flex; align-items:center; min-height:44px; }
   .back:hover { color:#BA751C; }
   .languages { display:flex; gap:6px; }
-  .languages a { font-size:12px; text-decoration:none; display:flex; align-items:center; gap:6px;
+  .languages a { font-size:12px; text-decoration:none; display:flex; align-items:center;
+    justify-content:center; gap:6px; min-height:var(--imagine-touch-target); min-width:44px;
     border:1px solid transparent; padding:8px 10px; border-radius:10px; color:var(--grey); }
-  .languages a[aria-current=page] { background:#FFF3E1; border-color:#F4D5AC; color:#704109; }
+  .languages a[aria-current=page] { background:var(--imagine-orange-soft);
+    border-color:#F4D5AC; color:var(--imagine-ink); }
   .flag { font-size:19px; }
   h1 { font-size:clamp(29px,3.6vw,45px); line-height:1.17; letter-spacing:-.065em; margin:0 0 14px; }
   .demo-source { display:inline-flex; padding:9px 12px; border:1px solid #E7D2B4;
     border-radius:10px; color:#7A531C; background:#FFF9ED; font-size:12px; margin:17px 0 0; }
-  .live-link { display:inline-flex; margin:18px 0 0; padding:11px 14px;
+  .live-link { display:inline-flex; align-items:center; min-height:44px;
+    margin:18px 0 0; padding:11px 14px;
     border-radius:10px; border:1px solid #F0CF9F; background:#FFF5E5;
     color:#75440F; text-decoration:none; font-weight:750; font-size:12px; }
   .live-link:hover { background:#FBE8C9; }
   .intro { color:var(--grey); line-height:1.65; font-size:15px; margin:0; max-width:760px; }
   .stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
     gap:15px; margin:31px 0 42px; }
-  .stat { background:white; border:1px solid var(--border); border-radius:17px;
-    padding:23px 22px; box-shadow:0 7px 20px #1F312408; }
+  .stat { background:white; border:1px solid var(--border);
+    border-radius:var(--imagine-radius-panel);
+    padding:23px 22px; box-shadow:var(--imagine-shadow-panel); }
   .stat-label { color:#637467; font-weight:640; font-size:12px; margin:0 0 12px; }
   .stat-number { font-size:37px; font-weight:820; line-height:1.05;
     letter-spacing:-.045em; margin:0; }
@@ -63,16 +71,17 @@
     gap:20px; margin:0 0 20px; }
   h2 { margin:0; font-size:21px; letter-spacing:-.035em; }
   .section-note { color:var(--grey); font-size:12px; }
-  .board-scroll { overflow-x:auto; padding-bottom:12px; }
+  .board-scroll { overflow-x:auto; padding-bottom:12px; scrollbar-width:thin; }
   .board { display:grid; grid-template-columns:repeat(4,minmax(190px,1fr)); gap:13px;
     min-width:805px; }
-  .lane { background:#ECF1EA; padding:12px; border-radius:16px; min-height:245px; }
+  .lane { background:#F2F2F3; padding:12px; border-radius:var(--imagine-radius-panel); min-height:245px; }
   .lane-head { display:flex; justify-content:space-between; align-items:center;
     font-size:13px; font-weight:760; padding:4px 4px 14px; }
-  .lane-count { color:#5D705D; border-radius:20px; background:#DFE8DD; font-size:11px;
+  .lane-count { color:#4B4B4B; border-radius:20px; background:#E8E8E8; font-size:11px;
     padding:4px 8px; }
-  .opportunity { background:#fff; border-radius:12px; border:1px solid #E1E9DF;
-    margin:0 0 10px; padding:16px 13px; box-shadow:0 4px 10px #1F2C1F08; }
+  .opportunity { background:#fff; border-radius:var(--imagine-radius-navigation);
+    border:1px solid var(--imagine-border);
+    margin:0 0 10px; padding:16px 13px; box-shadow:var(--imagine-shadow-panel); }
   .opportunity strong { display:block; font-size:12px; letter-spacing:.02em; margin-bottom:8px; }
   .opportunity small { color:#849085; font-size:10px; display:block; }
   .label { display:inline-block; margin-top:12px; border-radius:7px; padding:5px 8px;
@@ -92,11 +101,14 @@
   .hint { padding:17px 19px; border:1px solid #F2DFBE; border-radius:13px;
     color:#805D25; background:#FFF9EE; font-size:12px; line-height:1.65; margin:21px 0 0; }
   footer { color:#809082; font-size:11px; margin-top:50px; }
+  .skip { position:absolute; left:-100vw; top:0; z-index:10;
+    padding:12px 16px; background:#fff; min-height:44px; }
+  .skip:focus { left:8px; }
   @media(max-width:930px) {
     .shell { grid-template-columns:1fr; }
     .sidebar { flex-direction:row; align-items:center; padding:15px 20px; gap:12px; }
     .side-nav { display:flex; margin-left:auto; gap:2px; }
-    .side-nav a { padding:10px; font-size:12px; }
+    .side-nav a { padding:10px; font-size:12px; min-height:44px; }
     .side-bottom { display:none; }
     .main { padding:28px 22px 46px; }
   }
@@ -104,7 +116,7 @@
     .sidebar { flex-wrap:wrap; }
     .side-nav { width:100%; justify-content:space-between; }
     .top { margin-bottom:30px; }
-    .languages a { padding:5px 5px; font-size:0; }
+    .languages a { padding:10px 5px; font-size:0; min-height:44px; min-width:44px; }
     .flag { font-size:21px; }
     .stats { gap:9px; }
     .stat { padding:18px 11px; }
@@ -117,18 +129,19 @@
 </style>
 </head>
 <body>
+<a class="skip" href="#main-content">{{ $copy['skip'] }}</a>
 <div class="banner" role="status">{{ $copy['eyebrow'] }}</div>
 <div class="shell">
     <aside class="sidebar" aria-label="Demo navigation">
         <a class="brand" href="/?lang={{ $lang }}"><span class="mark" aria-hidden="true">i</span>
             <span>imagine <small>CRM</small></span></a>
         <nav class="side-nav">
-            <a class="active" href="#pipeline">{{ $copy['pipeline'] }}</a>
+            <a class="active" aria-current="location" href="#pipeline">{{ $copy['pipeline'] }}</a>
             <a href="#tasks">{{ $copy['tasks'] }}</a>
         </nav>
         <p class="side-bottom">{{ $copy['board_note'] }}</p>
     </aside>
-    <main class="main">
+    <main class="main" id="main-content">
         <div class="top">
             <a class="back" href="/?lang={{ $lang }}">← {{ $copy['back'] }}</a>
             <nav class="languages" aria-label="Choose language">
