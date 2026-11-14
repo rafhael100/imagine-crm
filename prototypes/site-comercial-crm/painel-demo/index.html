@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'">
+<meta name="theme-color" content="#F9941D">
+<title>Imagine CRM — Painéis demonstrativos Cliente e Administrador</title>
+<link rel="stylesheet" href="./dashboard.css">
+<script src="./dashboard.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Pular para o conteúdo principal</a>
+<div class="labnotice" role="note">DEMONSTRAÇÃO ISOLADA • Dados fictícios • Nenhum login, gravação, compra ou acesso real.</div>
+<div class="entry" id="entry">
+<header class="entry-head"><a href="../index.html"><img src="../assets/logo-imagine.png" width="200" height="55" alt="Imagine Comunicação Digital"></a><span class="product-tag">CRM</span><a class="back" href="../index.html#planos">Voltar ao site comercial</a></header>
+<main id="main" class="entry-content">
+ <div class="intro"><span class="eyebrow">Experiência Imagine CRM</span><h1>Conheça os dois lados do CRM.</h1><p>Escolha uma demonstração para navegar pelos menus, painéis e etapas principais. Estas são telas de avaliação visual, com empresas e oportunidades inventadas. Nenhuma conta será criada.</p></div>
+ <div class="choices" role="group" aria-label="Escolha a demonstração">
+  <article class="role-card"><span class="role-icon">01</span><h2>Área do cliente</h2><p>Veja o painel comercial, leads, funil Kanban, automações, relatórios e configurações da empresa.</p><button type="button" class="action primary" data-enter="cliente">Visualizar painel do cliente <span aria-hidden="true">→</span></button></article>
+  <article class="role-card"><span class="role-icon">02</span><h2>Administração Imagine</h2><p>Explore a visão de empresas, assinaturas, solicitações e auditoria administrativa — sem acessar dados reais.</p><button type="button" class="action dark" data-enter="administrador">Visualizar área administrativa <span aria-hidden="true">→</span></button></article>
+ </div>
+ <p class="disclaimer">Importante: selecionar um perfil aqui não autentica usuários nem concede qualquer permissão. Todas as informações são fabricadas exclusivamente para este protótipo.</p>
+ <a class="journey-back" href="../fluxo-demo/index.html">Rever demonstração do cadastro de 14 dias</a>
+</main>
+</div>
+<div class="workspace" id="workspace" hidden>
+<aside class="sidebar" id="sidebar">
+ <div class="side-brand"><img src="../assets/logo-imagine.png" width="200" height="55" alt="Imagine Comunicação Digital"><span>CRM</span></div>
+ <div class="tenant"><span class="tenant-icon" aria-hidden="true">IE</span><div><strong id="tenant-title">Empresa Exemplo</strong><small id="tenant-subtitle">Área demonstrativa</small></div></div>
+ <div class="side-group"><span class="side-label">MENU PRINCIPAL</span><nav id="sidebar-nav" aria-label="Navegação do painel demonstrativo"></nav></div>
+ <div class="sidebar-bottom"><div class="small-alert"><strong>Ambiente de prévia</strong><span>Sem dados, permissões ou ações reais.</span></div><button class="exit" type="button" data-exit>Trocar demonstração</button></div>
+</aside>
+<div class="main-panel">
+ <header class="topbar">
+  <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="sidebar"><span aria-hidden="true">☰</span></button>
+  <div class="breadcrumbs"><span>Imagine CRM</span><span aria-hidden="true">/</span><strong id="crumb">Visão geral</strong></div>
+  <div class="top-actions"><span class="sandbox-pill">Demonstração</span><button class="avatar" type="button" data-action="Meu perfil" aria-label="Perfil demonstrativo">EX</button></div>
+ </header>
+ <main class="content" id="content" tabindex="-1">
+  <div class="section-head"><div><span class="eyebrow" id="section-kicker">PAINEL DO CLIENTE</span><h1 id="section-title">Visão geral</h1><p id="section-desc">Acompanhe sua operação comercial em um só lugar.</p></div><button class="action primary" id="section-cta" type="button" data-action="Nova atividade">Nova atividade +</button></div>
+  <div id="view"></div>
+  <p class="demo-footnote">Todas as organizações, pessoas, valores e indicadores desta tela são fictícios. Ações operacionais e integrações permanecem indisponíveis.</p>
+ </main>
+</div>
+</div>
+<div class="modal-backdrop" id="modal" hidden>
+ <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-text">
+  <button type="button" class="modal-x" id="modal-x" aria-label="Fechar aviso">×</button>
+  <span class="eyebrow">MODO DE HOMOLOGAÇÃO</span><h2 id="modal-title">Ação indisponível</h2>
+  <p id="modal-text" role="status">Esta operação não foi ativada.</p>
+  <button type="button" class="action primary" id="modal-done">Entendi</button>
+ </div>
+</div>
+</body>
+</html>

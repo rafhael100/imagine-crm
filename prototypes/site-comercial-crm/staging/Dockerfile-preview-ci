@@ -1,0 +1,15 @@
+# CI-only proof of private preview: never deploy to VPS or a public registry.
+# The context is prototypes/site-comercial-crm with a restrictive .dockerignore.
+FROM nginx:1.29-alpine
+COPY staging/nginx-preview-ci.conf /etc/nginx/nginx.conf
+COPY index.html /usr/share/nginx/html/index.html
+COPY assets/logo-imagine.png /usr/share/nginx/html/assets/logo-imagine.png
+COPY assets/site.css /usr/share/nginx/html/assets/site.css
+COPY assets/site.js /usr/share/nginx/html/assets/site.js
+COPY fluxo-demo/index.html /usr/share/nginx/html/fluxo-demo/index.html
+COPY painel-demo/index.html /usr/share/nginx/html/painel-demo/index.html
+COPY painel-demo/dashboard.css /usr/share/nginx/html/painel-demo/dashboard.css
+COPY painel-demo/dashboard.js /usr/share/nginx/html/painel-demo/dashboard.js
+USER nginx
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]
