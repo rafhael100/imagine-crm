@@ -40,6 +40,11 @@ final class StagingRenderedComposePolicyTest extends TestCase
             'services' => [
                 'app' => array_merge($base, [
                     'user' => '33:33',
+                    'healthcheck' => [
+                        'test' => ['CMD', 'php', '-r', "\$s=@fsockopen('127.0.0.1',9000,\$e,\$m,2); exit(\$s?0:1);"],
+                        'interval' => '5s', 'timeout' => '3s',
+                        'retries' => 2, 'start_period' => '10s',
+                    ],
                     'build' => [
                         'context' => '/review/checkout',
                         'dockerfile' => 'infra/staging/Dockerfile',
@@ -73,6 +78,11 @@ final class StagingRenderedComposePolicyTest extends TestCase
                 'web' => array_merge($base, [
                     'networks' => ['crm_private' => null, 'crm_loopback' => null],
                     'user' => '101:101',
+                    'healthcheck' => [
+                        'test' => ['CMD-SHELL', 'wget -q -T 3 -O /dev/null http://127.0.0.1:8080/up'],
+                        'interval' => '5s', 'timeout' => '4s',
+                        'retries' => 2, 'start_period' => '10s',
+                    ],
                     'entrypoint' => ['nginx', '-g', 'daemon off;'],
                     'build' => [
                         'context' => '/review/checkout',
@@ -90,7 +100,7 @@ final class StagingRenderedComposePolicyTest extends TestCase
                         'mode' => 'ingress',
                     ]],
                     'depends_on' => [
-                        'app' => ['condition' => 'service_started', 'required' => true],
+                        'app' => ['condition' => 'service_healthy', 'required' => true],
                     ],
                 ]),
             ],
@@ -174,6 +184,44 @@ final class StagingRenderedComposePolicyTest extends TestCase
         $model = self::validModel();
         $model['networks']['crm_private']['internal'] = false;
         self::assertContains('network_not_private', self::policy($model));
+    }
+
+    public function test_unsafe_health_checks_and_unguarded_startup_are_denied(): void
+    {
+        foreach (['app', 'web'] as $service) {
+            $model = self::validModel();
+            $model['services'][$service]['healthcheck']['test'] =
+                ['CMD-SHELL', 'curl https://unapproved.invalid/'];
+            self::assertContains(
+                $service.'_unreviewed_healthcheck',
+                self::policy($model),
+            );
+
+            $model = self::validModel();
+            $model['services'][$service]['healthcheck']['interval'] = '1ms';
+            self::assertContains(
+                $service.'_unreviewed_healthcheck',
+                self::policy($model),
+            );
+
+            $model = self::validModel();
+            $model['services'][$service]['healthcheck']['disable'] = true;
+            self::assertContains(
+                $service.'_unreviewed_healthcheck',
+                self::policy($model),
+            );
+
+            $model = self::validModel();
+            unset($model['services'][$service]['healthcheck']);
+            self::assertContains(
+                $service.'_unreviewed_healthcheck',
+                self::policy($model),
+            );
+        }
+
+        $model = self::validModel();
+        $model['services']['web']['depends_on']['app']['condition'] = 'service_started';
+        self::assertContains('web_service_dependency', self::policy($model));
     }
 
     public function test_host_checkout_must_be_exactly_build_context(): void
