@@ -110,12 +110,15 @@ CREATE TABLE public.crm_lab_lead_capture_keys (
   site_reference uuid NOT NULL,
   form_reference uuid NOT NULL,
   destination_reference uuid NOT NULL,
+  signed_nonce uuid NULL,
   recorded_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT crm_lab_capture_unique
     PRIMARY KEY (organization_id, source_code, event_sha256),
   -- A submission may not silently switch its source or destination.
   CONSTRAINT crm_lab_capture_submission_unique
     UNIQUE (organization_id, submission_reference),
+  CONSTRAINT crm_lab_capture_signed_nonce_unique
+    UNIQUE (organization_id, signed_nonce),
   CONSTRAINT crm_lab_capture_lead_org_fk
     FOREIGN KEY (lead_id, organization_id)
     REFERENCES public.crm_lab_leads(id, organization_id)
@@ -130,10 +133,16 @@ CREATE POLICY crm_lab_capture_tenant_scope
  WITH CHECK (organization_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid);
 GRANT SELECT (organization_id, source_code, event_sha256, lead_id,
   binding_reference, submission_reference, site_reference, form_reference,
-  destination_reference)
+  destination_reference, signed_nonce)
  ON public.crm_lab_lead_capture_keys TO crm_app_ci;
 GRANT INSERT (organization_id, source_code, event_sha256, lead_id,
   binding_reference, submission_reference, site_reference, form_reference,
-  destination_reference)
+  destination_reference, signed_nonce)
  ON public.crm_lab_lead_capture_keys TO crm_app_ci;
 -- No UPDATE/DELETE: a claimed event cannot be silently reassigned.
+
+-- PG05: (organization_id,signed_nonce) is unique for non-NULL signed
+-- submissions; legacy unsigned synthetic calls carry NULL and are NOT
+-- authenticated. The signed capture wrapper must verify the HMAC BEFORE
+-- invoking the transactional ledger; the row is reserved atomically with
+-- its lead and audit event.
