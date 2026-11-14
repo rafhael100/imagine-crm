@@ -137,7 +137,11 @@ final class StagingRenderedComposePolicy
             $tmpfs = $svc['tmpfs'] ?? [];
             $expectedTmpfs = $name === 'app'
                 ? ['/tmp', '/run', '/usr/local/var/run',
-                   '/var/www/html/storage', '/var/www/html/bootstrap/cache']
+                   '/var/www/html/storage/framework/cache',
+                   '/var/www/html/storage/framework/sessions',
+                   '/var/www/html/storage/framework/views',
+                   '/var/www/html/storage/logs',
+                   '/var/www/html/bootstrap/cache']
                 : ['/tmp', '/var/cache/nginx'];
             $actualTmpfs = [];
             if (is_array($tmpfs)) {
