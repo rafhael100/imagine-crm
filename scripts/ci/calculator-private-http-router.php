@@ -6,7 +6,8 @@ declare(strict_types=1);
  *
  * Not registered in Laravel bootstrap or any public route. This file is
  * reachable ONLY when an explicitly started localhost php -S process runs
- * in GitHub Actions with flags below. NO DB, PII, SMTP, CRM or marketing.
+ * in GitHub Actions with flags below. Optional ephemeral PG16 metadata lab;
+ * never a production database, PII, SMTP, CRM lead or marketing.
  */
 require_once __DIR__ . '/../../app/Core/Leads/SyntheticCalculatorInterestInteropInspector.php';
 
