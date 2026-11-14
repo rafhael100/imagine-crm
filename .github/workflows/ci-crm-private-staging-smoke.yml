@@ -19,6 +19,7 @@ on:
       - 'tests/Unit/StagingDemoPreviewTest.php'
       - 'resources/views/crm-staging-demo.blade.php'
       - 'resources/views/partials/imagine-staging-tokens.blade.php'
+      - 'public/assets/logo-imagine.png'
       - 'tests/Unit/ImagineStagingDesignSystemTest.php'
       - 'resources/views/crm-staging-marketing.blade.php'
       - 'routes/web.php'
@@ -77,6 +78,23 @@ jobs:
             test "$status" = 404
           done
           echo "Private CI health 200; business endpoints 404; localhost port only."
+      - name: Verify exact original Portal logo PNG is served from local public assets
+        run: |
+          set -euo pipefail
+          asset="public/assets/logo-imagine.png"
+          expected="678adeceb3a8ecdaeb6b576b9ee18d1bf0396f77"
+          [[ "$(git hash-object "$asset")" == "$expected" ]]
+          headers="$(curl -fsS -D - -o "$RUNNER_TEMP/crm-logo-png-ci.png" \
+            http://127.0.0.1:18080/assets/logo-imagine.png)"
+          [[ "${headers,,}" == *'content-type: image/png'* ]]
+          [[ "$(git hash-object "$RUNNER_TEMP/crm-logo-png-ci.png")" == "$expected" ]]
+          for path in / /demo; do
+            page="$(curl -fsS --max-time 5 "http://127.0.0.1:18080$path")"
+            [[ "$page" == *'src="/assets/logo-imagine.png"'* ]]
+            [[ "$page" == *'alt="Imagine"'* ]]
+          done
+          rm -f "$RUNNER_TEMP/crm-logo-png-ci.png"
+          echo "Original Portal PNG SHA verified in Git and Nginx, no external image host."
       - name: Deny unexpected Host and spoofed proxy headers before Laravel
         run: |
           set -euo pipefail
@@ -239,6 +257,7 @@ jobs:
             echo '- Runs only inside GitHub hosted runner with generated fake credentials'
             echo '- Localhost health and no public business routes tested'
             echo '- Nginx rejects non-loopback Host 421 and spoofed proxy headers; noindex always'
+            echo '- Exact original Imagine Portal PNG Git SHA verified and served locally in two Laravel views'
             echo '- Read-only PT/EN/ES marketing page tested on localhost; no signup/trial/checkout'
             echo '- Navigable fictional Kanban/tasks dashboard verified PT/EN/ES; POST /demo denied'
             echo '- PostgreSQL-backed Kanban verified from real SQL with fixed synthetic tenant, SELECT-only RLS and changes visible after CI admin update'
