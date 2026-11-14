@@ -65,6 +65,15 @@ final class CrmIamHttpBoundaryTest extends TestCase
         });
 
         Route::middleware('web')->group(function (): void {
+            Route::get('/_ci/iam/state-check', function (Request $request) {
+                return response()->json([
+                    'same_server_session' => $request->session()->getId()
+                        === $this->browserSession->getId(),
+                    'pending' => $request->session()->has('crm.auth.pending'),
+                    'client_cookie_present' => $request->cookies->has(config('session.cookie')),
+                ]);
+            });
+
             Route::get('/_ci/iam/current', function () {
                 $source = $this->app->make(GuardPrincipalSource::class);
 
@@ -142,11 +151,16 @@ final class CrmIamHttpBoundaryTest extends TestCase
 
         $this->getJson('/_ci/iam/current')->assertUnauthorized();
         $this->assertSame(0, $this->businessEffects);
+        $this->getJson('/_ci/iam/state-check')->assertOk()->assertJson([
+            'pending' => true,
+            'same_server_session' => true,
+            'client_cookie_present' => true,
+        ]);
 
         // Begin() rotates session+CSRF. Use ONLY its freshly issued token.
         $fresh = $this->browserSession->token();
         $this->assertNotSame('crm-test-csrf-a', $fresh);
-        $mfaResponse = $this->post('/_ci/iam/mfa', [
+        $mfaResponse = $this->postJson('/_ci/iam/mfa', [
             'code' => (new Totp())->code(self::SECRET, now()->getTimestamp()),
             '_token' => $fresh,
         ])->assertOk()->assertJson(['state' => 'authenticated']);
