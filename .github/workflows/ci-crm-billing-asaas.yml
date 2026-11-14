@@ -13,6 +13,7 @@ on:
       - 'tests/Feature/PostgresAsaasCustomerReconcileTest.php'
       - 'tests/Feature/PostgresAsaasSubscriptionDraftTest.php'
       - 'tests/Feature/AsaasSandboxSubscriptionLookupTest.php'
+      - 'tests/Feature/PostgresAsaasSubscriptionObservationTest.php'
       - 'tests/Unit/AsaasSubscriptionDraftSpecTest.php'
       - 'tests/Labs/billing/**'
       - '.github/workflows/ci-crm-billing-asaas.yml'
@@ -67,6 +68,9 @@ jobs:
       CRM_ASAAS_SUBSCRIPTION_LAB: synthetic-only
       BILLING_SUBSCRIPTION_USERNAME: crm_billing_subscription_ci
       BILLING_SUBSCRIPTION_PASSWORD: ephemeral-subscription-draft-only
+      CRM_ASAAS_SUBSCRIPTION_OBSERVATION_LAB: synthetic-only
+      BILLING_SUBSCRIPTION_REVIEW_USERNAME: crm_billing_subscription_review_ci
+      BILLING_SUBSCRIPTION_REVIEW_PASSWORD: ephemeral-subscription-review-only
       CACHE_STORE: array
       SESSION_DRIVER: array
       QUEUE_CONNECTION: sync
@@ -103,11 +107,13 @@ jobs:
           php -l app/Core/Billing/LaboratoryAsaasCustomerReconciler.php
           php -l app/Core/Billing/AsaasSubscriptionDraftSpec.php
           php -l app/Core/Billing/AsaasSandboxSubscriptionLookup.php
+          php -l app/Core/Billing/LaboratoryAsaasSubscriptionObservation.php
           php -l app/Core/Billing/LaboratoryAsaasSubscriptionDraft.php
           php -l tests/Feature/PostgresAsaasCustomerLinkTest.php
           php -l tests/Feature/PostgresAsaasCustomerReconcileTest.php
           php -l tests/Feature/PostgresAsaasSubscriptionDraftTest.php
           php -l tests/Feature/AsaasSandboxSubscriptionLookupTest.php
+          php -l tests/Feature/PostgresAsaasSubscriptionObservationTest.php
           php -l tests/Unit/AsaasSubscriptionDraftSpecTest.php
           php -l tests/Unit/AsaasWebhookEnvelopeTest.php
           php -l tests/Feature/PostgresAsaasWebhookInboxTest.php
@@ -139,6 +145,12 @@ jobs:
             -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-subscription-draft-ci.sql
       - name: Verificar draft mensal bloqueado, trial, unicidade e permissoes
         run: php artisan test --filter=PostgresAsaasSubscriptionDraftTest --no-ansi
+      - name: Criar diario de observacao de assinaturas somente em PG CI
+        run: |
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-subscription-observation-ci.sql
+      - name: Provar vinculo da assinatura com pagador, unicidade e rollback de acesso
+        run: php artisan test --filter=PostgresAsaasSubscriptionObservationTest --no-ansi
       - name: Resumo de limitacoes e escopo
         if: always()
         run: |
@@ -155,5 +167,6 @@ jobs:
             echo '- Rascunho mensal apenas com pagador vinculado, preco provisorio e trial 14 dias'
             echo '- Nenhum rascunho aprova contrato, assinatura, transacao ou cobranca'
             echo '- GET de assinaturas consulta referencia e pagador em Sandbox falso; ACTIVE nao equivale pago'
+            echo '- Assinatura encontrada por GET tem FK org e UNIQUE ID, SEM pagamento ou direito'
             echo '- Banco e papeis descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
           } >> "$GITHUB_STEP_SUMMARY"
