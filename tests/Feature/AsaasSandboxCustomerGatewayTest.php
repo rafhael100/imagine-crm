@@ -43,7 +43,7 @@ final class AsaasSandboxCustomerGatewayTest extends TestCase
         return new AsaasSandboxCustomerGateway(Http::getFacadeRoot(), $key);
     }
 
-    private function run(): array
+    private function exerciseSyntheticCustomer(): array
     {
         return $this->gateway()->findOrCreateSyntheticCustomer(
             self::FIXTURE_NAME, self::FIXTURE_CNPJ, self::EXTERNAL_REFERENCE,
@@ -83,7 +83,7 @@ final class AsaasSandboxCustomerGatewayTest extends TestCase
             },
         ]);
 
-        $result = $this->run();
+        $result = $this->exerciseSyntheticCustomer();
         $this->assertSame('sandbox_customer_found', $result['status_code']);
         $this->assertSame('cus_AAAA00001111', $result['provider_customer_id']);
         $this->assertNoFinancialGrants($result);
@@ -116,7 +116,7 @@ final class AsaasSandboxCustomerGatewayTest extends TestCase
             },
         ]);
 
-        $result = $this->run();
+        $result = $this->exerciseSyntheticCustomer();
         $this->assertSame('sandbox_customer_created', $result['status_code']);
         $this->assertSame('cus_TEST12345678', $result['provider_customer_id']);
         $this->assertNoFinancialGrants($result);
@@ -178,7 +178,7 @@ final class AsaasSandboxCustomerGatewayTest extends TestCase
                 'api-sandbox.asaas.com/v3/customers*' => Http::response($body, $status),
             ]);
             try {
-                $this->run();
+                $this->exerciseSyntheticCustomer();
                 $this->fail('Ambiguous provider lookup was accepted.');
             } catch (RuntimeException $e) {
                 $this->assertSame('Operacao Asaas sandbox inconclusiva.', $e->getMessage());
@@ -200,7 +200,7 @@ final class AsaasSandboxCustomerGatewayTest extends TestCase
         ]);
 
         try {
-            $this->run();
+            $this->exerciseSyntheticCustomer();
             $this->fail('Provider failed, but customer was considered created.');
         } catch (RuntimeException $e) {
             $this->assertSame('Operacao Asaas sandbox inconclusiva.', $e->getMessage());
