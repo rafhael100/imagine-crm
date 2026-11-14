@@ -32,3 +32,9 @@ A CI `ci-crm-billing-asaas.yml` reúne esses testes com o histórico anterior de
 ## Antes de liberar clientes
 
 Ainda são necessários: login e representantes verificados, preço e termos homologados, conta/assinatura Asaas reais, webhook público autenticado, máquina de estados durável com histórico de eventos e reversões, conciliação server-to-server paginada e limites de negócio, inadimplência e cancelamento, auditoria e isolamento por tenant, NFS-e, chaves em cofre, staging privado na VPS Leaseweb com backups/restore, e pareceres SEG/DBA #27, CORE/LGPD #259, UX #416. Este recorte **não** completa essas dependências, não cria POST nem altera `main` ou infraestrutura.
+
+## Ajuste adicional no receptor de Webhooks
+
+O receptor `AsaasWebhookEnvelope` e o `CHECK` da tabela de eventos em PostgreSQL CI foram alinhados ao inventário documentado de riscos relevantes: contestação/chargeback, análise de risco, estorno em andamento ou recusado, recebimento desfeito, restauração e cancelamento de boleto, além dos eventos já recebidos. Essa expansão **não processa nem aprova** esses estados: apenas permite uma observação idempotente de notificações reconhecidas pelo provedor.
+
+`AsaasWebhookEnvelopeTest::test_event_allowlist_is_identical_to_physical_postgresql_check_inventory` impede que o PHP aceite um evento que o banco descarte. Eventos desconhecidos fora da allowlist continuam negados até revisão documental e configuração de quais eventos o webhook efetivamente enviará.
