@@ -86,7 +86,7 @@ final readonly class LaboratoryAsaasCustomerLink
      * Bind a provider ID only after a trusted sandbox response. A conflicting
      * provider ID or a changed external reference must never overwrite.
      *
-     * @return array{status_code:'new_link'|'same_link',can_activate:false,can_charge:false}
+     * @return array{status_code:'new_link'|'same_link',can_register:false,can_activate:false,can_charge:false}
      */
     public function bind(
         string $organizationRef,
@@ -111,7 +111,7 @@ final readonly class LaboratoryAsaasCustomerLink
             );
 
             if ($count === 1) {
-                return ['status_code' => 'new_link', 'can_activate' => false, 'can_charge' => false];
+                return ['status_code' => 'new_link', 'can_register' => false, 'can_activate' => false, 'can_charge' => false];
             }
             if ($count !== 0) {
                 throw new RuntimeException('Resultado inesperado de vinculo.');
@@ -128,7 +128,7 @@ final readonly class LaboratoryAsaasCustomerLink
                 || !hash_equals($providerCustomerId, (string) $row->provider_customer_id)) {
                 throw new RuntimeException('Vinculo de cliente divergente.');
             }
-            return ['status_code' => 'same_link', 'can_activate' => false, 'can_charge' => false];
+            return ['status_code' => 'same_link', 'can_register' => false, 'can_activate' => false, 'can_charge' => false];
         } catch (Throwable) {
             throw new RuntimeException('Vinculo de cliente Asaas indisponivel.');
         }
