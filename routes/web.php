@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Core\Commercial\StagingDemoPreview;
 use App\Core\Commercial\StagingMarketingPreview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,4 +25,20 @@ if (app()->environment('staging')
                 "img-src 'self' data:; frame-ancestors 'none'; ".
                 "base-uri 'none'; form-action 'none'");
     })->name('crm.private.marketing-preview');
+
+    Route::get('/demo', static function (Request $request) {
+        // Demonstration data are constant synthetic labels from the code,
+        // never database rows, memberships, sessions, provider IDs or PII.
+        $model = StagingDemoPreview::presentation($request->query('lang', 'pt'));
+
+        return response()->view('crm-staging-demo', $model)
+            ->header('Cache-Control', 'private, no-store, max-age=0')
+            ->header('X-Robots-Tag', 'noindex, nofollow, noarchive')
+            ->header('X-Content-Type-Options', 'nosniff')
+            ->header('Referrer-Policy', 'no-referrer')
+            ->header('Content-Security-Policy',
+                "default-src 'none'; style-src 'unsafe-inline'; ".
+                "img-src 'self' data:; frame-ancestors 'none'; ".
+                "base-uri 'none'; form-action 'none'");
+    })->name('crm.private.readonly-demo');
 }
