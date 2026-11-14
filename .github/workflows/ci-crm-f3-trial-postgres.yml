@@ -6,6 +6,7 @@ on:
       - dev/fast-track-crm-2026-11-04
     paths:
       - 'app/Core/Plans/LaboratoryDurableTrialClaim.php'
+      - 'app/Core/Plans/LaboratoryHistoricalTrialAliases.php'
       - 'database/experimental-migrations/trial/**'
       - 'tests/Feature/PostgresLabTrialClaimUniqueTest.php'
       - '.github/workflows/ci-crm-f3-trial-postgres.yml'
@@ -83,15 +84,20 @@ jobs:
       - name: Criar papel INSERT estritamente por coluna (sem leitura de CNPJ)
         run: |
           psql -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 <<'SQL'
+          INSERT INTO crm_lab_trial_key_epochs (version, secret_tag)
+          VALUES (1, 'a4b491da4d5ea375653e3b76a6404b921729157c7cd6560c46940a9816a05ae5');
           CREATE ROLE crm_trial_claim_ci LOGIN PASSWORD 'ephemeral-trial-insert-only'
             NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
           GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_trial_claim_ci;
           GRANT USAGE ON SCHEMA public TO crm_trial_claim_ci;
           GRANT INSERT (cnpj_hmac, key_version, started_at, expires_at, state)
             ON TABLE crm_lab_trial_claims TO crm_trial_claim_ci;
+          GRANT SELECT ON TABLE crm_lab_trial_key_epochs TO crm_trial_claim_ci;
           SQL
       - name: Exercitar 2 conexões independentes, rollback e replay após expiração
         run: php artisan test --filter=PostgresLabTrialClaimUniqueTest --no-ansi
+      - name: Provar historico v1/v2, rejeicao de chave ausente e rollback integral
+        run: php artisan test --filter=PostgresLabTrialKeyRingTest --no-ansi
       - name: Declarar limites no resumo da CI
         if: always()
         run: |
