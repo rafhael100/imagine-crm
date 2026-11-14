@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; font-src 'none'; connect-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; font-src 'none'; connect-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'">
   <title>Imagine CRM — Protótipo offline</title>
   <style>
     :root{--imagine-orange:#F9941D;--imagine-graphite:#171B19;--imagine-white:#FFFFFF;--imagine-background:#F7F7F8;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--imagine-graphite);background:var(--imagine-background);line-height:1.52}
@@ -16,7 +16,7 @@
     .shell{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh}
     .sidebar{background:#171B19;color:#FFFFFF;padding:28px 18px;display:flex;flex-direction:column;gap:28px}
     .brand{display:flex;gap:13px;align-items:center;padding:4px 12px}
-    .brand-mark{width:42px;height:42px;display:grid;place-items:center;background:#F9941D;border-radius:14px;color:#171B19;font-weight:800;font-size:23px}
+    .brand-logo{width:130px;height:auto;max-width:100%;display:block;flex-shrink:0}
     .brand-name{font-size:19px;font-weight:750;letter-spacing:-.5px;line-height:1.15}.brand-name span{display:block;font-size:11px;font-weight:600;color:#E9D0AC;letter-spacing:1.6px;margin-top:5px}
     .side-label{text-transform:uppercase;letter-spacing:1.8px;font-size:10px;font-weight:800;color:#C9C7C0;margin:0 0 9px 13px}
     .side-nav{display:grid;gap:5px}.nav-button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:12px 13px;color:#ECEAE6;border:1px solid transparent;background:transparent;border-radius:11px;cursor:pointer;font-size:14px;font-weight:620}
@@ -86,7 +86,7 @@
 <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 <div class="shell">
   <aside class="sidebar" aria-label="Navegação do protótipo">
-    <div class="brand"><div class="brand-mark" aria-hidden="true">i</div><div class="brand-name">imagine<span>CRM</span></div></div>
+    <div class="brand"><img class="brand-logo" src="../assets/logo-imagine.png" width="200" height="55" alt="Imagine"><div class="brand-name">CRM<span>Demonstração</span></div></div>
     <div>
       <p class="side-label">Demonstração</p>
       <nav class="side-nav" id="demo-navigation" aria-label="Telas de demonstração">
