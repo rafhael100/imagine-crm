@@ -6,6 +6,7 @@ GitHub-hosted CI uses dummy inputs solely for docker compose config rendering.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -19,6 +20,8 @@ DOCKERFILE = ROOT / "infra/staging/Dockerfile"
 NGINX = ROOT / "infra/staging/nginx.conf"
 IGNORE = ROOT / ".dockerignore"
 DB_INIT = ROOT / "infra/staging/01-crm-staging-app-role.sh"
+ORIGINAL_LOGO = ROOT / "public/assets/logo-imagine.png"
+ORIGINAL_LOGO_BLOB_SHA = "678adeceb3a8ecdaeb6b576b9ee18d1bf0396f77"
 
 
 def deny(reason: str) -> None:
@@ -26,9 +29,21 @@ def deny(reason: str) -> None:
 
 
 def main() -> None:
-    files = (COMPOSE, DOCKERFILE, NGINX, IGNORE, DB_INIT)
+    files = (COMPOSE, DOCKERFILE, NGINX, IGNORE, DB_INIT, ORIGINAL_LOGO)
     if not all(path.is_file() for path in files):
         deny("required infrastructure file missing")
+    # Exact original PNG from rafhael100/imagine-portal/main/assets/logo-imagine.png.
+    # Git blob digest covers bytes, not a fabricated branding replacement.
+    logo_bytes = ORIGINAL_LOGO.read_bytes()
+    git_object = b"blob " + str(len(logo_bytes)).encode("ascii") + b"\\0" + logo_bytes
+    if (len(logo_bytes) != 5594
+        or not logo_bytes.startswith(b"\\x89PNG\\r\\n\\x1a\\n")
+        or hashlib.sha1(git_object).hexdigest() != ORIGINAL_LOGO_BLOB_SHA):
+        deny("original Portal PNG asset does not match its source Git blob")
+    for page in ("crm-staging-marketing.blade.php", "crm-staging-demo.blade.php"):
+        markup = (ROOT / "resources/views" / page).read_text(encoding="utf-8")
+        if '/assets/logo-imagine.png' not in markup or 'alt="Imagine"' not in markup:
+            deny("staging page missing original brand logo and accessible text")
     # Combined build must contain both the guarded Sites-to-lead ingestion
     # path and audited task core while exposing none of those CI-only classes.
     core_components = (
