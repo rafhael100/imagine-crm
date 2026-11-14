@@ -26,7 +26,11 @@ services:
       - /tmp:rw,nosuid,noexec,size=16m,mode=1777
       - /run:rw,nosuid,noexec,size=1m
       - /usr/local/var/run:rw,nosuid,noexec,size=1m
-      - /var/www/html/storage:rw,nosuid,noexec,size=16m,uid=33,gid=33
+      # Mount only pre-created Laravel write directories; never hide the storage tree.
+      - /var/www/html/storage/framework/cache:rw,nosuid,noexec,size=4m,uid=33,gid=33
+      - /var/www/html/storage/framework/sessions:rw,nosuid,noexec,size=2m,uid=33,gid=33
+      - /var/www/html/storage/framework/views:rw,nosuid,noexec,size=8m,uid=33,gid=33
+      - /var/www/html/storage/logs:rw,nosuid,noexec,size=2m,uid=33,gid=33
       - /var/www/html/bootstrap/cache:rw,nosuid,noexec,size=2m,uid=33,gid=33
     security_opt:
       - no-new-privileges:true
