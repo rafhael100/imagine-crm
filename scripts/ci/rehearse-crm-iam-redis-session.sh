@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# CRM-IAM-REDIS-01: server-side Redis sessions + real PostgreSQL16 IAM/RLS.
-# Only existing synthetic PHPUnit routes and fixture users; never production.
+# CRM-IAM-REDIS-01. Only existing synthetic PHPUnit routes + CI identities.
 set -euo pipefail
 fail() { echo "CRM IAM REDIS NO-GO: $*" >&2; exit 1; }
 [[ "$(printenv GITHUB_ACTIONS || true)" == true ]] || fail "GitHub Actions required"
@@ -17,47 +16,23 @@ fail() { echo "CRM IAM REDIS NO-GO: $*" >&2; exit 1; }
 [[ -n "$(printenv IAM_TEST_USERNAME || true)" ]] || fail "restricted IAM role absent"
 [[ -n "$(printenv RLS_TEST_USERNAME || true)" ]] || fail "restricted tenant role absent"
 [[ -d "$(printenv RUNNER_TEMP || true)" ]] || fail "ephemeral runner required"
-php -m | grep -qi '^redis
-php scripts/ci/verify-ephemeral-postgres.php --verify >/dev/null
-[[ "$(PGPASSWORD="$(printenv DB_PASSWORD)" psql -X -qAt -h 127.0.0.1 \
-  -U postgres -d imagine_crm_ci -c 'SHOW server_version_num')" =~ ^16[0-9]{4}$ ]] ||
-  fail "PostgreSQL16 missing"
-
-# Isolated session backing store: real Redis, encrypted server-side
-# sessions, secure HttpOnly/SameSite cookie on the same CI-only app.
-# Leave the existing full CI suite using SESSION_DRIVER=array unchanged.
-export SESSION_DRIVER=redis
-export SESSION_STORE=redis
-export SESSION_CONNECTION=default
-export SESSION_ENCRYPT=true
-export SESSION_SECURE_COOKIE=true
-export SESSION_SAME_SITE=strict
-export CRM_AUTH_EXPERIMENTAL=true
-export REDIS_CLIENT=phpredis
-
-php artisan test --filter=CrmIamHttpBoundaryTest --no-ansi
-php artisan test --filter=CrmIamPostgresHttpMembershipTest --no-ansi
-echo "CRM IAM REDIS PASS: test-only HTTP password/TOTP/session/revocation"
-echo "and real PostgreSQL16 membership executed with Redis-backed encrypted sessions."
-echo "No login or customer data was exposed by application routes." || fail "phpredis required"
-# The hosted runner includes phpredis via setup-php, but not necessarily
-# redis-cli. Probe Redis directly through the PHP runtime being tested.
+php -m | grep -Eqi '^redis$' || fail "phpredis extension required"
+# GitHub runner does not guarantee redis-cli: probe with the PHP client under test.
 php -r '
   if (!class_exists("Redis")) { exit(1); }
   $r = new Redis();
-  if (!$r->connect("127.0.0.1", 6379, 2.0) || !in_array($r->ping(), [true, "+PONG", "PONG"], true)) {
-      exit(1);
+  if (!$r->connect("127.0.0.1", 6379, 2.0)
+      || !in_array($r->ping(), [true, "+PONG", "PONG"], true)) {
+    exit(1);
   }
   $r->close();
 ' || fail "disposable Redis unavailable"
 php scripts/ci/verify-ephemeral-postgres.php --verify >/dev/null
-[[ "$(PGPASSWORD="$(printenv DB_PASSWORD)" psql -X -qAt -h 127.0.0.1 \
-  -U postgres -d imagine_crm_ci -c 'SHOW server_version_num')" =~ ^16[0-9]{4}$ ]] ||
-  fail "PostgreSQL16 missing"
+version="$(PGPASSWORD="$(printenv DB_PASSWORD)" psql -X -qAt -h 127.0.0.1 \
+  -U postgres -d imagine_crm_ci -c 'SHOW server_version_num')"
+[[ "$version" =~ ^16[0-9]{4}$ ]] || fail "PostgreSQL16 required"
 
-# Isolated session backing store: real Redis, encrypted server-side
-# sessions, secure HttpOnly/SameSite cookie on the same CI-only app.
-# Leave the existing full CI suite using SESSION_DRIVER=array unchanged.
+# Separate process env: the normal full suite continues with memory sessions.
 export SESSION_DRIVER=redis
 export SESSION_STORE=redis
 export SESSION_CONNECTION=default
@@ -69,6 +44,6 @@ export REDIS_CLIENT=phpredis
 
 php artisan test --filter=CrmIamHttpBoundaryTest --no-ansi
 php artisan test --filter=CrmIamPostgresHttpMembershipTest --no-ansi
-echo "CRM IAM REDIS PASS: test-only HTTP password/TOTP/session/revocation"
-echo "and real PostgreSQL16 membership executed with Redis-backed encrypted sessions."
-echo "No login or customer data was exposed by application routes."
+
+echo "CRM IAM REDIS PASS: real Redis-backed session for fake login/TOTP,"
+echo "PostgreSQL16 tenant authorization and revocation. No customer login routes."
