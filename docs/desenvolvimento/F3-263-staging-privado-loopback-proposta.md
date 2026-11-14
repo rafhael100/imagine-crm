@@ -82,6 +82,18 @@ Depois de passar pelos testes de runtime, a CI agora produz um inventário limit
 
 Se a etapa concluir, o workflow GitHub Actions anexará o artifact `crm-f3-271-review-inventory` por **7 dias**. O script exige runner GitHub-hosted, evento pull_request, projeto Compose restrito e diretório temporário novo, e o upload ocorre **após** as provas de HTTP, isolamento e recuperação. A CI remove contêineres, redes e imagens mesmo que o upload falhe. **O inventário não é SBOM completo, pin de digest de registry, assinatura de proveniência, aprovação de segurança ou deploy.**
 
+## F3-272 — imagens-base fixadas aos digests observados na CI
+
+O [build descartável #43547265544](https://github.com/rafhael100/imagine-crm/actions/runs/43547265544) registrou os digests dos três artefatos oficiais usados na construção:
+
+- PHP 8.4 FPM Bookworm: `sha256:b75642e8c89c321039f351466134df951576fb0f7017117b3931e9a19b908d6c`
+- Nginx 1.29 Alpine: `sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de`
+- Composer 2: `sha256:ca11f643d7791ebdd90a34fc20caf11380d434007ae539a9ea75cd9212e13dca`
+
+Os Dockerfiles candidatos passaram a usar as referências `nome:tag@sha256:digest` exatas, e um teste de fonte exige os três valores para impedir deriva silenciosa de tags. **A nova CI de build precisa passar na HEAD revisada para comprovar que esses digests ainda podem ser utilizados.**
+
+A fixação de digest garante referência ao conteúdo identificado, **não** que a imagem seja livre de vulnerabilidades ou assinada por uma origem confiável. Pendente: assinatura/proveniência verificada, análise de CVEs, SBOM de sistema operacional e política de atualizações. Nenhuma imagem foi enviada a registry privado, nenhuma VPS foi alterada e o PR permanece DRAFT/NO-MERGE/NO-DEPLOY.
+
 ## Escopo demonstrável
 
 A CI F3-263 cobre sintaxe e política estática. **A CI F3-267**, se verde, pode comprovar build e fumaça HTTP real **somente no runner descartável**. Nenhuma das duas comprova rede de uma VPS, segurança do host definitivo, TLS/Cloudflare, back-up, resiliência do PostgreSQL operacional, homologação privada da infraestrutura Imagine ou autorização de negócios.
