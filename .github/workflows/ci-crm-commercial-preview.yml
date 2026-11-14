@@ -28,3 +28,15 @@ jobs:
           persist-credentials: false
       - name: Validar integridade visual e limites sem rede
         run: python3 prototypes/site-comercial-crm/tests/test_preview.py
+      - name: Montar pacote de visualização offline
+        run: |
+          mkdir -p build/crm-preview/assets
+          cp prototypes/site-comercial-crm/index.html build/crm-preview/index.html
+          cp prototypes/site-comercial-crm/assets/logo-imagine.png build/crm-preview/assets/logo-imagine.png
+      - name: Anexar prévia sem dados reais
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: crm-web-p0-preview-offline
+          path: build/crm-preview/
+          if-no-files-found: error
+          retention-days: 7
