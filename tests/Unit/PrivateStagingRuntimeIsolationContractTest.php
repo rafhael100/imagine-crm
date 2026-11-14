@@ -38,6 +38,7 @@ final class PrivateStagingRuntimeIsolationContractTest extends TestCase
             '"00000000"',
             'docker compose port web 8080',
             'HostConfig.PortBindings',
+            'json_last_error() !== JSON_ERROR_NONE',
             'docker compose ps -q app',
             'docker network inspect imagine-crm-stage-review_crm_loopback',
             'com.docker.network.bridge.enable_ip_masquerade',
