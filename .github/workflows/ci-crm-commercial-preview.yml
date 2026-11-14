@@ -12,6 +12,7 @@ on:
     branches:
       - review/crm-web-p0-commercial-preview-2026-11-13
       - review/crm-web-p1-linked-trial-demo-2026-11-13
+      - review/crm-customer-admin-journey-preview-2026-11-14
     paths:
       - 'prototypes/site-comercial-crm/**'
       - '.github/workflows/ci-crm-commercial-preview.yml'
@@ -36,6 +37,8 @@ jobs:
         run: python3 -m py_compile prototypes/site-comercial-crm/staging/smoke_private_https.py
       - name: Navegar comercial até OTP e trial fictícios (Chromium real)
         run: python3 prototypes/site-comercial-crm/tests/trial_handoff_browser.py
+      - name: Validar painéis cliente/admin em navegador real
+        run: python3 prototypes/site-comercial-crm/tests/dashboard_journey_browser.py
       - name: Validar configuração privada proposta (somente estática)
         run: python3 prototypes/site-comercial-crm/staging/test_configuration.py
       - name: Capturar imagens estáticas para revisão visual (sem rede)
@@ -65,7 +68,11 @@ jobs:
           cp prototypes/site-comercial-crm/assets/site.js build/crm-preview/assets/site.js
           mkdir -p build/crm-preview/fluxo-demo
           cp prototypes/site-comercial-crm/fluxo-demo/index.html build/crm-preview/fluxo-demo/index.html
-          (cd build/crm-preview && sha256sum index.html assets/logo-imagine.png assets/site.css assets/site.js fluxo-demo/index.html > manifest.sha256)
+          mkdir -p build/crm-preview/painel-demo
+          cp prototypes/site-comercial-crm/painel-demo/index.html build/crm-preview/painel-demo/index.html
+          cp prototypes/site-comercial-crm/painel-demo/dashboard.css build/crm-preview/painel-demo/dashboard.css
+          cp prototypes/site-comercial-crm/painel-demo/dashboard.js build/crm-preview/painel-demo/dashboard.js
+          (cd build/crm-preview && sha256sum index.html assets/logo-imagine.png assets/site.css assets/site.js fluxo-demo/index.html painel-demo/index.html painel-demo/dashboard.css painel-demo/dashboard.js > manifest.sha256)
           (cd build/crm-preview && sha256sum --check manifest.sha256)
           printf 'Imagine CRM: previa demonstrativa SEM cadastro, login, CNPJ ou cobranca real.\nAbra index.html, preservando assets/.\n' > build/crm-preview/LEIA-ME.txt
       - name: Validar pacote fechado e manifesto SHA256
