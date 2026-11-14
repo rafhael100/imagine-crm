@@ -42,6 +42,25 @@ BEGIN
   EXCEPTION WHEN check_violation THEN NULL;
   END;
 
+  -- A reviewer with UPDATE grants still cannot reset/rebind a linked row.
+  BEGIN
+    UPDATE crm_lab_asaas_order_reservations
+      SET provider_payment_id = NULL, state = 'reserved'
+      WHERE order_ref = first_order;
+    RAISE EXCEPTION 'linked payment was reset';
+  EXCEPTION WHEN check_violation THEN NULL;
+  END;
+
+  UPDATE crm_lab_asaas_order_reservations
+    SET state='review_required' WHERE order_ref=second_order;
+  BEGIN
+    UPDATE crm_lab_asaas_order_reservations
+      SET provider_payment_id='pay_SYNTHETIC5678', state='linked'
+      WHERE order_ref=second_order;
+    RAISE EXCEPTION 'review-only order was reactivated';
+  EXCEPTION WHEN check_violation THEN NULL;
+  END;
+
   IF (SELECT count(*) FROM crm_lab_asaas_order_reservations) <> 2
      OR (SELECT count(*) FROM crm_lab_asaas_order_reservations WHERE state='linked') <> 1
      OR has_table_privilege('crm_billing_order_ci','crm_lab_asaas_order_reservations','SELECT')
