@@ -17,10 +17,39 @@ fail() { echo "CRM IAM REDIS NO-GO: $*" >&2; exit 1; }
 [[ -n "$(printenv IAM_TEST_USERNAME || true)" ]] || fail "restricted IAM role absent"
 [[ -n "$(printenv RLS_TEST_USERNAME || true)" ]] || fail "restricted tenant role absent"
 [[ -d "$(printenv RUNNER_TEMP || true)" ]] || fail "ephemeral runner required"
-command -v redis-cli >/dev/null 2>&1 || fail "redis-cli not installed"
-[[ "$(redis-cli -h 127.0.0.1 -p 6379 ping)" == PONG ]] ||
-  fail "disposable Redis unavailable"
-php -m | grep -qi '^redis$' || fail "phpredis required"
+php -m | grep -qi '^redis
+php scripts/ci/verify-ephemeral-postgres.php --verify >/dev/null
+[[ "$(PGPASSWORD="$(printenv DB_PASSWORD)" psql -X -qAt -h 127.0.0.1 \
+  -U postgres -d imagine_crm_ci -c 'SHOW server_version_num')" =~ ^16[0-9]{4}$ ]] ||
+  fail "PostgreSQL16 missing"
+
+# Isolated session backing store: real Redis, encrypted server-side
+# sessions, secure HttpOnly/SameSite cookie on the same CI-only app.
+# Leave the existing full CI suite using SESSION_DRIVER=array unchanged.
+export SESSION_DRIVER=redis
+export SESSION_STORE=redis
+export SESSION_CONNECTION=default
+export SESSION_ENCRYPT=true
+export SESSION_SECURE_COOKIE=true
+export SESSION_SAME_SITE=strict
+export CRM_AUTH_EXPERIMENTAL=true
+export REDIS_CLIENT=phpredis
+
+php artisan test --filter=CrmIamHttpBoundaryTest --no-ansi
+php artisan test --filter=CrmIamPostgresHttpMembershipTest --no-ansi
+echo "CRM IAM REDIS PASS: test-only HTTP password/TOTP/session/revocation"
+echo "and real PostgreSQL16 membership executed with Redis-backed encrypted sessions."
+echo "No login or customer data was exposed by application routes." || fail "phpredis required"
+# The hosted runner includes phpredis via setup-php, but not necessarily
+# redis-cli. Probe Redis directly through the PHP runtime being tested.
+php -r '
+  if (!class_exists("Redis")) { exit(1); }
+  $r = new Redis();
+  if (!$r->connect("127.0.0.1", 6379, 2.0) || $r->ping() !== true) {
+      exit(1);
+  }
+  $r->close();
+' || fail "disposable Redis unavailable"
 php scripts/ci/verify-ephemeral-postgres.php --verify >/dev/null
 [[ "$(PGPASSWORD="$(printenv DB_PASSWORD)" psql -X -qAt -h 127.0.0.1 \
   -U postgres -d imagine_crm_ci -c 'SHOW server_version_num')" =~ ^16[0-9]{4}$ ]] ||
