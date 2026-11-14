@@ -12,6 +12,9 @@ on:
       - 'app/Core/Tasks/**'
       - 'app/Core/Billing/**'
       - 'scripts/ci/rehearse-crm-private-restore.sh'
+      - 'scripts/ci/rehearse-crm-private-schema.sh'
+      - 'scripts/ci/check-staging-runtime-schema.php'
+      - 'database/migrations/**'
       - 'tests/Labs/recovery/**'
 
 permissions:
@@ -32,10 +35,13 @@ jobs:
       - name: Generate disposable dummy runtime credentials in this runner
         run: |
           DB_CI_PASSWORD="$(openssl rand -hex 24)"
+          APP_DB_CI_PASSWORD="$(openssl rand -hex 24)"
           APP_CI_KEY="base64:$(openssl rand -base64 32 | tr -d '\n')"
           echo "::add-mask::$DB_CI_PASSWORD"
+          echo "::add-mask::$APP_DB_CI_PASSWORD"
           echo "::add-mask::$APP_CI_KEY"
           echo "CRM_STAGING_DB_PASSWORD=$DB_CI_PASSWORD" >> "$GITHUB_ENV"
+          echo "CRM_STAGING_APP_DB_PASSWORD=$APP_DB_CI_PASSWORD" >> "$GITHUB_ENV"
           echo "CRM_STAGING_APP_KEY=$APP_CI_KEY" >> "$GITHUB_ENV"
       - name: Build PHP image without deploying or accessing VPS
         run: docker compose -f infra/staging/compose.yaml build app
@@ -62,6 +68,10 @@ jobs:
         env:
           CRM_RECOVERY_LAB: synthetic-only
         run: bash scripts/ci/rehearse-crm-private-restore.sh
+      - name: Prove real Laravel migration and RLS with separate non-owner app role
+        env:
+          CRM_SCHEMA_LAB: synthetic-only
+        run: bash scripts/ci/rehearse-crm-private-schema.sh
       - name: Collect CI-only container diagnostics on smoke failure
         if: failure()
         run: |
@@ -79,6 +89,7 @@ jobs:
             echo '- Localhost health and no public business routes tested'
             echo '- Asaas billing sources shipped but no sandbox/production billing route or flag enabled'
             echo '- Full pg_dump + pg_restore to second network-none PostgreSQL16 container, FORCE RLS and audit verified'
+            echo '- Laravel migration applied and repeated under CI admin; actual PHP app role is NO-SUPERUSER/NO-BYPASSRLS/NO-OWNER with tenant isolation'
             echo '- Containers and disposable volume destroyed before completion'
             echo '- No real customer, Asaas network, Leaseweb connection or production changes'
             echo '- Not sufficient for TLS, backups, operational IAM, RLS or launch GO'
