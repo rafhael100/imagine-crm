@@ -52,6 +52,9 @@ jobs:
       - name: PHP syntax check
         run: |
           php -l app/Support/Synthetic/AiaReadOnlyMockBoundary.php
+          php -l app/Support/Synthetic/AiaFixtureNonceLedger.php
+          php -l app/Support/Synthetic/AiaHmacFixturePreflight.php
+          php -l scripts/ci/check-aia-hmac-fixture.php
           php -l app/Core/Leads/AgentsReadResponseAssessment.php
           php -l app/Core/Leads/AgentsReadResponseInspector.php
           php -l tests/Unit/AgentsReadResponseInspectorTest.php
@@ -61,6 +64,9 @@ jobs:
           php -l _synthetic_agents_fixture/src/Domain/MockError.php
           php -l _synthetic_agents_fixture/src/Domain/TenantContext.php
           php -l _synthetic_agents_fixture/src/MockBridge/MockCrmReadRequest.php
+
+      - name: Verify signed and replay-protected synthetic bytes without any authority
+        run: php scripts/ci/check-aia-hmac-fixture.php
 
       - name: Cross-repository syntactic parity; uniform deny
         run: php scripts/ci/check-aia-crm-contract-parity.php
