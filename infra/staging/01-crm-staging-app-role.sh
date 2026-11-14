@@ -1,6 +1,7 @@
 #!/bin/bash
 # CI/private staging only: separate PostgreSQL app LOGIN from bootstrap admin.
-set -euo pipefail
+# Docker's postgres entrypoint sources non-executable *.sh init files.
+# Do not change shell flags in the parent entrypoint process.
 test -n "$POSTGRES_USER"
 test -n "$POSTGRES_DB"
 test -n "$CRM_STAGING_APP_DB_PASSWORD"
