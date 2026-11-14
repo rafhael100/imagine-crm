@@ -64,7 +64,7 @@ final class PrivateStagingRuntimeSmokeContractTest extends TestCase
             'docker compose exec -T app php-fpm -t',
             'docker compose exec -T web nginx -t',
             'origin="http://127.0.0.1:18080"',
-            '"/up"',
+            'origin/up',
             'for endpoint in / /login /register',
             'for endpoint in /login /register',
             'for endpoint in /.env',
