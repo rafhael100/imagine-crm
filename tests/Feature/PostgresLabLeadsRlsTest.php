@@ -104,6 +104,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
 
     private function clean(): void
     {
+        $this->owner->table('crm_lab_lead_events')->delete();
         $this->owner->table('crm_lab_leads')->delete();
         $this->owner->table('crm_memberships')
             ->whereIn('organization_id', [self::ORG_A, self::ORG_B])->delete();
@@ -310,6 +311,79 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $this->assertFalse((bool) $role->owns_table);
         $this->assertTrue((bool) $role->relrowsecurity);
         $this->assertTrue((bool) $role->relforcerowsecurity);
+    }
+
+    public function test_append_only_audit_records_creation_stage_move_archive_in_one_tenant(): void
+    {
+        $this->ledger()->createSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_A, 'DEMO_A007',
+        );
+        $this->ledger($this->two)->createSynthetic(
+            self::principal(), self::ORG_B, self::LEAD_B, 'DEMO_B007',
+        );
+        $this->ledger()->moveSyntheticStage(
+            self::principal(), self::ORG_A, self::LEAD_A, 'qualified', 1,
+        );
+        $this->ledger()->archiveSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_A, 2,
+        );
+
+        $events = $this->owner->table('crm_lab_lead_events')
+            ->where('lead_id', self::LEAD_A)->orderBy('version')->get()->all();
+        $this->assertCount(3, $events);
+        $this->assertSame(['created', 'stage_moved', 'archived'],
+            array_map(static fn ($event) => $event->event_type, $events));
+        $this->assertSame([1, 2, 3],
+            array_map(static fn ($event) => (int) $event->version, $events));
+        $this->assertSame(['new', 'qualified', 'qualified'],
+            array_map(static fn ($event) => $event->to_stage, $events));
+        foreach ($events as $event) {
+            $this->assertSame(self::ORG_A, $event->organization_id);
+        }
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_events')
+            ->where('organization_id', self::ORG_B)->count());
+        $this->assertFalse((bool) $this->one->selectOne(
+            "SELECT has_table_privilege(current_user, 'public.crm_lab_lead_events','SELECT') AS allowed",
+        )->allowed);
+        foreach (['UPDATE', 'DELETE', 'TRUNCATE'] as $permission) {
+            $this->assertFalse((bool) $this->one->selectOne(
+                'SELECT has_table_privilege(current_user, ?, ?) AS allowed',
+                ['public.crm_lab_lead_events', $permission],
+            )->allowed, $permission);
+        }
+    }
+
+    public function test_duplicate_audit_event_rolls_back_the_kanban_change_atomically(): void
+    {
+        $this->ledger()->createSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_A, 'DEMO_A008',
+        );
+        // A deliberate synthetic fixture collision; a production user
+        // cannot INSERT this event without a permitted membership context.
+        $this->owner->table('crm_lab_lead_events')->insert([
+            'event_id' => 'e9999999-9999-4999-8999-999999999999',
+            'lead_id' => self::LEAD_A,
+            'organization_id' => self::ORG_A,
+            'version' => 2,
+            'event_type' => 'stage_moved',
+            'from_stage' => 'new',
+            'to_stage' => 'qualified',
+        ]);
+        try {
+            $this->ledger()->moveSyntheticStage(
+                self::principal(), self::ORG_A, self::LEAD_A, 'qualified', 1,
+            );
+            $this->fail('Changing stage without committing audit must be impossible.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('Transicao sintetica de lead indisponivel.', $e->getMessage());
+            $this->assertNull($e->getPrevious());
+        }
+        $row = $this->owner->table('crm_lab_leads')->where('id', self::LEAD_A)->first();
+        $this->assertSame('new', $row->stage);
+        $this->assertSame(1, $row->version);
+        $this->assertSame(2, $this->owner->table('crm_lab_lead_events')
+            ->where('lead_id', self::LEAD_A)->count());
+        $this->assertSame(0, $this->one->transactionLevel());
     }
 
     public function test_wrong_database_role_and_public_endpoints_stay_denied(): void
