@@ -76,9 +76,10 @@ final class OfflinePrototypeHubImagineIdentityTest extends TestCase
             "default-src 'none'",
             "script-src 'none'",
             "connect-src 'none'",
-            "img-src 'none'",
+            "img-src 'self'",
             "form-action 'none'",
             'referrer" content="no-referrer"',
+            '<img src="assets/logo-imagine.png" width="200" height="55" alt="Imagine">',
         ] as $required) {
             self::assertStringContainsString($required, $html);
         }
