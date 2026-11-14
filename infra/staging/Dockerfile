@@ -1,6 +1,6 @@
 # F3-267 review candidate: build allowed only in isolated PR #517 CI; NEVER deploy to VPS.
 # This is a smoke-only Laravel runtime: no customer registration or real DB.
-FROM php:8.4-fpm-bookworm
+FROM php:8.4-fpm-bookworm@sha256:b75642e8c89c321039f351466134df951576fb0f7017117b3931e9a19b908d6c
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -8,7 +8,7 @@ RUN apt-get update \
     && docker-php-ext-install -j"$(nproc)" bcmath intl mbstring opcache pdo_pgsql pdo_sqlite zip \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:2@sha256:ca11f643d7791ebdd90a34fc20caf11380d434007ae539a9ea75cd9212e13dca /usr/bin/composer /usr/local/bin/composer
 WORKDIR /var/www/html
 
 COPY composer.json composer.lock ./
