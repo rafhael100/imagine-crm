@@ -1,0 +1,57 @@
+name: CRM Imagine - F3-227 OTP PostgreSQL 16 Isolated Lab
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'scripts/ci/check-signup-otp-pg16-lab.php'
+      - '.github/workflows/crm-f3-227-otp-pg16-lab.yml'
+      - 'app/Core/Identity/OfflineSignupOtpChallenge.php'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  otp-pg16:
+    name: Real PostgreSQL 16 OTP single-use race (NO-GO)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_otp_lab_ci
+          POSTGRES_USER: otp_lab_ci
+          POSTGRES_PASSWORD: fixture-password-only-for-disposable-ci
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U otp_lab_ci -d imagine_otp_lab_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      CI: 'true'
+      OTP_LAB_HOST: 127.0.0.1
+      OTP_LAB_PORT: '5433'
+      OTP_LAB_DB: imagine_otp_lab_ci
+      OTP_LAB_USER: otp_lab_ci
+      OTP_LAB_PASSWORD: fixture-password-only-for-disposable-ci
+    steps:
+      - name: Checkout exact PR revision
+        uses: actions/checkout@v4
+
+      - name: PHP 8.4 PDO PostgreSQL support
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, pgsql
+          coverage: none
+
+      - name: Syntax check only
+        run: |
+          php -l app/Core/Identity/OfflineSignupOtpChallenge.php
+          php -l scripts/ci/check-signup-otp-pg16-lab.php
+
+      - name: Run disposable PG16 race and replay test
+        run: php scripts/ci/check-signup-otp-pg16-lab.php

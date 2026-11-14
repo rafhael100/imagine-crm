@@ -1,0 +1,9 @@
+# CRM F3-227 — Prova real de consumo único OTP no PostgreSQL 16 descartável
+
+Este recorte **não libera OTP operacional**. Em um workflow Github Actions separado, cria um contêiner PostgreSQL 16 descartável com banco **`imagine_otp_lab_ci`**, papel **`otp_lab_ci`** e credencial inteiramente fictícia, sem integrações com a VPS ou contas reais. O script `scripts/ci/check-signup-otp-pg16-lab.php` recusa execução fora do GitHub Actions e valida host, porta, banco, papel e versão reais antes de criar uma única tabela de testes.
+
+O laboratório exercita o código verdadeiro `OfflineSignupOtpChallenge` da F3-226, usando um código de seis dígitos gerado apenas na memória do processo. Apenas nonce, compromisso HMAC-SHA256, timestamps, contador de tentativas e indicador de consumo são gravados na tabela isolada — **nenhum código de seis dígitos, e-mail, telefone, CNPJ ou tenant**. Duas conexões reais competem: a segunda encontra `lock_timeout` enquanto o primeiro consumidor mantém o registro bloqueado, depois vê zero linhas afetadas após o commit. Inclui consumo único/replay, cinco erros até orçamento ilustrativo esgotado e expiração exata em 900 segundos.
+
+O script remove **somente sua tabela de laboratório dentro do banco descartável de nome fixo**. A autenticação real continua NO-GO porque falta banco operacional com privilégios segregados, rate limit de origem, prova de vínculo, atomicidade transacional revisada, observabilidade, envio, LGPD, CNPJ, antifraude, controles de trial e revisão independente.
+
+**Gate:** manter a PR F3-227 em DRAFT; não mesclar em DEV, `main`, VPS ou produção até revisão SEG/DBA #27 e LGPD/CORE #259. As credenciais registradas na CI são literais fictícios de um contêiner criado e destruído pela própria execução, não são segredos da Imagine. Não há despesas adicionais com prestadores.
