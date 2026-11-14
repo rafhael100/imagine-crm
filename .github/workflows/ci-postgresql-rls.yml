@@ -156,5 +156,9 @@ jobs:
         run: php artisan test --filter=PostgresMembershipRlsTest --no-ansi
       - name: Prove nonce uniqueness between two disposable PostgreSQL connections
         run: php artisan test --filter=AiaPostgresAtomicNonceCandidateTest --no-ansi
+      - name: Verify real Redis-backed encrypted session across IAM HTTP and PostgreSQL membership
+        env:
+          CRM_IAM_REDIS_LAB: synthetic-only
+        run: bash scripts/ci/rehearse-crm-iam-redis-session.sh
       - name: Run full synthetic test suite
         run: php artisan test --no-ansi
