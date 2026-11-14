@@ -177,3 +177,75 @@ GRANT SELECT (organization_id, binding_reference, site_reference,
 
 -- Only the disposable fixture owner can provision, revoke or edit bindings.
 -- No CREATE/INSERT/UPDATE/DELETE permissions for crm_app_ci.
+
+-- PG07: serialize all fixture-owned binding mutations against any intake
+-- holding the same transaction-level advisory lock. This preserves
+-- SELECT-only tenant role (no UPDATE, FOR SHARE, SECURITY DEFINER).
+-- Hash collisions can only induce extra waiting, not bypass the gate.
+-- Both procedures use the same exact key and PostgreSQL16 hash function.
+CREATE FUNCTION public.crm_lab_binding_mutation_guard()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = pg_catalog
+AS $crm_binding_guard$
+DECLARE
+  locked_org uuid;
+  locked_binding uuid;
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    locked_org := NEW.organization_id;
+    locked_binding := NEW.binding_reference;
+  ELSE
+    locked_org := OLD.organization_id;
+    locked_binding := OLD.binding_reference;
+  END IF;
+
+  -- Binding identity is immutable; revoker can change status/version only
+  -- and must not silently reroute site/form/destination/source.
+  IF TG_OP = 'UPDATE' THEN
+    IF NEW.organization_id IS DISTINCT FROM OLD.organization_id
+      OR NEW.binding_reference IS DISTINCT FROM OLD.binding_reference
+      OR NEW.site_reference IS DISTINCT FROM OLD.site_reference
+      OR NEW.form_reference IS DISTINCT FROM OLD.form_reference
+      OR NEW.destination_reference IS DISTINCT FROM OLD.destination_reference
+      OR NEW.source_code IS DISTINCT FROM OLD.source_code
+      OR NEW.version <> OLD.version + 1
+      OR OLD.state = 'revoked'
+    THEN
+      RAISE EXCEPTION 'Binding mutation denied'
+        USING ERRCODE = '23514';
+    END IF;
+  END IF;
+
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(
+      'crm_lab_binding|' || locked_org::text || '|' || locked_binding::text,
+      0
+    )
+  );
+  IF TG_OP = 'DELETE' THEN
+    RETURN OLD;
+  END IF;
+  RETURN NEW;
+END
+$crm_binding_guard$;
+
+CREATE TRIGGER crm_lab_binding_serialized_mutation
+BEFORE INSERT OR UPDATE OR DELETE ON public.crm_lab_site_delivery_bindings
+FOR EACH ROW EXECUTE FUNCTION public.crm_lab_binding_mutation_guard();
+
+-- Never circumvent the trigger by truncating the fixture registry.
+CREATE FUNCTION public.crm_lab_binding_forbid_truncate()
+RETURNS trigger LANGUAGE plpgsql
+AS $crm_binding_no_truncate$
+BEGIN
+  RAISE EXCEPTION 'Binding truncation denied' USING ERRCODE = '42501';
+END
+$crm_binding_no_truncate$;
+
+CREATE TRIGGER crm_lab_binding_no_truncate
+BEFORE TRUNCATE ON public.crm_lab_site_delivery_bindings
+FOR EACH STATEMENT EXECUTE FUNCTION public.crm_lab_binding_forbid_truncate();
+
+-- The CI app role has SELECT columns ONLY; all insert/revoke/delete actions
+-- must be performed by the fixture owner; no BYPASSRLS, no app UPDATE.
