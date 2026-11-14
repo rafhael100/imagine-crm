@@ -33,7 +33,7 @@ def main():
     assert "fastcgi_pass" not in c, "Sem execução PHP na prévia"
     assert "access_log off" not in c, "Não desabilitar logs operacionais"
     whitelisted = re.findall(r"location\s+=\s+([^\s{]+)\s*\{", c)
-    assert whitelisted == ["/", "/index.html", "/assets/logo-imagine.png", "/assets/site.css", "/assets/site.js"], whitelisted
+    assert whitelisted == ["/", "/index.html", "/assets/logo-imagine.png", "/assets/site.css", "/assets/site.js", "/fluxo-demo/index.html"], whitelisted
     assert re.search(r"location\s+/\s*\{\s*return\s+404\s*;", c), "Demais rotas devem ser negadas"
     assert c.count("limit_except GET HEAD { deny all; }") == len(whitelisted)
     assert "/etc/nginx/crm-preview.htpasswd" not in str(HERE), "Fixture inesperada"
