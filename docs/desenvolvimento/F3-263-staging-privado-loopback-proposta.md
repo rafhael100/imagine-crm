@@ -24,6 +24,18 @@ Os testes PHPUnit de StagingRenderedComposePolicyTest verificam alterações adv
 
 **Isso continua sendo uma prova estática de configuração e da CLI de CI**, sem imagem executada, sem daemon Docker, sem acesso à VPS e sem liberação operacional. O PR continua em rascunho.
 
+## F3-266 — compatibilidade PHP e isolamento do contexto de build
+
+**Achado bloqueante antes de um build:** o arquivo composer.lock fixa pacotes de produção (incluindo laravel/framework) que exigem ext-mbstring. O Dockerfile PHP tinha libonig-dev, mas não compilava mbstring. Foi corrigido para incluir mbstring em docker-php-ext-install. O novo teste StagingPhpRuntimePlatformContractTest compara extensões ext-* exigidas pelo lock de produção com as compiladas explicitamente e uma lista fechada de módulos esperados na imagem base. Alterações de dependências ou Dockerfile reexecutam a política. **O teste estático não substitui php -m ou composer check-platform-reqs --no-dev na imagem realmente construída**.
+
+**Outro risco identificado:** COPY explícito evita inserir segredos na imagem, mas não impede que arquivos extras do checkout sejam enviados ao builder como contexto. Foram criados ignore-files **específicos por Dockerfile**:
+- infra/staging/Dockerfile.dockerignore: somente Composer, artisan e fontes de app/config/bootstrap/routes/resources/public/migrations normais;
+- infra/staging/Dockerfile.web.dockerignore: somente public/ e nginx.conf revisado.
+
+Os dois começam negando todos os arquivos, reabilitam entradas estritamente necessárias e no final voltam a excluir .env, chaves, certificados, bancos locais, logs, dependências e storage; o primeiro mantém database/experimental-migrations fora do contexto. A precedência de ignore-file por Dockerfile é [documentada pelo Docker](https://docs.docker.com/build/concepts/context/#filename-and-location). O novo StagingBuildContextIsolationTest verifica as listas exatas e alterações inseguras simuladas.
+
+**Limite:** a efetividade real dos padrões e as capacidades reais da imagem, symlinks, rede e permissões precisam ser verificadas num build isolado **somente após o gate apropriado**. Nenhum build, download de imagem, execução de container, deploy ou acesso à VPS ocorre nesta alteração. PR permanece DRAFT/NO-MERGE/NO-DEPLOY.
+
 ## Escopo demonstrável
 
 CI pode provar sintaxe da configuração Compose, modelo normalizado e consistência estática do contrato. **Não** confirma disponibilidade da imagem, build PHP, boot de FPM, healthcheck via Nginx, permissões efetivas, rede de uma VPS, isolamento Docker real, TLS/Cloudflare, segurança do host ou homologação privada completa.
