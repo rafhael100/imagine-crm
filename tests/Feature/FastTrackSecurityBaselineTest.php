@@ -97,6 +97,8 @@ final class FastTrackSecurityBaselineTest extends TestCase
     {
         $files = glob(database_path('experimental-migrations/*/*.php'));
         $this->assertCount(4, $files, 'Exactly four reviewed experimental migrations, no automatic discovery.');
+        $experimentalNames = array_map('basename', $files);
+        sort($experimentalNames, SORT_STRING);
         $this->assertSame(
             [
                 '2026_11_04_000002_create_candidate_crm_auth_registry.php',
@@ -104,7 +106,7 @@ final class FastTrackSecurityBaselineTest extends TestCase
                 '2026_11_05_000004_create_synthetic_async_ledger.php',
                 '2026_11_14_000005_create_lab_trial_claims.php',
             ],
-            array_map('basename', $files),
+            $experimentalNames,
             'No unreviewed experimental migration may be added.',
         );
         foreach (['production', 'staging', 'local', 'testing'] as $environment) {
