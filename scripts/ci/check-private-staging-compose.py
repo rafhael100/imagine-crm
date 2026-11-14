@@ -18,6 +18,7 @@ COMPOSE = ROOT / "infra/staging/compose.yaml"
 DOCKERFILE = ROOT / "infra/staging/Dockerfile"
 NGINX = ROOT / "infra/staging/nginx.conf"
 IGNORE = ROOT / ".dockerignore"
+DB_INIT = ROOT / "infra/staging/01-crm-staging-app-role.sh"
 
 
 def deny(reason: str) -> None:
@@ -25,7 +26,7 @@ def deny(reason: str) -> None:
 
 
 def main() -> None:
-    files = (COMPOSE, DOCKERFILE, NGINX, IGNORE)
+    files = (COMPOSE, DOCKERFILE, NGINX, IGNORE, DB_INIT)
     if not all(path.is_file() for path in files):
         deny("required infrastructure file missing")
     # Combined build must contain both the guarded Sites-to-lead ingestion
@@ -60,15 +61,25 @@ def main() -> None:
     dockerfile = DOCKERFILE.read_text(encoding="utf-8")
     nginx = NGINX.read_text(encoding="utf-8")
     ignore = IGNORE.read_text(encoding="utf-8")
+    init = DB_INIT.read_text(encoding="utf-8")
     if "127.0.0.1:18080:8080" not in raw:
         deny("web service must only bind localhost")
-    if "CRM_STAGING_DB_PASSWORD:?" not in raw or "CRM_STAGING_APP_KEY:?" not in raw:
+    if ("CRM_STAGING_DB_PASSWORD:?" not in raw
+        or "CRM_STAGING_APP_DB_PASSWORD:?" not in raw
+        or "CRM_STAGING_APP_KEY:?" not in raw):
         deny("mandatory non-production secret placeholders missing")
     if not all(x in ignore.splitlines() for x in [".env", ".env.*", ".git", "vendor"]):
         deny("build context secret exclusions missing")
     for source in (raw, dockerfile):
         if re.search(r"(?i)(artisan\s+(migrate|db:wipe)|migrate:fresh|migrate:refresh|db:wipe|asaas-access-token)", source):
             deny("unsafe migration or financial command in runtime definition")
+    if not all(token in init for token in (
+        "NOSUPERUSER", "NOBYPASSRLS", "NOCREATEROLE", "NOINHERIT",
+        "crm_staging_app", "GRANT CONNECT", "GRANT USAGE ON SCHEMA",
+    )):
+        deny("unprivileged PostgreSQL runtime bootstrap missing")
+    if re.search(r"(?i)GRANT\s+(ALL|CREATE|INSERT|UPDATE|DELETE|TRUNCATE)", init):
+        deny("runtime app role must not have mutation privileges in bootstrap")
     if "CRM_AUTH_EXPERIMENTAL: \"false\"" not in raw or "CRM_ASAAS_SANDBOX_ENABLED: \"false\"" not in raw:
         deny("staging authentication/payment must start disabled")
     if "internal;" not in nginx or "fastcgi_pass app:9000;" not in nginx:
@@ -77,6 +88,7 @@ def main() -> None:
     env = os.environ.copy()
     # Intentional impossible CI-only placeholders, NOT working credentials.
     env["CRM_STAGING_DB_PASSWORD"] = "CI-only-not-a-real-staging-password"
+    env["CRM_STAGING_APP_DB_PASSWORD"] = "CI-only-not-a-real-app-password"
     env["CRM_STAGING_APP_KEY"] = "base64:CI-only-invalid-application-key-do-not-deploy="
     check = subprocess.run(
         ["docker", "compose", "-f", str(COMPOSE), "config", "--format", "json"],
@@ -96,6 +108,15 @@ def main() -> None:
         assert int(web_ports[0]["target"]) == 8080
         assert not services["app"].get("ports")
         assert not services["postgres"].get("ports")
+        bootstrap_mounts = services["postgres"].get("volumes", [])
+        assert any(
+            v.get("target") == "/docker-entrypoint-initdb.d/01-crm-staging-app-role.sh"
+            and v.get("read_only") is True
+            for v in bootstrap_mounts
+        )
+        assert services["postgres"]["environment"]["POSTGRES_USER"] == "crm_staging"
+        assert services["app"]["environment"]["DB_USERNAME"] == "crm_staging_app"
+        assert services["app"]["environment"]["DB_PASSWORD"] != services["postgres"]["environment"]["POSTGRES_PASSWORD"]
         assert services["app"]["environment"]["APP_DEBUG"] == "false"
         assert services["app"]["environment"]["CRM_AUTH_EXPERIMENTAL"] == "false"
         assert services["app"]["environment"]["CRM_ASAAS_SANDBOX_ENABLED"] == "false"
