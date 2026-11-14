@@ -14,6 +14,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 HTML = BASE / "index.html"
 LOGO = BASE / "assets" / "logo-imagine.png"
+TRIAL_DEMO = BASE / "fluxo-demo" / "index.html"
 CSS = BASE / "assets" / "site.css"
 JS = BASE / "assets" / "site.js"
 EXPECTED_LOGO_BLOB = "678adeceb3a8ecdaeb6b576b9ee18d1bf0396f77"
@@ -25,6 +26,7 @@ class AuditHTML(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.ids = set()
         self.internal_links = []
+        self.local_paths = []
         self.meta = {}
         self.images = []
         self.buttons = []
@@ -50,6 +52,8 @@ class AuditHTML(HTMLParser):
             href = a.get("href", "")
             if href.startswith("#"):
                 self.internal_links.append(href[1:])
+            elif href == "./fluxo-demo/index.html":
+                self.local_paths.append(href)
             else:
                 self.blocked.append(f"link externo ou não previsto: {href}")
         if tag == "button":
@@ -85,6 +89,7 @@ def main():
     assert len(parser.headings) == 1
     assert EXPECTED_SECTIONS.issubset(parser.ids)
     assert all(anchor in parser.ids for anchor in parser.internal_links), "Âncora quebrada"
+    assert parser.local_paths == ["./fluxo-demo/index.html"], "Jornada demonstrativa única e local"
     assert parser.meta.get("robots") == "noindex,nofollow"
     csp = parser.meta.get("Content-Security-Policy", "")
     for directive in ("default-src 'none'", "connect-src 'none'", "form-action 'none'", "object-src 'none'"):
@@ -101,6 +106,14 @@ def main():
         assert price in html
         assert f'data-action="Plano {plan}"' in html
 
+    trial_page = TRIAL_DEMO.read_text("utf-8")
+    assert 'href="./fluxo-demo/index.html"' in html
+    assert 'src="../assets/logo-imagine.png"' in trial_page
+    assert 'href="../index.html#planos"' in trial_page
+    assert "PROTÓTIPO — DADOS FICTÍCIOS." in trial_page
+    assert "connect-src 'none'" in trial_page and "form-action 'none'" in trial_page
+    assert "012345" in trial_page and 'id="activate-trial"' in trial_page
+    assert "<form" not in trial_page, "Protótipo não pode captar dados"
     assert len(parser.buttons) >= 6
     assert '<table class="compare-table">' in html
     assert '<caption>Resumo preliminar dos planos mensais</caption>' in html

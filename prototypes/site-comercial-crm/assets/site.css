@@ -18,3 +18,7 @@
 .compare-table tbody th{font-weight:700;color:#334038;white-space:nowrap}
 .compare-table tbody tr:last-child th,.compare-table tbody tr:last-child td{border-bottom:0}
 .compare-table tbody td[colspan]{text-align:left;color:#737e76}
+
+/* WEB-P1: acesso explícito ao cadastro somente demonstrativo */
+.trial-preview-link{display:inline-block;margin-top:12px;color:#884900;font-size:12px;text-decoration:underline;text-underline-offset:3px;font-weight:750}
+.trial-preview-link:hover{color:#4b2d0b}.trial-preview-link:focus-visible{outline:3px solid #d17a11;outline-offset:4px;border-radius:3px}

@@ -57,3 +57,13 @@ python3 prototypes/site-comercial-crm/staging/smoke_private_https.py \
 ```
 
 A execução autenticada requer `--auth-file` apontando a um arquivo local fora do repositório com permissão `0600`; não passe senha na linha de comando nem em logs. Nenhum desses comandos realiza deploy ou concede acesso ao CRM.
+
+## WEB-P1 — Jornada navegável comercial → cadastro fictício
+
+Esta fase complementar **não altera a URL comercial nem ativa cadastro real**. O link `Ver demonstração do cadastro de 14 dias` na seção de planos abre `fluxo-demo/index.html`, derivado do protótipo F3-240 da [PR #485](https://github.com/rafhael100/imagine-crm/pull/485) (Git blob original `11b4f313192c9b84338d43f540291606adfcc78e`). Foram ajustados apenas o caminho local da mesma logomarca Imagine, o retorno aos planos e a aparência do link.
+
+O formulário fictício usa dois exemplos fixos de empresa e canal, código sintético `012345`, mostra aviso explícito para não inserir dados verdadeiros e mantém o botão de ativação real desabilitado. Não há backend, rede, armazenamento ou contratação.
+
+`tests/trial_handoff_browser.py` executa Chromium **real** em 375 e 1280px desde a página comercial, navega para a página fictícia, simula código/duplicidade/expiração e comprova que a ativação real continua bloqueada. A CI empacota `fluxo-demo/index.html` juntamente com os arquivos anteriores e inclui o caminho na lista SHA256; o modelo Nginx privado mantém whitelist explícita para esse arquivo.
+
+**Não homologado para público:** valores de planos ainda provisórios; CNPJ/OTP/trial, autenticação, pagamentos, titularidade e direito de uso reais continuam NO-GO, conforme gates SEG/DBA #27, CORE/LGPD #259 e UX #416.
