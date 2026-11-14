@@ -1,0 +1,76 @@
+name: Imagine CRM UX-01 - Prototype hub Chromium screenshots (NO DEPLOY)
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'prototypes/index.html'
+      - 'prototypes/ci_hub_visual.py'
+      - 'tests/Unit/OfflinePrototypeHubImagineIdentityTest.php'
+      - '.github/workflows/crm-ux-01-offline-hub.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-ux-01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-hub-chromium:
+    name: Only local HTML - Chromium 1440/768/390/320
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout PR files without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Reject symlinks, remote assets and active scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f prototypes/index.html
+          test ! -L prototypes/index.html
+          python3 -m py_compile prototypes/ci_hub_visual.py
+          ! grep -Eiq '<form|<script|<iframe|https?://|<input|<textarea' prototypes/index.html
+      - name: Render four viewport screenshots and verify twelve links
+        shell: bash
+        env:
+          GITHUB_ACTIONS: 'true'
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/crm-ux-01-venv"
+          "$RUNNER_TEMP/crm-ux-01-venv/bin/pip" install --disable-pip-version-check --no-input 'playwright==1.56.0'
+          "$RUNNER_TEMP/crm-ux-01-venv/bin/python" prototypes/ci_hub_visual.py
+      - name: Validate screenshot manifest and file integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json, os
+          folder=Path(os.environ["RUNNER_TEMP"])/"imagine-crm-ux-01-hub-review"
+          manifest=json.loads((folder/"manifest.json").read_text(encoding="utf-8"))
+          expected=["01-desktop.png","02-tablet.png","03-mobile.png","04-small-mobile.png"]
+          assert [x["name"] for x in manifest["files"]]==expected
+          assert set(p.name for p in folder.iterdir())==set(expected+["manifest.json"])
+          assert manifest["uses_real_customer_data"] is False
+          assert manifest["login_enabled"] is False
+          assert manifest["production_release_authorized"] is False
+          for entry in manifest["files"]:
+              blob=(folder/entry["name"]).read_bytes()
+              assert len(blob)>2048 and blob.startswith(bytes.fromhex("89504e470d0a1a0a"))
+              assert hashlib.sha256(blob).hexdigest()==entry["sha256"]
+          print("CRM UX-01 PASS: verified four local Chromium screenshots")
+          PY
+      - name: Archive visual-only screenshots for seven days
+        uses: actions/upload-artifact@v4
+        with:
+          name: imagine-crm-ux-01-private-visual-review
+          path: ${{ runner.temp }}/imagine-crm-ux-01-hub-review/
+          retention-days: 7
+          if-no-files-found: error
+          include-hidden-files: false
