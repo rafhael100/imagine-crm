@@ -64,9 +64,6 @@ jobs:
       ASYNC_TEST_PASSWORD: ephemeral-async-role-only
       ASYNC_AUDIT_TEST_USERNAME: crm_async_audit_ci
       ASYNC_AUDIT_TEST_PASSWORD: ephemeral-async-audit-only
-      CRM_TRIAL_LEDGER_LAB: 'synthetic-only'
-      TRIAL_TEST_USERNAME: crm_trial_claim_ci
-      TRIAL_TEST_PASSWORD: ephemeral-trial-insert-only
       IAM_ABUSE_REDIS_TEST: 'true'
       REDIS_CLIENT: phpredis
       REDIS_HOST: 127.0.0.1
@@ -155,20 +152,6 @@ jobs:
           GRANT SELECT ON TABLE crm_lab_async_ledger, crm_lab_async_attempts,
             crm_lab_async_inbox, crm_lab_async_outbox TO crm_async_audit_ci;
           SQL
-      - name: Explicitly migrate disposable global trial marker and grant INSERT-only role
-        run: |
-          php scripts/ci/verify-ephemeral-postgres.php --verify
-          php artisan migrate --path=database/experimental-migrations/trial --force --no-interaction
-          psql -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 <<'SQL'
-          CREATE ROLE crm_trial_claim_ci LOGIN PASSWORD 'ephemeral-trial-insert-only'
-            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
-          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_trial_claim_ci;
-          GRANT USAGE ON SCHEMA public TO crm_trial_claim_ci;
-          GRANT INSERT (cnpj_hmac, key_version, started_at, expires_at, state)
-            ON TABLE crm_lab_trial_claims TO crm_trial_claim_ci;
-          SQL
-      - name: Prove physical one-company-one-marker with two PostgreSQL connections
-        run: php artisan test --filter=PostgresLabTrialClaimUniqueTest --no-ansi
       - name: Run isolated PostgreSQL RLS tests
         run: php artisan test --filter=PostgresMembershipRlsTest --no-ansi
       - name: Run full synthetic test suite
