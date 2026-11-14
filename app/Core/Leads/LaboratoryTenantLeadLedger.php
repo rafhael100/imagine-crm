@@ -37,6 +37,92 @@ final readonly class LaboratoryTenantLeadLedger
 
     public function __construct(private Connection $db) {}
 
+    /**
+     * CRM-LEADS-PG03: CI-only idempotent import of a synthetic Sites event.
+     *
+     * The source/digest is a laboratory fixture, NOT verified webhook identity.
+     * One tenant-scoped event can create at most one lead and one audit event.
+     * A replay with differing attributes returns the same generic denial as
+     * an attempted remap; it never creates a second lead or reveals PII.
+     *
+     * @return array{status_code:'synthetic_captured'|'synthetic_replayed'|'synthetic_conflict_denied',
+     *   can_publish:false,can_contact:false,can_activate:false}
+     */
+    public function captureSynthetic(
+        PrincipalReference $principal,
+        string $organization,
+        string $leadId,
+        string $syntheticTitle,
+        string $sourceCode,
+        string $eventSha256,
+    ): array {
+        if (!Str::isUuid($leadId)
+            || preg_match('/\\A[A-Z0-9][A-Z0-9_-]{2,63}\\z/D', $syntheticTitle) !== 1
+            || !in_array($sourceCode, ['sites', 'landing', 'onepage'], true)
+            || preg_match('/\\A[0-9a-f]{64}\\z/D', $eventSha256) !== 1) {
+            throw new InvalidArgumentException('Captura de lead sintetico invalida.');
+        }
+
+        return $this->within($principal, $organization, function (MembershipSnapshot $membership)
+            use ($leadId, $syntheticTitle, $sourceCode, $eventSha256): array {
+            try {
+                // The unique event key is claimed BEFORE inserting a lead.
+                // A deferred composite FK guarantees no orphan can commit.
+                $claimed = $this->db->affectingStatement(
+                    'INSERT INTO public.crm_lab_lead_capture_keys
+                        (organization_id, source_code, event_sha256, lead_id)
+                     VALUES (?::uuid, ?, ?, ?::uuid)
+                     ON CONFLICT DO NOTHING',
+                    [$membership->tenantId, $sourceCode, $eventSha256, strtolower($leadId)],
+                );
+                if ($claimed === 1) {
+                    $this->db->table('public.crm_lab_leads')->insert([
+                        'id' => strtolower($leadId),
+                        'organization_id' => $membership->tenantId,
+                        'synthetic_title' => $syntheticTitle,
+                    ]);
+                    $this->appendEvent($leadId, $membership->tenantId, 1,
+                        'created', null, 'new');
+                    return self::captureAnswer('synthetic_captured');
+                }
+                if ($claimed !== 0) {
+                    throw new RuntimeException('Captura CI retornou contagem inesperada.');
+                }
+
+                // Only this tenant's exact synthetic event is visible.
+                $record = $this->db->table('public.crm_lab_lead_capture_keys')
+                    ->where('organization_id', $membership->tenantId)
+                    ->where('source_code', $sourceCode)
+                    ->where('event_sha256', $eventSha256)
+                    ->first(['lead_id']);
+                if ($record && strtolower((string) $record->lead_id) === strtolower($leadId)) {
+                    $title = $this->db->table('public.crm_lab_leads')
+                        ->where('organization_id', $membership->tenantId)
+                        ->where('id', strtolower($leadId))
+                        ->value('synthetic_title');
+                    if ($title === $syntheticTitle) {
+                        return self::captureAnswer('synthetic_replayed');
+                    }
+                }
+
+                return self::captureAnswer('synthetic_conflict_denied');
+            } catch (Throwable) {
+                // Never surface SQL params, tenant IDs or source event hashes.
+                throw new RuntimeException('Captura sintetica de lead indisponivel.');
+            }
+        });
+    }
+
+    private static function captureAnswer(string $status): array
+    {
+        return [
+            'status_code' => $status,
+            'can_publish' => false,
+            'can_contact' => false,
+            'can_activate' => false,
+        ];
+    }
+
     /** @return array{status_code:'synthetic_created',can_publish:false,can_contact:false,can_activate:false} */
     public function createSynthetic(
         PrincipalReference $principal,
