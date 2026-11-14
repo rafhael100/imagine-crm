@@ -447,6 +447,51 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $this->assertSame(0, $this->two->transactionLevel());
     }
 
+    public function test_site_binding_form_and_destination_cannot_change_during_replay(): void
+    {
+        $original = self::siteClaim(self::ORG_A);
+        $this->assertSame('synthetic_captured', $this->ledger()->captureSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_A, 'DEMO_A014', 'sites', $original,
+        )['status_code']);
+
+        $mutations = [
+            self::siteClaim(self::ORG_A,
+                binding: '23232323-2222-4222-8222-555555555552'),
+            self::siteClaim(self::ORG_A,
+                site: '34343434-2222-4222-8222-555555555552'),
+            self::siteClaim(self::ORG_A,
+                form: '45454545-2222-4222-8222-555555555552'),
+            self::siteClaim(self::ORG_A,
+                destination: '56565656-2222-4222-8222-555555555552'),
+        ];
+        foreach ($mutations as $claim) {
+            $denied = $this->ledger($this->two)->captureSynthetic(
+                self::principal(), self::ORG_A, self::LEAD_A,
+                'DEMO_A014', 'sites', $claim,
+            );
+            $this->assertSame('synthetic_conflict_denied', $denied['status_code']);
+            $this->assertNoEffects($denied);
+        }
+        $changedSource = $this->ledger($this->two)->captureSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_B,
+            'DEMO_A014', 'landing', $original,
+        );
+        $this->assertSame('synthetic_conflict_denied', $changedSource['status_code']);
+        $this->assertSame('synthetic_replayed', $this->ledger($this->two)->captureSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_A014', 'sites', $original,
+        )['status_code']);
+
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_capture_keys')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_events')->count());
+        $row = $this->owner->table('crm_lab_lead_capture_keys')->first();
+        $this->assertSame($original->identity->bindingReference, $row->binding_reference);
+        $this->assertSame($original->siteReference, $row->site_reference);
+        $this->assertSame($original->formReference, $row->form_reference);
+        $this->assertSame($original->destinationReference, $row->destination_reference);
+    }
+
     public function test_identical_source_event_hash_is_scoped_to_each_tenant(): void
     {
         $claimA = self::siteClaim(self::ORG_A);
