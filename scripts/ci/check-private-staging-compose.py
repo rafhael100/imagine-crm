@@ -34,6 +34,12 @@ def main() -> None:
         ROOT / "app/Core/Leads/LaboratorySignedSiteCapture.php",
         ROOT / "app/Core/Leads/LaboratoryTenantLeadLedger.php",
         ROOT / "app/Core/Tasks/LaboratoryTenantTaskLedger.php",
+        ROOT / "app/Core/Billing/AsaasSandboxCustomerGateway.php",
+        ROOT / "app/Core/Billing/AsaasSandboxPixPaymentGateway.php",
+        ROOT / "app/Core/Billing/AsaasSandboxSubscriptionLookup.php",
+        ROOT / "app/Core/Billing/AsaasSandboxSubscriptionPaymentsReview.php",
+        ROOT / "app/Core/Billing/AsaasWebhookInboxCandidate.php",
+        ROOT / "tests/Feature/PostgresAsaasBillingIntegratedLedgerTest.php",
         ROOT / "tests/Feature/PostgresLabLeadsRlsTest.php",
     )
     if not all(component.is_file() for component in core_components):
@@ -43,6 +49,10 @@ def main() -> None:
         if any(name in content for name in (
             "LaboratorySignedSiteCapture", "LaboratoryTenantLeadLedger",
             "LaboratoryTenantTaskLedger",
+            "AsaasSandboxCustomerGateway",
+            "AsaasSandboxSubscriptionLookup",
+            "AsaasSandboxSubscriptionPaymentsReview",
+            "LaboratoryAsaasOrderPaymentHandoff",
         )):
             deny("CI-only business modules must not be wired to public routes")
 
