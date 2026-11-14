@@ -19,7 +19,7 @@ from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 PATHS = ("/", "/index.html", "/assets/logo-imagine.png",
-         "/assets/site.css", "/assets/site.js")
+         "/assets/site.css", "/assets/site.js", "/fluxo-demo/index.html")
 
 
 class NoRedirect(HTTPRedirectHandler):
