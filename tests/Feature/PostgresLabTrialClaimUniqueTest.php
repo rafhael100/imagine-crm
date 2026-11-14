@@ -246,16 +246,19 @@ final class PostgresLabTrialClaimUniqueTest extends TestCase
         $this->assertSame(0, $this->admin->table(self::TABLE)->count());
     }
 
-    public function test_non_current_hmac_key_is_a_known_release_gate_not_false_guarantee(): void
+    public function test_replacing_current_hmac_key_fails_closed_before_inserting(): void
     {
         $first = $this->service($this->primary)->observe(self::CNPJ_A, self::START);
-        $other = $this->service($this->contingency, self::OTHER_HMAC_KEY)
-            ->observe(self::CNPJ_A, self::START + 1);
-
-        // Demonstrates what must be closed with historical-key candidates
-        // before accepting real registration: key rotation changes the HMAC.
         $this->assertSame('synthetic_first_marker', $first['status_code']);
-        $this->assertSame('synthetic_first_marker', $other['status_code']);
-        $this->assertSame(2, $this->admin->table(self::TABLE)->count());
+
+        try {
+            $this->service($this->contingency, self::OTHER_HMAC_KEY)
+                ->observe(self::CNPJ_A, self::START + 1);
+            $this->fail('A key replacement under the same version must not issue a new marker.');
+        } catch (RuntimeException $e) {
+            $this->assertSame('Politica historica de trial nao corresponde a chave.', $e->getMessage());
+        }
+
+        $this->assertSame(1, $this->admin->table(self::TABLE)->count());
     }
 }
