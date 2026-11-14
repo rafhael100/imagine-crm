@@ -592,6 +592,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
     private function seedActiveSiteBinding(
         string $organization = self::ORG_A,
         ?SyntheticIdempotencyClaim $claim = null,
+        string $source = 'sites',
     ): void {
         $claim ??= self::siteClaim($organization);
         $this->owner->table('crm_lab_site_delivery_bindings')->insert([
@@ -600,6 +601,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
             'site_reference' => $claim->siteReference,
             'form_reference' => $claim->formReference,
             'destination_reference' => $claim->destinationReference,
+            'source_code' => $source,
             'state' => 'active',
             'version' => 1,
         ]);
