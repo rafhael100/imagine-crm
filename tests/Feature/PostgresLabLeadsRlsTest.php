@@ -108,6 +108,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
     private function clean(): void
     {
         $this->owner->table('crm_lab_lead_capture_keys')->delete();
+        $this->owner->table('crm_lab_site_delivery_bindings')->delete();
         $this->owner->table('crm_lab_lead_events')->delete();
         $this->owner->table('crm_lab_leads')->delete();
         $this->owner->table('crm_memberships')
@@ -588,6 +589,22 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $this->assertSame(0, $this->one->transactionLevel());
     }
 
+    private function seedActiveSiteBinding(
+        string $organization = self::ORG_A,
+        ?SyntheticIdempotencyClaim $claim = null,
+    ): void {
+        $claim ??= self::siteClaim($organization);
+        $this->owner->table('crm_lab_site_delivery_bindings')->insert([
+            'organization_id' => $organization,
+            'binding_reference' => $claim->identity->bindingReference,
+            'site_reference' => $claim->siteReference,
+            'form_reference' => $claim->formReference,
+            'destination_reference' => $claim->destinationReference,
+            'state' => 'active',
+            'version' => 1,
+        ]);
+    }
+
     private function signedCapture(?Connection $connection = null, ?string $key = null): LaboratorySignedSiteCapture
     {
         return new LaboratorySignedSiteCapture(
@@ -613,6 +630,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
     public function test_ci_signed_site_capture_accepts_one_valid_message_then_deduplicates_replay(): void
     {
         $claim = self::siteClaim(self::ORG_A);
+        $this->seedActiveSiteBinding(self::ORG_A, $claim);
         $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
         $issued = 1700000000;
         $expires = $issued + 120;
@@ -698,6 +716,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
     public function test_signed_nonce_cannot_be_reused_for_another_submission_same_tenant(): void
     {
         $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
+        $this->seedActiveSiteBinding();
         $issued = 1700000000;
         $expires = $issued + 120;
         $firstClaim = self::siteClaim(self::ORG_A);
