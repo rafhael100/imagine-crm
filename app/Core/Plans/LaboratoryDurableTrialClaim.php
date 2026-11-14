@@ -118,5 +118,22 @@ final readonly class LaboratoryDurableTrialClaim
         if (($actual->role_name ?? null) !== 'crm_trial_claim_ci') {
             throw new RuntimeException('Papel de trial do laboratorio nao autorizado.');
         }
+
+        // Fail closed when the configured key changes, or when a second
+        // historical epoch appears. The v1-only API cannot safely process a
+        // rotated key ring; use the explicit all-aliases adapter instead.
+        try {
+            $policy = $this->database->select(
+                'SELECT version, secret_tag FROM crm_lab_trial_key_epochs ORDER BY version',
+            );
+        } catch (Throwable) {
+            throw new RuntimeException('Politica historica de trial indisponivel.');
+        }
+        $tag = hash_hmac('sha256', 'imagine.crm.trial.keyring.v1', $this->dedicatedHmacKey);
+        if (count($policy) !== 1 || (int) ($policy[0]->version ?? 0) !== 1
+            || !is_string($policy[0]->secret_tag ?? null)
+            || !hash_equals($policy[0]->secret_tag, $tag)) {
+            throw new RuntimeException('Politica historica de trial nao corresponde a chave.');
+        }
     }
 }
