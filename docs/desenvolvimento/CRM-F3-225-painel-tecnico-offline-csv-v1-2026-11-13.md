@@ -1,0 +1,9 @@
+# F3-225 — Painel técnico CSV offline com identidade Imagine
+
+Nova **interface complementar de laboratório**, distinta da Central de Portabilidade geral em revisão no PR #429. Arquivo `prototypes/f3-225-csv-review-board/index.html`: apresenta quatro indicadores de uma amostra exclusivamente fictícia, sem capturar entrada, ler arquivos, conectar rede, armazenar dados ou executar qualquer operação. A página é HTML/CSS estático com CSP `default-src 'none'`, sem scripts; usa a mesma logomarca PNG original aprovada e a paleta laranja/grafite/branco/fundo claro.
+
+Os números exibidos **não foram inventados como estado operacional**: `OfflineCsvReviewBoardTest` executa a classe real `PortableCsvReviewBundleV1` com o exato fixture fixo do CLI F3-224, e exige paridade de quatro indicadores: registros, colisões após mapeamento, controle de direção bidi e campos alegados não mapeados. O código PHP de testes também confirma a marca original pelo SHA de blob Git, a política CSP e a ausência de inputs, rede e vazamento de valores.
+
+**Limites:** é uma página de demonstração estática; não exibe contas ou leads reais, nem processa CSV de usuário. O protocolo Core é usado apenas no teste de correspondência; não há endpoint, download, upload, sessão, autorização, LGPD homologada nem deploy. Não representa aprovação visual. Por depender de validação humana de UX/acessibilidade e do gate #416, manter PR **DRAFT**, sem merge automático, mesmo que F0/PG16/Sites/AIA estejam verdes. Gates #27 e #259 também seguem abertos.
+
+**Evidência visual:** a CI separada `crm-f3-225-csv-review-visual.yml` executa Chromium real em iframes de 1100/550/320 CSS px; confere logomarca, métricas, responsividade, foco no disclosure, negações e ausência de IO. Após o smoke, captura PNGs e publica manifesto SHA-256 durante 7 dias. Capturas não substituem revisão visual humana.
