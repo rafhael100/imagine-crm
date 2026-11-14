@@ -53,6 +53,8 @@ final class StagingPhpRuntimePlatformContractTest extends TestCase
         self::assertIsString($dockerfile);
         self::assertStringContainsString('FROM php:8.4-fpm-bookworm', $dockerfile);
         self::assertStringContainsString('libonig-dev', $dockerfile);
+        self::assertStringContainsString('libsqlite3-dev', $dockerfile);
+        self::assertStringContainsString('pdo_sqlite', $dockerfile);
 
         $explicit = [];
         $commandPrefix = 'docker-php-ext-install -j"$(nproc)" ';
