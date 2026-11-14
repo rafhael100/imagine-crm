@@ -35,3 +35,16 @@ GRANT INSERT (organization_ref, external_reference, reserved_at)
     ON TABLE crm_lab_asaas_customer_links TO crm_billing_link_ci;
 GRANT UPDATE (provider_customer_id, state)
     ON TABLE crm_lab_asaas_customer_links TO crm_billing_link_ci;
+
+
+-- Separate GET-only reconciliation reviewer: can inspect synthetic link
+-- state and confirm an already discovered sandbox customer ID. NO INSERT,
+-- DELETE, TRUNCATE, provider POST or permission on customer/tenant tables.
+CREATE ROLE crm_billing_link_review_ci LOGIN PASSWORD 'ephemeral-link-review-only'
+    NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_billing_link_review_ci;
+GRANT USAGE ON SCHEMA public TO crm_billing_link_review_ci;
+GRANT SELECT (organization_ref, external_reference, provider_customer_id, state)
+    ON TABLE crm_lab_asaas_customer_links TO crm_billing_link_review_ci;
+GRANT UPDATE (provider_customer_id, state)
+    ON TABLE crm_lab_asaas_customer_links TO crm_billing_link_review_ci;
