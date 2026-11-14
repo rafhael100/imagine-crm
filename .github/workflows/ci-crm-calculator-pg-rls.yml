@@ -1,0 +1,67 @@
+name: CRM calculator PG idempotency and RLS (disposable)
+
+on:
+  pull_request:
+    paths:
+      - 'tests/Labs/calculator/**'
+      - '.github/workflows/ci-crm-calculator-pg-rls.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ephemeral-calculator-postgres:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_calc_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-disposable-not-secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d imagine_calc_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGUSER: postgres
+      PGDATABASE: imagine_calc_ci
+      PGPASSWORD: ci-disposable-not-secret
+    steps:
+      - name: Checkout isolated review code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify disposable database and create limited role
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTIONS" = "true"
+          test "$PGDATABASE" = "imagine_calc_ci"
+          test "$(psql -X -qAt -c 'SELECT current_database()')" = "imagine_calc_ci"
+          psql -X -v ON_ERROR_STOP=1 -1 <<'SQL'
+          CREATE ROLE crm_calc_ci LOGIN PASSWORD 'ci-only-role'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_calc_ci TO crm_calc_ci;
+          GRANT USAGE ON SCHEMA public TO crm_calc_ci;
+          SQL
+      - name: Create CI-only calculator tables with FORCE RLS
+        run: |
+          set -euo pipefail
+          psql -X -v ON_ERROR_STOP=1 -1 -f tests/Labs/calculator/calculator-interest-rls-ci.sql
+      - name: Test idempotency nonce and tenant isolation under restricted role
+        run: |
+          set -euo pipefail
+          psql -X -v ON_ERROR_STOP=1 -f tests/Labs/calculator/calculator-interest-rls-assertions-ci.sql
+      - name: Read-only report of disabled business effects
+        if: always()
+        run: |
+          echo '### Calculator PG16 laboratory (NO-GO)' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Metadata only, no PII, production migration, endpoint or email' >> "$GITHUB_STEP_SUMMARY"
+          echo 'A synthetic RLS policy alone does not prove business authorization' >> "$GITHUB_STEP_SUMMARY"
