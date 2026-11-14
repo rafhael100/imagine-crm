@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Core\Identity\PrincipalReference;
 use App\Core\Leads\LeadSubmissionIdentity;
 use App\Core\Leads\SyntheticIdempotencyClaim;
+use App\Core\Leads\LaboratorySignedSiteCapture;
 use App\Core\Leads\LaboratoryTenantLeadLedger;
 use App\Core\Tenancy\PostgresActiveMembershipStore;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -585,6 +586,167 @@ final class PostgresLabLeadsRlsTest extends TestCase
             "SELECT has_column_privilege(current_user, 'public.crm_lab_lead_capture_keys','recorded_at','INSERT') AS allowed",
         )->allowed);
         $this->assertSame(0, $this->one->transactionLevel());
+    }
+
+    private function signedCapture(?Connection $connection = null, ?string $key = null): LaboratorySignedSiteCapture
+    {
+        return new LaboratorySignedSiteCapture(
+            $this->ledger($connection),
+            $key ?? (string) getenv('CRM_LEADS_SIGNING_KEY_CI'),
+        );
+    }
+
+    private static function syntheticSiteSignature(
+        SyntheticIdempotencyClaim $claim,
+        string $leadId,
+        string $title,
+        string $source,
+        string $nonce,
+        int $issued,
+        int $expires,
+    ): string {
+        return hash_hmac('sha256', LaboratorySignedSiteCapture::canonicalForCi(
+            $claim, $leadId, $title, $source, $nonce, $issued, $expires,
+        ), (string) getenv('CRM_LEADS_SIGNING_KEY_CI'));
+    }
+
+    public function test_ci_signed_site_capture_accepts_one_valid_message_then_deduplicates_replay(): void
+    {
+        $claim = self::siteClaim(self::ORG_A);
+        $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
+        $issued = 1700000000;
+        $expires = $issued + 120;
+        $signature = self::syntheticSiteSignature(
+            $claim, self::LEAD_A, 'DEMO_SIGN01', 'sites', $nonce, $issued, $expires,
+        );
+
+        $first = $this->signedCapture()->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_SIGN01', 'sites', $claim,
+            $nonce, $issued, $expires, $issued + 10, $signature,
+        );
+        $replay = $this->signedCapture($this->two)->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_SIGN01', 'sites', $claim,
+            $nonce, $issued, $expires, $issued + 20, $signature,
+        );
+
+        $this->assertSame('synthetic_captured', $first['status_code']);
+        $this->assertSame('synthetic_replayed', $replay['status_code']);
+        $this->assertNoEffects($first);
+        $this->assertNoEffects($replay);
+        $this->assertSame(1, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_events')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_capture_keys')->count());
+        $this->assertSame($nonce,
+            $this->owner->table('crm_lab_lead_capture_keys')->value('signed_nonce'));
+
+        // A message expires even when its submission was already persisted.
+        $expired = $this->signedCapture()->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_SIGN01', 'sites', $claim,
+            $nonce, $issued, $expires, $expires, $signature,
+        );
+        $this->assertSame('synthetic_integrity_denied', $expired['status_code']);
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_events')->count());
+    }
+
+    public function test_signed_capture_rejects_tampering_and_invalid_time_before_any_sql(): void
+    {
+        $claim = self::siteClaim(self::ORG_A);
+        $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
+        $issued = 1700000000;
+        $expires = $issued + 120;
+        $signature = self::syntheticSiteSignature(
+            $claim, self::LEAD_A, 'DEMO_SIGN02', 'sites', $nonce, $issued, $expires,
+        );
+        $siteChanged = self::siteClaim(
+            self::ORG_A, site: '34343434-2222-4222-8222-555555555552',
+        );
+
+        foreach ([
+            ['DEMO_SIGN03', 'sites', $claim, $nonce, $issued, $expires, $issued + 1, $signature],
+            ['DEMO_SIGN02', 'landing', $claim, $nonce, $issued, $expires, $issued + 1, $signature],
+            ['DEMO_SIGN02', 'sites', $siteChanged, $nonce, $issued, $expires, $issued + 1, $signature],
+            ['DEMO_SIGN02', 'sites', $claim, 'bbbbbbbb-cccc-4ddd-8eee-aaaaaaaaaaaa', $issued, $expires, $issued + 1, $signature],
+            ['DEMO_SIGN02', 'sites', $claim, $nonce, $issued, $expires, $issued + 1, str_repeat('a', 64)],
+            ['DEMO_SIGN02', 'sites', $claim, $nonce, $issued, $expires, $expires, $signature],
+            ['DEMO_SIGN02', 'sites', $claim, $nonce, $issued + 31, $expires, $issued, $signature],
+            ['DEMO_SIGN02', 'sites', $claim, $nonce, $issued, $issued + 301, $issued + 1, $signature],
+            ['DEMO_SIGN02', 'sites', $claim, $nonce, $issued, $expires, $issued + 1, 'bad-signature'],
+        ] as [$title, $source, $differentClaim, $givenNonce, $at, $until, $now, $mac]) {
+            $result = $this->signedCapture()->captureSigned(
+                self::principal(), self::ORG_A, self::LEAD_A,
+                $title, $source, $differentClaim,
+                $givenNonce, $at, $until, $now, $mac,
+            );
+            $this->assertSame('synthetic_integrity_denied', $result['status_code']);
+            $this->assertNoEffects($result);
+        }
+
+        $this->assertSame(0, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(0, $this->owner->table('crm_lab_lead_events')->count());
+        $this->assertSame(0, $this->owner->table('crm_lab_lead_capture_keys')->count());
+    }
+
+    public function test_signed_nonce_cannot_be_reused_for_another_submission_same_tenant(): void
+    {
+        $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
+        $issued = 1700000000;
+        $expires = $issued + 120;
+        $firstClaim = self::siteClaim(self::ORG_A);
+        $secondClaim = self::siteClaim(
+            self::ORG_A, submission: '12121212-2222-4222-8222-555555555552',
+        );
+        $one = $this->signedCapture()->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_SIGN04', 'sites', $firstClaim, $nonce, $issued, $expires, $issued + 5,
+            self::syntheticSiteSignature(
+                $firstClaim, self::LEAD_A, 'DEMO_SIGN04', 'sites', $nonce, $issued, $expires,
+            ),
+        );
+        $duplicateNonce = $this->signedCapture($this->two)->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_B,
+            'DEMO_SIGN05', 'sites', $secondClaim, $nonce, $issued, $expires, $issued + 5,
+            self::syntheticSiteSignature(
+                $secondClaim, self::LEAD_B, 'DEMO_SIGN05', 'sites', $nonce, $issued, $expires,
+            ),
+        );
+        $this->assertSame('synthetic_captured', $one['status_code']);
+        $this->assertSame('synthetic_conflict_denied', $duplicateNonce['status_code']);
+        $this->assertNoEffects($duplicateNonce);
+        $this->assertSame(1, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_events')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_capture_keys')->count());
+        $this->assertFalse((bool) $this->one->selectOne(
+            "SELECT has_column_privilege(current_user, 'public.crm_lab_lead_capture_keys','signed_nonce','UPDATE') AS allowed",
+        )->allowed);
+    }
+
+    public function test_signed_site_capture_fails_closed_for_wrong_test_key_and_never_adds_routes(): void
+    {
+        try {
+            $this->signedCapture(key: 'not-the-CI-fixture-key')->captureSigned(
+                self::principal(), self::ORG_A, self::LEAD_A, 'DEMO_SIGN06',
+                'sites', self::siteClaim(self::ORG_A),
+                'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa',
+                1700000000, 1700000120, 1700000005, str_repeat('a', 64),
+            );
+            $this->fail('A non-CI key must not be trusted.');
+        } catch (LogicException $e) {
+            $this->assertSame(
+                'Verificacao sintética de origem disponivel somente no CI descartavel.',
+                $e->getMessage(),
+            );
+        }
+        $this->assertSame(0, $this->owner->table('crm_lab_leads')->count());
+        $this->postJson('/api/sites/intake', [])->assertNotFound();
+        $this->postJson('/api/leads/signed', [])->assertNotFound();
+        foreach (['routes/web.php', 'bootstrap/app.php'] as $file) {
+            $source = file_get_contents(base_path($file));
+            $this->assertIsString($source);
+            $this->assertStringNotContainsString('LaboratorySignedSiteCapture', $source);
+        }
     }
 
     public function test_wrong_database_role_and_public_endpoints_stay_denied(): void
