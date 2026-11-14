@@ -112,15 +112,6 @@ final class AsaasSandboxPixPaymentGatewayTest extends TestCase
     public function test_existing_pending_sandbox_pix_is_reused_without_post(): void
     {
         Http::fake([
-            'api-sandbox.asaas.com/v3/payments*' => static function (Request $request) {
-                return Http::response([
-                    'hasMore' => false,
-                    'data' => [$this->paymentRecord()],
-                ], 200);
-            },
-        ]);
-        // Use a closure bound to this test instead of a static closure:
-        Http::fake([
             'api-sandbox.asaas.com/v3/payments*' => fn (Request $request) =>
                 Http::response(['hasMore' => false, 'data' => [$this->paymentRecord()]], 200),
         ]);
@@ -159,7 +150,7 @@ final class AsaasSandboxPixPaymentGatewayTest extends TestCase
                     $this->assertSame([
                         'customer' => self::CUSTOMER_ID,
                         'billingType' => 'PIX',
-                        'value' => 89,
+                        'value' => 89.0,
                         'dueDate' => self::DUE_DATE,
                         'externalReference' => self::EXTERNAL_REFERENCE,
                         'description' => 'LAB-IMAGINE-CRM-essencial-FICTICIO',
@@ -291,8 +282,16 @@ final class AsaasSandboxPixPaymentGatewayTest extends TestCase
                 array_merge($this->paymentRecord(), ['billingType' => 'CREDIT_CARD']),
             ]]],
         ] as [$status, $payload]) {
+            $calls = 0;
             Http::fake([
-                'api-sandbox.asaas.com/v3/payments*' => Http::response($payload, $status),
+                'api-sandbox.asaas.com/v3/payments*' =>
+                    static function (Request $request) use ($payload, $status, &$calls) {
+                        $calls++;
+                        if ($request->method() !== 'GET') {
+                            throw new RuntimeException('POST não autorizado por consulta ambígua');
+                        }
+                        return Http::response($payload, $status);
+                    },
             ]);
             try {
                 $this->runCharge();
@@ -301,7 +300,7 @@ final class AsaasSandboxPixPaymentGatewayTest extends TestCase
                 $this->assertSame('Operacao PIX sandbox inconclusiva.', $e->getMessage());
                 $this->assertNull($e->getPrevious());
             }
-            Http::assertSentCount(1);
+            $this->assertSame(1, $calls, 'Only the lookup GET is allowed on ambiguity.');
         }
     }
 
