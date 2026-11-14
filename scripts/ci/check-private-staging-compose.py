@@ -55,12 +55,13 @@ def main() -> None:
     route_source = (ROOT / "routes/web.php").read_text(encoding="utf-8")
     if ("""app()->environment('staging')""" not in route_source
         or """getenv('CRM_STAGING_MARKETING_PREVIEW') === 'true'""" not in route_source
-        or "Route::get('/'" not in route_source
-        or "Route::get('/demo'" not in route_source
-        or "Route::get('/demo/live'" not in route_source
+        or "$router->get('/'" not in route_source
+        or "$router->get('/demo'" not in route_source
+        or "$router->get('/demo/live'" not in route_source
         or "getenv('CRM_STAGING_PERSISTED_DEMO') === 'true'" not in route_source
         or any(token in route_source for token in (
             "Route::post(", "Route::put(", "Route::patch(", "Route::delete(",
+            "$router->post(", "$router->put(", "$router->patch(", "$router->delete(",
         ))):
         deny("private preview route missing staging guard or exposes business effects")
     for entry in (ROOT / "routes/web.php", ROOT / "bootstrap/app.php"):
