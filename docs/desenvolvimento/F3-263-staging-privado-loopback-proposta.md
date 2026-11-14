@@ -76,6 +76,12 @@ A F3-270 adiciona **healthchecks nativos no Compose**: PHP-FPM inspeciona exclus
 
 **Isso verifica somente o runner efêmero se a CI ficar verde.** Healthchecks não realizam restart automático, não são SLA, não substituem monitoramento, certificado TLS, integração Portal/CRM, banco persistente, backup/restauração ou segurança da VPS. Regras DRAFT/NO-MERGE/NO-DEPLOY, SEG/DBA #27, CORE/LGPD #259 e UX #416 permanecem.
 
+## F3-271 — inventário de revisão do pacote efêmero
+
+Depois de passar pelos testes de runtime, a CI agora produz um inventário limitado a: commit SHA40 do checkout, hashes SHA256 do Composer lock, Dockerfiles e Compose, IDs SHA256 das **imagens locais temporárias** (não são digests assinados/publicados em registry), módulos PHP carregados e nomes/versões das dependências de produção. O gerador remove da saída descrições, URLs, tokens, variáveis de ambiente, arquivos de clientes e caminhos internos, e verifica um manifesto de checksums SHA256.
+
+Se a etapa concluir, o workflow GitHub Actions anexará o artifact `crm-f3-271-review-inventory` por **7 dias**. O script exige runner GitHub-hosted, evento pull_request, projeto Compose restrito e diretório temporário novo, e o upload ocorre **após** as provas de HTTP, isolamento e recuperação. A CI remove contêineres, redes e imagens mesmo que o upload falhe. **O inventário não é SBOM completo, pin de digest de registry, assinatura de proveniência, aprovação de segurança ou deploy.**
+
 ## Escopo demonstrável
 
 A CI F3-263 cobre sintaxe e política estática. **A CI F3-267**, se verde, pode comprovar build e fumaça HTTP real **somente no runner descartável**. Nenhuma das duas comprova rede de uma VPS, segurança do host definitivo, TLS/Cloudflare, back-up, resiliência do PostgreSQL operacional, homologação privada da infraestrutura Imagine ou autorização de negócios.
