@@ -1,0 +1,64 @@
+name: CRM Imagine WEB-P0 static preview - Chromium review (NO DEPLOY)
+on:
+  pull_request:
+    paths:
+      - 'prototypes/site-comercial-crm/**'
+      - '.github/workflows/crm-web-p0-preview-browser.yml'
+permissions:
+  contents: read
+jobs:
+  static-visual-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR candidate without saved credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Verify static HTML and no external checkout
+        run: |
+          set -euo pipefail
+          test -f prototypes/site-comercial-crm/index.html
+          test ! -L prototypes/site-comercial-crm/index.html
+          python3 -m py_compile prototypes/site-comercial-crm/ci_browser.py
+          ! grep -Ei '<form|<input[^>]+(email|password)|https?://|<script[^>]+src=' prototypes/site-comercial-crm/index.html
+          echo 'PASS: visual-only HTML, no forms, external scripts, direct checkout or registration'
+      - name: Run real browser desktop/tablet/mobile review
+        env:
+          GITHUB_ACTIONS: 'true'
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/crm-web-p0"
+          "$RUNNER_TEMP/crm-web-p0/bin/pip" install --disable-pip-version-check --no-input 'playwright==1.56.0'
+          "$RUNNER_TEMP/crm-web-p0/bin/python" prototypes/site-comercial-crm/ci_browser.py
+      - name: Validate synthetic screenshot manifest
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          folder=Path(os.environ["RUNNER_TEMP"])/"imagine-crm-web-preview-shots"
+          data=json.loads((folder/"manifest.json").read_text(encoding="utf-8"))
+          assert [x["name"] for x in data["files"]]==[
+              "01-desktop.png","02-tablet.png","03-mobile.png","04-small-mobile.png"]
+          assert set(p.name for p in folder.iterdir())=={
+              "01-desktop.png","02-tablet.png","03-mobile.png",
+              "04-small-mobile.png","manifest.json"}
+          assert data["public_release_authorized"] is False
+          assert data["customer_data_used"] is False
+          assert data["billing_enabled"] is False
+          assert data["registration_enabled"] is False
+          for item in data["files"]:
+              raw=(folder/item["name"]).read_bytes()
+              assert len(raw)>2048 and raw.startswith(bytes.fromhex("89504e470d0a1a0a"))
+              assert hashlib.sha256(raw).hexdigest()==item["sha256"]
+          print("PASS CRM-only static screenshots with verified SHA256")
+          PY
+      - name: Save visual review images for 7 days
+        uses: actions/upload-artifact@v4
+        with:
+          name: imagine-crm-web-p0-private-review
+          path: ${{ runner.temp }}/imagine-crm-web-preview-shots/
+          retention-days: 7
+          if-no-files-found: error
