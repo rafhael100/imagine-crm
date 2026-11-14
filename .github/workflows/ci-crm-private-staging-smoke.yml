@@ -10,6 +10,8 @@ on:
       - '.github/workflows/ci-crm-private-staging-smoke.yml'
       - 'app/Core/Leads/**'
       - 'app/Core/Tasks/**'
+      - 'scripts/ci/rehearse-crm-private-restore.sh'
+      - 'tests/Labs/recovery/**'
 
 permissions:
   contents: read
@@ -55,6 +57,10 @@ jobs:
             test "$status" = 404
           done
           echo "Private CI health 200; business endpoints 404; localhost port only."
+      - name: Prove full PostgreSQL backup and isolated restore with FORCE RLS
+        env:
+          CRM_RECOVERY_LAB: synthetic-only
+        run: bash scripts/ci/rehearse-crm-private-restore.sh
       - name: Collect CI-only container diagnostics on smoke failure
         if: failure()
         run: |
@@ -70,6 +76,7 @@ jobs:
             echo '### CRM private ephemeral smoke'
             echo '- Runs only inside GitHub hosted runner with generated fake credentials'
             echo '- Localhost health and no public business routes tested'
+            echo '- Full pg_dump + separate-db pg_restore, tenant RLS and audit with fictional data verified'
             echo '- Containers and disposable volume destroyed before completion'
             echo '- No real customer, Asaas network, Leaseweb connection or production changes'
             echo '- Not sufficient for TLS, backups, operational IAM, RLS or launch GO'
