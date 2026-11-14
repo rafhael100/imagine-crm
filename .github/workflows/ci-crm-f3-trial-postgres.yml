@@ -10,6 +10,7 @@ on:
       - 'database/experimental-migrations/trial/**'
       - 'tests/Feature/PostgresLabTrialClaimUniqueTest.php'
       - 'tests/Feature/PostgresLabTrialKeyRingTest.php'
+      - 'tests/Feature/PostgresLabTrialHttpHandoffTest.php'
       - 'tests/Unit/TrialClaimWorkflowGuardTest.php'
       - '.github/workflows/ci-crm-f3-trial-postgres.yml'
 
@@ -86,6 +87,7 @@ jobs:
           php -l app/Core/Plans/LaboratoryHistoricalTrialAliases.php
           php -l tests/Feature/PostgresLabTrialClaimUniqueTest.php
           php -l tests/Feature/PostgresLabTrialKeyRingTest.php
+          php -l tests/Feature/PostgresLabTrialHttpHandoffTest.php
       - name: Assegurar que a fonte do workflow nao habilita producao/DDL perigoso
         run: php artisan test --filter=TrialClaimWorkflowGuardTest --no-ansi
       - name: Inspecionar que PostgreSQL é descartável antes da migração
@@ -109,6 +111,8 @@ jobs:
         run: php artisan test --filter=PostgresLabTrialClaimUniqueTest --no-ansi
       - name: Provar historico v1/v2, rejeicao de chave ausente e rollback integral
         run: php artisan test --filter=PostgresLabTrialKeyRingTest --no-ansi
+      - name: Provar HTTP ficticio OTP -> PostgreSQL sem publicar API
+        run: php artisan test --filter=PostgresLabTrialHttpHandoffTest --no-ansi
       - name: Declarar limites no resumo da CI
         if: always()
         run: |
