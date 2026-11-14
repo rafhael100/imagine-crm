@@ -45,7 +45,13 @@ for _ in $(seq 1 30); do
   sleep 2
 done
 if [[ "$ready" != true ]]; then
-  echo 'F3-267 NO-GO: /up not reachable with HTTP 200 on loopback.' >&2
+  # HTTP status is a three-digit numeric diagnostic only; never echo a body,
+  # URL, response header, environment value, host path or service log.
+  if [[ "$code" =~ ^[0-9]{3}$ ]]; then
+    echo "F3-267 NO-GO: /up HTTP code $code, expected 200." >&2
+  else
+    echo 'F3-267 NO-GO: /up failed without a safe HTTP status code.' >&2
+  fi
   exit 1
 fi
 echo 'F3-267 /up HTTP 200 on loopback.'
