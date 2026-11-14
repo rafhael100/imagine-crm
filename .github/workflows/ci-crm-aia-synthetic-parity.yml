@@ -34,13 +34,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: rafhael100/imagine-ai-agents
-          ref: a18ad19ad8a24f9a04f1f4bce789ff4af6316d55
+          ref: 5a2c8af18448aeebfe8eda0d7570f34ffbe24611
           path: _synthetic_agents_fixture
           persist-credentials: false
 
       - name: Verify immutable Agents revision
         run: |
-          test "$(git -C _synthetic_agents_fixture rev-parse HEAD)" = "a18ad19ad8a24f9a04f1f4bce789ff4af6316d55"
+          test "$(git -C _synthetic_agents_fixture rev-parse HEAD)" = "5a2c8af18448aeebfe8eda0d7570f34ffbe24611"
 
       - name: PHP without Composer, services or credentials
         uses: shivammathur/setup-php@v2
@@ -55,6 +55,7 @@ jobs:
           php -l app/Support/Synthetic/AiaFixtureNonceLedger.php
           php -l app/Support/Synthetic/AiaHmacFixturePreflight.php
           php -l scripts/ci/check-aia-hmac-fixture.php
+          php -l scripts/ci/check-aia-f227-signer-reciprocal.php
           php -l app/Core/Leads/AgentsReadResponseAssessment.php
           php -l app/Core/Leads/AgentsReadResponseInspector.php
           php -l tests/Unit/AgentsReadResponseInspectorTest.php
@@ -67,6 +68,9 @@ jobs:
 
       - name: Verify signed and replay-protected synthetic bytes without any authority
         run: php scripts/ci/check-aia-hmac-fixture.php
+
+      - name: Original Agents signed body/proof issuer checked by original CRM HMAC verifier
+        run: php scripts/ci/check-aia-f227-signer-reciprocal.php
 
       - name: Cross-repository syntactic parity; uniform deny
         run: php scripts/ci/check-aia-crm-contract-parity.php
