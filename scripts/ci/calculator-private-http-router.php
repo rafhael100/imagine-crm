@@ -80,6 +80,43 @@ if ($assessment['synthetic_mac_matches'] !== true) {
     respond(403, 'SYNTHETIC_SIGNATURE_REJECTED');
     return;
 }
+// Optional CI-only database exercise: unlike HTTP review-only, this writes
+// IMMUTABLE SYNTHETIC METADATA to the disposed PostgreSQL service. It is never
+// reachable from a Laravel route, browser or actual customer environment.
+if (getenv('CRM_CALCULATOR_HTTP_PG_CI') === 'synthetic-pg') {
+    if (getenv('PGDATABASE') !== 'imagine_calc_ci' ||
+        getenv('PGHOST') !== '127.0.0.1' ||
+        getenv('GITHUB_ACTIONS') !== 'true') {
+        respond(404, 'SYNTHETIC_PG_DISABLED');
+        return;
+    }
+    require_once __DIR__ . '/../../app/Core/Leads/SyntheticCalculatorPgDelivery.php';
+    try {
+        $db = new PDO(
+            'pgsql:host=127.0.0.1;port=5432;dbname=imagine_calc_ci',
+            'crm_calc_ci',
+            'ci-only-role',
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+             PDO::ATTR_EMULATE_PREPARES => false]
+        );
+        $result = \App\Core\Leads\SyntheticCalculatorPgDelivery::record(
+            $db, $envelope, $key,
+            'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', $now
+        );
+        $state = $result['state'];
+        $status = match($state) {
+            'SYNTHETIC_PG_INTENT_RECORDED' => 201,
+            'SYNTHETIC_REPLAY_CONFIRMED' => 200,
+            'SYNTHETIC_CONFLICT_DENIED','SYNTHETIC_SQL_CONFLICT_DENIED' => 409,
+            default => 503,
+        };
+        respond($status, $state);
+    } catch (Throwable) {
+        respond(503, 'SYNTHETIC_PG_UNAVAILABLE');
+    }
+    return;
+}
+
 // A correct fixture MAC CANNOT authorize a real client, PII or consent.
 // 202 Accepted denotes ONLY a structurally reviewed synthetic HTTP request;
 // not persisted, queued or delivered.
