@@ -42,7 +42,10 @@ return new class extends Migration
             $t->string('secret_tag', 64)->unique();
         });
         DB::statement("ALTER TABLE crm_lab_trial_key_epochs ADD CONSTRAINT lab_trial_key_epoch_closed CHECK (
-            version BETWEEN 1 AND 4 AND secret_tag ~ '^[0-9a-f]{64}
+            version BETWEEN 1 AND 4 AND secret_tag ~ '^[0-9a-f]{64}$'
+        )");
+
+        Schema::create(self::TABLE, static function (Blueprint $t): void {
             // A keyed HMAC fingerprint, NEVER the raw CNPJ. Global across tenants:
             // one synthetic company cannot receive new markers in other tenants.
             $t->string('cnpj_hmac', 64)->primary();
@@ -74,41 +77,5 @@ return new class extends Migration
         $this->guard();
         Schema::dropIfExists(self::TABLE);
         Schema::dropIfExists('crm_lab_trial_key_epochs');
-    }
-};
-
-        )");
-
-        Schema::create(self::TABLE, static function (Blueprint $t): void {
-            // A keyed HMAC fingerprint, NEVER the raw CNPJ. Global across tenants:
-            // one synthetic company cannot receive new markers in other tenants.
-            $t->string('cnpj_hmac', 64)->primary();
-            $t->unsignedSmallInteger('key_version');
-            $t->bigInteger('started_at');
-            $t->bigInteger('expires_at');
-            $t->string('state', 32);
-            $t->boolean('can_activate')->default(false);
-            $t->boolean('can_register')->default(false);
-            $t->boolean('can_charge')->default(false);
-        });
-
-        DB::statement("ALTER TABLE crm_lab_trial_claims ADD CONSTRAINT lab_trial_unusable CHECK (
-            cnpj_hmac ~ '^[0-9a-f]{64}$'
-            AND key_version = 1
-            AND started_at > 0
-            AND expires_at = started_at + 1209600
-            AND state = 'synthetic_observation_only'
-            AND can_activate = false AND can_register = false AND can_charge = false
-        )");
-
-        // The trial ledger is global, not tenant-scoped. Restricted CI role
-        // gets INSERT only; no SELECT/UPDATE/DELETE/TRUNCATE grants.
-        // No OAuth, customer record, CNPJ lookup, access grants or send route.
-    }
-
-    public function down(): void
-    {
-        $this->guard();
-        Schema::dropIfExists(self::TABLE);
     }
 };
