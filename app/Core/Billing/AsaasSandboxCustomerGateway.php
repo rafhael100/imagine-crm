@@ -104,6 +104,72 @@ final readonly class AsaasSandboxCustomerGateway
         }
     }
 
+    /**
+     * BILL-ASAAS-07: GET-ONLY reconciliation. Never creates a customer.
+     * An absent/ambiguous result is NOT authorization to issue a new POST.
+     *
+     * @return array{
+     *  status_code:'sandbox_customer_found'|'sandbox_customer_absent',
+     *  provider_customer_id:?string,environment:'sandbox',
+     *  can_create_customer:false,can_charge:false,can_activate:false
+     * }
+     */
+    public function lookupOnlySyntheticCustomer(string $externalReference): array
+    {
+        $uuid = '/\A[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\z/iD';
+        if (preg_match($uuid, $externalReference) !== 1) {
+            throw new InvalidArgumentException('Referencia sandbox de conciliacao invalida.');
+        }
+
+        try {
+            $response = $this->request()->get(self::API.'/customers', [
+                'externalReference' => $externalReference,
+                'limit' => 2,
+            ]);
+            if (!$response->successful()) {
+                throw new RuntimeException('Consulta de conciliacao sem resposta.');
+            }
+            $body = $response->json();
+            if (!is_array($body)
+                || !is_array($body['data'] ?? null)
+                || !array_is_list($body['data'])
+                || ($body['hasMore'] ?? false) !== false
+                || count($body['data']) > 1) {
+                throw new RuntimeException('Consulta de conciliacao ambigua.');
+            }
+
+            if (count($body['data']) === 0) {
+                return [
+                    'status_code' => 'sandbox_customer_absent',
+                    'provider_customer_id' => null,
+                    'environment' => 'sandbox',
+                    'can_create_customer' => false,
+                    'can_charge' => false,
+                    'can_activate' => false,
+                ];
+            }
+
+            $found = $body['data'][0];
+            if (!is_array($found)
+                || ($found['externalReference'] ?? null) !== $externalReference
+                || !self::validProviderId($found['id'] ?? null)) {
+                throw new RuntimeException('Cliente sandbox de conciliacao divergente.');
+            }
+
+            return [
+                'status_code' => 'sandbox_customer_found',
+                'provider_customer_id' => $found['id'],
+                'environment' => 'sandbox',
+                'can_create_customer' => false,
+                'can_charge' => false,
+                'can_activate' => false,
+            ];
+        } catch (Throwable) {
+            // No response data, credentials or HTTP errors in logs/exceptions.
+            throw new RuntimeException('Consulta Asaas sandbox para conciliacao inconclusiva.');
+        }
+    }
+
     private function request(): \Illuminate\Http\Client\PendingRequest
     {
         return $this->http->withHeaders([
