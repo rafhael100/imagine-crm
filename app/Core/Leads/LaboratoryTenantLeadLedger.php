@@ -73,6 +73,27 @@ final readonly class LaboratoryTenantLeadLedger
         return $this->within($principal, $organization, function (MembershipSnapshot $membership)
             use ($leadId, $syntheticTitle, $sourceCode, $eventSha256, $claim, $signedNonce): array {
             try {
+                // Signed CI claims must match a server-owned, ACTIVE binding.
+                // Locking the row inside membership transaction serializes a
+                // concurrent state revocation with this capture. A MAC over
+                // caller-provided UUIDs alone is NOT sufficient authority.
+                if ($signedNonce !== null) {
+                    $binding = $this->db->table('public.crm_lab_site_delivery_bindings')
+                        ->where('organization_id', $membership->tenantId)
+                        ->where('binding_reference', $claim->identity->bindingReference)
+                        ->sharedLock()->first([
+                            'site_reference', 'form_reference',
+                            'destination_reference', 'state',
+                        ]);
+                    if (!$binding
+                        || $binding->state !== 'active'
+                        || (string) $binding->site_reference !== $claim->siteReference
+                        || (string) $binding->form_reference !== $claim->formReference
+                        || (string) $binding->destination_reference !== $claim->destinationReference) {
+                        return self::captureAnswer('synthetic_conflict_denied');
+                    }
+                }
+
                 // The unique event key is claimed BEFORE inserting a lead.
                 // A deferred composite FK guarantees no orphan can commit.
                 $claimed = $this->db->affectingStatement(
