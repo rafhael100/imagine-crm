@@ -36,6 +36,7 @@ final readonly class LaboratoryAsaasCustomerHandoff
     {
         // This call verifies CI-only role/environment and reserves a physical
         // organization/reference pair using the global PostgreSQL PK/index.
+        $this->links->assertAutocommitBoundary();
         $claim = $this->links->reserve($organizationRef, $externalReference, $reservedAt);
         if ($claim['status_code'] === 'already_linked') {
             return self::answer('sandbox_already_linked', false);
