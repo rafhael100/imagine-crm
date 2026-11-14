@@ -8,6 +8,7 @@ on:
       - 'app/Core/Billing/**'
       - 'tests/Unit/AsaasWebhookEnvelopeTest.php'
       - 'tests/Feature/PostgresAsaasWebhookInboxTest.php'
+      - 'tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php'
       - 'tests/Labs/billing/**'
       - '.github/workflows/ci-crm-billing-asaas.yml'
 
@@ -51,6 +52,8 @@ jobs:
       CRM_ASAAS_WEBHOOK_LAB: synthetic-only
       BILLING_TEST_USERNAME: crm_billing_ci
       BILLING_TEST_PASSWORD: ephemeral-billing-insert-only
+      BILLING_REVIEW_USERNAME: crm_billing_review_ci
+      BILLING_REVIEW_PASSWORD: ephemeral-billing-review-only
       CACHE_STORE: array
       SESSION_DRIVER: array
       QUEUE_CONNECTION: sync
@@ -81,8 +84,10 @@ jobs:
         run: |
           php -l app/Core/Billing/AsaasWebhookEnvelope.php
           php -l app/Core/Billing/AsaasWebhookInboxCandidate.php
+          php -l app/Core/Billing/AsaasWebhookReviewWorkerCandidate.php
           php -l tests/Unit/AsaasWebhookEnvelopeTest.php
           php -l tests/Feature/PostgresAsaasWebhookInboxTest.php
+          php -l tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php
           php artisan test --filter=AsaasWebhookEnvelopeTest --no-ansi
       - name: Comprovar PostgreSQL 16 CI efemero antes de qualquer DDL
         run: php scripts/ci/verify-ephemeral-postgres.php --verify
@@ -92,6 +97,8 @@ jobs:
             -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-webhook-inbox-ci.sql
       - name: Testar webhook via rota apenas PHPUnit e concorrencia real
         run: php artisan test --filter=PostgresAsaasWebhookInboxTest --no-ansi
+      - name: Validar processador concorrente de inbox SEM efeitos
+        run: php artisan test --filter=PostgresAsaasWebhookReviewWorkerTest --no-ansi
       - name: Resumo de limitacoes e escopo
         if: always()
         run: |
@@ -101,5 +108,5 @@ jobs:
             echo '- Idempotencia por HMAC do ID do evento + PK PostgreSQL'
             echo '- Nenhum payload pessoal, numero de cartao ou valor monetario persistido'
             echo '- Nenhum endpoint, cliente, assinatura, pagamento, ativacao ou fatura REAL'
-            echo '- Banco e papel descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
+            echo '- Papeis separados: receptor INSERT-only; worker SELECT de metadados + UPDATE state'\n            echo '- Banco e papel descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
           } >> "$GITHUB_STEP_SUMMARY"
