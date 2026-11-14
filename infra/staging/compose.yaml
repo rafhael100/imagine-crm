@@ -8,8 +8,10 @@ services:
       POSTGRES_DB: imagine_crm_staging
       POSTGRES_USER: crm_staging
       POSTGRES_PASSWORD: ${CRM_STAGING_DB_PASSWORD:?Provide a non-production staging password}
+      CRM_STAGING_APP_DB_PASSWORD: ${CRM_STAGING_APP_DB_PASSWORD:?Provide a separate non-production app password}
     volumes:
       - crm_staging_pg_data:/var/lib/postgresql/data
+      - ./01-crm-staging-app-role.sh:/docker-entrypoint-initdb.d/01-crm-staging-app-role.sh:ro
     networks: [internal]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U crm_staging -d imagine_crm_staging"]
@@ -32,8 +34,8 @@ services:
       DB_HOST: postgres
       DB_PORT: "5432"
       DB_DATABASE: imagine_crm_staging
-      DB_USERNAME: crm_staging
-      DB_PASSWORD: ${CRM_STAGING_DB_PASSWORD:?Provide a non-production staging password}
+      DB_USERNAME: crm_staging_app
+      DB_PASSWORD: ${CRM_STAGING_APP_DB_PASSWORD:?Provide a separate non-production app password}
       SESSION_DRIVER: file
       CACHE_STORE: file
       QUEUE_CONNECTION: sync
