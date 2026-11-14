@@ -32,7 +32,7 @@ final class StagingRenderedComposePolicy
         $networks = $model['networks'] ?? null;
         $privateNetwork = is_array($networks) ? ($networks['crm_private'] ?? null) : null;
         $require(
-            is_array($networks) && $keys($networks) === ['crm_private']
+            is_array($networks) && $keys($networks) === ['crm_loopback', 'crm_private']
             && is_array($privateNetwork)
             && ($privateNetwork['internal'] ?? null) === true
             && array_diff(
@@ -52,6 +52,34 @@ final class StagingRenderedComposePolicy
             && (!isset($privateNetwork['ipam']) || $privateNetwork['ipam'] === []
                 || $privateNetwork['ipam'] === ['driver' => 'default', 'config' => []]),
             'network_not_private',
+        );
+
+        // The host-facing Nginx network is distinct from the backend.
+        // Only Nginx is allowed on it, with a loopback binding and NAT
+        // masquerade disabled. This is NOT proof of host firewall policy.
+        $ingressNetwork = is_array($networks) ? ($networks['crm_loopback'] ?? null) : null;
+        $require(
+            is_array($ingressNetwork)
+            && array_diff(
+                array_keys($ingressNetwork),
+                ['name', 'driver', 'driver_opts', 'internal', 'attachable',
+                    'external', 'ipam', 'labels', 'enable_ipv4', 'enable_ipv6'],
+            ) === []
+            && ($ingressNetwork['name'] ?? null) === 'imagine-crm-stage-review_crm_loopback'
+            && ($ingressNetwork['driver'] ?? null) === 'bridge'
+            && ($ingressNetwork['driver_opts'] ?? null) === [
+                'com.docker.network.bridge.enable_ip_masquerade' => 'false',
+                'com.docker.network.bridge.host_binding_ipv4' => '127.0.0.1',
+            ]
+            && (!isset($ingressNetwork['internal']) || $ingressNetwork['internal'] === false)
+            && (!isset($ingressNetwork['attachable']) || $ingressNetwork['attachable'] === false)
+            && (!isset($ingressNetwork['external']) || $ingressNetwork['external'] === false)
+            && (!isset($ingressNetwork['enable_ipv4']) || $ingressNetwork['enable_ipv4'] === true)
+            && (!isset($ingressNetwork['enable_ipv6']) || $ingressNetwork['enable_ipv6'] === false)
+            && (!isset($ingressNetwork['labels']) || $ingressNetwork['labels'] === [])
+            && (!isset($ingressNetwork['ipam']) || $ingressNetwork['ipam'] === []
+                || $ingressNetwork['ipam'] === ['driver' => 'default', 'config' => []]),
+            'network_loopback_boundary',
         );
 
         $services = $model['services'] ?? null;
@@ -85,8 +113,10 @@ final class StagingRenderedComposePolicy
             $serviceNetworks = is_array($serviceNetworks)
                 ? (array_is_list($serviceNetworks) ? $serviceNetworks : array_keys($serviceNetworks))
                 : [];
+            sort($serviceNetworks, SORT_STRING);
             $require(
-                $serviceNetworks === ['crm_private'],
+                $serviceNetworks === ($name === 'app'
+                    ? ['crm_private'] : ['crm_loopback', 'crm_private']),
                 $name.'_unapproved_network',
             );
             foreach ([
