@@ -46,6 +46,8 @@ final class AsaasWebhookEnvelopeTest extends TestCase
         self::assertMatchesRegularExpression('/\A[a-f0-9]{64}\z/D', $event->resourceKey);
         self::assertNotSame($event->eventKey, $event->resourceKey);
         self::assertNotSame(hash('sha256', 'evt_0123456789abcdef'), $event->eventKey);
+        self::assertNotSame(hash('sha256', self::body()), $event->bodyDigest);
+        self::assertSame(hash_hmac('sha256', 'imagine:asaas:v3:body:'.self::body(), self::KEY), $event->bodyDigest);
 
         $serialized = json_encode($event, JSON_THROW_ON_ERROR);
         foreach (['cus_should_not_persist', 'PERSONALLY IDENTIFIABLE', 'pay_111111111111',
