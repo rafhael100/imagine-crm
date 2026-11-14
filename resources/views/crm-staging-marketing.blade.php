@@ -32,9 +32,9 @@
             gap:20px; }
         .brand { display:flex; align-items:center; gap:12px; text-decoration:none; font-size:22px;
             letter-spacing:-.06em; font-weight:800; white-space:nowrap; }
-        .mark { display:grid; place-items:center; width:39px; height:39px; background:var(--orange);
-            color:#1F261F; border-radius:12px; font-size:25px; font-weight:900; line-height:1; }
-        .brand small { color:var(--orange); font-weight:800; font-size:14px; letter-spacing:.03em; }
+        .brand-logo { width:145px; max-height:42px; object-fit:contain; flex:0 0 auto; }
+        .brand-product { color:var(--imagine-orange-text); font-weight:800; font-size:14px;
+            letter-spacing:.03em; padding-left:10px; border-left:1px solid var(--line); }
         .languages { display:flex; gap:6px; align-items:center; }
         .languages a { text-decoration:none; display:flex; align-items:center; justify-content:center;
             min-width:44px; min-height:44px; gap:7px;
@@ -117,7 +117,8 @@
             .container { padding:0 19px; }
             .nav { min-height:70px; }
             .brand { font-size:19px; }
-            .mark { width:35px; height:35px; }
+            .brand-logo { width:99px; max-height:36px; }
+            .brand-product { font-size:12px; padding-left:6px; }
             .languages { gap:2px; }
             .languages a { padding:10px 6px; font-size:0; min-width:44px; min-height:44px; }
             .flag { font-size:22px; }
@@ -135,7 +136,7 @@
         }
         @media(max-width:380px) {
             .cards { grid-template-columns:1fr; }
-            .brand small { font-size:12px; }
+            .brand-product { font-size:12px; }
         }
     </style>
 </head>
@@ -145,8 +146,9 @@
 <header>
     <div class="container nav">
         <a class="brand" href="/?lang={{ $lang }}" aria-label="Imagine CRM">
-            <span class="mark" aria-hidden="true">i</span>
-            <span>imagine <small>CRM</small></span>
+            <img class="brand-logo" src="/assets/logo-imagine.png" alt="Imagine"
+                 width="145" height="42" decoding="async">
+            <span class="brand-product">CRM</span>
         </a>
         <nav class="languages" aria-label="Choose language">
             <a href="/?lang=pt" aria-label="Português (Brasil)" @if($lang === 'pt') aria-current="page" @endif><span class="flag" aria-hidden="true">🇧🇷</span> PT</a>
