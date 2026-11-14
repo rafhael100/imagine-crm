@@ -127,7 +127,11 @@ final class CrmIamHttpBoundaryTest extends TestCase
             $this->assertTrue($cookie->isSecure());
             $this->assertTrue($cookie->isHttpOnly());
             $this->assertSame('strict', $cookie->getSameSite());
-            $this->withCookie($cookie->getName(), $cookie->getValue());
+            // HTTP TestCase normally ENCRYPTS withCookie() inputs and omits
+            // cookies entirely on JSON requests. Response cookies already
+            // have Laravel's encrypted+signed value: forward them unchanged.
+            $this->withUnencryptedCookie($cookie->getName(), $cookie->getValue())
+                ->withCredentials();
             $found = true;
         }
         $this->assertTrue($found, 'Real web response must issue a session cookie.');
@@ -154,6 +158,7 @@ final class CrmIamHttpBoundaryTest extends TestCase
         $this->getJson('/_ci/iam/state-check')->assertOk()->assertJson([
             'pending' => true,
             'same_server_session' => true,
+            'client_cookie_present' => true,
         ]);
 
         // Begin() rotates session+CSRF. Use ONLY its freshly issued token.
