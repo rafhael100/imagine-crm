@@ -153,7 +153,7 @@ final class StagingRenderedComposePolicy
             // for Nginx, no external targets or custom commands.
             $health = $svc['healthcheck'] ?? null;
             $expectedProbe = $name === 'app'
-                ? ['CMD', 'php', '-r', "$s=@fsockopen('127.0.0.1',9000,$e,$m,2); exit($s?0:1);"]
+                ? ['CMD', 'php', '-r', "\$s=@fsockopen('127.0.0.1',9000,\$e,\$m,2); exit(\$s?0:1);"]
                 : ['CMD-SHELL', 'wget -q -T 3 -O /dev/null http://127.0.0.1:8080/up'];
             $durationIs = static function (mixed $value, int $seconds): bool {
                 return $value === $seconds.'s' || $value === $seconds * 1000000000;
