@@ -73,19 +73,18 @@ jobs:
         run: |
           set -euo pipefail
           home="http://127.0.0.1:18080/"
-          curl --fail --silent --show-error --max-time 5 "$home" |
-            grep -Fq 'Organize seus contatos. Avance suas vendas.'
-          curl --fail --silent --show-error --max-time 5 "${home}?lang=en" |
-            grep -Fq 'Organize contacts. Move deals forward.'
-          curl --fail --silent --show-error --max-time 5 "${home}?lang=es" |
-            grep -Fq 'Organiza contactos. Impulsa tus ventas.'
-          curl --fail --silent --show-error --max-time 5 "${home}?lang=%3Cscript%3E" |
-            grep -Fq 'Organize seus contatos. Avance suas vendas.'
-          curl --fail --silent --show-error --max-time 5 "$home" |
-            grep -Fq 'R$ 69,00'
+          pt="$(curl --fail --silent --show-error --max-time 5 "$home")"
+          en="$(curl --fail --silent --show-error --max-time 5 "${home}?lang=en")"
+          es="$(curl --fail --silent --show-error --max-time 5 "${home}?lang=es")"
+          invalid="$(curl --fail --silent --show-error --max-time 5 "${home}?lang=%3Cscript%3E")"
+          [[ "$pt" == *'Organize seus contatos. Avance suas vendas.'* ]]
+          [[ "$en" == *'Organize contacts. Move deals forward.'* ]]
+          [[ "$es" == *'Organiza contactos. Impulsa tus ventas.'* ]]
+          [[ "$invalid" == *'Organize seus contatos. Avance suas vendas.'* ]]
+          [[ "$pt" == *'R$ 69,00'* ]]
           headers="$(curl -fsS -D - -o /dev/null "$home")"
-          printf '%s\n' "$headers" | grep -qi '^x-robots-tag: noindex, nofollow, noarchive'
-          printf '%s\n' "$headers" | grep -Fq "form-action 'none'"
+          [[ "${headers,,}" == *'x-robots-tag: noindex, nofollow, noarchive'* ]]
+          [[ "$headers" == *"form-action 'none'"* ]]
           for path in /signup /login /checkout /api/trial; do
             status="$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:18080$path")"
             test "$status" = 404
