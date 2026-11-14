@@ -79,6 +79,61 @@ PY
   done
 done
 
+# A local, script-free contact sheet makes manual review practical after ZIP download.
+# Its filenames are constants, and it is safe to open offline.
+python3 - "$output" <<'PY'
+from html import escape
+from pathlib import Path
+import sys
+folder = Path(sys.argv[1])
+pages = [
+    ('marketing', 'Página comercial'),
+    ('kanban-fixed', 'Kanban visual fictício'),
+    ('kanban-postgresql-ci', 'Kanban fictício persistido no PostgreSQL16'),
+]
+sizes = ['360x900', '768x1024', '1440x900']
+items = []
+for slug, title in pages:
+    items.append('<section><h2>' + escape(title) + '</h2><div class="grid">')
+    for size in sizes:
+        filename = f'{slug}-{size}.png'
+        if not (folder / filename).is_file():
+            raise SystemExit(f'CRM UX CAPTURE NO-GO: missing {filename}')
+        items.append(
+            '<figure><a href="' + filename + '"><img loading="lazy" '
+            'src="' + filename + '" alt="' + escape(title + ', viewport ' + size)
+            + '"></a><figcaption>' + escape(size) + '</figcaption></figure>'
+        )
+    items.append('</div></section>')
+html = '''<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy"
+ content="default-src 'none'; img-src 'self' file:; style-src 'unsafe-inline';
+ base-uri 'none'; form-action 'none'">
+<title>Imagine CRM | Revisão visual privada CI</title>
+<style>*{box-sizing:border-box}body{margin:0;font:16px Arial,Helvetica,sans-serif;
+background:#f7f7f8;color:#171b19}main{max-width:1380px;margin:auto;padding:32px 20px}
+h1{margin:0 0 12px;font-size:30px}h2{font-size:21px;margin:38px 0 16px}
+p{line-height:1.6;max-width:850px}.warn{background:#fff1e0;
+border-left:4px solid #f9941d;padding:12px 16px}.grid{display:grid;
+grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px}
+figure{margin:0;border:1px solid #e8e8e8;background:white;
+border-radius:12px;padding:10px}img{display:block;width:100%;height:auto;
+border-radius:6px;border:1px solid #e8e8e8}figcaption{padding:10px 2px;
+font-size:14px;font-weight:bold}a:focus-visible{outline:3px solid #b75c00}
+</style></head><body><main>
+<h1>Imagine CRM — comparação visual do Laravel</h1>
+<p class="warn">Todas as oportunidades e tarefas são fictícias. Capturas Chrome em
+localhost de CI descartável; não são produção, certificação WCAG ou aprovação
+de uso comercial. Para ampliar, clique na imagem.</p>
+''' + '\n'.join(items) + '''
+<p>Consulte manifest.tsv para os hashes SHA-256 e dimensões de cada PNG.
+As imagens devem ser inspecionadas por responsável UX.</p></main></body></html>'''
+(folder / 'index.html').write_text(html, encoding='utf-8')
+if html.count('<img ') != 9 or '<script' in html or '<form' in html:
+    raise SystemExit('CRM UX CAPTURE NO-GO: invalid visual contact sheet')
+PY
+
 [[ "$(wc -l < "$manifest" | tr -d ' ')" == 10 ]] ||
   fail "missing screenshots"
 [[ "$(find "$output" -maxdepth 1 -name '*.png' | wc -l | tr -d ' ')" == 9 ]] ||
