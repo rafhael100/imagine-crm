@@ -29,11 +29,11 @@ Esta prova vale **apenas para uma chave de HMAC de versão 1 dentro do laborató
 
 ## Execução de testes
 
-Na CI isolada `.github/workflows/ci-postgresql-rls.yml`, após verificar o PostgreSQL efêmero:
+Na CI **separada** `.github/workflows/ci-crm-f3-trial-postgres.yml`, com banco PostgreSQL efêmero próprio e preflight `SEC-CI-02` antes da migração:
 
 ```bash
 php artisan migrate --path=database/experimental-migrations/trial --force --no-interaction
 php artisan test --filter=PostgresLabTrialClaimUniqueTest --no-ansi
 ```
 
-O workflow cria `crm_trial_claim_ci` e limita os grants antes de executar os testes. O método não deve ser chamado em rotas da aplicação. No ambiente F0 sem PostgreSQL isolado, esses testes são ignorados propositalmente; isso **não** conta como validação de unicidade.
+O workflow cria `crm_trial_claim_ci` e limita os grants antes de executar os testes. A suíte PostgreSQL/RLS existente permanece com seu inventário fechado original de migrações e papéis; a nova tabela e o novo papel NÃO entram naquele banco de teste. O método não deve ser chamado em rotas da aplicação. No ambiente F0 sem PostgreSQL isolado, esses testes são ignorados propositalmente; isso **não** conta como validação de unicidade.
