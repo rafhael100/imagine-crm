@@ -149,10 +149,13 @@ final class CommercialPageCatalogParityTest extends TestCase
             self::assertSame($expectedLabels[$i], self::value($xpath, $row, './th'));
         }
 
-        $prices = self::nodes($xpath, './td', $rows[0]);
-        $seats = self::nodes($xpath, './td', $rows[1]);
-        $storage = self::nodes($xpath, './td', $rows[2]);
-        self::assertCount(4, $prices, (string) $rows[0]->ownerDocument?->saveHTML($rows[0]));
+        // DOMDocument's HTML parser normalizes table sections differently across
+        // libxml builds. Read each row's actual cell elements, not a brittle
+        // relative XPath tied to an implied tbody/thead structure.
+        $prices = iterator_to_array($rows[0]->getElementsByTagName('td'), false);
+        $seats = iterator_to_array($rows[1]->getElementsByTagName('td'), false);
+        $storage = iterator_to_array($rows[2]->getElementsByTagName('td'), false);
+        self::assertCount(4, $prices);
         self::assertCount(4, $seats);
         self::assertCount(4, $storage);
 
