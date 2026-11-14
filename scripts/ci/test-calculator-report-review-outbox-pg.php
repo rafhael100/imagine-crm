@@ -8,6 +8,9 @@ declare(strict_types=1);
  * No SMTP, mail adapter, queued worker, contact recovery or operational route.
  * Synthetic source quote/contact/ciphertext must have been created in CI.
  */
+require_once __DIR__.'/../../app/Core/Leads/CalculatorStudyPreviewV1.php';
+use App\Core\Leads\CalculatorStudyPreviewV1 as Study;
+
 if (getenv('CI') !== 'true' || getenv('GITHUB_ACTIONS') !== 'true' ||
     getenv('GITHUB_REPOSITORY') !== 'rafhael100/imagine-crm' ||
     getenv('CRM_CALCULATOR_LAB') !== 'synthetic-only' ||
@@ -119,4 +122,33 @@ requireReport(!in_array(true,$priv,true) && !in_array('t',$priv,true) &&
     !in_array('1',$priv,true),'restricted role cannot change or delete outbox rows');
 requireReport(strpos(json_encode($summary,JSON_THROW_ON_ERROR),'example.test')===false,
     'no contact data in reviewed outbox records');
+
+// Connect an actual stored *synthetic* quote digest to a local study preview.
+// No transport, recipient lookup or mailer is involved. This tests that a
+// review-only outbox candidate cannot turn into a sent report.
+$storedCents=scopedReport($pdo,$tenantA,static function(PDO $db) use ($submission):int {
+    $stmt=$db->prepare('SELECT media_total_cents FROM public.crm_calc_lab_intents
+        WHERE submission_id=?::uuid');
+    $stmt->execute([$submission]);
+    return (int)$stmt->fetchColumn();
+});
+$recommendation=[
+    ['channel'=>'chatgpt_ads','media_cents'=>180000],
+    ['channel'=>'google_ads','media_cents'=>150000],
+    ['channel'=>'meta_ads','media_cents'=>100000],
+];
+foreach(['pt-BR','en-US','es-ES'] as $language){
+    $study=Study::render($language,$recommendation);
+    requireReport($study['media_cents']===$storedCents,
+        'rendered study matches synthetic persisted signed amount');
+    requireReport($study['informational_total_cents']===516000,
+        'management fee is not confused with provider media');
+    requireReport($study['can_send']===false &&
+        $study['delivery_authorized']===false &&
+        $study['marketing_consent_proven']===false,
+        'study preview cannot authorize report or marketing');
+    requireReport(strpos($study['html'],'client@example.test')===false,
+        'report preview must not leak synthetic contact');
+}
+
 echo "PASS: CI report review outbox is immutable, idempotent and tenant isolated; no recipient, dispatch, SMTP, marketing or real delivery receipt\n";
