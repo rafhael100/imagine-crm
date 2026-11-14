@@ -34,6 +34,7 @@ final class PortalGatewayDecisionEnvelopeTest extends TestCase
     {
         $envelope = PortalGatewayDecisionEnvelope::sign($this->fields(), self::KEY);
         $result = PortalGatewayDecisionEnvelope::verify($envelope, self::KEY, 'org-synthetic-001');
+        self::assertSame('7a6738f4a62c15ab7748c7e31fc07b74cf0b2ec1bbf01ae13b48ab1d5b63fc31', $envelope['mac']);
         self::assertSame('asaas', $result['gateway']);
         self::assertFalse($result['can_charge']);
         self::assertFalse($result['can_activate']);
