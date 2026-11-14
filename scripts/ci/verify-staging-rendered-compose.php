@@ -168,6 +168,28 @@ final class StagingRenderedComposePolicy
                 && $durationIs($health['start_period'] ?? null, 10),
                 $name.'_unreviewed_healthcheck',
             );
+            // Diagnostic codes are fixed literals, never rendered command,
+            // duration, environment or other potentially sensitive values.
+            if (!is_array($health) || $keys($health) !==
+                ['interval', 'retries', 'start_period', 'test', 'timeout']) {
+                $fail[] = $name.'_healthcheck_fields';
+            }
+            if (!is_array($health) || ($health['test'] ?? null) !== $expectedProbe) {
+                $fail[] = $name.'_healthcheck_command';
+            }
+            if (!is_array($health) || !$durationIs($health['interval'] ?? null, 5)) {
+                $fail[] = $name.'_healthcheck_interval';
+            }
+            if (!is_array($health) ||
+                !$durationIs($health['timeout'] ?? null, $name === 'app' ? 3 : 4)) {
+                $fail[] = $name.'_healthcheck_timeout';
+            }
+            if (!is_array($health) || !$durationIs($health['start_period'] ?? null, 10)) {
+                $fail[] = $name.'_healthcheck_start_period';
+            }
+            if (!is_array($health) || ($health['retries'] ?? null) !== 2) {
+                $fail[] = $name.'_healthcheck_retries';
+            }
             $build = $svc['build'] ?? null;
             $require(
                 is_array($build)
