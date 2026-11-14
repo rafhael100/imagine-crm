@@ -10,6 +10,7 @@ on:
       - 'tests/Feature/PostgresAsaasWebhookInboxTest.php'
       - 'tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php'
       - 'tests/Feature/PostgresAsaasCustomerLinkTest.php'
+      - 'tests/Feature/PostgresAsaasCustomerReconcileTest.php'
       - 'tests/Labs/billing/**'
       - '.github/workflows/ci-crm-billing-asaas.yml'
 
@@ -58,6 +59,8 @@ jobs:
       CRM_ASAAS_LINK_LAB: synthetic-only
       BILLING_LINK_USERNAME: crm_billing_link_ci
       BILLING_LINK_PASSWORD: ephemeral-billing-link-only
+      BILLING_LINK_REVIEW_USERNAME: crm_billing_link_review_ci
+      BILLING_LINK_REVIEW_PASSWORD: ephemeral-link-review-only
       CACHE_STORE: array
       SESSION_DRIVER: array
       QUEUE_CONNECTION: sync
@@ -91,7 +94,9 @@ jobs:
           php -l app/Core/Billing/AsaasWebhookReviewWorkerCandidate.php
           php -l app/Core/Billing/LaboratoryAsaasCustomerLink.php
           php -l app/Core/Billing/LaboratoryAsaasCustomerHandoff.php
+          php -l app/Core/Billing/LaboratoryAsaasCustomerReconciler.php
           php -l tests/Feature/PostgresAsaasCustomerLinkTest.php
+          php -l tests/Feature/PostgresAsaasCustomerReconcileTest.php
           php -l tests/Unit/AsaasWebhookEnvelopeTest.php
           php -l tests/Feature/PostgresAsaasWebhookInboxTest.php
           php -l tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php
@@ -112,6 +117,8 @@ jobs:
             -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-customer-link-ci.sql
       - name: Testar unicidade org/externalReference e GET/POST HTTP fake sem repetir
         run: php artisan test --filter=PostgresAsaasCustomerLinkTest --no-ansi
+      - name: Conciliar por GET-only sem criar outro cliente Sandbox
+        run: php artisan test --filter=PostgresAsaasCustomerReconcileTest --no-ansi
       - name: Resumo de limitacoes e escopo
         if: always()
         run: |
@@ -124,5 +131,6 @@ jobs:
             echo '- Papeis separados: receptor INSERT-only; worker SELECT de metadados + UPDATE state'
             echo '- Vínculo org/externalReference/provider ID sintético: PK e UNIQUE em PostgreSQL'
             echo '- Falha do Asaas exige revisão humana; sem segundo POST automático'
+            echo '- Conciliador separado usa GET-only; resposta ambigua/ausente nao habilita POST'
             echo '- Banco e papeis descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
           } >> "$GITHUB_STEP_SUMMARY"
