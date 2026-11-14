@@ -52,3 +52,9 @@ A página de apresentação do Imagine CRM está implementada em Laravel Blade (
 A condição de publicação é dupla e explícita: **`APP_ENV=staging` E `CRM_STAGING_MARKETING_PREVIEW=true`**. `production`, `testing` e demais ambientes não registram `GET /`. O health `/up` permanece. A CI sobe os contêineres descartáveis, verifica `GET /` em três idiomas, preços de referência, headers `noindex`/CSP, fallback de parâmetro inválido e `/signup`, `/login`, `/checkout`, `/api/trial` respondendo 404. Nenhuma versão foi implantada na VPS.
 
 A página não integra Asaas, não identifica usuários, não capta leads, não possui formulários e **não deve ser divulgada como site comercial publicado** antes das aprovações UX, comercial, segurança e LGPD. A opção do Compose é somente para inspeção privada; nunca transportar a flag automaticamente para produção.
+
+## CRM-STG-DEMO-01 — Painel Laravel navegável com dados fictícios
+
+A homepage privada possui agora um link funcional para `GET /demo?lang=pt|en|es`. O painel usa uma nova view Blade responsiva com sidebar, âncoras navegáveis de funil e tarefas, indicadores de registros sintéticos, quatro colunas Kanban e cartões `EXEMPLO_*`/`TASK_DEMO_*` **codificados no próprio aplicativo**. A página **não consulta PostgreSQL, Asaas, usuários, contatos ou dados pessoais**, não tem formulários, scripts, comandos nem ações de escrita. Os três idiomas compartilham os mesmos registros fictícios e exibem avisos de prévia.
+
+O endpoint é registrado **exatamente sob a mesma condição de staging** da homepage, não existe em produção e responde somente a GET; `POST /demo` deve retornar 405. O workflow privado valida links entre páginas, PT/EN/ES, dados sintéticos, ausência de formulário/script, headers de segurança e resposta negada ao POST. Nada é publicado na VPS. Esta é uma demonstração **visual**, não um dashboard integrado a dados reais ou autenticação comercial.
