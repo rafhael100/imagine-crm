@@ -152,7 +152,7 @@ final class CommercialPageCatalogParityTest extends TestCase
         $prices = self::nodes($xpath, './td', $rows[0]);
         $seats = self::nodes($xpath, './td', $rows[1]);
         $storage = self::nodes($xpath, './td', $rows[2]);
-        self::assertCount(4, $prices);
+        self::assertCount(4, $prices, (string) $rows[0]->ownerDocument?->saveHTML($rows[0]));
         self::assertCount(4, $seats);
         self::assertCount(4, $storage);
 
