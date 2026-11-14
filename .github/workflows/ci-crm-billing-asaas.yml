@@ -130,6 +130,12 @@ jobs:
         run: php artisan test --filter=PostgresAsaasCustomerLinkTest --no-ansi
       - name: Provar conciliacao GET-only de pagador por revisor sem novos POSTs
         run: php artisan test --filter=PostgresAsaasCustomerReconcileTest --no-ansi
+      - name: Provar unicidade de pedido e pagamento no PostgreSQL CI (sem rede)
+        run: |
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-order-reservation-ci.sql
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-order-reservation-check-ci.sql
       - name: Resumo de limitacoes e escopo
         if: always()
         run: |
@@ -145,5 +151,5 @@ jobs:
             echo '- Conciliação GET /payments/id somente no Http::fake; status CONFIRMED != RECEIVED, tudo NO-GRANT'
             echo '- Jornada full fake repetida: um POST de cliente, um POST de Pix, GETs de replay e recebimento sem ativar'
             echo '- Link PG CI unico por organizacao/referencia, role separada e conciliacao GET-only de cliente'
-            echo '- Candidatos componiveis nesta HEAD mas SEM transacao real de pagamento, tenant autenticado ou RLS final'
+            echo '- Reserva SQL unica por pedido e provider_payment_id; teste CI sem endpoint, sem HTTP real e sem grant'\n            echo '- Candidatos componiveis nesta HEAD mas SEM transacao real de pagamento, tenant autenticado ou RLS final'
           } >> "$GITHUB_STEP_SUMMARY"
