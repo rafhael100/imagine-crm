@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'tests/Labs/calculator/**'
+      - 'scripts/ci/run-calculator-interest-pg-roundtrip.php'
       - '.github/workflows/ci-crm-calculator-pg-rls.yml'
   workflow_dispatch:
 
@@ -34,11 +35,30 @@ jobs:
       PGUSER: postgres
       PGDATABASE: imagine_calc_ci
       PGPASSWORD: ci-disposable-not-secret
+      CRM_CALCULATOR_LAB: synthetic-only
     steps:
       - name: Checkout isolated review code
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Checkout immutable Commercial Node producer
+        uses: actions/checkout@v4
+        with:
+          repository: rafhael100/imagine-comercial
+          ref: f2454eb58b77702f2df69be658c43ecd49f3beb3
+          path: _commercial_calculator_ci
+          persist-credentials: false
+      - name: Install Node22 for synthetic producer
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Setup isolated PHP with PDO PostgreSQL
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, pgsql
+          tools: none
+          coverage: none
       - name: Verify disposable database and create limited role
         run: |
           set -euo pipefail
@@ -59,6 +79,12 @@ jobs:
         run: |
           set -euo pipefail
           psql -X -v ON_ERROR_STOP=1 -f tests/Labs/calculator/calculator-interest-rls-assertions-ci.sql
+      - name: Real disposable PostgreSQL roundtrip from pinned Node producer
+        run: |
+          set -euo pipefail
+          test "$(git -C _commercial_calculator_ci rev-parse HEAD)" = "f2454eb58b77702f2df69be658c43ecd49f3beb3"
+          php -l scripts/ci/run-calculator-interest-pg-roundtrip.php
+          node _commercial_calculator_ci/scripts/emit-calculator-interest-fixture-ci.mjs | php scripts/ci/run-calculator-interest-pg-roundtrip.php
       - name: Read-only report of disabled business effects
         if: always()
         run: |
