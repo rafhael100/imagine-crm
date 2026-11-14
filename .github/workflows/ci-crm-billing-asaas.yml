@@ -11,6 +11,7 @@ on:
       - 'tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php'
       - 'tests/Feature/AsaasSandboxPixPaymentGatewayTest.php'
       - 'tests/Feature/AsaasSandboxPixReconciliationInspectorTest.php'
+      - 'tests/Feature/AsaasSandboxBillingJourneyTest.php'
       - 'tests/Labs/billing/**'
       - '.github/workflows/ci-crm-billing-asaas.yml'
 
@@ -96,6 +97,8 @@ jobs:
           php artisan test --filter=AsaasSandboxPixPaymentGatewayTest --no-ansi
           php -l tests/Feature/AsaasSandboxPixReconciliationInspectorTest.php
           php artisan test --filter=AsaasSandboxPixReconciliationInspectorTest --no-ansi
+          php -l tests/Feature/AsaasSandboxBillingJourneyTest.php
+          php artisan test --filter=AsaasSandboxBillingJourneyTest --no-ansi
           php artisan test --filter=AsaasWebhookEnvelopeTest --no-ansi
       - name: Comprovar PostgreSQL 16 CI efemero antes de qualquer DDL
         run: php scripts/ci/verify-ephemeral-postgres.php --verify
@@ -120,4 +123,5 @@ jobs:
             echo '- Banco e papel descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
             echo '- Pix Sandbox (somente Http::fake): consulta por externalReference, 14 dias, moeda BRL em centavos, sem grants'
             echo '- Conciliação GET /payments/id somente no Http::fake; status CONFIRMED != RECEIVED, tudo NO-GRANT'
+            echo '- Jornada full fake repetida: um POST de cliente, um POST de Pix, GETs de replay e recebimento sem ativar'
           } >> "$GITHUB_STEP_SUMMARY"
