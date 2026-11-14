@@ -20,6 +20,7 @@ on:
       - 'resources/views/crm-staging-demo.blade.php'
       - 'resources/views/partials/imagine-staging-tokens.blade.php'
       - 'public/assets/logo-imagine.png'
+      - 'scripts/ci/capture-crm-private-ux-review.sh'
       - 'tests/Unit/ImagineStagingDesignSystemTest.php'
       - 'resources/views/crm-staging-marketing.blade.php'
       - 'routes/web.php'
@@ -241,6 +242,18 @@ jobs:
         env:
           CRM_THREAT_LAB: synthetic-only
         run: bash scripts/ci/rehearse-crm-private-http-threats.sh
+      - name: Capture eight fictional CRM Laravel pages in headless Chrome for UX review
+        env:
+          CRM_UX_SCREENSHOT_LAB: synthetic-only
+        run: bash scripts/ci/capture-crm-private-ux-review.sh
+      - name: Publish seven-day synthetic screenshot review pack only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: imagine-crm-private-ux-${{ github.sha }}
+          path: ${{ runner.temp }}/crm-ux-private-review/*.png
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 6
       - name: Collect CI-only container diagnostics on smoke failure
         if: failure()
         run: |
@@ -263,6 +276,7 @@ jobs:
             echo '- PostgreSQL-backed Kanban verified from real SQL with fixed synthetic tenant, SELECT-only RLS and changes visible after CI admin update'
             echo '- Post-migration full Laravel + Kanban + audit backup restored into second network-none PG16 server with tenant ACL checks'
             echo '- 24 forged tenant/header SQL demo requests and 4 unsafe methods blocked; DB state unchanged'
+            echo '- Eight real headless Chrome screenshots of fictional pages; 7-day UX artifact; no PII'
             echo '- Asaas billing sources shipped but no sandbox/production billing route or flag enabled'
             echo '- Full pg_dump + pg_restore to second network-none PostgreSQL16 container, FORCE RLS and audit verified'
             echo '- Laravel migration applied and repeated under CI admin; actual PHP app role is NO-SUPERUSER/NO-BYPASSRLS/NO-OWNER with tenant isolation'
