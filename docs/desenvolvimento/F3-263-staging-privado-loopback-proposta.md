@@ -94,6 +94,12 @@ Os Dockerfiles candidatos passaram a usar as referências `nome:tag@sha256:diges
 
 A fixação de digest garante referência ao conteúdo identificado, **não** que a imagem seja livre de vulnerabilidades ou assinada por uma origem confiável. Pendente: assinatura/proveniência verificada, análise de CVEs, SBOM de sistema operacional e política de atualizações. Nenhuma imagem foi enviada a registry privado, nenhuma VPS foi alterada e o PR permanece DRAFT/NO-MERGE/NO-DEPLOY.
 
+## F3-273 — auditoria pública das dependências Composer de produção
+
+A CI isolada `.github/workflows/ci-crm-staging-composer-advisory.yml` consulta exclusivamente o índice público de avisos de segurança dos pacotes fixados em `composer.lock` com `composer audit --locked --no-dev --format=json`. Não instala pacotes, não aplica migrations, não acessa cliente, não roda Docker e só executa no PR #517 em rascunho dentro do próprio repositório. A política é conservadora: aviso reportado, pacote abandonado ou erro de consulta produz **NO-GO** e o relatório JSON não é anexado à conversa nem a um artifact.
+
+**A CI precisa concluir com sucesso na HEAD exata para registrar o resultado.** Não é verificação de pacotes Debian/Alpine, varredura de imagens, assinatura de origem, análise de zero-day ou aprovação de segurança do CRM. Continua obrigatório o gate SEG/DBA #27 e revisão completa de supply chain/host antes de qualquer acesso na VPS.
+
 ## Escopo demonstrável
 
 A CI F3-263 cobre sintaxe e política estática. **A CI F3-267**, se verde, pode comprovar build e fumaça HTTP real **somente no runner descartável**. Nenhuma das duas comprova rede de uma VPS, segurança do host definitivo, TLS/Cloudflare, back-up, resiliência do PostgreSQL operacional, homologação privada da infraestrutura Imagine ou autorização de negócios.
