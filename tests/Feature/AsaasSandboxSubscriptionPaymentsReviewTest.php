@@ -153,13 +153,28 @@ final class AsaasSandboxSubscriptionPaymentsReviewTest extends TestCase
 
     public function test_truncated_or_unrecognized_provider_evidence_is_denied(): void
     {
-        foreach ([
+        $cases = [
             [self::payment(), true, 200],
             [self::payment('pay_111111111', 'UNKNOWN'), false, 200],
             [self::payment('pay_111111111', 'RECEIVED', 'sub_FOREIGN1234'), false, 200],
             [self::payment('pay_123456789'), false, 503],
-        ] as [$payment, $hasMore, $statusCode]) {
-            $this->fake([$payment], $hasMore, $statusCode);
+        ];
+        $index = 0;
+
+        // Register ONE fake with per-request responses. Re-registering
+        // Http::fake() can retain an earlier matching stub and accidentally
+        // exercise the same scenario on every iteration.
+        Http::fake([
+            'api-sandbox.asaas.com/v3/subscriptions/*/payments*' =>
+                static function (Request $request) use (&$index, $cases) {
+                    [$payment, $hasMore, $status] = $cases[$index++];
+                    return Http::response([
+                        'data' => [$payment],
+                        'hasMore' => $hasMore,
+                    ], $status);
+                },
+        ]);
+        foreach ($cases as $_) {
             try {
                 $this->service()->inspect(self::SUBSCRIPTION);
                 $this->fail('Incomplete or conflicting provider statement must fail closed.');
@@ -168,6 +183,7 @@ final class AsaasSandboxSubscriptionPaymentsReviewTest extends TestCase
                 $this->assertNull($e->getPrevious());
             }
         }
+        $this->assertSame(count($cases), $index);
     }
 
     public function test_duplicate_payment_ids_cannot_inflate_receipt_counts(): void
