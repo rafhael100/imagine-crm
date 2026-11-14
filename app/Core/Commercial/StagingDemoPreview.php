@@ -15,6 +15,7 @@ final class StagingDemoPreview
 {
     private const TEXT = [
         'pt' => [
+            'skip' => 'Ir para o conteúdo',
             'title' => 'Imagine CRM | Demonstração privada',
             'eyebrow' => 'DEMONSTRAÇÃO FICTÍCIA • APENAS VISUALIZAÇÃO',
             'heading' => 'Visão geral do seu processo comercial',
@@ -38,6 +39,7 @@ final class StagingDemoPreview
             'footer' => 'Imagine CRM • Ambiente demonstrativo privado',
         ],
         'en' => [
+            'skip' => 'Skip to content',
             'title' => 'Imagine CRM | Private demo',
             'eyebrow' => 'FICTIONAL DEMO • VIEW ONLY',
             'heading' => 'An overview of your sales workflow',
@@ -61,6 +63,7 @@ final class StagingDemoPreview
             'footer' => 'Imagine CRM • Private demonstration environment',
         ],
         'es' => [
+            'skip' => 'Saltar al contenido',
             'title' => 'Imagine CRM | Demostración privada',
             'eyebrow' => 'DEMOSTRACIÓN FICTICIA • SOLO LECTURA',
             'heading' => 'Una visión general de tu proceso comercial',
