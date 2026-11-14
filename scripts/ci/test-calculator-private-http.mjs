@@ -16,15 +16,16 @@ const bytes=payload=>[
   payload.notice_version,
   String(payload.issued_at),String(payload.expires_at),payload.nonce
 ].join('\n');
+const pgMode=process.env.CRM_CALCULATOR_HTTP_PG_CI==='synthetic-pg';
 const payload={
   schema:'imagine.calculator.synthetic-interest.v1',
   source:'imagine_comercial_calculadora_performance',
-  submission_id:'123e4567-e89b-42d3-a456-426614174000',
+  submission_id:pgMode?'99999999-9999-4999-8999-999999999999':'123e4567-e89b-42d3-a456-426614174000',
   channel_ids:['chatgpt_ads','google_ads','meta_ads'],
   currency:'BRL',media_total_cents:430000,
   report_requested:true,marketing_requested:false,notice_version:'lab-notice-v1',
   issued_at:1794672000,expires_at:1794672300,
-  nonce:'f2e67d4e-39c1-43ba-a304-7db5477a2e66'
+  nonce:pgMode?'88888888-8888-4888-8888-888888888888':'f2e67d4e-39c1-43ba-a304-7db5477a2e66'
 };
 const sign=body=>({
   payload:body,
@@ -53,7 +54,6 @@ async function main(){
   });
   let runtimeLogs='';
   php.stderr.on('data',b=>{runtimeLogs+=b.toString().slice(0,1000)});
-  const controller=new AbortController();
   try {
     let ready=false;
     for(let i=0;i<55;i++){
@@ -80,19 +80,27 @@ async function main(){
       });
     }
     const ok=await send('/_lab/calculator-interest',sign(payload));
-    assert.equal(ok.status,202,'synthetic signed fixture should be accepted for review only');
+    assert.equal(ok.status,pgMode?201:202,'only synthetic HTTP receipt is accepted');
     assert.equal(ok.headers.get('cache-control'),'no-store');
     assert.equal(ok.headers.get('access-control-allow-origin'),null,'no CORS grant');
     const receipt=await ok.json();
-    assert.equal(receipt.state,'SYNTHETIC_HTTP_REVIEW_ONLY_NO_RECEIPT');
+    assert.equal(receipt.state,pgMode?'SYNTHETIC_PG_INTENT_RECORDED':'SYNTHETIC_HTTP_REVIEW_ONLY_NO_RECEIPT');
     for(const flag of ['consent_proven','tenant_authorized','crm_durable_receipt_proven',
       'can_store_pii','can_send_report','can_send_marketing','can_charge']){
       assert.equal(receipt[flag],false,flag+' must be false');
     }
     assert.equal(Object.hasOwn(receipt,'email'),false);
     assert.equal(Object.hasOwn(receipt,'name'),false);
-    assert.equal((await send('/_lab/calculator-interest',sign(payload))).status,202,
-      'replay alone never becomes a real receipt');
+    assert.equal((await send('/_lab/calculator-interest',sign(payload))).status,pgMode?200:202,
+      'replay may be recognized only for synthetic metadata, never a real CRM receipt');
+    if(pgMode){
+      const changed={...payload,media_total_cents:500000};
+      assert.equal((await send('/_lab/calculator-interest',sign(changed))).status,409,
+        'validly signed change of media budget must conflict with immutable submission');
+      const reused={...payload,submission_id:'77777777-7777-4777-8777-777777777777'};
+      assert.equal((await send('/_lab/calculator-interest',sign(reused))).status,409,
+        'nonce cannot be used with a different submission in the same tenant');
+    }
 
     const tampered=sign(payload);
     tampered.payload={...payload,marketing_requested:true};
@@ -117,9 +125,10 @@ async function main(){
     const huge={...sign(payload),padding:'X'.repeat(4300)};
     assert.equal((await send('/_lab/calculator-interest',huge)).status,415);
     assert.equal((await send('/_lab/calculator-interest',{foo:'<script>alert(1)</script>'})).status,403);
-    console.log('PASS: localhost-only synthetic HTTP signed intent 202; tamper 403, no CORS/PII/CRM receipt/email, size/method protection');
+    console.log(pgMode ?
+      'PASS: localhost-only HTTP to ephemeral PG16, first insert 201, replay 200, budget/nonce conflict 409, tamper 403, NO real CRM/PII/email/marketing' :
+      'PASS: localhost-only synthetic HTTP signed intent 202; tamper 403, no CORS/PII/CRM receipt/email, size/method protection');
   } finally {
-    controller.abort();
     php.kill('SIGTERM');
     await delay(150);
     if(php.exitCode===null)php.kill('SIGKILL');
