@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # F3-269: disposable CI failure-and-recovery proof. NEVER run on the VPS.
-# Only the mock PHP-FPM container is stopped/restarted, never business services.
+# Only the disposable PHP-FPM process is frozen/unfrozen; no real services.
 set -euo pipefail
 
 if [[ "$GITHUB_EVENT_NAME" != pull_request || "$RUNNER_ENVIRONMENT" != github-hosted ||
@@ -12,7 +12,7 @@ fi
 
 origin='http://127.0.0.1:18080'
 code() {
-  curl --noproxy '*' --silent --output /dev/null --max-time 5 \
+  curl --noproxy '*' --silent --output /dev/null --max-time 10 \
     --write-out '%{http_code}' "$origin/up" || true
 }
 
@@ -21,8 +21,22 @@ if [[ "$(code)" != 200 ]]; then
   exit 1
 fi
 
-# Explicit fault injection in ephemeral runner only; this cannot touch the VPS.
-docker compose stop -t 5 app > /dev/null
+# Suspend the disposable PHP process without removing its container IP/DNS
+# from crm_private. This tests an *unresponsive* FastCGI backend.
+app_cid="$(docker compose ps -q app)"
+if [[ -z "$app_cid" ]]; then
+  echo 'F3-269 NO-GO: missing disposable PHP-FPM container.' >&2
+  exit 1
+fi
+paused=false
+restore_backend() {
+  if [[ "$paused" == true ]]; then
+    docker unpause "$app_cid" > /dev/null 2>&1 || true
+  fi
+}
+trap restore_backend EXIT
+docker pause "$app_cid" > /dev/null
+paused=true
 failure="$(code)"
 if [[ "$failure" != 502 && "$failure" != 503 && "$failure" != 504 ]]; then
   if [[ "$failure" =~ ^[0-9]{3}$ ]]; then
@@ -30,14 +44,15 @@ if [[ "$failure" != 502 && "$failure" != 503 && "$failure" != 504 ]]; then
   else
     echo 'F3-269 NO-GO: failure produced no valid HTTP status.' >&2
   fi
-  if docker compose exec -T web nginx -t > /dev/null 2>&1; then
-    echo 'F3-269 diagnostic: nginx remains running.' >&2
+  web_cid="$(docker compose ps -q web)"
+  if [[ -n "$web_cid" && "$(docker inspect --format '{{.State.Running}}' "$web_cid")" == true ]]; then
+    echo 'F3-269 diagnostic: Nginx container remains running.' >&2
   else
-    echo 'F3-269 diagnostic: nginx was not running.' >&2
+    echo 'F3-269 diagnostic: Nginx container is not running.' >&2
   fi
   exit 1
 fi
-headers="$(curl --noproxy '*' --silent --max-time 5 --dump-header - \
+headers="$(curl --noproxy '*' --silent --max-time 10 --dump-header - \
   --output /dev/null "$origin/up")"
 if ! grep -qi '^x-content-type-options: nosniff' <<< "$headers" ||
    ! grep -qi '^x-frame-options: DENY' <<< "$headers" ||
@@ -46,9 +61,10 @@ if ! grep -qi '^x-content-type-options: nosniff' <<< "$headers" ||
   echo 'F3-269 NO-GO: failure response has missing protections or a cookie.' >&2
   exit 1
 fi
-echo 'F3-269 unavailable PHP-FPM returns HTTP 502/503/504 with protective headers, no cookie.'
+echo 'F3-269 unresponsive PHP-FPM returns HTTP 502/503/504 with protective headers, no cookie.'
 
-docker compose start app > /dev/null
+docker unpause "$app_cid" > /dev/null
+paused=false
 recovered=false
 for _ in $(seq 1 30); do
   if [[ "$(code)" == 200 ]]; then
@@ -58,7 +74,7 @@ for _ in $(seq 1 30); do
   sleep 2
 done
 if [[ "$recovered" != true ]]; then
-  echo 'F3-269 NO-GO: /up did not recover after temporary backend restart.' >&2
+  echo 'F3-269 NO-GO: /up did not recover after temporary backend unpause.' >&2
   exit 1
 fi
-echo 'F3-269 PASS: backend failure is contained and /up recovers on loopback; DRAFT/NO-DEPLOY.'
+echo 'F3-269 PASS: backend freeze is contained and /up recovers on loopback; DRAFT/NO-DEPLOY.'
