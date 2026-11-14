@@ -4,9 +4,11 @@ on:
   pull_request:
     paths:
       - 'app/Core/Leads/SyntheticCalculatorNurtureConsentInspector.php'
+      - 'app/Core/Leads/SyntheticCalculatorContactBoundary.php'
       - 'app/Core/Leads/SyntheticCalculatorNurtureLifecycle.php'
       - 'app/Core/Leads/SyntheticCalculatorInterestInteropInspector.php'
       - 'tests/offline_calculator_nurture_consent_test.php'
+      - 'tests/offline_calculator_synthetic_contact_boundary_test.php'
       - 'tests/offline_calculator_nurture_lifecycle_test.php'
       - 'tests/offline_calculator_interest_interop_test.php'
       - 'scripts/ci/check-calculator-interest-crossrepo.php'
@@ -46,6 +48,8 @@ jobs:
         run: |
           php -l app/Core/Leads/SyntheticCalculatorNurtureConsentInspector.php
           php -l tests/offline_calculator_nurture_consent_test.php
+          php -l app/Core/Leads/SyntheticCalculatorContactBoundary.php
+          php -l tests/offline_calculator_synthetic_contact_boundary_test.php
           php -l app/Core/Leads/SyntheticCalculatorNurtureLifecycle.php
           php -l tests/offline_calculator_nurture_lifecycle_test.php
           php -l app/Core/Leads/SyntheticCalculatorInterestInteropInspector.php
@@ -54,6 +58,7 @@ jobs:
       - name: Ensure no real CRM delivery or nurture starts
         run: |
           php tests/offline_calculator_nurture_consent_test.php
+          php tests/offline_calculator_synthetic_contact_boundary_test.php
           php tests/offline_calculator_nurture_lifecycle_test.php
           php tests/offline_calculator_interest_interop_test.php
       - name: Verify pinned Comercial source and cross-language Node-to-PHP vector
