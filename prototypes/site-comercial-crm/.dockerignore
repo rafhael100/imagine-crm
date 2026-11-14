@@ -10,3 +10,5 @@
 !staging/
 !staging/nginx-preview-ci.conf
 !staging/Dockerfile-preview-ci
+!staging/nginx-preview-tls-ci.conf
+!staging/Dockerfile-preview-tls-ci

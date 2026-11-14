@@ -1,0 +1,50 @@
+name: CRM WEB-P4 - HTTPS privado em laboratorio descartavel
+
+on:
+  push:
+    branches:
+      - review/crm-web-p4-https-ci-proof-2026-11-13
+    paths:
+      - 'prototypes/site-comercial-crm/**'
+      - '.github/workflows/ci-crm-web-p4-https-lab.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-web-p4-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  disposable-https:
+    name: Nginx TLS local - certificado curto e 401/200/404
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      CI_CRM_PREVIEW_DOCKER: synthetic-only
+    steps:
+      - name: Checkout sem token persistente
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verificar preflight do prototipo
+        run: |
+          python3 prototypes/site-comercial-crm/tests/test_preview.py
+          python3 prototypes/site-comercial-crm/staging/test_configuration.py
+          test -f prototypes/site-comercial-crm/staging/nginx-preview-tls-ci.conf
+          test -f prototypes/site-comercial-crm/staging/Dockerfile-preview-tls-ci
+      - name: HTTPS real somente no loopback GitHub com identidade ficticia
+        shell: bash
+        run: bash prototypes/site-comercial-crm/staging/smoke_docker_https_ci.sh
+      - name: Reportar alcance e limites
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '### WEB-P4: prova HTTPS sintética somente em runner'
+            echo '- Certificado autoassinado criado e descartado neste job; CA confiada apenas em curl local'
+            echo '- Controle da confiança de certificado verificado; sem --insecure'
+            echo '- Basic Auth sem dados reais, Nginx não privilegiado, rootfs de leitura'
+            echo '- Nunca foi usado na VPS, Cloudflare, DNS ou em clientes; nenhuma identidade/PSP'
+            echo '- SSL real público, certificados oficiais, proteção de host/egress e gates ainda NO-GO'
+          } >> "$GITHUB_STEP_SUMMARY"
