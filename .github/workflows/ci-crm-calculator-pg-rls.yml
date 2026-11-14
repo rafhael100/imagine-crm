@@ -7,6 +7,7 @@ on:
       - 'scripts/ci/run-calculator-interest-pg-roundtrip.php'
       - 'scripts/ci/test-calculator-synthetic-contact-pg.php'
       - 'scripts/ci/test-calculator-synthetic-ciphertext-pg.php'
+      - 'scripts/ci/test-calculator-report-review-outbox-pg.php'
       - 'app/Core/Leads/SyntheticCalculatorContactBoundary.php'
       - 'app/Core/Leads/SyntheticCalculatorContactCipher.php'
       - 'app/Core/Leads/SyntheticCalculatorPgDelivery.php'
@@ -106,6 +107,12 @@ jobs:
           php -l app/Core/Leads/SyntheticCalculatorContactCipher.php
           php -l scripts/ci/test-calculator-synthetic-ciphertext-pg.php
           php scripts/ci/test-calculator-synthetic-ciphertext-pg.php
+      - name: Verify report-review outbox is idempotent but cannot dispatch
+        run: |
+          set -euo pipefail
+          psql -X -v ON_ERROR_STOP=1 -1 -f tests/Labs/calculator/calculator-report-review-outbox-pg-ci.sql
+          php -l scripts/ci/test-calculator-report-review-outbox-pg.php
+          php scripts/ci/test-calculator-report-review-outbox-pg.php
       - name: Prove durable unsubscribe and tenant-scoped suppression without delivery
         run: |
           set -euo pipefail
