@@ -21,6 +21,8 @@ on:
       - 'scripts/ci/verify-private-staging-isolation.sh'
       - 'scripts/ci/verify-private-staging-fail-recover.sh'
       - 'scripts/ci/emit-private-staging-inventory.sh'
+      - 'scripts/ci/emit-private-staging-os-inventory.sh'
+      - 'tests/Unit/StagingOsPackageInventoryContractTest.php'
       - 'tests/Unit/StagingEvidenceInventoryContractTest.php'
       - 'tests/Unit/PrivateStagingFailRecoverContractTest.php'
       - 'tests/Unit/PrivateStagingRuntimeSmokeContractTest.php'
@@ -88,6 +90,12 @@ jobs:
           set -euo pipefail
           bash -n scripts/ci/emit-private-staging-inventory.sh
           bash scripts/ci/emit-private-staging-inventory.sh
+      - name: Inventory Debian and Alpine OS packages inside reviewed images
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n scripts/ci/emit-private-staging-os-inventory.sh
+          bash scripts/ci/emit-private-staging-os-inventory.sh
       - name: Attach 7-day sanitized dependency inventory for reviewers
         uses: actions/upload-artifact@v4
         with:
@@ -109,6 +117,7 @@ jobs:
             echo '- Checks non-root runtime, no dev artifacts, no app default route, and loopback port'
             echo '- Temporarily stops only disposable PHP-FPM, asserts 5xx, restarts and recovers /up'
             echo '- Uploads only sanitized image/source hashes and public PHP package-version inventory for 7 days'
+            echo '- Also includes installed Debian/Alpine OS package names and versions with SHA256 checksums'
             echo '- No VPS, domain, Docker registry push, deploy, cloud secrets or customer DB'
             echo '- This job does NOT imply release readiness, SEG/DBA approval or merge authorization'
           } >> "$GITHUB_STEP_SUMMARY"
