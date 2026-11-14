@@ -7,7 +7,7 @@ RUN apt-get update \
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-interaction --prefer-dist --no-progress --no-audit
+RUN composer install --no-dev --no-scripts --no-interaction --prefer-dist --no-progress
 COPY . .
 RUN composer dump-autoload --no-scripts --optimize \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
