@@ -59,7 +59,7 @@ final class OfflinePrototypeHubTest extends TestCase
         $html = self::hub();
         foreach ([
             "default-src 'none'", "script-src 'none'",
-            "img-src 'none'", "connect-src 'none'",
+            "img-src 'self'", "connect-src 'none'",
             "frame-src 'none'", "form-action 'none'",
             'base-uri '."'none'", 'referrer" content="no-referrer"',
         ] as $required) {
@@ -67,13 +67,33 @@ final class OfflinePrototypeHubTest extends TestCase
         }
         foreach ([
             'http://', 'https://', '//cdn.', '<form', '<input', '<textarea',
-            '<iframe', '<script', '<img', '<link', 'fetch(', 'XMLHttpRequest',
+            '<iframe', '<script', '<link', 'fetch(', 'XMLHttpRequest',
             'WebSocket', 'EventSource', 'localStorage', 'sessionStorage',
             'indexedDB', 'onload=', 'onclick=', '@import', 'url(',
             'download=', '.innerHTML',
         ] as $forbidden) {
             self::assertStringNotContainsString($forbidden, $html);
         }
+    }
+
+    public function test_original_logo_is_local_and_byte_identical_to_canonical_asset(): void
+    {
+        $html = self::hub();
+        self::assertSame(1, substr_count(
+            $html,
+            '<img src="assets/logo-imagine.png" width="200" height="55" alt="Imagine">',
+        ));
+        self::assertStringContainsString("img-src 'self'", $html);
+        $file = dirname(__DIR__, 2).'/prototypes/assets/logo-imagine.png';
+        self::assertFileExists($file);
+        $binary = file_get_contents($file);
+        self::assertIsString($binary);
+        self::assertStringStartsWith("\x89PNG\r\n\x1a\n", $binary);
+        self::assertSame(
+            '678adeceb3a8ecdaeb6b576b9ee18d1bf0396f77',
+            sha1('blob '.strlen($binary)."\0".$binary),
+        );
+        self::assertSame([200, 55], array_values(unpack('Nwidth/Nheight', substr($binary, 16, 8))));
     }
 
     public function test_mobile_and_keyboard_accessibility_structure_is_present(): void
