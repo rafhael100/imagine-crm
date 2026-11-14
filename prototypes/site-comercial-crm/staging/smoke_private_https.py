@@ -19,7 +19,8 @@ from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 PATHS = ("/", "/index.html", "/assets/logo-imagine.png",
-         "/assets/site.css", "/assets/site.js", "/fluxo-demo/index.html")
+         "/assets/site.css", "/assets/site.js", "/fluxo-demo/index.html",
+         "/painel-demo/index.html", "/painel-demo/dashboard.css", "/painel-demo/dashboard.js")
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -87,10 +88,14 @@ def main():
             status, headers, body = fetch(opener, origin + path, auth)
             assert status == 200, f"autenticado {path}: esperado 200, recebido {status}"
             verify_headers(headers)
-            if path in ("/", "/index.html"):
+            if path in ("/", "/index.html", "/painel-demo/index.html"):
                 assert b"Imagine CRM" in body, "HTML da prévia ausente"
             elif path.endswith(".png"):
                 assert body.startswith(b"\x89PNG\r\n\x1a\n"), "PNG da marca inválido"
+            elif path == "/painel-demo/dashboard.css":
+                assert b".sidebar" in body, "CSS painel ausente"
+            elif path == "/painel-demo/dashboard.js":
+                assert b"data-view" in body, "JS painel ausente"
             elif path.endswith(".css"):
                 assert b".brand-logo" in body, "CSS esperado ausente"
             elif path.endswith(".js"):
