@@ -49,6 +49,27 @@ final class OfflinePrototypeNineScreenImagineIdentityTest extends TestCase
         }
     }
 
+    public function test_imagine_logo_is_canonical_png_and_local_only(): void
+    {
+        $html = self::html();
+        self::assertSame(1, substr_count(
+            $html,
+            '<img class="brand-logo" src="../assets/logo-imagine.png" width="200" height="55" alt="Imagine">',
+        ));
+        self::assertStringContainsString("img-src 'self' data:", $html);
+        $asset = dirname(__DIR__, 2).'/prototypes/assets/logo-imagine.png';
+        self::assertFileExists($asset);
+        $binary = file_get_contents($asset);
+        self::assertIsString($binary);
+        self::assertSame(
+            '678adeceb3a8ecdaeb6b576b9ee18d1bf0396f77',
+            sha1('blob '.strlen($binary)."\0".$binary),
+        );
+        self::assertSame([200, 55], array_values(
+            unpack('Nwidth/Nheight', substr($binary, 16, 8)),
+        ));
+    }
+
     public function test_demo_remains_nine_offline_screens_with_no_network_or_real_auth(): void
     {
         $html = self::html();
