@@ -93,6 +93,7 @@ app_cid="$(docker compose ps -q app)"
 docker inspect --format '{{json .HostConfig.PortBindings}}' "$app_cid" |
   php -r '
     $bindings = json_decode(stream_get_contents(STDIN), true);
+    if (json_last_error() !== JSON_ERROR_NONE) { exit(1); }
     if ($bindings === null || $bindings === []) { exit(0); }
     if (!is_array($bindings)) { exit(1); }
     foreach ($bindings as $published) {
