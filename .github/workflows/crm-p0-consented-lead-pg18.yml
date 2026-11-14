@@ -1,0 +1,70 @@
+name: CRM P0 - isolated consented lead ingestion Postgres18 (NO-GO)
+
+on:
+  pull_request:
+    paths:
+      - 'tests/Labs/P0_LeadIngest/**'
+      - '.github/workflows/crm-p0-consented-lead-pg18.yml'
+      - 'docs/QA-CRM-P0-CONSENTED-LEAD-PG18.md'
+  push:
+    branches:
+      - review/crm-p0-consented-lead-postgres-lab-2026-11-13
+
+permissions:
+  contents: read
+
+jobs:
+  fake-consented-lead:
+    name: PG18 / PHP ${{ matrix.php }} / SQL HMAC and explicit opt-in
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3','8.4']
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: crm_p0_consent_lab
+          POSTGRES_PASSWORD: ci-fake-admin-intake-only
+        ports:
+          - '127.0.0.1:5432:5432'
+        options: >-
+          --health-cmd "pg_isready -U postgres -d crm_p0_consent_lab"
+          --health-interval 5s --health-timeout 5s --health-retries 15
+    steps:
+      - name: Checkout exact CRM candidate, no saved credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: PHP with PostgreSQL PDO
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_pgsql
+          coverage: none
+          tools: none
+      - name: Deny non-fixture SQL and lint PHP
+        run: |
+          set -euo pipefail
+          php -l tests/Labs/P0_LeadIngest/test_consented_lead_pg18.php
+          grep -q "current_database()<>'crm_p0_consent_lab'" tests/Labs/P0_LeadIngest/synthetic-consented-leads-pg18.sql
+          grep -q 'FORCE ROW LEVEL SECURITY' tests/Labs/P0_LeadIngest/synthetic-consented-leads-pg18.sql
+      - name: Create only fictitious binding and contact tables in disposable PG18
+        env:
+          PGPASSWORD: ci-fake-admin-intake-only
+        run: |
+          set -euo pipefail
+          psql -X -v ON_ERROR_STOP=1 -U postgres -h 127.0.0.1 \
+            -d crm_p0_consent_lab -f tests/Labs/P0_LeadIngest/synthetic-consented-leads-pg18.sql
+      - name: Prove signed binding, simulated consent, durable idempotency and denial cases
+        env:
+          GITHUB_ACTIONS: 'true'
+          CRM_P0_CONSENT_LAB: '1'
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: crm_p0_consent_lab
+        run: |
+          set -euo pipefail
+          php tests/Labs/P0_LeadIngest/test_consented_lead_pg18.php
+          echo 'NO-GO: purely synthetic, never a real lead API, identity binding or LGPD consent.' 
