@@ -50,7 +50,7 @@
   }
   function charts() {
     return '<div class="bars">'+[['Prospecção','72%',72,''],['Contato','55%',55,'dark'],['Proposta','38%',38,''],['Conclusão','21%',21,'gray']].map(item=>
-      '<div class="barrow"><div class="barlabels"><span>'+item[0]+'</span><b>'+item[1]+'</b></div><div class="track"><div class="fill '+item[3]+'" style="width:'+item[2]+'%"></div></div></div>').join('')+'</div>';
+      '<div class="barrow"><div class="barlabels"><span>'+item[0]+'</span><b>'+item[1]+'</b></div><div class="track"><div class="fill '+item[3]+' w'+item[2]+'"></div></div></div>').join('')+'</div>';
   }
   function overviewClient(){
     const activities=[['L','Lead fictício adicionado','Há 2 horas — demonstração'],['P','Proposta de exemplo revisada','Ontem — demonstração'],['A','Automação simulada','Há 3 dias — demonstração']];
