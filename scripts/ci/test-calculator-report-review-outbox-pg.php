@@ -94,8 +94,9 @@ requireReport(planReport($pdo,$tenantB,$submission)==='LAB_REPORT_REVIEW_UNAVAIL
     'another tenant cannot see or plan tenant A report');
 requireReport(planReport($pdo,$tenantA,'99999999-9999-4999-8999-999999999999')
     ==='LAB_REPORT_REVIEW_UNAVAILABLE','quote without approved matching contact/cipher not scheduled');
-requireReport(planReport($pdo,'',$submission)==='LAB_REPORT_REVIEW_UNAVAILABLE',
-    'missing tenant marker cannot see report plan');
+requireReport(scopedReport($pdo,'',static fn(PDO $db):int =>
+    (int)$db->query('SELECT count(*) FROM public.crm_calc_lab_report_outbox')
+        ->fetchColumn())===0,'missing tenant marker cannot read any report plans');
 
 $summary=scopedReport($pdo,$tenantA,static fn(PDO $db):array=>$db->query(
     'SELECT event_kind,state,send_enabled,contact_verified,
