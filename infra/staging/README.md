@@ -18,7 +18,7 @@
 - A aplicação tem apenas o healthcheck /up e os componentes permitidos pela branch. **Não há login, trial, leads ou checkout operacional** neste recorte.
 - Postgres tem volume persistente e **não pode** ser confundido com banco descartável de GitHub Actions. Nenhum teste de migração de CI deve ser apontado para ele.
 - Sem TLS ou domínio público neste recorte. Para inspeção posterior, a porta localhost pode ser visualizada via túnel SSH autenticado, quando SSH do operador e gate de infraestrutura forem aprovados.
-- Não há `docker compose up` ou deploy na CI. A configuração será inspecionada antes de qualquer uso em servidor.
+- Há um **smoke test Docker Compose estritamente efêmero** dentro do runner do GitHub Actions: ele cria contêineres com credenciais fictícias, valida `/up` e rotas de negócio 404 e destrói os volumes. Isso **não é deploy** nem acesso à VPS. O runner também executa uma recuperação `pg_dump`/`pg_restore` em banco de destino diferente, somente com dados fictícios, e remove o arquivo local ao término.
 
 ## Critérios antes de homologação em VPS
 
@@ -29,3 +29,9 @@
 5. Revisão independente SEG/DBA **#27**, CORE/LGPD **#259**, UX **#416**; condições para abrir #519 como homologação privada do site.
 
 A CI prova **sintaxe e fronteiras estáticas**, não o funcionamento da infraestrutura, da VPS ou de um SaaS. Nenhum passo de produção é autorizado.
+
+## Recuperação verificada em CI — CRM-RECOVERY-01
+
+A rotina `scripts/ci/rehearse-crm-private-restore.sh` exige `GITHUB_ACTIONS=true`, repositório esperado, marca `CRM_RECOVERY_LAB=synthetic-only` e banco `imagine_crm_staging` **vazio** no contêiner temporário PostgreSQL16. Ela executa o arquivo fictício `tests/Labs/recovery/private-postgres-backup-seed-ci.sql`, cria um arquivo custom-format real com `pg_dump` e o restaura em `imagine_crm_ci_restore` sem sobrescrever o banco original.
+
+O teste compara seis registros de duas empresas (leads, tarefas e histórico), confirma três tabelas `FORCE RLS`, políticas preservadas, grants restritos e leituras limitadas por empresa; sem tenant definido, o papel restrito deve ver zero registros. O arquivo local é apagado e os contêineres/volumes são destruídos no runner. **Não é backup permanente, replicação, disaster recovery real nem recuperação da base operacional do CRM.** Essas atividades continuam exigindo plano aprovado, criptografia, guarda de cópias, teste de restore separado, retenção e aprovação SEG/DBA antes da VPS.
