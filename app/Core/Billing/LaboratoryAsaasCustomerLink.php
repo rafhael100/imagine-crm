@@ -161,6 +161,19 @@ final readonly class LaboratoryAsaasCustomerLink
         }
     }
 
+    /**
+     * The coordinator may call Asaas ONLY after the reservation can be
+     * committed. An outer SQL transaction would make the first reservation
+     * invisible to other processes, creating a duplicate POST risk.
+     */
+    public function assertAutocommitBoundary(): void
+    {
+        $this->guard();
+        if ($this->database->transactionLevel() !== 0) {
+            throw new RuntimeException('Asaas sandbox nao permitido durante transacao aberta.');
+        }
+    }
+
     private static function validate(string $organizationRef, string $externalReference): void
     {
         $uuid = '/\A[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\z/iD';
