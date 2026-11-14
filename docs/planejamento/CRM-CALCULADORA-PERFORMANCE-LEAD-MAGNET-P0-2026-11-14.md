@@ -28,6 +28,26 @@ O módulo `SyntheticCalculatorNurtureLifecycle.php` implementa máquina determin
 
 A ausência de prova autenticada do consentimento deixa permanentemente `can_send_report=false`, `can_send_marketing=false` e `can_persist_lead=false`. O teste CI `tests/offline_calculator_nurture_lifecycle_test.php` cobre replay, datas fora de ordem, confirmação vencida, descadastro e reentrada. Antes de qualquer operação: gravar prova de origem assinada, canal de contato verificado, identidade do anunciante, base legal, revogação durável, supressão e auditoria.
 
+## PERF-CALC-PG02 — ensaio end-to-end Comercial Node → CRM PHP → PostgreSQL 16
+
+A prova de integração agora inclui os seguintes arquivos (todos **CI-only**, sem clientes ou dados pessoais):
+
+- `SyntheticCalculatorInterestInteropInspector.php`: valida estrutura exata e HMAC de evento de interesse do Comercial; mesmo um MAC válido não autoriza tenant, consentimento, envio, armazenamento de PII ou ativação.
+- `tests/offline_calculator_interest_interop_test.php`: vetor HMAC fixo Node/PHP, campos adulterados, janela de validade e tentativa de elevar interesse a consentimento.
+- `tests/Labs/calculator/calculator-interest-rls-ci.sql` e `calculator-interest-rls-assertions-ci.sql`: tabelas descartáveis de **metadados**, bloqueio de replay/nonce, integridade por tenant e RLS forçado, sem privilégios UPDATE/DELETE para o papel de teste.
+- `scripts/ci/run-calculator-interest-pg-roundtrip.php`: consome a fixture assinada do repositório Comercial fixado no commit `f2454eb58b77702f2df69be658c43ecd49f3beb3`, testa INSERT em PostgreSQL real descartável, replay idêntico, conflito de valor, reutilização do nonce e fraude de permissão de marketing.
+- `.github/workflows/ci-crm-calculator-pg-rls.yml`: executa PostgreSQL16 temporário na infraestrutura de CI; banco e papéis desaparecem ao final.
+
+**Resultado:** a gravação transacional de **metadados sintéticos** foi validada; isto NÃO equivale a gravar lead real, a um endpoint HTTP homologado, a prova de LGPD, a opt-in comprovado ou a entrega do relatório. Os campos reais de contato continuam fora do laboratório; `real_crm_receipt_proven=false`, `can_store_pii=false` e `can_send_marketing=false`.
+
+## Próximas dependências operacionais
+
+1. Binding de organização Imagine e origem Comercial assinados em backend independente, autenticação e autorização em produção.
+2. Aviso de privacidade, finalidade e prova de consentimento separadas, com revisão jurídica, retenção e direitos do titular.
+3. Endpoint privado protegido por CSRF/anti-bot/rate limit, idempotência persistente por organização, controle de exceções e fila de reenvio.
+4. Recibo CRM durável verificado, worker de relatório solicitado e opt-in confirmado com revogação e supressão atômica.
+5. Piloto real com monitoramento, segurança e aprovação explícita antes de liberar captação no site.
+
 ## Dependências
 - Comercial PR #389 (calculadora pública, sem PII).
 - Performance PR #351 (terceiro canal em laboratório).
