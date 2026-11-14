@@ -84,7 +84,7 @@ YAML;
             || !str_contains($yaml, 'DB_PORT: 5432')
             || !str_contains($yaml, 'DB_USERNAME: postgres')
             || !str_contains($yaml, 'APP_ENV: testing')
-            || substr_count($yaml, 'NOBYPASSRLS') !== 5
+            || substr_count($yaml, 'NOBYPASSRLS') !== 6
             || preg_match('/(?<!NO)\bBYPASSRLS\b/', $yaml)) {
             $issues[] = 'disposable_pg_roles';
         }
@@ -93,6 +93,7 @@ YAML;
             'php artisan migrate --force --no-interaction',
             'php artisan migrate --path=database/experimental-migrations/auth --force --no-interaction',
             'php artisan migrate --path=database/experimental-migrations/async --force --no-interaction',
+            'php artisan migrate --path=database/experimental-migrations/trial --force --no-interaction',
         ];
         $actual = [];
         $guardCount = 0;
@@ -109,7 +110,7 @@ YAML;
                 }
             }
         }
-        if ($guardCount !== 3 || $actual !== $approvedCommands) {
+        if ($guardCount !== 4 || $actual !== $approvedCommands) {
             $issues[] = 'migration_inventory';
         }
         if (preg_match('/\b(?:migrate:(?:fresh|refresh|reset|rollback)|db:wipe|DROP\s+(?:DATABASE|TABLE|SCHEMA)|TRUNCATE\s+TABLE)\b/i', $yaml)) {
@@ -149,6 +150,8 @@ YAML;
             [$pg, 'php artisan migrate --force --no-interaction',
                 'php artisan migrate:fresh --force --no-interaction', true, 'migration_inventory'],
             [$pg, 'php artisan migrate --path=database/experimental-migrations/async --force --no-interaction',
+                'php artisan migrate --path=database/migrations --force --no-interaction', true, 'migration_inventory'],
+            [$pg, 'php artisan migrate --path=database/experimental-migrations/trial --force --no-interaction',
                 'php artisan migrate --path=database/migrations --force --no-interaction', true, 'migration_inventory'],
             [$pg, 'php scripts/ci/verify-ephemeral-postgres.php --verify'."\n".'          php artisan migrate --force --no-interaction',
                 'php artisan migrate --force --no-interaction', true, 'unguarded_migration'],
