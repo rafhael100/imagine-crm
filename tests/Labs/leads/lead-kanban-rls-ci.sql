@@ -93,3 +93,35 @@ CREATE POLICY crm_lab_lead_events_tenant_scope ON public.crm_lab_lead_events
 GRANT INSERT (event_id, lead_id, organization_id, version,
   event_type, from_stage, to_stage)
  ON TABLE public.crm_lab_lead_events TO crm_app_ci;
+
+-- CRM-LEADS-PG03: synthetic site-to-CRM capture idempotency claims.
+-- DEFERRED composite FK allows reserving the event key first, then creating
+-- the lead and audit record inside the SAME transaction (no partial claim).
+-- All identifiers are synthetic; digest is NOT a production HMAC protocol.
+CREATE TABLE public.crm_lab_lead_capture_keys (
+  organization_id uuid NOT NULL,
+  source_code varchar(12) NOT NULL
+    CHECK (source_code IN ('sites', 'landing', 'onepage')),
+  event_sha256 char(64) NOT NULL
+    CHECK (event_sha256 ~ '^[0-9a-f]{64}$'),
+  lead_id uuid NOT NULL UNIQUE,
+  recorded_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT crm_lab_capture_unique
+    PRIMARY KEY (organization_id, source_code, event_sha256),
+  CONSTRAINT crm_lab_capture_lead_org_fk
+    FOREIGN KEY (lead_id, organization_id)
+    REFERENCES public.crm_lab_leads(id, organization_id)
+    ON UPDATE RESTRICT ON DELETE RESTRICT
+    DEFERRABLE INITIALLY DEFERRED
+);
+ALTER TABLE public.crm_lab_lead_capture_keys ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.crm_lab_lead_capture_keys FORCE ROW LEVEL SECURITY;
+CREATE POLICY crm_lab_capture_tenant_scope
+ ON public.crm_lab_lead_capture_keys FOR ALL TO crm_app_ci
+ USING (organization_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid)
+ WITH CHECK (organization_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid);
+GRANT SELECT (organization_id, source_code, event_sha256, lead_id)
+ ON public.crm_lab_lead_capture_keys TO crm_app_ci;
+GRANT INSERT (organization_id, source_code, event_sha256, lead_id)
+ ON public.crm_lab_lead_capture_keys TO crm_app_ci;
+-- No UPDATE/DELETE: a claimed event cannot be silently reassigned.
