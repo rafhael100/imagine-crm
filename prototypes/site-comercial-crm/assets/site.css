@@ -3,3 +3,18 @@
 
 /* WEB-P0: larguras ilustrativas sem atributos style inline. */
 .side-spacer{flex:1}.bar.w92{--w:92%}.bar.w72{--w:72%}.bar.w48{--w:48%}.bar.w26{--w:26%}
+
+/* WEB-P0: comparação acessível confinada ao componente, nunca à largura da página. */
+.compare-intro{text-align:center;margin:42px auto 15px}
+.compare-intro h3{font-size:23px;letter-spacing:-.7px;margin:0 0 6px}
+.compare-intro p{font-size:13px;color:#69756d;margin:0}
+.compare-scroll{margin:20px auto 8px;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;border:1px solid #e4e8e2;border-radius:18px;background:white}
+.compare-scroll:focus-visible{outline:3px solid #ffb767;outline-offset:3px}
+.compare-table{border-collapse:collapse;min-width:670px;width:100%;font-size:12px}
+.compare-table caption{caption-side:top;text-align:left;padding:16px 20px 8px;font-size:12px;font-weight:700;color:#69756d}
+.compare-table th,.compare-table td{border-bottom:1px solid #ecefe9;padding:15px 13px;text-align:center}
+.compare-table thead th{background:#fff9ef;color:#59402b}
+.compare-table th:first-child{text-align:left;padding-left:20px}
+.compare-table tbody th{font-weight:700;color:#334038;white-space:nowrap}
+.compare-table tbody tr:last-child th,.compare-table tbody tr:last-child td{border-bottom:0}
+.compare-table tbody td[colspan]{text-align:left;color:#737e76}
