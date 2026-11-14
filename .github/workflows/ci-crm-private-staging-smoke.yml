@@ -17,6 +17,8 @@ on:
       - 'scripts/ci/rehearse-crm-full-schema-restore.sh'
       - 'tests/Unit/StagingDemoPreviewTest.php'
       - 'resources/views/crm-staging-demo.blade.php'
+      - 'resources/views/partials/imagine-staging-tokens.blade.php'
+      - 'tests/Unit/ImagineStagingDesignSystemTest.php'
       - 'resources/views/crm-staging-marketing.blade.php'
       - 'routes/web.php'
       - 'tests/Unit/StagingMarketingPreviewTest.php'
@@ -119,6 +121,31 @@ jobs:
           [[ "${headers,,}" == *'x-robots-tag: noindex, nofollow, noarchive'* ]]
           [[ "$headers" == *"form-action 'none'"* ]]
           echo "Private navigable demonstration: PT/EN/ES, synthetic-only, GET-only, no edit or capture."
+      - name: Verify original Imagine brand tokens and keyboard navigation on actual Laravel HTML
+        run: |
+          set -euo pipefail
+          base="http://127.0.0.1:18080"
+          for path in / /demo /demo/live; do
+            if [[ "$path" == /demo/live ]]; then
+              continue  # SQL fixture is created later in this workflow.
+            fi
+            html="$(curl -fsS --max-time 5 "$base$path")"
+            [[ "$html" == *'--imagine-orange: #f9941d;'* ]]
+            [[ "$html" == *'--imagine-ink: #171b19;'* ]]
+            [[ "$html" == *'--imagine-surface: #f7f7f8;'* ]]
+            [[ "$html" == *'--imagine-touch-target: 44px;'* ]]
+            [[ "$html" == *'font-family:var(--imagine-font-ui)'* ]]
+            [[ "$html" == *'class="skip"'* ]]
+            [[ "$html" == *'aria-label="Choose language"'* ]]
+          done
+          pt="$(curl -fsS --max-time 5 "$base/demo?lang=pt")"
+          en="$(curl -fsS --max-time 5 "$base/demo?lang=en")"
+          es="$(curl -fsS --max-time 5 "$base/demo?lang=es")"
+          [[ "$pt" == *'Ir para o conteúdo'* ]]
+          [[ "$en" == *'Skip to content'* ]]
+          [[ "$es" == *'Saltar al contenido'* ]]
+          [[ "$pt" == *'aria-current="location"'* ]]
+          echo "Imagine DS V1 tokens and accessible PT/EN/ES pages rendered in private Laravel."
       - name: Restore PostgreSQL backup on separate network-none PG16 server and test RLS
         env:
           CRM_RECOVERY_LAB: synthetic-only
