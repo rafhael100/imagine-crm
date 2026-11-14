@@ -1,0 +1,63 @@
+name: CRM calculator consent lab (no personal data)
+
+on:
+  pull_request:
+    paths:
+      - 'app/Core/Leads/SyntheticCalculatorNurtureConsentInspector.php'
+      - 'app/Core/Leads/SyntheticCalculatorNurtureLifecycle.php'
+      - 'app/Core/Leads/SyntheticCalculatorInterestInteropInspector.php'
+      - 'tests/offline_calculator_nurture_consent_test.php'
+      - 'tests/offline_calculator_nurture_lifecycle_test.php'
+      - 'tests/offline_calculator_interest_interop_test.php'
+      - 'scripts/ci/check-calculator-interest-crossrepo.php'
+      - '.github/workflows/crm-calculator-nurture-consent-lab.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-consent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout without credential persistence
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Checkout immutable Comercial calculator producer
+        uses: actions/checkout@v4
+        with:
+          repository: rafhael100/imagine-comercial
+          ref: f2454eb58b77702f2df69be658c43ecd49f3beb3
+          path: _commercial_calculator_ci
+          persist-credentials: false
+      - name: Fix independent Node runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: PHP offline 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: none
+      - name: Lint source and lab tests
+        run: |
+          php -l app/Core/Leads/SyntheticCalculatorNurtureConsentInspector.php
+          php -l tests/offline_calculator_nurture_consent_test.php
+          php -l app/Core/Leads/SyntheticCalculatorNurtureLifecycle.php
+          php -l tests/offline_calculator_nurture_lifecycle_test.php
+          php -l app/Core/Leads/SyntheticCalculatorInterestInteropInspector.php
+          php -l tests/offline_calculator_interest_interop_test.php
+          php -l scripts/ci/check-calculator-interest-crossrepo.php
+      - name: Ensure no real CRM delivery or nurture starts
+        run: |
+          php tests/offline_calculator_nurture_consent_test.php
+          php tests/offline_calculator_nurture_lifecycle_test.php
+          php tests/offline_calculator_interest_interop_test.php
+      - name: Verify pinned Comercial source and cross-language Node-to-PHP vector
+        run: |
+          set -euo pipefail
+          test "$(git -C _commercial_calculator_ci rev-parse HEAD)" = "f2454eb58b77702f2df69be658c43ecd49f3beb3"
+          node _commercial_calculator_ci/scripts/emit-calculator-interest-fixture-ci.mjs | php scripts/ci/check-calculator-interest-crossrepo.php

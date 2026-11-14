@@ -1,0 +1,51 @@
+name: CRM calculator private HTTP loopback (synthetic)
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/ci/calculator-private-http-router.php'
+      - 'scripts/ci/test-calculator-private-http.mjs'
+      - 'app/Core/Leads/SyntheticCalculatorInterestInteropInspector.php'
+      - '.github/workflows/ci-crm-calculator-http-loopback.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  private-http-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    env:
+      CI: 'true'
+      CRM_CALCULATOR_HTTP_CI: synthetic-loopback
+    steps:
+      - name: Checkout without GitHub credential persistence
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup PHP 8.4 (no composer or server deployment)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: none
+      - name: Setup Node 22 for ephemeral request verification
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Lint private synthetic receiver
+        run: |
+          php -l scripts/ci/calculator-private-http-router.php
+          php -l app/Core/Leads/SyntheticCalculatorInterestInteropInspector.php
+      - name: Verify HTTP transport is localhost only and cannot accept PII or consent
+        run: node scripts/ci/test-calculator-private-http.mjs
+      - name: Report hard-deny release state
+        if: always()
+        run: |
+          {
+            echo '### Calculator HTTP smoke — offline disposable'
+            echo 'No Laravel route; no public API; no personal data or CRM writes'
+            echo 'No provider credentials, consent authority, email, nurture or ads'
+            echo 'DRAFT / NO-MERGE / NO-DEPLOY / NO-LIVE-INTAKE'
+          } >> "$GITHUB_STEP_SUMMARY"
