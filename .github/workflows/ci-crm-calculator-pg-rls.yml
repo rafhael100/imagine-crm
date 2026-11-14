@@ -88,6 +88,11 @@ jobs:
           test "$(git -C _commercial_calculator_ci rev-parse HEAD)" = "f2454eb58b77702f2df69be658c43ecd49f3beb3"
           php -l scripts/ci/run-calculator-interest-pg-roundtrip.php
           node _commercial_calculator_ci/scripts/emit-calculator-interest-fixture-ci.mjs | php scripts/ci/run-calculator-interest-pg-roundtrip.php
+      - name: Prove durable unsubscribe and tenant-scoped suppression without delivery
+        run: |
+          set -euo pipefail
+          psql -X -v ON_ERROR_STOP=1 -1 -f tests/Labs/calculator/calculator-nurture-suppression-rls-ci.sql
+          psql -X -v ON_ERROR_STOP=1 -f tests/Labs/calculator/calculator-nurture-suppression-assertions-ci.sql
       - name: Real loopback HTTP to temporary PostgreSQL metadata (NO PII)
         env:
           CRM_CALCULATOR_HTTP_CI: synthetic-loopback
