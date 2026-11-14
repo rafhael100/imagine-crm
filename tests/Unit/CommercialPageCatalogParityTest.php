@@ -129,14 +129,14 @@ final class CommercialPageCatalogParityTest extends TestCase
         self::assertCount(1, $tables);
 
         $table = $tables[0];
-        $headers = self::nodes($xpath, './thead/tr/th', $table);
+        $headers = self::nodes($xpath, '(.//tr)[1]/th', $table);
         self::assertCount(1 + count($plans), $headers);
 
         foreach ($plans as $i => $plan) {
             self::assertSame($plan['name'], trim($headers[$i + 1]->textContent));
         }
 
-        $rows = self::nodes($xpath, './tbody/tr', $table);
+        $rows = self::nodes($xpath, '(.//tr)[position()>1]', $table);
         self::assertCount(4, $rows);
         $expectedLabels = [
             'Mensalidade prevista',
