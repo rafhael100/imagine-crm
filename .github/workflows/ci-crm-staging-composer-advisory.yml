@@ -1,0 +1,70 @@
+name: CRM Imagine - F3-273 Production Composer Advisory Review (DRAFT Only)
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'composer.json'
+      - 'composer.lock'
+      - '.github/workflows/ci-crm-staging-composer-advisory.yml'
+      - 'tests/Unit/StagingComposerAdvisoryContractTest.php'
+      - 'docs/desenvolvimento/F3-263-staging-privado-loopback-proposta.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-f3-273-advisory-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  composer-lock-audit:
+    name: Public Composer production advisory check - no deploy
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == true && github.event.pull_request.number == 517 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Exact PR source, without persisted GitHub credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify installed Composer CLI and production dependency lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -v > /dev/null
+          composer --version > /dev/null
+          test -s composer.lock
+      - name: Fail closed on public security advisories or unavailable audit service
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! composer audit --locked --no-dev --format=json > "$RUNNER_TEMP/f3-273-public-audit.json"; then
+            echo 'F3-273 NO-GO: public Composer advisories reported findings or audit was unavailable.' >&2
+            exit 1
+          fi
+          php -r '
+            $raw = file_get_contents($argv[1]);
+            $j = json_decode($raw, true);
+            $advisories = is_array($j) ? ($j["advisories"] ?? null) : null;
+            $abandoned = is_array($j) ? ($j["abandoned"] ?? []) : null;
+            if (!is_array($advisories) || !is_array($abandoned) ||
+                count($advisories) > 0 || count($abandoned) > 0) {
+              fwrite(STDERR, "F3-273 NO-GO: public advisory scan incomplete or findings remain.\n");
+              exit(1);
+            }
+            echo "F3-273 PASS: production Composer lock has no currently reported public advisories or abandoned package findings.\n";
+          ' "$RUNNER_TEMP/f3-273-public-audit.json"
+      - name: Explain limited public advisory scope
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '### F3-273: public Composer production advisory audit'
+            echo '- Reviews composer.lock with --locked --no-dev, no install, no migrations'
+            echo '- Uses publicly reported advisories; no credentials or customer records'
+            echo '- No PHP container deployment, Docker push, VPS or production endpoint'
+            echo '- No OS-package scan, signed provenance, independent approval or release GO'
+          } >> "$GITHUB_STEP_SUMMARY"
