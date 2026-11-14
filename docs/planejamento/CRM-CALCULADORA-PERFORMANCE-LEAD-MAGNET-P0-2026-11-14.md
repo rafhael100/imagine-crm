@@ -75,6 +75,12 @@ A entrega acrescenta \`tests/Labs/calculator/calculator-report-review-outbox-pg-
 
 Esta prova reduz a lacuna de idempotência de solicitação de estudo, mas **não entrega e-mail**, não confirma identidade nem comprova consentimento. Em produção, a implantação precisará de worker autenticado e separado, comprovante de envio, retry controlado, retenção e revogação para marketing, com exceções de consentimento do relatório explicitamente definidas.
 
+## PERF-CALC-NURTURE-COPY-P0 — sequência educativa trilingue, sem mensagens
+
+\`SyntheticCalculatorEducationCatalog.php\` e \`tests/offline_calculator_education_catalog_test.php\` preparam o conteúdo das quatro etapas educativas nos dias 0, 3, 7 e 14, em português, inglês e espanhol. São **12 modelos estáticos**, com orientação de investimento, comparação de Meta/Google/ChatGPT Ads, checklist de campanha e convite opcional ao diagnóstico. Os textos não prometem conversões nem retornos.
+
+Cada prévia informa explicitamente que **não existe destinatário, permissão de marketing comprovada, autorização de entrega, servidor de e-mail ou agendamento**. Este é um catálogo editorial para futura aprovação, não um mecanismo de disparo. Antes da ativação, cada contato precisará de opt-in separado, confirmado e revogável, além de mecanismo de descadastro, limites de frequência e conexão com provedor autorizado.
+
 ## Próximas dependências operacionais
 
 1. Binding de organização Imagine e origem Comercial assinados em backend independente, autenticação e autorização em produção.
