@@ -1,0 +1,66 @@
+name: CRM AIA F231 Ed25519 synthetic bilateral deny gate
+
+on:
+  push:
+    branches:
+      - review/crm-aia-f231-ed25519-deny-ci-2026-11-14
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-aia-f231-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  denial-contract:
+    name: PHP ${{ matrix.php }} / pinned Agents Ed25519 deny-only proof
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4']
+    steps:
+      - name: Fail closed if private cross-repository access is unreviewed
+        if: ${{ github.event.repository.private == true }}
+        shell: bash
+        run: |
+          echo "::error::UNREVIEWED_PRIVATE_CROSS_REPO_ACCESS_NO_GO"
+          exit 1
+      - name: Checkout CRM under review
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 SHA pinned
+        with:
+          persist-credentials: false
+      - name: Checkout immutable Agents F231 service identity candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 SHA pinned
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba
+          path: _aia_f231_fixture
+          persist-credentials: false
+      - name: Verify exact Agents SHA, no editable trust anchor
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _aia_f231_fixture rev-parse HEAD)" = "fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba"
+      - name: PHP 8.3/8.4, no Composer install, no credentials
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: none
+      - name: Validate original sources and run cryptographic bilateral deny test
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -m | grep -qi '^sodium$'
+          php -l app/Support/Synthetic/AiaReadOnlyMockBoundary.php
+          php -l _aia_f231_fixture/src/MockBridge/MockServiceIdentityPreflight.php
+          php -l _aia_f231_fixture/src/MockBridge/MockCrmReadRequest.php
+          php -l scripts/ci/check-aia-f231-ed25519-deny.php
+          php scripts/ci/check-aia-f231-ed25519-deny.php
+          echo 'operational_decision=NO_GO real_authorization=false no_deploy=true' >> "$GITHUB_STEP_SUMMARY"
