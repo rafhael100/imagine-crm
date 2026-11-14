@@ -1,0 +1,50 @@
+name: CRM WEB-P3 - Nginx privado real em CI descartavel
+
+on:
+  push:
+    branches:
+      - review/crm-web-p3-private-http-runtime-2026-11-13
+    paths:
+      - 'prototypes/site-comercial-crm/**'
+      - '.github/workflows/ci-crm-web-p3-private-http.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-web-p3-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  http-private:
+    name: Nginx no runner - autenticar, negar rotas e validar bytes
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      CI_CRM_PREVIEW_DOCKER: synthetic-only
+    steps:
+      - name: Checkout imutavel sem credenciais retidas
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verificar modelo estatico e limite de ativos
+        run: |
+          python3 prototypes/site-comercial-crm/tests/test_preview.py
+          python3 prototypes/site-comercial-crm/staging/test_configuration.py
+          test -f prototypes/site-comercial-crm/.dockerignore
+          test -f prototypes/site-comercial-crm/staging/nginx-preview-ci.conf
+      - name: Construir Nginx e provar HTTP em 127.0.0.1 com identidade ficticia
+        shell: bash
+        run: bash prototypes/site-comercial-crm/staging/smoke_docker_http_ci.sh
+      - name: Registrar limites da evidência
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '### CRM WEB-P3: laboratorio descartavel'
+            echo '- Somente runner GitHub-hosted; nenhum acesso a Leaseweb, Cloudflare ou sistemas de clientes'
+            echo '- Autenticacao Basic de teste, senha aleatoria efemera sem origem real'
+            echo '- Sem certificado TLS, firewall definitivo, dominio, DB, app Laravel, API, transacao ou gateway'
+            echo '- Image nginx:1.29-alpine para teste; pin de digest, SBOM, revisao de rede e SEG pendentes'
+            echo '- Deploy, merge para DEV/main, trial real e pagamentos continuam NO-GO'
+          } >> "$GITHUB_STEP_SUMMARY"
