@@ -86,6 +86,10 @@ with ThreadingHTTPServer(("127.0.0.1", 0), partial(ReadOnly, directory=str(ROOT)
                     assert page.title() == "Imagine CRM — Laboratório navegável offline"
                     assert page.locator('html[lang="pt-BR"]').count() == 1
                     assert page.locator('article.card').count() == 12
+                    logo = page.locator('img[src="assets/logo-imagine.png"][alt="Imagine"]')
+                    assert logo.count() == 1 and logo.is_visible()
+                    assert logo.evaluate("(node) => node.naturalWidth") == 200
+                    assert logo.evaluate("(node) => node.naturalHeight") == 55
                     assert page.get_by_text("PROTÓTIPO — DADOS FICTÍCIOS.", exact=False).count() == 1
                     assert page.locator('form, script, iframe, input, textarea').count() == 0
                     assert page.locator('a[href^="https"], a[href^="http"], a[href^="//"]').count() == 0
