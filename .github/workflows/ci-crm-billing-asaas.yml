@@ -16,6 +16,12 @@ on:
       - 'tests/Feature/PostgresAsaasCustomerLinkTest.php'
       - 'tests/Feature/PostgresAsaasCustomerReconcileTest.php'
       - 'tests/Feature/PostgresAsaasOrderReservationTest.php'
+      - 'tests/Feature/PostgresAsaasBillingIntegratedLedgerTest.php'
+      - 'tests/Feature/PostgresAsaasSubscriptionDraftTest.php'
+      - 'tests/Feature/AsaasSandboxSubscriptionLookupTest.php'
+      - 'tests/Feature/PostgresAsaasSubscriptionObservationTest.php'
+      - 'tests/Feature/AsaasSandboxSubscriptionPaymentsReviewTest.php'
+      - 'tests/Unit/AsaasSubscriptionDraftSpecTest.php'
       - 'tests/Labs/billing/**'
       - '.github/workflows/ci-crm-billing-asaas.yml'
 
@@ -80,6 +86,12 @@ jobs:
       BILLING_ORDER_PASSWORD: ephemeral-order-insert-only
       BILLING_ORDER_REVIEW_USERNAME: crm_billing_order_review_ci
       BILLING_ORDER_REVIEW_PASSWORD: ephemeral-order-review-only
+      CRM_ASAAS_SUBSCRIPTION_LAB: synthetic-only
+      BILLING_SUBSCRIPTION_USERNAME: crm_billing_subscription_ci
+      BILLING_SUBSCRIPTION_PASSWORD: ephemeral-subscription-draft-only
+      CRM_ASAAS_SUBSCRIPTION_OBSERVATION_LAB: synthetic-only
+      BILLING_SUBSCRIPTION_REVIEW_USERNAME: crm_billing_subscription_review_ci
+      BILLING_SUBSCRIPTION_REVIEW_PASSWORD: ephemeral-subscription-review-only
       CACHE_STORE: array
       SESSION_DRIVER: array
       QUEUE_CONNECTION: sync
@@ -119,7 +131,21 @@ jobs:
           php -l app/Core/Billing/LaboratoryAsaasOrderReservation.php
           php -l app/Core/Billing/LaboratoryAsaasOrderPaymentReviewer.php
           php -l app/Core/Billing/LaboratoryAsaasOrderPaymentHandoff.php
+          php -l app/Core/Billing/AsaasSubscriptionDraftSpec.php
+          php -l app/Core/Billing/LaboratoryAsaasSubscriptionDraft.php
+          php -l app/Core/Billing/AsaasSandboxSubscriptionLookup.php
+          php -l app/Core/Billing/LaboratoryAsaasSubscriptionObservation.php
+          php -l app/Core/Billing/AsaasSandboxSubscriptionPaymentsReview.php
+          php -l tests/Feature/PostgresAsaasSubscriptionDraftTest.php
+          php -l tests/Feature/AsaasSandboxSubscriptionLookupTest.php
+          php -l tests/Feature/PostgresAsaasSubscriptionObservationTest.php
+          php -l tests/Feature/AsaasSandboxSubscriptionPaymentsReviewTest.php
+          php -l tests/Unit/AsaasSubscriptionDraftSpecTest.php
+          php artisan test --filter=AsaasSubscriptionDraftSpecTest --no-ansi
+          php artisan test --filter=AsaasSandboxSubscriptionLookupTest --no-ansi
+          php artisan test --filter=AsaasSandboxSubscriptionPaymentsReviewTest --no-ansi
           php -l tests/Feature/PostgresAsaasOrderReservationTest.php
+          php -l tests/Feature/PostgresAsaasBillingIntegratedLedgerTest.php
           php -l tests/Unit/AsaasWebhookEnvelopeTest.php
           php -l tests/Feature/PostgresAsaasWebhookInboxTest.php
           php -l tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php
@@ -158,6 +184,20 @@ jobs:
             -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-order-reservation-check-ci.sql
       - name: Provar duas conexoes, idempotencia e gateway Pix falso
         run: php artisan test --filter=PostgresAsaasOrderReservationTest --no-ansi
+      - name: Criar rascunhos de assinatura bloqueados apenas na CI
+        run: |
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-subscription-draft-ci.sql
+      - name: Provar trial 14 dias e rascunho sem direitos em PostgreSQL
+        run: php artisan test --filter=PostgresAsaasSubscriptionDraftTest --no-ansi
+      - name: Criar diario sintetico de observacao de assinaturas
+        run: |
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-subscription-observation-ci.sql
+      - name: Provar conciliacao GET-only de assinatura sem ativacao
+        run: php artisan test --filter=PostgresAsaasSubscriptionObservationTest --no-ansi
+      - name: Testar ledger integrado pagador pedido assinatura e isolamento
+        run: php artisan test --filter=PostgresAsaasBillingIntegratedLedgerTest --no-ansi
       - name: Resumo de limitacoes e escopo
         if: always()
         run: |
@@ -175,5 +215,7 @@ jobs:
             echo '- Link PG CI unico por organizacao/referencia, role separada e conciliacao GET-only de cliente'
             echo '- Reserva SQL unica por pedido e provider_payment_id; teste CI sem endpoint, sem HTTP real e sem grant'
             echo '- Handoff Laravel sob PostgreSQL16 CI apenas, com replay conservador e testes em duas sessoes'
+            echo '- Rascunho mensal com trial 14 dias, consulta GET e observacao sem conceder direitos'
+            echo '- CI valida pedido e assinatura no mesmo PG efemero por tenant, sem direitos'
             echo '- Candidatos componiveis nesta HEAD mas SEM transacao real de pagamento, tenant autenticado ou RLS final'
           } >> "$GITHUB_STEP_SUMMARY"
