@@ -1,5 +1,9 @@
 # CRM Imagine — STATUS ATUAL
 
+## Leitura de leads para o painel — proposta documental (14/11/2026)
+
+[Contrato v0.1](docs/contratos/CRM-LEAD-READ-V0.1-PROPOSTA.md) e [26 cenários de revisão](docs/contratos/CRM-LEAD-READ-V0.1-CENARIOS.md) preparados sob autorização documental. Separam lead/contato/oportunidade e propõem projeção, escopo, cursor e recusas. Parâmetros e direitos aguardam aceite; nenhum caso executado, endpoint, ALLOW ou gate encerrado. Baseline web #534 permanece independente e inalterada.
+
 ## OPS-70 — staging comprovado em CI descartável; VPS ainda NO-GO (14/11/2026)
 
 **Base DEV antes deste dossiê:** `3a723ae74b21a4b499c41dc9e132ae7f343d4508`; `main` preservada em `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012`. A PR [#517](https://github.com/rafhael100/imagine-crm/pull/517) permanece **DRAFT / NO-MERGE / NO-DEPLOY**. F3-267/268/269/270 passaram em contêineres reais *somente no GitHub*: imagens PHP/Nginx, /up HTTP 200 em loopback, FPM isolado sem rota padrão, serviço web limitado a 127.0.0.1 e transições de saúde `healthy → unhealthy → healthy` após suspensão/retomada do FPM. **6/6 workflows success** na HEAD F3-270 [`9c249dbf`](https://github.com/rafhael100/imagine-crm/actions/runs/43546705237). A F3-271 produziu inventário sanitizado de dependências e hashes em [Actions #43547265544](https://github.com/rafhael100/imagine-crm/actions/runs/43547265544) com **6/6 CI verdes** na SHA `240a01c5258616c9eb491604b3836a49e7858058`; [artifact #14094049896](https://github.com/rafhael100/imagine-crm/actions/runs/43547265544/artifacts/14094049896), expira em 21/11/2026.
