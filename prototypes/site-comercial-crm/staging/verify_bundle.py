@@ -10,10 +10,12 @@ import argparse
 import hashlib
 from pathlib import Path
 
-FILES = ("index.html", "assets/logo-imagine.png", "assets/site.css", "assets/site.js")
+FILES = ("index.html", "assets/logo-imagine.png", "assets/site.css", "assets/site.js",
+         "fluxo-demo/index.html")
 OPTIONAL = ("manifest.sha256", "LEIA-ME.txt")
 MAX_SIZE = {"index.html": 100_000, "assets/logo-imagine.png": 300_000,
-            "assets/site.css": 100_000, "assets/site.js": 100_000}
+            "assets/site.css": 100_000, "assets/site.js": 100_000,
+            "fluxo-demo/index.html": 100_000}
 
 
 def verify(directory: Path) -> None:
@@ -27,7 +29,7 @@ def verify(directory: Path) -> None:
             actual.add(name)
             assert name in allowed, "recurso não permitido no pacote"
         elif item.is_dir():
-            assert item.relative_to(directory).as_posix() == "assets", "diretório inesperado"
+            assert item.relative_to(directory).as_posix() in ("assets", "fluxo-demo"), "diretório inesperado"
         else:
             raise AssertionError("tipo de arquivo não permitido")
     assert set(FILES + ("manifest.sha256",)).issubset(actual), "recurso obrigatório ausente"
@@ -49,6 +51,11 @@ def verify(directory: Path) -> None:
     assert 'src="./assets/site.js"' in page
     assert "connect-src 'none'" in page and "form-action 'none'" in page
     assert "<form" not in page and "<input" not in page
+    assert 'href="./fluxo-demo/index.html"' in page
+    mock = (directory / "fluxo-demo/index.html").read_text("utf-8")
+    assert 'src="../assets/logo-imagine.png"' in mock
+    assert "PROTÓTIPO — DADOS FICTÍCIOS." in mock
+    assert "form-action 'none'" in mock and "connect-src 'none'" in mock
     print("PASS: quatro ativos permitidos e SHA256 conferidos. Nenhum deploy realizado.")
 
 
