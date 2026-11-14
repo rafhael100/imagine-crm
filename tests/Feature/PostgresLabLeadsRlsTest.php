@@ -412,7 +412,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
         );
         $again = $this->ledger($this->two)->captureSynthetic(
             self::principal(), self::ORG_A, self::LEAD_A,
-            'DEMO_A009', 'sites', $digest,
+            'DEMO_A009', 'sites', $claim,
         );
         $changedTitle = $this->ledger()->captureSynthetic(
             self::principal(), self::ORG_A, self::LEAD_A,
@@ -420,7 +420,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
         );
         $changedId = $this->ledger($this->two)->captureSynthetic(
             self::principal(), self::ORG_A, self::LEAD_B,
-            'DEMO_A009', 'sites', $digest,
+            'DEMO_A009', 'sites', $claim,
         );
         $newDigestSameLead = $this->ledger()->captureSynthetic(
             self::principal(), self::ORG_A, self::LEAD_A,
