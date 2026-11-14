@@ -26,7 +26,7 @@ CREATE TABLE crm_lab_asaas_order_reservations (
 -- Enforce monotonic state even if a CI reviewer issues SQL directly.
 -- Column grants alone are not an immutable payment ledger.
 CREATE FUNCTION crm_lab_asaas_order_monotonic_guard()
-RETURNS trigger LANGUAGE plpgsql AS $
+RETURNS trigger LANGUAGE plpgsql AS $lab_order_guard$
 BEGIN
   IF ROW(NEW.order_ref, NEW.organization_ref, NEW.provider_customer_id,
          NEW.plan_code, NEW.amount_cents, NEW.due_on)
@@ -43,7 +43,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END
-$;
+$lab_order_guard$;
 CREATE TRIGGER crm_lab_asaas_order_update_guard
 BEFORE UPDATE ON crm_lab_asaas_order_reservations
 FOR EACH ROW EXECUTE FUNCTION crm_lab_asaas_order_monotonic_guard();
