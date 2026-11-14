@@ -54,6 +54,19 @@ final class StagingSmokeBlueprintContractTest extends TestCase
         self::assertSame(2, substr_count($compose, 'read_only: true'));
     }
 
+    public function test_php_health_probe_escapes_compose_variable_expansion(): void
+    {
+        $compose = file_get_contents(
+            dirname(__DIR__, 2).'/infra/staging/compose.yaml',
+        );
+        self::assertIsString($compose);
+        self::assertStringContainsString(
+            "\$\$s=@fsockopen('127.0.0.1',9000,\$\$e,\$\$m,2); exit(\$\$s?0:1);",
+            $compose,
+        );
+        self::assertStringContainsString('condition: service_healthy', $compose);
+    }
+
     public function test_dockerfile_contains_only_application_sources_not_dev_fixtures_or_secrets(): void
     {
         $file = file_get_contents(
