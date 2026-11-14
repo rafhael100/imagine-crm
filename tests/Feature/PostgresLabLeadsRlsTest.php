@@ -104,6 +104,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
 
     private function clean(): void
     {
+        $this->owner->table('crm_lab_lead_capture_keys')->delete();
         $this->owner->table('crm_lab_lead_events')->delete();
         $this->owner->table('crm_lab_leads')->delete();
         $this->owner->table('crm_memberships')
@@ -383,6 +384,123 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $this->assertSame(1, $row->version);
         $this->assertSame(2, $this->owner->table('crm_lab_lead_events')
             ->where('lead_id', self::LEAD_A)->count());
+        $this->assertSame(0, $this->one->transactionLevel());
+    }
+
+    public function test_synthetic_sites_event_replay_is_idempotent_and_mismatches_are_denied(): void
+    {
+        $digest = hash('sha256', 'SITES-CI-EVENT-0001');
+        $first = $this->ledger()->captureSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_A009', 'sites', $digest,
+        );
+        $again = $this->ledger($this->two)->captureSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_A009', 'sites', $digest,
+        );
+        $changedTitle = $this->ledger()->captureSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_CHANGED', 'sites', $digest,
+        );
+        $changedId = $this->ledger($this->two)->captureSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_B,
+            'DEMO_A009', 'sites', $digest,
+        );
+        $newDigestSameLead = $this->ledger()->captureSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_A009', 'sites', hash('sha256', 'SITES-CI-OTHER-EVENT'),
+        );
+
+        $this->assertSame('synthetic_captured', $first['status_code']);
+        $this->assertSame('synthetic_replayed', $again['status_code']);
+        foreach ([$changedTitle, $changedId, $newDigestSameLead] as $blocked) {
+            $this->assertSame('synthetic_conflict_denied', $blocked['status_code']);
+            $this->assertNoEffects($blocked);
+            $this->assertCount(4, $blocked);
+            $this->assertArrayNotHasKey('lead_id', $blocked);
+            $this->assertArrayNotHasKey('event_sha256', $blocked);
+        }
+        $this->assertNoEffects($first);
+        $this->assertSame(1, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_events')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_capture_keys')->count());
+        $this->assertSame('DEMO_A009',
+            $this->owner->table('crm_lab_leads')->value('synthetic_title'));
+        $this->assertSame(0, $this->one->transactionLevel());
+        $this->assertSame(0, $this->two->transactionLevel());
+    }
+
+    public function test_identical_source_event_hash_is_scoped_to_each_tenant(): void
+    {
+        $digest = hash('sha256', 'SITES-CI-GLOBAL-RETRY-1');
+        $a = $this->ledger()->captureSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_A010', 'landing', $digest,
+        );
+        $b = $this->ledger($this->two)->captureSynthetic(
+            self::principal(), self::ORG_B, self::LEAD_B,
+            'DEMO_B010', 'landing', $digest,
+        );
+        $this->assertSame('synthetic_captured', $a['status_code']);
+        $this->assertSame('synthetic_captured', $b['status_code']);
+        $this->assertSame(2, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(2, $this->owner->table('crm_lab_lead_capture_keys')->count());
+        $this->assertSame(2, $this->owner->table('crm_lab_lead_events')->count());
+        $this->assertSame([self::LEAD_A], array_column(
+            $this->ledger()->listSynthetic(self::principal(), self::ORG_A), 'id',
+        ));
+        $this->assertSame([self::LEAD_B], array_column(
+            $this->ledger()->listSynthetic(self::principal(), self::ORG_B), 'id',
+        ));
+        $this->assertSame(0,
+            $this->one->table('public.crm_lab_lead_capture_keys')->count());
+    }
+
+    public function test_invalid_capture_source_and_digest_do_not_mutate_storage(): void
+    {
+        foreach ([
+            ['unknown', hash('sha256', 'SOURCE-CI')],
+            ['sites', 'RAW_EVENT_ID_NOT_A_DIGEST'],
+            ['sites', strtoupper(hash('sha256', 'SOURCE-CI'))],
+            ['sites', str_repeat('0', 63)],
+        ] as [$source, $digest]) {
+            try {
+                $this->ledger()->captureSynthetic(
+                    self::principal(), self::ORG_A, self::LEAD_A,
+                    'DEMO_A011', $source, $digest,
+                );
+                $this->fail('Invalid capture attributes should fail before SQL.');
+            } catch (\\InvalidArgumentException $e) {
+                $this->assertSame('Captura de lead sintetico invalida.', $e->getMessage());
+            }
+        }
+        $this->assertSame(0, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(0, $this->owner->table('crm_lab_lead_capture_keys')->count());
+    }
+
+    public function test_capture_is_revocation_aware_and_capture_claims_are_append_only(): void
+    {
+        $this->owner->table('crm_memberships')
+            ->where('organization_id', self::ORG_A)
+            ->update(['status' => 'revoked', 'version' => 2]);
+        try {
+            $this->ledger()->captureSynthetic(
+                self::principal(), self::ORG_A, self::LEAD_A,
+                'DEMO_A012', 'onepage', hash('sha256', 'REVOKED-CI'),
+            );
+            $this->fail('Revoked principal cannot capture.');
+        } catch (AuthorizationException) {
+            $this->assertSame(0, $this->owner->table('crm_lab_leads')->count());
+        }
+        foreach (['UPDATE', 'DELETE', 'TRUNCATE'] as $permission) {
+            $this->assertFalse((bool) $this->one->selectOne(
+                'SELECT has_table_privilege(current_user, ?, ?) AS allowed',
+                ['public.crm_lab_lead_capture_keys', $permission],
+            )->allowed);
+        }
+        $this->assertFalse((bool) $this->one->selectOne(
+            "SELECT has_column_privilege(current_user, 'public.crm_lab_lead_capture_keys','recorded_at','INSERT') AS allowed",
+        )->allowed);
         $this->assertSame(0, $this->one->transactionLevel());
     }
 
