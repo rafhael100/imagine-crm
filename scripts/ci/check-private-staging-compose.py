@@ -28,6 +28,24 @@ def main() -> None:
     files = (COMPOSE, DOCKERFILE, NGINX, IGNORE)
     if not all(path.is_file() for path in files):
         deny("required infrastructure file missing")
+    # Combined build must contain both the guarded Sites-to-lead ingestion
+    # path and audited task core while exposing none of those CI-only classes.
+    core_components = (
+        ROOT / "app/Core/Leads/LaboratorySignedSiteCapture.php",
+        ROOT / "app/Core/Leads/LaboratoryTenantLeadLedger.php",
+        ROOT / "app/Core/Tasks/LaboratoryTenantTaskLedger.php",
+        ROOT / "tests/Feature/PostgresLabLeadsRlsTest.php",
+    )
+    if not all(component.is_file() for component in core_components):
+        deny("integrated leads and tasks core missing")
+    for entry in (ROOT / "routes/web.php", ROOT / "bootstrap/app.php"):
+        content = entry.read_text(encoding="utf-8")
+        if any(name in content for name in (
+            "LaboratorySignedSiteCapture", "LaboratoryTenantLeadLedger",
+            "LaboratoryTenantTaskLedger",
+        )):
+            deny("CI-only business modules must not be wired to public routes")
+
     raw = COMPOSE.read_text(encoding="utf-8")
     dockerfile = DOCKERFILE.read_text(encoding="utf-8")
     nginx = NGINX.read_text(encoding="utf-8")
