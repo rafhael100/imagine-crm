@@ -156,5 +156,23 @@ jobs:
         run: php artisan test --filter=PostgresMembershipRlsTest --no-ansi
       - name: Prove nonce uniqueness between two disposable PostgreSQL connections
         run: php artisan test --filter=AiaPostgresAtomicNonceCandidateTest --no-ansi
+      - name: Checkout immutable Agents Ed25519 verifier for F232 PostgreSQL lab
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba
+          path: _aia_f231_fixture
+          persist-credentials: false
+      - name: Verify F232 original cryptography and atomic PG16 nonce claim
+        env:
+          AIA_ED25519_PG_LAB: 'true'
+        run: |
+          set -euo pipefail
+          test "$(git -C _aia_f231_fixture rev-parse HEAD)" = "fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba"
+          php -m | grep -qi '^sodium
+          php -l app/Support/Synthetic/AiaPgEd25519LabBridge.php
+          php -l tests/Feature/AiaPostgresEd25519NonceCandidateTest.php
+          php -l _aia_f231_fixture/src/MockBridge/MockServiceIdentityPreflight.php
+          php artisan test --filter=AiaPostgresEd25519NonceCandidateTest --no-ansi
       - name: Run full synthetic test suite
         run: php artisan test --no-ansi
