@@ -103,5 +103,5 @@ jobs:
         if: always()
         run: |
           echo '### Calculator PG16 laboratory (NO-GO)' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Metadata only, no PII, production migration, endpoint or email' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Metadata only; ephemeral private HTTP route, NO public endpoint, PII, production migration or email' >> "$GITHUB_STEP_SUMMARY"
           echo 'A synthetic RLS policy alone does not prove business authorization' >> "$GITHUB_STEP_SUMMARY"
