@@ -14,6 +14,7 @@ on:
       - 'tests/Feature/PostgresAsaasSubscriptionDraftTest.php'
       - 'tests/Feature/AsaasSandboxSubscriptionLookupTest.php'
       - 'tests/Feature/PostgresAsaasSubscriptionObservationTest.php'
+      - 'tests/Feature/AsaasSandboxSubscriptionPaymentsReviewTest.php'
       - 'tests/Unit/AsaasSubscriptionDraftSpecTest.php'
       - 'tests/Labs/billing/**'
       - '.github/workflows/ci-crm-billing-asaas.yml'
@@ -108,12 +109,14 @@ jobs:
           php -l app/Core/Billing/AsaasSubscriptionDraftSpec.php
           php -l app/Core/Billing/AsaasSandboxSubscriptionLookup.php
           php -l app/Core/Billing/LaboratoryAsaasSubscriptionObservation.php
+          php -l app/Core/Billing/AsaasSandboxSubscriptionPaymentsReview.php
           php -l app/Core/Billing/LaboratoryAsaasSubscriptionDraft.php
           php -l tests/Feature/PostgresAsaasCustomerLinkTest.php
           php -l tests/Feature/PostgresAsaasCustomerReconcileTest.php
           php -l tests/Feature/PostgresAsaasSubscriptionDraftTest.php
           php -l tests/Feature/AsaasSandboxSubscriptionLookupTest.php
           php -l tests/Feature/PostgresAsaasSubscriptionObservationTest.php
+          php -l tests/Feature/AsaasSandboxSubscriptionPaymentsReviewTest.php
           php -l tests/Unit/AsaasSubscriptionDraftSpecTest.php
           php -l tests/Unit/AsaasWebhookEnvelopeTest.php
           php -l tests/Feature/PostgresAsaasWebhookInboxTest.php
@@ -121,6 +124,7 @@ jobs:
           php artisan test --filter=AsaasWebhookEnvelopeTest --no-ansi
           php artisan test --filter=AsaasSubscriptionDraftSpecTest --no-ansi
           php artisan test --filter=AsaasSandboxSubscriptionLookupTest --no-ansi
+          php artisan test --filter=AsaasSandboxSubscriptionPaymentsReviewTest --no-ansi
       - name: Comprovar PostgreSQL 16 CI efemero antes de qualquer DDL
         run: php scripts/ci/verify-ephemeral-postgres.php --verify
       - name: Criar APENAS tabela e papel de laboratorio de cobranca
@@ -168,5 +172,6 @@ jobs:
             echo '- Nenhum rascunho aprova contrato, assinatura, transacao ou cobranca'
             echo '- GET de assinaturas consulta referencia e pagador em Sandbox falso; ACTIVE nao equivale pago'
             echo '- Assinatura encontrada por GET tem FK org e UNIQUE ID, SEM pagamento ou direito'
+            echo '- Pagamentos da assinatura revisados por GET, sem ativar mesmo em RECEIVED'
             echo '- Banco e papeis descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
           } >> "$GITHUB_STEP_SUMMARY"
