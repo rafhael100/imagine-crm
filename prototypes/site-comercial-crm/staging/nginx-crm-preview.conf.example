@@ -58,6 +58,18 @@ server {
         limit_except GET HEAD { deny all; }
         try_files /fluxo-demo/index.html =404;
     }
+    location = /painel-demo/index.html {
+        limit_except GET HEAD { deny all; }
+        try_files /painel-demo/index.html =404;
+    }
+    location = /painel-demo/dashboard.css {
+        limit_except GET HEAD { deny all; }
+        try_files /painel-demo/dashboard.css =404;
+    }
+    location = /painel-demo/dashboard.js {
+        limit_except GET HEAD { deny all; }
+        try_files /painel-demo/dashboard.js =404;
+    }
     location / {
         return 404;
     }
