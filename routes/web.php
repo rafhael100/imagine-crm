@@ -7,14 +7,16 @@ use App\Core\Commercial\StagingDemoPreview;
 use App\Core\Commercial\StagingMarketingPreview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
 
 // CRM-STG-MKT-01: private, read-only commercial page only in staging.
 // Production/testing environments remain completely route-less for business.
 // No login, signup, trial, checkout, customer data or stateful effect.
 if (app()->environment('staging')
     && getenv('CRM_STAGING_MARKETING_PREVIEW') === 'true') {
-    Route::get('/', static function (Request $request) {
+    // Resolve Laravel's Router from the container only after both private
+    // gates. There is no API route registration in production or testing.
+    $router = app('router');
+    $router->get('/', static function (Request $request) {
         $model = StagingMarketingPreview::presentation($request->query('lang', 'pt'));
 
         return response()->view('crm-staging-marketing', $model)
@@ -28,7 +30,7 @@ if (app()->environment('staging')
                 "base-uri 'none'; form-action 'none'");
     })->name('crm.private.marketing-preview');
 
-    Route::get('/demo', static function (Request $request) {
+    $router->get('/demo', static function (Request $request) {
         // Demonstration data are constant synthetic labels from the code,
         // never database rows, memberships, sessions, provider IDs or PII.
         $model = StagingDemoPreview::presentation($request->query('lang', 'pt'));
@@ -46,7 +48,7 @@ if (app()->environment('staging')
     })->name('crm.private.readonly-demo');
 
     if (getenv('CRM_STAGING_PERSISTED_DEMO') === 'true') {
-        Route::get('/demo/live', static function (Request $request) {
+        $router->get('/demo/live', static function (Request $request) {
             try {
                 // The tenant UUID is FIXED IN SERVER CODE. Neither the query,
                 // cookies nor request headers can select the SQL scope.
