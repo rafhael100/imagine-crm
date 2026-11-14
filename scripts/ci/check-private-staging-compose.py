@@ -103,6 +103,11 @@ def main() -> None:
         deny("staging authentication/payment must start disabled")
     if "internal;" not in nginx or "fastcgi_pass app:9000;" not in nginx:
         deny("nginx must restrict PHP entrypoint and use private FPM")
+    if ("server_name 127.0.0.1;" not in nginx
+        or 'if ($host != "127.0.0.1")' not in nginx
+        or "return 421;" not in nginx
+        or 'add_header X-Robots-Tag "noindex, nofollow, noarchive" always;' not in nginx):
+        deny("private Nginx must reject unexpected Host and prohibit indexing")
 
     env = os.environ.copy()
     # Intentional impossible CI-only placeholders, NOT working credentials.
