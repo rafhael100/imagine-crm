@@ -87,11 +87,18 @@ if [[ "$(docker compose port web 8080)" != '127.0.0.1:18080' ]]; then
   echo 'F3-268 NO-GO: published port is not loopback-only.' >&2
   exit 1
 fi
-php_public_port="$(docker compose port app 9000 2>/dev/null || true)"
-if [[ -n "$php_public_port" ]]; then
-  echo 'F3-268 NO-GO: PHP-FPM port published on the host.' >&2
-  exit 1
-fi
+# EXPOSE in the image is not a host publication. The Compose CLI may
+# print an internal/exposed endpoint; inspect PortBindings at Docker API level.
+app_cid="$(docker compose ps -q app)"
+docker inspect --format '{{json .HostConfig.PortBindings}}' "$app_cid" |
+  php -r '
+    $bindings = json_decode(stream_get_contents(STDIN), true);
+    if ($bindings === null || $bindings === []) { exit(0); }
+    if (!is_array($bindings)) { exit(1); }
+    foreach ($bindings as $published) {
+        if ($published !== null && $published !== []) { exit(1); }
+    }
+  ' || { echo 'F3-268 NO-GO: real PHP-FPM host PortBindings detected.' >&2; exit 1; }
 docker network inspect imagine-crm-stage-review_crm_loopback \
   --format '{{json .Options}}' |
   php -r '
