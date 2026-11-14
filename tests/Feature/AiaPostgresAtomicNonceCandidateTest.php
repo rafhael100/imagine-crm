@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Support\Synthetic\AiaPgNonceCandidateLedger;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -80,22 +81,33 @@ final class AiaPostgresAtomicNonceCandidateTest extends TestCase
         string $nonce,
         string $tenant = 'SYNTHETIC_TENANT_A',
     ): bool {
-        try {
-            return $connection->affectingStatement(
-                'INSERT INTO '.self::TABLE.' (
-                    issuer,audience,nonce,tenant_ref,claimed_at
-                 ) VALUES (?,?,?,?,?)
-                 ON CONFLICT (issuer,audience,nonce) DO NOTHING',
-                [
-                    'SYNTHETIC_AGENT_SERVICE', 'SYNTHETIC_CRM_API',
-                    $nonce, $tenant, 1794690010,
-                ],
-            ) === 1;
-        } catch (\Throwable) {
-            // A broken or unavailable shared backend cannot be treated as
-            // evidence that the nonce is unused.
-            return false;
+        return (new AiaPgNonceCandidateLedger($connection))->claim(
+            $nonce, $tenant, 1794690010,
+        );
+    }
+
+    public function test_lab_ledger_denies_untrusted_values_before_inserting(): void
+    {
+        $ledger = new AiaPgNonceCandidateLedger(DB::connection());
+        foreach ([
+            ['nonce' => 'NOT_SYNTHETIC'],
+            ['nonce' => 'SYNTHETIC_A'],
+            ['nonce' => str_repeat('SYNTHETIC_X', 100)],
+            ['tenant' => 'CUSTOMER_REAL_TENANT'],
+            ['tenant' => 'SYNTHETIC_LOWER_case'],
+            ['tenant' => str_repeat('SYNTHETIC_X', 100)],
+            ['time' => -1],
+            ['time' => 4102444801],
+        ] as $case) {
+            $this->assertFalse($ledger->claim(
+                $case['nonce'] ?? 'SYNTHETIC_NONCE_VALID',
+                $case['tenant'] ?? 'SYNTHETIC_TENANT_A',
+                $case['time'] ?? 1794690010,
+            ));
         }
+        $this->assertSame(
+            0, (int) DB::table('aia_lab_nonce_atomic_probe')->count()
+        );
     }
 
     public function test_unique_claim_is_observed_by_two_independent_connections(): void
