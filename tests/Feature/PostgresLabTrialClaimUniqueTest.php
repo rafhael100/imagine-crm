@@ -113,10 +113,24 @@ final class PostgresLabTrialClaimUniqueTest extends TestCase
                 );
                 self::assertFalse((bool) $allowed->allowed, $operation);
             }
-            self::assertTrue((bool) $db->selectOne(
+            // Column-restricted GRANT INSERT does not set table-level
+            // has_table_privilege(..., 'INSERT'); that should stay false.
+            self::assertFalse((bool) $db->selectOne(
                 'SELECT has_table_privilege(current_user, ?, ?) AS allowed',
                 [self::TABLE, 'INSERT'],
             )->allowed);
+            foreach (['cnpj_hmac', 'key_version', 'started_at', 'expires_at', 'state'] as $column) {
+                self::assertTrue((bool) $db->selectOne(
+                    'SELECT has_column_privilege(current_user, ?, ?, ?) AS allowed',
+                    [self::TABLE, $column, 'INSERT'],
+                )->allowed, 'Approved synthetic insert column: '.$column);
+            }
+            foreach (['can_activate', 'can_register', 'can_charge'] as $column) {
+                self::assertFalse((bool) $db->selectOne(
+                    'SELECT has_column_privilege(current_user, ?, ?, ?) AS allowed',
+                    [self::TABLE, $column, 'INSERT'],
+                )->allowed, 'Privilege escalation via rights column: '.$column);
+            }
             $this->assertSame(0, $db->transactionLevel());
         }
     }
