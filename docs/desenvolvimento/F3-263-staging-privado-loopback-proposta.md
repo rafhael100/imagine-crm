@@ -100,6 +100,12 @@ A CI isolada `.github/workflows/ci-crm-staging-composer-advisory.yml` consulta e
 
 **A CI precisa concluir com sucesso na HEAD exata para registrar o resultado.** Não é verificação de pacotes Debian/Alpine, varredura de imagens, assinatura de origem, análise de zero-day ou aprovação de segurança do CRM. Continua obrigatório o gate SEG/DBA #27 e revisão completa de supply chain/host antes de qualquer acesso na VPS.
 
+## F3-274 — inventário de pacotes Debian/Alpine das imagens locais (em validação)
+
+O fluxo de prova do PR #517 continua limitado ao runner descartável do GitHub. Além do inventário PHP da F3-271, será gerada uma lista **normalizada e determinística** dos pacotes instalados no sistema operacional da imagem PHP Debian (`dpkg-query -W`) e da imagem Nginx Alpine (`apk info -v`), usando somente nomes/versões públicos e sem consulta a dados da aplicação. O script `emit-private-staging-os-inventory.sh` nega ambientes fora de `pull_request` GitHub-hosted, rejeita registros com campos inesperados, e acrescenta checksums SHA256 aos arquivos `debian-system-packages.tsv` e `alpine-system-packages.txt` do inventário de sete dias. A coleta ocorre **após** smoke, isolamento, recuperação, healthchecks e manifesto F3-271 e **antes** do upload do artifact.
+
+**Limites:** isso não executa escaneamento de vulnerabilidades no Debian ou Alpine, não fornece SBOM assinado nem lista todos os arquivos da imagem. A F3-274 deve passar 7/7 checks na HEAD exata antes de ser considerada entregue. Nenhuma imagem é publicada ou implantada na VPS.
+
 ## Escopo demonstrável
 
 A CI F3-263 cobre sintaxe e política estática. **A CI F3-267**, se verde, pode comprovar build e fumaça HTTP real **somente no runner descartável**. Nenhuma das duas comprova rede de uma VPS, segurança do host definitivo, TLS/Cloudflare, back-up, resiliência do PostgreSQL operacional, homologação privada da infraestrutura Imagine ou autorização de negócios.
