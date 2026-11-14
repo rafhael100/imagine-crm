@@ -55,6 +55,11 @@ jobs:
             test "$status" = 404
           done
           echo "Private CI health 200; business endpoints 404; localhost port only."
+      - name: Collect CI-only container diagnostics on smoke failure
+        if: failure()
+        run: |
+          docker compose -f infra/staging/compose.yaml ps --all || true
+          docker compose -f infra/staging/compose.yaml logs --no-color --tail=60 app web postgres || true
       - name: Tear down all synthetic CI containers and their disposable volumes
         if: always()
         run: docker compose -f infra/staging/compose.yaml down --volumes --remove-orphans || true
