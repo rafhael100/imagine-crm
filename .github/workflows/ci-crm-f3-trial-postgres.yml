@@ -10,6 +10,7 @@ on:
       - 'database/experimental-migrations/trial/**'
       - 'tests/Feature/PostgresLabTrialClaimUniqueTest.php'
       - 'tests/Feature/PostgresLabTrialKeyRingTest.php'
+      - 'tests/Unit/TrialClaimWorkflowGuardTest.php'
       - '.github/workflows/ci-crm-f3-trial-postgres.yml'
 
 permissions:
@@ -78,6 +79,15 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate --force
+      - name: Lint da migration e dos serviços de trial antes de abrir o banco
+        run: |
+          php -l database/experimental-migrations/trial/2026_11_14_000005_create_lab_trial_claims.php
+          php -l app/Core/Plans/LaboratoryDurableTrialClaim.php
+          php -l app/Core/Plans/LaboratoryHistoricalTrialAliases.php
+          php -l tests/Feature/PostgresLabTrialClaimUniqueTest.php
+          php -l tests/Feature/PostgresLabTrialKeyRingTest.php
+      - name: Assegurar que a fonte do workflow nao habilita producao/DDL perigoso
+        run: php artisan test --filter=TrialClaimWorkflowGuardTest --no-ansi
       - name: Inspecionar que PostgreSQL é descartável antes da migração
         run: php scripts/ci/verify-ephemeral-postgres.php --verify
       - name: Migrar somente a tabela experimental de observação do trial
