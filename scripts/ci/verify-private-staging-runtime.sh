@@ -28,6 +28,26 @@ docker compose exec -T app php-fpm -t > /dev/null
 docker compose exec -T web nginx -t > /dev/null
 echo 'F3-267 FPM and Nginx syntax passed.'
 
+# Render only known state labels for the two ephemeral services. No env,
+# mount contents, request bodies, user identifiers or logs are printed.
+docker compose ps --all --format json | php -r '
+$raw = stream_get_contents(STDIN);
+$data = json_decode($raw, true);
+if (!is_array($data)) {
+    echo "F3-267 container state unavailable.\n";
+    exit(0);
+}
+foreach ($data as $entry) {
+    if (!is_array($entry)) { continue; }
+    $name = $entry["Service"] ?? "";
+    $state = $entry["State"] ?? "";
+    if (in_array($name, ["app", "web"], true) &&
+        in_array($state, ["running", "exited", "restarting", "created", "paused"], true)) {
+        echo "F3-267 state ".$name."=".$state."\n";
+    }
+}
+'
+
 origin="http://127.0.0.1:18080"
 status() {
   # Never print body, URLs carrying query parameters, auth values or headers.
@@ -51,6 +71,11 @@ if [[ "$ready" != true ]]; then
     echo "F3-267 NO-GO: /up HTTP code $code, expected 200." >&2
   else
     echo 'F3-267 NO-GO: /up failed without a safe HTTP status code.' >&2
+  fi
+  if docker compose exec -T web sh -c 'wget -q -T 5 -O /dev/null http://127.0.0.1:8080/up' > /dev/null 2>&1; then
+    echo 'F3-267 diagnostic: nginx container-local /up responds successfully; runner loopback is blocked.' >&2
+  else
+    echo 'F3-267 diagnostic: nginx container-local /up failed or web process unavailable.' >&2
   fi
   exit 1
 fi
