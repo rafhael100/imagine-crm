@@ -7,6 +7,10 @@
 !assets/site.js
 !fluxo-demo/
 !fluxo-demo/index.html
+!painel-demo/
+!painel-demo/index.html
+!painel-demo/dashboard.css
+!painel-demo/dashboard.js
 !staging/
 !staging/nginx-preview-ci.conf
 !staging/Dockerfile-preview-ci

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - review/crm-web-p4-https-ci-proof-2026-11-13
+      - review/crm-customer-admin-journey-preview-2026-11-14
     paths:
       - 'prototypes/site-comercial-crm/**'
       - '.github/workflows/ci-crm-web-p4-https-lab.yml'
@@ -33,6 +34,8 @@ jobs:
           python3 prototypes/site-comercial-crm/staging/test_configuration.py
           test -f prototypes/site-comercial-crm/staging/nginx-preview-tls-ci.conf
           test -f prototypes/site-comercial-crm/staging/Dockerfile-preview-tls-ci
+          test -f prototypes/site-comercial-crm/painel-demo/index.html
+          node --check prototypes/site-comercial-crm/painel-demo/dashboard.js
       - name: HTTPS real somente no loopback GitHub com identidade ficticia
         shell: bash
         run: bash prototypes/site-comercial-crm/staging/smoke_docker_https_ci.sh

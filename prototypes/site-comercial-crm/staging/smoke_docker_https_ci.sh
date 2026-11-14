@@ -83,14 +83,14 @@ if [[ "$ready" != true ]]; then
   exit 1
 fi
 
-for asset in / /index.html /assets/logo-imagine.png /assets/site.css /assets/site.js /fluxo-demo/index.html; do
+for asset in / /index.html /assets/logo-imagine.png /assets/site.css /assets/site.js /fluxo-demo/index.html /painel-demo/index.html /painel-demo/dashboard.css /painel-demo/dashboard.js; do
   [[ "$(code "$origin$asset")" == "401" ]] || { echo "FAIL: anonymous resource not protected"; exit 1; }
   [[ "$(code --user "$user:wrong" "$origin$asset")" == "401" ]] || { echo "FAIL: wrong password was accepted"; exit 1; }
   [[ "$(code --user "$user:$password" "$origin$asset")" == "200" ]] || { echo "FAIL: approved fixture inaccessible"; exit 1; }
   echo "PASS: anonymous 401 / authenticated 200 for one known static asset"
 done
 
-for asset in /index.html /assets/logo-imagine.png /assets/site.css /assets/site.js /fluxo-demo/index.html; do
+for asset in /index.html /assets/logo-imagine.png /assets/site.css /assets/site.js /fluxo-demo/index.html /painel-demo/index.html /painel-demo/dashboard.css /painel-demo/dashboard.js; do
   curl --noproxy '*' --cacert "$stage/tls.crt" --resolve 'crm-ci.local:18443:127.0.0.1' --fail --silent --show-error --max-time 10 \
     --user "$user:$password" --output "$stage/response.bin" "$origin$asset"
   cmp "$prototype$asset" "$stage/response.bin" >/dev/null || {
@@ -98,7 +98,7 @@ for asset in /index.html /assets/logo-imagine.png /assets/site.css /assets/site.
     exit 1
   }
 done
-echo "PASS: all five delivered assets match the approved source bytes"
+echo "PASS: all eight delivered assets match the approved source bytes"
 
 for forbidden in /api/leads /api/checkout /login /register /admin /.env /composer.lock /manifest.sha256; do
   [[ "$(code --user "$user:$password" "$origin$forbidden")" == "404" ]] || {
@@ -155,7 +155,10 @@ for entry in \
   '/fluxo-demo/index.html:text/html' \
   '/assets/site.css:text/css' \
   '/assets/site.js:javascript' \
-  '/assets/logo-imagine.png:image/png'; do
+  '/assets/logo-imagine.png:image/png' \
+  '/painel-demo/index.html:text/html' \
+  '/painel-demo/dashboard.css:text/css' \
+  '/painel-demo/dashboard.js:javascript'; do
   route="$(printf '%s' "$entry" | cut -d: -f1)"
   mime="$(printf '%s' "$entry" | cut -d: -f2)"
   curl --noproxy '*' --cacert "$stage/tls.crt" --resolve 'crm-ci.local:18443:127.0.0.1' --silent --max-time 5 --head \

@@ -11,11 +11,13 @@ import hashlib
 from pathlib import Path
 
 FILES = ("index.html", "assets/logo-imagine.png", "assets/site.css", "assets/site.js",
-         "fluxo-demo/index.html")
+         "fluxo-demo/index.html", "painel-demo/index.html",
+         "painel-demo/dashboard.css", "painel-demo/dashboard.js")
 OPTIONAL = ("manifest.sha256", "LEIA-ME.txt")
 MAX_SIZE = {"index.html": 100_000, "assets/logo-imagine.png": 300_000,
             "assets/site.css": 100_000, "assets/site.js": 100_000,
-            "fluxo-demo/index.html": 100_000}
+            "fluxo-demo/index.html": 100_000, "painel-demo/index.html": 100_000,
+            "painel-demo/dashboard.css": 100_000, "painel-demo/dashboard.js": 100_000}
 
 
 def verify(directory: Path) -> None:
@@ -29,7 +31,7 @@ def verify(directory: Path) -> None:
             actual.add(name)
             assert name in allowed, "recurso não permitido no pacote"
         elif item.is_dir():
-            assert item.relative_to(directory).as_posix() in ("assets", "fluxo-demo"), "diretório inesperado"
+            assert item.relative_to(directory).as_posix() in ("assets", "fluxo-demo", "painel-demo"), "diretório inesperado"
         else:
             raise AssertionError("tipo de arquivo não permitido")
     assert set(FILES + ("manifest.sha256",)).issubset(actual), "recurso obrigatório ausente"
@@ -56,7 +58,19 @@ def verify(directory: Path) -> None:
     assert 'src="../assets/logo-imagine.png"' in mock
     assert "PROTÓTIPO — DADOS FICTÍCIOS." in mock
     assert "form-action 'none'" in mock and "connect-src 'none'" in mock
-    print("PASS: quatro ativos permitidos e SHA256 conferidos. Nenhum deploy realizado.")
+    panel = (directory / "painel-demo/index.html").read_text("utf-8")
+    css = (directory / "painel-demo/dashboard.css").read_text("utf-8")
+    script = (directory / "painel-demo/dashboard.js").read_text("utf-8")
+    assert 'href="./painel-demo/index.html"' in page
+    assert 'src="../assets/logo-imagine.png"' in panel
+    assert 'src="./dashboard.js"' in panel and 'href="./dashboard.css"' in panel
+    assert 'href="../painel-demo/index.html"' in mock
+    assert 'data-enter="cliente"' in panel and 'data-enter="administrador"' in panel
+    assert "form-action 'none'" in panel and "connect-src 'none'" in panel
+    assert "<form" not in panel and "<input" not in panel
+    assert len(css) > 6000 and len(script) > 9000
+    assert all(word not in script for word in ("fetch(", "XMLHttpRequest", "localStorage", "sessionStorage", "document.cookie"))
+    print("PASS: oito ativos permitidos e SHA256 conferidos. Nenhum deploy realizado.")
 
 
 def main():

@@ -15,6 +15,9 @@ BASE = Path(__file__).resolve().parents[1]
 HTML = BASE / "index.html"
 LOGO = BASE / "assets" / "logo-imagine.png"
 TRIAL_DEMO = BASE / "fluxo-demo" / "index.html"
+PANEL_DEMO = BASE / "painel-demo" / "index.html"
+PANEL_CSS = BASE / "painel-demo" / "dashboard.css"
+PANEL_JS = BASE / "painel-demo" / "dashboard.js"
 CSS = BASE / "assets" / "site.css"
 JS = BASE / "assets" / "site.js"
 EXPECTED_LOGO_BLOB = "678adeceb3a8ecdaeb6b576b9ee18d1bf0396f77"
@@ -52,7 +55,7 @@ class AuditHTML(HTMLParser):
             href = a.get("href", "")
             if href.startswith("#"):
                 self.internal_links.append(href[1:])
-            elif href == "./fluxo-demo/index.html":
+            elif href in ("./fluxo-demo/index.html", "./painel-demo/index.html"):
                 self.local_paths.append(href)
             else:
                 self.blocked.append(f"link externo ou não previsto: {href}")
@@ -89,7 +92,7 @@ def main():
     assert len(parser.headings) == 1
     assert EXPECTED_SECTIONS.issubset(parser.ids)
     assert all(anchor in parser.ids for anchor in parser.internal_links), "Âncora quebrada"
-    assert parser.local_paths == ["./fluxo-demo/index.html"], "Jornada demonstrativa única e local"
+    assert set(parser.local_paths) == {"./fluxo-demo/index.html", "./painel-demo/index.html"}, "Jornada demonstrativa local"
     assert parser.meta.get("robots") == "noindex,nofollow"
     csp = parser.meta.get("Content-Security-Policy", "")
     for directive in ("default-src 'none'", "connect-src 'none'", "form-action 'none'", "object-src 'none'"):
@@ -114,6 +117,24 @@ def main():
     assert "connect-src 'none'" in trial_page and "form-action 'none'" in trial_page
     assert "012345" in trial_page and 'id="activate-trial"' in trial_page
     assert "<form" not in trial_page, "Protótipo não pode captar dados"
+    assert 'href="../painel-demo/index.html"' in trial_page
+    panel = PANEL_DEMO.read_text("utf-8")
+    panel_css = PANEL_CSS.read_text("utf-8")
+    panel_js = PANEL_JS.read_text("utf-8")
+    assert 'href="./painel-demo/index.html"' in html
+    assert '<script src="./dashboard.js" defer></script>' in panel
+    assert '<link rel="stylesheet" href="./dashboard.css">' in panel
+    assert 'src="../assets/logo-imagine.png"' in panel
+    assert 'data-enter="cliente"' in panel and 'data-enter="administrador"' in panel
+    assert "login, gravação, compra ou acesso real" in panel
+    assert "form-action 'none'" in panel and "connect-src 'none'" in panel
+    assert "style-src 'self'; script-src 'self'" in panel
+    assert "<form" not in panel and "<input" not in panel and "<iframe" not in panel
+    for prohibited in ("fetch(", "XMLHttpRequest", "navigator.sendBeacon",
+                      "localStorage", "sessionStorage", "document.cookie"):
+        assert prohibited not in panel_js, "Painel com conexão ou persistência"
+    assert ' style="' not in panel and ' style="' not in panel_js
+    assert ".board{" in panel_css and ".sidebar{" in panel_css
     assert len(parser.buttons) >= 6
     assert '<table class="compare-table">' in html
     assert '<caption>Resumo preliminar dos planos mensais</caption>' in html
