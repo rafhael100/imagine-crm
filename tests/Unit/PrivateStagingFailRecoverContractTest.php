@@ -32,6 +32,10 @@ final class PrivateStagingFailRecoverContractTest extends TestCase
             'cache-control: no-store',
             'set-cookie:',
             'recovered=true',
+            'F3-270',
+            "'{{.State.Health.Status}}'",
+            'became_unhealthy=true',
+            'became_healthy=true',
             'trap restore_backend EXIT',
             'paused=true',
             'paused=false',
@@ -65,6 +69,7 @@ final class PrivateStagingFailRecoverContractTest extends TestCase
             "'tests/Unit/PrivateStagingFailRecoverContractTest.php'",
             'bash scripts/ci/verify-private-staging-fail-recover.sh',
             "github.event.pull_request.number == 517",
+            'docker compose up -d --no-build --no-recreate --wait --wait-timeout 60',
         ] as $token) {
             self::assertStringContainsString($token, $workflow);
         }
