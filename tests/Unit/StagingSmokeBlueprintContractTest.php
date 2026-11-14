@@ -30,6 +30,10 @@ final class StagingSmokeBlueprintContractTest extends TestCase
             'no-new-privileges:true', '127.0.0.1:18080:8080',
             'dockerfile: infra/staging/Dockerfile',
             'dockerfile: infra/staging/Dockerfile.web',
+            'condition: service_healthy',
+            'interval: 5s', 'start_period: 10s',
+            "fsockopen('127.0.0.1',9000",
+            'wget -q -T 3 -O /dev/null http://127.0.0.1:8080/up',
         ] as $required) {
             self::assertStringContainsString($required, $compose, $required);
         }
