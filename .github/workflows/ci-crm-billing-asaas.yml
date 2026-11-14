@@ -12,6 +12,8 @@ on:
       - 'tests/Feature/AsaasSandboxPixPaymentGatewayTest.php'
       - 'tests/Feature/AsaasSandboxPixReconciliationInspectorTest.php'
       - 'tests/Feature/AsaasSandboxBillingJourneyTest.php'
+      - 'tests/Feature/PostgresAsaasCustomerLinkTest.php'
+      - 'tests/Feature/PostgresAsaasCustomerReconcileTest.php'
       - 'tests/Labs/billing/**'
       - '.github/workflows/ci-crm-billing-asaas.yml'
 
@@ -57,6 +59,11 @@ jobs:
       BILLING_TEST_PASSWORD: ephemeral-billing-insert-only
       BILLING_REVIEW_USERNAME: crm_billing_review_ci
       BILLING_REVIEW_PASSWORD: ephemeral-billing-review-only
+      CRM_ASAAS_LINK_LAB: synthetic-only
+      BILLING_LINK_USERNAME: crm_billing_link_ci
+      BILLING_LINK_PASSWORD: ephemeral-billing-link-only
+      BILLING_LINK_REVIEW_USERNAME: crm_billing_link_review_ci
+      BILLING_LINK_REVIEW_PASSWORD: ephemeral-link-review-only
       CACHE_STORE: array
       SESSION_DRIVER: array
       QUEUE_CONNECTION: sync
@@ -90,6 +97,9 @@ jobs:
           php -l app/Core/Billing/AsaasWebhookReviewWorkerCandidate.php
           php -l app/Core/Billing/AsaasSandboxPixPaymentGateway.php
           php -l app/Core/Billing/AsaasSandboxPixReconciliationInspector.php
+          php -l app/Core/Billing/LaboratoryAsaasCustomerLink.php
+          php -l app/Core/Billing/LaboratoryAsaasCustomerHandoff.php
+          php -l app/Core/Billing/LaboratoryAsaasCustomerReconciler.php
           php -l tests/Unit/AsaasWebhookEnvelopeTest.php
           php -l tests/Feature/PostgresAsaasWebhookInboxTest.php
           php -l tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php
@@ -97,6 +107,8 @@ jobs:
           php artisan test --filter=AsaasSandboxPixPaymentGatewayTest --no-ansi
           php -l tests/Feature/AsaasSandboxPixReconciliationInspectorTest.php
           php artisan test --filter=AsaasSandboxPixReconciliationInspectorTest --no-ansi
+          php -l tests/Feature/PostgresAsaasCustomerLinkTest.php
+          php -l tests/Feature/PostgresAsaasCustomerReconcileTest.php
           php -l tests/Feature/AsaasSandboxBillingJourneyTest.php
           php artisan test --filter=AsaasSandboxBillingJourneyTest --no-ansi
           php artisan test --filter=AsaasWebhookEnvelopeTest --no-ansi
@@ -110,6 +122,14 @@ jobs:
         run: php artisan test --filter=PostgresAsaasWebhookInboxTest --no-ansi
       - name: Validar processador concorrente de inbox SEM efeitos
         run: php artisan test --filter=PostgresAsaasWebhookReviewWorkerTest --no-ansi
+      - name: Criar apenas vinculo de cliente sintetico Asaas em PostgreSQL CI
+        run: |
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-customer-link-ci.sql
+      - name: Provar reserva unica e handoff GET/POST de cliente sem duplicata
+        run: php artisan test --filter=PostgresAsaasCustomerLinkTest --no-ansi
+      - name: Provar conciliacao GET-only de pagador por revisor sem novos POSTs
+        run: php artisan test --filter=PostgresAsaasCustomerReconcileTest --no-ansi
       - name: Resumo de limitacoes e escopo
         if: always()
         run: |
@@ -124,4 +144,6 @@ jobs:
             echo '- Pix Sandbox (somente Http::fake): consulta por externalReference, 14 dias, moeda BRL em centavos, sem grants'
             echo '- Conciliação GET /payments/id somente no Http::fake; status CONFIRMED != RECEIVED, tudo NO-GRANT'
             echo '- Jornada full fake repetida: um POST de cliente, um POST de Pix, GETs de replay e recebimento sem ativar'
+            echo '- Link PG CI unico por organizacao/referencia, role separada e conciliacao GET-only de cliente'
+            echo '- Candidatos componiveis nesta HEAD mas SEM transacao real de pagamento, tenant autenticado ou RLS final'
           } >> "$GITHUB_STEP_SUMMARY"
