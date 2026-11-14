@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - dev/fast-track-crm-2026-11-04
+      - review/crm-aia-f232-ed25519-pg16-atomic-2026-11-14
   pull_request:
     branches:
       - main
       - dev/fast-track-crm-2026-11-04
+      - review/crm-aia-f231-ed25519-deny-ci-2026-11-14
 
 permissions:
   contents: read
