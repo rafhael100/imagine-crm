@@ -478,6 +478,27 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $this->assertSame(0, $this->owner->table('crm_lab_lead_capture_keys')->count());
     }
 
+    public function test_failed_lead_insert_rolls_back_capture_key_without_orphan(): void
+    {
+        $this->ledger()->createSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_A, 'DEMO_A013',
+        );
+        try {
+            $this->ledger($this->two)->captureSynthetic(
+                self::principal(), self::ORG_A, self::LEAD_B,
+                'DEMO_A013', 'sites', hash('sha256', 'CI-TITLE-CONFLICT'),
+            );
+            $this->fail('A captured event cannot commit when its lead fails.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('Captura sintetica de lead indisponivel.', $e->getMessage());
+            $this->assertNull($e->getPrevious());
+        }
+        $this->assertSame(1, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_events')->count());
+        $this->assertSame(0, $this->owner->table('crm_lab_lead_capture_keys')->count());
+        $this->assertSame(0, $this->two->transactionLevel());
+    }
+
     public function test_capture_is_revocation_aware_and_capture_claims_are_append_only(): void
     {
         $this->owner->table('crm_memberships')
