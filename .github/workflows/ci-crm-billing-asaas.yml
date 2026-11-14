@@ -9,6 +9,7 @@ on:
       - 'tests/Unit/AsaasWebhookEnvelopeTest.php'
       - 'tests/Feature/PostgresAsaasWebhookInboxTest.php'
       - 'tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php'
+      - 'tests/Feature/PostgresAsaasCustomerLinkTest.php'
       - 'tests/Labs/billing/**'
       - '.github/workflows/ci-crm-billing-asaas.yml'
 
@@ -54,6 +55,9 @@ jobs:
       BILLING_TEST_PASSWORD: ephemeral-billing-insert-only
       BILLING_REVIEW_USERNAME: crm_billing_review_ci
       BILLING_REVIEW_PASSWORD: ephemeral-billing-review-only
+      CRM_ASAAS_LINK_LAB: synthetic-only
+      BILLING_LINK_USERNAME: crm_billing_link_ci
+      BILLING_LINK_PASSWORD: ephemeral-billing-link-only
       CACHE_STORE: array
       SESSION_DRIVER: array
       QUEUE_CONNECTION: sync
@@ -85,6 +89,9 @@ jobs:
           php -l app/Core/Billing/AsaasWebhookEnvelope.php
           php -l app/Core/Billing/AsaasWebhookInboxCandidate.php
           php -l app/Core/Billing/AsaasWebhookReviewWorkerCandidate.php
+          php -l app/Core/Billing/LaboratoryAsaasCustomerLink.php
+          php -l app/Core/Billing/LaboratoryAsaasCustomerHandoff.php
+          php -l tests/Feature/PostgresAsaasCustomerLinkTest.php
           php -l tests/Unit/AsaasWebhookEnvelopeTest.php
           php -l tests/Feature/PostgresAsaasWebhookInboxTest.php
           php -l tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php
@@ -99,6 +106,12 @@ jobs:
         run: php artisan test --filter=PostgresAsaasWebhookInboxTest --no-ansi
       - name: Validar processador concorrente de inbox SEM efeitos
         run: php artisan test --filter=PostgresAsaasWebhookReviewWorkerTest --no-ansi
+      - name: Criar somente vínculo de cliente sintetico do Asaas em PostgreSQL CI
+        run: |
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-customer-link-ci.sql
+      - name: Testar unicidade org/externalReference e GET/POST HTTP fake sem repetir
+        run: php artisan test --filter=PostgresAsaasCustomerLinkTest --no-ansi
       - name: Resumo de limitacoes e escopo
         if: always()
         run: |
@@ -109,5 +122,7 @@ jobs:
             echo '- Nenhum payload pessoal, numero de cartao ou valor monetario persistido'
             echo '- Nenhum endpoint, cliente, assinatura, pagamento, ativacao ou fatura REAL'
             echo '- Papeis separados: receptor INSERT-only; worker SELECT de metadados + UPDATE state'
-            echo '- Banco e papel descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
+            echo '- Vínculo org/externalReference/provider ID sintético: PK e UNIQUE em PostgreSQL'
+            echo '- Falha do Asaas exige revisão humana; sem segundo POST automático'
+            echo '- Banco e papeis descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
           } >> "$GITHUB_STEP_SUMMARY"
