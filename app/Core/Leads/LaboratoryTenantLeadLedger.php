@@ -74,14 +74,16 @@ final readonly class LaboratoryTenantLeadLedger
             use ($leadId, $syntheticTitle, $sourceCode, $eventSha256, $claim, $signedNonce): array {
             try {
                 // Signed CI claims must match a server-owned, ACTIVE binding.
-                // Locking the row inside membership transaction serializes a
-                // concurrent state revocation with this capture. A MAC over
-                // caller-provided UUIDs alone is NOT sufficient authority.
+                // The CI role is intentionally SELECT-only: row-locking would
+                // require elevated UPDATE privileges. This snapshot check is
+                // NOT revocation-linearizable; concurrent revocation is a
+                // mandatory independent SEG/DBA gate before runtime use.
+                // A MAC over claimed UUIDs alone is NOT authority.
                 if ($signedNonce !== null) {
                     $binding = $this->db->table('public.crm_lab_site_delivery_bindings')
                         ->where('organization_id', $membership->tenantId)
                         ->where('binding_reference', $claim->identity->bindingReference)
-                        ->sharedLock()->first([
+                        ->first([
                             'site_reference', 'form_reference',
                             'destination_reference', 'source_code', 'state',
                         ]);
