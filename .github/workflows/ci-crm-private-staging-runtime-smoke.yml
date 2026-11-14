@@ -18,6 +18,8 @@ on:
       - 'scripts/ci/verify-staging-rendered-compose.php'
       - 'scripts/ci/verify-private-staging-runtime.sh'
       - 'scripts/ci/verify-private-staging-isolation.sh'
+      - 'scripts/ci/verify-private-staging-fail-recover.sh'
+      - 'tests/Unit/PrivateStagingFailRecoverContractTest.php'
       - 'tests/Unit/PrivateStagingRuntimeSmokeContractTest.php'
       - 'tests/Unit/PrivateStagingRuntimeIsolationContractTest.php'
       - '.github/workflows/ci-crm-private-staging-runtime-smoke.yml'
@@ -72,6 +74,11 @@ jobs:
         run: |
           set -euo pipefail
           bash scripts/ci/verify-private-staging-isolation.sh
+      - name: Prove Nginx fails closed and recovers after temporary PHP-FPM stop
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/ci/verify-private-staging-fail-recover.sh
       - name: Confirm no customer data or deployment was used
         if: always()
         shell: bash
@@ -83,6 +90,7 @@ jobs:
             echo '- HTTP is bound to 127.0.0.1:18080 inside the ephemeral runner'
             echo '- Probes /up and denial of unpublished business endpoints'
             echo '- Checks non-root runtime, no dev artifacts, no app default route, and loopback port'
+            echo '- Temporarily stops only disposable PHP-FPM, asserts 5xx, restarts and recovers /up'
             echo '- No VPS, domain, Docker registry push, deploy, cloud secrets or customer DB'
             echo '- This job does NOT imply release readiness, SEG/DBA approval or merge authorization'
           } >> "$GITHUB_STEP_SUMMARY"
