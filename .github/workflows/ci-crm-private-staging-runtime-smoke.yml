@@ -18,6 +18,8 @@ on:
       - 'scripts/ci/verify-staging-rendered-compose.php'
       - 'scripts/ci/verify-private-staging-runtime.sh'
       - 'scripts/ci/verify-private-staging-isolation.sh'
+      - 'tests/Unit/PrivateStagingRuntimeSmokeContractTest.php'
+      - 'tests/Unit/PrivateStagingRuntimeIsolationContractTest.php'
       - '.github/workflows/ci-crm-private-staging-runtime-smoke.yml'
   workflow_dispatch:
 
