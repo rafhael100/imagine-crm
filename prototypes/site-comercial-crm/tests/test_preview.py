@@ -99,6 +99,7 @@ def main():
 
     assert len(parser.buttons) >= 6
     assert 'aria-expanded="false"' in html
+    assert ".navact>.btn.menu{display:inline-flex" in html, "Menu mobile deve permanecer visível"
     assert "14 dias" in html and "sem cartão" in html
     assert "Preços" not in html or "homologação" in html.lower()
     assert "cadastro, acesso ao CRM, contratos e pagamentos reais ainda não estão liberados" in html
