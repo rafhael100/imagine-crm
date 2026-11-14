@@ -1,0 +1,105 @@
+name: CRM F3-TRIAL-PG01 - unicidade fisica trial (CI isolada)
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'app/Core/Plans/LaboratoryDurableTrialClaim.php'
+      - 'database/experimental-migrations/trial/**'
+      - 'tests/Feature/PostgresLabTrialClaimUniqueTest.php'
+      - '.github/workflows/ci-crm-f3-trial-postgres.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-f3-trial-postgres-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  experimental-trial-constraint:
+    name: PostgreSQL 16 - one CNPJ one marker with restricted INSERT
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_crm_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d imagine_crm_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      APP_URL: http://127.0.0.1
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: imagine_crm_ci
+      DB_USERNAME: postgres
+      DB_PASSWORD: ci-only-password
+      PGPASSWORD: ci-only-password
+      CRM_TRIAL_LEDGER_LAB: synthetic-only
+      TRIAL_TEST_USERNAME: crm_trial_claim_ci
+      TRIAL_TEST_PASSWORD: ephemeral-trial-insert-only
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - name: Checkout sem credenciais persistentes
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: PHP 8.4 e suporte a PostgreSQL
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, curl, zip, pdo_pgsql, pgsql
+          tools: composer:v2
+          coverage: none
+      - name: Instalar dependencias bloqueadas sem serviços externos
+        run: |
+          test -f composer.lock
+          composer validate --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+      - name: Chave Laravel apenas do runner
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+      - name: Inspecionar que PostgreSQL é descartável antes da migração
+        run: php scripts/ci/verify-ephemeral-postgres.php --verify
+      - name: Migrar somente a tabela experimental de observação do trial
+        run: php artisan migrate --path=database/experimental-migrations/trial --force --no-interaction
+      - name: Criar papel INSERT estritamente por coluna (sem leitura de CNPJ)
+        run: |
+          psql -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE ROLE crm_trial_claim_ci LOGIN PASSWORD 'ephemeral-trial-insert-only'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_trial_claim_ci;
+          GRANT USAGE ON SCHEMA public TO crm_trial_claim_ci;
+          GRANT INSERT (cnpj_hmac, key_version, started_at, expires_at, state)
+            ON TABLE crm_lab_trial_claims TO crm_trial_claim_ci;
+          SQL
+      - name: Exercitar 2 conexões independentes, rollback e replay após expiração
+        run: php artisan test --filter=PostgresLabTrialClaimUniqueTest --no-ansi
+      - name: Declarar limites no resumo da CI
+        if: always()
+        run: |
+          {
+            echo '### Prova de unicidade PostgreSQL apenas em laboratório'
+            echo '- Banco PostgreSQL descartável com identidade verificada pelo preflight SEC-CI-02'
+            echo '- Papel de execução somente INSERT de cinco colunas, sem SELECT ou UPDATE'
+            echo '- Sem CNPJ bruto no registro, sem rota, sem conta, sem ativação ou cobrança'
+            echo '- Rotação de chave HMAC, verificação de titularidade e LGPD ainda não liberadas'
+            echo '- Nunca migrado na VPS nem em produção; DRAFT e NO-GO'
+          } >> "$GITHUB_STEP_SUMMARY"
