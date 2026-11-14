@@ -42,6 +42,7 @@ final class OfflinePrototypeResourceBoundaryTest extends TestCase
             "object-src 'none'",
             "base-uri 'none'",
             "font-src 'none'",
+            "img-src 'self' data:",
         ] as $directive) {
             self::assertStringContainsString($directive, $policy);
         }
@@ -50,6 +51,18 @@ final class OfflinePrototypeResourceBoundaryTest extends TestCase
             self::assertSame(0, $document->getElementsByTagName($tag)->length, $tag.' must remain absent');
         }
 
+        // One reviewed local logo is allowed; all other resources stay denied.
+        $images = $xpath->query('//img');
+        self::assertNotFalse($images);
+        self::assertSame(1, $images->length);
+        $logo = $images->item(0);
+        self::assertInstanceOf(DOMElement::class, $logo);
+        self::assertSame('../assets/logo-imagine.png', $logo->getAttribute('src'));
+        self::assertSame('Imagine', $logo->getAttribute('alt'));
+        self::assertSame('200', $logo->getAttribute('width'));
+        self::assertSame('55', $logo->getAttribute('height'));
+        self::assertFileExists(dirname(__DIR__, 2).'/prototypes/assets/logo-imagine.png');
+
         $elements = $xpath->query('//*');
         self::assertNotFalse($elements);
         foreach ($elements as $element) {
@@ -57,6 +70,14 @@ final class OfflinePrototypeResourceBoundaryTest extends TestCase
                 continue;
             }
             foreach (['src', 'srcset', 'action', 'formaction', 'poster', 'data'] as $attribute) {
+                if ($attribute === 'src' && strtolower($element->tagName) === 'img') {
+                    self::assertSame(
+                        '../assets/logo-imagine.png',
+                        $element->getAttribute('src'),
+                        'Only the audited local Imagine logo may load',
+                    );
+                    continue;
+                }
                 self::assertFalse($element->hasAttribute($attribute), $element->tagName.'@'.$attribute.' may introduce a resource or action');
             }
             if ($element->hasAttribute('href')) {

@@ -1,0 +1,75 @@
+name: Imagine CRM UX-02 - Nine-screen offline Chromium review (NO DEPLOY)
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'prototypes/s01-prot-01/**'
+      - 'tests/Unit/OfflinePrototypeNineScreenImagineIdentityTest.php'
+      - '.github/workflows/crm-ux-02-nine-screen-visual.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-ux-02-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  nine-screen-chromium:
+    name: Offline navigation and four responsive screenshots
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout only the PR candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Verify no executable external dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f prototypes/s01-prot-01/index.html
+          test ! -L prototypes/s01-prot-01/index.html
+          python3 -m py_compile prototypes/s01-prot-01/ci_visual_review.py
+          ! grep -Eiq 'https?://|<form|<input|<textarea|<script[^>]*src=' prototypes/s01-prot-01/index.html
+      - name: Exercise nine screens in Chromium and save four screenshots
+        shell: bash
+        env:
+          GITHUB_ACTIONS: 'true'
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/crm-ux-02-venv"
+          "$RUNNER_TEMP/crm-ux-02-venv/bin/pip" install --disable-pip-version-check --no-input 'playwright==1.56.0'
+          "$RUNNER_TEMP/crm-ux-02-venv/bin/python" prototypes/s01-prot-01/ci_visual_review.py
+      - name: Verify SHA256 of screenshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          folder=Path(os.environ["RUNNER_TEMP"])/"crm-ux-02-nine-screen-review"
+          data=json.loads((folder/"manifest.json").read_text(encoding="utf-8"))
+          names=["01-desktop.png","02-tablet.png","03-mobile.png","04-small-mobile.png"]
+          assert [x["name"] for x in data["files"]]==names
+          assert set(p.name for p in folder.iterdir())==set(names+["manifest.json"])
+          assert data["uses_personal_data"] is False
+          assert data["live_identity_enabled"] is False
+          assert data["production_approval"] is False
+          for f in data["files"]:
+              raw=(folder/f["name"]).read_bytes()
+              assert len(raw)>2048 and raw.startswith(bytes.fromhex("89504e470d0a1a0a"))
+              assert hashlib.sha256(raw).hexdigest()==f["sha256"]
+          print("CRM UX-02 PASS: four verified offline Chromium snapshots")
+          PY
+      - name: Upload seven-day private visual review only
+        uses: actions/upload-artifact@v4
+        with:
+          name: imagine-crm-ux-02-nine-screen-private-review
+          path: ${{ runner.temp }}/crm-ux-02-nine-screen-review/
+          retention-days: 7
+          if-no-files-found: error
+          include-hidden-files: false
