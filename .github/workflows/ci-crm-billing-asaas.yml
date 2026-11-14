@@ -9,6 +9,7 @@ on:
       - 'tests/Unit/AsaasWebhookEnvelopeTest.php'
       - 'tests/Feature/PostgresAsaasWebhookInboxTest.php'
       - 'tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php'
+      - 'tests/Feature/AsaasSandboxPixPaymentGatewayTest.php'
       - 'tests/Labs/billing/**'
       - '.github/workflows/ci-crm-billing-asaas.yml'
 
@@ -85,9 +86,12 @@ jobs:
           php -l app/Core/Billing/AsaasWebhookEnvelope.php
           php -l app/Core/Billing/AsaasWebhookInboxCandidate.php
           php -l app/Core/Billing/AsaasWebhookReviewWorkerCandidate.php
+          php -l app/Core/Billing/AsaasSandboxPixPaymentGateway.php
           php -l tests/Unit/AsaasWebhookEnvelopeTest.php
           php -l tests/Feature/PostgresAsaasWebhookInboxTest.php
           php -l tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php
+          php -l tests/Feature/AsaasSandboxPixPaymentGatewayTest.php
+          php artisan test --filter=AsaasSandboxPixPaymentGatewayTest --no-ansi
           php artisan test --filter=AsaasWebhookEnvelopeTest --no-ansi
       - name: Comprovar PostgreSQL 16 CI efemero antes de qualquer DDL
         run: php scripts/ci/verify-ephemeral-postgres.php --verify
@@ -110,4 +114,5 @@ jobs:
             echo '- Nenhum endpoint, cliente, assinatura, pagamento, ativacao ou fatura REAL'
             echo '- Papeis separados: receptor INSERT-only; worker SELECT de metadados + UPDATE state'
             echo '- Banco e papel descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
+            echo '- Pix Sandbox (somente Http::fake): consulta por externalReference, 14 dias, moeda BRL em centavos, sem grants'
           } >> "$GITHUB_STEP_SUMMARY"
