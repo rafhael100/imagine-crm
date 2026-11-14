@@ -1,0 +1,48 @@
+name: CRM multigateway offline contract (no PSP/network)
+
+on:
+  push:
+    branches:
+      - review/crm-multigateway-portal-routing-contract-2026-11-14
+  pull_request:
+    branches:
+      - review/crm-core-billing-private-staging-ci-2026-11-14
+    paths:
+      - 'app/Core/Billing/PortalGatewayDecisionEnvelope.php'
+      - 'tests/Unit/PortalGatewayDecisionEnvelopeTest.php'
+      - 'scripts/ci/check-portal-multigateway-contract.php'
+      - '.github/workflows/ci-crm-multigateway-review.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-multigateway-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  signed-envelope:
+    name: PHP ${{ matrix.php }} / Portal-CRM contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4']
+    steps:
+      - name: Checkout candidate (read-only token)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: none
+      - name: Syntax and cross-project signed fixture
+        run: |
+          set -euo pipefail
+          php -l app/Core/Billing/PortalGatewayDecisionEnvelope.php
+          php -l scripts/ci/check-portal-multigateway-contract.php
+          php scripts/ci/check-portal-multigateway-contract.php
