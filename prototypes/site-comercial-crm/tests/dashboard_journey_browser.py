@@ -34,13 +34,29 @@ DRIVER = r"""<!doctype html><html lang="pt-BR"><meta charset="utf-8">
    check(doc.documentElement.scrollWidth<=__WIDTH__,'sem rolagem horizontal da página');
    if(step===0){
      check(!!doc.querySelector('#planos'),'preços comerciais visíveis');
-     const nav=doc.querySelector('a[href="./painel-demo/index.html"]');
-     check(!!nav,'link para demonstração de painéis');
+     const trial=doc.querySelector('a[href="./fluxo-demo/index.html"]');
+     check(!!trial,'link comercial para trial fictício');
+     check(!!doc.querySelector('a[href="./painel-demo/index.html"]'),'link direto ao painel');
      step=1;
-     nav.click();
+     trial.click();
      return;
    }
    if(step===1){
+     check(win.location.pathname.endsWith('/fluxo-demo/index.html'),'cadastro fictício navegável');
+     check(doc.body.textContent.includes('PROTÓTIPO — DADOS FICTÍCIOS.'),'aviso explícito fictício');
+     doc.querySelector('#simulate').click();
+     doc.querySelector('#code').value='012345';
+     doc.querySelector('#validate').click();
+     doc.querySelector('#show-trial').click();
+     check(!doc.querySelector('#step-four').hidden,'etapa de trial de exemplo');
+     check(doc.querySelector('#activate-trial').disabled,'ativação real bloqueada');
+     const panel=doc.querySelector('a[href="../painel-demo/index.html"]');
+     check(!!panel,'atalho da jornada fictícia para o painel');
+     step=2;
+     panel.click();
+     return;
+   }
+   if(step===2){
      check(win.location.pathname.endsWith('/painel-demo/index.html'),'navegou ao painel');
      check(doc.querySelector('meta[name=robots]').content==='noindex,nofollow','noindex');
      const logo=doc.querySelector('.entry-head img');
@@ -75,7 +91,7 @@ DRIVER = r"""<!doctype html><html lang="pt-BR"><meta charset="utf-8">
      check(doc.querySelector('#view').textContent.includes('Nenhuma assinatura'),'não há pagamento');
      check(!doc.querySelector('form,input'),'painel não coleta dados');
      check(doc.documentElement.scrollWidth<=__WIDTH__,'layout sem overflow');
-     done('PASS','comercial -> cliente -> Kanban -> relatório -> admin -> empresas -> assinaturas');
+     done('PASS','comercial -> cadastro/OTP/trial fictício -> Cliente/Kanban/relatório -> Admin/empresas/assinaturas');
    }
   }catch(e){done('FAIL',e.message)}
  });
