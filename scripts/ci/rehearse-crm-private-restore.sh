@@ -99,6 +99,11 @@ done
 # Provision this synthetic NOLOGIN role on the NEW isolated instance first.
 restored_sql -c "CREATE ROLE crm_ci_restore_reader NOLOGIN
  NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS"
+# New source role was defined in global PG credentials rather than the
+# database archive. Re-create it as NOLOGIN before restoring ACLs, never
+# moving the original user's password or granting administrative rights.
+restored_sql -c "CREATE ROLE crm_staging_app NOLOGIN
+ NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS"
 docker exec -i "$restorer" pg_restore -U crm_staging --no-owner --exit-on-error \
   --single-transaction -d "$restore_db" < "$tmp/ci-source.dump" > "$tmp/restore.log"
 
@@ -135,6 +140,11 @@ privileges="SELECT (NOT r.rolsuper AND NOT r.rolbypassrls)
   'public.crm_ci_restore_leads','SELECT')
  FROM pg_roles r WHERE r.rolname='crm_ci_restore_reader'"
 [[ "$(restored_sql -c "$privileges")" == t ]] || fail "least-privilege ACL lost"
+role_safe="SELECT CASE WHEN NOT rolsuper AND NOT rolbypassrls AND NOT rolcanlogin
+  AND NOT rolcreatedb AND NOT rolcreaterole THEN 'safe' ELSE 'unsafe' END
+ FROM pg_roles WHERE rolname='crm_staging_app'"
+[[ "$(restored_sql -c "$role_safe")" == safe ]] ||
+ fail "recovered global app role had elevated privileges"
 
 echo "CRM RECOVERY CI PASS: custom pg_dump and pg_restore in a DIFFERENT server,"
 echo "network=none; six fictional records, three FORCE-RLS tables, two tenants."
