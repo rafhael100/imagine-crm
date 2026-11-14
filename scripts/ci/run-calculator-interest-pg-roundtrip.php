@@ -35,6 +35,13 @@ $pdo = new PDO('pgsql:host=127.0.0.1;port=5432;dbname=imagine_calc_ci',
         PDO::ATTR_EMULATE_PREPARES=>false,
     ]);
 
+function strictPgBool(mixed $value): ?bool
+{
+    if ($value === true || $value === 't' || $value === 'true' || $value === '1') return true;
+    if ($value === false || $value === 'f' || $value === 'false' || $value === '0') return false;
+    return null;
+}
+
 function delivery(PDO $db, array $envelope, string $key, string $tenant, int $now): array
 {
     $deny = static fn(string $state): array=>[
@@ -101,8 +108,8 @@ function delivery(PDO $db, array $envelope, string $key, string $tenant, int $no
             $stored['signed_nonce']===$p['nonce'] &&
             $stored['payload_sha256']===$payloadHash &&
             (int)$stored['media_total_cents']===$p['media_total_cents'] &&
-            ($stored['report_requested']==='t')===$p['report_requested'] &&
-            ($stored['marketing_requested']==='t')===$p['marketing_requested'];
+            strictPgBool($stored['report_requested'])===$p['report_requested'] &&
+            strictPgBool($stored['marketing_requested'])===$p['marketing_requested'];
         $db->commit();
         return $exact
             ? array_replace($deny('SYNTHETIC_REPLAY_CONFIRMED'),['synthetic_pg_persisted'=>true])
