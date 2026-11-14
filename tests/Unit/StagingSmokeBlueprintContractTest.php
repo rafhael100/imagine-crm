@@ -113,6 +113,9 @@ final class StagingSmokeBlueprintContractTest extends TestCase
         foreach ([
             'listen 8080;', 'server_tokens off;',
             'location = /index.php', 'fastcgi_pass app:9000;',
+            'fastcgi_connect_timeout 3s;',
+            'fastcgi_send_timeout 3s;',
+            'fastcgi_read_timeout 3s;',
             'location ~ \.php(?:/|$) { return 404; }',
             'location ~ /\. { deny all; }',
             'X-Content-Type-Options nosniff',
