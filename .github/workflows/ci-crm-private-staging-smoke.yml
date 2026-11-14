@@ -28,8 +28,12 @@ jobs:
         run: python3 scripts/ci/check-private-staging-compose.py
       - name: Generate disposable dummy runtime credentials in this runner
         run: |
-          echo "CRM_STAGING_DB_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
-          echo "CRM_STAGING_APP_KEY=base64:$(openssl rand -base64 32 | tr -d '\n')" >> "$GITHUB_ENV"
+          DB_CI_PASSWORD="$(openssl rand -hex 24)"
+          APP_CI_KEY="base64:$(openssl rand -base64 32 | tr -d '\n')"
+          echo "::add-mask::$DB_CI_PASSWORD"
+          echo "::add-mask::$APP_CI_KEY"
+          echo "CRM_STAGING_DB_PASSWORD=$DB_CI_PASSWORD" >> "$GITHUB_ENV"
+          echo "CRM_STAGING_APP_KEY=$APP_CI_KEY" >> "$GITHUB_ENV"
       - name: Build PHP image without deploying or accessing VPS
         run: docker compose -f infra/staging/compose.yaml build app
       - name: Start isolated CI containers on localhost only
