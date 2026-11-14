@@ -90,6 +90,19 @@ for forbidden in /api/leads /api/checkout /login /register /admin /.env /compose
 done
 echo "PASS: unpublished routes and internal files deny 404"
 
+# No directories or hidden runtime endpoints may be served.
+for forbidden in /assets/ /fluxo-demo/ /index.php /wp-admin /robots.txt; do
+  [[ "$(code --user "$user:$password" "$origin$forbidden")" == "404" ]] || {
+    echo "FAIL: unintended directory or runtime endpoint exposed" >&2
+    exit 1
+  }
+done
+[[ "$(code --head "$origin/index.html")" == "401" ]] || {
+  echo "FAIL: unauthenticated HEAD was not denied" >&2
+  exit 1
+}
+echo "PASS: directory listings, PHP and anonymous HEAD denied"
+
 [[ "$(code --request POST --user "$user:$password" "$origin/")" == "403" ]] || {
   echo "FAIL: POST not denied" >&2; exit 1
 }
@@ -115,6 +128,25 @@ if grep -Eq "script-src 'unsafe-inline'" "$stage/headers-main.txt"; then
   exit 1
 fi
 grep -Eq "script-src 'unsafe-inline'" "$stage/headers-trial.txt"
-echo "PASS: CSP, no-store, robots, nosniff, deny-framing and scoped inline exception"
+if grep -Eiq '^Set-Cookie:' "$stage/headers-main.txt" || grep -Eiq '^Set-Cookie:' "$stage/headers-trial.txt"; then
+  echo "FAIL: preview unexpectedly sets a session cookie" >&2
+  exit 1
+fi
+for entry in \
+  '/index.html:text/html' \
+  '/fluxo-demo/index.html:text/html' \
+  '/assets/site.css:text/css' \
+  '/assets/site.js:javascript' \
+  '/assets/logo-imagine.png:image/png'; do
+  route="$(printf '%s' "$entry" | cut -d: -f1)"
+  mime="$(printf '%s' "$entry" | cut -d: -f2)"
+  curl --noproxy '*' --silent --max-time 5 --head \
+    --user "$user:$password" "$origin$route" > "$stage/type-headers.txt"
+  grep -Ei "^Content-Type: .*$mime" "$stage/type-headers.txt" >/dev/null || {
+    echo "FAIL: wrong Content-Type for a static asset" >&2
+    exit 1
+  }
+done
+echo "PASS: CSP, no-store, robots, nosniff, no cookies, MIME and scoped inline exception"
 
 echo "PASS: isolated synthetic HTTP CI smoke. Nothing installed on the VPS."
