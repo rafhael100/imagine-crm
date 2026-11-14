@@ -1,4 +1,4 @@
-# F3-263 candidate ONLY: never build, deploy or pull images without approval.
+# F3-267 review candidate: build allowed only in isolated PR #517 CI; NEVER deploy to VPS.
 # This is a smoke-only Laravel runtime: no customer registration or real DB.
 FROM php:8.4-fpm-bookworm
 
