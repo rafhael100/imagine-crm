@@ -10,6 +10,7 @@ on:
       - '.github/workflows/ci-crm-private-staging-smoke.yml'
       - 'app/Core/Leads/**'
       - 'app/Core/Tasks/**'
+      - 'app/Core/Billing/**'
       - 'scripts/ci/rehearse-crm-private-restore.sh'
       - 'tests/Labs/recovery/**'
 
@@ -76,6 +77,7 @@ jobs:
             echo '### CRM private ephemeral smoke'
             echo '- Runs only inside GitHub hosted runner with generated fake credentials'
             echo '- Localhost health and no public business routes tested'
+            echo '- Asaas billing sources shipped but no sandbox/production billing route or flag enabled'
             echo '- Full pg_dump + pg_restore to second network-none PostgreSQL16 container, FORCE RLS and audit verified'
             echo '- Containers and disposable volume destroyed before completion'
             echo '- No real customer, Asaas network, Leaseweb connection or production changes'
