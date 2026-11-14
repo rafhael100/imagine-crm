@@ -216,6 +216,11 @@ final class CrmIamHttpBoundaryTest extends TestCase
     public function test_real_http_csrf_and_unregistered_public_login_are_denied(): void
     {
         $this->registerLaboratoryRoutes();
+        // A normal HTML browser request must fail 401, not crash while
+        // redirecting to the deliberately absent named "login" route.
+        $this->get('/_ci/iam/current')->assertUnauthorized()
+            ->assertHeader('Cache-Control', 'no-store')
+            ->assertJson(['message' => 'Unauthenticated.']);
         $this->post('/_ci/iam/password', [
             'login' => 'fixture-a', 'password' => self::PASSWORD,
         ])->assertStatus(419);
