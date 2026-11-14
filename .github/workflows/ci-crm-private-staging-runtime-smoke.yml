@@ -63,7 +63,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          docker compose up -d --no-build --no-recreate
+          docker compose up -d --no-build --no-recreate --wait --wait-timeout 60
       - name: Run PHP platform, nginx config and private HTTP deny-only smoke
         shell: bash
         run: |
