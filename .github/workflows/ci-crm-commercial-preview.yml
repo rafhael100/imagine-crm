@@ -4,12 +4,14 @@ on:
   pull_request:
     branches:
       - dev/fast-track-crm-2026-11-04
+      - review/crm-web-p0-commercial-preview-2026-11-13
     paths:
       - 'prototypes/site-comercial-crm/**'
       - '.github/workflows/ci-crm-commercial-preview.yml'
   push:
     branches:
       - review/crm-web-p0-commercial-preview-2026-11-13
+      - review/crm-web-p1-linked-trial-demo-2026-11-13
     paths:
       - 'prototypes/site-comercial-crm/**'
       - '.github/workflows/ci-crm-commercial-preview.yml'
