@@ -44,8 +44,8 @@ SELECT current_user AS role_name,
     OR has_table_privilege(current_user, 'public.crm_memberships', 'UPDATE')
     OR has_table_privilege(current_user, 'public.crm_memberships', 'DELETE')
     THEN 'unsafe' ELSE 'read_only' END AS grant_safety,
-  c.relrowsecurity AS rls_enabled,
-  c.relforcerowsecurity AS rls_forced
+  CASE WHEN c.relrowsecurity THEN 'enabled' ELSE 'disabled' END AS rls_enabled,
+  CASE WHEN c.relforcerowsecurity THEN 'forced' ELSE 'not_forced' END AS rls_forced
 FROM pg_roles AS r CROSS JOIN pg_class AS c
 WHERE r.rolname = current_user
   AND c.oid = 'public.crm_memberships'::regclass
@@ -54,7 +54,7 @@ SQL);
 if (!$role || $role->role_name !== 'crm_staging_app'
     || $role->role_safety !== 'safe'
     || $role->grant_safety !== 'read_only'
-    || !$role->rls_enabled || !$role->rls_forced) {
+    || $role->rls_enabled !== 'enabled' || $role->rls_forced !== 'forced') {
     denyCiRuntime('database role or membership FORCE RLS is unsafe');
 }
 
