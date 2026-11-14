@@ -24,7 +24,7 @@ server {
     add_header X-Content-Type-Options "nosniff" always;
     add_header Referrer-Policy "no-referrer" always;
     add_header X-Frame-Options "DENY" always;
-    add_header Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" always;
+    add_header Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" always;
 
     # Expõe SOMENTE os arquivos estáticos previstos, sem API ou router Laravel.
     location = / {
@@ -38,6 +38,14 @@ server {
     location = /assets/logo-imagine.png {
         limit_except GET HEAD { deny all; }
         try_files /assets/logo-imagine.png =404;
+    }
+    location = /assets/site.css {
+        limit_except GET HEAD { deny all; }
+        try_files /assets/site.css =404;
+    }
+    location = /assets/site.js {
+        limit_except GET HEAD { deny all; }
+        try_files /assets/site.js =404;
     }
     location / {
         return 404;
