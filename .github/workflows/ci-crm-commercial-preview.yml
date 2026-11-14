@@ -28,6 +28,24 @@ jobs:
           persist-credentials: false
       - name: Validar integridade visual e limites sem rede
         run: python3 prototypes/site-comercial-crm/tests/test_preview.py
+      - name: Capturar imagens estáticas para revisão visual (sem rede)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BROWSER="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          mkdir -p review-screenshots
+          for width in 1280 375; do
+            if [[ "$width" = 1280 ]]; then height=1000; else height=1700; fi
+            profile="$(mktemp -d)"
+            "$BROWSER" --headless --no-sandbox --disable-gpu --hide-scrollbars \
+              --disable-background-networking --no-first-run \
+              --user-data-dir="$profile" --window-size="$width,$height" \
+              --virtual-time-budget=800 \
+              --screenshot="$PWD/review-screenshots/crm-comercial-$width.png" \
+              "file://$PWD/prototypes/site-comercial-crm/index.html"
+            rm -rf "$profile"
+            test -s "review-screenshots/crm-comercial-$width.png"
+          done
       - name: Montar pacote de visualização offline
         run: |
           mkdir -p build/crm-preview/assets
@@ -38,5 +56,12 @@ jobs:
         with:
           name: crm-web-p0-preview-offline
           path: build/crm-preview/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Anexar capturas para inspeção humana
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: crm-web-p0-review-desktop-mobile
+          path: review-screenshots/
           if-no-files-found: error
           retention-days: 7
