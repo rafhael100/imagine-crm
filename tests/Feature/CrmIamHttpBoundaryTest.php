@@ -106,6 +106,24 @@ final class CrmIamHttpBoundaryTest extends TestCase
         });
     }
 
+    /** Carry the actual encrypted server-session cookie across real HTTP requests. */
+    private function carryBrowserSessionCookie(\Illuminate\Testing\TestResponse $response): void
+    {
+        $sessionCookie = config('session.cookie');
+        $found = false;
+        foreach ($response->headers->getCookies() as $cookie) {
+            if ($cookie->getName() !== $sessionCookie) {
+                continue;
+            }
+            $this->assertTrue($cookie->isSecure());
+            $this->assertTrue($cookie->isHttpOnly());
+            $this->assertSame('strict', $cookie->getSameSite());
+            $this->withCookie($cookie->getName(), $cookie->getValue());
+            $found = true;
+        }
+        $this->assertTrue($found, 'Real web response must issue a session cookie.');
+    }
+
     public function test_real_laravel_http_password_mfa_session_business_deny_and_logout(): void
     {
         $this->registerLaboratoryRoutes();
@@ -113,12 +131,14 @@ final class CrmIamHttpBoundaryTest extends TestCase
         $this->getJson('/_ci/iam/tenant/'.self::C)->assertUnauthorized();
         $this->assertSame(0, $this->businessEffects);
 
-        $this->withSession(['_token' => 'crm-test-csrf-a'])
+        $passwordResponse = $this->withSession(['_token' => 'crm-test-csrf-a'])
             ->post('/_ci/iam/password', [
                 'login' => 'fixture-a',
                 'password' => self::PASSWORD,
                 '_token' => 'crm-test-csrf-a',
             ])->assertStatus(202)->assertJson(['state' => 'mfa_pending']);
+        $this->carryBrowserSessionCookie($passwordResponse);
+        $this->assertTrue($this->browserSession->has('crm.auth.pending'));
 
         $this->getJson('/_ci/iam/current')->assertUnauthorized();
         $this->assertSame(0, $this->businessEffects);
@@ -126,10 +146,11 @@ final class CrmIamHttpBoundaryTest extends TestCase
         // Begin() rotates session+CSRF. Use ONLY its freshly issued token.
         $fresh = $this->browserSession->token();
         $this->assertNotSame('crm-test-csrf-a', $fresh);
-        $this->post('/_ci/iam/mfa', [
+        $mfaResponse = $this->post('/_ci/iam/mfa', [
             'code' => (new Totp())->code(self::SECRET, now()->getTimestamp()),
             '_token' => $fresh,
         ])->assertOk()->assertJson(['state' => 'authenticated']);
+        $this->carryBrowserSessionCookie($mfaResponse);
 
         $this->getJson('/_ci/iam/current')->assertOk()->assertJson([
             'identity' => self::A,
