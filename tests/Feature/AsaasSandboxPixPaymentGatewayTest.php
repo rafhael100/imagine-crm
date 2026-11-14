@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Core\Billing\AsaasSandboxPixPaymentGateway;
+use Illuminate\Http\Client\Factory;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
@@ -50,6 +51,17 @@ final class AsaasSandboxPixPaymentGatewayTest extends TestCase
     private function gateway(string $key = self::API_KEY): AsaasSandboxPixPaymentGateway
     {
         return new AsaasSandboxPixPaymentGateway(Http::getFacadeRoot(), $key);
+    }
+
+    /**
+     * Laravel accumulates fake callbacks when fake() is called repeatedly.
+     * Each data-case must have an independent HTTP factory; otherwise stale
+     * responses can hide POST requests or cause false-positive retries.
+     */
+    private function resetHttpFakes(): void
+    {
+        Http::swap(new Factory());
+        Http::preventStrayRequests();
     }
 
     private function customer(): array
@@ -150,7 +162,7 @@ final class AsaasSandboxPixPaymentGatewayTest extends TestCase
                     $this->assertSame([
                         'customer' => self::CUSTOMER_ID,
                         'billingType' => 'PIX',
-                        'value' => 89.0,
+                        'value' => 89,
                         'dueDate' => self::DUE_DATE,
                         'externalReference' => self::EXTERNAL_REFERENCE,
                         'description' => 'LAB-IMAGINE-CRM-essencial-FICTICIO',
@@ -177,6 +189,7 @@ final class AsaasSandboxPixPaymentGatewayTest extends TestCase
     {
         foreach (['basico' => 6900, 'essencial' => 8900, 'profissional' => 14900,
             'empresarial' => 29900] as $code => $cents) {
+            $this->resetHttpFakes();
             Http::fake([
                 'api-sandbox.asaas.com/v3/payments*' =>
                     fn (Request $r) => $r->method() === 'GET'
@@ -187,7 +200,8 @@ final class AsaasSandboxPixPaymentGatewayTest extends TestCase
             $this->assertDenyOnlyResult($result, $cents);
             Http::assertSent(fn (Request $r) =>
                 $r->method() === 'POST'
-                && ($r->data()['value'] ?? null) === $cents / 100
+                && is_numeric($r->data()['value'] ?? null)
+                && abs((float) $r->data()['value'] * 100 - $cents) < 0.001
                 && !array_key_exists('discount', $r->data())
                 && !array_key_exists('interest', $r->data())
                 && !array_key_exists('fine', $r->data())
@@ -283,6 +297,7 @@ final class AsaasSandboxPixPaymentGatewayTest extends TestCase
             ]]],
         ] as [$status, $payload]) {
             $calls = 0;
+            $this->resetHttpFakes();
             Http::fake([
                 'api-sandbox.asaas.com/v3/payments*' =>
                     static function (Request $request) use ($payload, $status, &$calls) {
@@ -311,6 +326,7 @@ final class AsaasSandboxPixPaymentGatewayTest extends TestCase
             [200, array_merge($this->paymentRecord(), ['dueDate' => '2026-12-16'])],
             [200, array_merge($this->paymentRecord(), ['status' => 'CONFIRMED'])],
         ] as [$code, $body]) {
+            $this->resetHttpFakes();
             $calls = 0;
             Http::fake([
                 'api-sandbox.asaas.com/v3/payments*' =>
