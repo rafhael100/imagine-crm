@@ -47,6 +47,8 @@ jobs:
               "file://$PWD/prototypes/site-comercial-crm/painel-demo/index.html"
             rm -rf "$profile"
           done
+      - name: Capturar áreas internas Cliente/Admin também
+        run: python3 prototypes/site-comercial-crm/tests/capture_panel_views.py --output review-ux
       - name: Anexar capturas de revisão
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
