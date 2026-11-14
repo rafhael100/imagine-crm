@@ -57,4 +57,25 @@ final class ImagineStagingDesignSystemTest extends TestCase
             $this->assertStringContainsString($language, $kanban);
         }
     }
+
+    public function test_original_imagine_portal_png_is_byte_identical_and_used_locally(): void
+    {
+        $root = dirname(__DIR__, 2);
+        $filename = $root.'/public/assets/logo-imagine.png';
+        $bytes = file_get_contents($filename);
+        $this->assertIsString($bytes);
+        $this->assertSame(5594, strlen($bytes));
+        $this->assertStringStartsWith("\x89PNG\r\n\x1a\n", $bytes);
+        $this->assertSame(
+            '678adeceb3a8ecdaeb6b576b9ee18d1bf0396f77',
+            sha1('blob '.strlen($bytes)."\0".$bytes),
+        );
+        foreach (['crm-staging-marketing.blade.php', 'crm-staging-demo.blade.php'] as $page) {
+            $markup = file_get_contents($root.'/resources/views/'.$page);
+            $this->assertIsString($markup);
+            $this->assertStringContainsString('src="/assets/logo-imagine.png"', $markup);
+            $this->assertStringContainsString('alt="Imagine"', $markup);
+        }
+    }
+
 }
