@@ -68,9 +68,9 @@ def main():
     logo = LOGO.read_bytes()
     assert html.lower().startswith("<!doctype html>")
     assert html.strip().endswith("</body></html>")
-    assert logo[:8] == b"\\x89PNG\\r\\n\\x1a\\n"
+    assert logo[:8] == bytes((137, 80, 78, 71, 13, 10, 26, 10))
     assert (int.from_bytes(logo[16:20], "big"), int.from_bytes(logo[20:24], "big")) == (200, 55)
-    actual_blob_sha = hashlib.sha1(b"blob " + str(len(logo)).encode() + b"\\0" + logo).hexdigest()
+    actual_blob_sha = hashlib.sha1(b"blob " + str(len(logo)).encode() + bytes((0,)) + logo).hexdigest()
     assert actual_blob_sha == EXPECTED_LOGO_BLOB, "Logomarca diferente do Portal Imagine original"
 
     parser = AuditHTML()
