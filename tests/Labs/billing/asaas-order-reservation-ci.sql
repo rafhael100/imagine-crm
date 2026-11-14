@@ -1,6 +1,12 @@
 -- BILL-ASAAS-INT-02: CI-only order/payment reservation, never a production migration.
 -- Requires verified ephemeral postgres:16 service BEFORE this script.
 -- Identifiers and amounts are synthetic. No token, fiscal identity or customer data.
+-- Composite FK requires the physical organization+provider pair to be unique.
+-- Customer links are populated by earlier isolated customer lab fixtures.
+ALTER TABLE crm_lab_asaas_customer_links
+  ADD CONSTRAINT crm_lab_asaas_customer_identity_pair
+  UNIQUE (organization_ref, provider_customer_id);
+
 CREATE TABLE crm_lab_asaas_order_reservations (
   order_ref uuid PRIMARY KEY,
   organization_ref uuid NOT NULL,
@@ -10,6 +16,10 @@ CREATE TABLE crm_lab_asaas_order_reservations (
   due_on date NOT NULL,
   provider_payment_id varchar(72) UNIQUE,
   state varchar(24) NOT NULL DEFAULT 'reserved',
+  CONSTRAINT lab_order_customer_tenant_fk
+    FOREIGN KEY (organization_ref, provider_customer_id)
+    REFERENCES crm_lab_asaas_customer_links (organization_ref, provider_customer_id)
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT lab_order_shape CHECK (
     order_ref <> organization_ref
     AND provider_customer_id ~ '^cus_[A-Za-z0-9]{5,64}$'
