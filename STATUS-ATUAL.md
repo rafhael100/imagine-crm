@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## OPS-70 — staging comprovado em CI descartável; VPS ainda NO-GO (14/11/2026)
+
+**Base DEV antes deste dossiê:** `3a723ae74b21a4b499c41dc9e132ae7f343d4508`; `main` preservada em `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012`. A PR [#517](https://github.com/rafhael100/imagine-crm/pull/517) permanece **DRAFT / NO-MERGE / NO-DEPLOY**. F3-267/268/269/270 passaram em contêineres reais *somente no GitHub*: imagens PHP/Nginx, /up HTTP 200 em loopback, FPM isolado sem rota padrão, serviço web limitado a 127.0.0.1 e transições de saúde `healthy → unhealthy → healthy` após suspensão/retomada do FPM. **6/6 workflows success** na HEAD F3-270 [`9c249dbf`](https://github.com/rafhael100/imagine-crm/actions/runs/43546705237). A F3-271 produziu inventário sanitizado de dependências e hashes em [Actions #43547265544](https://github.com/rafhael100/imagine-crm/actions/runs/43547265544) com **6/6 CI verdes** na SHA `240a01c5258616c9eb491604b3836a49e7858058`; [artifact #14094049896](https://github.com/rafhael100/imagine-crm/actions/runs/43547265544/artifacts/14094049896), expira em 21/11/2026.
+
+**Nenhuma VPS, ambiente definitivo, banco real, CNPJ, cadastro, login, checkout, emissão fiscal, cobrança ou `main` foram ativados.** O staging da VPS e os gates independentes [SEG/DBA #27](https://github.com/rafhael100/imagine-crm/issues/27), [CORE/LGPD #259](https://github.com/rafhael100/imagine-crm/issues/259) e [UX #416](https://github.com/rafhael100/imagine-crm/issues/416) seguem **NO-GO**. Provas, defeitos resolvidos e rota até o release: [Dossiê OPS-70](docs/desenvolvimento/CRM-OPS-70-staging-runtime-provas-e-bloqueios-2026-11-14.md).
+
+
+
 ## OPS-69 — IAM experimental bloqueado; staging privado ainda DRAFT (13/11/2026)
 
 **DEV verificada:** c26e4d0091081d9e0695160d904b8880deb448a6. F3-262 [#516](https://github.com/rafhael100/imagine-crm/pull/516) integrada **somente na DEV**, 5/5 workflows success na SHA da PR e 4/4 success pós-merge DEV. Prova Laravel no-dev com **APP_ENV=production simulado + CRM_AUTH_EXPERIMENTAL=true** confirma que guard/provisioner/login e ALLOW continuam indisponíveis. **main** e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012 inalterada.
