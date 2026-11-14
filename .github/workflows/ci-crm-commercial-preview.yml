@@ -32,6 +32,8 @@ jobs:
         run: python3 prototypes/site-comercial-crm/tests/browser_smoke.py
       - name: Compilar verificador read-only de staging sem executar HTTP
         run: python3 -m py_compile prototypes/site-comercial-crm/staging/smoke_private_https.py
+      - name: Navegar comercial até OTP e trial fictícios (Chromium real)
+        run: python3 prototypes/site-comercial-crm/tests/trial_handoff_browser.py
       - name: Validar configuração privada proposta (somente estática)
         run: python3 prototypes/site-comercial-crm/staging/test_configuration.py
       - name: Capturar imagens estáticas para revisão visual (sem rede)
