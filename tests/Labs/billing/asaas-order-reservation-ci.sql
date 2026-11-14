@@ -13,7 +13,7 @@ CREATE TABLE crm_lab_asaas_order_reservations (
   CONSTRAINT lab_order_shape CHECK (
     order_ref <> organization_ref
     AND provider_customer_id ~ '^cus_[A-Za-z0-9]{5,64}$'
-    AND plan_code IN ('basico', 'essencial')
+    AND plan_code IN ('basico', 'essencial', 'profissional', 'empresarial')
     AND amount_cents > 0 AND amount_cents <= 10000000
     AND (
       (state IN ('reserved','review_required') AND provider_payment_id IS NULL)
