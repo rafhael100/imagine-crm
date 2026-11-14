@@ -68,6 +68,14 @@ O script scripts/ci/verify-private-staging-fail-recover.sh foi preparado para ex
 
 Esse teste **não** prova alta disponibilidade, failover, persistência, resiliência de banco, TLS, egress/firewall na VPS, rollback, nem segurança operacional. A validação precisa estar verde na SHA exata; não alterar estado de main/VPS, não autenticar usuários, não conceder ALLOW e manter o PR DRAFT/NO-DEPLOY.
 
+## F3-269 / F3-270 — recuperação validada e healthchecks do Compose
+
+A falha e recuperação F3-269 **passou em 6/6 workflows** na HEAD `b48596156ad1bcddcfbd48d820a6a44a129eb368`. [CI de runtime #43544656952](https://github.com/rafhael100/imagine-crm/actions/runs/43544656952) suspendeu apenas o PHP-FPM temporário preservando seu endereço na rede, observou erro HTTP 502/503/504 com cabeçalhos e sem cookies e, após retomar o backend, confirmou /up 200. Nenhum dado real foi utilizado e todos os contêineres foram eliminados.
+
+A F3-270 adiciona **healthchecks nativos no Compose**: PHP-FPM inspeciona exclusivamente seu socket local, Nginx testa somente seu próprio GET /up em 127.0.0.1:8080, ambos com timeout e tentativas limitados, e a inicialização de Nginx depende de PHP com `service_healthy`. A CI aguarda `docker compose up --wait` e o teste F3-269 foi estendido para exigir transições Docker `healthy → unhealthy → healthy` ao simular perda e recuperação do backend. A política fail-closed do Compose verifica o comando exato e rejeita alterações em parâmetros, endpoints externos ou verificações desativadas.
+
+**Isso verifica somente o runner efêmero se a CI ficar verde.** Healthchecks não realizam restart automático, não são SLA, não substituem monitoramento, certificado TLS, integração Portal/CRM, banco persistente, backup/restauração ou segurança da VPS. Regras DRAFT/NO-MERGE/NO-DEPLOY, SEG/DBA #27, CORE/LGPD #259 e UX #416 permanecem.
+
 ## Escopo demonstrável
 
 A CI F3-263 cobre sintaxe e política estática. **A CI F3-267**, se verde, pode comprovar build e fumaça HTTP real **somente no runner descartável**. Nenhuma das duas comprova rede de uma VPS, segurança do host definitivo, TLS/Cloudflare, back-up, resiliência do PostgreSQL operacional, homologação privada da infraestrutura Imagine ou autorização de negócios.
