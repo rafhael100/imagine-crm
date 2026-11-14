@@ -44,9 +44,21 @@ Na máquina efêmera GitHub-hosted a sequência é: validação de Compose JSON 
 
 **Evidência de falha da primeira construção:** [Actions 43540911931](https://github.com/rafhael100/imagine-crm/actions/runs/43540911931) identificou ausência de libsqlite3-dev, corrigida no Dockerfile. [Actions 43541127467](https://github.com/rafhael100/imagine-crm/actions/runs/43541127467) e [43541566114](https://github.com/rafhael100/imagine-crm/actions/runs/43541566114) provaram que imagens, Composer e Nginx/FPM carregam, mas o acesso do host a /up retornou HTTP 000. [Actions 43541947109](https://github.com/rafhael100/imagine-crm/actions/runs/43541947109) demonstrou /up respondendo com sucesso **dentro do próprio Nginx**, isolando o defeito na conectividade host para contêiner da rede internal única.
 
-**Correção estrutural sob teste:** duas redes próprias e não compartilhadas, crm_private (internal: true) contendo app+web e crm_loopback (driver: bridge) contendo somente web, com mascaramento de saída desativado e host binding forçado para 127.0.0.1. A política normalizada proíbe ligar app à ingress, habilitar NAT, rede externa, porta pública ou operações de banco. **Mesmo com NAT desativado, o isolamento de egress/firewall da bridge de ingresso não está comprovado** e deve ser revisto antes de VPS. Fontes: [Docker networking](https://docs.docker.com/compose/how-tos/networking/) e [Port publishing](https://docs.docker.com/engine/network/port-publishing/).
+**Correção estrutural validada no runner GitHub efêmero (não na VPS):** duas redes próprias e não compartilhadas, crm_private (internal: true) contendo app+web e crm_loopback (driver: bridge) contendo somente web, com mascaramento de saída desativado e host binding forçado para 127.0.0.1. A política normalizada proíbe ligar app à ingress, habilitar NAT, rede externa, porta pública ou operações de banco. **Mesmo com NAT desativado, o isolamento de egress/firewall da bridge de ingresso não está comprovado** e deve ser revisto antes de VPS. Fontes: [Docker networking](https://docs.docker.com/compose/how-tos/networking/) e [Port publishing](https://docs.docker.com/engine/network/port-publishing/).
 
 **Não se trata de homologação real:** nenhum contato, cadastro, login ou dado de cliente é criado; não existe serviço público, banco PostgreSQL da VPS, migração operacional, Cloudflare/TLS, credencial ou implantação. Build no runner prova somente o processo descartável da CI e **não** autoriza merge do candidato na DEV, execução na VPS, alteração de `main` ou liberação de funcionalidades de negócio. Mantêm-se os gates SEG/DBA #27, CORE/LGPD #259, UX #416, digest fixo/SBOM, backup/rollback e isolamento do host antes de qualquer ativação externa.
+
+## F3-267 — resultado runtime e nova F3-268 de isolamento
+
+A revisão F3-267 do commit 8fb304949f1826b9e76ff7d8d3bda857ecdc4574 passou **6/6 checks de CI**. O [smoke real #43542647814](https://github.com/rafhael100/imagine-crm/actions/runs/43542647814) construiu ambas as imagens, iniciou PHP-FPM e Nginx em redes separadas, confirmou GET /up HTTP 200 em 127.0.0.1:18080, negou rotas de negócio via GET e POST, negou acesso a arquivos internos e validou Composer, Nginx e FPM. Após os testes, contêineres, redes e imagens foram removidos. Isso resolve a falha **no runner descartável**, sem liberar VPS, produção, login, banco persistente ou qualquer rollout.
+
+O recorte adicional F3-268 introduz um script de prova **dentro desse mesmo runner** para afirmar, por docker inspect e comandos somente de leitura:
+- raízes de imagem read-only, ALL capabilities descartadas e no-new-privileges efetivo;
+- UID não privilegiado dos dois processos e grupos de redes exatos, sem PHP-FPM ligado à rede de entrada;
+- ausência, em cada imagem, de .env, código de teste, migrations experimentais e arquivos desnecessários;
+- ausência de rota padrão de saída do PHP conforme /proc/net/route, verificação de porta publicada apenas por Nginx no loopback e NAT da bridge desabilitado.
+
+A CI de F3-268 deve ficar verde na SHA exata antes de qualquer alegação de sucesso. **Mesmo uma CI verde não é demonstração de ausência de egress do Nginx**, certificação de firewall/host, revisão de supply chain, segurança de VPS ou homologação operacional. Os gates SEG/DBA #27, CORE/LGPD #259, UX #416, digests/SBOM, TLS, backup/rollback e auditoria permanecem NO-GO para deploy, main e dados reais.
 
 ## Escopo demonstrável
 
