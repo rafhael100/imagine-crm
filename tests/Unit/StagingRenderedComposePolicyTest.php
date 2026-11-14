@@ -41,7 +41,7 @@ final class StagingRenderedComposePolicyTest extends TestCase
                 'app' => array_merge($base, [
                     'user' => '33:33',
                     'healthcheck' => [
-                        'test' => ['CMD', 'php', '-r', "\$s=@fsockopen('127.0.0.1',9000,\$e,\$m,2); exit(\$s?0:1);"],
+                        'test' => ['CMD', 'php', '-r', "exit(@fsockopen('127.0.0.1',9000) ? 0 : 1);"],
                         'interval' => '5s', 'timeout' => '3s',
                         'retries' => 2, 'start_period' => '10s',
                     ],
