@@ -67,15 +67,16 @@ def main():
             common=[browser,"--headless","--no-sandbox","--disable-gpu",
                     "--disable-background-networking","--disable-extensions",
                     "--disable-dev-shm-usage","--no-first-run",
-                    "--allow-file-access-from-files","--user-data-dir="+str(root/"profile"),
-                    "--window-size="+str(width)+","+str(height),
-                    "--virtual-time-budget=2200"]
-            result=subprocess.run(common+["--dump-dom",driver.as_uri()],
+                    "--allow-file-access-from-files"]
+            result=subprocess.run(common+["--user-data-dir="+str(root/"profile"),
+                                  "--window-size="+str(width)+","+str(height),
+                                  "--virtual-time-budget=2200",
+                                  "--dump-dom",driver.as_uri()],
                                   capture_output=True,text=True,timeout=50)
-            assert result.returncode==0 and re.search(r'<span id="result" hidden="">PASS</span>',result.stdout),\
+            assert result.returncode==0 and re.search(r'<span[^>]*id="result"[^>]*>PASS</span>',result.stdout),\
                 f"Render de {filename} não passou na checagem JS"
             # New profile prevents reuse of chromium's exited process state.
-            capture=subprocess.run([*common[:-2], "--user-data-dir="+str(root/"capture-profile"),
+            capture=subprocess.run([*common, "--user-data-dir="+str(root/"capture-profile"),
                                     "--window-size="+str(width)+","+str(height),
                                     "--virtual-time-budget=2200",
                                     "--screenshot="+str((args.output/filename).resolve()),driver.as_uri()],
