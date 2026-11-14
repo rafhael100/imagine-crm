@@ -154,5 +154,7 @@ jobs:
           SQL
       - name: Run isolated PostgreSQL RLS tests
         run: php artisan test --filter=PostgresMembershipRlsTest --no-ansi
+      - name: Prove nonce uniqueness between two disposable PostgreSQL connections
+        run: php artisan test --filter=AiaPostgresAtomicNonceCandidateTest --no-ansi
       - name: Run full synthetic test suite
         run: php artisan test --no-ansi
