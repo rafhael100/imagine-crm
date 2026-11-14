@@ -53,7 +53,7 @@ GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_billing_subscription_ci;
 GRANT USAGE ON SCHEMA public TO crm_billing_subscription_ci;
 GRANT SELECT (organization_ref, state)
     ON TABLE crm_lab_asaas_customer_links TO crm_billing_subscription_ci;
-GRANT SELECT (external_reference, plan_code, monthly_cents, billing_type,
+GRANT SELECT (organization_ref, external_reference, plan_code, monthly_cents, billing_type,
     trial_started_on, trial_ends_on, first_due_on, state)
     ON TABLE crm_lab_asaas_subscription_drafts TO crm_billing_subscription_ci;
 GRANT INSERT (organization_ref, external_reference, plan_code, monthly_cents,
