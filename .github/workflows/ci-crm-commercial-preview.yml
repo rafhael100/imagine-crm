@@ -1,0 +1,88 @@
+name: CRM WEB-P0 - previa comercial isolada
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+
+permissions:
+  contents: read
+
+jobs:
+  preview-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout pinned
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact candidate HEAD
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          echo "Candidate HEAD: $EXPECTED_HEAD" >> "$GITHUB_STEP_SUMMARY"
+      - name: Validar integridade visual e limites sem rede
+        run: python3 prototypes/site-comercial-crm/tests/test_preview.py
+      - name: Exercitar interações reais em Chromium 320/375/768/1280
+        run: python3 prototypes/site-comercial-crm/tests/browser_smoke.py
+      - name: Compilar verificador read-only de staging sem executar HTTP
+        run: python3 -m py_compile prototypes/site-comercial-crm/staging/smoke_private_https.py
+      - name: Navegar comercial até OTP e trial fictícios (Chromium real)
+        run: python3 prototypes/site-comercial-crm/tests/trial_handoff_browser.py
+      - name: Validar painéis cliente/admin em navegador real
+        run: python3 prototypes/site-comercial-crm/tests/dashboard_journey_browser.py
+      - name: Validar configuração privada proposta (somente estática)
+        run: python3 prototypes/site-comercial-crm/staging/test_configuration.py
+      - name: Capturar imagens estáticas para revisão visual (sem rede)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BROWSER="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          mkdir -p review-screenshots
+          for width in 1280 375; do
+            if [[ "$width" = 1280 ]]; then height=1000; else height=1700; fi
+            profile="$(mktemp -d)"
+            "$BROWSER" --headless --no-sandbox --disable-gpu --hide-scrollbars \
+              --disable-background-networking --no-first-run \
+              --user-data-dir="$profile" --window-size="$width,$height" \
+              --virtual-time-budget=800 \
+              --screenshot="$PWD/review-screenshots/crm-comercial-$width.png" \
+              "file://$PWD/prototypes/site-comercial-crm/index.html"
+            rm -rf "$profile"
+            test -s "review-screenshots/crm-comercial-$width.png"
+          done
+      - name: Montar pacote de visualização offline
+        run: |
+          mkdir -p build/crm-preview/assets
+          cp prototypes/site-comercial-crm/index.html build/crm-preview/index.html
+          cp prototypes/site-comercial-crm/assets/logo-imagine.png build/crm-preview/assets/logo-imagine.png
+          cp prototypes/site-comercial-crm/assets/site.css build/crm-preview/assets/site.css
+          cp prototypes/site-comercial-crm/assets/site.js build/crm-preview/assets/site.js
+          mkdir -p build/crm-preview/fluxo-demo
+          cp prototypes/site-comercial-crm/fluxo-demo/index.html build/crm-preview/fluxo-demo/index.html
+          mkdir -p build/crm-preview/painel-demo
+          cp prototypes/site-comercial-crm/painel-demo/index.html build/crm-preview/painel-demo/index.html
+          cp prototypes/site-comercial-crm/painel-demo/dashboard.css build/crm-preview/painel-demo/dashboard.css
+          cp prototypes/site-comercial-crm/painel-demo/dashboard.js build/crm-preview/painel-demo/dashboard.js
+          (cd build/crm-preview && sha256sum index.html assets/logo-imagine.png assets/site.css assets/site.js fluxo-demo/index.html painel-demo/index.html painel-demo/dashboard.css painel-demo/dashboard.js > manifest.sha256)
+          (cd build/crm-preview && sha256sum --check manifest.sha256)
+          printf 'Imagine CRM: previa demonstrativa SEM cadastro, login, CNPJ ou cobranca real.\nAbra index.html, preservando assets/.\n' > build/crm-preview/LEIA-ME.txt
+      - name: Validar pacote fechado e manifesto SHA256
+        run: python3 prototypes/site-comercial-crm/staging/verify_bundle.py build/crm-preview
+      - name: Anexar prévia sem dados reais
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: crm-web-p0-preview-offline
+          path: build/crm-preview/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Anexar capturas para inspeção humana
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: crm-web-p0-review-desktop-mobile
+          path: review-screenshots/
+          if-no-files-found: error
+          retention-days: 7

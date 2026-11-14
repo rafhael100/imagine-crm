@@ -28,8 +28,15 @@ jobs:
       - name: Checkout CRM (source under test)
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
 
+      - name: Verify exact candidate HEAD
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          echo "Candidate HEAD: $EXPECTED_HEAD" >> "$GITHUB_STEP_SUMMARY"
       - name: Checkout pinned Agents synthetic fixture (not a deploy)
         uses: actions/checkout@v4
         with:

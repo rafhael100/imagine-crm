@@ -1,0 +1,56 @@
+name: CRM WEB-P4 - HTTPS privado em laboratorio descartavel
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-web-p4-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  disposable-https:
+    name: Nginx TLS local - certificado curto e 401/200/404
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      CI_CRM_PREVIEW_DOCKER: synthetic-only
+    steps:
+      - name: Checkout sem token persistente
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact candidate HEAD
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          echo "Candidate HEAD: $EXPECTED_HEAD" >> "$GITHUB_STEP_SUMMARY"
+      - name: Verificar preflight do prototipo
+        run: |
+          python3 prototypes/site-comercial-crm/tests/test_preview.py
+          python3 prototypes/site-comercial-crm/staging/test_configuration.py
+          test -f prototypes/site-comercial-crm/staging/nginx-preview-tls-ci.conf
+          test -f prototypes/site-comercial-crm/staging/Dockerfile-preview-tls-ci
+          test -f prototypes/site-comercial-crm/painel-demo/index.html
+          node --check prototypes/site-comercial-crm/painel-demo/dashboard.js
+      - name: HTTPS real somente no loopback GitHub com identidade ficticia
+        shell: bash
+        run: bash prototypes/site-comercial-crm/staging/smoke_docker_https_ci.sh
+      - name: Reportar alcance e limites
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '### WEB-P4: prova HTTPS sintética somente em runner'
+            echo '- Certificado autoassinado criado e descartado neste job; CA confiada apenas em curl local'
+            echo '- Controle da confiança de certificado verificado; sem --insecure'
+            echo '- Basic Auth sem dados reais, Nginx não privilegiado, rootfs de leitura'
+            echo '- Nunca foi usado na VPS, Cloudflare, DNS ou em clientes; nenhuma identidade/PSP'
+            echo '- SSL real público, certificados oficiais, proteção de host/egress e gates ainda NO-GO'
+          } >> "$GITHUB_STEP_SUMMARY"

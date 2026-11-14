@@ -1,0 +1,53 @@
+name: CRM WEB-P2 - Planos site versus Core (somente laboratorio)
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-web-p2-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  catalog-parity:
+    name: PHP 8.4 - catalogo e interface sem checkout
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout da revisao sem token persistente
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact candidate HEAD
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          echo "Candidate HEAD: $EXPECTED_HEAD" >> "$GITHUB_STEP_SUMMARY"
+      - name: Preparar PHP de testes sem credenciais externas
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, zip
+          tools: composer:v2
+          coverage: none
+      - name: Verificar sintaxe do Core e dos testes
+        run: |
+          php -l app/Core/Plans/CommercialPlanReferenceCatalog.php
+          php -l tests/Unit/CommercialPlanReferenceCatalogTest.php
+          php -l tests/Unit/CommercialPageCatalogParityTest.php
+      - name: Instalar dependencias de teste sem executar hooks de aplicacao
+        run: composer install --no-scripts --no-interaction --prefer-dist --no-progress
+      - name: Verificar integridade do catalogo comercial de referencia
+        run: vendor/bin/phpunit tests/Unit/CommercialPlanReferenceCatalogTest.php
+      - name: Conferir DOM do site contra o catalogo Core
+        run: vendor/bin/phpunit tests/Unit/CommercialPageCatalogParityTest.php
+      - name: Regressao de seguranca da pagina de prototipo
+        run: python3 prototypes/site-comercial-crm/tests/test_preview.py
+      - name: Regressao do fluxo comercial -> trial ficticio em Chromium
+        run: python3 prototypes/site-comercial-crm/tests/trial_handoff_browser.py
