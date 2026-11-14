@@ -165,4 +165,78 @@ final class CrmIamPostgresHttpMembershipTest extends TestCase
             ->table('public.crm_memberships')->count());
         DB::purge('crm_http_pg_probe');
     }
+
+    public function test_revoked_mfa_registry_session_denies_company_membership_before_pg_scope(): void
+    {
+        $store = $this->prepareRealPgMembership();
+        $this->registerPrivateMembershipRoute($store);
+        $this->attachExistingVerifiedSession();
+
+        $this->getJson('/_ci/iam/pg-membership/'.self::C)
+            ->assertOk()->assertJson(['identity' => self::A, 'tenant' => self::C]);
+
+        $this->fixtures->table('crm_auth_sessions')
+            ->where('identity_id', self::A)
+            ->where('state', 'active')
+            ->update(['state' => 'revoked']);
+
+        $this->getJson('/_ci/iam/pg-membership/'.self::C)->assertUnauthorized();
+        $this->assertSame(0, DB::connection('crm_http_pg_probe')->transactionLevel());
+        $this->assertSame(0, DB::connection('crm_http_pg_probe')
+            ->table('public.crm_memberships')->count());
+        DB::purge('crm_http_pg_probe');
+    }
+
+    public function test_credential_version_rotation_revokes_existing_http_access_to_active_company(): void
+    {
+        $store = $this->prepareRealPgMembership();
+        $this->registerPrivateMembershipRoute($store);
+        $this->attachExistingVerifiedSession();
+
+        $this->getJson('/_ci/iam/pg-membership/'.self::C)->assertOk();
+        $this->fixtures->table('crm_auth_credentials')
+            ->where('identity_id', self::A)
+            ->update(['version' => 2]);
+
+        // The membership itself remains active, but a stale identity
+        // credential/session must never access it through the HTTP route.
+        $this->assertSame('active', $this->fixtures->table('crm_memberships')
+            ->where('global_identity_id', self::A)->value('status'));
+        $this->getJson('/_ci/iam/pg-membership/'.self::C)->assertUnauthorized();
+        $this->assertSame(0, DB::connection('crm_http_pg_probe')
+            ->table('public.crm_memberships')->count());
+        DB::purge('crm_http_pg_probe');
+    }
+
+    public function test_same_verified_identity_can_switch_two_active_companies_without_leaking_scope(): void
+    {
+        $store = $this->prepareRealPgMembership();
+        $this->fixtures->table('crm_memberships')->insert([
+            'id' => (string) Str::uuid(),
+            'organization_id' => self::D,
+            'global_identity_id' => self::A,
+            'status' => 'active',
+            'version' => 4,
+        ]);
+        $this->registerPrivateMembershipRoute($store);
+        $this->attachExistingVerifiedSession();
+
+        foreach ([
+            [self::C, 2], [self::D, 4], [self::C, 2], [self::D, 4],
+        ] as [$tenant, $version]) {
+            $this->getJson('/_ci/iam/pg-membership/'.$tenant)
+                ->assertOk()->assertJson([
+                    'identity' => self::A,
+                    'tenant' => $tenant,
+                    'membership_version' => $version,
+                    'can_read_leads' => false,
+                    'can_charge' => false,
+                ]);
+            $this->assertSame(0, DB::connection('crm_http_pg_probe')
+                ->table('public.crm_memberships')->count());
+            $this->assertSame(0, DB::connection('crm_http_pg_probe')->transactionLevel());
+        }
+        DB::purge('crm_http_pg_probe');
+    }
+
 }
