@@ -7,11 +7,13 @@ on:
       - 'app/Core/Leads/SyntheticCalculatorContactBoundary.php'
       - 'app/Core/Leads/SyntheticCalculatorContactCipher.php'
       - 'app/Core/Leads/SyntheticCalculatorNurtureLifecycle.php'
+      - 'app/Core/Leads/SyntheticCalculatorEducationCatalog.php'
       - 'app/Core/Leads/SyntheticCalculatorInterestInteropInspector.php'
       - 'tests/offline_calculator_nurture_consent_test.php'
       - 'tests/offline_calculator_synthetic_contact_boundary_test.php'
       - 'tests/offline_calculator_synthetic_contact_cipher_test.php'
       - 'tests/offline_calculator_nurture_lifecycle_test.php'
+      - 'tests/offline_calculator_education_catalog_test.php'
       - 'tests/offline_calculator_interest_interop_test.php'
       - 'scripts/ci/check-calculator-interest-crossrepo.php'
       - '.github/workflows/crm-calculator-nurture-consent-lab.yml'
@@ -56,6 +58,8 @@ jobs:
           php -l tests/offline_calculator_synthetic_contact_cipher_test.php
           php -l app/Core/Leads/SyntheticCalculatorNurtureLifecycle.php
           php -l tests/offline_calculator_nurture_lifecycle_test.php
+          php -l app/Core/Leads/SyntheticCalculatorEducationCatalog.php
+          php -l tests/offline_calculator_education_catalog_test.php
           php -l app/Core/Leads/SyntheticCalculatorInterestInteropInspector.php
           php -l tests/offline_calculator_interest_interop_test.php
           php -l scripts/ci/check-calculator-interest-crossrepo.php
@@ -65,6 +69,7 @@ jobs:
           php tests/offline_calculator_synthetic_contact_boundary_test.php
           php tests/offline_calculator_synthetic_contact_cipher_test.php
           php tests/offline_calculator_nurture_lifecycle_test.php
+          php tests/offline_calculator_education_catalog_test.php
           php tests/offline_calculator_interest_interop_test.php
       - name: Verify pinned Comercial source and cross-language Node-to-PHP vector
         run: |
