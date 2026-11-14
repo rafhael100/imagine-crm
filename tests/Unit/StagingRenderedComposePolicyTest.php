@@ -28,6 +28,14 @@ final class StagingRenderedComposePolicyTest extends TestCase
             'name' => 'imagine-crm-stage-review',
             'networks' => [
                 'crm_private' => ['internal' => true, 'name' => 'imagine-crm-stage-review_crm_private'],
+                'crm_loopback' => [
+                    'name' => 'imagine-crm-stage-review_crm_loopback',
+                    'driver' => 'bridge',
+                    'driver_opts' => [
+                        'com.docker.network.bridge.enable_ip_masquerade' => 'false',
+                        'com.docker.network.bridge.host_binding_ipv4' => '127.0.0.1',
+                    ],
+                ],
             ],
             'services' => [
                 'app' => array_merge($base, [
@@ -63,6 +71,7 @@ final class StagingRenderedComposePolicyTest extends TestCase
                     ],
                 ]),
                 'web' => array_merge($base, [
+                    'networks' => ['crm_private' => null, 'crm_loopback' => null],
                     'user' => '101:101',
                     'entrypoint' => ['nginx', '-g', 'daemon off;'],
                     'build' => [
@@ -228,6 +237,39 @@ final class StagingRenderedComposePolicyTest extends TestCase
             'com.docker.network.bridge.enable_ip_masquerade' => 'true',
         ];
         self::assertContains('network_not_private', self::policy($model));
+    }
+
+    public function test_split_networks_never_connect_backend_to_ingress_or_enable_nat(): void
+    {
+        $good = self::validModel();
+        self::assertSame([], self::policy($good));
+
+        $appOnIngress = $good;
+        $appOnIngress['services']['app']['networks']['crm_loopback'] = null;
+        self::assertContains('app_unapproved_network', self::policy($appOnIngress));
+
+        $webWithoutIngress = $good;
+        unset($webWithoutIngress['services']['web']['networks']['crm_loopback']);
+        self::assertContains('web_unapproved_network', self::policy($webWithoutIngress));
+
+        foreach ([
+            ['com.docker.network.bridge.enable_ip_masquerade', 'true'],
+            ['com.docker.network.bridge.host_binding_ipv4', '0.0.0.0'],
+        ] as [$option, $unsafe]) {
+            $model = $good;
+            $model['networks']['crm_loopback']['driver_opts'][$option] = $unsafe;
+            self::assertContains('network_loopback_boundary', self::policy($model));
+        }
+
+        foreach (['external' => true, 'attachable' => true, 'internal' => true] as $option => $value) {
+            $model = $good;
+            $model['networks']['crm_loopback'][$option] = $value;
+            self::assertContains('network_loopback_boundary', self::policy($model));
+        }
+
+        $model = $good;
+        $model['networks']['crm_loopback']['driver_opts']['custom'] = 'unsafe';
+        self::assertContains('network_loopback_boundary', self::policy($model));
     }
 
     public function test_malformed_service_shape_is_denied_without_php_type_errors(): void
