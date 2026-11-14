@@ -5,6 +5,9 @@ on:
     paths:
       - 'tests/Labs/calculator/**'
       - 'scripts/ci/run-calculator-interest-pg-roundtrip.php'
+      - 'app/Core/Leads/SyntheticCalculatorPgDelivery.php'
+      - 'scripts/ci/calculator-private-http-router.php'
+      - 'scripts/ci/test-calculator-private-http.mjs'
       - '.github/workflows/ci-crm-calculator-pg-rls.yml'
   workflow_dispatch:
 
@@ -85,6 +88,17 @@ jobs:
           test "$(git -C _commercial_calculator_ci rev-parse HEAD)" = "f2454eb58b77702f2df69be658c43ecd49f3beb3"
           php -l scripts/ci/run-calculator-interest-pg-roundtrip.php
           node _commercial_calculator_ci/scripts/emit-calculator-interest-fixture-ci.mjs | php scripts/ci/run-calculator-interest-pg-roundtrip.php
+      - name: Real loopback HTTP to temporary PostgreSQL metadata (NO PII)
+        env:
+          CRM_CALCULATOR_HTTP_CI: synthetic-loopback
+          CRM_CALCULATOR_HTTP_PG_CI: synthetic-pg
+        run: |
+          set -euo pipefail
+          php -l scripts/ci/calculator-private-http-router.php
+          php -l app/Core/Leads/SyntheticCalculatorPgDelivery.php
+          node scripts/ci/test-calculator-private-http.mjs
+          test "$(psql -X -qAt -c "SELECT count(*) FROM public.crm_calc_lab_intents")" = '2'
+          test "$(psql -X -qAt -c "SELECT count(*) FROM public.crm_calc_lab_consent_events WHERE intent_kind='marketing_requested'")" = '0'
       - name: Read-only report of disabled business effects
         if: always()
         run: |
