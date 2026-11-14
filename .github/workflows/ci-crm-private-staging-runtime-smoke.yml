@@ -19,6 +19,8 @@ on:
       - 'scripts/ci/verify-private-staging-runtime.sh'
       - 'scripts/ci/verify-private-staging-isolation.sh'
       - 'scripts/ci/verify-private-staging-fail-recover.sh'
+      - 'scripts/ci/emit-private-staging-inventory.sh'
+      - 'tests/Unit/StagingEvidenceInventoryContractTest.php'
       - 'tests/Unit/PrivateStagingFailRecoverContractTest.php'
       - 'tests/Unit/PrivateStagingRuntimeSmokeContractTest.php'
       - 'tests/Unit/PrivateStagingRuntimeIsolationContractTest.php'
@@ -79,6 +81,20 @@ jobs:
         run: |
           set -euo pipefail
           bash scripts/ci/verify-private-staging-fail-recover.sh
+      - name: Build sanitized review evidence and self-check SHA256 manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n scripts/ci/emit-private-staging-inventory.sh
+          bash scripts/ci/emit-private-staging-inventory.sh
+      - name: Attach 7-day sanitized dependency inventory for reviewers
+        uses: actions/upload-artifact@v4
+        with:
+          name: crm-f3-271-review-inventory
+          path: ${{ runner.temp }}/crm-f3-271-inventory/
+          retention-days: 7
+          if-no-files-found: error
+          include-hidden-files: false
       - name: Confirm no customer data or deployment was used
         if: always()
         shell: bash
@@ -91,6 +107,7 @@ jobs:
             echo '- Probes /up and denial of unpublished business endpoints'
             echo '- Checks non-root runtime, no dev artifacts, no app default route, and loopback port'
             echo '- Temporarily stops only disposable PHP-FPM, asserts 5xx, restarts and recovers /up'
+            echo '- Uploads only sanitized image/source hashes and public PHP package-version inventory for 7 days'
             echo '- No VPS, domain, Docker registry push, deploy, cloud secrets or customer DB'
             echo '- This job does NOT imply release readiness, SEG/DBA approval or merge authorization'
           } >> "$GITHUB_STEP_SUMMARY"
