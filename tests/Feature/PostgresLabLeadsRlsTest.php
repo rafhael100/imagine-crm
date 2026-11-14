@@ -787,22 +787,130 @@ final class PostgresLabLeadsRlsTest extends TestCase
         );
         $this->assertSame('synthetic_conflict_denied', $afterRevocation['status_code']);
 
-        $this->owner->table('crm_lab_site_delivery_bindings')
-            ->where('organization_id', self::ORG_A)
-            ->update(['state' => 'active', 'source_code' => 'landing', 'version' => 3]);
-        $channelDenied = $this->signedCapture()->captureSigned(
-            self::principal(), self::ORG_A, self::LEAD_A,
-            'DEMO_REG01', 'sites', $claim, $nonce, $issued, $expires,
-            $issued + 4, $signed,
-        );
-        $this->assertSame('synthetic_conflict_denied', $channelDenied['status_code']);
+        // Revocation is terminal: an owner cannot silently reactivate a
+        // retired binding or reroute its source to another channel.
+        try {
+            $this->owner->table('crm_lab_site_delivery_bindings')
+                ->where('organization_id', self::ORG_A)
+                ->update(['state' => 'active', 'source_code' => 'landing', 'version' => 3]);
+            $this->fail('A revoked binding must remain revoked.');
+        } catch (QueryException $e) {
+            $this->assertSame('23514', $e->errorInfo[0] ?? null);
+        }
 
         $this->assertNoEffects($missing);
         $this->assertNoEffects($afterRevocation);
-        $this->assertNoEffects($channelDenied);
         $this->assertSame(1, $this->owner->table('crm_lab_leads')->count());
         $this->assertSame(1, $this->owner->table('crm_lab_lead_events')->count());
         $this->assertSame(1, $this->owner->table('crm_lab_lead_capture_keys')->count());
+    }
+
+    public function test_active_registry_mismatched_source_and_identity_mutations_are_denied(): void
+    {
+        $claim = self::siteClaim(self::ORG_A);
+        $this->seedActiveSiteBinding(self::ORG_A, $claim, 'landing');
+        $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
+        $issued = 1700000000;
+        $expires = $issued + 120;
+        $reply = $this->signedCapture()->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_REG03', 'sites', $claim, $nonce, $issued, $expires, $issued + 5,
+            self::syntheticSiteSignature(
+                $claim, self::LEAD_A, 'DEMO_REG03', 'sites', $nonce, $issued, $expires,
+            ),
+        );
+        $this->assertSame('synthetic_conflict_denied', $reply['status_code']);
+        foreach ([
+            ['site_reference' => '34343434-2222-4222-8222-555555555552', 'version' => 2],
+            ['source_code' => 'sites', 'version' => 2],
+        ] as $mutation) {
+            try {
+                $this->owner->table('crm_lab_site_delivery_bindings')
+                    ->where('organization_id', self::ORG_A)->update($mutation);
+                $this->fail('The binding identity must be immutable.');
+            } catch (QueryException $e) {
+                $this->assertSame('23514', $e->errorInfo[0] ?? null);
+            }
+        }
+        $this->assertSame(0, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(0, $this->owner->table('crm_lab_lead_capture_keys')->count());
+    }
+
+    public function test_concurrent_revocation_waits_for_inflight_capture_advisory_transaction(): void
+    {
+        $claim = self::siteClaim(self::ORG_A);
+        $this->seedActiveSiteBinding(self::ORG_A, $claim);
+        $this->assertTrue(extension_loaded('pgsql'), 'PG16 concurrency test needs pgsql extension');
+
+        // Simulate the exact critical section used by signed capture on the
+        // non-bypass, SELECT-only connection. Hold it across the owner UPDATE.
+        $key = 'crm_lab_binding|'.self::ORG_A.'|'.$claim->identity->bindingReference;
+        $this->one->beginTransaction();
+        $revoker = null;
+        try {
+            $this->one->selectOne("SELECT set_config('app.tenant_id', ?, true)", [self::ORG_A]);
+            $this->one->selectOne(
+                'SELECT pg_advisory_xact_lock(hashtextextended(?::text, 0))',
+                [$key],
+            );
+            $this->assertSame('active', $this->one
+                ->table('public.crm_lab_site_delivery_bindings')->value('state'));
+
+            $revoker = pg_connect(
+                'host=127.0.0.1 port=5432 dbname=imagine_crm_ci user=postgres'
+                .' password=ci-only-password connect_timeout=5',
+                PGSQL_CONNECT_FORCE_NEW,
+            );
+            $this->assertNotFalse($revoker);
+            $this->assertNotFalse(pg_query($revoker, "SET lock_timeout = '5000ms'"));
+            $this->assertTrue(pg_send_query_params(
+                $revoker,
+                'UPDATE public.crm_lab_site_delivery_bindings
+                    SET state=$1, version=$2
+                  WHERE organization_id=$3::uuid AND binding_reference=$4::uuid',
+                ['revoked', 2, self::ORG_A, $claim->identity->bindingReference],
+            ));
+
+            // The revoker must not commit a state change while the prior
+            // signed capture owns the advisory xact lock.
+            usleep(150000);
+            $this->assertTrue(pg_consume_input($revoker));
+            $this->assertTrue(pg_connection_busy($revoker));
+            $this->assertSame('active',
+                $this->owner->table('crm_lab_site_delivery_bindings')->value('state'));
+            $this->one->commit();
+            $outcome = pg_get_result($revoker);
+            $this->assertNotFalse($outcome);
+            $this->assertSame(PGSQL_COMMAND_OK, pg_result_status($outcome));
+            $this->assertSame(1, pg_affected_rows($outcome));
+            pg_free_result($outcome);
+        } finally {
+            while ($this->one->transactionLevel() > 0) {
+                $this->one->rollBack();
+            }
+            if ($revoker !== null && $revoker !== false) {
+                pg_close($revoker);
+            }
+        }
+        $this->assertSame('revoked',
+            $this->owner->table('crm_lab_site_delivery_bindings')->value('state'));
+
+        // The same synthetically signed message is now denied, even when
+        // nonce/clock/MAC are otherwise valid. No lead or audit is created.
+        $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
+        $issued = 1700000000;
+        $expires = $issued + 120;
+        $answer = $this->signedCapture($this->two)->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_REG04', 'sites', $claim,
+            $nonce, $issued, $expires, $issued + 5,
+            self::syntheticSiteSignature(
+                $claim, self::LEAD_A, 'DEMO_REG04', 'sites', $nonce, $issued, $expires,
+            ),
+        );
+        $this->assertSame('synthetic_conflict_denied', $answer['status_code']);
+        $this->assertSame(0, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(0, $this->owner->table('crm_lab_lead_capture_keys')->count());
     }
 
     public function test_registered_site_binding_is_tenant_private_and_nonwritable_by_runtime_role(): void
