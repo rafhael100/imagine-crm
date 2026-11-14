@@ -58,7 +58,13 @@ O recorte adicional F3-268 introduz um script de prova **dentro desse mesmo runn
 - ausência, em cada imagem, de .env, código de teste, migrations experimentais e arquivos desnecessários;
 - ausência de rota padrão de saída do PHP conforme /proc/net/route, verificação de porta publicada apenas por Nginx no loopback e NAT da bridge desabilitado.
 
-A CI de F3-268 deve ficar verde na SHA exata antes de qualquer alegação de sucesso. **Mesmo uma CI verde não é demonstração de ausência de egress do Nginx**, certificação de firewall/host, revisão de supply chain, segurança de VPS ou homologação operacional. Os gates SEG/DBA #27, CORE/LGPD #259, UX #416, digests/SBOM, TLS, backup/rollback e auditoria permanecem NO-GO para deploy, main e dados reais.
+A F3-268 **passou com 6/6 workflows na SHA 5c4279a20208ae13b2d83d23594cef55e6ee6ff9**, incluindo o [runtime e inspeção Docker #43543520064](https://github.com/rafhael100/imagine-crm/actions/runs/43543520064). Foi substituída uma checagem ambígua de docker compose port por inspeção fail-closed de HostConfig.PortBindings, pois EXPOSE de uma imagem não significa porta vinculada ao host. **Mesmo uma CI verde não é demonstração de ausência de egress do Nginx**, certificação de firewall/host, revisão de supply chain, segurança de VPS ou homologação operacional. Os gates SEG/DBA #27, CORE/LGPD #259, UX #416, digests/SBOM, TLS, backup/rollback e auditoria permanecem NO-GO para deploy, main e dados reais.
+
+## F3-269 — falha controlada e recuperação somente no runner
+
+O script scripts/ci/verify-private-staging-fail-recover.sh foi preparado para executar **apenas após os smoke e testes de isolamento**, no runner GitHub-hosted e exclusivamente no projeto Compose de laboratório. Ele verifica /up saudável, para **somente o contêiner PHP-FPM efêmero**, exige HTTP 502/503/504 do Nginx com cabeçalhos de segurança e sem Set-Cookie, reinicia o mesmo backend e exige retorno a HTTP 200 em loopback. A limpeza final dos contêineres é incondicional no workflow.
+
+Esse teste **não** prova alta disponibilidade, failover, persistência, resiliência de banco, TLS, egress/firewall na VPS, rollback, nem segurança operacional. A validação precisa estar verde na SHA exata; não alterar estado de main/VPS, não autenticar usuários, não conceder ALLOW e manter o PR DRAFT/NO-DEPLOY.
 
 ## Escopo demonstrável
 
