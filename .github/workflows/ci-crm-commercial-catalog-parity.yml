@@ -3,22 +3,7 @@ name: CRM WEB-P2 - Planos site versus Core (somente laboratorio)
 on:
   pull_request:
     branches:
-      - review/crm-web-p1-linked-trial-demo-2026-11-13
-    paths:
-      - 'prototypes/site-comercial-crm/**'
-      - 'app/Core/Plans/CommercialPlanReferenceCatalog.php'
-      - 'tests/Unit/CommercialPlanReferenceCatalogTest.php'
-      - 'tests/Unit/CommercialPageCatalogParityTest.php'
-      - '.github/workflows/ci-crm-commercial-catalog-parity.yml'
-  push:
-    branches:
-      - review/crm-web-p2-plan-contract-parity-2026-11-13
-    paths:
-      - 'prototypes/site-comercial-crm/**'
-      - 'app/Core/Plans/CommercialPlanReferenceCatalog.php'
-      - 'tests/Unit/CommercialPlanReferenceCatalogTest.php'
-      - 'tests/Unit/CommercialPageCatalogParityTest.php'
-      - '.github/workflows/ci-crm-commercial-catalog-parity.yml'
+      - dev/fast-track-crm-2026-11-04
 
 permissions:
   contents: read
@@ -36,7 +21,14 @@ jobs:
       - name: Checkout da revisao sem token persistente
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Verify exact candidate HEAD
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          echo "Candidate HEAD: $EXPECTED_HEAD" >> "$GITHUB_STEP_SUMMARY"
       - name: Preparar PHP de testes sem credenciais externas
         uses: shivammathur/setup-php@v2
         with:

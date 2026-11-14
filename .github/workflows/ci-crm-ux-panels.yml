@@ -1,12 +1,9 @@
 name: CRM Imagine - UX painel Cliente e Administrador (lab)
 
 on:
-  push:
+  pull_request:
     branches:
-      - review/crm-customer-admin-journey-preview-2026-11-14
-    paths:
-      - 'prototypes/site-comercial-crm/**'
-      - '.github/workflows/ci-crm-ux-panels.yml'
+      - dev/fast-track-crm-2026-11-04
 
 permissions:
   contents: read
@@ -23,7 +20,14 @@ jobs:
       - name: Checkout sem credenciais persistentes
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Verify exact candidate HEAD
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          echo "Candidate HEAD: $EXPECTED_HEAD" >> "$GITHUB_STEP_SUMMARY"
       - name: Inspecionar página comercial, links e superfície de dados
         run: python3 prototypes/site-comercial-crm/tests/test_preview.py
       - name: Validar código JavaScript das telas

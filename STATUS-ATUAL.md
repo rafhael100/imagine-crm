@@ -1,5 +1,9 @@
 # CRM Imagine — STATUS ATUAL
 
+## Revisão integrada WEB + PG18 — 14/11/2026
+
+Consolidação candidata DRAFT/NO-MERGE/NO-DEPLOY de #530/#528/#522; resultados históricos não aprovam a nova HEAD. [Análise, lacunas e critérios de verificação](docs/review/CRM-INTEGRATED-READINESS-2026-11-14.md). Nenhum gate funcional foi encerrado.
+
 ## OPS-69 — IAM experimental bloqueado; staging privado ainda DRAFT (13/11/2026)
 
 **DEV verificada:** c26e4d0091081d9e0695160d904b8880deb448a6. F3-262 [#516](https://github.com/rafhael100/imagine-crm/pull/516) integrada **somente na DEV**, 5/5 workflows success na SHA da PR e 4/4 success pós-merge DEV. Prova Laravel no-dev com **APP_ENV=production simulado + CRM_AUTH_EXPERIMENTAL=true** confirma que guard/provisioner/login e ALLOW continuam indisponíveis. **main** e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012 inalterada.

@@ -4,18 +4,6 @@ on:
   pull_request:
     branches:
       - dev/fast-track-crm-2026-11-04
-      - review/crm-web-p0-commercial-preview-2026-11-13
-    paths:
-      - 'prototypes/site-comercial-crm/**'
-      - '.github/workflows/ci-crm-commercial-preview.yml'
-  push:
-    branches:
-      - review/crm-web-p0-commercial-preview-2026-11-13
-      - review/crm-web-p1-linked-trial-demo-2026-11-13
-      - review/crm-customer-admin-journey-preview-2026-11-14
-    paths:
-      - 'prototypes/site-comercial-crm/**'
-      - '.github/workflows/ci-crm-commercial-preview.yml'
 
 permissions:
   contents: read
@@ -28,7 +16,14 @@ jobs:
       - name: Checkout pinned
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Verify exact candidate HEAD
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          echo "Candidate HEAD: $EXPECTED_HEAD" >> "$GITHUB_STEP_SUMMARY"
       - name: Validar integridade visual e limites sem rede
         run: python3 prototypes/site-comercial-crm/tests/test_preview.py
       - name: Exercitar interações reais em Chromium 320/375/768/1280

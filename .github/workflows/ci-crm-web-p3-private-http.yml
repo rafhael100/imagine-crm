@@ -1,12 +1,9 @@
 name: CRM WEB-P3 - Nginx privado real em CI descartavel
 
 on:
-  push:
+  pull_request:
     branches:
-      - review/crm-web-p3-private-http-runtime-2026-11-13
-    paths:
-      - 'prototypes/site-comercial-crm/**'
-      - '.github/workflows/ci-crm-web-p3-private-http.yml'
+      - dev/fast-track-crm-2026-11-04
 
 permissions:
   contents: read
@@ -26,7 +23,14 @@ jobs:
       - name: Checkout imutavel sem credenciais retidas
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Verify exact candidate HEAD
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          echo "Candidate HEAD: $EXPECTED_HEAD" >> "$GITHUB_STEP_SUMMARY"
       - name: Verificar modelo estatico e limite de ativos
         run: |
           python3 prototypes/site-comercial-crm/tests/test_preview.py
