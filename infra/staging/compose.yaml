@@ -48,7 +48,7 @@ services:
     volumes:
       - crm_staging_app_storage:/var/www/html/storage
       - crm_staging_app_cache:/var/www/html/bootstrap/cache
-    networks: [internal]
+    networks: [internal, ingress]
     read_only: true
     tmpfs:
       - /tmp
@@ -76,6 +76,8 @@ services:
 networks:
   internal:
     internal: true
+  ingress:
+    driver: bridge
 
 volumes:
   crm_staging_pg_data:
