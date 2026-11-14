@@ -29,6 +29,11 @@ def main():
     for label, regex in checks.items():
         assert re.search(regex, c), "Ausente: " + label
     assert not re.search(r"(?m)^\s*listen\s+(?:80|443|0\.0\.0\.0|\[::\])", c), "Porta pública não permitida"
+    assert "map $uri $crm_preview_csp {" in c, "CSP diferenciada para mock fictício obrigatória"
+    assert 'add_header Content-Security-Policy "$crm_preview_csp" always;' in c
+    assert "default \"default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'" in c
+    assert "/fluxo-demo/index.html \"default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" in c
+    assert c.count("script-src 'unsafe-inline'") == 1, "Exceção inline deve se restringir ao mock"
     assert "proxy_pass" not in c, "A página estática não pode fazer proxy para backend"
     assert "fastcgi_pass" not in c, "Sem execução PHP na prévia"
     assert "access_log off" not in c, "Não desabilitar logs operacionais"
@@ -38,7 +43,7 @@ def main():
     assert c.count("limit_except GET HEAD { deny all; }") == len(whitelisted)
     assert "/etc/nginx/crm-preview.htpasswd" not in str(HERE), "Fixture inesperada"
     assert not (HERE / "crm-preview.htpasswd").exists(), "Não armazenar credenciais no repositório"
-    print("PASS: modelo Nginx somente loopback/BasicAuth/3 recursos/headers/métodos. SEM deploy.")
+    print("PASS: modelo Nginx privado com 6 rotas, CSP por caminho, BasicAuth e métodos restritos. SEM deploy.")
 
 
 if __name__ == "__main__":
