@@ -1,0 +1,23 @@
+# F3-266 — Nginx build context: only static public files and reviewed config.
+**
+!infra/
+!infra/staging/
+!infra/staging/nginx.conf
+!public/
+!public/**
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/*.sqlite
+**/*.sqlite3
+**/*.db
+**/*.log
+**/.git/**
+**/vendor/**
+**/node_modules/**
+**/storage/**
+bootstrap/cache/**
+public/storage/**
