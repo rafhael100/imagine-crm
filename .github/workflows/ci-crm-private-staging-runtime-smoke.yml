@@ -1,0 +1,131 @@
+name: CRM Imagine - F3-267 Ephemeral Private Staging Runtime Smoke (DRAFT ONLY)
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'composer.json'
+      - 'composer.lock'
+      - 'app/**'
+      - 'bootstrap/**'
+      - 'config/**'
+      - 'database/migrations/**'
+      - 'public/**'
+      - 'resources/**'
+      - 'routes/**'
+      - 'infra/staging/**'
+      - 'tests/Unit/StagingPinnedBaseImagesContractTest.php'
+      - 'scripts/ci/verify-staging-rendered-compose.php'
+      - 'scripts/ci/verify-private-staging-runtime.sh'
+      - 'scripts/ci/verify-private-staging-isolation.sh'
+      - 'scripts/ci/verify-private-staging-fail-recover.sh'
+      - 'scripts/ci/emit-private-staging-inventory.sh'
+      - 'scripts/ci/emit-private-staging-os-inventory.sh'
+      - 'tests/Unit/StagingOsPackageInventoryContractTest.php'
+      - 'tests/Unit/StagingEvidenceInventoryContractTest.php'
+      - 'tests/Unit/PrivateStagingFailRecoverContractTest.php'
+      - 'tests/Unit/PrivateStagingRuntimeSmokeContractTest.php'
+      - 'tests/Unit/PrivateStagingRuntimeIsolationContractTest.php'
+      - '.github/workflows/ci-crm-private-staging-runtime-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-f3-267-runtime-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  private-smoke:
+    name: Disposable runner - build and smoke only; no VPS/production
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == true && github.event.pull_request.number == 517 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      COMPOSE_FILE: infra/staging/compose.yaml
+      COMPOSE_PROJECT_NAME: imagine-crm-stage-review
+      COMPOSE_DISABLE_ENV_FILE: '1'
+      DOCKER_BUILDKIT: '1'
+    steps:
+      - name: Checkout reviewed PR revision (no credentials retained)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Enforce normalized private Compose contract before touching Docker
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose config --quiet
+          docker compose config --format json | php scripts/ci/verify-staging-rendered-compose.php
+      - name: Build both temporary images from the reviewed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose build --progress plain app web
+      - name: Start only two review services on the ephemeral local runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose up -d --no-build --no-recreate --wait --wait-timeout 60
+      - name: Run PHP platform, nginx config and private HTTP deny-only smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/ci/verify-private-staging-runtime.sh
+      - name: Inspect actual container isolation without making external requests
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/ci/verify-private-staging-isolation.sh
+      - name: Prove Nginx fails closed and recovers after temporary PHP-FPM stop
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/ci/verify-private-staging-fail-recover.sh
+      - name: Build sanitized review evidence and self-check SHA256 manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n scripts/ci/emit-private-staging-inventory.sh
+          bash scripts/ci/emit-private-staging-inventory.sh
+      - name: Inventory Debian and Alpine OS packages inside reviewed images
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n scripts/ci/emit-private-staging-os-inventory.sh
+          bash scripts/ci/emit-private-staging-os-inventory.sh
+      - name: Attach 7-day sanitized dependency inventory for reviewers
+        uses: actions/upload-artifact@v4
+        with:
+          name: crm-f3-271-review-inventory
+          path: ${{ runner.temp }}/crm-f3-271-inventory/
+          retention-days: 7
+          if-no-files-found: error
+          include-hidden-files: false
+      - name: Confirm no customer data or deployment was used
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '### F3-267: isolated PR runtime evidence only'
+            echo '- A GitHub-hosted disposable runner builds temporary Nginx and PHP-FPM images'
+            echo '- Uses only checkout source and fake/memory-only Laravel configuration'
+            echo '- HTTP is bound to 127.0.0.1:18080 inside the ephemeral runner'
+            echo '- Probes /up and denial of unpublished business endpoints'
+            echo '- Checks non-root runtime, no dev artifacts, no app default route, and loopback port'
+            echo '- Temporarily stops only disposable PHP-FPM, asserts 5xx, restarts and recovers /up'
+            echo '- Uploads only sanitized image/source hashes and public PHP package-version inventory for 7 days'
+            echo '- Also includes installed Debian/Alpine OS package names and versions with SHA256 checksums'
+            echo '- No VPS, domain, Docker registry push, deploy, cloud secrets or customer DB'
+            echo '- This job does NOT imply release readiness, SEG/DBA approval or merge authorization'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Always delete containers, images and temporary volumes
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          docker compose down --remove-orphans --volumes --rmi local
+          docker image prune --force --filter 'until=1h' >/dev/null 2>&1
+          exit 0

@@ -1,0 +1,90 @@
+# F3-263 REVIEW/NO-GO: smoke-only, private, no operational CRM.
+# Never run on a VPS before infrastructure and SEG/DBA release gates.
+name: imagine-crm-stage-review
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: infra/staging/Dockerfile
+    environment:
+      APP_NAME: "CRM Imagine - Staging Smoke"
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: http://127.0.0.1:18080
+      CRM_AUTH_EXPERIMENTAL: "false"
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ":memory:"
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+      FILESYSTEM_DISK: local
+    user: "33:33"
+    # Check the local FPM listener, not a database or public endpoint.
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1',9000) ? 0 : 1);"]
+      interval: 5s
+      timeout: 3s
+      retries: 2
+      start_period: 10s
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,noexec,size=16m,mode=1777
+      - /run:rw,nosuid,noexec,size=1m
+      - /usr/local/var/run:rw,nosuid,noexec,size=1m
+      # Mount only pre-created Laravel write directories; never hide the storage tree.
+      - /var/www/html/storage/framework/cache:rw,nosuid,noexec,size=4m,uid=33,gid=33
+      - /var/www/html/storage/framework/sessions:rw,nosuid,noexec,size=2m,uid=33,gid=33
+      - /var/www/html/storage/framework/views:rw,nosuid,noexec,size=8m,uid=33,gid=33
+      - /var/www/html/storage/logs:rw,nosuid,noexec,size=2m,uid=33,gid=33
+      - /var/www/html/bootstrap/cache:rw,nosuid,noexec,size=2m,uid=33,gid=33
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - crm_private
+
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/staging/Dockerfile.web
+    user: "101:101"
+    entrypoint: ["nginx", "-g", "daemon off;"]
+    ports:
+      - "127.0.0.1:18080:8080"
+    # Probe Laravel /up through the local Nginx FastCGI path.
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -T 3 -O /dev/null http://127.0.0.1:8080/up"]
+      interval: 5s
+      timeout: 4s
+      retries: 2
+      start_period: 10s
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,noexec,size=8m,mode=1777
+      - /var/cache/nginx:rw,nosuid,noexec,size=8m,uid=101,gid=101
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - crm_private
+      - crm_loopback
+
+networks:
+  # PHP-FPM stays entirely on this network, with no default external gateway.
+  crm_private:
+    internal: true
+  # Separate host-access bridge ONLY for Nginx. Not an app or DB network.
+  # Disable NAT masquerade and bind any published host port to 127.0.0.1.
+  # Real egress policy must still be verified by SEG/infra before VPS use.
+  crm_loopback:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
