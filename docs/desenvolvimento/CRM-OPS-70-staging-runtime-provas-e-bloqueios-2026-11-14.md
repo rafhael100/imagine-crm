@@ -10,7 +10,7 @@
 | F3-268 — isolamento | [GitHub Actions #43543520064](https://github.com/rafhael100/imagine-crm/actions/runs/43543520064) | UID sem root, rootfs read-only, cap_drop ALL, no-new-privileges, redes exatas; PHP-FPM sem rota padrão nem porta do host; web apenas loopback |
 | F3-269 — indisponibilidade/recovery | [GitHub Actions #43544656952](https://github.com/rafhael100/imagine-crm/actions/runs/43544656952) | PHP-FPM suspenso com IP preservado; Nginx retornou HTTP 502/503/504 sem cookie e com headers; `/up` voltou HTTP 200 após unpause |
 | F3-270 — saúde nativa do Compose | [GitHub Actions #43546705237](https://github.com/rafhael100/imagine-crm/actions/runs/43546705237) | FPM e web iniciaram healthy; web alterou healthy → unhealthy → healthy na falha simulada |
-| F3-271 — inventário do pacote | Verificar PR #517 / CI na SHA do inventário, **não há aceite operacional antecipado** | Proposta para hashes SHA256 e versões somente públicas, preservando a política no-deploy |
+| F3-271 — inventário do pacote | [GitHub Actions #43547265544](https://github.com/rafhael100/imagine-crm/actions/runs/43547265544), [artifact #14094049896](https://github.com/rafhael100/imagine-crm/actions/runs/43547265544/artifacts/14094049896), válido até 21/11/2026 | 6/6 CI success na SHA `240a01c5258616c9eb491604b3836a49e7858058`; inventário sanitizado de hashes SHA256 e dependências públicas, sem aprovação de operação |
 
 As provas F3-269 e F3-270 tiveram **6/6 workflows success na HEAD exata**, incluindo F0, PG/RLS descartável, Sites, Agents, contrato Compose e runtime. O commit comprovado de F3-270 foi **`9c249dbff5694a6adca3d996bc527f7a62d47f0e`**. O candidato pode evoluir sem publicação, mas **não foi integrado à DEV**.
 
