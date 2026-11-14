@@ -34,13 +34,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: rafhael100/imagine-ai-agents
-          ref: 36de10eecbd11e04e7684ab3d15989ab4e9749dd
+          ref: a18ad19ad8a24f9a04f1f4bce789ff4af6316d55
           path: _synthetic_agents_fixture
           persist-credentials: false
 
       - name: Verify immutable Agents revision
         run: |
-          test "$(git -C _synthetic_agents_fixture rev-parse HEAD)" = "36de10eecbd11e04e7684ab3d15989ab4e9749dd"
+          test "$(git -C _synthetic_agents_fixture rev-parse HEAD)" = "a18ad19ad8a24f9a04f1f4bce789ff4af6316d55"
 
       - name: PHP without Composer, services or credentials
         uses: shivammathur/setup-php@v2
@@ -67,3 +67,8 @@ jobs:
 
       - name: Execute pinned Agents public facade, quarantine synthetic success
         run: php scripts/ci/check-aia-php-public-facade-witness.php
+
+      - name: Cross-repository canonical OP-01 exchange remains synthetic and denied by CRM Core
+        run: |
+          php -l scripts/ci/check-aia-op01-json-exchange.php
+          php scripts/ci/check-aia-op01-json-exchange.php
