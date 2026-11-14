@@ -470,7 +470,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
                     'DEMO_A011', $source, $digest,
                 );
                 $this->fail('Invalid capture attributes should fail before SQL.');
-            } catch (\\InvalidArgumentException $e) {
+            } catch (\InvalidArgumentException $e) {
                 $this->assertSame('Captura de lead sintetico invalida.', $e->getMessage());
             }
         }
