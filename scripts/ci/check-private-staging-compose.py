@@ -76,8 +76,8 @@ def main() -> None:
         # Compose namespaced network IDs; find by suffix.
         nets = cfg["networks"]
         assert len(nets) == 2
-        assert any(n.endswith("_internal") and v.get("internal") is True for n, v in nets.items())
-        assert any(n.endswith("_ingress") for n in nets)
+        assert any((n == "internal" or n.endswith("_internal")) and v.get("internal") is True for n, v in nets.items())
+        assert any(n == "ingress" or n.endswith("_ingress") for n in nets)
         assert services["app"].get("read_only") is True
         assert services["web"].get("read_only") is True
     except (KeyError, ValueError, TypeError, AssertionError) as exc:
