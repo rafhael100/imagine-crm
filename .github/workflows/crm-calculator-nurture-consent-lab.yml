@@ -4,7 +4,9 @@ on:
   pull_request:
     paths:
       - 'app/Core/Leads/SyntheticCalculatorNurtureConsentInspector.php'
+      - 'app/Core/Leads/SyntheticCalculatorNurtureLifecycle.php'
       - 'tests/offline_calculator_nurture_consent_test.php'
+      - 'tests/offline_calculator_nurture_lifecycle_test.php'
       - '.github/workflows/crm-calculator-nurture-consent-lab.yml'
   workflow_dispatch:
 
@@ -30,5 +32,9 @@ jobs:
         run: |
           php -l app/Core/Leads/SyntheticCalculatorNurtureConsentInspector.php
           php -l tests/offline_calculator_nurture_consent_test.php
+          php -l app/Core/Leads/SyntheticCalculatorNurtureLifecycle.php
+          php -l tests/offline_calculator_nurture_lifecycle_test.php
       - name: Ensure no real CRM delivery or nurture starts
-        run: php tests/offline_calculator_nurture_consent_test.php
+        run: |
+          php tests/offline_calculator_nurture_consent_test.php
+          php tests/offline_calculator_nurture_lifecycle_test.php
