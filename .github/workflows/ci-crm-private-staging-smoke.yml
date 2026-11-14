@@ -76,6 +76,26 @@ jobs:
             test "$status" = 404
           done
           echo "Private CI health 200; business endpoints 404; localhost port only."
+      - name: Deny unexpected Host and spoofed proxy headers before Laravel
+        run: |
+          set -euo pipefail
+          base="http://127.0.0.1:18080"
+          [[ "$(curl -sS -o /dev/null -w '%{http_code}' "$base/up")" == 200 ]]
+          for path in / /demo /up /api/leads; do
+            status="$(curl -sS -o /dev/null -w '%{http_code}' \
+              -H 'Host: preview.customer.example' "$base$path")"
+            [[ "$status" == 421 ]]
+            status="$(curl -sS -o /dev/null -w '%{http_code}' \
+              -H 'Host: preview.customer.example' \
+              -H 'X-Forwarded-Host: 127.0.0.1' "$base$path")"
+            [[ "$status" == 421 ]]
+          done
+          [[ "$(curl -sS -o /dev/null -w '%{http_code}' \
+            -H 'Host: 127.0.0.1:18080' \
+            -H 'X-Forwarded-Host: preview.customer.example' "$base/")" == 200 ]]
+          headers="$(curl -fsS -D - -o /dev/null "$base/up")"
+          [[ "${headers,,}" == *'x-robots-tag: noindex, nofollow, noarchive'* ]]
+          echo "Private Host gate PASS: unknown host 421 even with forged X-Forwarded-Host."
       - name: Verify Laravel marketing page PT EN ES and no checkout or signup
         run: |
           set -euo pipefail
@@ -213,6 +233,7 @@ jobs:
             echo '### CRM private ephemeral smoke'
             echo '- Runs only inside GitHub hosted runner with generated fake credentials'
             echo '- Localhost health and no public business routes tested'
+            echo '- Nginx rejects non-loopback Host 421 and spoofed proxy headers; noindex always'
             echo '- Read-only PT/EN/ES marketing page tested on localhost; no signup/trial/checkout'
             echo '- Navigable fictional Kanban/tasks dashboard verified PT/EN/ES; POST /demo denied'
             echo '- PostgreSQL-backed Kanban verified from real SQL with fixed synthetic tenant, SELECT-only RLS and changes visible after CI admin update'
