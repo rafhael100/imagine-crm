@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Support\Synthetic\AiaPgNonceCandidateLedger;
+use App\Support\Synthetic\{AiaPgNonceCandidateLedger, AiaPgHmacLabBridge, AiaReadOnlyMockBoundary};
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -143,6 +143,131 @@ final class AiaPostgresAtomicNonceCandidateTest extends TestCase
         $this->assertTrue($this->claim($two, 'SYNTHETIC_NONCE_ROLLBACK'));
         $this->assertFalse($this->claim($one, 'SYNTHETIC_NONCE_ROLLBACK'));
         $this->assertSame(1, (int) $one->table('aia_lab_nonce_atomic_probe')->count());
+    }
+
+    /**
+     * The HMAC is intentionally forgeable: it proves LAB-ONLY integration
+     * of signature preflight with a shared PostgreSQL nonce claim.
+     *
+     * @return array{0:string,1:array<string,mixed>}
+     */
+    private static function signedLabFixture(string $nonce): array
+    {
+        $body = json_encode([
+            'contract' => 'SYNTHETIC_CRM_AIA_READ_V1',
+            'request_ref' => 'SYNTHETIC_PG_SIGNED_REQUEST',
+            'operation' => 'crm.lead.read_minimal',
+            'tenant_ref' => 'SYNTHETIC_TENANT_A',
+            'principal_ref' => 'SYNTHETIC_PRINCIPAL',
+            'resource_ref' => 'SYNTHETIC_LEAD_A',
+            'purpose_ref' => 'SYNTHETIC_TEST',
+            'fields' => ['ref', 'stage'],
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        $claims = [
+            'issuer' => 'SYNTHETIC_AGENT_SERVICE',
+            'audience' => 'SYNTHETIC_CRM_API',
+            'tenant_ref' => 'SYNTHETIC_TENANT_A',
+            'nonce' => $nonce,
+            'issued_at' => 1794690000,
+            'expires_at' => 1794690025,
+            'body_sha256' => hash('sha256', $body),
+        ];
+        $claims['signature'] = hash_hmac('sha256', implode("\n", [
+            'SYNTHETIC_AIA_HMAC_PROOF_V1', ...array_values($claims),
+        ]), 'SYNTHETIC_PUBLIC_TEST_ONLY_PG_BRIDGE_KNOWN_NOT_SECRET_123456789');
+        return [$body, $claims];
+    }
+
+    public function test_signed_mock_proof_claims_once_across_two_pg_connections(): void
+    {
+        $key = 'SYNTHETIC_PUBLIC_TEST_ONLY_PG_BRIDGE_KNOWN_NOT_SECRET_123456789';
+        [$body, $claims] = self::signedLabFixture('SYNTHETIC_NONCE_SIGNED_A');
+        $first = new AiaPgNonceCandidateLedger(DB::connection());
+        $second = new AiaPgNonceCandidateLedger(
+            DB::connection('aia_nonce_probe_second')
+        );
+
+        $this->assertTrue(AiaPgHmacLabBridge::matchesLabFixture(
+            $body, $claims, 'SYNTHETIC_TENANT_A', 1794690010, $key, $first
+        ));
+        $this->assertFalse(AiaPgHmacLabBridge::matchesLabFixture(
+            $body, $claims, 'SYNTHETIC_TENANT_A', 1794690010, $key, $second
+        ));
+        $this->assertSame(
+            1, (int) DB::table('aia_lab_nonce_atomic_probe')->count()
+        );
+
+        [$bodyB, $proofB] = self::signedLabFixture('SYNTHETIC_NONCE_SIGNED_B');
+        $deny = AiaPgHmacLabBridge::inspectLabFixture(
+            $bodyB, $proofB, 'SYNTHETIC_TENANT_A', 1794690010, $key, $second
+        );
+        $this->assertSame(
+            AiaReadOnlyMockBoundary::inspectCanonicalJson($bodyB), $deny
+        );
+        $this->assertSame('DENIED_OR_NOT_FOUND', $deny['state']);
+        $this->assertFalse($deny['real_authorization']);
+        $this->assertSame(
+            2, (int) DB::table('aia_lab_nonce_atomic_probe')->count()
+        );
+    }
+
+    public function test_invalid_mock_signature_never_claims_pg_nonce(): void
+    {
+        $key = 'SYNTHETIC_PUBLIC_TEST_ONLY_PG_BRIDGE_KNOWN_NOT_SECRET_123456789';
+        [$body, $proof] = self::signedLabFixture('SYNTHETIC_NONCE_SIGNED_C');
+        $ledger = new AiaPgNonceCandidateLedger(DB::connection());
+
+        $invalids = [
+            'wrong signing key' => [$body, $proof, 1794690010,
+                'SYNTHETIC_PUBLIC_TEST_ONLY_DIFFERENT_KEY_KNOWN_123456789'],
+            'wrong body' => [str_replace('SYNTHETIC_LEAD_A', 'SYNTHETIC_LEAD_B', $body),
+                $proof, 1794690010, $key],
+            'expired' => [$body, $proof, 1794690025, $key],
+            'not yet issued' => [$body, $proof, 1794689999, $key],
+        ];
+        $otherTenant = $proof;
+        $otherTenant['tenant_ref'] = 'SYNTHETIC_TENANT_B';
+        $invalids['spoofed tenant'] = [$body, $otherTenant, 1794690010, $key];
+        $spoofedAudience = $proof;
+        $spoofedAudience['audience'] = 'SYNTHETIC_OTHER_SERVICE';
+        $invalids['spoofed audience'] = [$body, $spoofedAudience, 1794690010, $key];
+        $dup = substr($body, 0, -1)
+            . ',"tenant_ref":"SYNTHETIC_TENANT_A"}';
+        $invalids['duplicate key'] = [$dup, $proof, 1794690010, $key];
+
+        foreach ($invalids as $label => [$candidateBody, $candidateProof, $time, $signedKey]) {
+            $this->assertFalse(
+                AiaPgHmacLabBridge::matchesLabFixture(
+                    $candidateBody, $candidateProof, 'SYNTHETIC_TENANT_A',
+                    $time, $signedKey, $ledger,
+                ),
+                $label,
+            );
+        }
+        $this->assertCount(7, $invalids);
+        $this->assertSame(
+            0, (int) DB::table('aia_lab_nonce_atomic_probe')->count()
+        );
+    }
+
+    public function test_signed_lab_proof_fails_closed_when_pg_backend_table_absent(): void
+    {
+        $key = 'SYNTHETIC_PUBLIC_TEST_ONLY_PG_BRIDGE_KNOWN_NOT_SECRET_123456789';
+        [$body, $proof] = self::signedLabFixture('SYNTHETIC_NONCE_SIGNED_D');
+        $ledger = new AiaPgNonceCandidateLedger(
+            DB::connection('aia_nonce_probe_second')
+        );
+        DB::statement('DROP TABLE '.self::TABLE);
+        $this->assertFalse(AiaPgHmacLabBridge::matchesLabFixture(
+            $body, $proof, 'SYNTHETIC_TENANT_A', 1794690010, $key, $ledger
+        ));
+        $this->assertSame(
+            AiaReadOnlyMockBoundary::inspectCanonicalJson($body),
+            AiaPgHmacLabBridge::inspectLabFixture(
+                $body, $proof, 'SYNTHETIC_TENANT_A',
+                1794690010, $key, $ledger,
+            ),
+        );
     }
 
     public function test_unique_key_is_database_enforced_and_not_deferrable(): void
