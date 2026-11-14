@@ -49,7 +49,7 @@ final readonly class AsaasWebhookInboxCandidate
                 "INSERT INTO crm_lab_asaas_events
                   (event_key, resource_key, event_kind, body_digest, observed_at)
                  VALUES (?, ?, ?, ?, ?)
-                 ON CONFLICT (event_key) DO NOTHING",
+                 ON CONFLICT DO NOTHING",
                 [
                     $envelope->eventKey,
                     $envelope->resourceKey,
