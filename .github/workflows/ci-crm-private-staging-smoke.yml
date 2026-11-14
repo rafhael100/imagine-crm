@@ -57,7 +57,7 @@ jobs:
             test "$status" = 404
           done
           echo "Private CI health 200; business endpoints 404; localhost port only."
-      - name: Prove full PostgreSQL backup and isolated restore with FORCE RLS
+      - name: Restore PostgreSQL backup on separate network-none PG16 server and test RLS
         env:
           CRM_RECOVERY_LAB: synthetic-only
         run: bash scripts/ci/rehearse-crm-private-restore.sh
@@ -76,7 +76,7 @@ jobs:
             echo '### CRM private ephemeral smoke'
             echo '- Runs only inside GitHub hosted runner with generated fake credentials'
             echo '- Localhost health and no public business routes tested'
-            echo '- Full pg_dump + separate-db pg_restore, tenant RLS and audit with fictional data verified'
+            echo '- Full pg_dump + pg_restore to second network-none PostgreSQL16 container, FORCE RLS and audit verified'
             echo '- Containers and disposable volume destroyed before completion'
             echo '- No real customer, Asaas network, Leaseweb connection or production changes'
             echo '- Not sufficient for TLS, backups, operational IAM, RLS or launch GO'

@@ -22,6 +22,12 @@ python3 scripts/ci/check-private-staging-compose.py >/dev/null
 
 source_db="imagine_crm_staging"
 restore_db="imagine_crm_ci_restore"
+[[ "$(printenv GITHUB_RUN_ID || true)" =~ ^[0-9]+$ ]] || fail "missing GitHub runner identity"
+restorer="crm-ci-pg16-restore-$GITHUB_RUN_ID"
+restored_sql() {
+  docker exec -i "$restorer" psql -X -qAt -v ON_ERROR_STOP=1 \
+    -U crm_staging -d "$restore_db" "$@"
+}
 [[ "$(sql "$source_db" -c 'SELECT current_database()')" == "$source_db" ]] ||
   fail "unexpected source database"
 [[ "$(sql "$source_db" -c 'SHOW server_version_num')" =~ ^16[0-9]{4}$ ]] ||
@@ -33,7 +39,11 @@ existing="$(sql "$source_db" -c "SELECT count(*) FROM pg_class
  WHERE datname='$restore_db'")" == 0 ]] || fail "restore database already exists"
 
 tmp="$(mktemp -d "$RUNNER_TEMP/crm-recovery-ci-XXXXXXXX")"
-trap 'rm -rf -- "$tmp"' EXIT
+cleanup() {
+  docker rm --force --volumes "$restorer" >/dev/null 2>&1 || true
+  rm -rf -- "$tmp"
+}
+trap cleanup EXIT
 sql "$source_db" < tests/Labs/recovery/private-postgres-backup-seed-ci.sql \
   > "$tmp/fixture.log" || fail "fixture failed"
 
@@ -65,18 +75,41 @@ compose exec -T postgres pg_dump -U crm_staging -d "$source_db" \
 compose exec -T postgres pg_restore --list < "$tmp/ci-source.dump" > "$tmp/toc"
 grep -q crm_ci_restore_events "$tmp/toc" || fail "audit table absent from archive"
 
-compose exec -T postgres createdb -U crm_staging -T template0 "$restore_db"
-compose exec -T postgres pg_restore -U crm_staging --no-owner --exit-on-error \
+# Restore into a DISTINCT PostgreSQL16 server process, network=none,
+# no exposed ports or shared storage, not merely another database.
+docker run --detach --rm --pull=never --network none \
+  --security-opt no-new-privileges --name "$restorer" \
+  --env POSTGRES_USER=crm_staging --env POSTGRES_DB="$restore_db" \
+  --env POSTGRES_PASSWORD="$CRM_STAGING_DB_PASSWORD" \
+  postgres:16 > "$tmp/restore-container-id"
+[[ "$(docker inspect -f '{{.HostConfig.NetworkMode}}' "$restorer")" == none ]] \
+  || fail "restored server has external network access"
+
+ready=0
+for attempt in $(seq 1 30); do
+  if docker exec "$restorer" pg_isready -q -U crm_staging -d "$restore_db"; then
+    ready=1
+    break
+  fi
+  sleep 1
+done
+[[ "$ready" == 1 ]] || fail "separate restore server not ready"
+
+# pg_dump archives objects, grants and policies but not cluster-global roles.
+# Provision this synthetic NOLOGIN role on the NEW isolated instance first.
+restored_sql -c "CREATE ROLE crm_ci_restore_reader NOLOGIN
+ NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS"
+docker exec -i "$restorer" pg_restore -U crm_staging --no-owner --exit-on-error \
   --single-transaction -d "$restore_db" < "$tmp/ci-source.dump" > "$tmp/restore.log"
 
-sql "$restore_db" -c "$dataset_query" > "$tmp/restored-rows"
-sql "$restore_db" -c "$policy_query" > "$tmp/restored-policy"
+restored_sql -c "$dataset_query" > "$tmp/restored-rows"
+restored_sql -c "$policy_query" > "$tmp/restored-policy"
 diff -u "$tmp/source-rows" "$tmp/restored-rows" || fail "data changed in recovery"
 diff -u "$tmp/source-policy" "$tmp/restored-policy" || fail "RLS changed in recovery"
 
 scope_counts() {
   local tenant="$1"
-  sql "$restore_db" <<SQL | grep '^SCOPED|' | tail -n 1
+  restored_sql <<SQL | grep '^SCOPED|' | tail -n 1
 BEGIN;
 SET ROLE crm_ci_restore_reader;
 SELECT set_config('app.tenant_id', '$tenant', true);
@@ -101,9 +134,8 @@ privileges="SELECT (NOT r.rolsuper AND NOT r.rolbypassrls)
  AND has_table_privilege('crm_ci_restore_reader',
   'public.crm_ci_restore_leads','SELECT')
  FROM pg_roles r WHERE r.rolname='crm_ci_restore_reader'"
-[[ "$(sql "$restore_db" -c "$privileges")" == t ]] || fail "least-privilege ACL lost"
+[[ "$(restored_sql -c "$privileges")" == t ]] || fail "least-privilege ACL lost"
 
-compose exec -T postgres dropdb -U crm_staging "$restore_db"
-echo "CRM RECOVERY CI PASS: custom pg_dump and isolated pg_restore;"
-echo "six fictional records, three FORCE-RLS tables, two tenants and zero unscoped rows."
+echo "CRM RECOVERY CI PASS: custom pg_dump and pg_restore in a DIFFERENT server,"
+echo "network=none; six fictional records, three FORCE-RLS tables, two tenants."
 echo "NO operational backup, external transfer, production database or VPS deploy."
