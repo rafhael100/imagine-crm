@@ -297,6 +297,24 @@ final class PostgresAsaasCustomerLinkTest extends TestCase
         Http::assertNothingSent();
     }
 
+    public function test_never_send_sandbox_http_while_reservation_transaction_is_uncommitted(): void
+    {
+        $this->mockNotFoundThenCreate();
+        $this->one->beginTransaction();
+        try {
+            $this->flow($this->one)->run(self::ORG_A, self::EXT_A, self::NOW);
+            $this->fail('External HTTP must not run while reservation cannot be committed.');
+        } catch (RuntimeException $e) {
+            $this->assertSame('Asaas sandbox nao permitido durante transacao aberta.', $e->getMessage());
+            $this->assertNull($e->getPrevious());
+        } finally {
+            $this->one->rollBack();
+        }
+
+        Http::assertNothingSent();
+        $this->assertSame(0, $this->owner->table('crm_lab_asaas_customer_links')->count());
+    }
+
     public function test_role_has_only_synthetic_column_grants_and_owner_cannot_act_as_runtime(): void
     {
         foreach ([$this->one, $this->two] as $db) {
