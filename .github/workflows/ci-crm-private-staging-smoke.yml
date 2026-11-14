@@ -11,6 +11,11 @@ on:
       - 'app/Core/Leads/**'
       - 'app/Core/Tasks/**'
       - 'app/Core/Billing/**'
+      - 'app/Core/Commercial/**'
+      - 'resources/views/crm-staging-marketing.blade.php'
+      - 'routes/web.php'
+      - 'tests/Unit/StagingMarketingPreviewTest.php'
+      - 'scripts/ci/check-private-staging-compose.py'
       - 'scripts/ci/rehearse-crm-private-restore.sh'
       - 'scripts/ci/rehearse-crm-private-schema.sh'
       - 'scripts/ci/check-staging-runtime-schema.php'
@@ -64,6 +69,27 @@ jobs:
             test "$status" = 404
           done
           echo "Private CI health 200; business endpoints 404; localhost port only."
+      - name: Verify Laravel marketing page PT EN ES and no checkout or signup
+        run: |
+          set -euo pipefail
+          home="http://127.0.0.1:18080/"
+          pt="$(curl --fail --silent --show-error --max-time 5 "$home")"
+          en="$(curl --fail --silent --show-error --max-time 5 "${home}?lang=en")"
+          es="$(curl --fail --silent --show-error --max-time 5 "${home}?lang=es")"
+          invalid="$(curl --fail --silent --show-error --max-time 5 "${home}?lang=%3Cscript%3E")"
+          [[ "$pt" == *'Organize seus contatos. Avance suas vendas.'* ]]
+          [[ "$en" == *'Organize contacts. Move deals forward.'* ]]
+          [[ "$es" == *'Organiza contactos. Impulsa tus ventas.'* ]]
+          [[ "$invalid" == *'Organize seus contatos. Avance suas vendas.'* ]]
+          [[ "$pt" == *'R$ 69,00'* ]]
+          headers="$(curl -fsS -D - -o /dev/null "$home")"
+          [[ "${headers,,}" == *'x-robots-tag: noindex, nofollow, noarchive'* ]]
+          [[ "$headers" == *"form-action 'none'"* ]]
+          for path in /signup /login /checkout /api/trial; do
+            status="$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:18080$path")"
+            test "$status" = 404
+          done
+          echo "Private PT/EN/ES marketing GET only; no signup, checkout, payment or public indexing."
       - name: Restore PostgreSQL backup on separate network-none PG16 server and test RLS
         env:
           CRM_RECOVERY_LAB: synthetic-only
@@ -87,6 +113,7 @@ jobs:
             echo '### CRM private ephemeral smoke'
             echo '- Runs only inside GitHub hosted runner with generated fake credentials'
             echo '- Localhost health and no public business routes tested'
+            echo '- Read-only PT/EN/ES marketing page tested on localhost; no signup/trial/checkout'
             echo '- Asaas billing sources shipped but no sandbox/production billing route or flag enabled'
             echo '- Full pg_dump + pg_restore to second network-none PostgreSQL16 container, FORCE RLS and audit verified'
             echo '- Laravel migration applied and repeated under CI admin; actual PHP app role is NO-SUPERUSER/NO-BYPASSRLS/NO-OWNER with tenant isolation'

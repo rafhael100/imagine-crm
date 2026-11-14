@@ -41,6 +41,8 @@ services:
       QUEUE_CONNECTION: sync
       LOG_CHANNEL: stderr
       CRM_AUTH_EXPERIMENTAL: "false"
+      # Read-only, noindex marketing presentation for private CI/staging only.
+      CRM_STAGING_MARKETING_PREVIEW: "true"
       CRM_ASAAS_SANDBOX_ENABLED: "false"
       CRM_ASAAS_SANDBOX_PAYMENTS_ENABLED: "false"
       CRM_ASAAS_SANDBOX_RECONCILIATION_ENABLED: "false"
