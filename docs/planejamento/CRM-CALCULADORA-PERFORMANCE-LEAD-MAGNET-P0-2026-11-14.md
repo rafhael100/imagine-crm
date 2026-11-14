@@ -63,6 +63,18 @@ Novos artefatos, todos **isolados em laboratório**:
 
 **O que isso ainda não resolve:** o código é um laboratório sem uma chave KMS/cofre real, sem gestão de rotação/revogação de chaves, sem autenticação operacional por organização, sem endpoint Laravel, sem política LGPD ativa, sem aprovação do texto de consentimento e sem mensageria. **Não use esse código para tratar contatos reais em produção.** O modelo de cifragem e as políticas de retenção precisam de revisão de segurança, integração com vault e teste de recuperação autorizada antes do lançamento. O recebimento de e-mail por formulário público permanece proibido.
 
+## PERF-CALC-OUTBOX-01 — fila de revisão do relatório solicitado (CI-only)
+
+A entrega acrescenta \`tests/Labs/calculator/calculator-report-review-outbox-pg-ci.sql\` e \`scripts/ci/test-calculator-report-review-outbox-pg.php\` à PR. Trata-se de uma **fila de revisão sem envio**, não uma outbox de produção: guarda somente a empresa, o ID da simulação, tipo fixo \`report_request_review\`, digest da solicitação assinada e estado imutável \`NO_DISPATCH_REVIEW_ONLY\`.
+
+- Somente metadados fictícios com simulação e contato cifrado previamente registrados no PostgreSQL16 descartável podem produzir um candidato, e **somente quando o relatório foi solicitado**. A opção de marketing permanece independente.
+- Chave primária empresa+simulação+tipo garante que o reprocessamento idêntico não insere nova linha; o teste confere o digest da solicitação original.
+- O papel restrito de CI possui apenas SELECT/INSERT e FORCE RLS por empresa; não dispõe de UPDATE/DELETE, emissor, SMTP ou fila operacional de jobs.
+- Os campos \`send_enabled\`, \`contact_verified\` e \`marketing_consent_verified\` permanecem falsos por CHECK constraint.
+- Testes exigem: primeira solicitação, replay idempotente, impossibilidade de acesso cross-tenant ou sem organização, ausência de relatório quando não há simulação/contato vinculado e ausência de dados pessoais na consulta.
+
+Esta prova reduz a lacuna de idempotência de solicitação de estudo, mas **não entrega e-mail**, não confirma identidade nem comprova consentimento. Em produção, a implantação precisará de worker autenticado e separado, comprovante de envio, retry controlado, retenção e revogação para marketing, com exceções de consentimento do relatório explicitamente definidas.
+
 ## Próximas dependências operacionais
 
 1. Binding de organização Imagine e origem Comercial assinados em backend independente, autenticação e autorização em produção.
