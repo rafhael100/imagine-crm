@@ -151,6 +151,132 @@ final class AiaPostgresAtomicNonceCandidateTest extends TestCase
         );
     }
 
+    /**
+     * F3-AIA parallel contention: two *simultaneously active* PostgreSQL
+     * sessions attempt the same nonce. The first transaction remains open
+     * until the second is confirmed waiting on a real PostgreSQL lock.
+     *
+     * This deliberately proves a database primitive, never operational IAM.
+     */
+    private function raceCandidate(bool $commitFirst): void
+    {
+        if (!function_exists('pg_connect') || !function_exists('pg_send_query_params')) {
+            throw new RuntimeException('POSTGRES_ASYNC_EXTENSION_REQUIRED');
+        }
+
+        // Public CI-only credentials, reachable only on the ephemeral runner.
+        // The setUp() DB, repository, runner and user guards run before this.
+        $dsn = 'host=127.0.0.1 port=5432 dbname=imagine_crm_ci '
+            . 'user=postgres password=ci-only-password connect_timeout=2';
+        $first = pg_connect($dsn, PGSQL_CONNECT_FORCE_NEW);
+        $second = pg_connect($dsn, PGSQL_CONNECT_FORCE_NEW);
+        if ($first === false || $second === false) {
+            throw new RuntimeException('EPHEMERAL_CONNECTION_DENIED');
+        }
+        $firstOpen = false;
+        try {
+            $firstPidResult = pg_query($first, 'SELECT pg_backend_pid() AS pid');
+            $secondPidResult = pg_query($second, 'SELECT pg_backend_pid() AS pid');
+            if ($firstPidResult === false || $secondPidResult === false) {
+                throw new RuntimeException('SESSION_PID_UNAVAILABLE');
+            }
+            $firstPid = (int) pg_fetch_result($firstPidResult, 0, 'pid');
+            $secondPid = (int) pg_fetch_result($secondPidResult, 0, 'pid');
+            $this->assertNotSame($firstPid, $secondPid);
+
+            if (pg_query($first, 'BEGIN') === false) {
+                throw new RuntimeException('FIRST_TRANSACTION_UNAVAILABLE');
+            }
+            $firstOpen = true;
+            $query = 'INSERT INTO '.self::TABLE.' (
+                issuer,audience,nonce,tenant_ref,claimed_at
+                ) VALUES ($1,$2,$3,$4,$5)
+                ON CONFLICT (issuer,audience,nonce) DO NOTHING
+                RETURNING nonce';
+            $nonce = $commitFirst
+                ? 'SYNTHETIC_NONCE_CONCURRENT_COMMIT'
+                : 'SYNTHETIC_NONCE_CONCURRENT_ROLLBACK';
+            $args = [
+                'SYNTHETIC_AGENT_SERVICE', 'SYNTHETIC_CRM_API',
+                $nonce, 'SYNTHETIC_TENANT_A', '1794690010',
+            ];
+            $firstResult = pg_query_params($first, $query, $args);
+            if ($firstResult === false) {
+                throw new RuntimeException('FIRST_NONCE_INSERT_UNAVAILABLE');
+            }
+            $this->assertSame(1, pg_num_rows($firstResult));
+
+            // Dispatch an actual overlapping query on the OTHER connection.
+            // It must wait on the first transaction's uncommitted unique key.
+            if (pg_query($second, "SET lock_timeout = '6000ms'") === false
+                || pg_query($second, "SET statement_timeout = '7000ms'") === false
+                || !pg_send_query_params($second, $query, [
+                    'SYNTHETIC_AGENT_SERVICE', 'SYNTHETIC_CRM_API',
+                    $nonce, 'SYNTHETIC_TENANT_B', '1794690011',
+                ])) {
+                throw new RuntimeException('PARALLEL_NONCE_DISPATCH_DENIED');
+            }
+            $waitObserved = false;
+            $deadline = microtime(true) + 4.0;
+            do {
+                $state = DB::selectOne(
+                    'SELECT wait_event_type, wait_event
+                     FROM pg_stat_activity WHERE pid = ?',
+                    [$secondPid],
+                );
+                if ($state !== null && $state->wait_event_type === 'Lock') {
+                    $waitObserved = true;
+                    break;
+                }
+                usleep(25_000);
+            } while (microtime(true) < $deadline);
+            $this->assertTrue(
+                $waitObserved,
+                'Second PostgreSQL session never reached lock contention.',
+            );
+
+            // Only NOW release the first transaction, and inspect the
+            // concurrently issued second query's actual database result.
+            if (pg_query($first, $commitFirst ? 'COMMIT' : 'ROLLBACK') === false) {
+                throw new RuntimeException('FIRST_TRANSACTION_CLOSE_FAILED');
+            }
+            $firstOpen = false;
+            $secondResult = pg_get_result($second);
+            if ($secondResult === false) {
+                throw new RuntimeException('SECOND_NONCE_RESULT_MISSING');
+            }
+            $this->assertSame(PGSQL_TUPLES_OK, pg_result_status($secondResult));
+            $this->assertSame($commitFirst ? 0 : 1, pg_num_rows($secondResult));
+            $this->assertFalse(pg_get_result($second));
+
+            $saved = DB::table('aia_lab_nonce_atomic_probe')
+                ->where('nonce', $nonce)->get(['tenant_ref']);
+            $this->assertCount(1, $saved);
+            $this->assertSame(
+                $commitFirst ? 'SYNTHETIC_TENANT_A' : 'SYNTHETIC_TENANT_B',
+                $saved[0]->tenant_ref,
+            );
+        } finally {
+            // A failed assertion must not leave a hanging lock or pooled
+            // connection. The ephemeral runner owns both connections.
+            if ($firstOpen) {
+                pg_query($first, 'ROLLBACK');
+            }
+            pg_close($second);
+            pg_close($first);
+        }
+    }
+
+    public function test_concurrent_insert_only_one_commits_across_two_live_sessions(): void
+    {
+        $this->raceCandidate(true);
+    }
+
+    public function test_concurrent_insert_can_recover_after_first_transaction_rolls_back(): void
+    {
+        $this->raceCandidate(false);
+    }
+
     public function test_unavailable_backend_fails_closed_in_candidate_claim(): void
     {
         $two = DB::connection('aia_nonce_probe_second');
