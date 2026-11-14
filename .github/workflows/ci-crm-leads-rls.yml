@@ -6,6 +6,8 @@ on:
       - dev/fast-track-crm-2026-11-04
     paths:
       - 'app/Core/Leads/LaboratoryTenantLeadLedger.php'
+      - 'app/Core/Tasks/LaboratoryTenantTaskLedger.php'
+      - 'tests/Labs/tasks/**'
       - 'app/Core/Leads/LaboratorySignedSiteCapture.php'
       - 'tests/Labs/leads/**'
       - 'tests/Feature/PostgresLabLeadsRlsTest.php'
@@ -51,6 +53,7 @@ jobs:
       RLS_TEST_USERNAME: crm_app_ci
       RLS_TEST_PASSWORD: ephemeral-role-only
       CRM_LEADS_LAB: synthetic-only
+      CRM_TASKS_LAB: synthetic-only
       # Publicly visible fake fixture; never a secret or usable signing key.
       CRM_LEADS_SIGNING_KEY_CI: CI-ONLY-FAKE-KEY-2026-11-14-SITES-LEADS-PG05-NOT-SECRET
       CACHE_STORE: array
@@ -99,9 +102,15 @@ jobs:
           php scripts/ci/verify-ephemeral-postgres.php --verify
           psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
             -v ON_ERROR_STOP=1 -1 -f tests/Labs/leads/lead-kanban-rls-ci.sql
+      - name: Create synthetic follow-up task ledger and event tables
+        run: |
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/tasks/followup-tasks-rls-ci.sql
       - name: Execute real two-tenant leads and Kanban tests
         run: |
           php -l app/Core/Leads/LaboratoryTenantLeadLedger.php
+          php -l app/Core/Tasks/LaboratoryTenantTaskLedger.php
           php -l app/Core/Leads/LaboratorySignedSiteCapture.php
           php -l tests/Feature/PostgresLabLeadsRlsTest.php
           php artisan test --filter=PostgresLabLeadsRlsTest --no-ansi
@@ -112,6 +121,7 @@ jobs:
             echo '### CRM LEADS-PG01 — CI-only'
             echo '- PostgreSQL16 disposal verified before all schema changes'
             echo '- Membership active checked and scoped with FORCE RLS'
+            echo '- Same HEAD tests Sites intake, guarded revocation, task CAS and audit rollback'
             echo '- Signed Sites envelope laboratory: fake HMAC, expiry and one nonce/tenant'
             echo '- No customer PII, no public endpoint, no operational policy grants'
             echo '- Original 3-migration RLS workflow unchanged'

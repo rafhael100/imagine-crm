@@ -9,6 +9,7 @@ use App\Core\Leads\LeadSubmissionIdentity;
 use App\Core\Leads\SyntheticIdempotencyClaim;
 use App\Core\Leads\LaboratorySignedSiteCapture;
 use App\Core\Leads\LaboratoryTenantLeadLedger;
+use App\Core\Tasks\LaboratoryTenantTaskLedger;
 use App\Core\Tenancy\PostgresActiveMembershipStore;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Connection;
@@ -29,6 +30,9 @@ final class PostgresLabLeadsRlsTest extends TestCase
     private const INTRUDER = 'd4444444-4444-4444-8444-444444444444';
     private const LEAD_A = 'a5555555-5555-4555-8555-555555555555';
     private const LEAD_B = 'b6666666-6666-4666-8666-666666666666';
+
+    private const TASK_A = 'a9999999-9999-4999-8999-999999999999';
+    private const TASK_B = 'b9999999-9999-4999-8999-999999999999';
 
     private Connection $owner;
     private Connection $one;
@@ -109,6 +113,8 @@ final class PostgresLabLeadsRlsTest extends TestCase
     {
         $this->owner->table('crm_lab_lead_capture_keys')->delete();
         $this->owner->table('crm_lab_site_delivery_bindings')->delete();
+        $this->owner->table('crm_lab_task_events')->delete();
+        $this->owner->table('crm_lab_followup_tasks')->delete();
         $this->owner->table('crm_lab_lead_events')->delete();
         $this->owner->table('crm_lab_leads')->delete();
         $this->owner->table('crm_memberships')
@@ -122,6 +128,11 @@ final class PostgresLabLeadsRlsTest extends TestCase
     private function ledger(?Connection $connection = null): LaboratoryTenantLeadLedger
     {
         return new LaboratoryTenantLeadLedger($connection ?? $this->one);
+    }
+
+    private function tasks(?Connection $connection = null): LaboratoryTenantTaskLedger
+    {
+        return new LaboratoryTenantTaskLedger($connection ?? $this->one);
     }
 
     private static function principal(): PrincipalReference
@@ -972,6 +983,216 @@ final class PostgresLabLeadsRlsTest extends TestCase
             $this->assertIsString($source);
             $this->assertStringNotContainsString('LaboratorySignedSiteCapture', $source);
         }
+    }
+
+    public function test_synthetic_followup_tasks_are_isolated_by_tenant_and_bound_to_lead(): void
+    {
+        $this->ledger()->createSynthetic(self::principal(), self::ORG_A, self::LEAD_A, 'DEMO_T001');
+        $this->ledger($this->two)->createSynthetic(self::principal(), self::ORG_B, self::LEAD_B, 'DEMO_T002');
+        $a = $this->tasks()->createSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A,
+            self::LEAD_A, 'TASK_CALL_001', '2026-12-01',
+        );
+        $b = $this->tasks($this->two)->createSynthetic(
+            self::principal(), self::ORG_B, self::TASK_B,
+            self::LEAD_B, 'TASK_MAIL_002', '2026-12-02',
+        );
+        $this->assertSame('synthetic_task_created', $a['status_code']);
+        $this->assertSame('synthetic_task_created', $b['status_code']);
+        $this->assertFalse($a['can_contact']);
+        $this->assertFalse($a['can_notify']);
+        $this->assertFalse($a['can_activate']);
+        $visibleA = $this->tasks()->pendingSynthetic(self::principal(), self::ORG_A);
+        $visibleB = $this->tasks($this->two)->pendingSynthetic(self::principal(), self::ORG_B);
+        $this->assertSame([self::TASK_A], array_column($visibleA, 'task_id'));
+        $this->assertSame([self::TASK_B], array_column($visibleB, 'task_id'));
+        $this->assertSame('2026-12-01', $visibleA[0]['due_on']);
+        $this->assertSame(2, $this->owner->table('crm_lab_task_events')->count());
+        $this->assertSame(2, $this->owner->table('crm_lab_followup_tasks')->count());
+        $this->assertSame(0, $this->one->table('public.crm_lab_followup_tasks')->count());
+        $this->assertSame(0, $this->two->table('public.crm_lab_followup_tasks')->count());
+        $this->assertSame(0, $this->one->transactionLevel());
+    }
+
+    public function test_synthetic_task_completion_is_optimistic_terminal_and_audited(): void
+    {
+        $this->ledger()->createSynthetic(self::principal(), self::ORG_A, self::LEAD_A, 'DEMO_T003');
+        $this->tasks()->createSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A,
+            self::LEAD_A, 'TASK_REVIEW_003', '2026-12-03',
+        );
+        $first = $this->tasks()->resolveSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A, 'done', 1,
+        );
+        $stale = $this->tasks($this->two)->resolveSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A, 'cancelled', 1,
+        );
+        $terminal = $this->tasks()->resolveSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A, 'cancelled', 2,
+        );
+        $foreign = $this->tasks($this->two)->resolveSynthetic(
+            self::principal(), self::ORG_B, self::TASK_A, 'done', 1,
+        );
+        $this->assertSame('synthetic_task_resolved', $first['status_code']);
+        $this->assertSame('synthetic_task_not_changed', $stale['status_code']);
+        $this->assertSame('synthetic_task_not_changed', $terminal['status_code']);
+        $this->assertSame('synthetic_task_not_changed', $foreign['status_code']);
+        $this->assertSame([], $this->tasks()->pendingSynthetic(self::principal(), self::ORG_A));
+        $row = $this->owner->table('crm_lab_followup_tasks')->first();
+        $this->assertSame('done', $row->status);
+        $this->assertSame(2, $row->version);
+        $this->assertSame(['created','completed'], $this->owner->table('crm_lab_task_events')
+            ->orderBy('version')->pluck('event_type')->all());
+        $this->assertSame(0, $this->one->transactionLevel());
+        $this->assertSame(0, $this->two->transactionLevel());
+    }
+
+    public function test_task_cannot_attach_to_lead_of_other_tenant_or_archived_lead(): void
+    {
+        $this->ledger()->createSynthetic(self::principal(), self::ORG_B, self::LEAD_B, 'DEMO_T004');
+        $foreign = $this->tasks()->createSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A,
+            self::LEAD_B, 'TASK_FOREIGN', '2026-12-04',
+        );
+        $this->assertSame('synthetic_task_denied', $foreign['status_code']);
+        $this->assertSame(0, $this->owner->table('crm_lab_followup_tasks')->count());
+
+        $this->ledger()->createSynthetic(self::principal(), self::ORG_A, self::LEAD_A, 'DEMO_T005');
+        $this->ledger()->archiveSynthetic(self::principal(), self::ORG_A, self::LEAD_A, 1);
+        $archived = $this->tasks()->createSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A,
+            self::LEAD_A, 'TASK_ARCHIVED', '2026-12-04',
+        );
+        $this->assertSame('synthetic_task_denied', $archived['status_code']);
+        $this->assertSame(0, $this->owner->table('crm_lab_task_events')->count());
+        $this->assertSame(0, $this->owner->table('crm_lab_followup_tasks')->count());
+    }
+
+    public function test_task_update_rolls_back_if_append_only_audit_insert_fails(): void
+    {
+        $this->ledger()->createSynthetic(self::principal(), self::ORG_A, self::LEAD_A, 'DEMO_T006');
+        $this->tasks()->createSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A,
+            self::LEAD_A, 'TASK_AUDIT_006', '2026-12-06',
+        );
+        $this->owner->table('crm_lab_task_events')->insert([
+            'event_id' => 'f7777777-7777-4777-8777-777777777777',
+            'task_id' => self::TASK_A,
+            'organization_id' => self::ORG_A,
+            'version' => 2,
+            'event_type' => 'completed',
+        ]);
+        try {
+            $this->tasks($this->two)->resolveSynthetic(
+                self::principal(), self::ORG_A, self::TASK_A, 'done', 1,
+            );
+            $this->fail('A task transition without its audit is prohibited.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('Transicao de tarefa sintetica indisponivel.', $e->getMessage());
+        }
+        $row = $this->owner->table('crm_lab_followup_tasks')->first();
+        $this->assertSame('todo', $row->status);
+        $this->assertSame(1, $row->version);
+        $this->assertSame(2, $this->owner->table('crm_lab_task_events')->count());
+        $this->assertSame(0, $this->two->transactionLevel());
+    }
+
+    public function test_revoked_membership_and_restricted_task_role_are_denied(): void
+    {
+        foreach (['DELETE', 'TRUNCATE'] as $permission) {
+            $this->assertFalse((bool) $this->one->selectOne(
+                'SELECT has_table_privilege(current_user, ?, ?) AS allowed',
+                ['public.crm_lab_followup_tasks', $permission],
+            )->allowed);
+        }
+        foreach (['organization_id','lead_id','synthetic_subject','due_on'] as $column) {
+            $this->assertFalse((bool) $this->one->selectOne(
+                "SELECT has_column_privilege(current_user, 'public.crm_lab_followup_tasks', ?, 'UPDATE') AS allowed",
+                [$column],
+            )->allowed);
+        }
+        foreach (['SELECT', 'UPDATE', 'DELETE'] as $permission) {
+            $this->assertFalse((bool) $this->one->selectOne(
+                'SELECT has_table_privilege(current_user, ?, ?) AS allowed',
+                ['public.crm_lab_task_events', $permission],
+            )->allowed);
+        }
+        $this->owner->table('crm_memberships')
+            ->where('organization_id', self::ORG_A)->update(['status' => 'revoked','version' => 2]);
+        try {
+            $this->tasks()->pendingSynthetic(self::principal(), self::ORG_A);
+            $this->fail('Revoked member must not read tasks.');
+        } catch (AuthorizationException) {
+            $this->assertSame(0, $this->one->transactionLevel());
+        }
+        $this->postJson('/api/tasks', [])->assertNotFound();
+        $this->get('/api/tasks')->assertNotFound();
+    }
+
+    public function test_integrated_signed_capture_creates_tenant_lead_then_audited_followup_task(): void
+    {
+        $claim = self::siteClaim(self::ORG_A);
+        $this->seedActiveSiteBinding(self::ORG_A, $claim);
+        $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
+        $issued = 1700000000;
+        $expires = $issued + 120;
+        $mac = self::syntheticSiteSignature(
+            $claim, self::LEAD_A, 'DEMO_INTEGRATED01', 'sites',
+            $nonce, $issued, $expires,
+        );
+
+        $earlyTask = $this->tasks()->createSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A,
+            self::LEAD_A, 'TASK_INTEGRATED_01', '2026-12-10',
+        );
+        $this->assertSame('synthetic_task_denied', $earlyTask['status_code']);
+
+        $captured = $this->signedCapture()->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_INTEGRATED01', 'sites', $claim,
+            $nonce, $issued, $expires, $issued + 3, $mac,
+        );
+        $this->assertSame('synthetic_captured', $captured['status_code']);
+        $this->assertNoEffects($captured);
+
+        $task = $this->tasks($this->two)->createSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A,
+            self::LEAD_A, 'TASK_INTEGRATED_01', '2026-12-10',
+        );
+        $this->assertSame('synthetic_task_created', $task['status_code']);
+        $this->assertFalse($task['can_contact']);
+        $this->assertFalse($task['can_notify']);
+
+        $replay = $this->signedCapture($this->two)->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_INTEGRATED01', 'sites', $claim,
+            $nonce, $issued, $expires, $issued + 5, $mac,
+        );
+        $this->assertSame('synthetic_replayed', $replay['status_code']);
+        $this->assertCount(1, $this->tasks()->pendingSynthetic(
+            self::principal(), self::ORG_A,
+        ));
+        $this->assertSame([], $this->tasks()->pendingSynthetic(
+            self::principal(), self::ORG_B,
+        ));
+
+        $resolved = $this->tasks()->resolveSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A, 'done', 1,
+        );
+        $this->assertSame('synthetic_task_resolved', $resolved['status_code']);
+        $this->assertSame(1, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_capture_keys')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_events')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_followup_tasks')->count());
+        $this->assertSame(2, $this->owner->table('crm_lab_task_events')->count());
+
+        foreach (['crm_lab_leads','crm_lab_lead_capture_keys',
+            'crm_lab_lead_events','crm_lab_followup_tasks','crm_lab_task_events'] as $table) {
+            $this->assertSame(self::ORG_A,
+                $this->owner->table($table)->value('organization_id'), $table);
+        }
+        $this->assertSame(0, $this->one->transactionLevel());
+        $this->assertSame(0, $this->two->transactionLevel());
     }
 
     public function test_wrong_database_role_and_public_endpoints_stay_denied(): void
