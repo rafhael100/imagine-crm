@@ -55,7 +55,7 @@ final class AiaHmacFixturePreflightTest extends TestCase
         return $payload;
     }
 
-    private static function matches(
+    private static function fixtureMatches(
         string $body,
         array $claims,
         ?AiaFixtureNonceLedger $ledger = null,
@@ -74,9 +74,9 @@ final class AiaHmacFixturePreflightTest extends TestCase
         $body = self::bytes();
         $p = self::proof($body);
         $store = new AiaFixtureNonceLedger();
-        self::assertTrue(self::matches($body, $p, $store));
+        self::assertTrue(self::fixtureMatches($body, $p, $store));
         self::assertSame(1, $store->countConsumed());
-        self::assertFalse(self::matches($body, $p, $store));
+        self::assertFalse(self::fixtureMatches($body, $p, $store));
         self::assertSame(1, $store->countConsumed());
         $fresh = self::proof($body, 'SYNTHETIC_NONCE_BBBB');
         self::assertSame(
@@ -118,7 +118,7 @@ final class AiaHmacFixturePreflightTest extends TestCase
         $body = self::bytes();
         $proof = array_replace(self::proof($body), $overrides);
         $store = new AiaFixtureNonceLedger();
-        self::assertFalse(self::matches($body, $proof, $store));
+        self::assertFalse(self::fixtureMatches($body, $proof, $store));
         self::assertSame(0, $store->countConsumed());
     }
 
@@ -127,10 +127,10 @@ final class AiaHmacFixturePreflightTest extends TestCase
         $body = self::bytes();
         $p = self::proof($body);
         $store = new AiaFixtureNonceLedger();
-        self::assertFalse(self::matches($body,$p,$store,'SYNTHETIC_TENANT_B'));
-        self::assertFalse(self::matches(
+        self::assertFalse(self::fixtureMatches($body,$p,$store,'SYNTHETIC_TENANT_B'));
+        self::assertFalse(self::fixtureMatches(
             str_replace('SYNTHETIC_LEAD_A','SYNTHETIC_LEAD_B',$body),$p,$store));
-        self::assertFalse(self::matches($body . '{}',$p,$store));
+        self::assertFalse(self::fixtureMatches($body . '{}',$p,$store));
         self::assertSame(0, $store->countConsumed());
     }
 
@@ -138,19 +138,19 @@ final class AiaHmacFixturePreflightTest extends TestCase
     {
         $body=self::bytes();
         $p=self::proof($body);
-        self::assertFalse(self::matches($body,$p,key:'not-a-secret'));
-        self::assertFalse(self::matches($body,$p,key:
+        self::assertFalse(self::fixtureMatches($body,$p,key:'not-a-secret'));
+        self::assertFalse(self::fixtureMatches($body,$p,key:
             'SYNTHETIC_PUBLIC_TEST_ONLY_ANOTHER_KNOWN_TEST_KEY_123456789'));
-        self::assertFalse(self::matches($body,self::proof($body,key:
+        self::assertFalse(self::fixtureMatches($body,self::proof($body,key:
             'SYNTHETIC_PUBLIC_TEST_ONLY_OTHER_SIGNING_KEY_123456789')));
     }
 
     public function test_strict_expiration_includes_end_second_and_rejects_future(): void
     {
         $body=self::bytes();
-        self::assertFalse(self::matches($body,self::proof($body),now:self::NOW+20));
-        self::assertFalse(self::matches($body,self::proof($body),now:self::NOW-6));
-        self::assertTrue(self::matches($body,self::proof($body),now:self::NOW+19));
+        self::assertFalse(self::fixtureMatches($body,self::proof($body),now:self::NOW+20));
+        self::assertFalse(self::fixtureMatches($body,self::proof($body),now:self::NOW-6));
+        self::assertTrue(self::fixtureMatches($body,self::proof($body),now:self::NOW+19));
     }
 
     public function test_no_replay_after_outage_or_saturation(): void
@@ -158,13 +158,13 @@ final class AiaHmacFixturePreflightTest extends TestCase
         $body=self::bytes();
         $ledger=new AiaFixtureNonceLedger(1);
         $p=self::proof($body);
-        self::assertTrue(self::matches($body,$p,$ledger));
+        self::assertTrue(self::fixtureMatches($body,$p,$ledger));
         $ledger->setAvailable(false);
-        self::assertFalse(self::matches(
+        self::assertFalse(self::fixtureMatches(
             $body,self::proof($body,'SYNTHETIC_NONCE_BBBB'),$ledger));
         $ledger->setAvailable(true);
-        self::assertFalse(self::matches($body,$p,$ledger));
-        self::assertFalse(self::matches(
+        self::assertFalse(self::fixtureMatches($body,$p,$ledger));
+        self::assertFalse(self::fixtureMatches(
             $body,self::proof($body,'SYNTHETIC_NONCE_BBBB'),$ledger));
         self::assertSame(1,$ledger->countConsumed());
     }
