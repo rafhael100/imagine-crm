@@ -146,3 +146,34 @@ GRANT INSERT (organization_id, source_code, event_sha256, lead_id,
 -- authenticated. The signed capture wrapper must verify the HMAC BEFORE
 -- invoking the transactional ledger; the row is reserved atomically with
 -- its lead and audit event.
+
+-- PG06: CI-authoritative (fixture-owned) organization → site/form/destination
+-- registry. Signed lead intake must LOCK and verify an ACTIVE row under the
+-- very same membership-scoped transaction. End users cannot write this table.
+CREATE TABLE public.crm_lab_site_delivery_bindings (
+  organization_id uuid NOT NULL
+    REFERENCES public.crm_organizations(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
+  binding_reference uuid NOT NULL,
+  site_reference uuid NOT NULL,
+  form_reference uuid NOT NULL,
+  destination_reference uuid NOT NULL,
+  source_code varchar(12) NOT NULL
+    CHECK (source_code IN ('sites','landing','onepage')),
+  state varchar(16) NOT NULL
+    CHECK (state IN ('active', 'suspended', 'revoked')),
+  version integer NOT NULL DEFAULT 1 CHECK (version > 0),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT crm_lab_binding_identity
+    PRIMARY KEY (organization_id, binding_reference)
+);
+ALTER TABLE public.crm_lab_site_delivery_bindings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.crm_lab_site_delivery_bindings FORCE ROW LEVEL SECURITY;
+CREATE POLICY crm_lab_binding_tenant_scope
+ ON public.crm_lab_site_delivery_bindings FOR SELECT TO crm_app_ci
+ USING (organization_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid);
+GRANT SELECT (organization_id, binding_reference, site_reference,
+  form_reference, destination_reference, source_code, state, version)
+ ON public.crm_lab_site_delivery_bindings TO crm_app_ci;
+
+-- Only the disposable fixture owner can provision, revoke or edit bindings.
+-- No CREATE/INSERT/UPDATE/DELETE permissions for crm_app_ci.

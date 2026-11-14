@@ -108,6 +108,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
     private function clean(): void
     {
         $this->owner->table('crm_lab_lead_capture_keys')->delete();
+        $this->owner->table('crm_lab_site_delivery_bindings')->delete();
         $this->owner->table('crm_lab_lead_events')->delete();
         $this->owner->table('crm_lab_leads')->delete();
         $this->owner->table('crm_memberships')
@@ -588,6 +589,24 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $this->assertSame(0, $this->one->transactionLevel());
     }
 
+    private function seedActiveSiteBinding(
+        string $organization = self::ORG_A,
+        ?SyntheticIdempotencyClaim $claim = null,
+        string $source = 'sites',
+    ): void {
+        $claim ??= self::siteClaim($organization);
+        $this->owner->table('crm_lab_site_delivery_bindings')->insert([
+            'organization_id' => $organization,
+            'binding_reference' => $claim->identity->bindingReference,
+            'site_reference' => $claim->siteReference,
+            'form_reference' => $claim->formReference,
+            'destination_reference' => $claim->destinationReference,
+            'source_code' => $source,
+            'state' => 'active',
+            'version' => 1,
+        ]);
+    }
+
     private function signedCapture(?Connection $connection = null, ?string $key = null): LaboratorySignedSiteCapture
     {
         return new LaboratorySignedSiteCapture(
@@ -613,6 +632,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
     public function test_ci_signed_site_capture_accepts_one_valid_message_then_deduplicates_replay(): void
     {
         $claim = self::siteClaim(self::ORG_A);
+        $this->seedActiveSiteBinding(self::ORG_A, $claim);
         $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
         $issued = 1700000000;
         $expires = $issued + 120;
@@ -698,6 +718,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
     public function test_signed_nonce_cannot_be_reused_for_another_submission_same_tenant(): void
     {
         $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
+        $this->seedActiveSiteBinding();
         $issued = 1700000000;
         $expires = $issued + 120;
         $firstClaim = self::siteClaim(self::ORG_A);
@@ -727,6 +748,96 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $this->assertFalse((bool) $this->one->selectOne(
             "SELECT has_column_privilege(current_user, 'public.crm_lab_lead_capture_keys','signed_nonce','UPDATE') AS allowed",
         )->allowed);
+    }
+
+    public function test_signed_capture_requires_registered_active_source_binding_and_revokes_retries(): void
+    {
+        $claim = self::siteClaim(self::ORG_A);
+        $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
+        $issued = 1700000000;
+        $expires = $issued + 120;
+        $signed = self::syntheticSiteSignature(
+            $claim, self::LEAD_A, 'DEMO_REG01', 'sites', $nonce, $issued, $expires,
+        );
+
+        // An authentic fixture MAC alone cannot admit a non-existent binding.
+        $missing = $this->signedCapture()->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_REG01', 'sites', $claim, $nonce, $issued, $expires,
+            $issued + 1, $signed,
+        );
+        $this->assertSame('synthetic_conflict_denied', $missing['status_code']);
+        $this->assertSame(0, $this->owner->table('crm_lab_leads')->count());
+
+        $this->seedActiveSiteBinding();
+        $valid = $this->signedCapture()->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_REG01', 'sites', $claim, $nonce, $issued, $expires,
+            $issued + 2, $signed,
+        );
+        $this->assertSame('synthetic_captured', $valid['status_code']);
+
+        $this->owner->table('crm_lab_site_delivery_bindings')
+            ->where('organization_id', self::ORG_A)
+            ->update(['state' => 'revoked', 'version' => 2]);
+        $afterRevocation = $this->signedCapture($this->two)->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_REG01', 'sites', $claim, $nonce, $issued, $expires,
+            $issued + 3, $signed,
+        );
+        $this->assertSame('synthetic_conflict_denied', $afterRevocation['status_code']);
+
+        $this->owner->table('crm_lab_site_delivery_bindings')
+            ->where('organization_id', self::ORG_A)
+            ->update(['state' => 'active', 'source_code' => 'landing', 'version' => 3]);
+        $channelDenied = $this->signedCapture()->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_REG01', 'sites', $claim, $nonce, $issued, $expires,
+            $issued + 4, $signed,
+        );
+        $this->assertSame('synthetic_conflict_denied', $channelDenied['status_code']);
+
+        $this->assertNoEffects($missing);
+        $this->assertNoEffects($afterRevocation);
+        $this->assertNoEffects($channelDenied);
+        $this->assertSame(1, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_events')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_capture_keys')->count());
+    }
+
+    public function test_registered_site_binding_is_tenant_private_and_nonwritable_by_runtime_role(): void
+    {
+        $this->seedActiveSiteBinding(self::ORG_B);
+        $claim = self::siteClaim(self::ORG_A);
+        $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
+        $issued = 1700000000;
+        $until = $issued + 120;
+
+        $result = $this->signedCapture()->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_REG02', 'sites', $claim,
+            $nonce, $issued, $until, $issued + 2,
+            self::syntheticSiteSignature(
+                $claim, self::LEAD_A, 'DEMO_REG02', 'sites', $nonce, $issued, $until,
+            ),
+        );
+        $this->assertSame('synthetic_conflict_denied', $result['status_code']);
+        $this->assertSame(0, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(0, $this->owner->table('crm_lab_lead_capture_keys')->count());
+
+        $visible = (new PostgresActiveMembershipStore($this->one))->within(
+            self::principal(), self::ORG_A, fn () =>
+                $this->one->table('public.crm_lab_site_delivery_bindings')->count(),
+        );
+        $this->assertSame(0, $visible);
+        $this->assertSame(0, $this->one->transactionLevel());
+        foreach (['INSERT', 'UPDATE', 'DELETE', 'TRUNCATE'] as $permission) {
+            $this->assertFalse((bool) $this->one->selectOne(
+                'SELECT has_table_privilege(current_user, ?, ?) AS allowed',
+                ['public.crm_lab_site_delivery_bindings', $permission],
+            )->allowed, $permission);
+        }
+        $this->assertSame(1, $this->owner->table('crm_lab_site_delivery_bindings')->count());
     }
 
     public function test_signed_site_capture_fails_closed_for_wrong_test_key_and_never_adds_routes(): void
