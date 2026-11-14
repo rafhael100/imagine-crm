@@ -52,6 +52,17 @@ O arquivo `tests/Labs/calculator/calculator-nurture-suppression-rls-ci.sql` mode
 
 **Nunca interpretar status HTTP 200/201/202 destes testes como aceitação de contato real, consentimento de marketing ou capacidade de disparo.** O módulo não conhece dados de pessoas, continua sem SMTP, APIs públicas, autenticação operacional, jobs, LGPD comprovada ou deploy.
 
+## PERF-CALC-PII-01..04 — contatos fictícios com guarda de privacidade e criptografia
+
+Novos artefatos, todos **isolados em laboratório**:
+- `SyntheticCalculatorContactBoundary.php`: valida exclusivamente nomes sintéticos `Sample ...` e endereços `example.test`/`example.invalid`; rejeita e-mails reais, campos extras e falsas provas de consentimento. Gera HMAC de contato no backend com chave descartável de CI e retorna apenas metadados, nunca nome/e-mail.
+- `tests/Labs/calculator/calculator-synthetic-contact-pg-ci.sql` e `scripts/ci/test-calculator-synthetic-contact-pg.php`: gravam somente o HMAC do contato e os interesses declarados em PostgreSQL16 descartável, com tenant RLS, replay imutável e flags de consentimento sempre falsas.
+- `SyntheticCalculatorContactCipher.php`: AES-256-GCM com nonce novo por registro, AAD vinculado a tenant/submissão/key-id e verificação de integridade. Rejeita chave, tenant, submissão, tag, nonce ou ciphertext incompatíveis. O método de recuperação existe somente para testes CI **não acessíveis pela rede** e ainda recusa dados não sintéticos.
+- `tests/Labs/calculator/calculator-synthetic-ciphertext-pg-ci.sql` e `scripts/ci/test-calculator-synthetic-ciphertext-pg.php`: prova de armazenamento e recuperação privada de contato fictício criptografado, sem gravar a chave criptográfica no banco, logs, repositório ou artefatos de CI.
+- `tests/offline_calculator_synthetic_contact_boundary_test.php` e `tests/offline_calculator_synthetic_contact_cipher_test.php`: testes adversariais para PII real, tentativa de conceder opt-in, corrupção do conteúdo e acesso por tenant diferente.
+
+**O que isso ainda não resolve:** o código é um laboratório sem uma chave KMS/cofre real, sem gestão de rotação/revogação de chaves, sem autenticação operacional por organização, sem endpoint Laravel, sem política LGPD ativa, sem aprovação do texto de consentimento e sem mensageria. **Não use esse código para tratar contatos reais em produção.** O modelo de cifragem e as políticas de retenção precisam de revisão de segurança, integração com vault e teste de recuperação autorizada antes do lançamento. O recebimento de e-mail por formulário público permanece proibido.
+
 ## Próximas dependências operacionais
 
 1. Binding de organização Imagine e origem Comercial assinados em backend independente, autenticação e autorização em produção.
