@@ -108,5 +108,6 @@ jobs:
             echo '- Idempotencia por HMAC do ID do evento + PK PostgreSQL'
             echo '- Nenhum payload pessoal, numero de cartao ou valor monetario persistido'
             echo '- Nenhum endpoint, cliente, assinatura, pagamento, ativacao ou fatura REAL'
-            echo '- Papeis separados: receptor INSERT-only; worker SELECT de metadados + UPDATE state'\n            echo '- Banco e papel descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
+            echo '- Papeis separados: receptor INSERT-only; worker SELECT de metadados + UPDATE state'
+            echo '- Banco e papel descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
           } >> "$GITHUB_STEP_SUMMARY"
