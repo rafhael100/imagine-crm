@@ -16,6 +16,7 @@ on:
       - 'tests/Feature/PostgresAsaasCustomerLinkTest.php'
       - 'tests/Feature/PostgresAsaasCustomerReconcileTest.php'
       - 'tests/Feature/PostgresAsaasOrderReservationTest.php'
+      - 'tests/Feature/PostgresAsaasBillingIntegratedLedgerTest.php'
       - 'tests/Feature/PostgresAsaasSubscriptionDraftTest.php'
       - 'tests/Feature/AsaasSandboxSubscriptionLookupTest.php'
       - 'tests/Feature/PostgresAsaasSubscriptionObservationTest.php'
@@ -144,6 +145,7 @@ jobs:
           php artisan test --filter=AsaasSandboxSubscriptionLookupTest --no-ansi
           php artisan test --filter=AsaasSandboxSubscriptionPaymentsReviewTest --no-ansi
           php -l tests/Feature/PostgresAsaasOrderReservationTest.php
+          php -l tests/Feature/PostgresAsaasBillingIntegratedLedgerTest.php
           php -l tests/Unit/AsaasWebhookEnvelopeTest.php
           php -l tests/Feature/PostgresAsaasWebhookInboxTest.php
           php -l tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php
@@ -194,6 +196,8 @@ jobs:
             -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-subscription-observation-ci.sql
       - name: Provar conciliacao GET-only de assinatura sem ativacao
         run: php artisan test --filter=PostgresAsaasSubscriptionObservationTest --no-ansi
+      - name: Testar ledger integrado pagador pedido assinatura e isolamento
+        run: php artisan test --filter=PostgresAsaasBillingIntegratedLedgerTest --no-ansi
       - name: Resumo de limitacoes e escopo
         if: always()
         run: |
@@ -212,5 +216,6 @@ jobs:
             echo '- Reserva SQL unica por pedido e provider_payment_id; teste CI sem endpoint, sem HTTP real e sem grant'
             echo '- Handoff Laravel sob PostgreSQL16 CI apenas, com replay conservador e testes em duas sessoes'
             echo '- Rascunho mensal com trial 14 dias, consulta GET e observacao sem conceder direitos'
+            echo '- CI valida pedido e assinatura no mesmo PG efemero por tenant, sem direitos'
             echo '- Candidatos componiveis nesta HEAD mas SEM transacao real de pagamento, tenant autenticado ou RLS final'
           } >> "$GITHUB_STEP_SUMMARY"
