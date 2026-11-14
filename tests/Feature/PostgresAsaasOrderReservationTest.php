@@ -64,6 +64,21 @@ final class PostgresAsaasOrderReservationTest extends TestCase
         Http::preventStrayRequests();
         $this->owner = DB::connection();
         $this->owner->table('crm_lab_asaas_order_reservations')->delete();
+        $this->owner->table('crm_lab_asaas_customer_links')->delete();
+        $this->owner->table('crm_lab_asaas_customer_links')->insert([
+            [
+                'organization_ref' => self::ORG_A,
+                'external_reference' => 'cccccccc-2222-4333-8444-555555555551',
+                'provider_customer_id' => self::CUSTOMER_A,
+                'state' => 'linked', 'reserved_at' => 1700000000,
+            ],
+            [
+                'organization_ref' => self::ORG_B,
+                'external_reference' => 'cccccccc-2222-4333-8444-555555555552',
+                'provider_customer_id' => self::CUSTOMER_B,
+                'state' => 'linked', 'reserved_at' => 1700000000,
+            ],
+        ]);
 
         $pg['url'] = null;
         $roles = [
@@ -98,6 +113,7 @@ final class PostgresAsaasOrderReservationTest extends TestCase
                 $this->owner->rollBack();
             }
             $this->owner->table('crm_lab_asaas_order_reservations')->delete();
+            $this->owner->table('crm_lab_asaas_customer_links')->delete();
             foreach (['order_creator_a_ci', 'order_creator_b_ci',
                 'order_reviewer_a_ci', 'order_reviewer_b_ci'] as $alias) {
                 DB::purge($alias);
@@ -176,6 +192,21 @@ final class PostgresAsaasOrderReservationTest extends TestCase
         $this->assertInert($first);
         $this->assertSame(1, $this->owner->table('crm_lab_asaas_order_reservations')->count());
         $this->assertSame(6900, $this->owner->table('crm_lab_asaas_order_reservations')->value('amount_cents'));
+        Http::assertNothingSent();
+    }
+
+    public function test_customer_of_other_tenant_cannot_be_bound_to_order_even_on_new_uuid(): void
+    {
+        try {
+            $this->reservation()->reserve(
+                self::ORG_A, self::ORDER_A, self::CUSTOMER_B, 'essencial', self::DUE_ON,
+            );
+            $this->fail('Foreign customer reference must be rejected by PostgreSQL.');
+        } catch (RuntimeException $e) {
+            $this->assertSame('Reserva de pedido Asaas indisponivel.', $e->getMessage());
+            $this->assertNull($e->getPrevious());
+        }
+        $this->assertSame(0, $this->owner->table('crm_lab_asaas_order_reservations')->count());
         Http::assertNothingSent();
     }
 

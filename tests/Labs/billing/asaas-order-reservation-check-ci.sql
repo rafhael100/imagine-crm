@@ -3,12 +3,28 @@ DO $$
 DECLARE
   first_order uuid := '11111111-2222-4333-8444-555555555551';
   second_order uuid := '11111111-2222-4333-8444-555555555552';
+  third_order uuid := '11111111-2222-4333-8444-555555555553';
   tenant_a uuid := 'aaaaaaaa-2222-4333-8444-555555555551';
   tenant_b uuid := 'bbbbbbbb-2222-4333-8444-555555555552';
 BEGIN
+  INSERT INTO crm_lab_asaas_customer_links
+    (organization_ref,external_reference,provider_customer_id,state,reserved_at)
+  VALUES
+    (tenant_a,'cccccccc-2222-4333-8444-555555555551','cus_SYNTHETIC1234','linked',1700000000),
+    (tenant_b,'cccccccc-2222-4333-8444-555555555552','cus_SYNTHETIC5678','linked',1700000000);
+
   INSERT INTO crm_lab_asaas_order_reservations
     (order_ref,organization_ref,provider_customer_id,plan_code,amount_cents,due_on)
   VALUES (first_order,tenant_a,'cus_SYNTHETIC1234','basico',6900,'2026-12-15');
+
+  -- Customer ID from tenant B must not attach to an otherwise new tenant-A order.
+  BEGIN
+    INSERT INTO crm_lab_asaas_order_reservations
+      (order_ref,organization_ref,provider_customer_id,plan_code,amount_cents,due_on)
+    VALUES (third_order,tenant_a,'cus_SYNTHETIC5678','essencial',8900,'2026-12-15');
+    RAISE EXCEPTION 'foreign customer was accepted under another tenant';
+  EXCEPTION WHEN foreign_key_violation THEN NULL;
+  END;
 
   -- No new order or mutated tenant/plan may reuse an existing order_ref.
   BEGIN
