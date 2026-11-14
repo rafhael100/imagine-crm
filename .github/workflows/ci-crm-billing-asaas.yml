@@ -1,0 +1,149 @@
+name: CRM BILL-ASAAS-01 - webhook idempotente PostgreSQL isolado
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'app/Core/Billing/**'
+      - 'tests/Unit/AsaasWebhookEnvelopeTest.php'
+      - 'tests/Feature/PostgresAsaasWebhookInboxTest.php'
+      - 'tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php'
+      - 'tests/Feature/AsaasSandboxPixPaymentGatewayTest.php'
+      - 'tests/Feature/AsaasSandboxPixReconciliationInspectorTest.php'
+      - 'tests/Feature/AsaasSandboxBillingJourneyTest.php'
+      - 'tests/Feature/PostgresAsaasCustomerLinkTest.php'
+      - 'tests/Feature/PostgresAsaasCustomerReconcileTest.php'
+      - 'tests/Labs/billing/**'
+      - '.github/workflows/ci-crm-billing-asaas.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-billing-asaas-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  asaas-webhook-inbox-ci:
+    name: PostgreSQL 16 - Asaas envelope / inbox / idempotencia
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_crm_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d imagine_crm_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      APP_URL: http://127.0.0.1
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: imagine_crm_ci
+      DB_USERNAME: postgres
+      DB_PASSWORD: ci-only-password
+      PGPASSWORD: ci-only-password
+      CRM_ASAAS_WEBHOOK_LAB: synthetic-only
+      BILLING_TEST_USERNAME: crm_billing_ci
+      BILLING_TEST_PASSWORD: ephemeral-billing-insert-only
+      BILLING_REVIEW_USERNAME: crm_billing_review_ci
+      BILLING_REVIEW_PASSWORD: ephemeral-billing-review-only
+      CRM_ASAAS_LINK_LAB: synthetic-only
+      BILLING_LINK_USERNAME: crm_billing_link_ci
+      BILLING_LINK_PASSWORD: ephemeral-billing-link-only
+      BILLING_LINK_REVIEW_USERNAME: crm_billing_link_review_ci
+      BILLING_LINK_REVIEW_PASSWORD: ephemeral-link-review-only
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - name: Checkout sem token persistente
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: PHP 8.4 + PDO PG
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, curl, zip, pdo_pgsql, pgsql
+          tools: composer:v2
+          coverage: none
+      - name: Dependencias travadas
+        run: |
+          test -f composer.lock
+          composer validate --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+      - name: Chave local da aplicacao descartavel
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+      - name: Validar fonte PHP e contrato de autenticacao sem network
+        run: |
+          php -l app/Core/Billing/AsaasWebhookEnvelope.php
+          php -l app/Core/Billing/AsaasWebhookInboxCandidate.php
+          php -l app/Core/Billing/AsaasWebhookReviewWorkerCandidate.php
+          php -l app/Core/Billing/AsaasSandboxPixPaymentGateway.php
+          php -l app/Core/Billing/AsaasSandboxPixReconciliationInspector.php
+          php -l app/Core/Billing/LaboratoryAsaasCustomerLink.php
+          php -l app/Core/Billing/LaboratoryAsaasCustomerHandoff.php
+          php -l app/Core/Billing/LaboratoryAsaasCustomerReconciler.php
+          php -l tests/Unit/AsaasWebhookEnvelopeTest.php
+          php -l tests/Feature/PostgresAsaasWebhookInboxTest.php
+          php -l tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php
+          php -l tests/Feature/AsaasSandboxPixPaymentGatewayTest.php
+          php artisan test --filter=AsaasSandboxPixPaymentGatewayTest --no-ansi
+          php -l tests/Feature/AsaasSandboxPixReconciliationInspectorTest.php
+          php artisan test --filter=AsaasSandboxPixReconciliationInspectorTest --no-ansi
+          php -l tests/Feature/PostgresAsaasCustomerLinkTest.php
+          php -l tests/Feature/PostgresAsaasCustomerReconcileTest.php
+          php -l tests/Feature/AsaasSandboxBillingJourneyTest.php
+          php artisan test --filter=AsaasSandboxBillingJourneyTest --no-ansi
+          php artisan test --filter=AsaasWebhookEnvelopeTest --no-ansi
+      - name: Comprovar PostgreSQL 16 CI efemero antes de qualquer DDL
+        run: php scripts/ci/verify-ephemeral-postgres.php --verify
+      - name: Criar APENAS tabela e papel de laboratorio de cobranca
+        run: |
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-webhook-inbox-ci.sql
+      - name: Testar webhook via rota apenas PHPUnit e concorrencia real
+        run: php artisan test --filter=PostgresAsaasWebhookInboxTest --no-ansi
+      - name: Validar processador concorrente de inbox SEM efeitos
+        run: php artisan test --filter=PostgresAsaasWebhookReviewWorkerTest --no-ansi
+      - name: Criar apenas vinculo de cliente sintetico Asaas em PostgreSQL CI
+        run: |
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-customer-link-ci.sql
+      - name: Provar reserva unica e handoff GET/POST de cliente sem duplicata
+        run: php artisan test --filter=PostgresAsaasCustomerLinkTest --no-ansi
+      - name: Provar conciliacao GET-only de pagador por revisor sem novos POSTs
+        run: php artisan test --filter=PostgresAsaasCustomerReconcileTest --no-ansi
+      - name: Resumo de limitacoes e escopo
+        if: always()
+        run: |
+          {
+            echo '### BILL-ASAAS-01 — apenas laboratorio'
+            echo '- Token do Webhook Asaas e distinto de chave de API'
+            echo '- Idempotencia por HMAC do ID do evento + PK PostgreSQL'
+            echo '- Nenhum payload pessoal, numero de cartao ou valor monetario persistido'
+            echo '- Nenhum endpoint, cliente, assinatura, pagamento, ativacao ou fatura REAL'
+            echo '- Papeis separados: receptor INSERT-only; worker SELECT de metadados + UPDATE state'
+            echo '- Banco e papel descartaveis no GitHub, NO-MERGE/NO-DEPLOY'
+            echo '- Pix Sandbox (somente Http::fake): consulta por externalReference, 14 dias, moeda BRL em centavos, sem grants'
+            echo '- Conciliação GET /payments/id somente no Http::fake; status CONFIRMED != RECEIVED, tudo NO-GRANT'
+            echo '- Jornada full fake repetida: um POST de cliente, um POST de Pix, GETs de replay e recebimento sem ativar'
+            echo '- Link PG CI unico por organizacao/referencia, role separada e conciliacao GET-only de cliente'
+            echo '- Candidatos componiveis nesta HEAD mas SEM transacao real de pagamento, tenant autenticado ou RLS final'
+          } >> "$GITHUB_STEP_SUMMARY"
