@@ -15,6 +15,7 @@ on:
       - 'resources/**'
       - 'routes/**'
       - 'infra/staging/**'
+      - 'tests/Unit/StagingPinnedBaseImagesContractTest.php'
       - 'scripts/ci/verify-staging-rendered-compose.php'
       - 'scripts/ci/verify-private-staging-runtime.sh'
       - 'scripts/ci/verify-private-staging-isolation.sh'
