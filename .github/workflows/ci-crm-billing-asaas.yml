@@ -17,6 +17,13 @@ on:
       - 'tests/Labs/billing/**'
       - '.github/workflows/ci-crm-billing-asaas.yml'
 
+  push:
+    branches:
+      - review/crm-billing-order-ledger-lab-2026-11-14
+    paths:
+      - 'tests/Labs/billing/**'
+      - '.github/workflows/ci-crm-billing-asaas.yml'
+
 permissions:
   contents: read
 
