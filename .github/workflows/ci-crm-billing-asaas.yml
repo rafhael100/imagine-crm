@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - dev/fast-track-crm-2026-11-04
+      - review/crm-billing-asaas-combined-lab-2026-11-14
     paths:
       - 'app/Core/Billing/**'
       - 'tests/Unit/AsaasWebhookEnvelopeTest.php'
@@ -14,6 +15,16 @@ on:
       - 'tests/Feature/AsaasSandboxBillingJourneyTest.php'
       - 'tests/Feature/PostgresAsaasCustomerLinkTest.php'
       - 'tests/Feature/PostgresAsaasCustomerReconcileTest.php'
+      - 'tests/Feature/PostgresAsaasOrderReservationTest.php'
+      - 'tests/Labs/billing/**'
+      - '.github/workflows/ci-crm-billing-asaas.yml'
+
+  push:
+    branches:
+      - review/crm-billing-order-ledger-lab-2026-11-14
+    paths:
+      - 'app/Core/Billing/**'
+      - 'tests/Feature/PostgresAsaasOrderReservationTest.php'
       - 'tests/Labs/billing/**'
       - '.github/workflows/ci-crm-billing-asaas.yml'
 
@@ -64,6 +75,11 @@ jobs:
       BILLING_LINK_PASSWORD: ephemeral-billing-link-only
       BILLING_LINK_REVIEW_USERNAME: crm_billing_link_review_ci
       BILLING_LINK_REVIEW_PASSWORD: ephemeral-link-review-only
+      CRM_ASAAS_ORDER_LAB: synthetic-only
+      BILLING_ORDER_USERNAME: crm_billing_order_ci
+      BILLING_ORDER_PASSWORD: ephemeral-order-insert-only
+      BILLING_ORDER_REVIEW_USERNAME: crm_billing_order_review_ci
+      BILLING_ORDER_REVIEW_PASSWORD: ephemeral-order-review-only
       CACHE_STORE: array
       SESSION_DRIVER: array
       QUEUE_CONNECTION: sync
@@ -100,6 +116,10 @@ jobs:
           php -l app/Core/Billing/LaboratoryAsaasCustomerLink.php
           php -l app/Core/Billing/LaboratoryAsaasCustomerHandoff.php
           php -l app/Core/Billing/LaboratoryAsaasCustomerReconciler.php
+          php -l app/Core/Billing/LaboratoryAsaasOrderReservation.php
+          php -l app/Core/Billing/LaboratoryAsaasOrderPaymentReviewer.php
+          php -l app/Core/Billing/LaboratoryAsaasOrderPaymentHandoff.php
+          php -l tests/Feature/PostgresAsaasOrderReservationTest.php
           php -l tests/Unit/AsaasWebhookEnvelopeTest.php
           php -l tests/Feature/PostgresAsaasWebhookInboxTest.php
           php -l tests/Feature/PostgresAsaasWebhookReviewWorkerTest.php
@@ -130,6 +150,14 @@ jobs:
         run: php artisan test --filter=PostgresAsaasCustomerLinkTest --no-ansi
       - name: Provar conciliacao GET-only de pagador por revisor sem novos POSTs
         run: php artisan test --filter=PostgresAsaasCustomerReconcileTest --no-ansi
+      - name: Provar unicidade de pedido e pagamento no PostgreSQL CI (sem rede)
+        run: |
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-order-reservation-ci.sql
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci \
+            -v ON_ERROR_STOP=1 -1 -f tests/Labs/billing/asaas-order-reservation-check-ci.sql
+      - name: Provar duas conexoes, idempotencia e gateway Pix falso
+        run: php artisan test --filter=PostgresAsaasOrderReservationTest --no-ansi
       - name: Resumo de limitacoes e escopo
         if: always()
         run: |
@@ -145,5 +173,7 @@ jobs:
             echo '- Conciliação GET /payments/id somente no Http::fake; status CONFIRMED != RECEIVED, tudo NO-GRANT'
             echo '- Jornada full fake repetida: um POST de cliente, um POST de Pix, GETs de replay e recebimento sem ativar'
             echo '- Link PG CI unico por organizacao/referencia, role separada e conciliacao GET-only de cliente'
+            echo '- Reserva SQL unica por pedido e provider_payment_id; teste CI sem endpoint, sem HTTP real e sem grant'
+            echo '- Handoff Laravel sob PostgreSQL16 CI apenas, com replay conservador e testes em duas sessoes'
             echo '- Candidatos componiveis nesta HEAD mas SEM transacao real de pagamento, tenant autenticado ou RLS final'
           } >> "$GITHUB_STEP_SUMMARY"
