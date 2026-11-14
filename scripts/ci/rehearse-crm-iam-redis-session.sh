@@ -45,7 +45,7 @@ echo "No login or customer data was exposed by application routes." || fail "php
 php -r '
   if (!class_exists("Redis")) { exit(1); }
   $r = new Redis();
-  if (!$r->connect("127.0.0.1", 6379, 2.0) || $r->ping() !== true) {
+  if (!$r->connect("127.0.0.1", 6379, 2.0) || !in_array($r->ping(), [true, "+PONG", "PONG"], true)) {
       exit(1);
   }
   $r->close();
