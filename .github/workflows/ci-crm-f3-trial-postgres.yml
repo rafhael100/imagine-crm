@@ -9,6 +9,7 @@ on:
       - 'app/Core/Plans/LaboratoryHistoricalTrialAliases.php'
       - 'database/experimental-migrations/trial/**'
       - 'tests/Feature/PostgresLabTrialClaimUniqueTest.php'
+      - 'tests/Feature/PostgresLabTrialKeyRingTest.php'
       - '.github/workflows/ci-crm-f3-trial-postgres.yml'
 
 permissions:
@@ -104,7 +105,7 @@ jobs:
           {
             echo '### Prova de unicidade PostgreSQL apenas em laboratório'
             echo '- Banco PostgreSQL descartável com identidade verificada pelo preflight SEC-CI-02'
-            echo '- Papel de execução somente INSERT de cinco colunas, sem SELECT ou UPDATE'
+            echo '- Claims: INSERT somente cinco colunas; politica de versoes: SELECT apenas, sem UPDATE ou DELETE'
             echo '- Sem CNPJ bruto no registro, sem rota, sem conta, sem ativação ou cobrança'
             echo '- Rotação de chave HMAC, verificação de titularidade e LGPD ainda não liberadas'
             echo '- Nunca migrado na VPS nem em produção; DRAFT e NO-GO'
