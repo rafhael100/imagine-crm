@@ -492,7 +492,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $this->assertSame($original->destinationReference, $row->destination_reference);
     }
 
-    public function test_identical_source_event_hash_is_scoped_to_each_tenant(): void
+    public function test_identical_submission_reference_is_scoped_to_each_tenant(): void
     {
         $claimA = self::siteClaim(self::ORG_A);
         $claimB = self::siteClaim(self::ORG_B);
