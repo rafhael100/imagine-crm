@@ -17,6 +17,7 @@ from urllib.parse import urlsplit
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent
+PROTOTYPES_ROOT = ROOT.parent
 PAGE = ROOT / "index.html"
 assert os.environ.get("GITHUB_ACTIONS") == "true", "Disposable CI only"
 assert PAGE.is_file() and not PAGE.is_symlink() and PAGE.stat().st_size < 150_000
@@ -45,7 +46,7 @@ class ReadOnly(SimpleHTTPRequestHandler):
         self.send_error(405, "No CRM write endpoint")
 
 
-with ThreadingHTTPServer(("127.0.0.1", 0), partial(ReadOnly, directory=str(ROOT))) as server:
+with ThreadingHTTPServer(("127.0.0.1", 0), partial(ReadOnly, directory=str(PROTOTYPES_ROOT))) as server:
     origin = f"http://127.0.0.1:{server.server_port}"
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
@@ -81,12 +82,16 @@ with ThreadingHTTPServer(("127.0.0.1", 0), partial(ReadOnly, directory=str(ROOT)
                             route.abort()
 
                     page.route("**/*", offline_only)
-                    response = page.goto(origin + "/", wait_until="domcontentloaded")
+                    response = page.goto(origin + "/s01-prot-01/", wait_until="domcontentloaded")
                     assert response and response.status == 200
                     assert page.title() == "Imagine CRM — Protótipo offline"
                     assert page.locator('html[lang="pt-BR"]').count() == 1
                     assert page.locator('nav#demo-navigation .nav-button').count() == 9
                     assert page.locator('section[data-screen]').count() == 9
+                    logo = page.locator('img[src="../assets/logo-imagine.png"][alt="Imagine"]')
+                    assert logo.count() == 1 and logo.is_visible()
+                    assert logo.evaluate('(node) => node.naturalWidth') == 200
+                    assert logo.evaluate('(node) => node.naturalHeight') == 55
                     assert page.evaluate(
                         'getComputedStyle(document.documentElement).getPropertyValue("--imagine-orange").trim()'
                     ) == "#F9941D"
