@@ -83,10 +83,11 @@ final readonly class LaboratoryTenantLeadLedger
                         ->where('binding_reference', $claim->identity->bindingReference)
                         ->sharedLock()->first([
                             'site_reference', 'form_reference',
-                            'destination_reference', 'state',
+                            'destination_reference', 'source_code', 'state',
                         ]);
                     if (!$binding
                         || $binding->state !== 'active'
+                        || $binding->source_code !== $sourceCode
                         || (string) $binding->site_reference !== $claim->siteReference
                         || (string) $binding->form_reference !== $claim->formReference
                         || (string) $binding->destination_reference !== $claim->destinationReference) {
