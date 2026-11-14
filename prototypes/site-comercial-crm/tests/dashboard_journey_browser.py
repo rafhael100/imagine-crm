@@ -122,10 +122,25 @@ def main() -> int:
                 "--virtual-time-budget=4500", "--window-size=1500,1100",
                 "--dump-dom", path.as_uri(),
             ]
-            try:
-                result = subprocess.run(args, capture_output=True, text=True, timeout=50)
-            except subprocess.TimeoutExpired:
-                print("FAIL: browser sem resposta", file=sys.stderr)
+            # CI Chrome may occasionally hang while terminating a headless
+            # process. Retry at most ONCE with a NEW profile; no test can pass
+            # unless the actual browser supplies a PASS observation.
+            result = None
+            for attempt in range(2):
+                if attempt:
+                    args = [
+                        "--user-data-dir=" + str(root / "retry-profile")
+                        if arg.startswith("--user-data-dir=") else arg
+                        for arg in args
+                    ]
+                try:
+                    result = subprocess.run(args, capture_output=True, text=True, timeout=45)
+                    break
+                except subprocess.TimeoutExpired:
+                    if attempt == 0:
+                        print(f"WARN {width}px: Chromium temporariamente sem resposta; repetição com perfil novo", file=sys.stderr)
+            if result is None:
+                print(f"FAIL {width}px: Chromium não respondeu após duas tentativas", file=sys.stderr)
                 return 1
             match = re.search(r'<output\b[^>]*data-ux="(PASS|FAIL)"[^>]*>(.*?)</output>',
                               result.stdout, re.DOTALL)
