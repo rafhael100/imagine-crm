@@ -22,7 +22,7 @@ CREATE TABLE crm_lab_asaas_events (
             'SUBSCRIPTION_CREATED', 'SUBSCRIPTION_UPDATED',
             'SUBSCRIPTION_INACTIVATED', 'SUBSCRIPTION_DELETED'
         )
-        AND state = 'pending_review'
+        AND state IN ('pending_review', 'reviewed_no_effect')
         AND observed_at > 0
     )
 );
@@ -35,3 +35,13 @@ GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_billing_ci;
 GRANT USAGE ON SCHEMA public TO crm_billing_ci;
 GRANT INSERT (event_key, resource_key, event_kind, body_digest, observed_at)
     ON TABLE crm_lab_asaas_events TO crm_billing_ci;
+
+-- A physically separate reviewer can inspect only pseudonymous markers and
+-- acknowledge them as reviewed WITHOUT ANY business mutation capability.
+CREATE ROLE crm_billing_review_ci LOGIN PASSWORD 'ephemeral-billing-review-only'
+    NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_billing_review_ci;
+GRANT USAGE ON SCHEMA public TO crm_billing_review_ci;
+GRANT SELECT (event_key, event_kind, state, observed_at)
+    ON TABLE crm_lab_asaas_events TO crm_billing_review_ci;
+GRANT UPDATE (state) ON TABLE crm_lab_asaas_events TO crm_billing_review_ci;
