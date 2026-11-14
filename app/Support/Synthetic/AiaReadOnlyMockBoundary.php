@@ -19,6 +19,50 @@ final class AiaReadOnlyMockBoundary
     ];
 
     /**
+     * F3-AIA: byte-exact, bounded mock request validation, NEVER authority.
+     *
+     * This is only the same canonical encoding as the pinned Agents lab:
+     * duplicate property names, alias escapes, whitespace and unknown keys
+     * cannot be normalized into a different accepted request.
+     * It is not an HTTP parser or a requirement on a future real API.
+     */
+    public static function hasCanonicalFixtureShape(string $bytes): bool
+    {
+        if ($bytes === '' || strlen($bytes) > 1024) {
+            return false;
+        }
+
+        try {
+            $wire = json_decode($bytes, true, 4, JSON_THROW_ON_ERROR);
+            if (!is_array($wire) || array_keys($wire) !== self::KEYS
+                || !self::hasFixtureShape($wire)) {
+                return false;
+            }
+            $canonical = json_encode(
+                $wire,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                    | JSON_THROW_ON_ERROR
+            );
+            return hash_equals($canonical, $bytes);
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    /**
+     * Uniform deny even after a valid mock body. Never grants any CRM read.
+     *
+     * @return array{contract:string,state:string,projection:null,real_authorization:false,external_calls:0}
+     */
+    public static function inspectCanonicalJson(string $bytes): array
+    {
+        // The result intentionally does not vary based on schema, resource,
+        // principal, claimed tenant or canonical encoding.
+        self::hasCanonicalFixtureShape($bytes);
+        return self::denied();
+    }
+
+    /**
      * Syntactic compatibility only. NEVER grants any read permission.
      *
      * @param array<mixed> $wire
