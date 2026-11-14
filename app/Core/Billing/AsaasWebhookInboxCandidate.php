@@ -15,7 +15,7 @@ use Throwable;
  * Not deployable in the current release: the only allowed target is a
  * disposable GitHub CI PostgreSQL service with an INSERT-only role.
  *
- * Stores exclusively HMAC event/resource identifiers and raw body SHA-256,
+ * Stores exclusively HMAC event/resource identifiers and keyed body HMAC-SHA256,
  * NEVER payloads, customer contacts, names, amounts, card or subscription
  * rights. Does NOT settle, charge, invoice, grant IAM or activate a tenant.
  */
