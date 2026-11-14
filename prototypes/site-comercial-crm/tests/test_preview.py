@@ -102,7 +102,7 @@ def main():
     assert "14 dias" in html and "sem cartão" in html
     assert "Preços" not in html or "homologação" in html.lower()
     assert "cadastro, acesso ao CRM, contratos e pagamentos reais ainda não estão liberados" in html
-    assert "content="noindex,nofollow"" in html
+    assert 'content="noindex,nofollow"' in html
     for prohibited in ("fetch(", "XMLHttpRequest", "navigator.sendBeacon",
                        "localStorage", "sessionStorage", "document.cookie",
                        "window.location=", "location.href="):
