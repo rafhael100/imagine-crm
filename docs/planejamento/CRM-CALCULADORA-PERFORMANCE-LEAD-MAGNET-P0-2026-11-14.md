@@ -22,6 +22,12 @@ Quando o backend autorizado estiver disponível, receber leads da calculadora no
 ## Entrega atual
 `app/Core/Leads/SyntheticCalculatorNurtureConsentInspector.php` valida um rascunho sintético, recusa canais/versões de aviso desconhecidos, separa marcações de interesse e **sempre recusa** envio de relatório, inscrição em marketing, armazenamento e execução de campanhas; booleans enviados pelo navegador não provam consentimento.
 
+## Fluxo offline de opt-in e descadastro (entrega adicional)
+
+O módulo `SyntheticCalculatorNurtureLifecycle.php` implementa máquina determinística de eventos sem dados pessoais e **sem enviar mensagens**. Fases sintéticas: relatório solicitado; marketing solicitado separadamente; confirmação de e-mail em até sete dias; expiração; revogação; novo pedido pós-revogação. Se confirmado apenas no laboratório, sugere quatro conteúdos nos dias 0, 3, 7 e 14, sem job, destinatário ou canal configurado.
+
+A ausência de prova autenticada do consentimento deixa permanentemente `can_send_report=false`, `can_send_marketing=false` e `can_persist_lead=false`. O teste CI `tests/offline_calculator_nurture_lifecycle_test.php` cobre replay, datas fora de ordem, confirmação vencida, descadastro e reentrada. Antes de qualquer operação: gravar prova de origem assinada, canal de contato verificado, identidade do anunciante, base legal, revogação durável, supressão e auditoria.
+
 ## Dependências
 - Comercial PR #389 (calculadora pública, sem PII).
 - Performance PR #351 (terceiro canal em laboratório).
