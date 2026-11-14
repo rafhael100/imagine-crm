@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Core\Identity\PrincipalReference;
+use App\Core\Leads\LeadSubmissionIdentity;
+use App\Core\Leads\SyntheticIdempotencyClaim;
 use App\Core\Leads\LaboratoryTenantLeadLedger;
 use App\Core\Tenancy\PostgresActiveMembershipStore;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -387,12 +389,26 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $this->assertSame(0, $this->one->transactionLevel());
     }
 
+    private static function siteClaim(
+        string $organization,
+        string $submission = '12121212-2222-4222-8222-555555555551',
+        string $binding = '23232323-2222-4222-8222-555555555551',
+        string $site = '34343434-2222-4222-8222-555555555551',
+        string $form = '45454545-2222-4222-8222-555555555551',
+        string $destination = '56565656-2222-4222-8222-555555555551',
+    ): SyntheticIdempotencyClaim {
+        return new SyntheticIdempotencyClaim(
+            new LeadSubmissionIdentity($organization, $binding, $submission),
+            $site, $form, $destination,
+        );
+    }
+
     public function test_synthetic_sites_event_replay_is_idempotent_and_mismatches_are_denied(): void
     {
-        $digest = hash('sha256', 'SITES-CI-EVENT-0001');
+        $claim = self::siteClaim(self::ORG_A);
         $first = $this->ledger()->captureSynthetic(
             self::principal(), self::ORG_A, self::LEAD_A,
-            'DEMO_A009', 'sites', $digest,
+            'DEMO_A009', 'sites', $claim,
         );
         $again = $this->ledger($this->two)->captureSynthetic(
             self::principal(), self::ORG_A, self::LEAD_A,
@@ -400,7 +416,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
         );
         $changedTitle = $this->ledger()->captureSynthetic(
             self::principal(), self::ORG_A, self::LEAD_A,
-            'DEMO_CHANGED', 'sites', $digest,
+            'DEMO_CHANGED', 'sites', $claim,
         );
         $changedId = $this->ledger($this->two)->captureSynthetic(
             self::principal(), self::ORG_A, self::LEAD_B,
@@ -408,7 +424,8 @@ final class PostgresLabLeadsRlsTest extends TestCase
         );
         $newDigestSameLead = $this->ledger()->captureSynthetic(
             self::principal(), self::ORG_A, self::LEAD_A,
-            'DEMO_A009', 'sites', hash('sha256', 'SITES-CI-OTHER-EVENT'),
+            'DEMO_A009', 'sites', self::siteClaim(self::ORG_A,
+                submission: '12121212-2222-4222-8222-555555555552'),
         );
 
         $this->assertSame('synthetic_captured', $first['status_code']);
@@ -432,14 +449,15 @@ final class PostgresLabLeadsRlsTest extends TestCase
 
     public function test_identical_source_event_hash_is_scoped_to_each_tenant(): void
     {
-        $digest = hash('sha256', 'SITES-CI-GLOBAL-RETRY-1');
+        $claimA = self::siteClaim(self::ORG_A);
+        $claimB = self::siteClaim(self::ORG_B);
         $a = $this->ledger()->captureSynthetic(
             self::principal(), self::ORG_A, self::LEAD_A,
-            'DEMO_A010', 'landing', $digest,
+            'DEMO_A010', 'landing', $claimA,
         );
         $b = $this->ledger($this->two)->captureSynthetic(
             self::principal(), self::ORG_B, self::LEAD_B,
-            'DEMO_B010', 'landing', $digest,
+            'DEMO_B010', 'landing', $claimB,
         );
         $this->assertSame('synthetic_captured', $a['status_code']);
         $this->assertSame('synthetic_captured', $b['status_code']);
@@ -456,20 +474,19 @@ final class PostgresLabLeadsRlsTest extends TestCase
             $this->one->table('public.crm_lab_lead_capture_keys')->count());
     }
 
-    public function test_invalid_capture_source_and_digest_do_not_mutate_storage(): void
+    public function test_invalid_source_tenant_and_title_never_reach_capture_sql(): void
     {
         foreach ([
-            ['unknown', hash('sha256', 'SOURCE-CI')],
-            ['sites', 'RAW_EVENT_ID_NOT_A_DIGEST'],
-            ['sites', strtoupper(hash('sha256', 'SOURCE-CI'))],
-            ['sites', str_repeat('0', 63)],
-        ] as [$source, $digest]) {
+            ['unknown', self::siteClaim(self::ORG_A), 'DEMO_A011'],
+            ['sites', self::siteClaim(self::ORG_B), 'DEMO_A011'],
+            ['sites', self::siteClaim(self::ORG_A), 'invalid title!'],
+        ] as [$source, $claim, $title]) {
             try {
                 $this->ledger()->captureSynthetic(
                     self::principal(), self::ORG_A, self::LEAD_A,
-                    'DEMO_A011', $source, $digest,
+                    $title, $source, $claim,
                 );
-                $this->fail('Invalid capture attributes should fail before SQL.');
+                $this->fail('Invalid origin claim must be rejected before SQL.');
             } catch (\InvalidArgumentException $e) {
                 $this->assertSame('Captura de lead sintetico invalida.', $e->getMessage());
             }
@@ -486,7 +503,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
         try {
             $this->ledger($this->two)->captureSynthetic(
                 self::principal(), self::ORG_A, self::LEAD_B,
-                'DEMO_A013', 'sites', hash('sha256', 'CI-TITLE-CONFLICT'),
+                'DEMO_A013', 'sites', self::siteClaim(self::ORG_A),
             );
             $this->fail('A captured event cannot commit when its lead fails.');
         } catch (\RuntimeException $e) {
@@ -507,7 +524,7 @@ final class PostgresLabLeadsRlsTest extends TestCase
         try {
             $this->ledger()->captureSynthetic(
                 self::principal(), self::ORG_A, self::LEAD_A,
-                'DEMO_A012', 'onepage', hash('sha256', 'REVOKED-CI'),
+                'DEMO_A012', 'onepage', self::siteClaim(self::ORG_A),
             );
             $this->fail('Revoked principal cannot capture.');
         } catch (AuthorizationException) {
