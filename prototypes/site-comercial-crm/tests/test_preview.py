@@ -102,6 +102,11 @@ def main():
         assert f'data-action="Plano {plan}"' in html
 
     assert len(parser.buttons) >= 6
+    assert '<table class="compare-table">' in html
+    assert '<caption>Resumo preliminar dos planos mensais</caption>' in html
+    assert '<th scope="row">Usuários de referência</th>' in html
+    assert '<th scope="row">Anexos e arquivos</th>' in html
+    assert '.compare-scroll{' in stylesheet and 'overflow-x:auto' in stylesheet
     assert 'aria-expanded="false"' in html
     assert ".navact>.btn.menu{display:inline-flex" in stylesheet, "Menu mobile deve permanecer visível"
     assert "14 dias" in html and "sem cartão" in html
