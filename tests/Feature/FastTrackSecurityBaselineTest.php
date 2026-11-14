@@ -95,7 +95,18 @@ final class FastTrackSecurityBaselineTest extends TestCase
 
     public function test_all_experimental_migrations_stay_outside_normal_discovery_and_refuse_staging_production(): void
     {
-        $files = glob(database_path('experimental-migrations/*/*.php')); $this->assertCount(3, $files);
+        $files = glob(database_path('experimental-migrations/*/*.php'));
+        $this->assertCount(4, $files, 'Exactly four reviewed experimental migrations, no automatic discovery.');
+        $this->assertSame(
+            [
+                '2026_11_04_000002_create_candidate_crm_auth_registry.php',
+                '2026_11_04_000003_create_candidate_iam_hardening.php',
+                '2026_11_05_000004_create_synthetic_async_ledger.php',
+                '2026_11_14_000005_create_lab_trial_claims.php',
+            ],
+            array_map('basename', $files),
+            'No unreviewed experimental migration may be added.',
+        );
         foreach (['production', 'staging', 'local', 'testing'] as $environment) {
             $this->app->instance('env', $environment); config(['identity.experimental' => true]);
             $normal = $this->app['migrator']->getMigrationFiles(array_merge([database_path('migrations')], $this->app['migrator']->paths()));
