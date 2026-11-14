@@ -1,0 +1,56 @@
+name: CRM Imagine - UX painel Cliente e Administrador (lab)
+
+on:
+  push:
+    branches:
+      - review/crm-customer-admin-journey-preview-2026-11-14
+    paths:
+      - 'prototypes/site-comercial-crm/**'
+      - '.github/workflows/ci-crm-ux-panels.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-ux-panels-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  client-admin-ux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout sem credenciais persistentes
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Inspecionar página comercial, links e superfície de dados
+        run: python3 prototypes/site-comercial-crm/tests/test_preview.py
+      - name: Validar código JavaScript das telas
+        run: node --check prototypes/site-comercial-crm/painel-demo/dashboard.js
+      - name: Executar fluxo comercial -> Cliente -> Kanban -> Administrador
+        run: python3 prototypes/site-comercial-crm/tests/dashboard_journey_browser.py
+      - name: Verificar regressões da jornada do trial de exemplo
+        run: python3 prototypes/site-comercial-crm/tests/trial_handoff_browser.py
+      - name: Criar capturas para revisão humana (sem dados reais)
+        shell: bash
+        run: |
+          set -euo pipefail
+          browser="$(command -v google-chrome || command -v chromium || command -v google-chrome-stable)"
+          mkdir -p review-ux
+          for width in 1280 375; do
+            profile="$(mktemp -d)"
+            "$browser" --headless --no-sandbox --disable-gpu --disable-background-networking \
+              --user-data-dir="$profile" --window-size="$width,900" \
+              --virtual-time-budget=800 \
+              --screenshot="$PWD/review-ux/painel-entrada-$width.png" \
+              "file://$PWD/prototypes/site-comercial-crm/painel-demo/index.html"
+            rm -rf "$profile"
+          done
+      - name: Anexar capturas de revisão
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: crm-ux-cliente-administrador-entradas
+          path: review-ux/
+          retention-days: 7
+          if-no-files-found: error
