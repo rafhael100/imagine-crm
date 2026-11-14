@@ -14,6 +14,8 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parents[1]
 HTML = BASE / "index.html"
 LOGO = BASE / "assets" / "logo-imagine.png"
+CSS = BASE / "assets" / "site.css"
+JS = BASE / "assets" / "site.js"
 EXPECTED_LOGO_BLOB = "678adeceb3a8ecdaeb6b576b9ee18d1bf0396f77"
 EXPECTED_SECTIONS = {"inicio", "recursos", "como-funciona", "planos", "duvidas", "conteudo"}
 
@@ -66,6 +68,8 @@ class AuditHTML(HTMLParser):
 def main():
     html = HTML.read_text(encoding="utf-8")
     logo = LOGO.read_bytes()
+    stylesheet = CSS.read_text("utf-8")
+    script = JS.read_text("utf-8")
     assert html.lower().startswith("<!doctype html>")
     assert html.strip().endswith("</body></html>")
     assert logo[:8] == bytes((137, 80, 78, 71, 13, 10, 26, 10))
@@ -99,16 +103,24 @@ def main():
 
     assert len(parser.buttons) >= 6
     assert 'aria-expanded="false"' in html
-    assert ".navact>.btn.menu{display:inline-flex" in html, "Menu mobile deve permanecer visível"
+    assert ".navact>.btn.menu{display:inline-flex" in stylesheet, "Menu mobile deve permanecer visível"
     assert "14 dias" in html and "sem cartão" in html
     assert "Preços" not in html or "homologação" in html.lower()
-    assert "cadastro, acesso ao CRM, contratos e pagamentos reais ainda não estão liberados" in html
+    assert "cadastro, acesso ao CRM, contratos e pagamentos reais ainda não estão liberados" in script
     assert 'content="noindex,nofollow"' in html
     for prohibited in ("fetch(", "XMLHttpRequest", "navigator.sendBeacon",
                        "localStorage", "sessionStorage", "document.cookie",
                        "window.location=", "location.href="):
-        assert prohibited not in html, f"Prévia contém recurso proibido: {prohibited}"
+        assert prohibited not in (html + script), f"Prévia contém recurso proibido: {prohibited}"
     assert re.search(r"<meta[^>]+Content-Security-Policy", html)
+    assert '<link rel="stylesheet" href="./assets/site.css">' in html
+    assert '<script src="./assets/site.js" defer></script>' in html
+    assert '<style>' not in html and '<script>' not in html
+    assert ' style="' not in html and ' onClick=' not in html
+    assert "style-src 'self'; script-src 'self'" in html
+    assert "'unsafe-inline'" not in html
+    assert len(stylesheet) > 4000 and len(script) > 1000
+    assert 'document.querySelectorAll(\'[data-action]\')' in script
     print("OK — estrutura, marca original, planos, navegação, isolamento e bloqueio de contratação")
 
 
