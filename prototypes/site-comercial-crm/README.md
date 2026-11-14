@@ -12,6 +12,7 @@
 - `tests/browser_smoke.py` — interação real em Chromium com 320, 375, 768 e 1280 px (menu, FAQ, CTA, modal, foco e ausência de overflow).
 - `staging/nginx-crm-preview.conf.example` — proposta de vhost somente loopback com Basic Auth e exposição explícita de cinco caminhos.
 - `staging/test_configuration.py` — checagem estrutural do exemplo; **não substitui** `nginx -t` nem teste real na VPS.
+- `staging/verify_bundle.py` — confere se o pacote contém somente HTML, logo, CSS, JS e arquivos de instrução/manifesto, com SHA256 válido; não faz rede.
 - `staging/smoke_private_https.py` — verificação HTTP **somente leitura e opcional**, não executada pela CI: exige origem HTTPS e hostname aprovados; valida 401 anônimo para os cinco recursos e, com arquivo de credenciais seguro, 200 autenticado + cabeçalhos. Não registra credenciais.
 - CI `ci-crm-commercial-preview.yml` — valida os arquivos da branch de revisão; não efetua deploy.
 - Não há dependência de API, banco de dados, pagamento, cookies ou scripts de terceiros.
@@ -37,3 +38,22 @@ Separar dois aceites:
 - **Aceite técnico de cadastro/contratação** — fluxo real de trial, IAM, segurança, dados e pagamentos, a ser avaliado em etapa própria.
 
 A aprovação visual do protótipo não substitui os gates técnicos de runtime.
+
+## Comandos de revisão (sem deploy)
+
+```bash
+python3 prototypes/site-comercial-crm/tests/test_preview.py
+python3 prototypes/site-comercial-crm/tests/browser_smoke.py
+python3 prototypes/site-comercial-crm/staging/test_configuration.py
+python3 prototypes/site-comercial-crm/staging/verify_bundle.py build/crm-preview
+```
+
+O último comando depende de a CI ter montado o pacote `build/crm-preview`. Para staging real, o operador deve definir a URL HTTPS aprovada e verificar o comportamento 401/200:
+
+```bash
+python3 prototypes/site-comercial-crm/staging/smoke_private_https.py \
+  --url 'https://SEU-HOST-PRIVADO-APROVADO' \
+  --expected-host 'SEU-HOST-PRIVADO-APROVADO'
+```
+
+A execução autenticada requer `--auth-file` apontando a um arquivo local fora do repositório com permissão `0600`; não passe senha na linha de comando nem em logs. Nenhum desses comandos realiza deploy ou concede acesso ao CRM.
