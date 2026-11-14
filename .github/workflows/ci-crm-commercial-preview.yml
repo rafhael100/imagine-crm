@@ -28,6 +28,8 @@ jobs:
           persist-credentials: false
       - name: Validar integridade visual e limites sem rede
         run: python3 prototypes/site-comercial-crm/tests/test_preview.py
+      - name: Exercitar interações reais em Chromium 320/375/768/1280
+        run: python3 prototypes/site-comercial-crm/tests/browser_smoke.py
       - name: Capturar imagens estáticas para revisão visual (sem rede)
         shell: bash
         run: |
