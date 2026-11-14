@@ -1,6 +1,6 @@
 # CRM F3-263 — Candidato de staging privado sem dados reais (DRAFT / NO-GO)
 
-**Objetivo:** preparar para revisão técnica um pacote de contêineres do CRM que *poderá*, somente após gate de infraestrutura, servir a aplicação Laravel F0 em localhost para verificar o health-check. Este commit **não instala nem executa qualquer contêiner**. Nenhuma URL pública, sessão de cliente, CNPJ, tenant, credencial, migração, API, e-mail ou WhatsApp é habilitada.
+**Objetivo:** preparar para revisão técnica um pacote de contêineres do CRM que *poderá*, somente após gate de infraestrutura, servir a aplicação Laravel F0 em localhost para verificar o health-check. O pacote **não instala serviços na VPS ou em produção**. A partir de F3-267, uma CI isolada e temporária pode construir e executar contêineres somente no runner descartável do GitHub para testar `/up` e negativas de rotas; não há deploy nem serviço permanente. Nenhuma URL pública, sessão de cliente, CNPJ, tenant, credencial, migração, API, e-mail ou WhatsApp é habilitada.
 
 ## Arquivos
 
@@ -34,11 +34,19 @@ Os testes PHPUnit de StagingRenderedComposePolicyTest verificam alterações adv
 
 Os dois começam negando todos os arquivos, reabilitam entradas estritamente necessárias e no final voltam a excluir .env, chaves, certificados, bancos locais, logs, dependências e storage; o primeiro mantém database/experimental-migrations fora do contexto. A precedência de ignore-file por Dockerfile é [documentada pelo Docker](https://docs.docker.com/build/concepts/context/#filename-and-location). O novo StagingBuildContextIsolationTest verifica as listas exatas e alterações inseguras simuladas.
 
-**Limite:** a efetividade real dos padrões e as capacidades reais da imagem, symlinks, rede e permissões precisam ser verificadas num build isolado **somente após o gate apropriado**. Nenhum build, download de imagem, execução de container, deploy ou acesso à VPS ocorre nesta alteração. PR permanece DRAFT/NO-MERGE/NO-DEPLOY.
+**Limite F3-266 (histórico):** a etapa F3-266 validou somente arquivos. A autorização explícita posterior da Direção permite apenas a prova F3-267 em runner temporário de CI, sem nenhum deploy ou acesso à VPS. O PR permanece DRAFT/NO-MERGE/NO-DEPLOY.
+
+## F3-267 — construção/execução de fumaça descartável, sem infraestrutura externa
+
+A Direção autorizou continuar a prova de execução. A CI `.github/workflows/ci-crm-private-staging-runtime-smoke.yml` foi criada exclusivamente para o **PR #517 em rascunho, no mesmo repositório**, sem credenciais persistentes, com token GitHub limitado a leitura, tempo máximo e cancelamento de execuções substituídas. Ela é distinta da CI **puramente estática** F3-263, que permanece sem construir imagens.
+
+Na máquina efêmera GitHub-hosted a sequência é: validação de Compose JSON fail-closed; construção local das duas imagens revisadas; execução de contêineres PHP-FPM e Nginx com rede interna e única porta no loopback do runner; verificação de extensões PHP e dependências Composer de produção, sintaxe Nginx/FPM, GET/HEAD /up, respostas 404/405 para rotas comerciais não habilitadas, tentativa de acesso a arquivos internos e cabeçalhos HTTP; exclusão de contêineres, volumes e imagens ao final, mesmo em falha. Os checks executados e o resultado devem ser vinculados à SHA exata.
+
+**Não se trata de homologação real:** nenhum contato, cadastro, login ou dado de cliente é criado; não existe serviço público, banco PostgreSQL da VPS, migração operacional, Cloudflare/TLS, credencial ou implantação. Build no runner prova somente o processo descartável da CI e **não** autoriza merge do candidato na DEV, execução na VPS, alteração de `main` ou liberação de funcionalidades de negócio. Mantêm-se os gates SEG/DBA #27, CORE/LGPD #259, UX #416, digest fixo/SBOM, backup/rollback e isolamento do host antes de qualquer ativação externa.
 
 ## Escopo demonstrável
 
-CI pode provar sintaxe da configuração Compose, modelo normalizado e consistência estática do contrato. **Não** confirma disponibilidade da imagem, build PHP, boot de FPM, healthcheck via Nginx, permissões efetivas, rede de uma VPS, isolamento Docker real, TLS/Cloudflare, segurança do host ou homologação privada completa.
+A CI F3-263 cobre sintaxe e política estática. **A CI F3-267**, se verde, pode comprovar build e fumaça HTTP real **somente no runner descartável**. Nenhuma das duas comprova rede de uma VPS, segurança do host definitivo, TLS/Cloudflare, back-up, resiliência do PostgreSQL operacional, homologação privada da infraestrutura Imagine ou autorização de negócios.
 
 A conexão de banco do container está propositalmente inerte (SQLite em memória). O PostgreSQL da homologação **não está configurado**: só será desenhado após definição de papéis de runtime não superusuários, migrações, back-up/restore, segredos, RLS e aprovação especializada.
 
