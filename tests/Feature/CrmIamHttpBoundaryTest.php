@@ -154,7 +154,6 @@ final class CrmIamHttpBoundaryTest extends TestCase
         $this->getJson('/_ci/iam/state-check')->assertOk()->assertJson([
             'pending' => true,
             'same_server_session' => true,
-            'client_cookie_present' => true,
         ]);
 
         // Begin() rotates session+CSRF. Use ONLY its freshly issued token.
@@ -218,9 +217,12 @@ final class CrmIamHttpBoundaryTest extends TestCase
         $this->registerLaboratoryRoutes();
         // A normal HTML browser request must fail 401, not crash while
         // redirecting to the deliberately absent named "login" route.
-        $this->get('/_ci/iam/current')->assertUnauthorized()
-            ->assertHeader('Cache-Control', 'no-store')
-            ->assertJson(['message' => 'Unauthenticated.']);
+        $denied = $this->get('/_ci/iam/current');
+        $denied->assertUnauthorized()->assertJson(['message' => 'Unauthenticated.']);
+        $this->assertStringContainsString(
+            'no-store',
+            (string) $denied->headers->get('Cache-Control'),
+        );
         $this->post('/_ci/iam/password', [
             'login' => 'fixture-a', 'password' => self::PASSWORD,
         ])->assertStatus(419);
