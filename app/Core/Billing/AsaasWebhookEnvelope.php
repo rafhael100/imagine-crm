@@ -114,7 +114,10 @@ final readonly class AsaasWebhookEnvelope
             hash_hmac('sha256', 'imagine:asaas:v3:event:'.$eventId, $fingerprintKey),
             hash_hmac('sha256', 'imagine:asaas:v3:'.$resource.':'.$resourceId, $fingerprintKey),
             $event,
-            hash('sha256', $body),
+            // A plain hash of a financial/PII payload supports offline
+            // guessing against low-entropy fields; use a domain-separated
+            // keyed digest instead, with no disclosure of the key.
+            hash_hmac('sha256', 'imagine:asaas:v3:body:'.$body, $fingerprintKey),
         );
     }
 
