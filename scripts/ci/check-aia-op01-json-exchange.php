@@ -115,6 +115,8 @@ try {
         f3AiaFixture('POSITIVE', true);
     $request = new MockCrmReadRequest($wire);
     $bytes = MockCrmReadRequest::encodeCanonicalJson($wire);
+    f3AiaCheck(AiaReadOnlyMockBoundary::hasCanonicalFixtureShape($bytes));
+    f3AiaCheck(AiaReadOnlyMockBoundary::inspectCanonicalJson($bytes) === $denial);
     $raw = $edge->exchangeCanonicalJson(
         $bytes, $env, $owner, $ctx, 15
     );
@@ -156,6 +158,8 @@ try {
     $bytes = MockCrmReadRequest::encodeCanonicalJson($wire);
     $duplicate = substr($bytes, 0, -1)
         . ',"tenant_ref":"SYNTHETIC_A"}';
+    f3AiaCheck(!AiaReadOnlyMockBoundary::hasCanonicalFixtureShape($duplicate));
+    f3AiaCheck(AiaReadOnlyMockBoundary::inspectCanonicalJson($duplicate) === $denial);
     f3AiaCheck($edge->exchangeCanonicalJson(
         $duplicate, $env, $owner, $ctx, 15
     ) === $denialBytes);
@@ -174,6 +178,15 @@ try {
     ) === $denialBytes);
     f3AiaCheck($audit->count() === 1);
     ++$n;
+
+    // Independent CRM-only byte parser also denies future ambiguous JSON.
+    $unknown = json_decode(
+        MockCrmReadRequest::encodeCanonicalJson($wire), true, 4, JSON_THROW_ON_ERROR
+    );
+    $unknown['role'] = 'ADMIN';
+    f3AiaCheck(!AiaReadOnlyMockBoundary::hasCanonicalFixtureShape(
+        json_encode($unknown, JSON_THROW_ON_ERROR)
+    ));
 
     // Missing service identity cannot be invented by a matching wire shape.
     [$edge, $counter, $audit, $ctx, $env, $owner, $wire] =

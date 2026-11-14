@@ -34,6 +34,65 @@ final class AiaReadOnlyMockBoundaryTest extends TestCase
         ], AiaReadOnlyMockBoundary::inspect($request));
     }
 
+    public function test_canonical_json_bytes_are_validated_without_any_grant(): void
+    {
+        $valid = self::validWire();
+        $body = json_encode(
+            $valid,
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
+        );
+        self::assertTrue(AiaReadOnlyMockBoundary::hasCanonicalFixtureShape($body));
+        self::assertDenied($valid);
+        self::assertSame(AiaReadOnlyMockBoundary::inspect($valid),
+            AiaReadOnlyMockBoundary::inspectCanonicalJson($body));
+        foreach ([['ref'], ['stage'], ['stage', 'ref']] as $fields) {
+            $valid['fields'] = $fields;
+            $raw = json_encode($valid, JSON_UNESCAPED_UNICODE
+                | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+            self::assertTrue(AiaReadOnlyMockBoundary::hasCanonicalFixtureShape($raw));
+            self::assertSame(AiaReadOnlyMockBoundary::inspect($valid),
+                AiaReadOnlyMockBoundary::inspectCanonicalJson($raw));
+        }
+    }
+
+    public function test_canonical_json_rejects_ambiguity_and_remains_uniform(): void
+    {
+        $wire = self::validWire();
+        $raw = json_encode($wire, JSON_UNESCAPED_UNICODE
+            | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        $extra = $wire; $extra['is_admin'] = true;
+        $unknown = $wire; $unknown['fields'] = ['email'];
+        $reordered = array_reverse($wire, true);
+        $dupe = $wire; $dupe['fields'] = ['ref', 'ref'];
+        foreach ([
+            'duplicate key' => substr($raw, 0, -1)
+                . ',"tenant_ref":"SYNTHETIC_TENANT_A"}',
+            'whitespace' => str_replace(',"request_ref"', ', "request_ref"', $raw),
+            'escape alias' => str_replace('SYNTHETIC_CRM_AIA_READ_V1',
+                '\u0053YNTHETIC_CRM_AIA_READ_V1', $raw),
+            'trailing json' => $raw . '{}',
+            'wrong key order' => json_encode($reordered, JSON_THROW_ON_ERROR),
+            'forged admin key' => json_encode($extra, JSON_THROW_ON_ERROR),
+            'unknown personal field' => json_encode($unknown, JSON_THROW_ON_ERROR),
+            'duplicate field' => json_encode($dupe, JSON_THROW_ON_ERROR),
+            'oversized' => str_repeat('X', 2048),
+            'invalid UTF-8' => $raw . "\xFF",
+            'nested flood' => '{"fields":' . str_repeat('[', 9) .
+                'null' . str_repeat(']', 9) . '}',
+            'array root' => '[]',
+            'null root' => 'null',
+            'empty' => '',
+        ] as $label => $bad) {
+            self::assertFalse(AiaReadOnlyMockBoundary::hasCanonicalFixtureShape($bad),
+                'Unexpected accepted mock input: '.$label);
+            self::assertSame(
+                AiaReadOnlyMockBoundary::inspect($wire),
+                AiaReadOnlyMockBoundary::inspectCanonicalJson($bad),
+                'Denial unexpectedly reveals schema status: '.$label
+            );
+        }
+    }
+
     public function test_valid_agents_f1_12_request_remains_denied(): void
     {
         self::assertTrue(AiaReadOnlyMockBoundary::hasFixtureShape(self::validWire()));
