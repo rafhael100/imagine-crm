@@ -1,6 +1,13 @@
 name: CRM WEB-P4 - HTTPS privado em laboratorio descartavel
 
 on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'prototypes/site-comercial-crm/**'
+      - 'database/experimental-migrations/trial/**'
+      - '.github/workflows/ci-crm-web-p4-https-lab.yml'
   push:
     branches:
       - review/crm-web-p4-https-ci-proof-2026-11-13
