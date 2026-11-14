@@ -1,0 +1,68 @@
+name: CRM Private Staging - ephemeral container smoke NO DEPLOY
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'infra/staging/**'
+      - '.dockerignore'
+      - '.github/workflows/ci-crm-private-staging-smoke.yml'
+      - 'app/Core/Leads/**'
+      - 'app/Core/Tasks/**'
+
+permissions:
+  contents: read
+
+jobs:
+  ephemeral-container-smoke:
+    name: Build and smoke localhost-only isolated candidate (CI ephemeral)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Prove private Compose input and no public business wiring
+        run: python3 scripts/ci/check-private-staging-compose.py
+      - name: Generate disposable dummy runtime credentials in this runner
+        run: |
+          echo "CRM_STAGING_DB_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+          echo "CRM_STAGING_APP_KEY=base64:$(openssl rand -base64 32 | tr -d '\n')" >> "$GITHUB_ENV"
+      - name: Build PHP image without deploying or accessing VPS
+        run: docker compose -f infra/staging/compose.yaml build app
+      - name: Start isolated CI containers on localhost only
+        run: docker compose -f infra/staging/compose.yaml up --no-build -d
+      - name: Verify private health and public business routes remain unavailable
+        run: |
+          set -euo pipefail
+          ready=0
+          for attempt in $(seq 1 25); do
+            if curl --max-time 3 -fsS -o /dev/null http://127.0.0.1:18080/up; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          test "$ready" -eq 1
+          for path in /api/leads /api/sites/intake /api/tasks; do
+            status=$(curl --max-time 4 -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:18080$path")
+            test "$status" = 404
+          done
+          echo "Private CI health 200; business endpoints 404; localhost port only."
+      - name: Tear down all synthetic CI containers and their disposable volumes
+        if: always()
+        run: docker compose -f infra/staging/compose.yaml down --volumes --remove-orphans || true
+      - name: Declare NO-GO limitations
+        if: always()
+        run: |
+          {
+            echo '### CRM private ephemeral smoke'
+            echo '- Runs only inside GitHub hosted runner with generated fake credentials'
+            echo '- Localhost health and no public business routes tested'
+            echo '- Containers and disposable volume destroyed before completion'
+            echo '- No real customer, Asaas network, Leaseweb connection or production changes'
+            echo '- Not sufficient for TLS, backups, operational IAM, RLS or launch GO'
+            echo '- DRAFT / NO-MERGE / NO-DEPLOY'
+          } >> "$GITHUB_STEP_SUMMARY"
