@@ -157,6 +157,8 @@ CREATE TABLE public.crm_lab_site_delivery_bindings (
   site_reference uuid NOT NULL,
   form_reference uuid NOT NULL,
   destination_reference uuid NOT NULL,
+  source_code varchar(12) NOT NULL
+    CHECK (source_code IN ('sites','landing','onepage')),
   state varchar(16) NOT NULL
     CHECK (state IN ('active', 'suspended', 'revoked')),
   version integer NOT NULL DEFAULT 1 CHECK (version > 0),
@@ -170,7 +172,7 @@ CREATE POLICY crm_lab_binding_tenant_scope
  ON public.crm_lab_site_delivery_bindings FOR SELECT TO crm_app_ci
  USING (organization_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid);
 GRANT SELECT (organization_id, binding_reference, site_reference,
-  form_reference, destination_reference, state, version)
+  form_reference, destination_reference, source_code, state, version)
  ON public.crm_lab_site_delivery_bindings TO crm_app_ci;
 
 -- Only the disposable fixture owner can provision, revoke or edit bindings.
