@@ -29,7 +29,7 @@ return new class extends Migration
             || ($pg['host'] ?? null) !== '127.0.0.1'
             || ($pg['database'] ?? null) !== 'imagine_crm_ci'
             || DB::getDriverName() !== 'pgsql') {
-            throw new RuntimeException('Trial uniqueness schema is restricted to disposable CI PostgreSQL.');
+            throw new RuntimeException('Trial uniqueness schema is laboratory only; disposable CI PostgreSQL required.');
         }
     }
 
