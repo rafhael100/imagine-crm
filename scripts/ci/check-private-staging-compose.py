@@ -35,9 +35,9 @@ def main() -> None:
     # Exact original PNG from rafhael100/imagine-portal/main/assets/logo-imagine.png.
     # Git blob digest covers bytes, not a fabricated branding replacement.
     logo_bytes = ORIGINAL_LOGO.read_bytes()
-    git_object = b"blob " + str(len(logo_bytes)).encode("ascii") + b"\\0" + logo_bytes
+    git_object = b"blob " + str(len(logo_bytes)).encode("ascii") + b"\0" + logo_bytes
     if (len(logo_bytes) != 5594
-        or not logo_bytes.startswith(b"\\x89PNG\\r\\n\\x1a\\n")
+        or not logo_bytes.startswith(b"\x89PNG\r\n\x1a\n")
         or hashlib.sha1(git_object).hexdigest() != ORIGINAL_LOGO_BLOB_SHA):
         deny("original Portal PNG asset does not match its source Git blob")
     for page in ("crm-staging-marketing.blade.php", "crm-staging-demo.blade.php"):
