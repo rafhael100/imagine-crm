@@ -59,7 +59,9 @@ jobs:
           cp prototypes/site-comercial-crm/assets/logo-imagine.png build/crm-preview/assets/logo-imagine.png
           cp prototypes/site-comercial-crm/assets/site.css build/crm-preview/assets/site.css
           cp prototypes/site-comercial-crm/assets/site.js build/crm-preview/assets/site.js
-          (cd build/crm-preview && sha256sum index.html assets/logo-imagine.png assets/site.css assets/site.js > manifest.sha256)
+          mkdir -p build/crm-preview/fluxo-demo
+          cp prototypes/site-comercial-crm/fluxo-demo/index.html build/crm-preview/fluxo-demo/index.html
+          (cd build/crm-preview && sha256sum index.html assets/logo-imagine.png assets/site.css assets/site.js fluxo-demo/index.html > manifest.sha256)
           (cd build/crm-preview && sha256sum --check manifest.sha256)
           printf 'Imagine CRM: previa demonstrativa SEM cadastro, login, CNPJ ou cobranca real.\nAbra index.html, preservando assets/.\n' > build/crm-preview/LEIA-ME.txt
       - name: Validar pacote fechado e manifesto SHA256
