@@ -74,12 +74,18 @@ final readonly class LaboratoryTenantLeadLedger
             use ($leadId, $syntheticTitle, $sourceCode, $eventSha256, $claim, $signedNonce): array {
             try {
                 // Signed CI claims must match a server-owned, ACTIVE binding.
-                // The CI role is intentionally SELECT-only: row-locking would
-                // require elevated UPDATE privileges. This snapshot check is
-                // NOT revocation-linearizable; concurrent revocation is a
-                // mandatory independent SEG/DBA gate before runtime use.
-                // A MAC over claimed UUIDs alone is NOT authority.
+                // Advisory xact lock precedes the read AND stays held until the
+                // lead, idempotency reservation, and audit event commit. The
+                // fixture-owned mutation trigger takes the exact same key.
+                // A SELECT-only runtime role needs no UPDATE or FOR SHARE.
+                // CI-only proof; SEG/DBA still must independently review.
                 if ($signedNonce !== null) {
+                    $key = 'crm_lab_binding|' . $membership->tenantId . '|'
+                        . $claim->identity->bindingReference;
+                    $this->db->selectOne(
+                        'SELECT pg_advisory_xact_lock(hashtextextended(?::text, 0))',
+                        [$key],
+                    );
                     $binding = $this->db->table('public.crm_lab_site_delivery_bindings')
                         ->where('organization_id', $membership->tenantId)
                         ->where('binding_reference', $claim->identity->bindingReference)
