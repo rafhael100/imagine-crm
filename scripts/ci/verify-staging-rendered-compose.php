@@ -149,6 +149,25 @@ final class StagingRenderedComposePolicy
                 !isset($svc['command']) || $svc['command'] === [],
                 $name.'_unreviewed_command',
             );
+            // Exact non-privileged health probes: no shell for PHP, local /up
+            // for Nginx, no external targets or custom commands.
+            $health = $svc['healthcheck'] ?? null;
+            $expectedProbe = $name === 'app'
+                ? ['CMD', 'php', '-r', "$s=@fsockopen('127.0.0.1',9000,$e,$m,2); exit($s?0:1);"]
+                : ['CMD-SHELL', 'wget -q -T 3 -O /dev/null http://127.0.0.1:8080/up'];
+            $durationIs = static function (mixed $value, int $seconds): bool {
+                return $value === $seconds.'s' || $value === $seconds * 1000000000;
+            };
+            $require(
+                is_array($health)
+                && $keys($health) === ['interval', 'retries', 'start_period', 'test', 'timeout']
+                && ($health['test'] ?? null) === $expectedProbe
+                && ($health['retries'] ?? null) === 2
+                && $durationIs($health['interval'] ?? null, 5)
+                && $durationIs($health['timeout'] ?? null, $name === 'app' ? 3 : 4)
+                && $durationIs($health['start_period'] ?? null, 10),
+                $name.'_unreviewed_healthcheck',
+            );
             $build = $svc['build'] ?? null;
             $require(
                 is_array($build)
@@ -230,7 +249,11 @@ final class StagingRenderedComposePolicy
         );
         $depends = $web['depends_on'] ?? [];
         $require(
-            is_array($depends) && $keys($depends) === ['app'],
+            is_array($depends) && $keys($depends) === ['app']
+            && is_array($depends['app'])
+            && ($depends['app']['condition'] ?? null) === 'service_healthy'
+            && ($depends['app']['required'] ?? true) === true
+            && array_diff(array_keys($depends['app']), ['condition', 'required']) === [],
             'web_service_dependency',
         );
 
