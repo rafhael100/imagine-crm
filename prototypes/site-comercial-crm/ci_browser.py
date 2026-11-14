@@ -127,7 +127,13 @@ with ThreadingHTTPServer(("127.0.0.1", 0), partial(StaticOnly, directory=str(ROO
                         "Plano Básico", "Plano Essencial", "Plano Profissional",
                         "Plano Empresarial",
                     ]:
-                        trigger = page.locator('[data-action="' + action + '"]').first
+                        if action == "Acessar o CRM" and width <= 800:
+                            # Desktop login hides on mobile; the alternative
+                            # is an actual visible action inside the menu.
+                            menu.click()
+                            assert menu.get_attribute("aria-expanded") == "true"
+                        trigger = page.locator('[data-action="' + action + '"]:visible').first
+                        assert trigger.count() == 1, ("No visible CTA", width, action)
                         trigger.click()
                         dialog = page.get_by_role("dialog")
                         assert dialog.is_visible(), ("Missing preview-only dialog", action)
@@ -137,6 +143,9 @@ with ThreadingHTTPServer(("127.0.0.1", 0), partial(StaticOnly, directory=str(ROO
                         assert len(context.cookies()) == 0
                         page.keyboard.press("Escape")
                         assert not dialog.is_visible()
+                        if action == "Acessar o CRM" and width <= 800:
+                            menu.click()
+                            assert menu.get_attribute("aria-expanded") == "false"
 
                     faq = page.locator("#duvidas details").first
                     assert faq.count() == 1 and not faq.get_attribute("open")
