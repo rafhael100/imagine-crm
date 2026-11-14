@@ -44,6 +44,12 @@
   .languages a[aria-current=page] { background:#FFF3E1; border-color:#F4D5AC; color:#704109; }
   .flag { font-size:19px; }
   h1 { font-size:clamp(29px,3.6vw,45px); line-height:1.17; letter-spacing:-.065em; margin:0 0 14px; }
+  .demo-source { display:inline-flex; padding:9px 12px; border:1px solid #E7D2B4;
+    border-radius:10px; color:#7A531C; background:#FFF9ED; font-size:12px; margin:17px 0 0; }
+  .live-link { display:inline-flex; margin:18px 0 0; padding:11px 14px;
+    border-radius:10px; border:1px solid #F0CF9F; background:#FFF5E5;
+    color:#75440F; text-decoration:none; font-weight:750; font-size:12px; }
+  .live-link:hover { background:#FBE8C9; }
   .intro { color:var(--grey); line-height:1.65; font-size:15px; margin:0; max-width:760px; }
   .stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
     gap:15px; margin:31px 0 42px; }
@@ -134,6 +140,10 @@
         <section aria-labelledby="demo-title">
             <h1 id="demo-title">{{ $copy['heading'] }}</h1>
             <p class="intro">{{ $copy['intro'] }}</p>
+            <p class="demo-source" role="status">{{ ($is_persisted ?? false) ? $copy['live_source'] : $copy['static_source'] }}</p>
+            @if($enable_persisted_demo ?? false)
+                <div><a class="live-link" href="/demo/live?lang={{ $lang }}">{{ $copy['live_demo'] }}</a></div>
+            @endif
             <div class="stats">
                 <div class="stat"><p class="stat-label">{{ $copy['opportunities'] }}</p><p class="stat-number">{{ $opportunity_count }}</p></div>
                 <div class="stat"><p class="stat-label">{{ $copy['pending'] }}</p><p class="stat-number">{{ $task_count }}</p></div>
@@ -145,7 +155,7 @@
             <div class="board-scroll">
                 <div class="board">
                     @foreach($pipeline as $stage => $leads)
-                    <div class="lane">
+                    <div class="lane" data-stage="{{ $stage }}" data-count="{{ count($leads) }}">
                         <div class="lane-head"><span>{{ $copy[$stage] }}</span><span class="lane-count">{{ count($leads) }}</span></div>
                         @foreach($leads as $lead)
                         <article class="opportunity">

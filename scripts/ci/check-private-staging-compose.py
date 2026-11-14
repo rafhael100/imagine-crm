@@ -42,6 +42,9 @@ def main() -> None:
         ROOT / "app/Core/Billing/AsaasWebhookInboxCandidate.php",
         ROOT / "app/Core/Commercial/StagingMarketingPreview.php",
         ROOT / "app/Core/Commercial/StagingDemoPreview.php",
+        ROOT / "app/Core/Commercial/StagingPersistedDemoPreview.php",
+        ROOT / "tests/Labs/demo/ci-persisted-kanban-fixture.sql",
+        ROOT / "scripts/ci/rehearse-crm-persisted-demo.sh",
         ROOT / "resources/views/crm-staging-marketing.blade.php",
         ROOT / "resources/views/crm-staging-demo.blade.php",
         ROOT / "tests/Feature/PostgresAsaasBillingIntegratedLedgerTest.php",
@@ -52,10 +55,13 @@ def main() -> None:
     route_source = (ROOT / "routes/web.php").read_text(encoding="utf-8")
     if ("""app()->environment('staging')""" not in route_source
         or """getenv('CRM_STAGING_MARKETING_PREVIEW') === 'true'""" not in route_source
-        or "Route::get('/'" not in route_source
-        or "Route::get('/demo'" not in route_source
+        or "$router->get('/'" not in route_source
+        or "$router->get('/demo'" not in route_source
+        or "$router->get('/demo/live'" not in route_source
+        or "getenv('CRM_STAGING_PERSISTED_DEMO') === 'true'" not in route_source
         or any(token in route_source for token in (
             "Route::post(", "Route::put(", "Route::patch(", "Route::delete(",
+            "$router->post(", "$router->put(", "$router->patch(", "$router->delete(",
         ))):
         deny("private preview route missing staging guard or exposes business effects")
     for entry in (ROOT / "routes/web.php", ROOT / "bootstrap/app.php"):
@@ -132,6 +138,7 @@ def main() -> None:
         assert services["app"]["environment"]["DB_PASSWORD"] != services["postgres"]["environment"]["POSTGRES_PASSWORD"]
         assert services["app"]["environment"]["APP_ENV"] == "staging"
         assert services["app"]["environment"]["CRM_STAGING_MARKETING_PREVIEW"] == "true"
+        assert services["app"]["environment"]["CRM_STAGING_PERSISTED_DEMO"] == "true"
         assert services["app"]["environment"]["APP_DEBUG"] == "false"
         assert services["app"]["environment"]["CRM_AUTH_EXPERIMENTAL"] == "false"
         assert services["app"]["environment"]["CRM_ASAAS_SANDBOX_ENABLED"] == "false"
