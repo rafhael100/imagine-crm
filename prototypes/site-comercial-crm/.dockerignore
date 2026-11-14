@@ -1,0 +1,12 @@
+# CI smoke context only: fail closed on unexpected sources.
+**
+!index.html
+!assets/
+!assets/logo-imagine.png
+!assets/site.css
+!assets/site.js
+!fluxo-demo/
+!fluxo-demo/index.html
+!staging/
+!staging/nginx-preview-ci.conf
+!staging/Dockerfile-preview-ci
