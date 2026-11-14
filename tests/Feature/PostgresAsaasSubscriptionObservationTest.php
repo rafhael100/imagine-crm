@@ -248,20 +248,28 @@ final class PostgresAsaasSubscriptionObservationTest extends TestCase
     public function test_provider_id_collision_between_two_organizations_fails_closed(): void
     {
         $this->fixture();
-        $this->mockRemote();
-        $this->observe();
-
         $this->fixture(self::ORG_B, self::CUSTOMER_REF_B, self::SUB_REF_B, self::CUSTOMER_B);
-        Http::fake(['api-sandbox.asaas.com/v3/subscriptions*' =>
-            Http::response([
-                'hasMore' => false,
-                'data' => [[
-                    'id' => self::SUBSCRIPTION_ID,
-                    'customer' => self::CUSTOMER_B,
-                    'externalReference' => self::SUB_REF_B,
-                ]],
-            ], 200),
+
+        // ONE deterministic fake: repeated Http::fake() calls may retain an
+        // older matching stub and accidentally test a wrong-payer response
+        // instead of reaching the physical UNIQUE subscription ID constraint.
+        Http::fake([
+            'api-sandbox.asaas.com/v3/subscriptions*' => function (Request $request) {
+                $isB = str_contains($request->url(), 'externalReference='.self::SUB_REF_B);
+                $ref = $isB ? self::SUB_REF_B : self::SUB_REF_A;
+                $customer = $isB ? self::CUSTOMER_B : self::CUSTOMER_A;
+                $this->assertSame('GET', $request->method());
+                return Http::response([
+                    'hasMore' => false,
+                    'data' => [[
+                        'id' => self::SUBSCRIPTION_ID,
+                        'customer' => $customer,
+                        'externalReference' => $ref,
+                    ]],
+                ], 200);
+            },
         ]);
+        $this->assertSame('synthetic_observed', $this->observe()['status_code']);
         try {
             $this->observe($this->reviewTwo, self::ORG_B, self::SUB_REF_B);
             $this->fail('Same provider subscription cannot belong to two organizations.');
