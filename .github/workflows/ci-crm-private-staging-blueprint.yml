@@ -8,6 +8,7 @@ on:
       - 'composer.json'
       - 'composer.lock'
       - 'infra/staging/**'
+      - 'docs/desenvolvimento/F3-263-staging-privado-loopback-proposta.md'
       - 'tests/Unit/StagingSmokeBlueprintContractTest.php'
       - 'tests/Unit/StagingRenderedComposePolicyTest.php'
       - 'tests/Unit/StagingPhpRuntimePlatformContractTest.php'
