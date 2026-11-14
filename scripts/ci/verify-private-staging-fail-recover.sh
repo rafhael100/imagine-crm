@@ -21,6 +21,16 @@ if [[ "$(code)" != 200 ]]; then
   exit 1
 fi
 
+# Both services must be declared healthy by Docker (not just by one curl).
+for svc in app web; do
+  cid="$(docker compose ps -q "$svc")"
+  if [[ -z "$cid" || "$(docker inspect --format '{{.State.Health.Status}}' "$cid")" != healthy ]]; then
+    echo 'F3-270 NO-GO: baseline Docker service health was not healthy.' >&2
+    exit 1
+  fi
+done
+echo 'F3-270 app and Nginx start healthy.'
+
 # Suspend the disposable PHP process without removing its container IP/DNS
 # from crm_private. This tests an *unresponsive* FastCGI backend.
 app_cid="$(docker compose ps -q app)"
@@ -63,6 +73,22 @@ if ! grep -qi '^x-content-type-options: nosniff' <<< "$headers" ||
 fi
 echo 'F3-269 unresponsive PHP-FPM returns HTTP 502/503/504 with protective headers, no cookie.'
 
+# The Nginx /up healthcheck must react to the frozen backend.
+web_cid="$(docker compose ps -q web)"
+became_unhealthy=false
+for _ in $(seq 1 12); do
+  if [[ "$(docker inspect --format '{{.State.Health.Status}}' "$web_cid")" == unhealthy ]]; then
+    became_unhealthy=true
+    break
+  fi
+  sleep 2
+done
+if [[ "$became_unhealthy" != true ]]; then
+  echo 'F3-270 NO-GO: Nginx health did not report unavailable upstream.' >&2
+  exit 1
+fi
+echo 'F3-270 Nginx Docker health detected frozen backend.'
+
 docker unpause "$app_cid" > /dev/null
 paused=false
 recovered=false
@@ -77,4 +103,18 @@ if [[ "$recovered" != true ]]; then
   echo 'F3-269 NO-GO: /up did not recover after temporary backend unpause.' >&2
   exit 1
 fi
+# A recovering web must return to Docker healthy, not just one good response.
+became_healthy=false
+for _ in $(seq 1 20); do
+  if [[ "$(docker inspect --format '{{.State.Health.Status}}' "$web_cid")" == healthy ]]; then
+    became_healthy=true
+    break
+  fi
+  sleep 2
+done
+if [[ "$became_healthy" != true ]]; then
+  echo 'F3-270 NO-GO: Docker health did not recover.' >&2
+  exit 1
+fi
 echo 'F3-269 PASS: backend freeze is contained and /up recovers on loopback; DRAFT/NO-DEPLOY.'
+echo 'F3-270 PASS: Docker readiness transitions healthy to unhealthy to healthy in isolated CI.'
