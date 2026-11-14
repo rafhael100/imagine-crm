@@ -40,6 +40,18 @@ A prova de integração agora inclui os seguintes arquivos (todos **CI-only**, s
 
 **Resultado:** a gravação transacional de **metadados sintéticos** foi validada; isto NÃO equivale a gravar lead real, a um endpoint HTTP homologado, a prova de LGPD, a opt-in comprovado ou a entrega do relatório. Os campos reais de contato continuam fora do laboratório; `real_crm_receipt_proven=false`, `can_store_pii=false` e `can_send_marketing=false`.
 
+## PERF-CALC-HTTP-01 / PG03 — receptor privado e supressão durável de laboratório
+
+O `scripts/ci/calculator-private-http-router.php` e `scripts/ci/test-calculator-private-http.mjs` adicionam verificação de transporte HTTP **somente no processo PHP temporário do próprio GitHub Actions, vinculado a 127.0.0.1**. Esses arquivos NÃO são rotas Laravel nem serviços implantados. Exigem GitHub Actions, repositório fixo, flags de laboratório, tamanho máximo, JSON e assinatura sintética válida. Mensagens inválidas não chegam ao banco.
+
+O receptor tem dois modos testados:
+- *Leitura/revisão*, sem nenhuma persistência: `202 SYNTHETIC_HTTP_REVIEW_ONLY_NO_RECEIPT`.
+- *Registro de metadados fictícios no PostgreSQL descartável*, usando `SyntheticCalculatorPgDelivery.php`: primeiro pedido gera `201 SYNTHETIC_PG_INTENT_RECORDED`, repetição idêntica `200 SYNTHETIC_REPLAY_CONFIRMED`, alteração de orçamento ou reutilização de nonce recebe `409`, fraude de assinatura `403`. Não é recibo de lead real.
+
+O arquivo `tests/Labs/calculator/calculator-nurture-suppression-rls-ci.sql` modela supressão por empresa e token de contato **sintético**, com PK e FORCE RLS. O teste `calculator-nurture-suppression-assertions-ci.sql` valida que a revogação permanece após COMMIT, não pode ser apagada/alterada pelo papel restrito e não aparece para outro tenant. Nenhum contato real é identificado, nenhuma comunicação é gerada. Em produção, o token precisará ser derivado com HMAC secreto de identificador de contato validado; hash comum de email não deve ser usado.
+
+**Nunca interpretar status HTTP 200/201/202 destes testes como aceitação de contato real, consentimento de marketing ou capacidade de disparo.** O módulo não conhece dados de pessoas, continua sem SMTP, APIs públicas, autenticação operacional, jobs, LGPD comprovada ou deploy.
+
 ## Próximas dependências operacionais
 
 1. Binding de organização Imagine e origem Comercial assinados em backend independente, autenticação e autorização em produção.
