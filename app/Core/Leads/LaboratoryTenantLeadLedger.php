@@ -57,6 +57,8 @@ final readonly class LaboratoryTenantLeadLedger
                     'organization_id' => $membership->tenantId,
                     'synthetic_title' => $syntheticTitle,
                 ]);
+                $this->appendEvent($leadId, $membership->tenantId, 1,
+                    'created', null, 'new');
                 return [
                     'status_code' => 'synthetic_created',
                     'can_publish' => false,
@@ -108,6 +110,10 @@ final readonly class LaboratoryTenantLeadLedger
                     ->where('version', $expectedVersion)
                     ->where('archived', false)
                     ->update(['stage' => $nextStage, 'version' => $expectedVersion + 1]);
+                if ($updated === 1) {
+                    $this->appendEvent($leadId, $membership->tenantId,
+                        $expectedVersion + 1, 'stage_moved', (string) $record->stage, $nextStage);
+                }
                 return self::moveAnswer($updated === 1
                     ? 'synthetic_stage_changed' : 'synthetic_not_changed');
             } catch (Throwable) {
@@ -130,6 +136,13 @@ final readonly class LaboratoryTenantLeadLedger
         return $this->within($principal, $organization, function (MembershipSnapshot $membership)
             use ($leadId, $expectedVersion): array {
             try {
+                $record = $this->db->table('public.crm_lab_leads')
+                    ->where('id', strtolower($leadId))
+                    ->where('organization_id', $membership->tenantId)
+                    ->lockForUpdate()->first();
+                if (!$record || $record->archived || (int) $record->version !== $expectedVersion) {
+                    return self::archiveAnswer('synthetic_not_changed');
+                }
                 $updated = $this->db->table('public.crm_lab_leads')
                     ->where('id', strtolower($leadId))
                     ->where('organization_id', $membership->tenantId)
@@ -139,6 +152,11 @@ final readonly class LaboratoryTenantLeadLedger
                         'archived' => true,
                         'version' => $expectedVersion + 1,
                     ]);
+                if ($updated === 1) {
+                    $this->appendEvent($leadId, $membership->tenantId,
+                        $expectedVersion + 1, 'archived', (string) $record->stage,
+                        (string) $record->stage);
+                }
                 return self::archiveAnswer($updated === 1
                     ? 'synthetic_archived' : 'synthetic_not_changed');
             } catch (Throwable) {
@@ -208,6 +226,26 @@ final readonly class LaboratoryTenantLeadLedger
         if (($role->role_name ?? null) !== 'crm_app_ci') {
             throw new LogicException('Papel de leads nao autorizado.');
         }
+    }
+
+    /**
+     * Event append is inside the locked membership transaction. A failed
+     * write aborts BOTH the lead mutation and its audit event.
+     * The application role cannot SELECT, UPDATE or DELETE event rows.
+     */
+    private function appendEvent(
+        string $leadId, string $organization, int $version, string $eventType,
+        ?string $fromStage, string $toStage,
+    ): void {
+        $this->db->table('public.crm_lab_lead_events')->insert([
+            'event_id' => (string) Str::uuid(),
+            'lead_id' => strtolower($leadId),
+            'organization_id' => $organization,
+            'version' => $version,
+            'event_type' => $eventType,
+            'from_stage' => $fromStage,
+            'to_stage' => $toStage,
+        ]);
     }
 
     private static function moveAnswer(string $status): array

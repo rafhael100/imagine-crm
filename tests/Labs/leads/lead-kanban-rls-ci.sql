@@ -12,7 +12,8 @@ CREATE TABLE public.crm_lab_leads (
   archived boolean NOT NULL DEFAULT false,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT crm_lab_lead_title_org UNIQUE (organization_id, synthetic_title)
+  CONSTRAINT crm_lab_lead_title_org UNIQUE (organization_id, synthetic_title),
+  CONSTRAINT crm_lab_lead_identity_org UNIQUE (id, organization_id)
 );
 CREATE INDEX crm_lab_leads_org_stage ON public.crm_lab_leads (organization_id, stage, id);
 ALTER TABLE public.crm_lab_leads ENABLE ROW LEVEL SECURITY;
@@ -55,3 +56,40 @@ $crm_lead_guard$;
 CREATE TRIGGER crm_lab_lead_monotonic_guard
 BEFORE UPDATE ON public.crm_lab_leads
 FOR EACH ROW EXECUTE FUNCTION public.crm_lab_lead_monotonic_update();
+
+-- CRM-LEADS-PG02: append-only synthetic stage audit in the SAME transaction
+-- as create/move/archive. No direct SELECT/UPDATE/DELETE for runtime role.
+CREATE TABLE public.crm_lab_lead_events (
+  event_id uuid PRIMARY KEY,
+  lead_id uuid NOT NULL,
+  organization_id uuid NOT NULL,
+  version integer NOT NULL CHECK (version > 0),
+  event_type varchar(20) NOT NULL CHECK (event_type IN ('created','stage_moved','archived')),
+  from_stage varchar(24),
+  to_stage varchar(24) NOT NULL CHECK (to_stage IN ('new','qualified','proposal','won','lost')),
+  occurred_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT crm_lab_lead_event_origin
+    FOREIGN KEY (lead_id, organization_id)
+    REFERENCES public.crm_lab_leads (id, organization_id)
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
+  CONSTRAINT crm_lab_lead_event_once UNIQUE (lead_id, version),
+  CONSTRAINT crm_lab_lead_event_shape CHECK (
+    (event_type='created' AND version=1 AND from_stage IS NULL AND to_stage='new')
+    OR (event_type='stage_moved' AND version>1
+        AND from_stage IN ('new','qualified','proposal')
+        AND from_stage <> to_stage)
+    OR (event_type='archived' AND version>1
+        AND from_stage IS NOT NULL AND from_stage=to_stage)
+  )
+);
+CREATE INDEX crm_lab_lead_events_org_record ON public.crm_lab_lead_events
+  (organization_id, lead_id, version);
+ALTER TABLE public.crm_lab_lead_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.crm_lab_lead_events FORCE ROW LEVEL SECURITY;
+CREATE POLICY crm_lab_lead_events_tenant_scope ON public.crm_lab_lead_events
+ FOR ALL TO crm_app_ci
+ USING (organization_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid)
+ WITH CHECK (organization_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid);
+GRANT INSERT (event_id, lead_id, organization_id, version,
+  event_type, from_stage, to_stage)
+ ON TABLE public.crm_lab_lead_events TO crm_app_ci;
