@@ -6,7 +6,9 @@ on:
       - 'tests/Labs/calculator/**'
       - 'scripts/ci/run-calculator-interest-pg-roundtrip.php'
       - 'scripts/ci/test-calculator-synthetic-contact-pg.php'
+      - 'scripts/ci/test-calculator-synthetic-ciphertext-pg.php'
       - 'app/Core/Leads/SyntheticCalculatorContactBoundary.php'
+      - 'app/Core/Leads/SyntheticCalculatorContactCipher.php'
       - 'app/Core/Leads/SyntheticCalculatorPgDelivery.php'
       - 'scripts/ci/calculator-private-http-router.php'
       - 'scripts/ci/test-calculator-private-http.mjs'
@@ -97,6 +99,13 @@ jobs:
           php -l app/Core/Leads/SyntheticCalculatorContactBoundary.php
           php -l scripts/ci/test-calculator-synthetic-contact-pg.php
           php scripts/ci/test-calculator-synthetic-contact-pg.php
+      - name: Encrypt fictitious contact at rest in disposable PostgreSQL
+        run: |
+          set -euo pipefail
+          psql -X -v ON_ERROR_STOP=1 -1 -f tests/Labs/calculator/calculator-synthetic-ciphertext-pg-ci.sql
+          php -l app/Core/Leads/SyntheticCalculatorContactCipher.php
+          php -l scripts/ci/test-calculator-synthetic-ciphertext-pg.php
+          php scripts/ci/test-calculator-synthetic-ciphertext-pg.php
       - name: Prove durable unsubscribe and tenant-scoped suppression without delivery
         run: |
           set -euo pipefail
