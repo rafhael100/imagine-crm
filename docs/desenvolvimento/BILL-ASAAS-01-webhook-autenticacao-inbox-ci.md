@@ -36,3 +36,16 @@ php artisan test --filter=PostgresAsaasWebhookInboxTest --no-ansi
 ```
 
 **NO-GO / NO-MERGE / NO-DEPLOY:** a evidência prova uma fronteira de entrada e idempotência física, não um cliente real nem integração de API Asaas. `main`, VPS, DNS, chaves e serviços de cobrança permanecem inalterados.
+
+---
+
+## BILL-ASAAS-03 — consumidor persistente sem efeitos financeiros
+
+A etapa seguinte separa o recebimento do processamento para suportar entrega *at least once* e workers concorrentes com recuperação:
+
+- `AsaasWebhookReviewWorkerCandidate` recebe **somente** o papel `crm_billing_review_ci`, diferente do receptor.
+- O revisor consulta exclusivamente `event_key`, `event_kind`, `state` e `observed_at`, sem acesso ao `body_digest` ou `resource_key`. Pode atualizar apenas a coluna `state`. Não pode inserir, apagar, truncar, cobrar, conciliar ou conceder acesso.
+- Em transação PostgreSQL, `SELECT ... FOR UPDATE SKIP LOCKED` coordena vários workers; a primeira revisão marca `reviewed_no_effect`, e uma segunda revisão não processa novamente o mesmo registro. Se a transação falha, um rollback devolve `pending_review`, permitindo repetir.
+- A verificação `PostgresAsaasWebhookReviewWorkerTest` testa dois workers independentes, lock, rollback, replay, grants restritos e rejeição de papéis errados.
+
+**Importante:** `reviewed_no_effect` é um estado **exclusivamente de teste**, não confirmação de pagamento, fatura ou acesso. O próximo desenvolvimento real exige uma máquina de estados de pagamentos vinculada a uma cobrança local preexistente, consulta autenticada à API Asaas, controles de ordem/estorno, auditoria e revisão dos contratos/comercial. Nenhuma rota ou worker recorrente foi ativado. A migração está restrita a `tests/Labs/billing/` e a CI é descartável.
