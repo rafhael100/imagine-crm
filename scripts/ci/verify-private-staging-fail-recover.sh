@@ -25,7 +25,16 @@ fi
 docker compose stop -t 5 app > /dev/null
 failure="$(code)"
 if [[ "$failure" != 502 && "$failure" != 503 && "$failure" != 504 ]]; then
-  echo 'F3-269 NO-GO: Nginx did not fail closed after the mock backend stopped.' >&2
+  if [[ "$failure" =~ ^[0-9]{3}$ ]]; then
+    echo "F3-269 NO-GO: unexpected three-digit HTTP status $failure while mock backend is down." >&2
+  else
+    echo 'F3-269 NO-GO: failure produced no valid HTTP status.' >&2
+  fi
+  if docker compose exec -T web nginx -t > /dev/null 2>&1; then
+    echo 'F3-269 diagnostic: nginx remains running.' >&2
+  else
+    echo 'F3-269 diagnostic: nginx was not running.' >&2
+  fi
   exit 1
 fi
 headers="$(curl --noproxy '*' --silent --max-time 5 --dump-header - \
