@@ -69,11 +69,6 @@ $validPr = $event === 'pull_request'
     && preg_match('~\Arefs/pull/[1-9][0-9]*/merge\z~D', $ref) === 1
     && in_array($base, ['main', 'dev/fast-track-crm-2026-11-04'], true);
 
-if (!$validPush && !$validPr && !$validF232Push && !$validF232Pr) {
-    denyEphemeral('unsupported event, branch or pull request target');
-}
-
-// Disallow driver-level and libpq alternative connection paths. Retain only
 // F232: one extra CI-only branch and stacked PR, not a generic
 // permission to migrate on review branches. Keep exact head and base names.
 $validF232Push = $event === 'push'
@@ -81,7 +76,7 @@ $validF232Push = $event === 'push'
     && ($base === false || $base === '');
 $validF232Pr = $event === 'pull_request'
     && is_string($ref)
-    && preg_match('~\\Arefs/pull/[1-9][0-9]*/merge\\z~D', $ref) === 1
+    && preg_match('~\Arefs/pull/[1-9][0-9]*/merge\z~D', $ref) === 1
     && $base === 'review/crm-aia-f231-ed25519-deny-ci-2026-11-14'
     && getenv('GITHUB_HEAD_REF') === 'review/crm-aia-f232-ed25519-pg16-atomic-2026-11-14';
 if ($validF232Pr) {
@@ -96,6 +91,12 @@ if ($validF232Pr) {
         && ($payload['pull_request']['head']['ref'] ?? null)
             === 'review/crm-aia-f232-ed25519-pg16-atomic-2026-11-14';
 }
+
+if (!$validPush && !$validPr && !$validF232Push && !$validF232Pr) {
+    denyEphemeral('unsupported event, branch or pull request target');
+}
+
+// Disallow driver-level and libpq alternative connection paths. Retain only
 // the literal disposable service settings owned by the job.
 foreach ([
     'DB_URL', 'DATABASE_URL', 'PGHOST', 'PGHOSTADDR', 'PGPORT', 'PGDATABASE',
