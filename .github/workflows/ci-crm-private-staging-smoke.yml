@@ -1,0 +1,254 @@
+name: CRM Private Staging - ephemeral container smoke NO DEPLOY
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - 'infra/staging/**'
+      - '.dockerignore'
+      - '.github/workflows/ci-crm-private-staging-smoke.yml'
+      - 'app/Core/Leads/**'
+      - 'app/Core/Tasks/**'
+      - 'app/Core/Billing/**'
+      - 'app/Core/Commercial/**'
+      - 'tests/Labs/demo/**'
+      - 'scripts/ci/rehearse-crm-persisted-demo.sh'
+      - 'scripts/ci/rehearse-crm-full-schema-restore.sh'
+      - 'scripts/ci/rehearse-crm-private-http-threats.sh'
+      - 'tests/Unit/StagingDemoPreviewTest.php'
+      - 'resources/views/crm-staging-demo.blade.php'
+      - 'resources/views/partials/imagine-staging-tokens.blade.php'
+      - 'tests/Unit/ImagineStagingDesignSystemTest.php'
+      - 'resources/views/crm-staging-marketing.blade.php'
+      - 'routes/web.php'
+      - 'tests/Unit/StagingMarketingPreviewTest.php'
+      - 'scripts/ci/check-private-staging-compose.py'
+      - 'scripts/ci/rehearse-crm-private-restore.sh'
+      - 'scripts/ci/rehearse-crm-private-schema.sh'
+      - 'scripts/ci/check-staging-runtime-schema.php'
+      - 'database/migrations/**'
+      - 'tests/Labs/recovery/**'
+
+permissions:
+  contents: read
+
+jobs:
+  ephemeral-container-smoke:
+    name: Build and smoke localhost-only isolated candidate (CI ephemeral)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Prove private Compose input and no public business wiring
+        run: python3 scripts/ci/check-private-staging-compose.py
+      - name: Generate disposable dummy runtime credentials in this runner
+        run: |
+          DB_CI_PASSWORD="$(openssl rand -hex 24)"
+          APP_DB_CI_PASSWORD="$(openssl rand -hex 24)"
+          APP_CI_KEY="base64:$(openssl rand -base64 32 | tr -d '\n')"
+          echo "::add-mask::$DB_CI_PASSWORD"
+          echo "::add-mask::$APP_DB_CI_PASSWORD"
+          echo "::add-mask::$APP_CI_KEY"
+          echo "CRM_STAGING_DB_PASSWORD=$DB_CI_PASSWORD" >> "$GITHUB_ENV"
+          echo "CRM_STAGING_APP_DB_PASSWORD=$APP_DB_CI_PASSWORD" >> "$GITHUB_ENV"
+          echo "CRM_STAGING_APP_KEY=$APP_CI_KEY" >> "$GITHUB_ENV"
+      - name: Build PHP image without deploying or accessing VPS
+        run: docker compose -f infra/staging/compose.yaml build app
+      - name: Start isolated CI containers on localhost only
+        run: docker compose -f infra/staging/compose.yaml up --no-build -d
+      - name: Verify private health and public business routes remain unavailable
+        run: |
+          set -euo pipefail
+          ready=0
+          for attempt in $(seq 1 25); do
+            if curl --max-time 3 -fsS -o /dev/null http://127.0.0.1:18080/up; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          test "$ready" -eq 1
+          for path in /api/leads /api/sites/intake /api/tasks; do
+            status=$(curl --max-time 4 -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:18080$path")
+            test "$status" = 404
+          done
+          echo "Private CI health 200; business endpoints 404; localhost port only."
+      - name: Deny unexpected Host and spoofed proxy headers before Laravel
+        run: |
+          set -euo pipefail
+          base="http://127.0.0.1:18080"
+          [[ "$(curl -sS -o /dev/null -w '%{http_code}' "$base/up")" == 200 ]]
+          for path in / /demo /up /api/leads; do
+            status="$(curl -sS -o /dev/null -w '%{http_code}' \
+              -H 'Host: preview.customer.example' "$base$path")"
+            [[ "$status" == 421 ]]
+            status="$(curl -sS -o /dev/null -w '%{http_code}' \
+              -H 'Host: preview.customer.example' \
+              -H 'X-Forwarded-Host: 127.0.0.1' "$base$path")"
+            [[ "$status" == 421 ]]
+          done
+          [[ "$(curl -sS -o /dev/null -w '%{http_code}' \
+            -H 'Host: 127.0.0.1:18080' \
+            -H 'X-Forwarded-Host: preview.customer.example' "$base/")" == 200 ]]
+          headers="$(curl -fsS -D - -o /dev/null "$base/up")"
+          [[ "${headers,,}" == *'x-robots-tag: noindex, nofollow, noarchive'* ]]
+          echo "Private Host gate PASS: unknown host 421 even with forged X-Forwarded-Host."
+      - name: Verify Laravel marketing page PT EN ES and no checkout or signup
+        run: |
+          set -euo pipefail
+          home="http://127.0.0.1:18080/"
+          pt="$(curl --fail --silent --show-error --max-time 5 "$home")"
+          en="$(curl --fail --silent --show-error --max-time 5 "${home}?lang=en")"
+          es="$(curl --fail --silent --show-error --max-time 5 "${home}?lang=es")"
+          invalid="$(curl --fail --silent --show-error --max-time 5 "${home}?lang=%3Cscript%3E")"
+          [[ "$pt" == *'Organize seus contatos. Avance suas vendas.'* ]]
+          [[ "$en" == *'Organize contacts. Move deals forward.'* ]]
+          [[ "$es" == *'Organiza contactos. Impulsa tus ventas.'* ]]
+          [[ "$invalid" == *'Organize seus contatos. Avance suas vendas.'* ]]
+          [[ "$pt" == *'R$ 69,00'* ]]
+          headers="$(curl -fsS -D - -o /dev/null "$home")"
+          [[ "${headers,,}" == *'x-robots-tag: noindex, nofollow, noarchive'* ]]
+          [[ "$headers" == *"form-action 'none'"* ]]
+          for path in /signup /login /checkout /api/trial; do
+            status="$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:18080$path")"
+            test "$status" = 404
+          done
+          echo "Private PT/EN/ES marketing GET only; no signup, checkout, payment or public indexing."
+      - name: Verify synthetic read-only Laravel dashboard navigation and actions denied
+        run: |
+          set -euo pipefail
+          base="http://127.0.0.1:18080"
+          home="$(curl -fsS --max-time 5 "$base/")"
+          pt="$(curl -fsS --max-time 5 "$base/demo?lang=pt")"
+          en="$(curl -fsS --max-time 5 "$base/demo?lang=en")"
+          es="$(curl -fsS --max-time 5 "$base/demo?lang=es")"
+          invalid="$(curl -fsS --max-time 5 "$base/demo?lang=%3Cscript%3E")"
+          [[ "$home" == *'/demo?lang=pt'* ]]
+          [[ "$pt" == *'Visão geral do seu processo comercial'* ]]
+          [[ "$en" == *'An overview of your sales workflow'* ]]
+          [[ "$es" == *'Una visión general de tu proceso comercial'* ]]
+          [[ "$invalid" == *'Visão geral do seu processo comercial'* ]]
+          [[ "$pt" == *'EXEMPLO_ALFA'* ]]
+          [[ "$pt" == *'FOLLOW_UP_DEMO_A'* ]]
+          [[ "$pt" != *'<form'* ]]
+          [[ "$pt" != *'<script'* ]]
+          status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$base/demo")"
+          test "$status" = 405
+          headers="$(curl -fsS -D - -o /dev/null "$base/demo")"
+          [[ "${headers,,}" == *'x-robots-tag: noindex, nofollow, noarchive'* ]]
+          [[ "$headers" == *"form-action 'none'"* ]]
+          echo "Private navigable demonstration: PT/EN/ES, synthetic-only, GET-only, no edit or capture."
+      - name: Verify original Imagine brand tokens and keyboard navigation on actual Laravel HTML
+        run: |
+          set -euo pipefail
+          base="http://127.0.0.1:18080"
+          for path in / /demo /demo/live; do
+            if [[ "$path" == /demo/live ]]; then
+              continue  # SQL fixture is created later in this workflow.
+            fi
+            html="$(curl -fsS --max-time 5 "$base$path")"
+            [[ "$html" == *'--imagine-orange: #f9941d;'* ]]
+            [[ "$html" == *'--imagine-ink: #171b19;'* ]]
+            [[ "$html" == *'--imagine-surface: #f7f7f8;'* ]]
+            [[ "$html" == *'--imagine-touch-target: 44px;'* ]]
+            [[ "$html" == *'font-family:var(--imagine-font-ui)'* ]]
+            [[ "$html" == *'class="skip"'* ]]
+            [[ "$html" == *'aria-label="Choose language"'* ]]
+          done
+          pt="$(curl -fsS --max-time 5 "$base/demo?lang=pt")"
+          en="$(curl -fsS --max-time 5 "$base/demo?lang=en")"
+          es="$(curl -fsS --max-time 5 "$base/demo?lang=es")"
+          [[ "$pt" == *'Ir para o conteúdo'* ]]
+          [[ "$en" == *'Skip to content'* ]]
+          [[ "$es" == *'Saltar al contenido'* ]]
+          [[ "$pt" == *'aria-current="location"'* ]]
+          echo "Imagine DS V1 tokens and accessible PT/EN/ES pages rendered in private Laravel."
+      - name: Restore PostgreSQL backup on separate network-none PG16 server and test RLS
+        env:
+          CRM_RECOVERY_LAB: synthetic-only
+        run: bash scripts/ci/rehearse-crm-private-restore.sh
+      - name: Prove real Laravel migration and RLS with separate non-owner app role
+        env:
+          CRM_SCHEMA_LAB: synthetic-only
+        run: bash scripts/ci/rehearse-crm-private-schema.sh
+      - name: Seed two-tenant fictional Kanban in PostgreSQL after real Laravel migration
+        env:
+          CRM_DEMO_LAB: synthetic-only
+        run: bash scripts/ci/rehearse-crm-persisted-demo.sh
+      - name: Verify real PostgreSQL-backed private Kanban and tenant isolation over HTTP
+        run: |
+          set -euo pipefail
+          base="http://127.0.0.1:18080"
+          static="$(curl -fsS --max-time 5 "$base/demo?lang=pt")"
+          pt="$(curl -fsS --max-time 5 "$base/demo/live?lang=pt")"
+          en="$(curl -fsS --max-time 5 "$base/demo/live?lang=en")"
+          es="$(curl -fsS --max-time 5 "$base/demo/live?lang=es")"
+          attack="$(curl -fsS --max-time 5 "$base/demo/live?lang=%3Cscript%3E&tenant=b2222222-2222-4222-8222-222222222222")"
+          [[ "$static" == *'/demo/live?lang=pt'* ]]
+          [[ "$pt" == *'Dados fictícios carregados do PostgreSQL16 de teste'* ]]
+          [[ "$en" == *'Fictional data loaded from the test PostgreSQL16 database'* ]]
+          [[ "$es" == *'Datos ficticios cargados del PostgreSQL16 de prueba'* ]]
+          [[ "$attack" == *'Visão geral do seu processo comercial'* ]]
+          [[ "$pt" == *'EXEMPLO_ALFA'* && "$pt" == *'FOLLOW_UP_DEMO_A'* ]]
+          [[ "$pt" != *'EXEMPLO_OMEGA'* && "$attack" != *'EXEMPLO_OMEGA'* ]]
+          [[ "$pt" == *'data-stage="new" data-count="2"'* ]]
+          [[ "$pt" == *'data-stage="qualified" data-count="1"'* ]]
+          [[ "$pt" != *'<form'* && "$pt" != *'<script'* ]]
+          [[ "$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$base/demo/live")" == 405 ]]
+          headers="$(curl -fsS -D - -o /dev/null "$base/demo/live")"
+          [[ "${headers,,}" == *'x-robots-tag: noindex, nofollow, noarchive'* ]]
+          [[ "$headers" == *"form-action 'none'"* ]]
+          # Prove the page is reading actual SQL, not a second hardcoded JSON.
+          # This write uses the CI DB ADMIN from the GitHub runner only.
+          docker compose -f infra/staging/compose.yaml exec -T postgres \
+            psql -X -v ON_ERROR_STOP=1 -U crm_staging -d imagine_crm_staging \
+            -c "UPDATE public.crm_ci_demo_opportunities SET stage='qualified'
+                 WHERE organization_id='a1111111-1111-4111-8111-111111111111'
+                 AND reference='DEMO_002'"
+          after="$(curl -fsS --max-time 5 "$base/demo/live?lang=pt")"
+          [[ "$after" == *'data-stage="new" data-count="1"'* ]]
+          [[ "$after" == *'data-stage="qualified" data-count="2"'* ]]
+          [[ "$static" == *'data-stage="new" data-count="2"'* ]]
+          [[ "$after" != *'EXEMPLO_OMEGA'* ]]
+          echo "CRM STG SQL DEMO PASS: persisted changes reflected; read-only app, fixed tenant, 3 languages."
+      - name: Restore full migrated Laravel and synthetic CRM schema to separate PostgreSQL16 server
+        env:
+          CRM_FULL_RESTORE_LAB: synthetic-only
+        run: bash scripts/ci/rehearse-crm-full-schema-restore.sh
+      - name: Prove repeated hostile tenant, identity and write requests do not leak or mutate
+        env:
+          CRM_THREAT_LAB: synthetic-only
+        run: bash scripts/ci/rehearse-crm-private-http-threats.sh
+      - name: Collect CI-only container diagnostics on smoke failure
+        if: failure()
+        run: |
+          docker compose -f infra/staging/compose.yaml ps --all || true
+          docker compose -f infra/staging/compose.yaml logs --no-color --tail=60 app web postgres || true
+      - name: Tear down all synthetic CI containers and their disposable volumes
+        if: always()
+        run: docker compose -f infra/staging/compose.yaml down --volumes --remove-orphans || true
+      - name: Declare NO-GO limitations
+        if: always()
+        run: |
+          {
+            echo '### CRM private ephemeral smoke'
+            echo '- Runs only inside GitHub hosted runner with generated fake credentials'
+            echo '- Localhost health and no public business routes tested'
+            echo '- Nginx rejects non-loopback Host 421 and spoofed proxy headers; noindex always'
+            echo '- Read-only PT/EN/ES marketing page tested on localhost; no signup/trial/checkout'
+            echo '- Navigable fictional Kanban/tasks dashboard verified PT/EN/ES; POST /demo denied'
+            echo '- PostgreSQL-backed Kanban verified from real SQL with fixed synthetic tenant, SELECT-only RLS and changes visible after CI admin update'
+            echo '- Post-migration full Laravel + Kanban + audit backup restored into second network-none PG16 server with tenant ACL checks'
+            echo '- 24 forged tenant/header SQL demo requests and 4 unsafe methods blocked; DB state unchanged'
+            echo '- Asaas billing sources shipped but no sandbox/production billing route or flag enabled'
+            echo '- Full pg_dump + pg_restore to second network-none PostgreSQL16 container, FORCE RLS and audit verified'
+            echo '- Laravel migration applied and repeated under CI admin; actual PHP app role is NO-SUPERUSER/NO-BYPASSRLS/NO-OWNER with tenant isolation'
+            echo '- Containers and disposable volume destroyed before completion'
+            echo '- No real customer, Asaas network, Leaseweb connection or production changes'
+            echo '- Not sufficient for TLS, backups, operational IAM, RLS or launch GO'
+            echo '- DRAFT / NO-MERGE / NO-DEPLOY'
+          } >> "$GITHUB_STEP_SUMMARY"
