@@ -96,6 +96,19 @@ def main() -> None:
         assert len(nets) == 2
         assert any((n == "internal" or n.endswith("_internal")) and v.get("internal") is True for n, v in nets.items())
         assert any(n == "ingress" or n.endswith("_ingress") for n in nets)
+        # Network attachment matters more than network existence: exposing
+        # only PHP to ingress leaves nginx unreachable from host and weakens
+        # network isolation. Keep PHP/PG on internal, nginx on both networks.
+        def normalized_networks(service: str) -> set[str]:
+            return {
+                "internal" if n == "internal" or n.endswith("_internal")
+                else "ingress" if n == "ingress" or n.endswith("_ingress")
+                else n
+                for n in services[service].get("networks", {})
+            }
+        assert normalized_networks("postgres") == {"internal"}
+        assert normalized_networks("app") == {"internal"}
+        assert normalized_networks("web") == {"internal", "ingress"}
         assert services["app"].get("read_only") is True
         assert services["web"].get("read_only") is True
     except (KeyError, ValueError, TypeError, AssertionError) as exc:
