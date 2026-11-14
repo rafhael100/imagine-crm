@@ -44,6 +44,7 @@ export REDIS_CLIENT=phpredis
 
 php artisan test --filter=CrmIamHttpBoundaryTest --no-ansi
 php artisan test --filter=CrmIamPostgresHttpMembershipTest --no-ansi
+php artisan test --filter=CrmIamRedisConfidentialityTest --no-ansi
 
 echo "CRM IAM REDIS PASS: real Redis-backed session for fake login/TOTP,"
 echo "PostgreSQL16 tenant authorization and revocation. No customer login routes."
