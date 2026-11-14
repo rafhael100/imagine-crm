@@ -149,7 +149,7 @@ final class CiEphemeralPreflightV2Test extends TestCase
                 $lastMigrate = $lineNumber;
             }
         }
-        self::assertSame(3, $guarded, 'Three existing migration steps must each be guarded.');
+        self::assertSame(4, $guarded, 'All four approved migration steps must each have a fresh preflight.');
         self::assertGreaterThanOrEqual(3, $lastMigrate);
         foreach (['migrate:fresh', 'migrate:refresh', 'db:wipe'] as $dangerous) {
             self::assertStringNotContainsString($dangerous, $content);
