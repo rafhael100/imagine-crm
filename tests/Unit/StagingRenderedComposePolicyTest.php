@@ -40,7 +40,10 @@ final class StagingRenderedComposePolicyTest extends TestCase
                         '/tmp:rw,nosuid,noexec,size=16m,mode=1777',
                         '/run:rw,nosuid,noexec,size=1m',
                         '/usr/local/var/run:rw,nosuid,noexec,size=1m',
-                        '/var/www/html/storage:rw,nosuid,noexec,size=16m,uid=33,gid=33',
+                        '/var/www/html/storage/framework/cache:rw,nosuid,noexec,size=4m,uid=33,gid=33',
+                        '/var/www/html/storage/framework/sessions:rw,nosuid,noexec,size=2m,uid=33,gid=33',
+                        '/var/www/html/storage/framework/views:rw,nosuid,noexec,size=8m,uid=33,gid=33',
+                        '/var/www/html/storage/logs:rw,nosuid,noexec,size=2m,uid=33,gid=33',
                         '/var/www/html/bootstrap/cache:rw,nosuid,noexec,size=2m,uid=33,gid=33',
                     ],
                     'environment' => [
@@ -118,6 +121,13 @@ final class StagingRenderedComposePolicyTest extends TestCase
             'extra network' => ['web', 'networks', ['crm_private' => null, 'default' => null], 'web_unapproved_network'],
             'root app' => ['app', 'user', '0:0', 'app_runtime_user'],
             'writable web' => ['web', 'read_only', false, 'web_writable_root'],
+            'storage tree masked' => ['app', 'tmpfs', [
+                '/tmp:rw,nosuid,noexec,size=16m,mode=1777',
+                '/run:rw,nosuid,noexec,size=1m',
+                '/usr/local/var/run:rw,nosuid,noexec,size=1m',
+                '/var/www/html/storage:rw,nosuid,noexec,size=16m,uid=33,gid=33',
+                '/var/www/html/bootstrap/cache:rw,nosuid,noexec,size=2m,uid=33,gid=33',
+            ], 'app_tmpfs_targets'],
             'build secrets' => ['app', 'build', [
                 'context' => '/review/checkout',
                 'dockerfile' => 'infra/staging/Dockerfile',
