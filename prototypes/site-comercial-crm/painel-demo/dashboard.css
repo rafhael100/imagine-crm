@@ -15,3 +15,6 @@
 @media(max-width:740px){.entry-head{padding:18px 17px}.entry-head img{width:120px}.entry-head .back{font-size:11px}.entry-content{margin:35px auto;padding:0 18px 45px}.choices{grid-template-columns:1fr;gap:14px;margin-top:27px}.role-card{padding:25px}.role-card p{min-height:auto}.sidebar{position:fixed;inset:36px auto 0 0;height:calc(100vh - 36px);width:250px;min-width:0;transform:translateX(-110%);transition:transform .19s;box-shadow:8px 0 25px rgba(0,0,0,.1)}.sidebar.open{transform:translateX(0)}.menu-toggle{display:block}.topbar{padding:0 16px}.content{padding:25px 16px 44px}.section-head{align-items:start}.section-head .action{min-width:100px}.sandbox-pill{display:none}.stat{padding:16px}.stat-value{font-size:24px}.board{grid-template-columns:repeat(4,185px)}}
 @media(max-width:440px){.entry-head .back{display:none}.intro h1{font-size:33px}.stats{gap:9px}.stat{padding:12px}.stat-value{font-size:21px}.section-head{display:block}.section-head .action{margin-top:15px}.panel{padding:16px}.role-card h2{font-size:22px}.topbar{height:60px}.breadcrumbs{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sidebar{transition:none}}.fill.w72{width:72%}.fill.w55{width:55%}.fill.w38{width:38%}.fill.w21{width:21%}
+
+/* Foco programático do conteúdo, sem contorno de formulário ao trocar páginas. */
+.content:focus{outline:none}
