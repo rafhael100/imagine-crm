@@ -8,6 +8,7 @@ on:
       - 'composer.json'
       - 'composer.lock'
       - 'infra/staging/**'
+      - 'tests/Unit/StagingPinnedBaseImagesContractTest.php'
       - 'docs/desenvolvimento/F3-263-staging-privado-loopback-proposta.md'
       - 'tests/Unit/StagingSmokeBlueprintContractTest.php'
       - 'tests/Unit/StagingRenderedComposePolicyTest.php'
@@ -41,6 +42,7 @@ jobs:
           php -l scripts/ci/verify-staging-rendered-compose.php
           php -l tests/Unit/StagingPhpRuntimePlatformContractTest.php
           php -l tests/Unit/StagingBuildContextIsolationTest.php
+          php -l tests/Unit/StagingPinnedBaseImagesContractTest.php
           docker compose -f infra/staging/compose.yaml config --format json \
             | php scripts/ci/verify-staging-rendered-compose.php
           # No build, up, pull or any container runtime.
