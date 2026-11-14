@@ -633,6 +633,12 @@ final class PostgresLabLeadsRlsTest extends TestCase
 
         $this->assertSame('synthetic_captured', $first['status_code']);
         $this->assertSame('synthetic_replayed', $replay['status_code']);
+        $unsignedBypass = $this->ledger()->captureSynthetic(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            'DEMO_SIGN01', 'sites', $claim,
+        );
+        $this->assertSame('synthetic_conflict_denied', $unsignedBypass['status_code']);
+        $this->assertNoEffects($unsignedBypass);
         $this->assertNoEffects($first);
         $this->assertNoEffects($replay);
         $this->assertSame(1, $this->owner->table('crm_lab_leads')->count());
