@@ -274,7 +274,7 @@ def apply(ci_id: str, marker: dict, old_text: str, current: str, candidate: str)
         if ENV.exists() and image_tag(ENV.read_text()) == candidate:
             atomic_private(ENV, old_text)
         if PUBLISHED.exists() and json.loads(PUBLISHED.read_text()).get("sha") == candidate:
-            atomic_private(PUBLISHED, json.dumps(marker, indent=2) + "\\n")
+            atomic_private(PUBLISHED, json.dumps(marker, indent=2) + "\n")
         raise
 
 
