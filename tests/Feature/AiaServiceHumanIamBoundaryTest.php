@@ -79,7 +79,7 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
         DB::purge('aia_f235_membership');
         foreach ([
             'aia_f238_iam_read', 'aia_f238_iam_second',
-            'aia_f238_admin_second',
+            'aia_f238_admin_second', 'aia_f239_scoped_grants',
         ] as $name) {
             DB::disconnect($name);
             DB::purge($name);
@@ -335,6 +335,7 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
                 enabled boolean NOT NULL,
                 revoked_at bigint NULL,
                 revision integer NOT NULL,
+                lock_marker smallint NOT NULL DEFAULT 0,
                 PRIMARY KEY (tenant_ref,key_id,principal_ref)
             )');
             $db->statement('CREATE TABLE public.aia_lab_human_service_grants (
@@ -354,8 +355,71 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
                 expires_at bigint NOT NULL,
                 revoked_at bigint NULL,
                 version integer NOT NULL,
+                lock_marker smallint NOT NULL DEFAULT 0,
                 UNIQUE (tenant_ref,key_id,request_sha256)
             )');
+
+            // F239: exact disposable privilege-minimum role; no business
+            // or global IAM table ACL and no privileged issuer connection.
+            $db->statement("CREATE ROLE crm_aia_grant_ci LOGIN
+                PASSWORD 'ci-aia-grant-only'
+                NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS");
+            $db->statement('GRANT CONNECT ON DATABASE imagine_crm_ci
+                TO crm_aia_grant_ci');
+            $db->statement('GRANT USAGE ON SCHEMA public TO crm_aia_grant_ci');
+            foreach ([
+                'aia_lab_agent_human_bindings',
+                'aia_lab_human_service_grants',
+            ] as $table) {
+                $db->statement('ALTER TABLE public.'.$table.
+                    ' ENABLE ROW LEVEL SECURITY');
+                $db->statement('ALTER TABLE public.'.$table.
+                    ' FORCE ROW LEVEL SECURITY');
+                $db->statement('CREATE POLICY aia_f239_read ON public.'.
+                    $table.' FOR SELECT TO crm_aia_grant_ci
+                    USING (tenant_ref = current_setting('.
+                    "'app.tenant_id', true))");
+                $db->statement('CREATE POLICY aia_f239_lock ON public.'.
+                    $table.' FOR UPDATE TO crm_aia_grant_ci
+                    USING (tenant_ref = current_setting('.
+                    "'app.tenant_id', true)) WITH CHECK (false)");
+                $db->statement('GRANT SELECT ON TABLE public.'.
+                    $table.' TO crm_aia_grant_ci');
+                // PG SELECT FOR UPDATE needs an UPDATE-eligible column;
+                // this column has no business content and the RLS UPDATE
+                // policy denies every attempted write.
+                $db->statement('GRANT UPDATE (lock_marker) ON TABLE public.'.
+                    $table.' TO crm_aia_grant_ci');
+            }
+            $db->statement('CREATE POLICY aia_f239_issue ON
+                public.aia_lab_human_service_grants
+                FOR INSERT TO crm_aia_grant_ci
+                WITH CHECK (
+                    tenant_ref = current_setting('. "'app.tenant_id',true)" .')
+                    AND revoked_at IS NULL
+                    AND version = 1 AND membership_version > 0
+                    AND credential_version > 0
+                    AND expires_at > issued_at
+                    AND expires_at <= issued_at + 30
+                )');
+            $db->statement('GRANT INSERT ON TABLE
+                public.aia_lab_human_service_grants TO crm_aia_grant_ci');
+            $grantSettings = config('database.connections.pgsql');
+            $grantSettings['url'] = null;
+            $grantSettings['username'] = 'crm_aia_grant_ci';
+            $grantSettings['password'] = 'ci-aia-grant-only';
+            config(['database.connections.aia_f239_scoped_grants' => $grantSettings]);
+            DB::purge('aia_f239_scoped_grants');
+            $grantDb = DB::connection('aia_f239_scoped_grants');
+            $this->assertSame('crm_aia_grant_ci',
+                $grantDb->selectOne('SELECT current_user AS u')->u);
+            $this->assertSame(0, (int) $grantDb->table(
+                'public.aia_lab_agent_human_bindings'
+            )->count());
+            $this->assertSame(0, (int) $grantDb->table(
+                'public.aia_lab_human_service_grants'
+            )->count());
+            $this->assertSame(0, $grantDb->transactionLevel());
 
             $db->table('aia_lab_agent_human_bindings')->insert([
                 'tenant_ref' => $tenant,
@@ -374,7 +438,7 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
                 'enabled' => true, 'revoked_at' => null, 'revision' => 1,
             ]);
 
-            $witness = new \App\Support\Synthetic\AiaPgHumanDelegationWitnessLab($db);
+            $witness = new \App\Support\Synthetic\AiaPgHumanDelegationWitnessLab($grantDb);
             $source = $this->app->make(GuardPrincipalSource::class);
             $sessionAuthority = $this->app->make(
                 \App\Core\Identity\DatabaseSessionAuthority::class
@@ -399,6 +463,26 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
             $this->assertSame(0, (int) $db
                 ->table('aia_lab_human_service_grants')->count());
 
+            // Runtime role has no permission on IAM, memberships, leads,
+            // issuer keyring, or nonce; its locked row column cannot be
+            // used to mutate an existing record.
+            foreach ([
+                'public.crm_auth_sessions',
+                'public.crm_memberships',
+                'public.crm_global_identities',
+                'public.aia_lab_ed25519_service_keys',
+                'public.aia_lab_nonce_atomic_probe',
+            ] as $forbiddenTable) {
+                $denied = false;
+                try {
+                    $grantDb->table($forbiddenTable)->count();
+                } catch (\Throwable) {
+                    $denied = true;
+                }
+                $this->assertTrue($denied, 'Unexpected runtime privilege: '.$forbiddenTable);
+            }
+            $this->assertSame(0, $grantDb->transactionLevel());
+
             $this->login(); // Existing CRM password + TOTP + verified session.
             $this->assertSame(self::A, $source->current()->principalId);
             // A's membership is in C only; a caller cannot issue under D.
@@ -413,6 +497,50 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
             ), 'Duplicate issuance must not create extra delegated grants.');
             $this->assertSame(1, (int) $db
                 ->table('aia_lab_human_service_grants')->count());
+            // Even though it may lock a row, it cannot UPDATE/DELETE the
+            // business/security content. RLS also rejects any cross-tenant
+            // SELECT/INSERT without the server-set transaction-local marker.
+            $this->assertSame(0, (int) $grantDb->table(
+                'public.aia_lab_human_service_grants'
+            )->count());
+            $this->assertSame(0, $grantDb->transactionLevel());
+            $db->table('aia_lab_agent_human_bindings')->insert([
+                'tenant_ref' => 'SYNTHETIC_TENANT_B',
+                'organization_id' => self::D,
+                'principal_ref' => 'SYNTHETIC_F239_PRINCIPAL_B',
+                'key_id' => $kid,
+                'allowed_fields_json' => '["ref"]',
+                'enabled' => true, 'revoked_at' => null, 'revision' => 1,
+            ]);
+            $grantDb->transaction(function () use ($grantDb): void {
+                $grantDb->selectOne("SELECT set_config(
+                    'app.tenant_id', ?, true)", ['SYNTHETIC_TENANT_A']);
+                $this->assertSame(1, (int) $grantDb->table(
+                    'public.aia_lab_human_service_grants'
+                )->count());
+                $this->assertSame(1, (int) $grantDb->table(
+                    'public.aia_lab_agent_human_bindings'
+                )->count());
+                // A column-level lock grant cannot perform an UPDATE
+                // because the RLS WITH CHECK is deliberately false.
+                $badWrite = false;
+                try {
+                    $affected = $grantDb->table(
+                        'public.aia_lab_human_service_grants'
+                    )->update(['lock_marker' => 1]);
+                    $badWrite = $affected !== 0;
+                } catch (\Throwable) {
+                    $badWrite = false;
+                }
+                $this->assertFalse($badWrite);
+            }, 1);
+            $this->assertSame(0, $grantDb->transactionLevel());
+            $this->assertSame(0, (int) $grantDb->table(
+                'public.aia_lab_human_service_grants'
+            )->count());
+            $this->assertSame(0, (int) $grantDb->table(
+                'public.aia_lab_agent_human_bindings'
+            )->count());
             $grant = $db->table('aia_lab_human_service_grants')->first();
             $this->assertSame(self::A, $grant->human_identity_id);
             $this->assertSame(self::C, $grant->organization_id);
@@ -551,6 +679,8 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
                 ->table('aia_lab_human_service_grants')->count());
             $this->assertSame(0, DB::connection('aia_f235_membership')->transactionLevel());
         } finally {
+            DB::disconnect('aia_f239_scoped_grants');
+            DB::purge('aia_f239_scoped_grants');
             foreach ([
                 'aia_lab_human_service_grants',
                 'aia_lab_agent_human_bindings',
@@ -559,6 +689,10 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
             ] as $table) {
                 $db->statement('DROP TABLE IF EXISTS public.'.$table);
             }
+            $db->statement('REVOKE USAGE ON SCHEMA public FROM crm_aia_grant_ci');
+            $db->statement('REVOKE CONNECT ON DATABASE imagine_crm_ci
+                FROM crm_aia_grant_ci');
+            $db->statement('DROP ROLE IF EXISTS crm_aia_grant_ci');
         }
     }
 
