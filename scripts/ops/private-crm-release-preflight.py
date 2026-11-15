@@ -23,6 +23,7 @@ SHA = re.compile(r"\A[a-f0-9]{40}\Z")
 SCOPE = {
     ".github/workflows/ci-crm-aia-f248-private.yml": "ci_evidence",
     ".github/workflows/ci-private-crm-journey.yml": "ci_evidence",
+    ".github/workflows/ci-private-crm-release-preflight.yml": "ci_evidence",
     "app/Homologation/Controller.php": "private_runtime_review",
     "app/Homologation/OpportunityScenario.php": "private_runtime_review",
     "app/Homologation/PrivateHeaders.php": "private_runtime_review",
@@ -34,6 +35,7 @@ SCOPE = {
     "scripts/ops/test-private-crm-http.py": "ci_evidence",
     "scripts/ops/update-private-crm-marketing.py": "operator_script_review",
     "scripts/ops/private-crm-release-preflight.py": "operator_script_review",
+    "scripts/ops/test-private-crm-release-preflight.py": "ci_evidence",
     "tests/Feature/AgentsPrivateIngressCandidateTest.php": "ci_evidence",
     "tests/Unit/OpportunityScenarioTest.php": "ci_evidence",
 }
@@ -45,8 +47,8 @@ def classify(changes: list[tuple[str, str]]) -> dict:
     inspected = []
     seen = set()
     for status, path in changes:
-        if (status not in ("A", "M") or path not in SCOPE
-                or path in seen or not isinstance(path, str)):
+        if (status not in ("A", "M") or not isinstance(path, str)
+                or path not in SCOPE or path in seen):
             blocked.append(path)
             continue
         seen.add(path)
