@@ -343,6 +343,20 @@ def main():
     a.get('/admin',expected=403)
     b.login(FIXTURES['clientB'])
     check(title not in b.get('/painel?section=leads'),'cross-tenant read leak')
+    bSummary=b.get('/painel?section=reports')
+    check('data-report-methodology="imagine"' in bSummary,
+          'F255 second tenant cannot open its own funnel report')
+    check('data-report-leads="0"' in bSummary and
+          'data-report-clients="0"' in bSummary,
+          'F255 first tenant lead or won aggregates leaked into second tenant')
+    check('data-report-visits="unavailable"' in bSummary,
+          'F255 second tenant has invented visitor analytics')
+    bPipelines=re.findall(
+        r'<tr data-report-funnel-id="([^"]+)" data-report-funnel-leads="(\d+)" data-report-funnel-won="(\d+)" data-report-funnel-rate="([^"]+)">',
+        bSummary)
+    check(len(bPipelines)>=1 and
+          all(int(row[1])==0 and int(row[2])==0 for row in bPipelines),
+          'F255 foreign leads or won status visible in other tenant pipeline')
     b.post('/leads/'+lead,{'version':2,'stage':'proposal'},expected=404)
     b.post('/tarefas',{'lead':lead,'title':'TASK_TESTE_CROSS','due':'2026-12-01'},expected=404)
     print('PASS CSRF → client/admin role denial → forged tenant/role rejection → two-company isolation')
@@ -379,6 +393,15 @@ def main():
           'won count across pipelines wrong')
     check(sorted(float(row[3]) for row in pipeline_rows)==[0.0,33.3],
           'pipeline conversion must be scoped and avoid zero division')
+    bSummaryAfterWon=b.get('/painel?section=reports')
+    check('data-report-leads="0"' in bSummaryAfterWon and
+          'data-report-clients="0"' in bSummaryAfterWon,
+          'F255 foreign won deal leaked across tenants after stage transition')
+    check('data-report-conversion="0"' in bSummaryAfterWon,
+          'F255 other tenant conversion inflated by foreign won deals')
+    check(title not in b.get('/exportar'),
+          'F255 cross-tenant lead appeared in another company CSV export')
+    print('PASS F255 independent-tenant funnel, conversion and CSV isolation before/after won')
     print('PASS proposal → won/lost → terminal state protection → proposal follow-up task')
     exported=a.get('/exportar')
     check(',won,' in exported and ',lost,' in exported,'exported sales stages missing')
