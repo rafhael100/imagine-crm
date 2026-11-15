@@ -27,3 +27,6 @@ Matriz: HMAC íntegro sem binding continua NEGADO; vínculo fictício ativo perm
 Workflow dedicado ci-crm-sites-f398-pg16.yml: PostgreSQL16 efêmero e papel crm_app_ci sem superuser/BYPASSRLS, schema Laravel e SQL fixtures originais, checkout do Sites na SHA fixa. Executa somente o método de integração com --fail-on-skipped; não houve mudança de rota, papéis produtivos, migração operacional, deploy ou senha real.
 
 Esta comprovação não torna o CRM operacional. Não contempla cadastro de binding realizado por servidor autenticado, consentimento LGPD, autenticação real do emissor, pagamento, filas, TLS/mTLS, gestão de certificados ou VPS.
+## Correção conservadora de escopo CI
+
+A primeira execução da nova suíte PG16 foi barrada corretamente por SEC-CI-02 (`unsupported event, branch or pull request target`), pois a PR estava empilhada sobre o candidato #596 em vez de mirar diretamente a DEV. **O código SEC-CI-02 não foi alterado, enfraquecido ou contornado.** A PR #605 foi redirecionada à branch `dev/fast-track-crm-2026-11-04` — a mesma base autorizada do candidato #596 — e a CI deve reexecutar a inspeção completa de evento/branch, container Docker, host, credenciais falsas e cluster PG16 antes de qualquer DDL. Nenhum erro da primeira execução autoriza considerar o teste novo concluído.
