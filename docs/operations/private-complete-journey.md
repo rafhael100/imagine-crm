@@ -220,3 +220,107 @@ BasicAuth, isolamento de outros hosts e smoke pós-publicação.
 a VPS.** O script `update-private-crm-marketing.py` continua restrito
 a views; sua lista não foi ampliada artificialmente para contornar
 o bloqueio desta atualização funcional.
+
+## F252 — atualização conservadora da aplicação privada já publicada (sem GO automático)
+
+A revisão anteriormente publicada é ea5d320addaeb7ab970bdfa3931d55ddea37afac.
+Este procedimento existe porque o deploy inicial recusa sobrescrever um ingresso existente, e
+o utilitário anterior de manutenção aceita apenas views. **Nenhum script deste pacote
+realiza SSH, cron, deploy automático, merge em main ou liberação comercial.**
+
+**Escopo F252:** atualizar somente a imagem da aplicação privada sob
+/srv/imagine/crm-private-candidate, mantendo o mesmo PostgreSQL, Redis, rede,
+porta 127.0.0.1:18086, configurações Nginx, TLS, BasicAuth e demais projetos.
+O classificador F251 deve aceitar o diff **somente como MANUAL_REVIEW_REQUIRED**.
+Mudanças em migrations, papéis, rotas, providers, Compose, Composer ou caminhos
+não classificados interrompem o processo.
+
+### Bloqueios obrigatórios antes de operar na VPS
+
+1. Inspeção independente de segurança e operações, com duas pessoas identificadas,
+   seus registros de evidência e autorização manual da Direção. A presença de um JSON
+   não prova a independência nem substitui a revisão dos documentos.
+2. CI da revisão exata concluída em sucesso: jornada completa, preflight F251 e
+   contrato de atualização F252, além de **todas as checks** daquele SHA.
+3. Backup criptografado e restauração íntegra em PostgreSQL separado e sem rede;
+   o banco operacional não será restaurado automaticamente, pois não há migrações.
+4. Acesso legítimo do operador à VPS, sem copiar segredos para GitHub ou chat.
+   O arquivo runtime.env, o cofre de revisão e os registros são protegidos (root/0600).
+5. Identidade da implantação verificada na VPS: published.json, runtime.env,
+   imagem Docker em execução, hashes das configurações, HTTPS/BasicAuth dos hosts
+   CRM, Portal e Comercial, e ausência de fixtures automatizadas.
+
+### Registro de aceite (fora do Git, root/0600)
+
+O operador registra em
+/srv/imagine/private-crm-journey/approvals/private-upgrade-SHA_CANDIDATA.json
+um objeto no formato abaixo, substituindo os valores ilustrativos por evidências
+verificadas e mantendo a revisão dentro do diretório protegido. **Não criar
+aprovação fictícia para satisfazer o script.**
+
+```json
+{
+  "published_sha": "SHA_REAL_DA_VERSAO_PUBLICADA",
+  "candidate_sha": "SHA_REAL_DA_CANDIDATA",
+  "scope": "private-synthetic-only",
+  "authorized_by": "IDENTIFICACAO_DO_RESPONSAVEL",
+  "manual_private_release": true,
+  "reviews": {
+    "security": {
+      "reviewer": "PESSOA_RESPONSAVEL_SEGURANCA",
+      "decision": "approved",
+      "evidence": "REGISTRO_DE_REVISAO_VERIFICAVEL"
+    },
+    "operations": {
+      "reviewer": "PESSOA_RESPONSAVEL_OPERACOES",
+      "decision": "approved",
+      "evidence": "REGISTRO_DE_REVISAO_VERIFICAVEL"
+    }
+  }
+}
+```
+
+Os dois revisores devem ser distintos. A revisão independente de SEG/DBA e o
+aceite CORE/LGPD de produção continuam como gates próprios; **nenhum
+aceite de homologação fictícia os substitui.**
+
+### Sequência de comandos do operador (somente após satisfazer todos os gates)
+
+Acessar por canal protegido a VPS autorizada, confirmar que o checkout está na
+revisão exata e que os arquivos não foram alterados. Não executar o candidato
+em outro projeto ou aplicar o Compose antigo na porta 18080.
+
+```bash
+cd /srv/imagine/crm-private-candidate
+sudo python3 scripts/ops/private-crm-upgrade-f252.py plan ID_DA_CI_EXATA
+sudo python3 scripts/ops/private-crm-upgrade-f252.py apply ID_DA_CI_EXATA
+```
+
+O comando plan faz inspeção e não atualiza contêineres. O apply exige aprovação
+privada, classificações F251, checks completas, backup e restore, compila a
+imagem candidata, recria somente app/web do CRM, verifica as telas HTTP e
+autenticação cliente/admin (sem imprimir fatores), confirma HTTPS/BasicAuth
+e faz novo backup/restauração. Em erro durante o upgrade, tenta voltar à imagem
+anterior, sem tocar banco, segredos ou Nginx. Em falha de reversão, o operador
+deve interromper a liberação e seguir o plano de incidente.
+
+Reversão operacional deliberada (somente se a revisão atual ainda for F252
+e os registros de release estiverem íntegros):
+
+```bash
+cd /srv/imagine/crm-private-candidate
+sudo python3 scripts/ops/private-crm-upgrade-f252.py rollback
+```
+
+**Aceite final na VPS após o apply:** navegador humano atravessando BasicAuth,
+cadastro/OTP fictício/trial, login cliente, MFA/recuperação, leads e Kanban,
+tarefas, automação interna, CSV, convite, pedido simulado, relatório,
+acesso admin separado, suspensão/revogação e reativação; conferir RLS de duas
+organizações, backup e isolamento dos outros hosts. O operador registra o
+resultado na issue CRM-LAUNCH-01 e na evidência protegida. Nenhum desses
+itens permite cadastro real, SMTP/SMS, Asaas/C6, NFS-e, captação Sites/Portal,
+IA externa ou lançamento do SaaS sem homologações independentes.
+
+**Limites desta entrega:** o código e o workflow F252 só podem demonstrar
+política e CI sem acesso SSH. A atualização efetiva exige operador com acesso
+à VPS e revisões independentes, sem promessas de deploy a partir do GitHub.
