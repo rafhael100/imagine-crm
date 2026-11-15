@@ -69,6 +69,12 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
 
     protected function tearDown(): void
     {
+        // This test is explicitly SKIPPED in the general suite. In that
+        // case Laravel was never booted and DB facade is not registered.
+        if (!isset($this->fixtures)) {
+            parent::tearDown();
+            return;
+        }
         DB::disconnect('aia_f235_membership');
         DB::purge('aia_f235_membership');
         $this->cleanupSyntheticIamLab();
