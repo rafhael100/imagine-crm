@@ -41,6 +41,9 @@ SCOPE = {
     "scripts/ops/private-crm-upgrade-f252.py": "operator_script_review",
     "scripts/ops/test-private-crm-upgrade-f252.py": "ci_evidence",
     ".github/workflows/ci-private-crm-upgrade-f252.yml": "ci_evidence",
+    "scripts/ops/private-crm-f253-canary.py": "operator_script_review",
+    "scripts/ops/test-private-crm-f253-canary.py": "ci_evidence",
+    ".github/workflows/ci-private-crm-f253-canary.yml": "ci_evidence",
 }
 
 
