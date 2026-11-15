@@ -68,6 +68,57 @@ final class AiaPgTenantBoundServiceProofLab
         }
     }
 
+    /**
+     * F243: use server-owned binding while the PG row remains locked.
+     * A concurrent binding revocation UPDATE cannot commit between
+     * tenant resolution, signature verification and anti-replay insert.
+     * A true return is only evidence; it never grants any CRM operation.
+     *
+     * @return ?array{tenant_ref:string,organization_id:string}
+     */
+    public static function verifyWithStableBinding(
+        string $canonicalRequest,
+        string $canonicalClaims,
+        string $signatureBase64,
+        int $now,
+        AiaPgLockedServiceTenantBindingLab $bindings,
+        AiaTrustedPublicKeySource $keyring,
+        AiaNonceClaimSource $nonces,
+    ): ?array {
+        try {
+            if ($canonicalRequest === '' || strlen($canonicalRequest) > 2048
+                || $canonicalClaims === '' || strlen($canonicalClaims) > 1024
+                || $signatureBase64 === '' || strlen($signatureBase64) > 128) {
+                return null;
+            }
+            $claims = json_decode($canonicalClaims, true, 4, JSON_THROW_ON_ERROR);
+            if (!is_array($claims) || !is_string($claims['key_id'] ?? null)
+                || !is_string($claims['tenant_ref'] ?? null)
+                || json_encode(
+                    $claims, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                        | JSON_THROW_ON_ERROR
+                ) !== $canonicalClaims) {
+                return null;
+            }
+            return $bindings->withinLockedBinding(
+                $claims['key_id'],
+                static function (array $bound) use (
+                    $canonicalRequest, $canonicalClaims, $signatureBase64,
+                    $now, $claims, $keyring, $nonces
+                ): bool {
+                    return hash_equals($bound['tenant_ref'], $claims['tenant_ref'])
+                        && AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                            $canonicalRequest, $canonicalClaims,
+                            $signatureBase64, $bound['tenant_ref'], $now,
+                            $keyring, $nonces,
+                        );
+                }
+            );
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
     /** @return array{contract:string,state:string,projection:null,real_authorization:false,external_calls:0} */
     public static function inspectDenied(
         string $canonicalRequest,
