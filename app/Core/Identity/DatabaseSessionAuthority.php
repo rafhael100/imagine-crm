@@ -24,11 +24,20 @@ final readonly class DatabaseSessionAuthority implements SessionAuthority
 
     public function transaction(Closure $operation): mixed
     {
-        if (!config('identity.experimental') || !app()->environment('local', 'testing')
+        if (!IdentityRuntimeProfile::enabled()
             || $this->db->transactionLevel() !== 0) {
             throw new LogicException('Isolated IAM transaction required.');
         }
         if ($this->db->getDriverName() === 'pgsql') {
+            if (app()->environment('staging')) {
+                // Check the actual server, not only Laravel configuration. A
+                // swapped/injected connection must not enter the private profile.
+                $actual = $this->db->selectOne('SELECT current_database() AS database_name, current_user AS role_name');
+                if (($actual->database_name ?? null) !== 'imagine_crm_private_homologation'
+                    || ($actual->role_name ?? null) !== 'crm_homologation_iam') {
+                    throw new LogicException('Private staging IAM connection mismatch.');
+                }
+            }
             // A shared pool may carry a caller-set tenant marker or disabled
             // RLS from a prior use. Neither may be inherited by global IAM.
             // Read state before the transaction; do not silently repair it.
