@@ -155,8 +155,19 @@ def main():
     a=Client(); b=Client(); admin=Client()
     home=a.get('/')
     check('R$ 69,00' in home and 'R$ 89,00' in home,'commercial plan references missing')
-    for language,headline in [('en','More control.'),('es','Más control.'),('pt','Mais controle.')]:
-        check(headline in a.get('/?lang='+language),'locale missing')
+    for language,headline,method,pillar in [
+        ('en','More control.','Visits → Leads → Customers','ATTRACT'),
+        ('es','Más control.','Visitas → Leads → Clientes','ATRACCIÓN'),
+        ('pt','Mais controle.','Visitas → Leads → Clientes','ATRAÇÃO'),
+    ]:
+        localized=a.get('/?lang='+language)
+        check(headline in localized,'locale missing')
+        check('data-home-section="imagine-methodology"' in localized,
+              'Imagine methodology section missing')
+        check(method in localized and pillar in localized,
+              'Imagine methodology translations/pillars missing')
+        check('href="#metodologia"' in localized,
+              'Imagine methodology navigation missing')
     initial=a.get('/cadastro')
     document=re.search(r'<option selected>([0-9]{14})</option>',initial)
     if not document: document=re.search(r'<option[^>]*>([0-9]{14})</option>',initial)
