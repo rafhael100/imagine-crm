@@ -8,24 +8,26 @@ use Illuminate\Database\Connection;
 use ImagineAI\MockBridge\MockCrmReadRequest;
 
 /**
- * F233: read CRM-owned, disposable PostgreSQL *candidate* scope facts.
+ * F234: test-only, read-only PostgreSQL RLS-backed scope witness.
  *
- * This NEVER grants business access. Only a proof of lab policy conformance
- * after service signature, trusted key and atomic nonce were verified.
- * No production schema, no PII, no real membership, no CRM lead reads.
+ * Queries are executed ONLY under dedicated non-owner, NOBYPASSRLS,
+ * SELECT-only CI role with transaction-local tenant marker. No real
+ * business authorization, human delegation, lead data or production use.
  */
 final readonly class AiaPgServiceScopeLab
 {
+    private const ROLE = 'crm_aia_scope_ci';
+
     public function __construct(private Connection $connection)
     {
     }
 
     /**
-     * This is not an ACL decision. No caller may convert true to ALLOW.
-     * The controller/response boundary remains unconditional DENIAL.
+     * "true" is ONLY a synthetic policy diagnostic. Never turn it into
+     * CRM ALLOW; the public read response remains uniform DENIAL.
      *
-     * @param array<string,mixed> $signedClaims Already verified by the
-     *   original Agents Ed25519 implementation in the calling bridge.
+     * @param array<string,mixed> $signedClaims Already Ed25519-verified by
+     *  the original pinned Agents implementation in the calling bridge.
      */
     public function matchesCandidate(
         string $canonicalRequest,
@@ -43,7 +45,8 @@ final readonly class AiaPgServiceScopeLab
             || $this->connection->getDriverName() !== 'pgsql'
             || $this->connection->getDatabaseName() !== 'imagine_crm_ci'
             || $this->connection->getConfig('host') !== '127.0.0.1'
-            || $this->connection->getConfig('username') !== 'postgres'
+            || $this->connection->getConfig('username') !== self::ROLE
+            || $this->connection->transactionLevel() !== 0
             || $now < 0 || $now > 4102444800) {
             return false;
         }
@@ -66,65 +69,98 @@ final readonly class AiaPgServiceScopeLab
                 || !self::syntheticRef($request['purpose_ref'], 1)) {
                 return false;
             }
-            $who = $this->connection->selectOne(
-                'SELECT current_database() AS dbname, current_user AS username'
+            $db = $this->connection;
+            $who = $db->selectOne(
+                "SELECT current_database() AS dbname, current_user AS username,
+                    current_setting('app.tenant_id', true) AS inherited_tenant,
+                    current_setting('row_security') AS row_security,
+                    r.rolsuper, r.rolbypassrls
+                 FROM pg_roles r WHERE r.rolname = current_user"
             );
             if (!$who || $who->dbname !== 'imagine_crm_ci'
-                || $who->username !== 'postgres') {
+                || $who->username !== self::ROLE
+                || $who->rolsuper || $who->rolbypassrls
+                || $who->row_security !== 'on'
+                || ($who->inherited_tenant !== null
+                    && $who->inherited_tenant !== '')) {
                 return false;
             }
 
-            // The caller's assertions are only selectors; all permissions
-            // and owner facts must exist in separate CRM-owned tables.
-            $delegation = $this->connection
-                ->table('public.aia_lab_service_delegations')
-                ->where('tenant_ref', $expectedTenant)
-                ->where('key_id', $keyId)
-                ->where('principal_ref', $request['principal_ref'])
-                ->where('purpose_ref', $request['purpose_ref'])
-                ->where('operation', 'crm.lead.read_minimal')
-                ->where('enabled', true)
-                ->whereNull('revoked_at')
-                ->where('not_before', '<=', $now)
-                ->where('expires_at', '>', $now)
-                ->first(['revision','enabled','revoked_at']);
-            if (!$delegation || (int) $delegation->revision < 1) {
+            // Require all three exact tables to enforce FORCE RLS and
+            // deny any role that might bypass by owning them.
+            $flags = $db->selectOne(
+                "SELECT count(*) AS count,
+                    bool_and(c.relrowsecurity AND c.relforcerowsecurity
+                        AND NOT pg_has_role(current_user,c.relowner,'MEMBER')) AS safe
+                 FROM pg_class c WHERE c.oid IN (
+                    'public.aia_lab_service_delegations'::regclass,
+                    'public.aia_lab_resource_owners'::regclass,
+                    'public.aia_lab_service_field_grants'::regclass
+                 )"
+            );
+            if (!$flags || (int) $flags->count !== 3
+                || ($flags->safe !== true && $flags->safe !== 't')) {
                 return false;
             }
 
-            $owner = $this->connection
-                ->table('public.aia_lab_resource_owners')
-                ->where('tenant_ref', $expectedTenant)
-                ->where('resource_ref', $request['resource_ref'])
-                ->where('principal_ref', $request['principal_ref'])
-                ->where('status', 'active')
-                ->exists();
-            if (!$owner) {
-                return false;
-            }
+            return $db->transaction(function () use (
+                $db, $request, $signedClaims, $expectedTenant, $now, $keyId
+            ): bool {
+                // The only company marker is derived from the verified
+                // expected tenant, not an HTTP header or arbitrary claim.
+                $db->selectOne(
+                    "SELECT set_config('app.tenant_id', ?, true) AS tenant",
+                    [$expectedTenant],
+                );
 
-            $fields = $request['fields'];
-            if (!is_array($fields) || count($fields) < 1 || count($fields) > 2
-                || count(array_unique($fields)) !== count($fields)
-                || array_diff($fields, ['ref','stage']) !== []) {
-                return false;
-            }
+                $delegation = $db->table('public.aia_lab_service_delegations')
+                    ->where('tenant_ref', $expectedTenant)
+                    ->where('key_id', $keyId)
+                    ->where('principal_ref', $request['principal_ref'])
+                    ->where('purpose_ref', $request['purpose_ref'])
+                    ->where('operation', 'crm.lead.read_minimal')
+                    ->where('enabled', true)
+                    ->whereNull('revoked_at')
+                    ->where('not_before', '<=', $now)
+                    ->where('expires_at', '>', $now)
+                    ->first(['revision']);
+                if (!$delegation || (int) $delegation->revision < 1) {
+                    return false;
+                }
 
-            $approved = $this->connection
-                ->table('public.aia_lab_service_field_grants')
-                ->where('tenant_ref', $expectedTenant)
-                ->where('key_id', $keyId)
-                ->where('principal_ref', $request['principal_ref'])
-                ->where('resource_ref', $request['resource_ref'])
-                ->whereIn('field_code', $fields)
-                ->where('enabled', true)
-                ->pluck('field_code')
-                ->all();
-            sort($approved, SORT_STRING);
-            sort($fields, SORT_STRING);
-            return $approved === $fields;
+                $owner = $db->table('public.aia_lab_resource_owners')
+                    ->where('tenant_ref', $expectedTenant)
+                    ->where('resource_ref', $request['resource_ref'])
+                    ->where('principal_ref', $request['principal_ref'])
+                    ->where('status', 'active')
+                    ->exists();
+                if (!$owner) {
+                    return false;
+                }
+
+                $fields = $request['fields'];
+                if (!is_array($fields) || count($fields) < 1
+                    || count($fields) > 2
+                    || count(array_unique($fields)) !== count($fields)
+                    || array_diff($fields, ['ref', 'stage']) !== []) {
+                    return false;
+                }
+                $approved = $db->table('public.aia_lab_service_field_grants')
+                    ->where('tenant_ref', $expectedTenant)
+                    ->where('key_id', $keyId)
+                    ->where('principal_ref', $request['principal_ref'])
+                    ->where('resource_ref', $request['resource_ref'])
+                    ->whereIn('field_code', $fields)
+                    ->where('enabled', true)
+                    ->pluck('field_code')
+                    ->all();
+                sort($approved, SORT_STRING);
+                sort($fields, SORT_STRING);
+                return $approved === $fields;
+            }, 1); // no automatic retry of a protected operation
         } catch (\Throwable) {
-            // Missing owner/delegation/field table, RLS or DB outage -> deny.
+            // Absent relation, stale tenant, transaction, RLS or backend
+            // outage always deny; never fall back to privileged connection.
             return false;
         }
     }
