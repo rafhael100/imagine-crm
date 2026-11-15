@@ -17,3 +17,13 @@ São testadas as três origens permitidas; retry idêntico; mudança de organiza
 
 Enquanto os gates #27, #259, #564 e #557 estiverem abertos, não ativar rotas de produção, APIs de leads, provisionamento, cobrança ou entregas aos clientes.
 Links: Sites PR #479 e issue Sites #38; CRM PR #596 e seu candidato integrado ainda em revisão.
+
+## Complemento F398-PG16 — caminho completo com o banco original
+
+O teste test_original_sites_f398_signed_capture_persists_only_with_current_binding (PostgresLabLeadsRlsTest) usa os bytes originais emitidos pelo Sites, chama o CRM LaboratorySignedSiteCapture original e persiste no ledger PostgreSQL16 com FORCE RLS, mas somente com binding registrado no fixture pelo proprietário do banco.
+
+Matriz: HMAC íntegro sem binding continua NEGADO; vínculo fictício ativo permite exatamente uma captura; retry idêntico retorna replay sem duplicação; alteração de formulário é rejeitada; empresa B não pode usar vínculo da empresa A; revogação terminal impede novos recebimentos; contagens físicas de lead/evento/claim e leitura RLS sem contexto são verificadas.
+
+Workflow dedicado ci-crm-sites-f398-pg16.yml: PostgreSQL16 efêmero e papel crm_app_ci sem superuser/BYPASSRLS, schema Laravel e SQL fixtures originais, checkout do Sites na SHA fixa. Executa somente o método de integração com --fail-on-skipped; não houve mudança de rota, papéis produtivos, migração operacional, deploy ou senha real.
+
+Esta comprovação não torna o CRM operacional. Não contempla cadastro de binding realizado por servidor autenticado, consentimento LGPD, autenticação real do emissor, pagamento, filas, TLS/mTLS, gestão de certificados ou VPS.
