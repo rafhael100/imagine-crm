@@ -1609,9 +1609,8 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
                                     &$httpVerifications
                                 ): bool {
                                     $httpVerifications++;
-                                    return \App\Support\Synthetic\
-                                        AiaPgTenantBoundServiceProofLab::
-                                            verifyWithStableIdentity(
+                                    return \App\Support\Synthetic\AiaPgTenantBoundServiceProofLab::
+                                        verifyWithStableIdentity(
                                                 $receivedBody,$receivedClaims,
                                                 $receivedSignature,$now,
                                                 $locked,$lockedKey,$nonce
