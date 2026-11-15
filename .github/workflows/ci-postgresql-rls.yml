@@ -160,5 +160,11 @@ jobs:
         env:
           CRM_IAM_REDIS_LAB: synthetic-only
         run: bash scripts/ci/rehearse-crm-iam-redis-session.sh
+      - name: Verify atomic OTP consumption and 14-day CNPJ historical uniqueness in disposable PostgreSQL
+        env:
+          CRM_TRIAL_OTP_PG_LAB: synthetic-only
+        run: |
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          php artisan test --filter=CrmAtomicOtpTrialPgTest --no-ansi --fail-on-skipped
       - name: Run full synthetic test suite
         run: php artisan test --no-ansi
