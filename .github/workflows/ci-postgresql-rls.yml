@@ -207,5 +207,12 @@ jobs:
         run: |
           php -l tests/Feature/AiaNoGoHttpBoundaryTest.php
           php artisan test --filter=AiaNoGoHttpBoundaryTest --no-ansi
+      - name: Verify CRM-Agents F246 isolated HTTP staging envelope without granting access
+        env:
+          AIA_F246_HTTP_LAB: 'true'
+        run: |
+          php -l app/Support/Synthetic/AiaStagingDeniedIngressLab.php
+          php -l tests/Feature/AiaStagingDeniedIngressTest.php
+          php artisan test --filter=AiaStagingDeniedIngressTest --no-ansi
       - name: Run full synthetic test suite
         run: php artisan test --no-ansi
