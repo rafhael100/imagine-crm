@@ -150,10 +150,52 @@ def upload_csv(client,csv_text,expected=303):
     client.request('/importar',expected=expected,body=body,headers={'Content-Type':'multipart/form-data; boundary='+boundary})
 
 
+
+def assert_agents_no_go(client, audience):
+    """F249: real private HTTP kernel has no synthetic or operational Agents API."""
+    body=json.dumps({
+        'contract':'SYNTHETIC_CRM_AIA_READ_V1',
+        'request_ref':'SYNTHETIC_F249_REJECT',
+        'operation':'crm.lead.read_minimal',
+        'tenant_ref':'SYNTHETIC_TENANT_A',
+        'principal_ref':'SYNTHETIC_F249_PRINCIPAL',
+        'resource_ref':'SYNTHETIC_F249_LEAD',
+        'purpose_ref':'SYNTHETIC_F249_PURPOSE',
+        'fields':['ref','stage'],
+    },separators=(',',':'))
+    paths=(
+        '/api/aia/lead/read',
+        '/api/agents/op01/leads',
+        '/api/crm/agents/leads/SYNTHETIC_F249_LEAD',
+        '/internal/aia/op01/leads',
+        '/__synthetic_f248_not_registered',
+    )
+    for path in paths:
+        # Even an authenticated customer/admin with a fake service proof
+        # must never gain access to an unapproved S2S API.
+        html,_=client.request(path,body=body,expected=404,headers={
+            'Content-Type':'application/json',
+            'X-Aia-Claims':'{}',
+            'X-Aia-Signature':'SYNTHETIC_NOT_A_SIGNATURE',
+        })
+        for forbidden in (
+            'SYNTHETIC_F249_LEAD',
+            'SYNTHETIC_F249_PRINCIPAL',
+            'SYNTHETIC_NOT_A_SIGNATURE',
+            'access_token',
+            'READ_SYNTHETIC_ONLY',
+        ):
+            check(forbidden not in html,
+                  'F249 forbidden service/lead content in denied HTTP response')
+        client.get(path,expected=404)
+    print('PASS F249 private Agents HTTP NO-GO audience='+audience)
+
+
 def main():
     scenario('clear-cache')
     a=Client(); b=Client(); admin=Client()
     home=a.get('/')
+    assert_agents_no_go(a,'guest')
     check('R$ 69,00' in home and 'R$ 89,00' in home,'commercial plan references missing')
     for language,headline,method,pillar in [
         ('en','More control.','Visits → Leads → Customers','ATTRACT'),
@@ -286,6 +328,7 @@ def main():
     b.post('/leads/'+lead,{'version':2,'stage':'proposal'},expected=404)
     b.post('/tarefas',{'lead':lead,'title':'TASK_TESTE_CROSS','due':'2026-12-01'},expected=404)
     print('PASS CSRF → client/admin role denial → forged tenant/role rejection → two-company isolation')
+    assert_agents_no_go(a,'authenticated-client')
 
     a.get('/painel?section=kanban')
     a.post('/leads/'+lead,{'version':2,'stage':'proposal'})
@@ -376,6 +419,7 @@ def main():
     scenario('clear-cache')
     administrator=dict(FIXTURES['admin'],admin=True)
     page=admin.login(administrator)
+    assert_agents_no_go(admin,'authenticated-global-admin')
     rows=re.findall(r'<tr data-account-id="([^"]+)">(.*?)</tr>',page,re.S)
     identity=[identity for identity,body in rows if primary['label'] in body and 'data-team-role="owner"' in body][0]
     FIXTURES['member']['identity']=[identity for identity,body in rows if primary['label'] in body and 'data-team-role="member"' in body][0]
