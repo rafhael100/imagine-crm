@@ -397,3 +397,25 @@ incluídos pelo Nginx ou a configuração de hosts de terceiros.
 Permanecem obrigatórios o exame do operador, CI integral da
 SHA exata, backup/restauração, acesso cliente/admin, canário F253,
 TLS/BasicAuth, revisão independente e plano de rollback.
+
+## F255 — isolamento dos relatórios e CSV entre empresas
+
+A suíte HTTP da homologação privada passou a verificar explicitamente
+a **ausência de contaminação entre duas empresas fictícias com
+autenticação independente**. Enquanto a empresa A possui três
+oportunidades em dois funis, o relatório da empresa B deve manter
+zero leads, zero negócios ganhos e nenhum funil com valores de A.
+Depois que A muda uma oportunidade de proposta para `won`
+(33,3% de conversão em seu próprio relatório), B continua
+com zero leads, zero ganhos e conversão zero.
+
+O teste ainda consulta a exportação CSV da empresa B e
+confirma que ela não contém o identificador da oportunidade
+de A. O objetivo é detectar regressões em *agregações* que
+poderiam escapar de uma verificação apenas das páginas de leads,
+sem simular tráfego real, contas comerciais ou pagamento.
+
+**A verificação é executada por HTTP real no PostgreSQL de
+homologação descartável**, com sessões e MFA distintos por
+empresa. Não cria endpoints Agents, migrações, autorização
+para dados reais ou custos.
