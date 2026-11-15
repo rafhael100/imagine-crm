@@ -13,7 +13,7 @@ use Illuminate\Database\Connection;
  * This is not an operational key registry, credential vault or authorization.
  * It is gated to the existing exact GitHub PostgreSQL16 CI test identity.
  */
-final readonly class AiaPgServiceKeyringLab
+final readonly class AiaPgServiceKeyringLab implements AiaTrustedPublicKeySource
 {
     private const TABLE = 'public.aia_lab_ed25519_service_keys';
     private const ISSUER = 'SYNTHETIC_AGENT_SERVICE';
