@@ -563,4 +563,157 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
     }
 
 
+    /**
+     * F238: physical PostgreSQL lock test, NOT a thread simulation.
+     * Two independent backend connections try to revoke the exact same
+     * CRM IAM session or server-owned grant while a validation unit holds
+     * its row locks. After commit, revocation is effective immediately.
+     */
+    public function test_f238_pg16_revocation_is_linearized_against_session_and_grant_reads(): void
+    {
+        if (getenv('AIA_F238_SESSION_LAB') !== 'true') {
+            $this->markTestSkipped('F238 requires disposable PostgreSQL16 CI.');
+        }
+        $this->login();
+        $source = $this->app->make(GuardPrincipalSource::class);
+        $authority = $this->app->make(
+            \App\Core\Identity\DatabaseSessionAuthority::class
+        );
+        $registered = $source->withinCurrent(
+            fn (PrincipalReference $p) => $authority->sessionRow('crm.auth.token')
+        );
+        $this->assertNotNull($registered);
+        $this->assertSame(self::A, $registered->identity_id);
+
+        $iamSettings = config('database.connections.pgsql');
+        $iamSettings['url'] = null;
+        $iamSettings['username'] = getenv('IAM_TEST_USERNAME');
+        $iamSettings['password'] = getenv('IAM_TEST_PASSWORD');
+        config(['database.connections.aia_f238_iam_read' => $iamSettings]);
+        config(['database.connections.aia_f238_iam_second' => $iamSettings]);
+        DB::purge('aia_f238_iam_read');
+        DB::purge('aia_f238_iam_second');
+        $firstIam = DB::connection('aia_f238_iam_read');
+        $secondIam = DB::connection('aia_f238_iam_second');
+        $firstPid = (int) $firstIam
+            ->selectOne('SELECT pg_backend_pid() AS pid')->pid;
+        $secondPid = (int) $secondIam
+            ->selectOne('SELECT pg_backend_pid() AS pid')->pid;
+        $this->assertNotSame($firstPid, $secondPid);
+
+        $continuity = new \App\Support\Synthetic\AiaPgSessionContinuityLab(
+            $firstIam
+        );
+        $sessionId = $registered->id;
+        $credentialVersion = (int) $registered->credential_version;
+        $now = now()->getTimestamp();
+        $called = false;
+        $this->assertTrue($continuity->withinActiveSession(
+            self::A, $sessionId, $credentialVersion, $now,
+            function () use ($secondIam, $sessionId, &$called): bool {
+                $called = true;
+                $blocked = false;
+                $secondIam->statement("SET lock_timeout = '180ms'");
+                try {
+                    // Competing connection really attempts UPDATE on the
+                    // *same row*, while the first holds FOR SHARE.
+                    $secondIam->table('public.crm_auth_sessions')
+                        ->where('id', $sessionId)
+                        ->update(['state' => 'revoked']);
+                } catch (\Throwable) {
+                    $blocked = true;
+                } finally {
+                    $secondIam->statement('RESET lock_timeout');
+                }
+                $this->assertTrue(
+                    $blocked,
+                    'Session revocation must wait for active validation'
+                );
+                return true;
+            }
+        ));
+        $this->assertTrue($called);
+        $this->assertSame(0, $firstIam->transactionLevel());
+        $this->assertSame('active', $this->fixtures
+            ->table('crm_auth_sessions')
+            ->where('id', $sessionId)->value('state'));
+
+        // The same connection succeeds AFTER the held row lock commits.
+        $this->assertSame(1, $secondIam->table('public.crm_auth_sessions')
+            ->where('id', $sessionId)
+            ->update(['state' => 'revoked']));
+        $calledAfter = false;
+        $this->assertFalse($continuity->withinActiveSession(
+            self::A, $sessionId, $credentialVersion, $now,
+            static function () use (&$calledAfter): bool {
+                $calledAfter = true;
+                return true;
+            }
+        ));
+        $this->assertFalse($calledAfter);
+
+        // Repeat the physical race on the grant row. The F237 witness
+        // uses the same lockForUpdate primitive during its full signed
+        // verification. This table has only artificial CI data.
+        $fixture = DB::connection();
+        $fixture->statement('CREATE TABLE public.aia_lab_human_service_grants (
+            grant_id uuid NOT NULL PRIMARY KEY, revoked_at bigint NULL
+        )');
+        try {
+            $grantId = (string) Str::uuid();
+            $fixture->table('aia_lab_human_service_grants')->insert([
+                'grant_id' => $grantId, 'revoked_at' => null
+            ]);
+            $adminSettings = config('database.connections.pgsql');
+            $adminSettings['url'] = null;
+            config(['database.connections.aia_f238_admin_second' => $adminSettings]);
+            DB::purge('aia_f238_admin_second');
+            $secondAdmin = DB::connection('aia_f238_admin_second');
+            $adminPid = (int) $secondAdmin->selectOne(
+                'SELECT pg_backend_pid() AS pid'
+            )->pid;
+            $ownerPid = (int) $fixture->selectOne(
+                'SELECT pg_backend_pid() AS pid'
+            )->pid;
+            $this->assertNotSame($adminPid, $ownerPid);
+
+            $fixture->transaction(function () use (
+                $fixture, $secondAdmin, $grantId
+            ): void {
+                $row = $fixture->table('public.aia_lab_human_service_grants')
+                    ->where('grant_id', $grantId)->lockForUpdate()->first();
+                $this->assertNull($row->revoked_at);
+                $secondAdmin->statement("SET lock_timeout = '180ms'");
+                $blocked = false;
+                try {
+                    $secondAdmin->table('public.aia_lab_human_service_grants')
+                        ->where('grant_id', $grantId)
+                        ->update(['revoked_at' => 1800000001]);
+                } catch (\Throwable) {
+                    $blocked = true;
+                } finally {
+                    $secondAdmin->statement('RESET lock_timeout');
+                }
+                $this->assertTrue(
+                    $blocked, 'Grant revocation must serialize with read'
+                );
+            }, 1);
+            $this->assertSame(1, $secondAdmin
+                ->table('public.aia_lab_human_service_grants')
+                ->where('grant_id', $grantId)
+                ->update(['revoked_at' => 1800000001]));
+            $this->assertSame(
+                1800000001,
+                (int) $fixture->table('public.aia_lab_human_service_grants')
+                    ->where('grant_id', $grantId)->value('revoked_at')
+            );
+        } finally {
+            DB::disconnect('aia_f238_admin_second');
+            DB::purge('aia_f238_admin_second');
+            $fixture->statement(
+                'DROP TABLE IF EXISTS public.aia_lab_human_service_grants'
+            );
+        }
+    }
+
 }
