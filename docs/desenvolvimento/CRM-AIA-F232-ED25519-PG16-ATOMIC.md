@@ -334,3 +334,53 @@ Próximas condições obrigatórias: revisão independente SEG/CORE/DBA/IAM/LGPD
 modelagem da sessão de delegação para produção com papel de emissão mínimo,
 testes adversariais de concorrência/cancelamento e 13 cenários operacionais
 do CRM #57. **DRAFT / NO-MERGE / NO-DEPLOY / NO-SECRETS / NO-PII / NO-GO.**
+
+
+## F239 — emissão de testemunhos por papel limitado e FORCE RLS
+
+O testemunho de delegação F237/F238 deixa de utilizar o administrador
+PostgreSQL no caminho de emissão e consulta. A classe
+AiaPgHumanDelegationWitnessLab exige agora a conexão segregada
+crm_aia_grant_ci, sem SUPERUSER, CREATEDB, CREATEROLE, INHERIT ou
+BYPASSRLS, e verifica nome do banco, host local, schema, RLS
+habilitada e FORCE ROW LEVEL SECURITY nas tabelas de vínculos
+e delegações. Nenhum usuário operacional, API ou migration real
+é alterado.
+
+A role tem somente SELECT sobre vínculos e testemunhos da empresa,
+INSERT somente sobre testemunhos, e uma concessão PostgreSQL de
+UPDATE **apenas na coluna sem conteúdo lock_marker**, exigida pelo
+SQL SELECT FOR UPDATE. A política de UPDATE é delimitada por tenant
+e WITH CHECK false, impedindo mutações efetivas na linha. Não há
+UPDATE nos campos de concessão/revogação, DELETE, leitura de chaves
+privadas, acesso às tabelas IAM/membership/leads, nem permissões
+em outros recursos do CRM. O tenant é aplicado por marcador
+**local da transação** após as verificações de ambiente; a
+autoridade efetiva de emissão depende ainda da identidade humana
+com MFA recente e vínculo UUID físico ativos, e a consulta
+do serviço exige Ed25519 + keyring CRM + nonce PG16 + sessão
+original + versão de membership.
+
+A suíte temporária da F237 agora cria a role, tabelas, policies e
+conexões para testar: ausência de dados antes do marcador de
+tenant, isolamento entre duas empresas sintéticas, emissão de
+uma única concessão, proibição de alterações de coluna técnica,
+recusa de consultas a IAM, memberships e keyring, limpeza de
+marcador de tenant e revogação física por administrador
+**somente do laboratório**. Todos os objetos são descartados
+ao final da suíte. Fora do marcador AIA_F239_GRANT_ROLE_LAB=true,
+a classe nega sem consultar a base.
+
+O marcador de tenant ainda é uma capacidade da conexão SQL e não
+constitui autenticação. Esta role não é operacional nem permite
+que o serviço libere dados do cliente. Os limites de
+concorrência demonstrados nas provas anteriores seguem válidos
+apenas para as operações e interleavings realmente testadas.
+F239 não altera o retorno público: DENIED_OR_NOT_FOUND, projeção
+nula e zero chamadas externas.
+
+**Próximos passos:** revisão independente SEG/DBA/CORE/IAM/LGPD,
+provisionamento mínimo de identidades operacionais e emissão
+autorizada, infraestrutura isolada de homologação e 13 cenários
+CRM #57; todos os 14 gates/7 decisões continuam pendentes.
+**NO-GO / DRAFT / NO-MERGE / NO-DEPLOY / NO-PII.**
