@@ -59,3 +59,30 @@ autoridade da identidade serviço-serviço e política do CRM por
 empresa/principal/recurso/campo, mais fonte protegida de chaves,
 revogação, TLS e revisão independente. Esta PR está em **DRAFT / NO-MERGE /
 NO-DEPLOY** e não altera `main`, produção ou VPS.
+
+
+## F232b — trust anchor do serviço obtido exclusivamente do PostgreSQL
+
+Como continuidade na mesma PR, a classe
+`app/Support/Synthetic/AiaPgServiceKeyringLab.php` consulta a
+**chave pública Ed25519 registrada pelo lado servidor** em uma tabela
+descartável `aia_lab_ed25519_service_keys`. A chave não é lida de
+cabeçalhos, parâmetros fornecidos pelo chamador ou do envelope assinado;
+apenas `key_id` e tenant esperado, previamente limitados, selecionam
+uma linha PostgreSQL com issuer/audience fixos.
+
+A ponte `AiaPgEd25519LabBridge::matchesWithServerKeyring`
+exige JSON canônico, consulta a chave da empresa correta e somente então
+executa a verificação Ed25519 original Agents e a reserva atômica de nonce.
+
+O teste adicional usa **PostgreSQL 16 real e descartável** para verificar
+leitura de chave confiável, negativa de chave desconhecida ou de outra
+empresa, revogação, rotação para novo par público de laboratório,
+rejeição da assinatura da chave antiga e falha segura quando o registro
+de chaves fica indisponível. Não inclui endpoint, credenciais reais
+ou permissões efetivas, nem habilita `ALLOW`.
+
+Essa tabela é criada e apagada **somente pelo teste**, não existe
+migration de aplicação, registro no container Laravel, sistema de
+segredos ou configuração na VPS. O experimento demonstra o padrão de
+fonte de confiança servidor/CRM, não o IAM operacional.
