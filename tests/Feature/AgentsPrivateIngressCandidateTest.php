@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Homologation\AgentsSignedIngressCandidate;
+use App\Support\Synthetic\AgentsSignedIngressCandidate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
