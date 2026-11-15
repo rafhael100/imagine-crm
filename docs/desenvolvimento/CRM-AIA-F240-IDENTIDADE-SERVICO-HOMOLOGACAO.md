@@ -226,3 +226,27 @@ provisionamento da identidade de serviço.
 Riscos ainda não eliminados: falhas de rede, vários processos,
 deadlocks externos, retenção dos nonces, revisão LGPD/SEG/DBA,
 segredos reais e gates de CRM #57. **DRAFT / NO-GO / NO-DEPLOY.**
+
+## F245 — barreira de publicação acidental da API
+
+Os candidatos F232–F244 não implementam um endpoint CRM que
+possa ler leads. A F245 transforma essa restrição em teste
+HTTP executado em toda suíte, mesmo sem flags do laboratório:
+`AiaNoGoHttpBoundaryTest` procura rotas ativas
+de serviço Agents/CRM, rejeita nomes de rotas inesperados,
+exercita `POST`/`GET` em caminhos representativos
+com claims/Authorization sintéticos e exige HTTP 404.
+Também comprova o mesmo retorno público
+`DENIED_OR_NOT_FOUND` e projeção nula para requisições
+canônicas e não canônicas.
+
+A prova não equivale a um teste de pentest ou descoberta
+exaustiva de todos os endpoints possíveis. Trata-se de
+regressão controlada na branch F0 para impedir que o
+experimento de criptografia introduza **sem querer** uma
+rota de negócio operacional antes dos gates. Uma futura
+API verdadeira exigirá revisão explícita desta barreira,
+não sua exclusão silenciosa.
+
+**Estado:** DRAFT, ausência de deploy, ausência de dados reais,
+todos os gates de segurança ainda pendentes.
