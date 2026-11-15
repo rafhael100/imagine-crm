@@ -1123,4 +1123,299 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
         }
     }
 
+    /**
+     * F242: service TENANT from a CRM-owned globally-unique key binding,
+     * never from an unverified client claim, route or SQL tenant marker.
+     * Uses original SHA-pinned Agents Ed25519 + F240 read-only keyring
+     * + F241 insert-only nonce ledger, with three separate PG roles.
+     */
+    public function test_f242_trusted_key_binding_derives_tenant_before_atomic_proof(): void
+    {
+        if (getenv('AIA_F242_PEER_ROUTING_LAB') !== 'true') {
+            $this->markTestSkipped('F242 needs the pinned Agents + PG16 CI gate.');
+        }
+
+        $admin = DB::connection();
+        $createdRoles = [];
+        $admin->statement('CREATE TABLE public.aia_lab_service_tenant_bindings (
+            key_id varchar(90) NOT NULL PRIMARY KEY,
+            tenant_ref varchar(90) NOT NULL,
+            organization_id uuid NOT NULL,
+            issuer varchar(90) NOT NULL,
+            audience varchar(90) NOT NULL,
+            subject varchar(90) NOT NULL,
+            enabled boolean NOT NULL,
+            revoked_at bigint NULL,
+            revision integer NOT NULL
+        )');
+        $admin->statement('CREATE TABLE public.aia_lab_ed25519_service_keys (
+            issuer varchar(90) NOT NULL,
+            audience varchar(90) NOT NULL,
+            tenant_ref varchar(90) NOT NULL,
+            key_id varchar(90) NOT NULL,
+            public_key_base64 varchar(44) NOT NULL,
+            enabled boolean NOT NULL,
+            revoked_at bigint NULL,
+            revision integer NOT NULL,
+            PRIMARY KEY (tenant_ref,key_id)
+        )');
+        try {
+            $roles = [
+                'crm_aia_peer_router_ci' => [
+                    'aia_lab_service_tenant_bindings', 'SELECT'
+                ],
+                'crm_aia_key_verify_ci' => [
+                    'aia_lab_ed25519_service_keys', 'SELECT'
+                ],
+                'crm_aia_nonce_ci' => [
+                    'aia_lab_nonce_atomic_probe', 'INSERT'
+                ],
+            ];
+            foreach ($roles as $role => [$table,$privilege]) {
+                $admin->statement("CREATE ROLE ".$role." LOGIN
+                    PASSWORD 'f242-disposable-role'
+                    NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS");
+                $createdRoles[] = $role;
+                $admin->statement('GRANT CONNECT ON DATABASE imagine_crm_ci TO '.$role);
+                $admin->statement('GRANT USAGE ON SCHEMA public TO '.$role);
+                $admin->statement('ALTER TABLE public.'.$table.
+                    ' ENABLE ROW LEVEL SECURITY');
+                $admin->statement('ALTER TABLE public.'.$table.
+                    ' FORCE ROW LEVEL SECURITY');
+                $admin->statement('GRANT '.$privilege.' ON TABLE public.'.$table.
+                    ' TO '.$role);
+            }
+            // The trusted binding is independent of tenant claims and the
+            // GUC: a globally unique key_id selects exactly ONE record.
+            $admin->statement('CREATE POLICY aia_f242_peer_select ON
+                public.aia_lab_service_tenant_bindings FOR SELECT
+                TO crm_aia_peer_router_ci USING (true)');
+            $admin->statement("CREATE POLICY aia_f242_public_key_select ON
+                public.aia_lab_ed25519_service_keys FOR SELECT
+                TO crm_aia_key_verify_ci
+                USING (tenant_ref = current_setting('app.tenant_id',true))");
+            $admin->statement("CREATE POLICY aia_f242_nonce_insert ON
+                public.aia_lab_nonce_atomic_probe FOR INSERT
+                TO crm_aia_nonce_ci
+                WITH CHECK (
+                    tenant_ref = current_setting('app.tenant_id',true)
+                    AND issuer='SYNTHETIC_AGENT_SERVICE'
+                    AND audience='SYNTHETIC_CRM_API'
+                    AND claimed_at > 0
+                )");
+
+            $tenantA = 'SYNTHETIC_TENANT_A';
+            $tenantB = 'SYNTHETIC_TENANT_B';
+            $keyA = 'SYNTHETIC_F242_KEY_A';
+            $keyB = 'SYNTHETIC_F242_KEY_B';
+            $orgA = '11111111-1111-4111-8111-111111111111';
+            $orgB = '22222222-2222-4222-8222-222222222222';
+            $pairA = sodium_crypto_sign_seed_keypair(
+                hash('sha256','F242_ONLY_PEER_A_PUBLIC_CI',true)
+            );
+            $pairB = sodium_crypto_sign_seed_keypair(
+                hash('sha256','F242_ONLY_PEER_B_PUBLIC_CI',true)
+            );
+            $secretA = sodium_crypto_sign_secretkey($pairA);
+            $secretB = sodium_crypto_sign_secretkey($pairB);
+            $pubA = sodium_crypto_sign_publickey($pairA);
+            $pubB = sodium_crypto_sign_publickey($pairB);
+            foreach ([
+                [$keyA,$tenantA,$orgA,$pubA],
+                [$keyB,$tenantB,$orgB,$pubB],
+            ] as [$key,$tenant,$organization,$public]) {
+                $common = [
+                    'key_id'=>$key,
+                    'tenant_ref'=>$tenant,
+                    'issuer'=>'SYNTHETIC_AGENT_SERVICE',
+                    'audience'=>'SYNTHETIC_CRM_API',
+                    'enabled'=>true,'revoked_at'=>null,'revision'=>1,
+                ];
+                $admin->table('public.aia_lab_service_tenant_bindings')
+                    ->insert($common + [
+                        'organization_id'=>$organization,
+                        'subject'=>'SYNTHETIC_AGENTS_READ_ONLY',
+                    ]);
+                $admin->table('public.aia_lab_ed25519_service_keys')
+                    ->insert($common + [
+                        'public_key_base64'=>base64_encode($public),
+                    ]);
+            }
+            $settings = config('database.connections.pgsql');
+            $settings['url'] = null;
+            foreach ([
+                'aia_f242_binding' => 'crm_aia_peer_router_ci',
+                'aia_f242_keyring' => 'crm_aia_key_verify_ci',
+                'aia_f242_nonce' => 'crm_aia_nonce_ci',
+            ] as $connectionName => $username) {
+                $scoped = $settings;
+                $scoped['username'] = $username;
+                $scoped['password'] = 'f242-disposable-role';
+                config(['database.connections.'.$connectionName => $scoped]);
+                DB::purge($connectionName);
+            }
+            $boundDb = DB::connection('aia_f242_binding');
+            $keyDb = DB::connection('aia_f242_keyring');
+            $nonceDb = DB::connection('aia_f242_nonce');
+            $this->assertCount(3, array_unique([
+                $boundDb->selectOne('SELECT pg_backend_pid() AS pid')->pid,
+                $keyDb->selectOne('SELECT pg_backend_pid() AS pid')->pid,
+                $nonceDb->selectOne('SELECT pg_backend_pid() AS pid')->pid,
+            ]));
+            $binding = new \App\Support\Synthetic\AiaPgServiceTenantBindingLab($boundDb);
+            $keyring = new \App\Support\Synthetic\AiaPgRestrictedKeyringLab($keyDb);
+            $nonce = new \App\Support\Synthetic\AiaPgRestrictedNonceLedgerLab($nonceDb);
+
+            // Key ID is a selector; the only independently bound tenant
+            // and organization arrive from server-side globally unique row.
+            $this->assertSame(
+                ['tenant_ref'=>$tenantA,'organization_id'=>$orgA],
+                $binding->resolveByKeyId($keyA)
+            );
+            $this->assertSame(
+                ['tenant_ref'=>$tenantB,'organization_id'=>$orgB],
+                $binding->resolveByKeyId($keyB)
+            );
+            $this->assertNull($binding->resolveByKeyId('SYNTHETIC_F242_ABSENT'));
+            $this->assertNull($binding->resolveByKeyId('attacker-controlled'));
+            $this->assertSame(0,$boundDb->transactionLevel());
+            $this->assertSame(0,$keyDb->transactionLevel());
+            $this->assertSame(0,$nonceDb->transactionLevel());
+            $reqA = self::request($tenantA);
+            $reqB = self::request($tenantB);
+            $now = 1794690010;
+            $sign = static fn (string $body,string $tenant,string $nonceValue,
+                string $private,string $kid) => self::signed(
+                    $body,$tenant,$nonceValue,$private,['key_id'=>$kid]
+                );
+            [$aClaims,$aSignature] = $sign(
+                $reqA,$tenantA,'SYNTHETIC_F242_FIRST_A',$secretA,$keyA
+            );
+            [$bClaims,$bSignature] = $sign(
+                $reqB,$tenantB,'SYNTHETIC_F242_FIRST_B',$secretB,$keyB
+            );
+            $verify = static fn (string $req,string $claims,string $signature) =>
+                \App\Support\Synthetic\AiaPgTenantBoundServiceProofLab::verifyAndConsume(
+                    $req,$claims,$signature,$now,$binding,$keyring,$nonce
+                );
+            // An A claim cannot forge B simply by setting tenant_ref,
+            // even if SIGNED by A's own valid secret key.
+            [$forgedClaims,$forgedSignature] = $sign(
+                $reqB,$tenantB,'SYNTHETIC_F242_FORGED_B',$secretA,$keyA
+            );
+            $this->assertNull($verify($reqB,$forgedClaims,$forgedSignature));
+            $this->assertNull($verify($reqA,$aClaims,$bSignature));
+            $this->assertNull($verify($reqA,$aClaims,'INVALID_SIGNATURE'));
+            $this->assertSame(0, (int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+
+            $this->assertSame(
+                ['tenant_ref'=>$tenantA,'organization_id'=>$orgA],
+                $verify($reqA,$aClaims,$aSignature)
+            );
+            $this->assertSame(
+                ['tenant_ref'=>$tenantB,'organization_id'=>$orgB],
+                $verify($reqB,$bClaims,$bSignature)
+            );
+            $this->assertNull($verify($reqA,$aClaims,$aSignature));
+            $this->assertSame(2,(int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+
+            // Physical permission boundary: the binding-only role cannot
+            // change tenant ownership or inspect IAM, while the key role
+            // and nonce role cannot query the binding table at all.
+            foreach ([
+                static fn ($db) => $db->table('public.aia_lab_service_tenant_bindings')
+                    ->update(['tenant_ref'=>'SYNTHETIC_TENANT_B']),
+                static fn ($db) => $db->table('public.aia_lab_service_tenant_bindings')
+                    ->delete(),
+                static fn ($db) => $db->table('public.crm_auth_sessions')->count(),
+            ] as $bad) {
+                $denied = false;
+                try { $bad($boundDb); } catch (\Throwable) { $denied=true; }
+                $this->assertTrue($denied);
+            }
+            foreach ([$keyDb,$nonceDb] as $wrongRole) {
+                $denied=false;
+                try {
+                    $wrongRole->table('public.aia_lab_service_tenant_bindings')->count();
+                } catch (\Throwable) { $denied=true; }
+                $this->assertTrue($denied);
+            }
+
+            // Revoking the server-owned mapping denies an otherwise-valid
+            // fresh signature, without consuming a PostgreSQL nonce.
+            $admin->table('aia_lab_service_tenant_bindings')
+                ->where('key_id',$keyA)
+                ->update(['revoked_at'=>1794690009,'revision'=>2]);
+            [$revokedClaims,$revokedSig] = $sign(
+                $reqA,$tenantA,'SYNTHETIC_F242_REVOKED',$secretA,$keyA
+            );
+            $this->assertNull($verify($reqA,$revokedClaims,$revokedSig));
+            $this->assertSame(2,(int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+
+            // Changing the mapping to a different tenant invalidates A
+            // regardless of A's public key still existing. No fallback
+            // to signed tenant_ref nor SQL marker.
+            $admin->table('aia_lab_service_tenant_bindings')
+                ->where('key_id',$keyA)->update([
+                    'tenant_ref'=>$tenantB,
+                    'organization_id'=>$orgB,
+                    'revoked_at'=>null,'revision'=>3,
+                ]);
+            $this->assertNull($verify($reqA,$revokedClaims,$revokedSig));
+            $this->assertSame(2,(int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+            $admin->table('aia_lab_service_tenant_bindings')
+                ->where('key_id',$keyA)->update([
+                    'tenant_ref'=>$tenantA,'organization_id'=>$orgA,
+                    'revision'=>4,
+                ]);
+
+            // Loss of FORCE RLS denies mapping; no shadow keyring or
+            // nonce path can be reached when privilege controls change.
+            $admin->statement('ALTER TABLE public.aia_lab_service_tenant_bindings
+                NO FORCE ROW LEVEL SECURITY');
+            $this->assertNull($binding->resolveByKeyId($keyA));
+            $this->assertNull($verify($reqA,$revokedClaims,$revokedSig));
+            $admin->statement('ALTER TABLE public.aia_lab_service_tenant_bindings
+                FORCE ROW LEVEL SECURITY');
+            $this->assertSame(2,(int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+            $this->assertSame(0,$boundDb->transactionLevel());
+            $this->assertSame(0,$keyDb->transactionLevel());
+            $this->assertSame(0,$nonceDb->transactionLevel());
+
+            self::assertDenial(
+                \App\Support\Synthetic\AiaPgTenantBoundServiceProofLab::inspectDenied(
+                    $reqA,$revokedClaims,$revokedSig,$now,$binding,$keyring,$nonce
+                )
+            );
+        } finally {
+            foreach (['aia_f242_binding','aia_f242_keyring','aia_f242_nonce']
+                as $name) {
+                DB::disconnect($name);
+                DB::purge($name);
+            }
+            foreach ([
+                'aia_lab_service_tenant_bindings',
+                'aia_lab_ed25519_service_keys',
+            ] as $table) {
+                $admin->statement('DROP TABLE IF EXISTS public.'.$table);
+            }
+            $admin->statement('DROP POLICY IF EXISTS aia_f242_nonce_insert
+                ON public.aia_lab_nonce_atomic_probe');
+            foreach ($createdRoles as $role) {
+                if ($role==='crm_aia_nonce_ci') {
+                    $admin->statement('REVOKE INSERT ON TABLE
+                        public.aia_lab_nonce_atomic_probe FROM '.$role);
+                }
+                $admin->statement('REVOKE USAGE ON SCHEMA public FROM '.$role);
+                $admin->statement('REVOKE CONNECT ON DATABASE imagine_crm_ci FROM '.$role);
+                $admin->statement('DROP ROLE '.$role);
+            }
+        }
+    }
+
 }
