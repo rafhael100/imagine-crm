@@ -272,4 +272,264 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
             $this->assertFalse($executed);
         }
     }
+    /**
+     * F237: a genuine MFA human initiates an inert, server-owned delegation.
+     * A signed service can only match the witness while its exact request,
+     * CRM-owned binding and *current* PG membership version remain valid.
+     *
+     * No customer records, no service permission, no human session token
+     * crosses into the service proof; no business effect is reachable.
+     */
+    public function test_f237_recent_mfa_issues_bound_witness_and_pg_revocation_blocks_service(): void
+    {
+        if (getenv('AIA_F237_DELEGATION_LAB') !== 'true') {
+            $this->markTestSkipped('F237 requires the exact disposable CI gate.');
+        }
+        $store = $this->membershipStore();
+        $db = DB::connection();
+        $request = MockCrmReadRequest::encodeCanonicalJson([
+            'contract' => 'SYNTHETIC_CRM_AIA_READ_V1',
+            'request_ref' => 'SYNTHETIC_F237_READ',
+            'operation' => 'crm.lead.read_minimal',
+            'tenant_ref' => 'SYNTHETIC_TENANT_A',
+            'principal_ref' => 'SYNTHETIC_F237_PRINCIPAL',
+            'resource_ref' => 'SYNTHETIC_F237_LEAD',
+            'purpose_ref' => 'SYNTHETIC_F237_PURPOSE',
+            'fields' => ['ref', 'stage'],
+        ]);
+        $kid = 'SYNTHETIC_F237_KEY';
+        $tenant = 'SYNTHETIC_TENANT_A';
+        $pair = sodium_crypto_sign_seed_keypair(
+            hash('sha256', 'PUBLIC_F237_HUMAN_DELEGATION_ONLY', true)
+        );
+        $secret = sodium_crypto_sign_secretkey($pair);
+        $public = sodium_crypto_sign_publickey($pair);
+        $bodyHash = hash('sha256', $request);
+
+        $db->statement('CREATE TABLE public.aia_lab_ed25519_service_keys (
+            issuer varchar(90) NOT NULL, audience varchar(90) NOT NULL,
+            tenant_ref varchar(90) NOT NULL, key_id varchar(90) NOT NULL,
+            public_key_base64 varchar(44) NOT NULL, enabled boolean NOT NULL,
+            revoked_at bigint NULL, revision integer NOT NULL,
+            PRIMARY KEY (tenant_ref,key_id)
+        )');
+        try {
+            $db->statement('CREATE TABLE public.aia_lab_nonce_atomic_probe (
+                issuer varchar(90) NOT NULL, audience varchar(90) NOT NULL,
+                nonce varchar(90) NOT NULL, tenant_ref varchar(90) NOT NULL,
+                claimed_at bigint NOT NULL, PRIMARY KEY (issuer,audience,nonce)
+            )');
+            $db->statement('CREATE TABLE public.aia_lab_agent_human_bindings (
+                tenant_ref varchar(90) NOT NULL,
+                organization_id uuid NOT NULL,
+                principal_ref varchar(90) NOT NULL,
+                key_id varchar(90) NOT NULL,
+                allowed_fields_json text NOT NULL,
+                enabled boolean NOT NULL,
+                revoked_at bigint NULL,
+                revision integer NOT NULL,
+                PRIMARY KEY (tenant_ref,key_id,principal_ref)
+            )');
+            $db->statement('CREATE TABLE public.aia_lab_human_service_grants (
+                grant_id uuid NOT NULL PRIMARY KEY,
+                tenant_ref varchar(90) NOT NULL,
+                organization_id uuid NOT NULL,
+                key_id varchar(90) NOT NULL,
+                principal_ref varchar(90) NOT NULL,
+                human_identity_id uuid NOT NULL,
+                membership_version integer NOT NULL,
+                request_sha256 char(64) NOT NULL,
+                purpose_ref varchar(90) NOT NULL,
+                resource_ref varchar(90) NOT NULL,
+                issued_at bigint NOT NULL,
+                expires_at bigint NOT NULL,
+                revoked_at bigint NULL,
+                version integer NOT NULL,
+                UNIQUE (tenant_ref,key_id,request_sha256)
+            )');
+
+            $db->table('aia_lab_agent_human_bindings')->insert([
+                'tenant_ref' => $tenant,
+                'organization_id' => self::C,
+                'principal_ref' => 'SYNTHETIC_F237_PRINCIPAL',
+                'key_id' => $kid,
+                'allowed_fields_json' => '["ref","stage"]',
+                'enabled' => true, 'revoked_at' => null, 'revision' => 1,
+            ]);
+            $db->table('aia_lab_ed25519_service_keys')->insert([
+                'issuer' => 'SYNTHETIC_AGENT_SERVICE',
+                'audience' => 'SYNTHETIC_CRM_API',
+                'tenant_ref' => $tenant,
+                'key_id' => $kid,
+                'public_key_base64' => base64_encode($public),
+                'enabled' => true, 'revoked_at' => null, 'revision' => 1,
+            ]);
+
+            $witness = new \App\Support\Synthetic\AiaPgHumanDelegationWitnessLab($db);
+            $source = $this->app->make(GuardPrincipalSource::class);
+            $keyring = new \App\Support\Synthetic\AiaPgServiceKeyringLab($db);
+            $ledger = new \App\Support\Synthetic\AiaPgNonceCandidateLedger($db);
+
+            // Signed Agent input does not create an IAM login or a human
+            // grant. No authenticated session = zero inserted rows.
+            $this->assertFalse($witness->issueFromCurrentHuman(
+                $source, $store, self::C, $request, $kid, 1800000000,
+            ));
+            $this->assertSame(0, (int) $db
+                ->table('aia_lab_human_service_grants')->count());
+
+            $this->login(); // Existing CRM password + TOTP + verified session.
+            $this->assertSame(self::A, $source->current()->principalId);
+            // A's membership is in C only; a caller cannot issue under D.
+            $this->assertFalse($witness->issueFromCurrentHuman(
+                $source, $store, self::D, $request, $kid, 1800000000,
+            ));
+            $this->assertTrue($witness->issueFromCurrentHuman(
+                $source, $store, self::C, $request, $kid, 1800000000,
+            ));
+            $this->assertFalse($witness->issueFromCurrentHuman(
+                $source, $store, self::C, $request, $kid, 1800000000,
+            ), 'Duplicate issuance must not create extra delegated grants.');
+            $this->assertSame(1, (int) $db
+                ->table('aia_lab_human_service_grants')->count());
+            $grant = $db->table('aia_lab_human_service_grants')->first();
+            $this->assertSame(self::A, $grant->human_identity_id);
+            $this->assertSame(self::C, $grant->organization_id);
+            $this->assertSame(1, (int) $grant->membership_version);
+            $this->assertSame($bodyHash, $grant->request_sha256);
+            $this->assertSame(1800000030, (int) $grant->expires_at);
+            $this->assertFalse(property_exists($grant, 'session_token'));
+            $this->assertFalse(property_exists($grant, 'cookie'));
+            $this->assertFalse(property_exists($grant, 'email'));
+
+            $sign = static function (string $body, string $nonce) use (
+                $kid, $tenant, $secret
+            ): array {
+                $claims = [
+                    'contract' => 'SYNTHETIC_AIA_SERVICE_IDENTITY_V1',
+                    'issuer' => 'SYNTHETIC_AGENT_SERVICE',
+                    'audience' => 'SYNTHETIC_CRM_API',
+                    'key_id' => $kid,
+                    'subject' => 'SYNTHETIC_AGENTS_READ_ONLY',
+                    'tenant_ref' => $tenant,
+                    'operation' => 'crm.lead.read_minimal',
+                    'nonce' => $nonce,
+                    'issued_at' => 1800000000,
+                    'expires_at' => 1800000020,
+                    'request_sha256' => hash('sha256', $body),
+                ];
+                $canonical = json_encode(
+                    $claims,
+                    JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                        | JSON_THROW_ON_ERROR
+                );
+                return [
+                    $canonical,
+                    base64_encode(sodium_crypto_sign_detached(
+                        "SYNTHETIC_AIA_SERVICE_ED25519_V1\n".$canonical,
+                        $secret,
+                    )),
+                ];
+            };
+            $probe = function (
+                string $nonce, bool $expected, ?string $body = null,
+                int $clock = 1800000010,
+            ) use ($sign, $witness, $request, $tenant, $keyring, $ledger, $store): void {
+                $body ??= $request;
+                [$claims, $signature] = $sign($body, $nonce);
+                $this->assertSame($expected, $witness->matchesSignedServiceWitness(
+                    $body, $claims, $signature, $tenant, $clock,
+                    $keyring, $ledger, $store,
+                ));
+                // This is a CRM-side experiment only: the public response
+                // must never reflect the internal positive witness result.
+                $this->assertSame(
+                    'DENIED_OR_NOT_FOUND',
+                    \App\Support\Synthetic\AiaReadOnlyMockBoundary
+                        ::inspectCanonicalJson($body)['state']
+                );
+            };
+
+            $probe('SYNTHETIC_F237_FIRST_NONCE', true);
+            $probe('SYNTHETIC_F237_FIRST_NONCE', false); // replay
+
+            // Fresh and correctly signed requests still cannot change any
+            // field, resource or purpose of the human's exact witness.
+            $narrow = json_decode($request, true, 4, JSON_THROW_ON_ERROR);
+            $narrow['fields'] = ['ref'];
+            $narrowBody = MockCrmReadRequest::encodeCanonicalJson($narrow);
+            $probe('SYNTHETIC_F237_NARROW_NONCE', false, $narrowBody);
+
+            $db->table('aia_lab_agent_human_bindings')
+                ->where('tenant_ref', $tenant)->update(['enabled' => false]);
+            $probe('SYNTHETIC_F237_BINDING_DISABLED', false);
+            $db->table('aia_lab_agent_human_bindings')
+                ->where('tenant_ref', $tenant)->update(['enabled' => true]);
+
+            $db->table('aia_lab_human_service_grants')->update([
+                'revoked_at' => 1800000005, 'version' => 2,
+            ]);
+            $probe('SYNTHETIC_F237_GRANT_REVOKED', false);
+            $db->table('aia_lab_human_service_grants')->update([
+                'revoked_at' => null, 'version' => 3,
+            ]);
+
+            // Even with all service facts valid, live CRM membership
+            // revocation and membership-version rotation are rechecked.
+            $this->fixtures->table('crm_memberships')
+                ->where('global_identity_id', self::A)
+                ->where('organization_id', self::C)
+                ->update(['version' => 2]);
+            $probe('SYNTHETIC_F237_MEMBERSHIP_STALE', false);
+            $this->fixtures->table('crm_memberships')
+                ->where('global_identity_id', self::A)
+                ->where('organization_id', self::C)
+                ->update(['version' => 1, 'status' => 'revoked']);
+            $probe('SYNTHETIC_F237_MEMBER_REVOKED', false);
+            $this->fixtures->table('crm_memberships')
+                ->where('global_identity_id', self::A)
+                ->where('organization_id', self::C)
+                ->update(['status' => 'active']);
+
+            $db->table('aia_lab_human_service_grants')
+                ->update(['expires_at' => 1800000010]);
+            $probe('SYNTHETIC_F237_GRANT_EXPIRED', false);
+            $db->table('aia_lab_human_service_grants')
+                ->update(['expires_at' => 1800000030]);
+
+            $db->table('aia_lab_ed25519_service_keys')
+                ->where('tenant_ref', $tenant)->update(['revoked_at' => 1800000005]);
+            $before = (int) $db->table('aia_lab_nonce_atomic_probe')->count();
+            $probe('SYNTHETIC_F237_SERVICE_KEY_REVOKED', false);
+            $this->assertSame(
+                $before, (int) $db->table('aia_lab_nonce_atomic_probe')->count()
+            );
+            $db->table('aia_lab_ed25519_service_keys')
+                ->where('tenant_ref', $tenant)->update(['revoked_at' => null]);
+
+            // Revoked browser IAM cannot create any NEW grant, even when
+            // existing membership is active. Service proof never forwards
+            // cookies or inherits CRM interactive permissions.
+            $this->fixtures->table('crm_auth_sessions')
+                ->where('identity_id', self::A)->where('state', 'active')
+                ->update(['state' => 'revoked']);
+            $this->assertFalse($witness->issueFromCurrentHuman(
+                $source, $store, self::C, $narrowBody, $kid, 1800000000,
+            ));
+            $this->assertSame(1, (int) $db
+                ->table('aia_lab_human_service_grants')->count());
+            $this->assertSame(0, DB::connection('aia_f235_membership')->transactionLevel());
+        } finally {
+            foreach ([
+                'aia_lab_human_service_grants',
+                'aia_lab_agent_human_bindings',
+                'aia_lab_nonce_atomic_probe',
+                'aia_lab_ed25519_service_keys',
+            ] as $table) {
+                $db->statement('DROP TABLE IF EXISTS public.'.$table);
+            }
+        }
+    }
+
+
 }
