@@ -116,6 +116,51 @@ class UpgradeGuardTests(unittest.TestCase):
         status["total_count"] = 21
         self.reject(lambda: module.validate_checks(workflow(), status, NEW))
 
+    def test_f254_immutable_nginx_snapshot_under_https_401(self):
+        """A protected HTTPS 401 is insufficient when Nginx bytes change."""
+        marker={
+            "crm_config_sha256": "a"*64,
+            "shared_after_sha256": "b"*64,
+        }
+        module.require_unchanged_ingress(
+            marker,"a"*64,"b"*64,
+            crm_enabled=True,points_to_expected_config=True,
+        )
+        for bad_crm,bad_shared,enabled,target in [
+            ("c"*64,"b"*64,True,True),
+            ("a"*64,"c"*64,True,True),
+            ("a"*64,"b"*64,False,True),
+            ("a"*64,"b"*64,True,False),
+        ]:
+            with self.subTest(hash_or_link=(bad_crm,bad_shared,enabled,target)):
+                self.reject(lambda:module.require_unchanged_ingress(
+                    marker,bad_crm,bad_shared,crm_enabled=enabled,
+                    points_to_expected_config=target))
+        for defective in [
+            {},
+            {"crm_config_sha256": "a"*64},
+            {"crm_config_sha256": "not-a-digest", "shared_after_sha256": "b"*64},
+            {"crm_config_sha256": "A"*64, "shared_after_sha256": "b"*64},
+        ]:
+            self.reject(lambda item=defective:module.require_unchanged_ingress(
+                item,"a"*64,"b"*64,crm_enabled=True,
+                points_to_expected_config=True))
+
+    def test_f254_release_requires_nginx_snapshot_before_marking_success(self):
+        source=SCRIPT.read_text()
+        apply_region=source[source.index("def apply("):source.index("def rollback(")]
+        rollback_region=source[source.index("def rollback("):source.index("def main(")]
+        self.assertIn("verify_ingress_snapshot(marker)",apply_region)
+        self.assertLess(
+            apply_region.index("verify_ingress_snapshot(marker)"),
+            apply_region.index("updated = dict(marker, sha=candidate"))
+        self.assertIn("verify_ingress_snapshot(marker)",rollback_region)
+        self.assertLess(
+            rollback_region.index("verify_ingress_snapshot(marker)"),
+            rollback_region.index("restored = dict(marker, sha=previous"))
+        self.assertGreaterEqual(
+            source.count("verify_ingress_snapshot(marker)"),5)
+
     def test_operator_only_no_automated_ssh_or_production(self):
         source = SCRIPT.read_text()
         for forbidden in ("paramiko", "subprocess.Popen(['ssh'", "docker compose down",
