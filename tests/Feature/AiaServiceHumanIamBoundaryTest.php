@@ -77,6 +77,13 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
         }
         DB::disconnect('aia_f235_membership');
         DB::purge('aia_f235_membership');
+        foreach ([
+            'aia_f238_iam_read', 'aia_f238_iam_second',
+            'aia_f238_admin_second',
+        ] as $name) {
+            DB::disconnect($name);
+            DB::purge($name);
+        }
         $this->cleanupSyntheticIamLab();
     }
 
@@ -338,6 +345,8 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
                 principal_ref varchar(90) NOT NULL,
                 human_identity_id uuid NOT NULL,
                 membership_version integer NOT NULL,
+                iam_session_id uuid NOT NULL,
+                credential_version integer NOT NULL,
                 request_sha256 char(64) NOT NULL,
                 purpose_ref varchar(90) NOT NULL,
                 resource_ref varchar(90) NOT NULL,
@@ -367,13 +376,25 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
 
             $witness = new \App\Support\Synthetic\AiaPgHumanDelegationWitnessLab($db);
             $source = $this->app->make(GuardPrincipalSource::class);
+            $sessionAuthority = $this->app->make(
+                \App\Core\Identity\DatabaseSessionAuthority::class
+            );
+            $iamSettings = config('database.connections.pgsql');
+            $iamSettings['url'] = null;
+            $iamSettings['username'] = getenv('IAM_TEST_USERNAME');
+            $iamSettings['password'] = getenv('IAM_TEST_PASSWORD');
+            config(['database.connections.aia_f238_iam_read' => $iamSettings]);
+            DB::purge('aia_f238_iam_read');
+            $sessionContinuity = new \App\Support\Synthetic\AiaPgSessionContinuityLab(
+                DB::connection('aia_f238_iam_read')
+            );
             $keyring = new \App\Support\Synthetic\AiaPgServiceKeyringLab($db);
             $ledger = new \App\Support\Synthetic\AiaPgNonceCandidateLedger($db);
 
             // Signed Agent input does not create an IAM login or a human
             // grant. No authenticated session = zero inserted rows.
             $this->assertFalse($witness->issueFromCurrentHuman(
-                $source, $store, self::C, $request, $kid, 1800000000,
+                $source, $sessionAuthority, $store, self::C, $request, $kid, 1800000000,
             ));
             $this->assertSame(0, (int) $db
                 ->table('aia_lab_human_service_grants')->count());
@@ -382,13 +403,13 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
             $this->assertSame(self::A, $source->current()->principalId);
             // A's membership is in C only; a caller cannot issue under D.
             $this->assertFalse($witness->issueFromCurrentHuman(
-                $source, $store, self::D, $request, $kid, 1800000000,
+                $source, $sessionAuthority, $store, self::D, $request, $kid, 1800000000,
             ));
             $this->assertTrue($witness->issueFromCurrentHuman(
-                $source, $store, self::C, $request, $kid, 1800000000,
+                $source, $sessionAuthority, $store, self::C, $request, $kid, 1800000000,
             ));
             $this->assertFalse($witness->issueFromCurrentHuman(
-                $source, $store, self::C, $request, $kid, 1800000000,
+                $source, $sessionAuthority, $store, self::C, $request, $kid, 1800000000,
             ), 'Duplicate issuance must not create extra delegated grants.');
             $this->assertSame(1, (int) $db
                 ->table('aia_lab_human_service_grants')->count());
@@ -396,10 +417,13 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
             $this->assertSame(self::A, $grant->human_identity_id);
             $this->assertSame(self::C, $grant->organization_id);
             $this->assertSame(1, (int) $grant->membership_version);
+            $this->assertTrue(Str::isUuid($grant->iam_session_id));
+            $this->assertSame(1, (int) $grant->credential_version);
             $this->assertSame($bodyHash, $grant->request_sha256);
             $this->assertSame(1800000030, (int) $grant->expires_at);
             $this->assertFalse(property_exists($grant, 'session_token'));
             $this->assertFalse(property_exists($grant, 'cookie'));
+            $this->assertFalse(property_exists($grant, 'token_hash'));
             $this->assertFalse(property_exists($grant, 'email'));
 
             $sign = static function (string $body, string $nonce) use (
@@ -434,12 +458,15 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
             $probe = function (
                 string $nonce, bool $expected, ?string $body = null,
                 int $clock = 1800000010,
-            ) use ($sign, $witness, $request, $tenant, $keyring, $ledger, $store): void {
+            ) use (
+                $sign, $witness, $request, $tenant, $keyring, $ledger,
+                $sessionContinuity, $store
+            ): void {
                 $body ??= $request;
                 [$claims, $signature] = $sign($body, $nonce);
                 $this->assertSame($expected, $witness->matchesSignedServiceWitness(
                     $body, $claims, $signature, $tenant, $clock,
-                    $keyring, $ledger, $store,
+                    $keyring, $ledger, $sessionContinuity, $store,
                 ));
                 // This is a CRM-side experiment only: the public response
                 // must never reflect the internal positive witness result.
@@ -510,11 +537,15 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
             // Revoked browser IAM cannot create any NEW grant, even when
             // existing membership is active. Service proof never forwards
             // cookies or inherits CRM interactive permissions.
-            $this->fixtures->table('crm_auth_sessions')
-                ->where('identity_id', self::A)->where('state', 'active')
-                ->update(['state' => 'revoked']);
+            // A real logout invalidates the EXACT originating session
+            // and therefore this previously issued witness as well.
+            $this->auth->logout();
+            $this->assertSame('revoked', $this->fixtures
+                ->table('crm_auth_sessions')
+                ->where('id', $grant->iam_session_id)->value('state'));
+            $probe('SYNTHETIC_F238_ISSUER_LOGOUT', false);
             $this->assertFalse($witness->issueFromCurrentHuman(
-                $source, $store, self::C, $narrowBody, $kid, 1800000000,
+                $source, $sessionAuthority, $store, self::C, $narrowBody, $kid, 1800000000,
             ));
             $this->assertSame(1, (int) $db
                 ->table('aia_lab_human_service_grants')->count());
