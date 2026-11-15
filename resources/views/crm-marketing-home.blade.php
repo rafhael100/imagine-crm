@@ -1,5 +1,7 @@
 @php
     $say=fn($pt,$en,$es)=>$language==='en'?$en:($language==='es'?$es:$pt);
+    $scenario=$data['opportunity_scenario'] ?? \App\Homologation\OpportunityScenario::fromQuery([]);
+    $scenarioNumber=fn($n)=>number_format($n,0,',',$language==='en'?',':'.');
     $features=[
         ['01',$say('Cada oportunidade no lugar certo','Every opportunity in the right place','Cada oportunidad en su lugar'),$say('Cadastre leads com seu valor inicial, edite os títulos e acompanhe cada contato até a decisão de compra.','Create leads, edit their titles and track the initial opportunity value through the buying decision.','Registra leads, edita sus títulos y sigue el valor inicial de cada oportunidad hasta la decisión de compra.'),'Leads'],
         ['02',$say('Um funil que mostra o próximo passo','A pipeline that shows the next step','Un embudo que muestra el próximo paso'),$say('Visualize novos contatos, qualificados, propostas, ganhos e perdas. Movimente as oportunidades com histórico das alterações.','See new contacts, qualified leads, proposals, wins and losses. Move opportunities with a history of changes.','Visualiza nuevos contactos, leads calificados, propuestas, ganancias y pérdidas. Mueve oportunidades con un historial de cambios.'),'Kanban'],
@@ -37,6 +39,21 @@
 .home-method-note{font-size:12px;color:var(--muted);max-width:760px;line-height:1.6}
 @media(min-width:761px){.home-method-list li:not(:last-child):after{content:'→';position:absolute;right:-14px;top:48%;background:#f9941d;color:#26211a;width:27px;height:27px;border-radius:50%;display:grid;place-items:center;font-weight:900;z-index:1}}
 @media(max-width:760px){.home-method-list{grid-template-columns:minmax(0,1fr);gap:12px}.home-method-list li{padding:21px}.home-method-list h3{font-size:22px}}
+
+.home-estimator{border:1px solid #f0d1a7;background:linear-gradient(140deg,#fffaf1,#fff);padding:30px;border-radius:22px;margin-top:28px}
+.home-estimator h3{font-size:23px;margin:0 0 8px}
+.home-estimator-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:18px 0}
+.home-estimator-fields label{display:block;font-size:13px;font-weight:750;margin:0 0 7px}
+.home-estimator-fields input{width:100%;padding:12px 14px;min-height:46px;border:1px solid #c6bdb0;border-radius:10px;background:#fff;color:#272727}
+.home-estimator-fields input:focus-visible{outline:3px solid #f9941d;outline-offset:2px}
+.home-estimator-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.home-estimator-actions button{min-height:46px}
+.home-estimator-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0 13px}
+.home-estimator-results div{background:white;border:1px solid #ead8bb;border-radius:14px;padding:18px;min-width:0}
+.home-estimator-results dt{font-size:12px;color:#665b4b;font-weight:750;margin:0 0 8px}
+.home-estimator-results dd{font-size:clamp(24px,3vw,36px);font-weight:850;margin:0;line-height:1.2;overflow-wrap:anywhere}
+.home-estimator-results div:last-child{background:#ffedce;border-color:#f2cb8d}
+@media(max-width:760px){.home-estimator{padding:20px}.home-estimator-fields,.home-estimator-results{grid-template-columns:minmax(0,1fr)}}
 </style>
 <div class="crm-home" data-home-section="commercial">
 <nav class="home-nav" aria-label="{{ $say('Conheça o CRM','Explore the CRM','Conoce el CRM') }}">
@@ -71,6 +88,26 @@
 <p>{{ $say('Propostas, tarefas e histórico ajudam sua equipe a conduzir negociações. Vender depende da sua oferta, do mercado e do acompanhamento.','Proposals, tasks and history help your team move deals forward. Sales depend on your offer, your market and your follow-through.','Propuestas, tareas e historial ayudan a avanzar las negociaciones. Las ventas dependen de tu oferta, tu mercado y el seguimiento.') }}</p></li>
 </ol>
 <p class="home-method-note">{{ $say('As três etapas são uma metodologia de trabalho, não uma previsão ou garantia de conversão.','These three stages describe a working method, not a conversion forecast or guarantee.','Las tres etapas describen una metodología de trabajo, no una previsión ni garantía de conversión.') }}</p>
+<div class="home-estimator" data-home-section="imagine-scenario" aria-labelledby="imagine-estimator-title">
+<span class="eyebrow">{{ $say('Simulação sem cadastro','No-registration scenario','Simulación sin registro') }}</span>
+<h3 id="imagine-estimator-title">{{ $say('Calcule um cenário de oportunidades','Calculate an opportunity scenario','Calcula un escenario de oportunidades') }}</h3>
+<p class="quiet">{{ $say('Informe as visitas semanais e duas hipóteses de conversão. O cálculo é ilustrativo, não representa uma promessa de resultados.','Enter weekly visits and two assumed conversion rates. This is an illustration, not a promise of results.','Indica las visitas semanales y dos tasas supuestas de conversión. Es una ilustración, no una promesa de resultados.') }}</p>
+<form method="get" action="/" data-scenario-form="imagine" autocomplete="off">
+<input type="hidden" name="lang" value="{{ $language }}">
+<div class="home-estimator-fields">
+<div><label for="scenario-visits">{{ $say('Visitas por semana','Weekly visits','Visitas por semana') }}</label><input type="number" id="scenario-visits" name="visits" value="{{ $scenario['visits'] }}" min="0" max="1000000" step="1" inputmode="numeric" required></div>
+<div><label for="scenario-lead-rate">{{ $say('Visitas que viram leads (%)','Visits becoming leads (%)','Visitas que se vuelven leads (%)') }}</label><input type="number" id="scenario-lead-rate" name="lead_rate" value="{{ $scenario['lead_rate'] }}" min="0" max="100" step="1" inputmode="numeric" required></div>
+<div><label for="scenario-client-rate">{{ $say('Leads que viram clientes (%)','Leads becoming customers (%)','Leads que se vuelven clientes (%)') }}</label><input type="number" id="scenario-client-rate" name="client_rate" value="{{ $scenario['client_rate'] }}" min="0" max="100" step="1" inputmode="numeric" required></div>
+</div>
+<div class="home-estimator-actions"><button type="submit">{{ $say('Calcular cenário','Calculate scenario','Calcular escenario') }}</button><span class="quiet">{{ $say('Sem nome, e-mail, cookies de marketing ou envio para terceiros.','No name, email, marketing cookies or third-party transfer.','Sin nombre, correo, cookies de marketing ni envío a terceros.') }}</span></div>
+</form>
+<dl class="home-estimator-results" aria-live="polite">
+<div><dt>{{ $say('Visitas semanais','Weekly visits','Visitas semanales') }}</dt><dd data-scenario-visits="{{ $scenario['visits'] }}">{{ $scenarioNumber($scenario['visits']) }}</dd></div>
+<div><dt>{{ $say('Leads estimados','Estimated leads','Leads estimados') }}</dt><dd data-scenario-leads="{{ $scenario['leads'] }}">{{ $scenarioNumber($scenario['leads']) }}</dd></div>
+<div><dt>{{ $say('Clientes estimados','Estimated customers','Clientes estimados') }}</dt><dd data-scenario-clients="{{ $scenario['clients'] }}">{{ $scenarioNumber($scenario['clients']) }}</dd></div>
+</dl>
+<p class="home-method-note">{{ $say('Fórmula: visitas × taxa de leads; depois leads × taxa de clientes. Os percentuais são hipóteses informadas por você, não dados reais de mercado. Esta página não armazena a simulação em um CRM.','Formula: visits × lead rate, then leads × customer rate. The percentages are assumptions you enter, not actual market benchmarks. This page does not store your scenario in the CRM.','Fórmula: visitas × tasa de leads y luego leads × tasa de clientes. Los porcentajes son hipótesis tuyas, no referencias reales del mercado. La página no guarda la simulación en el CRM.') }}</p>
+</div>
 </section>
 <section class="home-section" id="beneficios" data-home-section="benefits"><span class="eyebrow">{{ $say('Mais clareza para vender','More clarity for sales','Más claridad para vender') }}</span><h2>{{ $say('O contato chegou. E agora?','The lead arrived. What happens next?','Llegó el contacto. ¿Y ahora?') }}</h2><p class="home-intro">{{ $say('O desafio não termina em gerar interesse. É preciso saber quem está em negociação, o que já foi feito e quando retomar a conversa.','Generating interest is only the beginning. Know who is negotiating, what has been done and when to reconnect.','Generar interés es solo el comienzo. Hay que saber quién está negociando, qué se ha hecho y cuándo retomar la conversación.') }}</p><div class="home-split"><div class="home-pain"><h3>{{ $say('Quando tudo depende da memória…','When everything depends on memory…','Cuando todo depende de la memoria…') }}</h3><p>{{ $say('Contatos espalhados e dificuldade para localizar o contexto.','Scattered contacts and missing conversation context.','Contactos dispersos y dificultad para encontrar el contexto.') }}</p><p>{{ $say('Propostas enviadas sem uma próxima ação definida.','Proposals sent without a defined next action.','Propuestas enviadas sin una próxima acción definida.') }}</p><p>{{ $say('Pouca visibilidade sobre o andamento de cada oportunidade.','Limited visibility into each opportunity.','Poca visibilidad sobre el avance de cada oportunidad.') }}</p></div><div class="home-outcome"><h3>{{ $say('Com um processo comercial organizado','With an organized sales process','Con un proceso comercial organizado') }}</h3><ul><li>{{ $say('Você enxerga a etapa de cada lead.','See every lead’s current stage.','Ves la etapa actual de cada lead.') }}</li><li>{{ $say('A equipe acompanha tarefas e vencimentos.','Your team follows tasks and due dates.','El equipo sigue tareas y vencimientos.') }}</li><li>{{ $say('O histórico ajuda a retomar a conversa com contexto.','History helps you reconnect with context.','El historial ayuda a retomar la conversación con contexto.') }}</li><li>{{ $say('Os relatórios mostram o que está registrado no funil.','Reports reflect the records in your pipeline.','Los informes muestran los registros del embudo.') }}</li></ul></div></div></section>
 <section class="home-section" id="recursos" data-home-section="features"><span class="eyebrow">{{ $say('Da organização à ação','From organization to action','De la organización a la acción') }}</span><h2>{{ $say('Os recursos que dão ritmo à sua operação.','Features that keep your sales operation moving.','Funciones que dan ritmo a tu operación.') }}</h2><p class="home-intro">{{ $say('Um lugar para conectar oportunidades, acompanhamento e equipe. Explore no teste os recursos que já estão disponíveis.','One place to connect opportunities, follow-up and your team. Explore the features currently available in the trial.','Un lugar para conectar oportunidades, seguimiento y equipo. Explora en la prueba las funciones que ya están disponibles.') }}</p><div class="home-grid3">
