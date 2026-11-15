@@ -173,6 +173,7 @@ jobs:
           test "$(git -C _aia_f231_fixture rev-parse HEAD)" = "fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba"
           php -m | grep -qi sodium
           php -l app/Support/Synthetic/AiaPgEd25519LabBridge.php
+          php -l app/Support/Synthetic/AiaPgServiceKeyringLab.php
           php -l tests/Feature/AiaPostgresEd25519NonceCandidateTest.php
           php -l _aia_f231_fixture/src/MockBridge/MockServiceIdentityPreflight.php
           php artisan test --filter=AiaPostgresEd25519NonceCandidateTest --no-ansi
