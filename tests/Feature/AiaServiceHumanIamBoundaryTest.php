@@ -30,8 +30,8 @@ use Tests\TestCase;
 final class AiaServiceHumanIamBoundaryTest extends TestCase
 {
     use SyntheticIam {
-        setUp as private setUpSyntheticIam;
-        tearDown as private tearDownSyntheticIam;
+        setUp as protected bootstrapSyntheticIamLab;
+        tearDown as protected cleanupSyntheticIamLab;
     }
 
     protected function setUp(): void
@@ -39,7 +39,7 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
         if (getenv('AIA_F235_IAM_LAB') !== 'true') {
             $this->markTestSkipped('F235 requires the expressly gated PG16 IAM laboratory.');
         }
-        $this->setUpSyntheticIam();
+        $this->bootstrapSyntheticIamLab();
         if (DB::getDriverName() !== 'pgsql'
             || getenv('GITHUB_ACTIONS') !== 'true'
             || getenv('GITHUB_REPOSITORY') !== 'rafhael100/imagine-crm'
@@ -71,7 +71,7 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
     {
         DB::disconnect('aia_f235_membership');
         DB::purge('aia_f235_membership');
-        $this->tearDownSyntheticIam();
+        $this->cleanupSyntheticIamLab();
     }
 
     private function membershipStore(): PostgresActiveMembershipStore
