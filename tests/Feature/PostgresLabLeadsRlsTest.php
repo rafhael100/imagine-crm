@@ -1213,4 +1213,121 @@ final class PostgresLabLeadsRlsTest extends TestCase
             $this->assertStringNotContainsString('LaboratoryTenantLeadLedger', $source);
         }
     }
+
+    /**
+     * End-to-end laboratory seam using the ORIGINAL Sites F398 emitter with
+     * the ORIGINAL CRM PG16 binding + FORCE RLS + signed ledger.
+     * Never an operational sender, provisioning API, IAM grant or customer.
+     */
+    public function test_original_sites_f398_signed_capture_persists_only_with_current_binding(): void
+    {
+        if (getenv('CRM_SITES_F398_PG_CI') !== '1'
+            || getenv('SITES_F398_CRM_CAPTURE_CI') !== '1') {
+            $this->markTestSkipped('Pinned Sites original available only in dedicated synthetic PG16 CI.');
+        }
+        $source = getenv('F398_SITES_SOURCE');
+        if (!is_string($source) || !is_file($source.'/src/Integration/SyntheticCrmCaptureEnvelope.php')) {
+            throw new LogicException('Pinned original Sites emitter missing.');
+        }
+        require_once $source.'/src/Integration/SyntheticCrmCaptureEnvelope.php';
+
+        $now = 1790000000;
+        $claim = self::siteClaim(self::ORG_A);
+        $wireInput = [
+            'organizationReference' => self::ORG_A,
+            'bindingReference' => $claim->identity->bindingReference,
+            'submissionReference' => $claim->identity->submissionReference,
+            'siteReference' => $claim->siteReference,
+            'formReference' => $claim->formReference,
+            'destinationReference' => $claim->destinationReference,
+            'leadId' => self::LEAD_A,
+            'syntheticTitle' => 'DEMO_F398_PG',
+            'sourceCode' => 'sites',
+            'nonce' => 'a8888888-8888-4888-8888-888888888888',
+            'issuedAt' => $now - 10,
+            'expiresAt' => $now + 40,
+        ];
+        $wire = \Imagine\Sites\Integration\SyntheticCrmCaptureEnvelope::sign($wireInput, $now);
+        $this->assertSame(
+            LaboratorySignedSiteCapture::canonicalForCi(
+                $claim, $wire['leadId'], $wire['syntheticTitle'],
+                $wire['sourceCode'], $wire['nonce'],
+                $wire['issuedAt'], $wire['expiresAt'],
+            ),
+            \Imagine\Sites\Integration\SyntheticCrmCaptureEnvelope::canonical($wire),
+        );
+
+        // Even a correctly signed Sites message cannot provision its own binding.
+        $missing = $this->signedCapture()->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            $wire['syntheticTitle'], $wire['sourceCode'], $claim,
+            $wire['nonce'], $wire['issuedAt'], $wire['expiresAt'], $now, $wire['signature'],
+        );
+        $this->assertSame('synthetic_conflict_denied', $missing['status_code']);
+        $this->assertSame(0, $this->owner->table('crm_lab_leads')->count());
+
+        // Only the independent fixture owner grants this temporary lab binding.
+        $this->seedActiveSiteBinding(self::ORG_A, $claim, 'sites');
+        $accepted = $this->signedCapture()->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            $wire['syntheticTitle'], $wire['sourceCode'], $claim,
+            $wire['nonce'], $wire['issuedAt'], $wire['expiresAt'], $now, $wire['signature'],
+        );
+        $replayed = $this->signedCapture($this->two)->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            $wire['syntheticTitle'], $wire['sourceCode'], $claim,
+            $wire['nonce'], $wire['issuedAt'], $wire['expiresAt'], $now + 1, $wire['signature'],
+        );
+        $this->assertSame('synthetic_captured', $accepted['status_code']);
+        $this->assertSame('synthetic_replayed', $replayed['status_code']);
+        $this->assertNoEffects($accepted);
+        $this->assertNoEffects($replayed);
+
+        // Valid identity and binding do not permit forged form fields.
+        $wrongForm = self::siteClaim(
+            self::ORG_A, form: '45454545-2222-4222-8222-555555555552'
+        );
+        $forged = $this->signedCapture($this->two)->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            $wire['syntheticTitle'], $wire['sourceCode'], $wrongForm,
+            $wire['nonce'], $wire['issuedAt'], $wire['expiresAt'], $now, $wire['signature'],
+        );
+        $this->assertSame('synthetic_integrity_denied', $forged['status_code']);
+
+        // A second company cannot borrow the first company's registered form.
+        $tenantBInput = $wireInput;
+        $tenantBInput['organizationReference'] = self::ORG_B;
+        $tenantBInput['leadId'] = self::LEAD_B;
+        $tenantBInput['nonce'] = 'b8888888-8888-4888-8888-888888888888';
+        $tenantB = \Imagine\Sites\Integration\SyntheticCrmCaptureEnvelope::sign($tenantBInput, $now);
+        $otherTenant = $this->signedCapture($this->two)->captureSigned(
+            self::principal(), self::ORG_B, self::LEAD_B,
+            $tenantB['syntheticTitle'], $tenantB['sourceCode'],
+            self::siteClaim(self::ORG_B),
+            $tenantB['nonce'], $tenantB['issuedAt'], $tenantB['expiresAt'],
+            $now, $tenantB['signature'],
+        );
+        $this->assertSame('synthetic_conflict_denied', $otherTenant['status_code']);
+
+        $this->owner->table('crm_lab_site_delivery_bindings')
+            ->where('organization_id', self::ORG_A)
+            ->update(['state' => 'revoked', 'version' => 2]);
+        $revoked = $this->signedCapture($this->two)->captureSigned(
+            self::principal(), self::ORG_A, self::LEAD_A,
+            $wire['syntheticTitle'], $wire['sourceCode'], $claim,
+            $wire['nonce'], $wire['issuedAt'], $wire['expiresAt'], $now + 2, $wire['signature'],
+        );
+        $this->assertSame('synthetic_conflict_denied', $revoked['status_code']);
+        foreach ([$missing, $forged, $otherTenant, $revoked] as $denied) {
+            $this->assertNoEffects($denied);
+        }
+
+        $this->assertSame(1, $this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_events')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_lead_capture_keys')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_site_delivery_bindings')->count());
+        $this->assertSame([], $this->one->table('public.crm_lab_leads')->get()->all());
+        $this->assertSame([], $this->two->table('public.crm_lab_leads')->get()->all());
+    }
+
 }
