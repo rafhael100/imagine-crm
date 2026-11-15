@@ -136,6 +136,40 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def require_unchanged_ingress(
+    marker: dict,
+    crm_hash: str,
+    shared_hash: str,
+    *,
+    crm_enabled: bool,
+    points_to_expected_config: bool,
+) -> None:
+    """F254 pure policy: status 401 does not prove Nginx bytes are unchanged."""
+    require(crm_enabled and points_to_expected_config,
+            "Private CRM ingress link changed during maintenance.")
+    expected_crm = marker.get("crm_config_sha256")
+    expected_shared = marker.get("shared_after_sha256")
+    require(isinstance(expected_crm, str) and len(expected_crm) == 64
+            and isinstance(expected_shared, str) and len(expected_shared) == 64
+            and all(ch in "0123456789abcdef" for ch in expected_crm + expected_shared),
+            "Immutable published ingress checksums absent or malformed.")
+    require(crm_hash == expected_crm and shared_hash == expected_shared,
+            "Protected Nginx configuration changed during the private upgrade.")
+
+
+def verify_ingress_snapshot(marker: dict) -> None:
+    """Read only; checks both hashes and exact link, never rewrites ingress."""
+    require_unchanged_ingress(
+        marker,
+        sha256(CRM_NGINX),
+        sha256(SHARED_NGINX),
+        crm_enabled=CRM_ENABLED.is_symlink(),
+        points_to_expected_config=(
+            CRM_ENABLED.is_symlink() and CRM_ENABLED.resolve() == CRM_NGINX
+        ),
+    )
+
+
 def protected_https() -> None:
     for host in (HOST, "portal-dev.imaginecomunica.com.br",
                  "comercial-dev.imaginecomunica.com.br"):
@@ -170,11 +204,7 @@ def verify_existing(marker: dict, env_text: str) -> str:
     require(image_tag(env_text) == current, "Recorded release differs from runtime.env.")
     require((STATE / "data/review-access.json").is_file(), "Client/admin reviewer vault absent.")
     require(not (STATE / "data/fixtures.json").exists(), "Unrevoked fixture credentials.")
-    require(CRM_ENABLED.is_symlink() and CRM_ENABLED.resolve() == CRM_NGINX,
-            "Private CRM ingress is not the published protected ingress.")
-    require(sha256(CRM_NGINX) == marker.get("crm_config_sha256")
-            and sha256(SHARED_NGINX) == marker.get("shared_after_sha256"),
-            "Nginx differs from protected published snapshot.")
+    verify_ingress_snapshot(marker)
     protected_https()
     return current
 
@@ -266,7 +296,9 @@ def apply(ci_id: str, marker: dict, old_text: str, current: str, candidate: str)
         verify_candidate_canary()
         review_access(new_env)
         protected_https()
+        verify_ingress_snapshot(marker)
         backup_and_restore(new_env)
+        verify_ingress_snapshot(marker)
         updated = dict(marker, sha=candidate, workflow_run=int(ci_id),
                        base_release_sha=ORIGINAL, latest_maintenance="private-application-f252",
                        previous_sha=current)
@@ -286,6 +318,7 @@ def apply(ci_id: str, marker: dict, old_text: str, current: str, candidate: str)
             check_live_image(current, old_env)
             local_smoke()
             protected_https()
+            verify_ingress_snapshot(marker)
         if ENV.exists() and image_tag(ENV.read_text()) == candidate:
             atomic_private(ENV, old_text)
         if PUBLISHED.exists() and json.loads(PUBLISHED.read_text()).get("sha") == candidate:
@@ -310,6 +343,7 @@ def rollback(marker: dict, current: str) -> None:
     check_live_image(previous, directory / "runtime-before.env")
     local_smoke()
     protected_https()
+    verify_ingress_snapshot(marker)
     restored = dict(marker, sha=previous, latest_maintenance="f252-rollback",
                     rolled_back_from=current)
     atomic_private(ENV, old_text)
