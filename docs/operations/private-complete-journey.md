@@ -324,3 +324,46 @@ IA externa ou lançamento do SaaS sem homologações independentes.
 **Limites desta entrega:** o código e o workflow F252 só podem demonstrar
 política e CI sem acesso SSH. A atualização efetiva exige operador com acesso
 à VPS e revisões independentes, sem promessas de deploy a partir do GitHub.
+
+## F253 — aceitação funcional obrigatória após troca de imagem
+
+A F252 já oferece ao operador comandos protegidos para
+`plan`, `apply` e `rollback`; **nenhum foi executado por esta PR**.
+A F253 acrescenta um teste de aceitação que deve passar **após a
+instalação do candidato e antes de alterar os marcadores de revisão
+publicada**. O arquivo `scripts/ops/private-crm-f253-canary.py`
+consulta somente a aplicação privada em `127.0.0.1:18086`, com
+`Host: crm-dev.imaginecomunica.com.br`, sem credenciais nem cookies.
+
+Critérios verificados:
+
+- Página inicial e login HTTP 200, `no-store` e `noindex`;
+  bloco real da metodologia Visitas → Leads → Clientes;
+- Calculadora funcional em português, inglês e espanhol:
+  2.500 visitas, 8% de conversão em leads, 13% de leads em
+  clientes gera **200 leads e 26 clientes**, sem campos para
+  nome, e-mail ou CNPJ;
+- Entradas artificiais nos endereços Agents ainda não publicados
+  devem permanecer HTTP 400/404 e não podem refletir identificadores,
+  chave, assinatura ou token;
+- Cabeçalhos `X-Aia-Claims` nos endpoints humanos
+  `/login`, `/cadastro` e `/recuperar` devem retornar HTTP 400.
+
+A aplicação deste canário ao fluxo F252 coloca
+`verify_candidate_canary()` **entre** `local_smoke()`
+e `review_access(new_env)`. Se o teste falha, o modo
+`apply` aborta e tenta a reversão protegida da imagem anterior.
+**Não** adicionamos canário da nova versão ao modo rollback,
+pois a versão antiga não possui os recursos mais novos.
+
+A CI F253 executa testes sem rede, e a suíte de jornada
+privada executa o canário **contra o contêiner real em loopback**
+antes do encerramento dos testes. A rotina de publicação F252
+passa a exigir um check independente
+`private-f253-post-switch-canary` no SHA exato além dos demais.
+
+F253 não é aprovação de release: mantém
+`MANUAL_REVIEW_REQUIRED`, pareceres SEG/OPS, backup/restore,
+reversibilidade, TLS e BasicAuth dos demais hosts, validação
+de usuário e administrador com MFA, revisão humana do navegador
+e bloqueio de dados reais, faturamento ou integração Agents.
