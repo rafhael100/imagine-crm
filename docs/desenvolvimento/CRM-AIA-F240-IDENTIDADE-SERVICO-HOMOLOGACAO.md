@@ -126,3 +126,40 @@ políticas por recurso/campo e aprovações independentes.
 Nenhuma rota operacional, IAM de serviço real, ALLOW ou
 leitura de leads foi habilitada. DRAFT / NO-GO /
 NO-MERGE / NO-DEPLOY.
+
+## F242 — derivação de empresa pelo vínculo CRM da chave de serviço
+
+A F242 fornece uma prova sintética de vinculação criptográfica ao tenant
+sem assumir que o tenant informado pelo remetente é confiável.
+
+- Tabela descartável `aia_lab_service_tenant_bindings` de posse exclusiva
+  do CRM, com `key_id` **globalmente único**, UUID de organização, tenant,
+  emissor, audiência, assunto, habilitação/revogação e versão.
+- `AiaPgServiceTenantBindingLab` consulta a tabela pela role
+  `crm_aia_peer_router_ci`, `SELECT`-only, não proprietária, com
+  `FORCE ROW LEVEL SECURITY`. Essa consulta **não aplica nem confia**
+  no marcador `app.tenant_id`, pois o tenant ainda é desconhecido.
+  A política permite à role interna ler os vínculos sintéticos por key_id;
+  não há endpoint público de listagem.
+- `AiaPgTenantBoundServiceProofLab` extrai o `key_id` de claims canônicas
+  como mero *hint* não autenticado, consulta o vínculo CRM e compara o
+  tenant alegado contra o vínculo **antes** do nonce. Somente depois,
+  o verificador Ed25519 original Agents SHA-fixado F232 usa a chave
+  pública CRM F240 específica da empresa e reclama o nonce INSERT-only
+  F241. Uma assinatura válida por chave da empresa A jamais autentica
+  a empresa B, mesmo que contenha `tenant_ref=B` assinado.
+- Uma eventual resposta `tenant_ref`/`organization_id` retornada é
+  **evidência sintética diagnóstica**, não concessão de acesso a leads
+  nem autorização empresarial. Nenhuma sessão humana, token ou
+  segredo privado é encaminhado.
+- Testes CI usam três conexões PostgreSQL distintas, duas empresas,
+  pares Ed25519 diferentes, chave única global, assinatura falsificada,
+  replay, troca/revogação do vínculo, ausência de FORCE RLS e negação
+  física de UPDATE/DELETE e leitura IAM. Todos os objetos são efêmeros.
+
+**Risco e gates:** A integridade do vínculo-chave exige provisionamento
+confiável e aprovação de cadastro/rotação em produção; o mapeamento
+ainda é artificial. Identidade de peer mTLS, bloqueios cross-process
+de revogação/rotação, aprovação SEG/CORE/IAM/DBA/LGPD e 13 cenários
+CRM #57 seguem pendentes. O retorno público continua
+`DENIED_OR_NOT_FOUND` — **NO-GO / NO-DEPLOY / NO-MERGE**.
