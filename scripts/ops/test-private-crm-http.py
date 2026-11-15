@@ -338,4 +338,14 @@ def main():
 
 
 if __name__=='__main__':
-    main()
+    if len(sys.argv)>2 and sys.argv[2]=='review-access':
+        scenario('clear-cache')
+        for key in ['client','admin']:
+            reviewer=Client();account=dict(FIXTURES[key],admin=key=='admin')
+            reviewer.login(account)
+            if key=='client': reviewer.get('/admin',expected=403)
+            reviewer.post('/logout',{})
+            reviewer.get('/admin' if key=='admin' else '/painel',expected=303)
+        print(f'PRIVATE REVIEW ACCESS PASS: {CHECKS} checks; client/admin password+MFA and logout, no credentials displayed.')
+    else:
+        main()

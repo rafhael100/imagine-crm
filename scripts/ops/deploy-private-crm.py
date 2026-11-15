@@ -58,5 +58,16 @@ elif mode=='verify':
     run(['python3','scripts/ops/backup-private-crm.py',str(DATA/'backups')])
     (PROTECTED/'http-verified.json').write_text(json.dumps({'sha':sha,'private_http':'passed','restore':'passed'})+'\n')
     print('PRIVATE HTTP VERIFY PASS: private client/admin journey and filled backup; ingress unchanged.')
+elif mode=='access':
+    marker=PROTECTED/'http-verified.json'
+    if not marker.is_file() or json.loads(marker.read_text())!={'sha':sha,'private_http':'passed','restore':'passed'}:
+        raise SystemExit('Exact revision needs completed private HTTP and restore verification.')
+    if (DATA/'fixtures.json').exists():
+        run(compose+['run','--rm','-T','tools','scripts/ops/seed-private-crm-fixtures.php','revoke'])
+    if not (DATA/'review-access.json').exists():
+        run(compose+['run','--rm','-T','tools','scripts/ops/seed-private-crm-review-access.php'])
+    run(['python3','scripts/ops/test-private-crm-http.py',str(DATA/'review-access.json'),'review-access'])
+    (PROTECTED/'access-verified.json').write_text(json.dumps({'sha':sha,'reviewer_access':'passed','automated_fixture_credentials':'revoked'})+'\n')
+    print('PRIVATE REVIEWER ACCESS PASS: client/admin tested, automated fixture credentials revoked; ingress unchanged.')
 else:
-    raise SystemExit('Explicit prepare or verify required; no ingress change performed.')
+    raise SystemExit('Explicit prepare, verify or access required; no ingress change performed.')

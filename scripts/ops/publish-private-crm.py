@@ -32,6 +32,7 @@ if workflow.get('head_sha')!=sha or workflow.get('conclusion')!='success' or wor
 for filename,expected in [
     ('prepare-verified.json',{'sha':sha,'restore':'passed','scope':'synthetic-v1'}),
     ('http-verified.json',{'sha':sha,'private_http':'passed','restore':'passed'}),
+    ('access-verified.json',{'sha':sha,'reviewer_access':'passed','automated_fixture_credentials':'revoked'}),
 ]:
     file=STATE/filename
     if not file.is_file() or json.loads(file.read_text())!=expected: raise SystemExit('Missing exact-revision VPS verification.')

@@ -43,7 +43,7 @@ PostgreSQL e Redis têm rede interna exclusiva. A única porta publicada é `127
    Ela inclui HTTP real, Chromium desktop/mobile, backup/restauração e falhas/recuperação.
 5. Pelo serviço CLI `tools`, executar `scripts/ops/seed-private-crm-fixtures.php revoke`.
    A revogação elimina o cofre de testes automatizados e conserva os registros de auditoria.
-6. Pelo serviço CLI `tools`, executar `scripts/ops/seed-private-crm-review-access.php`.
+6. Executar `python3 scripts/ops/deploy-private-crm.py access`. Esse comando revoga o cofre automatizado, cria os acessos de revisão quando ausentes e testa senha, MFA, perfil e saída dos dois acessos.
    Os dois acessos de revisão são criados uma única vez em `data/review-access.json`, sem exibição em logs.
    O operador entrega os acessos por canal privado. Não publicar o cofre nem incluí-lo nos artefatos da CI.
 7. Executar `python3 scripts/ops/publish-private-crm.py ID_DA_CI_VERDE`.
@@ -73,5 +73,5 @@ exigir novo login → conferir auditoria. Os controles de empresa/perfil são ve
 
 A CI preserva apenas PNGs sem credenciais das telas comerciais e dos painéis desktop/mobile.
 Os relatórios e cofres da VPS não são arquivos públicos. O operador deve consultar os JSONs protegidos
-`prepare-verified`, `http-verified`, `published`, `ingress-rollback-verified` e `ingress-resume-verified`
+`prepare-verified`, `http-verified`, `access-verified`, `published`, `ingress-rollback-verified` e `ingress-resume-verified`
 para afirmar o estado efetivamente alcançado; código preparado não equivale a publicação concluída.
