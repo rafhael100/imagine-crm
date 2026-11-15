@@ -1,0 +1,87 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Support\Synthetic;
+
+/**
+ * F242: key-id is an UNTRUSTED lookup hint for a globally unique CRM record.
+ * Never use tenant_ref or organization_id from HTTP/claims as an authority.
+ *
+ * Only the original pinned Agents Ed25519 verifier can establish that the
+ * caller controls the corresponding secret key, then atomic PG nonce is
+ * claimed. This returns synthetic diagnostic evidence, not CRM access.
+ */
+final class AiaPgTenantBoundServiceProofLab
+{
+    /**
+     * @return ?array{tenant_ref:string,organization_id:string}
+     */
+    public static function verifyAndConsume(
+        string $canonicalRequest,
+        string $canonicalClaims,
+        string $signatureBase64,
+        int $now,
+        AiaPgServiceTenantBindingLab $bindings,
+        AiaTrustedPublicKeySource $keyring,
+        AiaNonceClaimSource $nonces,
+    ): ?array {
+        try {
+            if (strlen($canonicalRequest) > 2048
+                || $canonicalRequest === ''
+                || strlen($canonicalClaims) > 1024
+                || $canonicalClaims === ''
+                || strlen($signatureBase64) > 128
+                || $signatureBase64 === '') {
+                return null;
+            }
+            $claims = json_decode($canonicalClaims, true, 4, JSON_THROW_ON_ERROR);
+            if (!is_array($claims) || !is_string($claims['key_id'] ?? null)
+                || !is_string($claims['tenant_ref'] ?? null)
+                || json_encode(
+                    $claims, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                        | JSON_THROW_ON_ERROR
+                ) !== $canonicalClaims) {
+                return null;
+            }
+
+            // The only pre-authenticated input used by routing is a key-id
+            // hint. Organization comes from immutable-ish server-owned table,
+            // not from the signed claim itself (which is untrusted until
+            // signature verification) or from app.tenant_id.
+            $bound = $bindings->resolveByKeyId($claims['key_id']);
+            if ($bound === null || !hash_equals(
+                $bound['tenant_ref'], $claims['tenant_ref']
+            )) {
+                return null;
+            }
+
+            if (!AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $canonicalRequest, $canonicalClaims, $signatureBase64,
+                $bound['tenant_ref'], $now, $keyring, $nonces,
+            )) {
+                return null;
+            }
+            return $bound; // diagnostic ONLY: do not use as an ACL
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /** @return array{contract:string,state:string,projection:null,real_authorization:false,external_calls:0} */
+    public static function inspectDenied(
+        string $canonicalRequest,
+        string $canonicalClaims,
+        string $signatureBase64,
+        int $now,
+        AiaPgServiceTenantBindingLab $bindings,
+        AiaTrustedPublicKeySource $keyring,
+        AiaNonceClaimSource $nonces,
+    ): array {
+        self::verifyAndConsume(
+            $canonicalRequest, $canonicalClaims, $signatureBase64, $now,
+            $bindings, $keyring, $nonces,
+        );
+        return AiaReadOnlyMockBoundary::inspectCanonicalJson($canonicalRequest);
+    }
+}
