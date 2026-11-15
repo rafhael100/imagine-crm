@@ -550,6 +550,83 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
             $this->assertSame(0, (int) $grantDb->table(
                 'public.aia_lab_agent_human_bindings'
             )->count());
+            // Direct revocation and DELETE from the bounded role must
+            // fail at the physical PostgreSQL privilege boundary.
+            // Each attempt gets its own transaction because SQL errors
+            // leave the current transaction aborted until rollback.
+            foreach ([
+                static fn (\Illuminate\Database\Connection $connection) =>
+                    $connection->table('public.aia_lab_human_service_grants')
+                        ->update(['revoked_at' => 1800000005]),
+                static fn (\Illuminate\Database\Connection $connection) =>
+                    $connection->table('public.aia_lab_human_service_grants')
+                        ->delete(),
+            ] as $mutate) {
+                $denied = false;
+                try {
+                    $grantDb->transaction(function () use (
+                        $grantDb, $mutate
+                    ): void {
+                        $grantDb->selectOne("SELECT set_config(
+                            'app.tenant_id', ?, true)",
+                            ['SYNTHETIC_TENANT_A']
+                        );
+                        $mutate($grantDb);
+                    }, 1);
+                } catch (\Throwable) {
+                    $denied = true;
+                }
+                $this->assertTrue(
+                    $denied,
+                    'The issuance role must not revoke or delete grants'
+                );
+                $this->assertSame(0, $grantDb->transactionLevel());
+            }
+            $this->assertSame(1, (int) $db
+                ->table('aia_lab_human_service_grants')
+                ->whereNull('revoked_at')->count());
+
+            // The role must also fail to INSERT a forged witness for a
+            // different tenant while scoped to A, regardless of SQL ACL.
+            $crossTenantDenied = false;
+            try {
+                $grantDb->transaction(function () use (
+                    $grantDb, $kid
+                ): void {
+                    $grantDb->selectOne("SELECT set_config(
+                        'app.tenant_id', ?, true)",
+                        ['SYNTHETIC_TENANT_A']
+                    );
+                    $grantDb->table(
+                        'public.aia_lab_human_service_grants'
+                    )->insert([
+                        'grant_id' => (string) Str::uuid(),
+                        'tenant_ref' => 'SYNTHETIC_TENANT_B',
+                        'organization_id' => self::D,
+                        'key_id' => $kid,
+                        'principal_ref' => 'SYNTHETIC_F239_PRINCIPAL_B',
+                        'human_identity_id' => self::B,
+                        'membership_version' => 2,
+                        'iam_session_id' => (string) Str::uuid(),
+                        'credential_version' => 1,
+                        'request_sha256' => hash(
+                            'sha256', 'SYNTHETIC_F239_FORGED_B'
+                        ),
+                        'purpose_ref' => 'SYNTHETIC_F239_PURPOSE_B',
+                        'resource_ref' => 'SYNTHETIC_F239_LEAD_B',
+                        'issued_at' => 1800000000,
+                        'expires_at' => 1800000030,
+                        'revoked_at' => null,
+                        'version' => 1,
+                    ]);
+                }, 1);
+            } catch (\Throwable) {
+                $crossTenantDenied = true;
+            }
+            $this->assertTrue($crossTenantDenied);
+            $this->assertSame(0, $grantDb->transactionLevel());
+            $this->assertSame(1, (int) $db
+                ->table('aia_lab_human_service_grants')->count());
             $grant = $db->table('aia_lab_human_service_grants')->first();
             $this->assertSame(self::A, $grant->human_identity_id);
             $this->assertSame(self::C, $grant->organization_id);
