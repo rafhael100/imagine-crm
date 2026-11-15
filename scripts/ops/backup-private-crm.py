@@ -29,6 +29,8 @@ TENANT_TABLES=['crm_memberships','crm_private_trials','crm_private_leads','crm_p
 def run(command,content=None,environment=None):
     result=subprocess.run(command,input=content,stdout=subprocess.PIPE,stderr=subprocess.PIPE,env=environment)
     if result.returncode:
+        safe=re.findall(rb'Private backup crypto failed: [A-Za-z0-9_\\]+ at [A-Za-z0-9_.-]+:[0-9]+',result.stderr)
+        if safe: print(safe[-1].decode(),file=sys.stderr)
         raise RuntimeError('Private backup phase failed; no raw data or credentials displayed.')
     return result.stdout
 

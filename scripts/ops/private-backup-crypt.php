@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+try {
 require __DIR__.'/private-crm-toolbox.php';
 $key=base64_decode((string)getenv('CRM_PRIVATE_BACKUP_KEY'),true);
 if (!is_string($key) || strlen($key)!==32) throw new RuntimeException('Independent backup key required.');
@@ -11,3 +12,7 @@ $crypto=new Illuminate\Encryption\Encrypter($key,'AES-256-CBC');
 if (($argv[1]??'')==='encrypt') echo $crypto->encryptString($input);
 elseif (($argv[1]??'')==='decrypt') echo $crypto->decryptString($input);
 else throw new RuntimeException('Explicit backup mode required.');
+} catch (Throwable $error) {
+    fwrite(STDERR, 'Private backup crypto failed: '.get_class($error).' at '.basename($error->getFile()).':'.$error->getLine().PHP_EOL);
+    exit(1);
+}
