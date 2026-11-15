@@ -288,3 +288,49 @@ homologação isolada, serialização de revogações sob concorrência e
 eventos auditáveis. CRM #57 permanece **NO-GO**, com 14 gates,
 7 decisões e 13 cenários operacionais pendentes. **NO-MERGE /
 NO-DEPLOY / NO-SECRETS / NO-PII.**
+
+
+## F238 — continuidade da sessão emissora e concorrência de revogações
+
+Esta fase endurece o testemunho F237 (continuamente limitado ao laboratório
+PostgreSQL 16 descartável). A emissão por pessoa autenticada passa a registrar
+o **UUID interno da sessão de IAM que estava efetivamente verificada sob
+bloqueio** e a versão da credencial. Nem o cookie, nem o token da sessão,
+nem o token_hash são incluídos no testemunho ou enviados ao Agents.
+
+Na consulta do serviço, a ponte exige primeiro a assinatura Ed25519 original
+Agents e o keyring público do CRM, o nonce único PG16 e o witness vinculado
+ao hash exato do pedido. Em seguida, AiaPgSessionContinuityLab usa uma
+conexão distinta com papel crm_iam_ci não privilegiado para verificar
+**exatamente aquela sessão de origem**, com status ativo, MFA registrado,
+prazo de sessão/credencial, versão de credencial e operação IAM concluída,
+sem session hold. Essa verificação conserva locks PostgreSQL durante a
+reconsulta de membership física em crm_memberships sob FORCE RLS.
+
+**Semântica conservadora escolhida para o laboratório:** logout ou revogação
+da sessão original impede que o serviço reutilize qualquer witness
+pendente daquela sessão. Uma nova sessão do mesmo usuário não substitui
+a antiga. Rotação de credencial, vínculo empresarial revogado/trocado,
+revogação do grant, alteração de payload/campos ou chave Ed25519 inválida
+também resultam em negativa. O serviço não recebe nenhuma sessão humana.
+
+**Concorrência:** teste F238 com duas conexões PostgreSQL físicas distintas
+demonstra bloqueios de linha enquanto a validação de sessão está ativa,
+com falha por lock_timeout no UPDATE concorrente. Depois que a transação
+termina, a mesma revogação consegue commitar e nova verificação não executa
+efeitos. Outra prova repete esse experimento na linha de delegação com
+FOR UPDATE, usando uma conexão administrativa *apenas de testes*.
+
+Os dados e roles do novo witness não estão em migrations de produção;
+a role do banco de testemunhos ainda é privilegiada somente porque se trata
+de configuração laboratorial, portanto o resultado **não comprova**
+provisionamento real nem isolamento de privilégios de emissão para clientes.
+Também não prova ausência de deadlock em todas as interleavings, auditoria
+operacional sob carga, distribuições/retries nem consentimento. F238 não
+altera o bloqueio de acesso empresarial:
+DENIED_OR_NOT_FOUND e nenhuma projeção de lead.
+
+Próximas condições obrigatórias: revisão independente SEG/CORE/DBA/IAM/LGPD,
+modelagem da sessão de delegação para produção com papel de emissão mínimo,
+testes adversariais de concorrência/cancelamento e 13 cenários operacionais
+do CRM #57. **DRAFT / NO-MERGE / NO-DEPLOY / NO-SECRETS / NO-PII / NO-GO.**
