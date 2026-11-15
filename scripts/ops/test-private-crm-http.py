@@ -307,6 +307,16 @@ def main():
           'won-per-lead ratio must match tenant-scoped won leads')
     check('não contratos, pagamentos ou clientes reais' in report,
           'won deals must not be presented as real paying customers')
+    pipeline_rows=re.findall(
+        r'<tr data-report-funnel-id="([^"]+)" data-report-funnel-leads="(\\d+)" data-report-funnel-won="(\\d+)" data-report-funnel-rate="([^"]+)">',
+        report)
+    check(len(pipeline_rows)==2,'two scoped pipeline report rows expected')
+    check(sorted(int(row[1]) for row in pipeline_rows)==[0,3],
+          'empty and populated pipeline counts wrong')
+    check(sorted(int(row[2]) for row in pipeline_rows)==[0,1],
+          'won count across pipelines wrong')
+    check(sorted(float(row[3]) for row in pipeline_rows)==[0.0,33.3],
+          'pipeline conversion must be scoped and avoid zero division')
     print('PASS proposal → won/lost → terminal state protection → proposal follow-up task')
     exported=a.get('/exportar')
     check(',won,' in exported and ',lost,' in exported,'exported sales stages missing')
