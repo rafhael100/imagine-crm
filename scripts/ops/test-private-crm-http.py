@@ -308,7 +308,7 @@ def main():
     check('não contratos, pagamentos ou clientes reais' in report,
           'won deals must not be presented as real paying customers')
     pipeline_rows=re.findall(
-        r'<tr data-report-funnel-id="([^"]+)" data-report-funnel-leads="(\\d+)" data-report-funnel-won="(\\d+)" data-report-funnel-rate="([^"]+)">',
+        r'<tr data-report-funnel-id="([^"]+)" data-report-funnel-leads="(\d+)" data-report-funnel-won="(\d+)" data-report-funnel-rate="([^"]+)">',
         report)
     check(len(pipeline_rows)==2,'two scoped pipeline report rows expected')
     check(sorted(int(row[1]) for row in pipeline_rows)==[0,3],
