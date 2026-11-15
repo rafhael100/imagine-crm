@@ -81,8 +81,13 @@ final class CrmIamRecoveryHttpBoundaryTest extends TestCase
 
     private function beginHttpPassword(string $csrf): void
     {
-        $response = $this->withSession(['_token' => $csrf])
-            ->post('/_ci/iam-recovery/password', [
+        // A previous logout rotates the session ID. Bind this browser
+        // request to the CURRENT server session rather than reusing the
+        // encrypted response cookie from the earlier authentication cycle.
+        $this->withSession(['_token' => $csrf]);
+        $this->withCookie((string) config('session.cookie'), $this->browserSession->getId())
+            ->withCredentials();
+        $response = $this->post('/_ci/iam-recovery/password', [
                 'login' => 'fixture-a',
                 'password' => self::PASSWORD,
                 '_token' => $csrf,
