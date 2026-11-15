@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Core\Identity\PrincipalReference;
 use App\Core\Leads\LaboratorySiteBindingProvisioner;
+use App\Core\Leads\LaboratoryPortalS2sBindingGateway;
 use App\Core\Leads\LaboratorySignedSiteCapture;
 use App\Core\Leads\LaboratoryTenantLeadLedger;
 use App\Core\Leads\LeadSubmissionIdentity;
@@ -95,6 +96,13 @@ final class PostgresSitesProvisioningF399Test extends TestCase
             DB::purge('f399_restricted');
         }
         if (isset($this->owner)) {
+            // F400 uses an immutable S2S receipt ledger; the entire PG16
+            // container is disposable and destroyed at the end of this job.
+            // Do not bypass append-only protections to clean the test state.
+            if (getenv('CRM_SITES_F400_S2S_CI') === '1') {
+                parent::tearDown();
+                return;
+            }
             $this->owner->table('crm_lab_lead_capture_keys')->delete();
             $this->owner->table('crm_lab_site_provision_events')->delete();
             $this->owner->table('crm_lab_site_delivery_bindings')->delete();
@@ -265,6 +273,197 @@ final class PostgresSitesProvisioningF399Test extends TestCase
         try {
             $provision->provision(self::ORG_A,self::ORDER);
             $this->fail('CI guard bypass');
+        } catch (LogicException) {
+            $this->assertTrue(true);
+        }
+    }
+
+    /**
+     * F400: signed fake Portal commands are an additional independent gate.
+     * The F399 owner registry still decides what may actually be provisioned.
+     */
+    public function test_portal_s2s_scoped_commands_replay_rotation_and_atomic_revoke(): void
+    {
+        if (getenv('CRM_SITES_F400_S2S_CI') !== '1') {
+            $this->markTestSkipped('F400 dedicated GitHub Actions/PG16 fixture only.');
+        }
+
+        $gateway = new LaboratoryPortalS2sBindingGateway($this->owner);
+        $now = 1790000000;
+
+        $this->authority('approved', 'settled', 'recorded');
+        foreach ([
+            ['lab-portal-crm-provision-a', 'provision'],
+            ['lab-portal-crm-provision-b', 'provision'],
+            ['lab-portal-crm-revoke-c', 'revoke'],
+        ] as [$key, $action]) {
+            $this->owner->table('crm_lab_site_s2s_keys')->insert([
+                'key_id' => $key,
+                'source_service' => 'imagine-portal',
+                'audience_service' => 'imagine-crm',
+                'allowed_action' => $action,
+                'state' => 'active',
+                'valid_from' => $now - 100,
+                'valid_until' => $now + 300,
+                'version' => 1,
+            ]);
+        }
+        $claim = [
+            'protocol' => 'imagine-s2s-f400-ci-v1',
+            'sourceService' => 'imagine-portal',
+            'audienceService' => 'imagine-crm',
+            'keyId' => 'lab-portal-crm-provision-a',
+            'action' => 'provision',
+            'organizationReference' => self::ORG_A,
+            'orderReference' => self::ORDER,
+            'bindingReference' => self::BINDING,
+            'expectedOrderVersion' => 1,
+            'nonce' => '40404040-4040-4040-8040-404040404041',
+            'issuedAt' => $now - 10,
+            'expiresAt' => $now + 40,
+        ];
+        $signed = $gateway->signForCi($claim);
+        $unsigned = $signed;
+        unset($unsigned['signature']);
+        $this->assertSame('synthetic_s2s_denied',
+            $gateway->consume($unsigned, $now)['status_code']);
+
+        foreach ([
+            ['signature' => str_repeat('0',64)],
+            ['sourceService' => 'imagine-sites'],
+            ['audienceService' => 'imagine-sites'],
+            ['action' => 'revoke'],
+            ['organizationReference' => self::ORG_B],
+            ['bindingReference' => '00000000-0000-4000-8000-000000000001'],
+            ['expectedOrderVersion' => 2],
+            ['expiresAt' => $now + 400],
+            ['issuedAt' => $now + 40],
+            ['unexpectedField' => 'x'],
+        ] as $changes) {
+            $tampered = array_replace($signed, $changes);
+            $this->assertSame('synthetic_s2s_denied',
+                $gateway->consume($tampered, $now)['status_code']);
+        }
+
+        // Even with a fresh signature, a claim for another company, binding,
+        // order revision or source service is not an authorization.
+        foreach ([
+            ['organizationReference' => self::ORG_B],
+            ['bindingReference' => '00000000-0000-4000-8000-000000000001'],
+            ['expectedOrderVersion' => 2],
+        ] as $changes) {
+            $reSigned = $gateway->signForCi(array_replace($claim, $changes));
+            $this->assertSame('synthetic_s2s_denied',
+                $gateway->consume($reSigned, $now)['status_code']);
+        }
+        $noKey = $signed;
+        $noKey['keyId'] = 'unknown-forged-credential';
+        $this->assertSame('synthetic_s2s_denied',
+            $gateway->consume($noKey, $now)['status_code']);
+
+        $this->assertSame(0,$this->owner->table('crm_lab_site_s2s_inbox')->count());
+        $this->assertSame(0,$this->owner->table('crm_lab_site_delivery_bindings')->count());
+
+        $first = $gateway->consume($signed, $now);
+        $this->assertSame('synthetic_provisioned', $first['status_code']);
+        $this->assertFalse($first['can_publish']);
+        $this->assertFalse($first['can_contact']);
+        $this->assertFalse($first['can_activate']);
+        $this->assertSame('synthetic_s2s_replayed',
+            $gateway->consume($signed, $now+1)['status_code']);
+        $this->assertSame(1,$this->owner->table('crm_lab_site_s2s_inbox')->count());
+
+        // Exact nonce is source-global, independent of credential rotation.
+        $reusingNonce = $claim;
+        $reusingNonce['keyId'] = 'lab-portal-crm-provision-b';
+        $this->assertSame('synthetic_s2s_denied',
+            $gateway->consume($gateway->signForCi($reusingNonce), $now)['status_code']);
+
+        $siteEvent = self::message(self::ORG_A, self::LEAD, self::NONCE);
+        $this->assertSame('synthetic_captured',
+            $this->capture(self::ORG_A,self::LEAD,$siteEvent)['status_code']);
+        $this->assertSame('synthetic_replayed',
+            $this->capture(self::ORG_A,self::LEAD,$siteEvent,$now+1)['status_code']);
+        $this->assertSame(1,$this->owner->table('crm_lab_leads')->count());
+
+        // A provision credential cannot perform a revoke operation,
+        // regardless of the validity of its own HMAC.
+        $wrongRole = array_replace($claim, [
+            'action' => 'revoke',
+            'nonce' => '40404040-4040-4040-8040-404040404042',
+        ]);
+        $this->assertSame('synthetic_s2s_denied',
+            $gateway->consume($gateway->signForCi($wrongRole), $now)['status_code']);
+
+        $rotated = array_replace($claim, [
+            'keyId'=>'lab-portal-crm-provision-b',
+            'nonce'=>'40404040-4040-4040-8040-404040404043',
+        ]);
+        $this->assertSame('synthetic_already_provisioned',
+            $gateway->consume($gateway->signForCi($rotated), $now)['status_code']);
+        $this->owner->table('crm_lab_site_s2s_keys')
+            ->where('key_id','lab-portal-crm-provision-a')
+            ->update(['state'=>'revoked','version'=>2]);
+        $oldKey = array_replace($claim, [
+            'nonce'=>'40404040-4040-4040-8040-404040404044',
+        ]);
+        $this->assertSame('synthetic_s2s_denied',
+            $gateway->consume($gateway->signForCi($oldKey), $now)['status_code']);
+        $this->assertSame('synthetic_s2s_denied',
+            $gateway->consume($signed, $now)['status_code']);
+        try {
+            $this->owner->table('crm_lab_site_s2s_keys')
+                ->where('key_id','lab-portal-crm-provision-a')
+                ->update(['state'=>'active','version'=>3]);
+            $this->fail('Revoked S2S key was reactivated.');
+        } catch (QueryException $exception) {
+            $this->assertSame('23514', $exception->errorInfo[0] ?? null);
+        }
+
+        $revoke = array_replace($claim, [
+            'keyId'=>'lab-portal-crm-revoke-c',
+            'action'=>'revoke',
+            'nonce'=>'40404040-4040-4040-8040-404040404045',
+        ]);
+        $this->assertSame('synthetic_revoked',
+            $gateway->consume($gateway->signForCi($revoke), $now)['status_code']);
+        $this->assertSame('revoked',
+            $this->owner->table('crm_lab_site_delivery_bindings')->value('state'));
+        $this->assertSame('revoked',
+            $this->owner->table('crm_lab_site_provision_orders')->value('state'));
+        $this->assertSame('synthetic_conflict_denied',
+            $this->capture(self::ORG_A,self::LEAD,$siteEvent,$now+2)['status_code']);
+        $this->assertSame(1,$this->owner->table('crm_lab_leads')->count());
+        $this->assertSame(2,$this->owner->table('crm_lab_site_provision_events')->count());
+        $this->assertSame(3,$this->owner->table('crm_lab_site_s2s_inbox')->count());
+        $this->assertSame('synthetic_s2s_replayed',
+            $gateway->consume($gateway->signForCi($revoke), $now+2)['status_code']);
+
+        $afterRevoke = array_replace($rotated, [
+            'expectedOrderVersion'=>2,
+            'nonce'=>'40404040-4040-4040-8040-404040404046',
+        ]);
+        $this->assertSame('synthetic_s2s_denied',
+            $gateway->consume($gateway->signForCi($afterRevoke), $now+3)['status_code']);
+        $this->assertSame(3,$this->owner->table('crm_lab_site_s2s_inbox')->count());
+
+        foreach ([
+            ['crm_lab_site_s2s_keys','SELECT'],
+            ['crm_lab_site_s2s_inbox','SELECT'],
+            ['crm_lab_site_s2s_keys','UPDATE'],
+            ['crm_lab_site_s2s_inbox','INSERT'],
+        ] as [$table,$action]) {
+            $this->assertFalse((bool)$this->owner->selectOne(
+                'SELECT has_table_privilege(?, ?, ?) AS allowed',
+                ['crm_app_ci','public.'.$table,$action],
+            )->allowed);
+        }
+
+        // No fake authorization can be invoked when its CI gate is disabled.
+        putenv('CRM_SITES_F400_S2S_CI=0');
+        try {
+            $gateway->consume($signed, $now);
+            $this->fail('F400 CI-only guard was bypassed.');
         } catch (LogicException) {
             $this->assertTrue(true);
         }
