@@ -7,6 +7,7 @@ on:
       - 'app/Core/Identity/**'
       - 'app/Providers/AppServiceProvider.php'
       - 'config/**'
+      - 'bootstrap/app.php'
       - 'routes/private-homologation.php'
       - 'resources/views/crm-private-journey.blade.php'
       - 'infra/homologation/**'
@@ -59,6 +60,8 @@ jobs:
         run: |
           set -euo pipefail
           docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T app sh -c 'find app/Homologation -name "*.php" -exec php -l {} \; && php artisan view:cache && for view in storage/framework/views/*.php; do php -l "$view" || exit 1; done'
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T app sh -c 'for file in scripts/ops/*private*.php; do php -l "$file" || exit 1; done'
+          python3 -m py_compile scripts/ops/*private-crm*.py
       - name: Prove encrypted empty-schema backup and separate restore before persistent fixtures
         run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/backup-private-crm.py "$RUNNER_TEMP/crm-private-data/backups"
       - name: Seed temporary fictional identities without printing credentials
@@ -71,6 +74,12 @@ jobs:
         run: |
           npm install --prefix "$RUNNER_TEMP/private-crm-browser" --ignore-scripts --no-audit --no-fund playwright@1.56.1
           sudo env CRM_PRIVATE_PLAYWRIGHT_DIR="$RUNNER_TEMP/private-crm-browser" node scripts/ops/test-private-crm-browser.cjs "$RUNNER_TEMP/crm-private-data/fixtures.json" "$RUNNER_TEMP/crm-private-evidence"
+      - name: Make only credential-free browser evidence readable by the artifact runner
+        if: always()
+        run: |
+          if test -d "$RUNNER_TEMP/crm-private-evidence"; then
+            sudo chown -R "$(id -u):$(id -g)" "$RUNNER_TEMP/crm-private-evidence"
+          fi
       - name: Preserve credential-free desktop and mobile evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

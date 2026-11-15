@@ -296,7 +296,9 @@ def main():
     a.post('/leads',{'title':'LEAD_TESTE_OVER_LIMIT','value_cents':0},expected=409)
     old_cookie=dict(a.cookies)
     a.get('/painel');a.post('/logout',{})
-    stale=Client();stale.cookies=old_cookie;stale.get('/painel',expected=303)
+    stale=Client();stale.cookies=old_cookie
+    _,secure_location=stale.request('/painel',expected=303,headers={'X-Forwarded-Proto':'https'})
+    check(secure_location=='https://crm-dev.imaginecomunica.com.br/login','TLS proxy redirect downgraded to HTTP')
     a.login(primary,recovery=primary['recovery'][0])
     check(len(leads(a))==20,'data did not survive logout/login')
     new_password=secrets.token_hex(16)
