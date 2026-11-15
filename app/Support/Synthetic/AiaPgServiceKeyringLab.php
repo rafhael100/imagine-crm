@@ -61,9 +61,11 @@ final readonly class AiaPgServiceKeyringLab
                 ->where('audience', self::AUDIENCE)
                 ->where('tenant_ref', $expectedTenant)
                 ->where('key_id', $keyId)
+                ->where('enabled', true)
+                ->whereNull('revoked_at')
                 ->first(['public_key_base64','enabled','revoked_at','revision']);
 
-            if (!$row || !$row->enabled || $row->revoked_at !== null
+            if (!$row || $row->revoked_at !== null
                 || (int) $row->revision < 1
                 || !is_string($row->public_key_base64)
                 || strlen($row->public_key_base64) !== 44) {
