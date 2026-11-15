@@ -18,6 +18,10 @@ foreach (['storage/framework/cache','storage/framework/sessions','storage/framew
 }
 $privateApp=require dirname(__DIR__,2).'/bootstrap/app.php';
 $privateApp->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+set_exception_handler(static function (Throwable $error): void {
+    fwrite(STDERR,'Private operator failed: '.get_class($error).' at '.basename($error->getFile()).':'.$error->getLine().PHP_EOL);
+    exit(1);
+});
 if (!Environment::enabled()) throw new RuntimeException('Private operator profile required.');
 
 function privateCrmOwner(): PDO

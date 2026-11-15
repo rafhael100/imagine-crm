@@ -38,6 +38,7 @@ jobs:
           [[ "$GITHUB_REPOSITORY" == rafhael100/imagine-crm ]]
           [[ "$GITHUB_EVENT_NAME" == pull_request ]]
           python3 scripts/ops/create-private-crm-environment.py "$RUNNER_TEMP/crm-private.env" "$RUNNER_TEMP/crm-private-data" "$CANDIDATE_SHA"
+          sudo chown root:root "$RUNNER_TEMP/crm-private-data"
           echo "CRM_PRIVATE_ENV_FILE=$RUNNER_TEMP/crm-private.env" >> "$GITHUB_ENV"
       - name: Render Compose quietly; build exact private application
         run: |
