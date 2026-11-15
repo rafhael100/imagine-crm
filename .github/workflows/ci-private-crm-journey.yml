@@ -10,6 +10,7 @@ on:
       - 'bootstrap/app.php'
       - 'routes/private-homologation.php'
       - 'resources/views/crm-private-journey.blade.php'
+      - 'resources/views/crm-marketing-home.blade.php'
       - 'infra/homologation/**'
       - 'scripts/ops/*private-crm*'
       - 'scripts/ops/test-private-crm-browser.cjs'

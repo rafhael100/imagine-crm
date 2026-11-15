@@ -38,6 +38,28 @@ async function width(page) {
     await page.goto(base + '/');
     await width(page);
     await page.screenshot({ path: path.join(output, 'crm-home-desktop.png'), fullPage: true });
+    for (const language of ['pt','en','es']) {
+      phase='marketing-'+language;
+      await page.goto(base+'/?lang='+language);
+      check(await page.locator('[data-home-section]').count()>=12,'Incomplete commercial home');
+      check(await page.locator('#duvidas details').count()>=10,'Missing purchase FAQs');
+      const missingAnchors=await page.locator('.crm-home a[href^="#"]').evaluateAll(links=>links.filter(link=>!document.getElementById(link.hash.slice(1))).length);
+      check(missingAnchors===0,'Broken home navigation anchor');
+      const invalidCtas=await page.locator('.crm-home a.btn').evaluateAll(links=>links.filter(link=>!link.getAttribute('href').startsWith('/cadastro')&&!['/login','#recursos'].includes(link.getAttribute('href'))).length);
+      check(invalidCtas===0,'Commercial CTA leaves approved purchase path');
+      const question=page.locator('#duvidas details').first();
+      await question.locator('summary').click();
+      check(await question.getAttribute('open')!==null,'FAQ does not open');
+      await question.locator('summary').click();
+      for (const size of [320,390,768,1440]) {
+        await page.setViewportSize({width:size,height:900});
+        await width(page);
+      }
+    }
+    await page.goto(base+'/?lang=pt');
+    await page.setViewportSize({width:390,height:844});
+    await page.screenshot({path:path.join(output,'crm-home-mobile.png'),fullPage:true});
+    await page.setViewportSize({width:1440,height:1000});
     await login(page, fixtures.clientA);
     await page.goto(base + '/painel?section=leads');
     phase = 'lead-creation';
