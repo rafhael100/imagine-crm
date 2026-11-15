@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Core\Authorization\Authorizer;
 use App\Core\Authorization\DenyByDefaultAuthorizer;
 use App\Core\Identity\GuardPrincipalSource;
+use App\Core\Identity\IdentityRuntimeProfile;
 use App\Core\Identity\GlobalIdentity;
 use App\Core\Identity\SessionAuthority;
 use App\Core\Identity\DatabaseSessionAuthority;
@@ -27,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         // F0: politica de autorizacao sempre nega ate contratos CORE/SEG.
         $this->app->bind(Authorizer::class, DenyByDefaultAuthorizer::class);
         // Candidate profile is disabled by default and can never run in production.
-        if (config('identity.experimental') && $this->app->environment('local', 'testing')) {
+        if (IdentityRuntimeProfile::enabled()) {
             config([
                 'auth.guards.crm_identity' => ['driver' => 'session', 'provider' => 'crm_global_identities'],
                 'auth.providers.crm_global_identities' => ['driver' => 'eloquent', 'model' => GlobalIdentity::class],
@@ -58,13 +59,13 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(SessionAuthority::class, DatabaseSessionAuthority::class);
         $this->app->bind(GuardPrincipalSource::class, function ($app) {
-            if (!config('identity.experimental') || !$app->environment('local', 'testing')) {
+            if (!IdentityRuntimeProfile::enabled()) {
                 return new GuardPrincipalSource();
             }
             return GuardPrincipalSource::fromConfiguration($app['auth'], $app['config'], $app->make(SessionAuthority::class));
         });
         $this->app->bind(ExperimentalAuthenticator::class, function ($app) {
-            if (!config('identity.experimental') || !$app->environment('local', 'testing')
+            if (!IdentityRuntimeProfile::enabled()
                 || config('session.driver') === 'cookie'
                 || (config('session.driver') === 'array' && !$app->environment('testing'))) {
                 throw new \LogicException('Experimental server-side authentication only.');

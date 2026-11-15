@@ -8,7 +8,7 @@
     ".github/workflows/ci-postgresql-rls.yml": "b7f2279860aae88dd75d568ce6e42d6908203c3235aae4a62629e3c967d7ce4f",
     "scripts/ci/rehearse-crm-full-schema-restore.sh": "517e741a9079215be30a1185cf294f25828ca45014994b0b11e2630940bd033a",
     "scripts/ci/rehearse-crm-iam-redis-session.sh": "2efd4cbd4eedd1294e82e29edb610053e137b33c19a18d1bdabd00c675b5be6b",
-    "app/Core/Identity/DatabaseSessionAuthority.php": "c075682241f0377ec632ced5885b132b8ff7e553cf79cd39abfb44583a42e223",
+    "app/Core/Identity/DatabaseSessionAuthority.php": "c5471ec61aadb2f194fcc447d064d0a45dc6f0f0bb877b60fa4fafb447c2964d",
     "app/Core/Identity/ExperimentalAuthenticator.php": "080280bc0cd1662390998219c752daf1c0ccae7bc62e6661f07e9fc2f0f7080f",
     "app/Core/Identity/GuardPrincipalSource.php": "1c07b7c78d55e212bc7174aa03c15df6b36f2eab1f74b4816d4a7ca24ee0eef9",
     "app/Core/Plans/LaboratoryAtomicOtpTrialEnrollment.php": "0774f5c4a3f449aa09e235dda42b08ebb9e2162c58a79c92d65a411de5519365",
@@ -30,6 +30,8 @@
     "docs/desenvolvimento/CRM-SITES-F401-original-portal-interop-ci.md",
     "tests/Feature/PostgresSitesProvisioningF399Test.php",
     "tests/Labs/leads/site-portal-s2s-inbox-ci.sql",
-    "tests/Labs/leads/site-provisioning-authority-ci.sql"
+    "tests/Labs/leads/site-provisioning-authority-ci.sql",
+    "app/Core/Identity/IdentityRuntimeProfile.php",
+    "tests/Unit/IdentityPrivateStagingProfileTest.php"
   ]
 }

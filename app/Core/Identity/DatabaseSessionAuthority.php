@@ -24,7 +24,7 @@ final readonly class DatabaseSessionAuthority implements SessionAuthority
 
     public function transaction(Closure $operation): mixed
     {
-        if (!config('identity.experimental') || !app()->environment('local', 'testing')
+        if (!IdentityRuntimeProfile::enabled()
             || $this->db->transactionLevel() !== 0) {
             throw new LogicException('Isolated IAM transaction required.');
         }
