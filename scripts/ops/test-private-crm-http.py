@@ -295,6 +295,18 @@ def main():
     a.post('/leads/'+other,{'version':1,'stage':'lost'})
     a.post('/leads/'+other,{'version':2,'stage':'qualified'},expected=422)
     check('TASK_TESTE_AUTO_PROPOSAL' in a.get('/painel?section=tasks'),'proposal automation missing')
+    report=a.get('/painel?section=reports')
+    check('data-report-methodology="imagine"' in report,
+          'Imagine 3-pillar report missing')
+    check('data-report-visits="unavailable"' in report,
+          'traffic visits must never be fabricated')
+    check('data-report-leads="3"' in report and
+          'data-report-clients="1"' in report,
+          'report must reflect tenant-scoped persisted leads and won deals')
+    check('data-report-conversion="33.3"' in report,
+          'won-per-lead ratio must match tenant-scoped won leads')
+    check('não contratos, pagamentos ou clientes reais' in report,
+          'won deals must not be presented as real paying customers')
     print('PASS proposal → won/lost → terminal state protection → proposal follow-up task')
     exported=a.get('/exportar')
     check(',won,' in exported and ',lost,' in exported,'exported sales stages missing')
