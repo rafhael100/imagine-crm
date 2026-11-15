@@ -147,7 +147,7 @@ final readonly class AiaPgHumanDelegationWitnessLab
         string $expectedTenant,
         int $now,
         AiaTrustedPublicKeySource $keyring,
-        AiaPgNonceCandidateLedger $nonceLedger,
+        AiaNonceClaimSource $nonceLedger,
         AiaPgSessionContinuityLab $sessionContinuity,
         PostgresActiveMembershipStore $memberships,
     ): bool {
