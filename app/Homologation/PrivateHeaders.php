@@ -36,6 +36,12 @@ final class PrivateHeaders
         $causes=[];
         for($i=0;$error && $i<4;$i++,$error=$error->getPrevious()) {
             $item=['type'=>$error::class,'source'=>basename($error->getFile()),'line'=>$error->getLine()];
+            if (preg_match('/\A[A-Z0-9]{5}\z/D',(string)$error->getCode())) $item['code']=(string)$error->getCode();
+            foreach($error->getTrace() as $frame) {
+                if (isset($frame['file']) && str_contains($frame['file'],'/app/Homologation/')) {
+                    $item['origin']=basename($frame['file']).':'.($frame['line']??0);break;
+                }
+            }
             if (preg_match('/Undefined variable \$([A-Za-z0-9_]+)/',$error->getMessage(),$match)) $item['undefined']=$match[1];
             $causes[]=$item;
         }

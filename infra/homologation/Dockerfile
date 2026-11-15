@@ -6,7 +6,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev libon
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-interaction --prefer-dist --no-progress
+RUN for attempt in 1 2 3; do \
+      if composer install --no-dev --no-scripts --no-interaction --prefer-dist --no-progress; then exit 0; fi; \
+      sleep 2; \
+    done; exit 1
 COPY . .
 RUN composer dump-autoload --no-scripts --optimize \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
