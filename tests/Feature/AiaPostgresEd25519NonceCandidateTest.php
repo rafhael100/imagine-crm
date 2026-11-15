@@ -1146,7 +1146,8 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
             subject varchar(90) NOT NULL,
             enabled boolean NOT NULL,
             revoked_at bigint NULL,
-            revision integer NOT NULL
+            revision integer NOT NULL,
+            lock_marker smallint NOT NULL DEFAULT 0
         )');
         $admin->statement('CREATE TABLE public.aia_lab_ed25519_service_keys (
             issuer varchar(90) NOT NULL,
@@ -1387,13 +1388,125 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
             $this->assertSame(0,$keyDb->transactionLevel());
             $this->assertSame(0,$nonceDb->transactionLevel());
 
+            // F243: separate scoped role can lock a trusted binding only.
+            // Its fake UPDATE(lock_marker) right allows SELECT FOR UPDATE;
+            // RLS WITH CHECK(false) prohibits any effective UPDATE.
+            $admin->statement("CREATE ROLE crm_aia_peer_lock_ci LOGIN
+                PASSWORD 'f243-disposable-role'
+                NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS");
+            $createdRoles[] = 'crm_aia_peer_lock_ci';
+            $admin->statement('GRANT CONNECT ON DATABASE imagine_crm_ci
+                TO crm_aia_peer_lock_ci');
+            $admin->statement('GRANT USAGE ON SCHEMA public
+                TO crm_aia_peer_lock_ci');
+            $admin->statement('GRANT SELECT ON TABLE
+                public.aia_lab_service_tenant_bindings
+                TO crm_aia_peer_lock_ci');
+            $admin->statement('GRANT UPDATE (lock_marker) ON TABLE
+                public.aia_lab_service_tenant_bindings
+                TO crm_aia_peer_lock_ci');
+            $admin->statement('CREATE POLICY aia_f243_lock ON
+                public.aia_lab_service_tenant_bindings FOR UPDATE
+                TO crm_aia_peer_lock_ci
+                USING (true) WITH CHECK (false)');
+            $admin->statement('CREATE POLICY aia_f243_read ON
+                public.aia_lab_service_tenant_bindings FOR SELECT
+                TO crm_aia_peer_lock_ci USING (true)');
+            $scoped = $settings;
+            $scoped['username'] = 'crm_aia_peer_lock_ci';
+            $scoped['password'] = 'f243-disposable-role';
+            config(['database.connections.aia_f243_peer_lock'=>$scoped]);
+            config(['database.connections.aia_f243_revoker'=>$settings]);
+            DB::purge('aia_f243_peer_lock');
+            DB::purge('aia_f243_revoker');
+            $lockDb = DB::connection('aia_f243_peer_lock');
+            $revoker = DB::connection('aia_f243_revoker');
+            $this->assertNotSame(
+                $lockDb->selectOne('SELECT pg_backend_pid() AS pid')->pid,
+                $revoker->selectOne('SELECT pg_backend_pid() AS pid')->pid
+            );
+            $locked = new \App\Support\Synthetic\AiaPgLockedServiceTenantBindingLab(
+                $lockDb
+            );
+            $raceObserved = false;
+            $this->assertSame(
+                ['tenant_ref'=>$tenantA,'organization_id'=>$orgA],
+                $locked->withinLockedBinding(
+                    $keyA,
+                    function (array $trusted) use (
+                        $revoker,$keyA,&$raceObserved
+                    ): bool {
+                        $this->assertSame('SYNTHETIC_TENANT_A',$trusted['tenant_ref']);
+                        $revoker->statement("SET lock_timeout = '180ms'");
+                        try {
+                            // Real competing transaction must block on the
+                            // exact row currently used for verification.
+                            $revoker->table('public.aia_lab_service_tenant_bindings')
+                                ->where('key_id',$keyA)
+                                ->update(['enabled'=>false]);
+                        } catch (\Throwable) {
+                            $raceObserved = true;
+                        } finally {
+                            $revoker->statement('RESET lock_timeout');
+                        }
+                        return $raceObserved;
+                    }
+                )
+            );
+            $this->assertTrue($raceObserved);
+            $this->assertSame(0,$lockDb->transactionLevel());
+            $this->assertSame(0,$revoker->transactionLevel());
+
+            [$stableClaims,$stableSig] = $sign(
+                $reqA,$tenantA,'SYNTHETIC_F243_STABLE_A',$secretA,$keyA
+            );
+            $this->assertSame(
+                ['tenant_ref'=>$tenantA,'organization_id'=>$orgA],
+                \App\Support\Synthetic\AiaPgTenantBoundServiceProofLab::
+                    verifyWithStableBinding(
+                        $reqA,$stableClaims,$stableSig,$now,
+                        $locked,$keyring,$nonce
+                    )
+            );
+            $this->assertSame(3,(int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+            $this->assertSame(1,$revoker->table(
+                'public.aia_lab_service_tenant_bindings'
+            )->where('key_id',$keyA)->update(['enabled'=>false]));
+            [$afterRevocation,$afterSig] = $sign(
+                $reqA,$tenantA,'SYNTHETIC_F243_DENY_AFTER_REVOKE',
+                $secretA,$keyA
+            );
+            $this->assertNull(
+                \App\Support\Synthetic\AiaPgTenantBoundServiceProofLab::
+                    verifyWithStableBinding(
+                        $reqA,$afterRevocation,$afterSig,$now,
+                        $locked,$keyring,$nonce
+                    )
+            );
+            $this->assertSame(3,(int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+            $this->assertSame(0,$lockDb->transactionLevel());
+            $this->assertSame(0,$revoker->transactionLevel());
+
+            // The lock role cannot change the trust row's real fields.
+            $badMutation = false;
+            try {
+                $lockDb->table('public.aia_lab_service_tenant_bindings')
+                    ->update(['tenant_ref'=>$tenantB]);
+            } catch (\Throwable) {
+                $badMutation = true;
+            }
+            $this->assertTrue($badMutation);
+
             self::assertDenial(
                 \App\Support\Synthetic\AiaPgTenantBoundServiceProofLab::inspectDenied(
                     $reqA,$revokedClaims,$revokedSig,$now,$binding,$keyring,$nonce
                 )
             );
         } finally {
-            foreach (['aia_f242_binding','aia_f242_keyring','aia_f242_nonce']
+            foreach (['aia_f242_binding','aia_f242_keyring','aia_f242_nonce',
+                'aia_f243_peer_lock','aia_f243_revoker']
                 as $name) {
                 DB::disconnect($name);
                 DB::purge($name);
