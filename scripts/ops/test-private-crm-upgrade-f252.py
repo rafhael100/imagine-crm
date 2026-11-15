@@ -31,12 +31,14 @@ def approved() -> dict:
 
 
 def checks() -> dict:
-    return {"total_count": 3, "check_runs": [
+    runs = [
         {"name": "real-private-http", "status": "completed", "conclusion": "success"},
         {"name": "Exact-SHA private maintenance scope / no deploy / manual review",
          "status": "completed", "conclusion": "success"},
         {"name": "private-upgrade-static-policy", "status": "completed", "conclusion": "success"},
-    ]}
+    ] + [{"name": "other-required-check-" + str(n), "status": "completed",
+          "conclusion": "success"} for n in range(19)]
+    return {"total_count": 22, "check_runs": runs}
 
 
 def workflow() -> dict:
@@ -108,6 +110,10 @@ class UpgradeGuardTests(unittest.TestCase):
         status = checks()
         status["total_count"] = 101
         self.reject(lambda: module.validate_checks(workflow(), status, NEW))
+        status = checks()
+        status["check_runs"].pop()
+        status["total_count"] = 21
+        self.reject(lambda: module.validate_checks(workflow(), status, NEW))
 
     def test_operator_only_no_automated_ssh_or_production(self):
         source = SCRIPT.read_text()
@@ -117,6 +123,7 @@ class UpgradeGuardTests(unittest.TestCase):
         self.assertIn("commercial_production_go", source)
         self.assertIn("MANUAL_APPROVAL_REQUIRED", source)
         self.assertIn("backup_and_restore", source)
+        self.assertIn("--untracked-files=all", source)
         self.assertIn("review_access", source)
 
 
