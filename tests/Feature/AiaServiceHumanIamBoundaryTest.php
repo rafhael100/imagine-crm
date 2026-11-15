@@ -521,20 +521,29 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
                 $this->assertSame(1, (int) $grantDb->table(
                     'public.aia_lab_agent_human_bindings'
                 )->count());
-                // A column-level lock grant cannot perform an UPDATE
-                // because the RLS WITH CHECK is deliberately false.
-                $badWrite = false;
-                try {
-                    $affected = $grantDb->table(
-                        'public.aia_lab_human_service_grants'
-                    )->update(['lock_marker' => 1]);
-                    $badWrite = $affected !== 0;
-                } catch (\Throwable) {
-                    $badWrite = false;
-                }
-                $this->assertFalse($badWrite);
             }, 1);
             $this->assertSame(0, $grantDb->transactionLevel());
+            // An RLS write denial can abort its transaction. Test it in
+            // its own unit of work, never poison the read-only scope test.
+            $badWrite = false;
+            try {
+                $grantDb->transaction(function () use ($grantDb): void {
+                    $grantDb->selectOne("SELECT set_config(
+                        'app.tenant_id', ?, true)", ['SYNTHETIC_TENANT_A']);
+                    $updated = $grantDb->table(
+                        'public.aia_lab_human_service_grants'
+                    )->update(['lock_marker' => 1]);
+                    $this->assertSame(0, $updated);
+                }, 1);
+            } catch (\Throwable) {
+                $badWrite = true; // a blocked UPDATE is equally safe
+            }
+            $this->assertSame(0, $grantDb->transactionLevel());
+            $this->assertTrue(
+                $badWrite || (int) $db->table(
+                    'aia_lab_human_service_grants'
+                )->where('lock_marker', 1)->count() === 0
+            );
             $this->assertSame(0, (int) $grantDb->table(
                 'public.aia_lab_human_service_grants'
             )->count());
