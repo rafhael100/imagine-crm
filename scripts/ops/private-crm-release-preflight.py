@@ -38,6 +38,9 @@ SCOPE = {
     "scripts/ops/test-private-crm-release-preflight.py": "ci_evidence",
     "tests/Feature/AgentsPrivateIngressCandidateTest.php": "ci_evidence",
     "tests/Unit/OpportunityScenarioTest.php": "ci_evidence",
+    "scripts/ops/private-crm-upgrade-f252.py": "operator_script_review",
+    "scripts/ops/test-private-crm-upgrade-f252.py": "ci_evidence",
+    ".github/workflows/ci-private-crm-upgrade-f252.yml": "ci_evidence",
 }
 
 
@@ -69,7 +72,7 @@ def classify(changes: list[tuple[str, str]]) -> dict:
         "deploy_approved": False,
         "no_deploy_executed": True,
         "requires": [
-            "17/17 exact-head CI checks including F248/F249/F250 and private E2E",
+            "all exact-head CI checks including F248/F249/F250, F251, F252 and private E2E",
             "independent security and operational review",
             "protected existing VPS revision and rollback snapshot",
             "encrypted tested backup and restore",
