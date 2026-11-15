@@ -32,6 +32,12 @@ $records=json_decode(file_get_contents($file),true,512,JSON_THROW_ON_ERROR);
 if ($mode==='revoke') {
     $db->beginTransaction();
     foreach($records as $record) {
+        if (!isset($record['identity'])) {
+            $lookup=$db->prepare('SELECT identity_id FROM crm_auth_credentials WHERE login_key=?');
+            $lookup->execute([hash('sha256',$record['login'])]);
+            $record['identity']=$lookup->fetchColumn();
+            if (!$record['identity']) throw new RuntimeException('Fixture identity absent.');
+        }
         privateCrmSql($db,"UPDATE crm_auth_credentials SET status='revoked',version=version+1 WHERE identity_id=?",[$record['identity']]);
         privateCrmSql($db,"UPDATE crm_auth_sessions SET state='revoked' WHERE identity_id=?",[$record['identity']]);
         privateCrmSql($db,"UPDATE crm_private_accounts SET status='suspended' WHERE identity_id=?",[$record['identity']]);

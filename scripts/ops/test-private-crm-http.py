@@ -205,6 +205,34 @@ def main():
     check(len(leads(a))==3,'CSV import not persisted')
     print('PASS lead create/edit protections → Kanban versioning → automation → tasks → reports → CSV')
 
+    a.get('/painel?section=funnels')
+    a.post('/funis',{'title':'FUNIL_TESTE_SEGUNDO'})
+    check(len(re.findall('data-funnel-id=',a.get('/painel?section=funnels')))==2,'two funnels not persisted')
+    a.post('/funis',{'title':'FUNIL_TESTE_TERCEIRO'},expected=409)
+    a.get('/painel?section=team')
+    page,_=a.post('/equipe/convidar',{},expected=200)
+    invitation=re.search(r'data-test="invitation-code">([^<]+)',page).group(1).strip()
+    member=Client()
+    member.get('/convite')
+    teammate={'login':'lab-member-'+suffix,'password':secrets.token_hex(16)}
+    member.post('/convite',dict(teammate,invitation=invitation,email=teammate['login']+'@example.test',terms='simulated'))
+    page=member.get('/cadastro/codigo')
+    code=re.search(r'data-test="otp-code">\s*([0-9]{6})',page).group(1)
+    member.post('/cadastro/verificar',{'code':code})
+    page=member.get('/cadastro/mfa')
+    teammate['secret']=re.search(r'data-test="setup-secret">\s*([A-Z2-7]{32})',page).group(1)
+    STEPS[teammate['login']]=int(time.time())//30
+    page,_=member.post('/cadastro/concluir',{'code':totp(teammate['secret'])},expected=200)
+    teammate['recovery']=re.findall(r'<div>([a-f0-9]{24})</div>',page)
+    check(title in member.login(teammate),'invited member cannot see same company')
+    member.post('/funis',{'title':'FUNIL_TESTE_DENIED'},expected=403)
+    member.post('/equipe/convidar',{},expected=403)
+    member.get('/admin',expected=403)
+    a.get('/painel?section=team');a.post('/equipe/convidar',{},expected=409)
+    FIXTURES['member']=teammate
+    VAULT.write_text(json.dumps(FIXTURES));VAULT.chmod(0o600)
+    print('PASS two-funnel quota → scoped single-use invitation → second user → owner/member permission boundaries')
+
     for target in ['/painel?tenant_id=aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','/painel?role=admin']:
         a.get(target,expected=400)
     a.request('/painel',expected=400,headers={'X-Role':'admin'})

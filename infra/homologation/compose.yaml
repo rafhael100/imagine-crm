@@ -113,7 +113,10 @@ services:
     entrypoint: [php]
     volumes: ["${CRM_PRIVATE_DATA_DIR:?Required protected data directory}:/private"]
     networks: [internal]
-    tmpfs: [/tmp]
+    tmpfs:
+      - /tmp
+      - /var/www/html/storage:uid=0,gid=0,mode=0700
+      - /var/www/html/bootstrap/cache:uid=0,gid=0,mode=0700
     security_opt: ["no-new-privileges:true"]
     cap_drop: [ALL]
 networks:

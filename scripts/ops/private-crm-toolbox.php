@@ -10,6 +10,12 @@ if (PHP_SAPI!=='cli' || getenv('CRM_PRIVATE_OPERATOR_MODE')!=='tools-only') {
     throw new RuntimeException('Private operator CLI only.');
 }
 require dirname(__DIR__,2).'/vendor/autoload.php';
+foreach (['storage/framework/cache','storage/framework/sessions','storage/framework/views','storage/logs','bootstrap/cache'] as $path) {
+    $directory=dirname(__DIR__,2).'/'.$path;
+    if (!is_dir($directory) && !mkdir($directory,0700,true) && !is_dir($directory)) {
+        throw new RuntimeException('Private tool cache unavailable.');
+    }
+}
 $privateApp=require dirname(__DIR__,2).'/bootstrap/app.php';
 $privateApp->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 if (!Environment::enabled()) throw new RuntimeException('Private operator profile required.');
