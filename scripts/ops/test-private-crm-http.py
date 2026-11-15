@@ -168,6 +168,32 @@ def main():
               'Imagine methodology translations/pillars missing')
         check('href="#metodologia"' in localized,
               'Imagine methodology navigation missing')
+
+    # Anonymous Imagine 3-pillar calculator: no contact capture, session
+    # provisioning, outbound providers or probability promise.
+    scenario=a.get('/?lang=pt&visits=2500&lead_rate=8&client_rate=13')
+    check('data-home-section="imagine-scenario"' in scenario,
+          'Imagine commercial calculator missing')
+    check('data-scenario-visits="2500"' in scenario,
+          'weekly visit scenario not reflected')
+    check('data-scenario-leads="200"' in scenario,
+          'visit-to-lead scenario calculation incorrect')
+    check('data-scenario-clients="26"' in scenario,
+          'lead-to-customer scenario calculation incorrect')
+    check('data-scenario-form="imagine"' in scenario,
+          'anonymous estimate form missing')
+    for lang in ('pt','en','es'):
+        localized=a.get('/?lang='+lang+'&visits=1000&lead_rate=4&client_rate=15')
+        check('data-scenario-leads="40"' in localized and
+              'data-scenario-clients="6"' in localized,
+              'localized scenario result missing')
+    malformed=a.get('/?lang=pt&visits=-1&lead_rate=10000&client_rate=1e2')
+    check('data-scenario-visits="1000"' in malformed and
+          'data-scenario-leads="40"' in malformed and
+          'data-scenario-clients="6"' in malformed,
+          'invalid scenario input must use safe defaults')
+    print('PASS Imagine Visits → Leads → Customers PII-free scenario PT/EN/ES')
+
     initial=a.get('/cadastro')
     document=re.search(r'<option selected>([0-9]{14})</option>',initial)
     if not document: document=re.search(r'<option[^>]*>([0-9]{14})</option>',initial)
