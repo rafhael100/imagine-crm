@@ -51,6 +51,12 @@ autenticada: quantidade de leads fictícios, negócios marcados
 sem integração real de analytics não pode haver números fabricados.
 A etapa `won` não prova contrato, pagamento ou cliente real.
 
+O painel também lista um resumo **por funil da mesma empresa**, com
+total de leads, ganhos e percentual de ganhos entre os leads daquele funil.
+Um funil vazio apresenta zero, sem divisão por zero, e não são consultadas
+oportunidades de outras organizações. O roteiro HTTP cria dois funis e
+valida os dois resultados contra o estado real no PostgreSQL fictício.
+
 O teste HTTP completo na suíte privada valida a calculadora
 nos três idiomas, as proteções de entrada e o resultado persistido
 do relatório após mover leads pelo funil; o teste Unit
