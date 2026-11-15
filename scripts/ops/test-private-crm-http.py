@@ -224,7 +224,8 @@ def main():
     STEPS[teammate['login']]=int(time.time())//30
     page,_=member.post('/cadastro/concluir',{'code':totp(teammate['secret'])},expected=200)
     teammate['recovery']=re.findall(r'<div>([a-f0-9]{24})</div>',page)
-    check(title in member.login(teammate),'invited member cannot see same company')
+    check(primary['label'] in member.login(teammate),'invited member cannot see same company')
+    check(title in member.get('/painel?section=leads'),'invited member cannot see same company leads')
     member.post('/funis',{'title':'FUNIL_TESTE_DENIED'},expected=403)
     member.post('/equipe/convidar',{},expected=403)
     member.get('/admin',expected=403)

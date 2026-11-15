@@ -46,8 +46,12 @@ if mode=='prepare':
     run(compose+['exec','-T','web','nginx','-s','reload'])
     run(compose+['exec','-T','app','php','artisan','view:cache'])
     run(['python3','scripts/ops/backup-private-crm.py',str(DATA/'backups')])
+    (PROTECTED/'prepare-verified.json').write_text(json.dumps({'sha':sha,'restore':'passed','scope':'synthetic-v1'})+'\n')
     print('PRIVATE PREPARE PASS: isolated loopback application and verified encrypted restore; ingress unchanged.')
 elif mode=='verify':
+    marker=PROTECTED/'prepare-verified.json'
+    if not marker.is_file() or json.loads(marker.read_text())!={'sha':sha,'restore':'passed','scope':'synthetic-v1'}:
+        raise SystemExit('Exact revision needs a verified initial restore before persistent fixtures.')
     if not (DATA/'fixtures.json').exists():
         run(compose+['run','--rm','-T','tools','scripts/ops/seed-private-crm-fixtures.php','seed'])
     run(['python3','scripts/ops/test-private-crm-http.py',str(DATA/'fixtures.json')])

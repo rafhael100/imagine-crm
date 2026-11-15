@@ -1,6 +1,7 @@
 // Independent Chromium tests against the ephemeral loopback application only.
 const fs = require('node:fs');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const { chromium } = require(path.join(process.env.CRM_PRIVATE_PLAYWRIGHT_DIR, 'node_modules/playwright'));
 const vault = process.argv[2];
 if (fs.statSync(vault).mode & 0o077) throw Error('Protected fixture vault required');
@@ -39,10 +40,11 @@ async function width(page) {
     await login(page, fixtures.clientA);
     await page.goto(base + '/painel?section=leads');
     phase = 'lead-creation';
-    await page.locator('form[action="/leads"] [name=title]').fill('LEAD_TESTE_CHROMIUM');
+    const title='LEAD_TESTE_CHROMIUM_'+crypto.randomBytes(4).toString('hex').toUpperCase();
+    await page.locator('form[action="/leads"] [name=title]').fill(title);
     await page.locator('form[action="/leads"] [name=value_cents]').fill('250000');
     await Promise.all([page.waitForURL('**/painel?section=leads'), page.locator('form[action="/leads"] button').click()]);
-    check(await page.getByText('LEAD_TESTE_CHROMIUM', { exact: true }).isVisible(), 'Browser lead creation missing');
+    check(await page.getByText(title, { exact: true }).isVisible(), 'Browser lead creation missing');
     for (const section of ['overview', 'leads', 'funnels', 'kanban', 'tasks', 'reports', 'team', 'automation', 'settings', 'billing']) {
       phase = 'client-section-' + section;
       const response = await page.goto(base + '/painel?section=' + section);
@@ -60,7 +62,7 @@ async function width(page) {
     await login(adminPage, fixtures.admin, true);
     phase = 'administrator-desktop';
     check(await adminPage.locator('[data-account-id]').count() >= 3, 'Administrator accounts missing');
-    check(!(await adminPage.content()).includes('LEAD_TESTE_CHROMIUM'), 'Administrator exposed tenant lead content');
+    check(!(await adminPage.content()).includes(title), 'Administrator exposed tenant lead content');
     await width(adminPage);
     await adminPage.screenshot({ path: path.join(output, 'crm-admin-desktop.png'), fullPage: true });
     await adminPage.setViewportSize({ width: 390, height: 844 });
