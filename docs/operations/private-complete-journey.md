@@ -121,3 +121,15 @@ A CI preserva apenas PNGs sem credenciais das telas comerciais e dos painéis de
 Os relatórios e cofres da VPS não são arquivos públicos. O operador deve consultar os JSONs protegidos
 `prepare-verified`, `http-verified`, `access-verified`, `published`, `ingress-rollback-verified` e `ingress-resume-verified`
 para afirmar o estado efetivamente alcançado; código preparado não equivale a publicação concluída.
+
+## F248 — preparação de interoperabilidade com o Agents sem abrir rota
+
+A integração Ed25519 de laboratório está na [PR #602](https://github.com/rafhael100/imagine-crm/pull/602), de uma árvore F0 sem rotas comerciais. Esta PR privada possui rotas legítimas de cliente e administrador: **não é correto fundir as duas árvores diretamente**, nem aplicar os gates de rota F245 da F0 ao CRM navegável.
+
+A F248 inicia uma portabilidade explícita e pequena, mantendo o limite **NO-GO**:
+`app/Homologation/AgentsSignedIngressCandidate.php` adapta o **envelope de entrada sintética, sem autorização**, sem definir rota, binding do container, token, credencial, grants, migrations ou operações de lead. Em runtime privado e produção, a callback nunca é invocada. Mesmo com a flag exata da CI, um envelope sintético com assinatura válida ou inválida sempre recebe **HTTP 404**, `DENIED_OR_NOT_FOUND`, `projection=null`, `real_authorization=false`, `external_calls=0`, cache desabilitado e nenhum cookie. Cabeçalhos de role, organização, tenant ou autorização são rejeitados antes da callback, impedindo que valores externos sejam confundidos com identidade.
+
+A workflow `ci-crm-aia-f248-private.yml` baixa o verificador **original** do Imagine AI Agents na revisão imutável
+`fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba` (não copia nem altera o algoritmo original). Confere a SHA, assina uma mensagem artificial com chave gerada deterministicamente só para teste e exercita a primeira prova, replay, alteração de conteúdo, assinatura forjada, cabeçalhos conflitantes e callback com exceção. O teste não registra rota no Laravel e verifica que nenhum endpoint real foi publicado.
+
+**Essa entrega não inclui:** chave privada real, mTLS, cadastro operacional de peer, origem confiável da empresa, nonce PG distribuído, consentimento LGPD, auditoria de dados reais, política de acesso a leads, deploy ou `ALLOW`. F242–F247 continuam condicionadas à revisão/portabilidade individual e à autorização SEG/CORE/IAM/DBA/LGPD; não há nenhuma ativação da integração operacional.
