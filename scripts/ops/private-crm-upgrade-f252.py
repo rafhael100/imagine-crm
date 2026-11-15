@@ -91,7 +91,8 @@ def validate_checks(workflow: dict, checks: dict, sha: str) -> None:
             "All exact-commit checks must be green.")
     names = {c.get("name") for c in items}
     for name in ("real-private-http", "Exact-SHA private maintenance scope / no deploy / manual review",
-                 "private-upgrade-static-policy"):
+                 "private-upgrade-static-policy",
+                 "private-f253-post-switch-canary"):
         require(name in names, "Missing required private-upgrade check: " + name)
 
 
@@ -207,6 +208,14 @@ def backup_and_restore(envfile: Path) -> None:
          env=environment)
 
 
+def verify_candidate_canary() -> None:
+    """F253: verify real loopback UI, fictional estimate and Agents NO-GO
+    after app/web switch, before recording candidate as the published SHA.
+    No credentials, migrations, outbound HTTP or new routes.
+    """
+    call(["python3", "scripts/ops/private-crm-f253-canary.py"])
+
+
 def review_access(envfile: Path) -> None:
     environment = dict(os.environ, CRM_PRIVATE_ENV_FILE=str(envfile), CRM_PRIVATE_PROJECT=PROJECT)
     call(["python3", "scripts/ops/test-private-crm-http.py",
@@ -254,6 +263,7 @@ def apply(ci_id: str, marker: dict, old_text: str, current: str, candidate: str)
         install(new_env, build=True)
         check_live_image(candidate, new_env)
         local_smoke()
+        verify_candidate_canary()
         review_access(new_env)
         protected_https()
         backup_and_restore(new_env)
