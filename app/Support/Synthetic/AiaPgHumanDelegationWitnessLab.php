@@ -17,8 +17,10 @@ use ImagineAI\MockBridge\MockCrmReadRequest;
  * A later signed service probe rechecks grant, server mapping and current
  * membership version under locks. Neither method grants any CRM read.
  *
- * Requires a privileged ephemeral fixture connection ONLY to manage test
- * tables; it is not a runtime/provisioning pattern. No production routes,
+ * The scoped PG runtime role may SELECT tenant-bound mappings and grants and
+ * INSERT new grants; no UPDATE of business/security fields is possible.
+ * A narrowly scoped UPDATE(lock_marker) is needed for row locks and is
+ * blocked for actual writes by RLS. No production routes,
  * tables, key material, IAM tokens, PII or customer effects.
  */
 final readonly class AiaPgHumanDelegationWitnessLab
@@ -58,6 +60,12 @@ final readonly class AiaPgHumanDelegationWitnessLab
                 $human, $sessionAuthority, $memberships, $organizationId,
                 $request, $canonicalRequest, $keyId, $now
             ): bool {
+                // Tenant is only a selector; membership and the CRM-owned
+                // organization binding must independently agree later.
+                $this->fixture->selectOne(
+                    "SELECT set_config('app.tenant_id', ?, true)",
+                    [$request['tenant_ref']],
+                );
                 $binding = $this->binding(
                     $request['tenant_ref'], $organizationId,
                     $request['principal_ref'], $keyId, true,
@@ -171,6 +179,10 @@ final readonly class AiaPgHumanDelegationWitnessLab
                 $request, $canonicalRequest, $claims, $expectedTenant,
                 $now, $sessionContinuity, $memberships
             ): bool {
+                $this->fixture->selectOne(
+                    "SELECT set_config('app.tenant_id', ?, true)",
+                    [$expectedTenant],
+                );
                 $grant = $this->fixture
                     ->table('public.aia_lab_human_service_grants')
                     ->where('tenant_ref', $expectedTenant)
@@ -273,9 +285,19 @@ final readonly class AiaPgHumanDelegationWitnessLab
             && preg_match('/\ASYNTHETIC_[A-Z0-9_]{1,80}\z/D', $value) === 1;
     }
 
+    /**
+     * F239: no privileged fixture connection can execute issuance/lookup.
+     * The dedicated CI runtime role can only:
+     * - SELECT tenant-visible binding/grant rows with FORCE RLS;
+     * - INSERT a new grant satisfying a restrictive WITH CHECK policy;
+     * - request row locks through UPDATE(lock_marker), a column whose
+     *   UPDATE policy deliberately rejects EVERY mutation.
+     * No read/write privileges on CRM IAM, memberships, leads, or audit.
+     */
     private static function labSafe(Connection $db): bool
     {
         if (getenv('AIA_F237_DELEGATION_LAB') !== 'true'
+            || getenv('AIA_F239_GRANT_ROLE_LAB') !== 'true'
             || getenv('GITHUB_ACTIONS') !== 'true'
             || getenv('GITHUB_REPOSITORY') !== 'rafhael100/imagine-crm'
             || getenv('APP_ENV') !== 'testing'
@@ -286,16 +308,61 @@ final readonly class AiaPgHumanDelegationWitnessLab
             || $db->getDriverName() !== 'pgsql'
             || $db->getDatabaseName() !== 'imagine_crm_ci'
             || $db->getConfig('host') !== '127.0.0.1'
-            || $db->getConfig('username') !== 'postgres'
+            || $db->getConfig('username') !== 'crm_aia_grant_ci'
             || $db->transactionLevel() !== 0) {
             return false;
         }
         try {
             $who = $db->selectOne(
-                'SELECT current_database() AS dbname, current_user AS username'
+                "SELECT current_database() AS dbname,
+                        current_user AS username,
+                        current_setting('app.tenant_id', true) AS inherited_tenant,
+                        current_setting('row_security') AS row_security,
+                        r.rolsuper, r.rolbypassrls, r.rolinherit, r.rolcreaterole,
+                        r.rolcreatedb
+                 FROM pg_roles r WHERE r.rolname=current_user"
             );
-            return $who && $who->dbname === 'imagine_crm_ci'
-                && $who->username === 'postgres';
+            if (!$who || $who->dbname !== 'imagine_crm_ci'
+                || $who->username !== 'crm_aia_grant_ci'
+                || $who->row_security !== 'on'
+                || $who->rolsuper || $who->rolbypassrls
+                || $who->rolinherit || $who->rolcreaterole
+                || $who->rolcreatedb
+                || ($who->inherited_tenant !== null
+                    && $who->inherited_tenant !== '')) {
+                return false;
+            }
+
+            $tables = $db->select(
+                "SELECT c.relname,
+                        c.relrowsecurity, c.relforcerowsecurity,
+                        pg_has_role(current_user, c.relowner, 'MEMBER') AS owns,
+                        has_table_privilege(current_user, c.oid, 'SELECT') AS can_select,
+                        has_table_privilege(current_user, c.oid, 'INSERT') AS can_insert,
+                        has_table_privilege(current_user, c.oid, 'DELETE') AS can_delete,
+                        has_column_privilege(current_user,c.oid,'lock_marker','UPDATE') AS can_lock,
+                        has_column_privilege(current_user,c.oid,'revoked_at','UPDATE') AS can_revoke
+                 FROM pg_class c
+                 WHERE c.oid IN (
+                    'public.aia_lab_agent_human_bindings'::regclass,
+                    'public.aia_lab_human_service_grants'::regclass
+                 )"
+            );
+            if (count($tables) !== 2) {
+                return false;
+            }
+            foreach ($tables as $table) {
+                if (!$table->relrowsecurity || !$table->relforcerowsecurity
+                    || $table->owns || !$table->can_select
+                    || $table->can_delete || !$table->can_lock
+                    || $table->can_revoke
+                    || ($table->relname === 'aia_lab_agent_human_bindings'
+                        ? $table->can_insert
+                        : !$table->can_insert)) {
+                    return false;
+                }
+            }
+            return true;
         } catch (\Throwable) {
             return false;
         }
