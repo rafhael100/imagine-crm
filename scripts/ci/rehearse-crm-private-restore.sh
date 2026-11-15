@@ -85,15 +85,24 @@ docker run --detach --rm --pull=never --network none \
 [[ "$(docker inspect -f '{{.HostConfig.NetworkMode}}' "$restorer")" == none ]] \
   || fail "restored server has external network access"
 
+# The official postgres image opens a TEMPORARY postmaster while initdb runs,
+# shuts it down, then execs the FINAL postgres server as PID 1. pg_isready alone
+# can succeed during that temporary window; a following CREATE ROLE then fails
+# with "database system is shutting down". Never treat that window as ready.
 ready=0
 for attempt in $(seq 1 30); do
-  if docker exec "$restorer" pg_isready -q -U crm_staging -d "$restore_db"; then
+  pid1="$(docker exec "$restorer" cat /proc/1/comm 2>/dev/null || true)"
+  if [[ "$pid1" == postgres ]] &&
+     docker exec "$restorer" pg_isready -q -U crm_staging -d "$restore_db" &&
+     [[ "$(docker exec "$restorer" psql -X -qAt -v ON_ERROR_STOP=1 \
+         -U crm_staging -d "$restore_db" \
+         -c 'SELECT current_database()' 2>/dev/null || true)" == "$restore_db" ]]; then
     ready=1
     break
   fi
   sleep 1
 done
-[[ "$ready" == 1 ]] || fail "separate restore server not ready"
+[[ "$ready" == 1 ]] || fail "final separate restore server not ready"
 
 # pg_dump archives objects, grants and policies but not cluster-global roles.
 # Provision this synthetic NOLOGIN role on the NEW isolated instance first.
