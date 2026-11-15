@@ -119,6 +119,63 @@ final class AiaPgTenantBoundServiceProofLab
         }
     }
 
+    /**
+     * F244: stable peer binding + stable CRM public key while consuming
+     * a nonce. Locks are acquired in deterministic order:
+     * service binding -> public key -> nonce INSERT.
+     * Returns only diagnostic identity, NEVER an authorization to read.
+     *
+     * @return ?array{tenant_ref:string,organization_id:string}
+     */
+    public static function verifyWithStableIdentity(
+        string $canonicalRequest,
+        string $canonicalClaims,
+        string $signatureBase64,
+        int $now,
+        AiaPgLockedServiceTenantBindingLab $bindings,
+        AiaPgLockedServiceKeyringLab $keyring,
+        AiaNonceClaimSource $nonces,
+    ): ?array {
+        try {
+            if ($canonicalRequest === '' || strlen($canonicalRequest) > 2048
+                || $canonicalClaims === '' || strlen($canonicalClaims) > 1024
+                || $signatureBase64 === '' || strlen($signatureBase64) > 128) {
+                return null;
+            }
+            $claims = json_decode($canonicalClaims,true,4,JSON_THROW_ON_ERROR);
+            if (!is_array($claims) || !is_string($claims['key_id'] ?? null)
+                || !is_string($claims['tenant_ref'] ?? null)
+                || json_encode(
+                    $claims,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                        | JSON_THROW_ON_ERROR
+                ) !== $canonicalClaims) {
+                return null;
+            }
+            return $bindings->withinLockedBinding(
+                $claims['key_id'],
+                static function (array $bound) use (
+                    $claims,$canonicalRequest,$canonicalClaims,
+                    $signatureBase64,$now,$keyring,$nonces
+                ): bool {
+                    if (!hash_equals($bound['tenant_ref'],$claims['tenant_ref'])) {
+                        return false;
+                    }
+                    return $keyring->withinLockedPublicKey(
+                        $claims['key_id'],$bound['tenant_ref'],
+                        static fn (array $trusted): bool =>
+                            AiaPgEd25519LabBridge::matchesLabFixture(
+                                $canonicalRequest,$canonicalClaims,
+                                $signatureBase64,$trusted,
+                                $bound['tenant_ref'],$now,$nonces
+                            )
+                    );
+                }
+            );
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
     /** @return array{contract:string,state:string,projection:null,real_authorization:false,external_calls:0} */
     public static function inspectDenied(
         string $canonicalRequest,
