@@ -24,7 +24,11 @@ final class Controller
     private function enrollment(): Enrollment { return app(Enrollment::class); }
     private function auth(): ExperimentalAuthenticator { return app(ExperimentalAuthenticator::class); }
 
-    public function home(Request $r) { return $this->page($r,'home'); }
+    public function home(Request $r) {
+        return $this->page($r,'home',[
+            'opportunity_scenario'=>OpportunityScenario::fromQuery($r->query()),
+        ]);
+    }
     public function signup(Request $r) {
         $plan=$r->query('plan',$r->session()->get('crm.private.plan','basic'));
         if (!in_array($plan,['basic','essential','professional','enterprise'],true)) $plan='basic';
