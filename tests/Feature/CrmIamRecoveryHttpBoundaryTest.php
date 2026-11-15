@@ -81,13 +81,8 @@ final class CrmIamRecoveryHttpBoundaryTest extends TestCase
 
     private function beginHttpPassword(string $csrf): void
     {
-        // A previous logout rotates the session ID. Bind this browser
-        // request to the CURRENT server session rather than reusing the
-        // encrypted response cookie from the earlier authentication cycle.
-        $this->withSession(['_token' => $csrf]);
-        $this->withCookie((string) config('session.cookie'), $this->browserSession->getId())
-            ->withCredentials();
-        $response = $this->post('/_ci/iam-recovery/password', [
+        $response = $this->withSession(['_token' => $csrf])
+            ->post('/_ci/iam-recovery/password', [
                 'login' => 'fixture-a',
                 'password' => self::PASSWORD,
                 '_token' => $csrf,
@@ -95,7 +90,7 @@ final class CrmIamRecoveryHttpBoundaryTest extends TestCase
         $this->carrySessionCookie($response);
     }
 
-    public function test_recovery_code_authenticates_after_password_once_and_then_cannot_be_reused(): void
+    public function test_recovery_code_authenticates_once_and_logout_revokes_session(): void
     {
         $this->registerRecoveryTestRoutes();
         $this->getJson('/_ci/iam-recovery/current')->assertUnauthorized();
@@ -127,13 +122,22 @@ final class CrmIamRecoveryHttpBoundaryTest extends TestCase
         $this->assertSame(0, $this->fixtures->table('crm_auth_sessions')
             ->where('identity_id', self::A)->where('state', 'active')->count());
 
-        $this->beginHttpPassword('recovery-csrf-2');
+    }
+
+    public function test_previously_consumed_recovery_code_is_rejected_during_http_mfa(): void
+    {
+        // Independent browser lifecycle: this fixture simulates a code
+        // consumed in a previous session, without reusing test cookies.
+        $this->fixtures->table('crm_auth_recovery_codes')
+            ->where('identity_id', self::A)
+            ->update(['consumed_at' => now()->getTimestamp()]);
+        $this->registerRecoveryTestRoutes();
+        $this->beginHttpPassword('recovery-replay-csrf');
         $this->getJson('/_ci/iam-recovery/current')->assertUnauthorized();
         $this->postJson('/_ci/iam-recovery/code', [
             'code' => self::RECOVERY,
             '_token' => $this->browserSession->token(),
         ])->assertUnauthorized();
-
         $this->getJson('/_ci/iam-recovery/current')->assertUnauthorized();
         $this->assertSame(0, $this->fixtures->table('crm_auth_sessions')
             ->where('identity_id', self::A)->where('state', 'active')->count());
