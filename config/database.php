@@ -32,6 +32,19 @@ return [
 
     'connections' => [
 
+        'crm_enrollment' => [
+            'driver'=>'pgsql','host'=>env('DB_HOST'),'port'=>env('DB_PORT','5432'),
+            'database'=>env('DB_DATABASE'),'username'=>env('CRM_ENROLLMENT_USERNAME'),
+            'password'=>env('CRM_ENROLLMENT_PASSWORD'),'charset'=>'utf8','prefix'=>'',
+            'search_path'=>'public','sslmode'=>env('DB_SSLMODE','require'),
+        ],
+        'crm_operator' => [
+            'driver'=>'pgsql','host'=>env('DB_HOST'),'port'=>env('DB_PORT','5432'),
+            'database'=>env('DB_DATABASE'),'username'=>env('CRM_OPERATOR_USERNAME'),
+            'password'=>env('CRM_OPERATOR_PASSWORD'),'charset'=>'utf8','prefix'=>'',
+            'search_path'=>'public','sslmode'=>env('DB_SSLMODE','require'),
+        ],
+
         // Administrative synthetic lab service; never the login or business role.
         'crm_provision' => [
             'driver' => 'pgsql', 'host' => env('DB_HOST', '127.0.0.1'),

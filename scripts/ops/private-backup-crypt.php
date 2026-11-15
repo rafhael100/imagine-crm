@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+require __DIR__.'/private-crm-toolbox.php';
+$key=base64_decode((string)getenv('CRM_PRIVATE_BACKUP_KEY'),true);
+if (!is_string($key) || strlen($key)!==32) throw new RuntimeException('Independent backup key required.');
+$input=stream_get_contents(STDIN,67108865);
+if (!is_string($input) || strlen($input)>67108864) throw new RuntimeException('Backup exceeds private limit.');
+$crypto=new Illuminate\Encryption\Encrypter($key,'AES-256-CBC');
+if (($argv[1]??'')==='encrypt') echo $crypto->encryptString($input);
+elseif (($argv[1]??'')==='decrypt') echo $crypto->decryptString($input);
+else throw new RuntimeException('Explicit backup mode required.');

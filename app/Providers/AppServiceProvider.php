@@ -82,6 +82,15 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        //
+        if (\App\Homologation\Environment::enabled()) {
+            $this->app->bind(\App\Homologation\Enrollment::class,fn($app)=>new \App\Homologation\Enrollment(
+                $app['db']->connection('crm_enrollment'),$app['encrypter'],$app['hash'],$app['session.store']));
+            $this->app->bind(\App\Homologation\Workspace::class,fn($app)=>new \App\Homologation\Workspace(
+                $app->make(GuardPrincipalSource::class),$app['db']->connection(),$app['db']->connection('crm_iam')));
+            $this->app->bind(\App\Homologation\Administration::class,fn($app)=>new \App\Homologation\Administration(
+                $app->make(GuardPrincipalSource::class),$app['db']->connection('crm_operator'),$app['db']->connection('crm_iam')));
+            \Illuminate\Support\Facades\Route::middleware(['web',\App\Homologation\PrivateHeaders::class])
+                ->group(base_path('routes/private-homologation.php'));
+        }
     }
 }
