@@ -29,6 +29,24 @@ permissions:
   contents: read
 YAML;
 
+    // F232 extends only the PostgreSQL CI event allowlist. F0 must
+    // retain its independent, strictly narrower trigger contract.
+    private const APPROVED_F232_POSTGRES_TRIGGERS = <<<'YAML'
+on:
+  push:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+      - review/crm-aia-f232-ed25519-pg16-atomic-2026-11-14
+  pull_request:
+    branches:
+      - main
+      - dev/fast-track-crm-2026-11-04
+      - review/crm-aia-f231-ed25519-deny-ci-2026-11-14
+
+permissions:
+  contents: read
+YAML;
+
     /**
      * @return list<string> diagnostic codes without leaking workflow source.
      */
@@ -36,7 +54,10 @@ YAML;
     {
         $issues = [];
 
-        if (substr_count($yaml, self::APPROVED_TRIGGERS_AND_PERMISSIONS) !== 1
+        $approved = $postgres ? self::APPROVED_F232_POSTGRES_TRIGGERS
+            : self::APPROVED_TRIGGERS_AND_PERMISSIONS;
+
+        if (substr_count($yaml, $approved) !== 1
             || preg_match_all('/^on:$/m', $yaml) !== 1
             || preg_match_all('/^permissions:$/m', $yaml) !== 1) {
             $issues[] = 'trigger_permissions';
@@ -141,6 +162,10 @@ YAML;
 
         $mutations = [
             [$pg, '  pull_request:', '  pull_request_target:', true, 'trigger_permissions'],
+            [$pg, 'review/crm-aia-f232-ed25519-pg16-atomic-2026-11-14',
+                'review/any-untrusted-branch', true, 'trigger_permissions'],
+            [$pg, 'review/crm-aia-f231-ed25519-deny-ci-2026-11-14',
+                'main', true, 'trigger_permissions'],
             [$pg, '  contents: read', '  contents: write', true, 'token_permissions'],
             [$pg, 'runs-on: ubuntu-latest', 'runs-on: self-hosted', true, 'runner'],
             [$pg, 'DB_HOST: 127.0.0.1', 'DB_HOST: remote.invalid', true, 'disposable_pg_roles'],
