@@ -104,6 +104,66 @@ final class AiaPgEd25519LabBridge
         }
     }
 
+    /**
+     * F233: authenticated synthetic service + server-managed key + atomic
+     * nonce + server-owned delegation/owner/field-grant rehearsal.
+     *
+     * A match is a diagnostic only. There is NO production ALLOW, no
+     * business read, no IAM and no API route. Policy is inspected only
+     * AFTER original Agents Ed25519 and PG nonce checks succeed.
+     */
+    public static function matchesWithServerScope(
+        string $canonicalRequest,
+        string $canonicalClaims,
+        string $signatureBase64,
+        string $expectedTenant,
+        int $now,
+        AiaPgServiceKeyringLab $keyring,
+        AiaPgNonceCandidateLedger $ledger,
+        AiaPgServiceScopeLab $scope,
+    ): bool {
+        try {
+            if (!self::matchesWithServerKeyring(
+                $canonicalRequest, $canonicalClaims, $signatureBase64,
+                $expectedTenant, $now, $keyring, $ledger,
+            )) {
+                return false;
+            }
+
+            $verifiedClaims = json_decode(
+                $canonicalClaims, true, 4, JSON_THROW_ON_ERROR
+            );
+            if (!is_array($verifiedClaims)) {
+                return false;
+            }
+
+            return $scope->matchesCandidate(
+                $canonicalRequest, $verifiedClaims, $expectedTenant, $now,
+            );
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    /** Public status is ALWAYS denied, regardless of matching test scope. */
+    public static function inspectWithServerScope(
+        string $canonicalRequest,
+        string $canonicalClaims,
+        string $signatureBase64,
+        string $expectedTenant,
+        int $now,
+        AiaPgServiceKeyringLab $keyring,
+        AiaPgNonceCandidateLedger $ledger,
+        AiaPgServiceScopeLab $scope,
+    ): array {
+        self::matchesWithServerScope(
+            $canonicalRequest, $canonicalClaims, $signatureBase64,
+            $expectedTenant, $now, $keyring, $ledger, $scope,
+        );
+
+        return AiaReadOnlyMockBoundary::inspectCanonicalJson($canonicalRequest);
+    }
+
     /** Uniform denial even after passing PostgreSQL-backed public-key lookup. */
     public static function inspectWithServerKeyring(
         string $canonicalRequest,
