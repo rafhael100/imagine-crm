@@ -951,4 +951,176 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
         }
     }
 
+    /**
+     * F241: the nonce ledger is physically INSERT-only (not privileged PG),
+     * with two independent backend connections and real PG16 UNIQUE+RLS.
+     */
+    public function test_f241_insert_only_nonce_role_rejects_replays_and_cannot_read_or_mutate(): void
+    {
+        if (getenv('AIA_F241_NONCE_ROLE_LAB') !== 'true') {
+            $this->markTestSkipped('F241 requires disposable PG16 CI.');
+        }
+        $admin = DB::connection();
+        $roleCreated = false;
+        try {
+            $admin->statement("CREATE ROLE crm_aia_nonce_ci LOGIN
+                PASSWORD 'f241-insert-only-test'
+                NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS");
+            $roleCreated = true;
+            $admin->statement('GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_aia_nonce_ci');
+            $admin->statement('GRANT USAGE ON SCHEMA public TO crm_aia_nonce_ci');
+            $admin->statement('ALTER TABLE public.aia_lab_nonce_atomic_probe
+                ENABLE ROW LEVEL SECURITY');
+            $admin->statement('ALTER TABLE public.aia_lab_nonce_atomic_probe
+                FORCE ROW LEVEL SECURITY');
+            $admin->statement("CREATE POLICY aia_f241_nonce_only_insert
+                ON public.aia_lab_nonce_atomic_probe FOR INSERT
+                TO crm_aia_nonce_ci
+                WITH CHECK (
+                    tenant_ref = current_setting('app.tenant_id',true)
+                    AND issuer = 'SYNTHETIC_AGENT_SERVICE'
+                    AND audience = 'SYNTHETIC_CRM_API'
+                    AND claimed_at > 0
+                )");
+            $admin->statement('GRANT INSERT ON TABLE
+                public.aia_lab_nonce_atomic_probe TO crm_aia_nonce_ci');
+
+            $settings = config('database.connections.pgsql');
+            $settings['url'] = null;
+            $settings['username'] = 'crm_aia_nonce_ci';
+            $settings['password'] = 'f241-insert-only-test';
+            config([
+                'database.connections.aia_f241_nonce_one' => $settings,
+                'database.connections.aia_f241_nonce_two' => $settings,
+            ]);
+            DB::purge('aia_f241_nonce_one');
+            DB::purge('aia_f241_nonce_two');
+            $one = DB::connection('aia_f241_nonce_one');
+            $two = DB::connection('aia_f241_nonce_two');
+            $this->assertNotSame(
+                (int) $one->selectOne('SELECT pg_backend_pid() AS pid')->pid,
+                (int) $two->selectOne('SELECT pg_backend_pid() AS pid')->pid
+            );
+            $ledgerOne = new \App\Support\Synthetic\AiaPgRestrictedNonceLedgerLab($one);
+            $ledgerTwo = new \App\Support\Synthetic\AiaPgRestrictedNonceLedgerLab($two);
+            $tenantA = 'SYNTHETIC_TENANT_A';
+            $tenantB = 'SYNTHETIC_TENANT_B';
+            $now = 1794690010;
+
+            $this->assertTrue($ledgerOne->claim(
+                'SYNTHETIC_F241_FIRST_NONCE', $tenantA, $now
+            ));
+            // Unique constraint is on issuer + audience + nonce, so a
+            // replay under another tenant cannot consume a second claim.
+            $this->assertFalse($ledgerTwo->claim(
+                'SYNTHETIC_F241_FIRST_NONCE', $tenantA, $now
+            ));
+            $this->assertFalse($ledgerTwo->claim(
+                'SYNTHETIC_F241_FIRST_NONCE', $tenantB, $now
+            ));
+            $this->assertSame(1, (int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+            $this->assertSame(0,$one->transactionLevel());
+            $this->assertSame(0,$two->transactionLevel());
+
+            foreach ([
+                static fn ($db) => $db->table('public.aia_lab_nonce_atomic_probe')->count(),
+                static fn ($db) => $db->table('public.aia_lab_nonce_atomic_probe')
+                    ->update(['claimed_at' => 1794690011]),
+                static fn ($db) => $db->table('public.aia_lab_nonce_atomic_probe')->delete(),
+                static fn ($db) => $db->table('public.crm_memberships')->count(),
+                static fn ($db) => $db->table('public.crm_auth_sessions')->count(),
+            ] as $attempt) {
+                $blocked = false;
+                try {
+                    $attempt($one);
+                } catch (\Throwable) {
+                    $blocked = true;
+                }
+                $this->assertTrue($blocked,
+                    'Nonce role unexpectedly has read/update/delete/business grants');
+            }
+
+            // Tenant marker must come from the trusted bridge. A role
+            // trying to insert B while its transaction is scoped to A
+            // is physically rejected by PostgreSQL RLS.
+            $crossTenantDenied = false;
+            try {
+                $one->transaction(function () use ($one,$tenantA,$tenantB,$now): void {
+                    $one->selectOne("SELECT set_config('app.tenant_id', ?, true)",
+                        [$tenantA]);
+                    $one->table('public.aia_lab_nonce_atomic_probe')->insert([
+                        'issuer' => 'SYNTHETIC_AGENT_SERVICE',
+                        'audience' => 'SYNTHETIC_CRM_API',
+                        'nonce' => 'SYNTHETIC_F241_FORGED_CROSS',
+                        'tenant_ref' => $tenantB,
+                        'claimed_at' => $now,
+                    ]);
+                }, 1);
+            } catch (\Throwable) {
+                $crossTenantDenied = true;
+            }
+            $this->assertTrue($crossTenantDenied);
+            $this->assertSame(1, (int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+
+            // Original SHA-pinned Agents Ed25519 is the only signer
+            // verification before a nonce becomes persisted.
+            [$private, $public] = self::publicTestKeys();
+            $req = self::request($tenantA);
+            $trusted = ['SYNTHETIC_F232_KEY' => [
+                'public_key' => $public, 'enabled' => true,
+            ]];
+            [$claimBytes,$sig] = self::signed(
+                $req,$tenantA,'SYNTHETIC_F241_SIGNED_NONCE',$private
+            );
+            $this->assertFalse(AiaPgEd25519LabBridge::matchesLabFixture(
+                $req,$claimBytes,'INVALID_SIGNATURE',$trusted,
+                $tenantA,$now,$ledgerOne
+            ));
+            $this->assertSame(1, (int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+            $this->assertTrue(AiaPgEd25519LabBridge::matchesLabFixture(
+                $req,$claimBytes,$sig,$trusted,$tenantA,$now,$ledgerOne
+            ));
+            $this->assertFalse(AiaPgEd25519LabBridge::matchesLabFixture(
+                $req,$claimBytes,$sig,$trusted,$tenantA,$now,$ledgerTwo
+            ));
+            self::assertDenial(AiaPgEd25519LabBridge::inspectLabFixture(
+                $req,$claimBytes,$sig,$trusted,$tenantA,$now,$ledgerOne
+            ));
+            $this->assertSame(2, (int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+            $this->assertSame(0,$one->transactionLevel());
+            $this->assertSame(0,$two->transactionLevel());
+
+            // Disabling FORCE RLS is an explicit failure of the guard,
+            // not a reason to fall back to a privileged connection.
+            $admin->statement('ALTER TABLE public.aia_lab_nonce_atomic_probe
+                NO FORCE ROW LEVEL SECURITY');
+            $this->assertFalse($ledgerOne->claim(
+                'SYNTHETIC_F241_RLS_REMOVED', $tenantA, $now
+            ));
+            $this->assertSame(2, (int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+            $admin->statement('ALTER TABLE public.aia_lab_nonce_atomic_probe
+                FORCE ROW LEVEL SECURITY');
+        } finally {
+            foreach (['aia_f241_nonce_one','aia_f241_nonce_two'] as $connection) {
+                DB::disconnect($connection);
+                DB::purge($connection);
+            }
+            $admin->statement('DROP POLICY IF EXISTS aia_f241_nonce_only_insert
+                ON public.aia_lab_nonce_atomic_probe');
+            if ($roleCreated) {
+                $admin->statement('REVOKE INSERT ON TABLE public.aia_lab_nonce_atomic_probe
+                    FROM crm_aia_nonce_ci');
+                $admin->statement('REVOKE USAGE ON SCHEMA public FROM crm_aia_nonce_ci');
+                $admin->statement('REVOKE CONNECT ON DATABASE imagine_crm_ci
+                    FROM crm_aia_nonce_ci');
+                $admin->statement('DROP ROLE crm_aia_nonce_ci');
+            }
+        }
+    }
+
 }
