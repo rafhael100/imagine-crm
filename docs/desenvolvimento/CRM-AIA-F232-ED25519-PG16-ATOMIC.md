@@ -233,3 +233,58 @@ A tabela e a role só existem no ensaio descartável e são removidas no
 final. As decisões do produto permanecem negadas. Faltam revisão
 SEG/DBA/LGPD/CORE e os 14 gates/13 cenários de CRM #57.
 **NO-GO / DRAFT / NO-MERGE / NO-DEPLOY.**
+
+
+## F237 — testemunho de delegação iniciado por pessoa autenticada
+
+A classe AiaPgHumanDelegationWitnessLab aproxima a relação entre
+**pessoa autenticada pelo CRM** e **serviço Agents assinado** sem
+implantar qualquer autorização de leads. Só existe no **PostgreSQL16
+descartável de GitHub Actions**, com AIA_F237_DELEGATION_LAB=true.
+
+**Emissão (humana):** issueFromCurrentHuman exige uma sessão CRM
+válida e MFA recente por GuardPrincipalSource::withinCurrent(..., true).
+A identidade humana é lida exclusivamente dessa fonte, jamais de um
+campo no pedido Agents. Revalida a membership real
+PostgresActiveMembershipStore::within em crm_memberships com FORCE
+RLS e bloqueio de linha. Uma tabela de vínculo **CRM-owned** associa
+tenant_ref sintético à UUID da empresa e ao principal do serviço; o
+vínculo, a operação e os campos exatos são validados antes de persistir
+um testemunho de teste com UUID, hash do pedido canônico, versão da
+membership, validade curta e identificador interno de identidade.
+
+**Verificação do serviço (somente diagnóstico):**
+matchesSignedServiceWitness valida primeiro a chave pública
+autorizada pelo CRM, a assinatura original Ed25519 do Agents e o
+nonce atômico. Sob bloqueio de registro no PostgreSQL descarta
+testemunhos ausentes, expirados, revogados ou de empresa/pedido/chave
+diferentes, revalida o vínculo CRM e consulta novamente a membership
+física da identidade armazenada no servidor, exigindo a **mesma
+versão**. Não há token, sessão ou cookie humano enviado ao Agents.
+
+O teste utiliza senhas/TOTP e chaves **inteiramente fictícios**. A
+matriz cobre ausência de login, empresa errada, emissão duplicada,
+assinatura correta, replay, mudança de projeção/campos, desativação
+do vínculo, revogação e expiração do testemunho, rotação de
+membership, revogação da própria membership, revogação da chave
+pública, sessão IAM revogada antes de nova emissão e limpeza de
+transações.
+
+**Limites críticos:** a tabela de testemunhos é temporária, escrita
+apenas por uma conexão privilegiada do **laboratório**. Não há
+estrutura de provisionamento operacional, login de serviço real,
+delegação aprovada pelo produto/usuário final, ACL de leads ou
+consentimento LGPD. A validade de um testemunho não autoriza
+leitura real: a resposta permanece DENIED_OR_NOT_FOUND. A
+decisão de revogar delegações existentes automaticamente ao
+encerrar a sessão do usuário **ainda precisa ser homologada**;
+por ora, revogação de sessão impede *novas* emissões, enquanto
+versão de membership e revogação explícita invalidam testemunhos
+persistentes.
+
+A próxima etapa de segurança será revisão independente de
+assinatura/vínculo, prova com usuário/serviço em infraestrutura de
+homologação isolada, serialização de revogações sob concorrência e
+eventos auditáveis. CRM #57 permanece **NO-GO**, com 14 gates,
+7 decisões e 13 cenários operacionais pendentes. **NO-MERGE /
+NO-DEPLOY / NO-SECRETS / NO-PII.**
