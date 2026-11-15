@@ -55,7 +55,13 @@ final class PrivateHeaders
         // Tenant/role/identity hints are never accepted as scope selectors.
         abort_if($request->hasAny(['tenant','tenant_id','organization_id','role','identity_id'])
             || $request->headers->has('X-Tenant-Id') || $request->headers->has('X-Identity-Id')
-            || $request->headers->has('X-Role'),400);
+            || $request->headers->has('X-Role')
+            // F250: Human-facing routes must never interpret a service
+            // proof as a session, membership, MFA or business authorization.
+            || $request->headers->has('X-Aia-Claims')
+            || $request->headers->has('X-Aia-Signature')
+            || $request->headers->has('X-Aia-Key-Id')
+            || $request->headers->has('X-Service-Identity'),400);
         try { $response=$next($request); }
         catch(AuthenticationException) { $response=redirect('/login',303)->withErrors(['session'=>'Sessão expirada ou revogada. Entre novamente.']); }
         catch(\App\Core\Tenancy\MembershipDenied|\Illuminate\Auth\Access\AuthorizationException) {
