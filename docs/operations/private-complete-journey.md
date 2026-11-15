@@ -367,3 +367,33 @@ F253 não é aprovação de release: mantém
 reversibilidade, TLS e BasicAuth dos demais hosts, validação
 de usuário e administrador com MFA, revisão humana do navegador
 e bloqueio de dados reais, faturamento ou integração Agents.
+
+## F254 — integridade imutável do Nginx durante atualização e reversão
+
+O script protegido F252 já exige TLS e BasicAuth com retorno 401 nos
+endereços privados da Imagine. Isso, isoladamente, não garante que
+os arquivos de Nginx não mudaram: outra configuração poderia também
+retornar 401, mas abrir rotas ou alterar hosts futuramente.
+
+A F254 acrescenta ao F252 a verificação **read-only dos hashes SHA-256**
+do virtual host do CRM e da configuração compartilhada com Portal e
+Comercial, confrontados com os checksums já gravados em
+`published.json`, além da exigência de o symlink publicado apontar
+exatamente para a configuração CRM conhecida.
+
+Essa proteção atua no preflight, depois da troca de imagem, depois
+do backup do candidato e depois de uma reversão, sempre **antes**
+de gravar um novo `published.json`. Uma divergência de hash
+ou symlink exige intervenção operacional e impede a declaração de
+publicação bem-sucedida; a reversão continua sob o fluxo
+fail-closed original. Os testes negativos verificam checksum
+ausente, incorreto, alterado ou fora do formato, symlink ausente
+e symlink para alvo inesperado. Nenhum arquivo de Nginx é escrito
+pelo código F254, e nenhum ingresso novo é criado.
+
+**Limites:** checksums verificam os arquivos já definidos pela
+release privada, não a segurança completa de todos os arquivos
+incluídos pelo Nginx ou a configuração de hosts de terceiros.
+Permanecem obrigatórios o exame do operador, CI integral da
+SHA exata, backup/restauração, acesso cliente/admin, canário F253,
+TLS/BasicAuth, revisão independente e plano de rollback.
