@@ -54,6 +54,7 @@ if ($mode==='expire-clientB') {
 } elseif ($mode==='expire-signup') {
     $db->exec('UPDATE crm_private_signup_requests SET issued_at=issued_at-901,expires_at=expires_at-901 WHERE completed_at IS NULL AND consumed_at IS NULL');
 } elseif ($mode==='expire-clientA-trial') {
-    privateCrmSql($db,'UPDATE crm_private_trials SET started_at=?,expires_at=? WHERE organization_id=?',[time()-1209601,time()-1,$records['clientA']['organization']]);
+    $now=time();
+    privateCrmSql($db,'UPDATE crm_private_trials SET started_at=?,expires_at=? WHERE organization_id=?',[$now-1209601,$now-1,$records['clientA']['organization']]);
 } else throw new RuntimeException('Unknown private fixture scenario.');
 echo "Private negative test scenario prepared.\n";

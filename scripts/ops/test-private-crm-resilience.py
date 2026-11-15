@@ -58,6 +58,20 @@ def main():
     otp.post('/cadastro/verificar',{'code':code})
     print('PASS private OTP session binding → five-attempt cap → resend cap → expiry')
 
+    duplicate=http.Client(); dup_login='lab-duplicate-'+suffix
+    dup_label='EMPRESA_TESTE_DUPLICATE_'+suffix.upper()
+    http.signup(duplicate,dup_login,dup_label,document,secrets.token_hex(16))
+    page=duplicate.get('/cadastro/codigo')
+    dup_code=re.search(r'data-test="otp-code">\s*([0-9]{6})',page).group(1)
+    duplicate.post('/cadastro/verificar',{'code':dup_code})
+    page=duplicate.get('/cadastro/mfa')
+    secret=re.search(r'data-test="setup-secret">\s*([A-Z2-7]{32})',page).group(1)
+    duplicate.post('/cadastro/concluir',{'code':http.totp(secret)})
+    http.check('Um trial por CNPJ' in duplicate.get('/cadastro/mfa'),'duplicate document obtained second trial')
+    administrator=http.Client();administrator.login(dict(http.FIXTURES['admin'],admin=True),recovery=http.FIXTURES['admin']['recovery'][1])
+    http.check(dup_label not in administrator.get('/admin'),'duplicate trial created an account')
+    print('PASS duplicate CNPJ blocked after OTP and MFA without creating another company')
+
     try:
         run(['stop','postgres'])
         client.get('/painel',expected=(403,503))

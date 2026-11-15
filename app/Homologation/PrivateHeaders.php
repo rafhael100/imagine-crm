@@ -13,6 +13,35 @@ use Throwable;
 
 final class PrivateHeaders
 {
+    public static function renderFailure(Throwable $error,Request $request)
+    {
+        if ($error instanceof AuthenticationException) return redirect('/login',303)->withErrors(['session'=>'Sessão expirada ou revogada. Entre novamente.']);
+        if ($error instanceof ValidationException) {
+            $path=match($request->path()) {
+                'cadastro/reenviar','cadastro/verificar'=>'/cadastro/codigo','cadastro/concluir'=>'/cadastro/mfa',
+                'cadastro'=>'/cadastro','convite'=>'/convite','recuperar'=>'/recuperar',default=>'/painel',
+            };
+            return redirect($path,303)->withErrors($error->errors())
+                ->withInput($request->only(['login','company','cnpj','email','phone','title','value_cents']));
+        }
+        $status=$error instanceof HttpExceptionInterface?$error->getStatusCode():503;
+        if ($error instanceof \App\Core\Tenancy\MembershipDenied || $error instanceof \Illuminate\Auth\Access\AuthorizationException) $status=403;
+        // Independent error HTML remains available even when a compiled view failed.
+        return response('<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Imagine CRM</title><body style="font:16px system-ui;background:#f7f7f8;color:#272727;padding:8vw"><main style="max-width:640px;background:white;border:1px solid #e6e2dc;border-top:5px solid #f9941d;border-radius:18px;padding:32px"><h1>Não foi possível concluir esta operação.</h1><p>Recarregue, revise os dados ou entre novamente. Seu perfil, o estado do registro e as franquias são verificados em cada operação.</p><p>Código '.$status.'</p><a href="/painel">Voltar ao CRM</a> · <a href="/login">Entrar</a></main></body></html>',$status)
+            ->header('Cache-Control','private, no-store')->header('X-Robots-Tag','noindex, nofollow');
+    }
+
+    public static function reportFailure(Throwable $error): void
+    {
+        $causes=[];
+        for($i=0;$error && $i<4;$i++,$error=$error->getPrevious()) {
+            $item=['type'=>$error::class,'source'=>basename($error->getFile()),'line'=>$error->getLine()];
+            if (preg_match('/Undefined variable \$([A-Za-z0-9_]+)/',$error->getMessage(),$match)) $item['undefined']=$match[1];
+            $causes[]=$item;
+        }
+        logger()->error('CRM_PRIVATE_REQUEST_UNAVAILABLE',['causes'=>$causes]);
+    }
+
     public function handle(Request $request,Closure $next)
     {
         abort_unless(Environment::enabled() && in_array($request->getHost(),
