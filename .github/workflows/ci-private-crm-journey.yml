@@ -58,7 +58,7 @@ jobs:
       - name: Compile all Blade views and lint private PHP implementation
         run: |
           set -euo pipefail
-          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T app sh -c 'find app/Homologation -name "*.php" -exec php -l {} \; && php artisan view:cache'
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T app sh -c 'find app/Homologation -name "*.php" -exec php -l {} \; && php artisan view:cache && for view in storage/framework/views/*.php; do php -l "$view" || exit 1; done'
       - name: Prove encrypted empty-schema backup and separate restore before persistent fixtures
         run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/backup-private-crm.py "$RUNNER_TEMP/crm-private-data/backups"
       - name: Seed temporary fictional identities without printing credentials

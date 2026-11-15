@@ -42,6 +42,8 @@ if mode=='prepare':
     run(compose+['config','--quiet'])
     run(compose+['build','app'])
     run(compose+['up','-d','--no-build'])
+    run(compose+['exec','-T','web','nginx','-t'])
+    run(compose+['exec','-T','web','nginx','-s','reload'])
     run(compose+['exec','-T','app','php','artisan','view:cache'])
     run(['python3','scripts/ops/backup-private-crm.py',str(DATA/'backups')])
     print('PRIVATE PREPARE PASS: isolated loopback application and verified encrypted restore; ingress unchanged.')
