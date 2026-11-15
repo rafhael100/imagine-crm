@@ -184,3 +184,39 @@ continuam independentes.
 não abre leitura de leads e não identifica provedores externos.
 Uma eventual integração real requer um ingresso separado e
 homologado que nunca reutilize login/CSRF/sessão humanos.
+
+## F251 — análise de manutenção da VPS, somente leitura
+
+A primeira publicação privada da aplicação utilizou a revisão
+`ea5d320addaeb7ab970bdfa3931d55ddea37afac`. Desde então, a PR
+de homologação recebeu modificações no controlador, na validação de
+cabeçalhos, na calculadora e nos relatórios; **não é mais uma mudança
+exclusivamente de views**. O utilitário anterior
+`update-private-crm-marketing.py` rejeita corretamente essa
+nova revisão pelo limite de arquivos permitidos.
+
+A F251 acrescenta `scripts/ops/private-crm-release-preflight.py`
+e testes de política, sem efetuar qualquer implantação. O programa
+compara a revisão publicada com uma candidata **exata** e rejeita:
+SHA fora da árvore publicada, checkout alterado, caminhos não
+previstos, renomes, exclusões, mudanças em migrations/roles/schema,
+rotas, bootstrap, provider, Composer e infraestrutura. Exige uma
+diferença efetiva de aplicação privada e apresenta somente a lista de
+arquivos de escopo revisável. Mesmo com a lista aprovada, o resultado
+é sempre `MANUAL_REVIEW_REQUIRED`, `deploy_approved=false` e
+`no_deploy_executed=true`.
+
+A CI `ci-private-crm-release-preflight.yml` usa checkout completo
+somente leitura, verifica ancestralidade da revisão privada anterior,
+executa testes negativos da política e comprova que o diff atual
+permanece **candidato a revisão**, não autorização de publicação.
+
+**Gates operacionais ainda necessários:** o operador deve validar as
+17+ CI do SHA completo e obter revisão independente para mudanças
+de middleware e integração; conferir env/roles/tabelas da VPS,
+backup criptografado/restauração, rollback da imagem anterior, TLS,
+BasicAuth, isolamento de outros hosts e smoke pós-publicação.
+**A F251 não instala, reinicia, publica, emite mensagem ou acessa
+a VPS.** O script `update-private-crm-marketing.py` continua restrito
+a views; sua lista não foi ampliada artificialmente para contornar
+o bloqueio desta atualização funcional.
