@@ -181,6 +181,39 @@
 'El número de clientes en esta demostración representa oportunidades en etapa Ganado, no contratos, pagos ni clientes reales.'
 ) }}</p>
 </section>
+<section class="panel" data-report-funnel-breakdown="imagine">
+<h2>{{ $reportSay('Resultados por funil','Results by pipeline','Resultados por embudo') }}</h2>
+<p class="quiet">{{ $reportSay(
+'Compare leads e negócios ganhos em cada funil da sua empresa. São dados fictícios; não há integração com tráfego ou faturamento real.',
+'Compare leads and won deals in each pipeline of your company. These are fictional data; no real traffic or revenue is connected.',
+'Compara leads y negocios ganados por embudo de tu empresa. Son datos ficticios; no existe integración con tráfico ni facturación real.'
+) }}</p>
+<div class="tablewrap"><table>
+<thead><tr>
+<th>{{ $reportSay('Funil','Pipeline','Embudo') }}</th>
+<th>Leads</th>
+<th>{{ $reportSay('Ganhos','Won','Ganados') }}</th>
+<th>{{ $reportSay('Conversão','Conversion','Conversión') }}</th>
+</tr></thead><tbody>
+@foreach($data['funnels'] as $funnel)
+@php
+    $funnelLeads=array_values(array_filter($data['leads'],fn($lead)=>$lead->funnel_id===$funnel->id));
+    $funnelTotal=count($funnelLeads);
+    $funnelWon=count(array_filter($funnelLeads,fn($lead)=>$lead->stage==='won'));
+    $funnelRate=$funnelTotal>0?round(100*$funnelWon/$funnelTotal,1):0.0;
+@endphp
+<tr data-report-funnel-id="{{ $funnel->id }}" data-report-funnel-leads="{{ $funnelTotal }}" data-report-funnel-won="{{ $funnelWon }}" data-report-funnel-rate="{{ $funnelRate }}">
+<td>{{ $funnel->title }}</td><td>{{ $funnelTotal }}</td><td>{{ $funnelWon }}</td>
+<td>{{ number_format($funnelRate,1,$language==='en'?'.':',',$language==='en'?',':'.') }}%</td>
+</tr>
+@endforeach
+</tbody></table></div>
+<p class="quiet">{{ $reportSay(
+'As taxas representam ganhos sobre oportunidades daquele funil. Um funil sem leads apresenta 0,0%, sem divisão por zero.',
+'Rates represent won opportunities divided by leads in the same pipeline. Empty pipelines show 0.0%, with no division by zero.',
+'Las tasas representan ganados entre leads de cada embudo. Un embudo vacío muestra 0,0%, sin división por cero.'
+) }}</p>
+</section>
 <div class="panel"><h2>Seu funil em números.</h2>
 @foreach($stages as $stage=>$label)
 @php
