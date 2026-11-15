@@ -126,3 +126,38 @@ revisão independente de SEG/DBA, CORE/AUT, LGPD, isolamento com role
 não privilegiada/RLS, verificação de membro e recurso reais, logs
 auditáveis sem PII e os **14 gates / 13 cenários operacionais** do
 CRM-AIA-RO-01.
+
+
+## F234 — política lida por papel PostgreSQL de privilégio mínimo e FORCE RLS
+
+Para reduzir a dependência da conexão privilegiada do ensaio F233, a
+prévia de escopo agora exige uma conexão distinta `crm_aia_scope_ci`
+de **somente SELECT**, sem herança, superuser, ownership ou BYPASSRLS.
+Ela valida no PostgreSQL a identidade da role, `row_security=on`, a
+ausência de marcador de empresa herdado, e que as três tabelas
+fictícias de política tenham simultaneamente `ENABLE/FORCE ROW LEVEL
+SECURITY` e não pertençam à role de leitura.
+
+O teste cria e apaga a role **somente dentro da CI descartável**,
+concede SELECT apenas nas três tabelas, cria políticas RLS de tenant
+em cada uma, e monta uma conexão independente para consultar escopos.
+O tenant é definido **LOCAL à transação** com `set_config(..., true)`
+somente depois de verificar a assinatura, chave pública CRM e nonce
+único. Após a transação, o escopo é limpo. A role não pode alterar
+a delegação; consultas sem tenant não enxergam registros de nenhuma
+das duas empresas fictícias.
+
+O teste demonstra também que A e B possuem fatos separados e não
+recebem visibilidade cruzada sob RLS. O backend administrativo continua
+restrito a semear/apagar **dados fictícios e temporários** e a consultar
+o keyring/nonce de laboratório. A consulta efetiva de políticas não
+retorna resultados de uma conexão privilegiada.
+
+**Isso ainda não é autorização operacional:** marcadores de tenant
+de sessões SQL podem ser alterados por quem controla uma conexão,
+portanto o *serviço de backend confiável* deverá selecionar o tenant
+a partir de identidade verificada, nunca de parâmetro externo. A
+fonte de delegações e responsáveis é sintética, não o esquema real de
+leads e memberships. Ainda não existem segredo de produção, mTLS,
+auditoria operacional, API externa ou revisão SEG/LGPD. A resposta
+pública permanece sempre negada. **NO-GO / NO-MERGE / NO-DEPLOY.**
