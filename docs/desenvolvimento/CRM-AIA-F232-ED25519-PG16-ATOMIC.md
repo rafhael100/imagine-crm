@@ -86,3 +86,43 @@ Essa tabela é criada e apagada **somente pelo teste**, não existe
 migration de aplicação, registro no container Laravel, sistema de
 segredos ou configuração na VPS. O experimento demonstra o padrão de
 fonte de confiança servidor/CRM, não o IAM operacional.
+
+
+## F233 — prévia de escopo por empresa, delegação, responsável e campo
+
+A próxima fase usa a **mesma CI com PostgreSQL 16 descartável** e amplia
+a verificação para políticas armazenadas pelo **lado CRM**:
+
+- `AiaPgServiceScopeLab::matchesCandidate` consulta fatos **distintos**:
+  delegação do principal e finalidade para um serviço/chave/empresa/operação,
+  vínculo do recurso ao principal e uma concessão específica para cada
+  campo solicitado (`ref` e `stage`). O pedido assinado é **seletor de
+  fatos**, não fonte de autorização.
+- `AiaPgEd25519LabBridge::matchesWithServerScope` exige **antes** a
+  assinatura original Agents, chave pública pertencente ao CRM e nonce
+  único no PostgreSQL; somente então compara os fatos da política.
+- `inspectWithServerScope` não transforma o resultado em `ALLOW`.
+  Mesmo quando a prévia encontra escopo, a resposta pública permanece
+  `DENIED_OR_NOT_FOUND`, sem projeção e sem acesso ao banco de leads.
+
+A expansão do teste `AiaPostgresEd25519NonceCandidateTest` cria e apaga
+tabelas **exclusivas da CI** para delegações, responsáveis e campos, e
+exercita 14 variantes: escopo completo, tenant sem autorização, delegação
+desativada/revogada/expirada, responsável revogado, campo desativado,
+projeção reduzida, principal/recurso/finalidade diferentes, chave
+revogada e tabela de política indisponível. O uso de nonce repetido é
+sempre negado independentemente de alterações posteriores nas regras.
+
+**Limitações importantes:** os fatos são inteiramente fictícios; o
+PostgreSQL deste ensaio usa a conexão privilegiada da CI, **não**
+comprova uma role operacional de leitura mínima nem RLS para os dados
+de leads. O modelo de responsável e delegação não é membership humana
+autenticada nem consentimento LGPD real. Não existe endpoint, worker,
+rota Laravel, migration produtiva, role da VPS, chave privada real,
+concessão ao usuário ou acesso a cliente.
+
+**NO-GO permanece.** Para homologação funcional ainda é necessário
+revisão independente de SEG/DBA, CORE/AUT, LGPD, isolamento com role
+não privilegiada/RLS, verificação de membro e recurso reais, logs
+auditáveis sem PII e os **14 gates / 13 cenários operacionais** do
+CRM-AIA-RO-01.
