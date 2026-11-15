@@ -11,6 +11,7 @@ on:
       - 'resources/views/crm-private-journey.blade.php'
       - 'infra/homologation/**'
       - 'scripts/ops/*private-crm*'
+      - 'scripts/ops/test-private-crm-browser.cjs'
       - 'scripts/ops/private-backup-crypt.php'
       - '.github/workflows/ci-private-crm-journey.yml'
 permissions:
@@ -65,6 +66,17 @@ jobs:
         run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/test-private-crm-http.py "$RUNNER_TEMP/crm-private-data/fixtures.json"
       - name: Prove backup and restore with actual fictional records and tenant scopes
         run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/backup-private-crm.py "$RUNNER_TEMP/crm-private-data/backups"
+      - name: Chromium client and administrator desktop/mobile journey
+        run: |
+          npm install --prefix "$RUNNER_TEMP/private-crm-browser" --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          sudo env CRM_PRIVATE_PLAYWRIGHT_DIR="$RUNNER_TEMP/private-crm-browser" node scripts/ops/test-private-crm-browser.cjs "$RUNNER_TEMP/crm-private-data/fixtures.json" "$RUNNER_TEMP/crm-private-evidence"
+      - name: Preserve credential-free desktop and mobile evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: private-crm-desktop-mobile
+          path: ${{ runner.temp }}/crm-private-evidence/*.png
+          retention-days: 7
+          if-no-files-found: error
       - name: Sanitized diagnostics on failure
         if: failure()
         run: |
