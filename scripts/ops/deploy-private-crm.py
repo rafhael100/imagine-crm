@@ -44,6 +44,8 @@ if mode=='prepare':
     run(compose+['config','--quiet'])
     run(compose+['build','app'])
     run(compose+['up','-d','--no-build'])
+    # Git replaces the bind-mounted config inode; reload alone can retain the old file.
+    run(compose+['up','-d','--no-build','--force-recreate','--no-deps','web'])
     run(compose+['exec','-T','web','nginx','-t'])
     run(compose+['exec','-T','web','nginx','-s','reload'])
     run(compose+['exec','-T','app','php','artisan','view:cache'])
