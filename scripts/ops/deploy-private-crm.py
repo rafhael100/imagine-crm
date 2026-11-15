@@ -16,7 +16,7 @@ if os.geteuid()!=0 or ROOT!=Path('/srv/imagine/crm-private-candidate'):
     raise SystemExit('Run only as operator on the dedicated Leaseweb private CRM checkout.')
 
 def run(command):
-    subprocess.run(command,cwd=ROOT,check=True)
+    subprocess.run(command,cwd=ROOT,check=True,stdin=subprocess.DEVNULL)
 
 sha=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
 if not re.fullmatch('[a-f0-9]{40}',sha): raise SystemExit('Invalid source revision.')
