@@ -119,16 +119,23 @@ restored_sql() {
   docker exec -i "$restorer" psql -X -qAt -v ON_ERROR_STOP=1 \
     -U crm_staging -d imagine_crm_ci_full_restore "$@"
 }
+# The official postgres image starts a *temporary* postmaster during
+# initdb, then shuts it down before exec'ing the final PID 1 postgres
+# server. pg_isready alone can accept that transient process and race
+# the first CREATE ROLE with its shutdown. Verify final PID 1 as well.
 ready=0
-for attempt in $(seq 1 30); do
-  if docker exec "$restorer" pg_isready -q -U crm_staging \
-    -d imagine_crm_ci_full_restore; then
+for attempt in $(seq 1 45); do
+  pid1="$(docker exec "$restorer" cat /proc/1/comm 2>/dev/null || true)"
+  if [[ "$pid1" == postgres ]] \
+    && docker exec "$restorer" pg_isready -q -U crm_staging \
+      -d imagine_crm_ci_full_restore \
+    && [[ "$(restored_sql -c 'SELECT current_database()' 2>/dev/null || true)" == imagine_crm_ci_full_restore ]]; then
     ready=1
     break
   fi
   sleep 1
 done
-[[ "$ready" == 1 ]] || fail "isolated restore server did not become healthy"
+[[ "$ready" == 1 ]] || fail "isolated final PostgreSQL restore server did not become healthy"
 
 # The SQL archive does not contain cluster-global roles. Recreate only
 # harmless NOLOGIN ACL targets. No source passwords are transferred.
