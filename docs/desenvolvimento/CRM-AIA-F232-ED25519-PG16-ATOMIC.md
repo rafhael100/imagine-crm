@@ -161,3 +161,43 @@ fonte de delegações e responsáveis é sintética, não o esquema real de
 leads e memberships. Ainda não existem segredo de produção, mTLS,
 auditoria operacional, API externa ou revisão SEG/LGPD. A resposta
 pública permanece sempre negada. **NO-GO / NO-MERGE / NO-DEPLOY.**
+
+
+## F235 — fronteira real de autenticação humana versus assinatura do serviço
+
+A F235 preserva deliberadamente **duas identidades distintas**:
+
+1. **Serviço Agents:** verificado pelo `MockServiceIdentityPreflight`
+   original, com Ed25519 e chave de laboratório. A prova assinada
+   contém `principal_ref` sintético e não se transforma em uma sessão
+   humana, identidade global UUID ou autorização de leitura.
+2. **Pessoa no CRM:** validada pelo fluxo existente
+   `ExperimentalAuthenticator` (senha + TOTP e registro persistido de
+   sessão em PostgreSQL 16), `GuardPrincipalSource::withinCurrent`
+   e `PostgresActiveMembershipStore`. A role `crm_app_ci` consulta
+   `crm_memberships` protegida por FORCE RLS em transação. O resultado
+   é um snapshot de membership, **não uma decisão positiva de acesso**.
+
+O teste CI `AiaServiceHumanIamBoundaryTest` usa somente os dados
+fictícios do trait `SyntheticIam`, o código atual real de CORE/Identity
+e o verifier original Agents SHA-fixado. Comprova que mesmo após MFA
+e membership correta, `TenantAccessBoundary` consulta
+`DenyByDefaultAuthorizer` e **não executa a closure de leitura**.
+Comprova também recusa de tenant da outra empresa, revogação
+do vínculo após commit e revogação da sessão registrada, e que
+nenhum `principal_ref` do serviço assinado pode se converter em
+identidade humana.
+
+A suíte exclusiva é acionada **somente** no PostgreSQL 16 efêmero
+da CI pelo marcador `AIA_F235_IAM_LAB=true`. Fora desse recorte,
+é explicitamente ignorada e não abre rota, worker ou dependência
+de produção. O candidato de autenticação HTTP/Redis e recuperação
+da PR CRM #604 permanece independente, sem merge; a F235 já
+usa as classes CORE IAM presentes na base DEV.
+
+**Próximos requisitos reais:** delegação operacional sob controle
+do CRM (sem reencaminhar cookies/sessões humanas ao Agents), identidade
+de serviço e chaves protegidas, RLS/RBAC reais para leads,
+revogação efetiva sob concorrência, auditoria de decisões sem PII,
+revisão SEG/CORE/DBA/LGPD e 13 cenários de homologação. F235 não
+implementa nenhum ALLOW. **NO-GO / DRAFT / NO-MERGE / NO-DEPLOY.**
