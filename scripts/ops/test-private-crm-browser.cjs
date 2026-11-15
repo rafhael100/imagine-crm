@@ -47,6 +47,24 @@ async function width(page) {
       check(missingAnchors===0,'Broken home navigation anchor');
       const invalidCtas=await page.locator('.crm-home a.btn').evaluateAll(links=>links.filter(link=>!link.getAttribute('href').startsWith('/cadastro')&&!['/login','#recursos'].includes(link.getAttribute('href'))).length);
       check(invalidCtas===0,'Commercial CTA leaves approved purchase path');
+      phase='marketing-calculator-'+language;
+      const calculator=page.locator('form[data-scenario-form="imagine"]');
+      check(await calculator.count()===1,'Imagine scenario form missing');
+      check(await calculator.locator('input[name=name],input[name=email],input[name=cnpj]').count()===0,
+        'Anonymous scenario is collecting personal contact details');
+      await calculator.locator('input[name=visits]').fill('2500');
+      await calculator.locator('input[name=lead_rate]').fill('8');
+      await calculator.locator('input[name=client_rate]').fill('13');
+      await Promise.all([
+        page.waitForNavigation(),
+        calculator.locator('button[type=submit]').click()
+      ]);
+      check(new URL(page.url()).searchParams.get('lang')===language,
+        'Scenario lost selected locale');
+      check(await page.locator('[data-scenario-visits="2500"]').count()===1
+        && await page.locator('[data-scenario-leads="200"]').count()===1
+        && await page.locator('[data-scenario-clients="26"]').count()===1,
+        'Scenario estimates not updated after form submission');
       const question=page.locator('#duvidas details').first();
       await question.locator('summary').click();
       check(await question.getAttribute('open')!==null,'FAQ does not open');
