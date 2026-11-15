@@ -13,7 +13,7 @@ use Illuminate\Database\Connection;
  * It always denies unless the exact GitHub CI laboratory identity matches.
  * No service-container binding, migration, route or injected real credential.
  */
-final class AiaPgNonceCandidateLedger
+final class AiaPgNonceCandidateLedger implements AiaNonceClaimSource
 {
     private const TABLE = 'public.aia_lab_nonce_atomic_probe';
 
