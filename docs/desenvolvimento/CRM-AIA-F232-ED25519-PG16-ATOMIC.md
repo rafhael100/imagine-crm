@@ -1,0 +1,386 @@
+# CRM F232 — Ed25519 + nonce atômico PostgreSQL 16 descartável
+
+**14/11/2026 · CI com fonte Agents imutavelmente fixada · NO-GO.**
+
+## Avanço técnico
+
+A F231 comprovou a assinatura Ed25519 com chave pública injetada e apenas
+um contador anti-replay **local à instância PHP**. A F232 combina, pela
+primeira vez no lado CRM, a **implementação original** do Agents na revisão
+`fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba` com o ledger
+PostgreSQL 16 real `AiaPgNonceCandidateLedger` já validado em CI.
+
+O novo `AiaPgEd25519LabBridge` preserva esta ordem sem alternativas:
+verificar assinatura destacada, issuer/audience, tenant, operação,
+JSON canônico, digest dos bytes, nonce e janela temporal **antes** de
+tentar `INSERT ... ON CONFLICT DO NOTHING` na base PostgreSQL descartável.
+O banco impõe a unicidade `(issuer,audience,nonce)` entre processos e
+empresas; não depende de uma lista local de nonces para a proteção final.
+
+## Evidências reproduzíveis
+
+`tests/Feature/AiaPostgresEd25519NonceCandidateTest.php` executa
+somente com `AIA_ED25519_PG_LAB=true` e com as verificações da identidade
+efêmera do GitHub Actions: banco `imagine_crm_ci`, host local,
+`APP_ENV=testing`, repositório correto e usuário da conexão `postgres`.
+Se o marcador estiver ativo e faltar qualquer pré-requisito, falha
+explicitamente. Sem marcador, a suite geral ignora esta prova isolada.
+
+- **3 tenants sintéticos**, três nonces únicos consumidos uma vez em
+  PostgreSQL real e tentativas de replay por uma segunda conexão
+  independente (inclusive com tentativa de trocar tenant).
+- **11 negativos** da assinatura Ed25519 ou claims, incluindo claims
+  fraudulentas mas corretamente assinadas. Nenhuma delas consome nonce
+  ou altera a autorização. Verifica que o nonce continua utilizável
+  depois de uma prova inválida.
+- Indisponibilidade da tabela PostgreSQL gera negação uniforme sem
+  projeção, sem qualquer `ALLOW`.
+- O workflow `ci-postgresql-rls.yml` exige checkout Agents em SHA fixa,
+  verifica a SHA, executa PHPUnit sobre PostgreSQL 16 real e mantém
+  integralmente a suíte anterior.
+
+## Bloqueios intencionais
+
+O laboratório ainda usa chaves **determinísticas e públicas para teste**.
+A assinatura verificada atesta apenas criptografia de fixture, não
+identidade operacional; `AiaPgNonceCandidateLedger` é restrito à base
+descartável da CI. Não existem rotas de autenticação de serviços,
+segredos reais, autorização por registro/coluna, dados reais,
+credenciais, deploy, configuração da VPS nem custos extras.
+
+A resposta pública continua SEMPRE
+`DENIED_OR_NOT_FOUND`, `real_authorization=false`,
+`external_calls=0`, mesmo com assinatura e registro PG válidos.
+
+O CRM [PR #57](https://github.com/rafhael100/imagine-crm/pull/57)
+permanece DRAFT; **14 gates, 7 decisões independentes, 13 cenários
+operacionais NAO_EXECUTADO. NO-GO.** O próximo bloqueio real é
+autoridade da identidade serviço-serviço e política do CRM por
+empresa/principal/recurso/campo, mais fonte protegida de chaves,
+revogação, TLS e revisão independente. Esta PR está em **DRAFT / NO-MERGE /
+NO-DEPLOY** e não altera `main`, produção ou VPS.
+
+
+## F232b — trust anchor do serviço obtido exclusivamente do PostgreSQL
+
+Como continuidade na mesma PR, a classe
+`app/Support/Synthetic/AiaPgServiceKeyringLab.php` consulta a
+**chave pública Ed25519 registrada pelo lado servidor** em uma tabela
+descartável `aia_lab_ed25519_service_keys`. A chave não é lida de
+cabeçalhos, parâmetros fornecidos pelo chamador ou do envelope assinado;
+apenas `key_id` e tenant esperado, previamente limitados, selecionam
+uma linha PostgreSQL com issuer/audience fixos.
+
+A ponte `AiaPgEd25519LabBridge::matchesWithServerKeyring`
+exige JSON canônico, consulta a chave da empresa correta e somente então
+executa a verificação Ed25519 original Agents e a reserva atômica de nonce.
+
+O teste adicional usa **PostgreSQL 16 real e descartável** para verificar
+leitura de chave confiável, negativa de chave desconhecida ou de outra
+empresa, revogação, rotação para novo par público de laboratório,
+rejeição da assinatura da chave antiga e falha segura quando o registro
+de chaves fica indisponível. Não inclui endpoint, credenciais reais
+ou permissões efetivas, nem habilita `ALLOW`.
+
+Essa tabela é criada e apagada **somente pelo teste**, não existe
+migration de aplicação, registro no container Laravel, sistema de
+segredos ou configuração na VPS. O experimento demonstra o padrão de
+fonte de confiança servidor/CRM, não o IAM operacional.
+
+
+## F233 — prévia de escopo por empresa, delegação, responsável e campo
+
+A próxima fase usa a **mesma CI com PostgreSQL 16 descartável** e amplia
+a verificação para políticas armazenadas pelo **lado CRM**:
+
+- `AiaPgServiceScopeLab::matchesCandidate` consulta fatos **distintos**:
+  delegação do principal e finalidade para um serviço/chave/empresa/operação,
+  vínculo do recurso ao principal e uma concessão específica para cada
+  campo solicitado (`ref` e `stage`). O pedido assinado é **seletor de
+  fatos**, não fonte de autorização.
+- `AiaPgEd25519LabBridge::matchesWithServerScope` exige **antes** a
+  assinatura original Agents, chave pública pertencente ao CRM e nonce
+  único no PostgreSQL; somente então compara os fatos da política.
+- `inspectWithServerScope` não transforma o resultado em `ALLOW`.
+  Mesmo quando a prévia encontra escopo, a resposta pública permanece
+  `DENIED_OR_NOT_FOUND`, sem projeção e sem acesso ao banco de leads.
+
+A expansão do teste `AiaPostgresEd25519NonceCandidateTest` cria e apaga
+tabelas **exclusivas da CI** para delegações, responsáveis e campos, e
+exercita 14 variantes: escopo completo, tenant sem autorização, delegação
+desativada/revogada/expirada, responsável revogado, campo desativado,
+projeção reduzida, principal/recurso/finalidade diferentes, chave
+revogada e tabela de política indisponível. O uso de nonce repetido é
+sempre negado independentemente de alterações posteriores nas regras.
+
+**Limitações importantes:** os fatos são inteiramente fictícios; o
+PostgreSQL deste ensaio usa a conexão privilegiada da CI, **não**
+comprova uma role operacional de leitura mínima nem RLS para os dados
+de leads. O modelo de responsável e delegação não é membership humana
+autenticada nem consentimento LGPD real. Não existe endpoint, worker,
+rota Laravel, migration produtiva, role da VPS, chave privada real,
+concessão ao usuário ou acesso a cliente.
+
+**NO-GO permanece.** Para homologação funcional ainda é necessário
+revisão independente de SEG/DBA, CORE/AUT, LGPD, isolamento com role
+não privilegiada/RLS, verificação de membro e recurso reais, logs
+auditáveis sem PII e os **14 gates / 13 cenários operacionais** do
+CRM-AIA-RO-01.
+
+
+## F234 — política lida por papel PostgreSQL de privilégio mínimo e FORCE RLS
+
+Para reduzir a dependência da conexão privilegiada do ensaio F233, a
+prévia de escopo agora exige uma conexão distinta `crm_aia_scope_ci`
+de **somente SELECT**, sem herança, superuser, ownership ou BYPASSRLS.
+Ela valida no PostgreSQL a identidade da role, `row_security=on`, a
+ausência de marcador de empresa herdado, e que as três tabelas
+fictícias de política tenham simultaneamente `ENABLE/FORCE ROW LEVEL
+SECURITY` e não pertençam à role de leitura.
+
+O teste cria e apaga a role **somente dentro da CI descartável**,
+concede SELECT apenas nas três tabelas, cria políticas RLS de tenant
+em cada uma, e monta uma conexão independente para consultar escopos.
+O tenant é definido **LOCAL à transação** com `set_config(..., true)`
+somente depois de verificar a assinatura, chave pública CRM e nonce
+único. Após a transação, o escopo é limpo. A role não pode alterar
+a delegação; consultas sem tenant não enxergam registros de nenhuma
+das duas empresas fictícias.
+
+O teste demonstra também que A e B possuem fatos separados e não
+recebem visibilidade cruzada sob RLS. O backend administrativo continua
+restrito a semear/apagar **dados fictícios e temporários** e a consultar
+o keyring/nonce de laboratório. A consulta efetiva de políticas não
+retorna resultados de uma conexão privilegiada.
+
+**Isso ainda não é autorização operacional:** marcadores de tenant
+de sessões SQL podem ser alterados por quem controla uma conexão,
+portanto o *serviço de backend confiável* deverá selecionar o tenant
+a partir de identidade verificada, nunca de parâmetro externo. A
+fonte de delegações e responsáveis é sintética, não o esquema real de
+leads e memberships. Ainda não existem segredo de produção, mTLS,
+auditoria operacional, API externa ou revisão SEG/LGPD. A resposta
+pública permanece sempre negada. **NO-GO / NO-MERGE / NO-DEPLOY.**
+
+
+## F235 — fronteira real de autenticação humana versus assinatura do serviço
+
+A F235 preserva deliberadamente **duas identidades distintas**:
+
+1. **Serviço Agents:** verificado pelo `MockServiceIdentityPreflight`
+   original, com Ed25519 e chave de laboratório. A prova assinada
+   contém `principal_ref` sintético e não se transforma em uma sessão
+   humana, identidade global UUID ou autorização de leitura.
+2. **Pessoa no CRM:** validada pelo fluxo existente
+   `ExperimentalAuthenticator` (senha + TOTP e registro persistido de
+   sessão em PostgreSQL 16), `GuardPrincipalSource::withinCurrent`
+   e `PostgresActiveMembershipStore`. A role `crm_app_ci` consulta
+   `crm_memberships` protegida por FORCE RLS em transação. O resultado
+   é um snapshot de membership, **não uma decisão positiva de acesso**.
+
+O teste CI `AiaServiceHumanIamBoundaryTest` usa somente os dados
+fictícios do trait `SyntheticIam`, o código atual real de CORE/Identity
+e o verifier original Agents SHA-fixado. Comprova que mesmo após MFA
+e membership correta, `TenantAccessBoundary` consulta
+`DenyByDefaultAuthorizer` e **não executa a closure de leitura**.
+Comprova também recusa de tenant da outra empresa, revogação
+do vínculo após commit e revogação da sessão registrada, e que
+nenhum `principal_ref` do serviço assinado pode se converter em
+identidade humana.
+
+A suíte exclusiva é acionada **somente** no PostgreSQL 16 efêmero
+da CI pelo marcador `AIA_F235_IAM_LAB=true`. Fora desse recorte,
+é explicitamente ignorada e não abre rota, worker ou dependência
+de produção. O candidato de autenticação HTTP/Redis e recuperação
+da PR CRM #604 permanece independente, sem merge; a F235 já
+usa as classes CORE IAM presentes na base DEV.
+
+**Próximos requisitos reais:** delegação operacional sob controle
+do CRM (sem reencaminhar cookies/sessões humanas ao Agents), identidade
+de serviço e chaves protegidas, RLS/RBAC reais para leads,
+revogação efetiva sob concorrência, auditoria de decisões sem PII,
+revisão SEG/CORE/DBA/LGPD e 13 cenários de homologação. F235 não
+implementa nenhum ALLOW. **NO-GO / DRAFT / NO-MERGE / NO-DEPLOY.**
+
+
+## F236 — auditoria mínima de negativas sem dados pessoais
+
+Esta fase acrescenta a classe `AiaPgServiceDenialAuditLab` e a prova
+`AiaServiceDenialAuditLabTest`, exclusivamente no PostgreSQL16 efêmero.
+Os eventos contêm apenas **UUID do evento gerado pelo servidor**,
+identificador fixo do emissor sintético, `DENIED_OR_NOT_FOUND`,
+`sha256` dos bytes canônicos do pedido sintético, `sha256` com
+domínio do tenant sintético e instante fixo. **Não** incluem pedido
+bruto, headers, identificação humana, telefone, e-mail, nome ou dados
+de leads.
+
+A CI cria uma role `crm_aia_audit_ci` dedicada, não privilegiada e
+sem BYPASSRLS. Ela recebe somente `INSERT` na tabela descartável
+`aia_lab_service_denial_audit`, que aplica `FORCE ROW LEVEL SECURITY`
+e uma política `WITH CHECK` restrita a registros de negativa. A role
+não possui `SELECT`, `UPDATE` nem `DELETE`; as consultas de
+inspeção no teste são realizadas pelo administrador **somente da CI**.
+A auditoria prova unicidade do evento entre duas conexões independentes,
+rejeição de duplicatas, conteúdo não identificável, falta de privilégios,
+recusa de JSON não canônico, identidade SQL errada e indisponibilidade
+da tabela. Ausência de auditoria não pode produzir uma decisão de
+acesso positiva.
+
+**Limites:** ainda não existe trilha de auditoria em produção,
+persistência/retenção LGPD homologada, transação distribuída com
+gerador de evento, alertas operacionais ou anexação a um endpoint real.
+A tabela e a role só existem no ensaio descartável e são removidas no
+final. As decisões do produto permanecem negadas. Faltam revisão
+SEG/DBA/LGPD/CORE e os 14 gates/13 cenários de CRM #57.
+**NO-GO / DRAFT / NO-MERGE / NO-DEPLOY.**
+
+
+## F237 — testemunho de delegação iniciado por pessoa autenticada
+
+A classe AiaPgHumanDelegationWitnessLab aproxima a relação entre
+**pessoa autenticada pelo CRM** e **serviço Agents assinado** sem
+implantar qualquer autorização de leads. Só existe no **PostgreSQL16
+descartável de GitHub Actions**, com AIA_F237_DELEGATION_LAB=true.
+
+**Emissão (humana):** issueFromCurrentHuman exige uma sessão CRM
+válida e MFA recente por GuardPrincipalSource::withinCurrent(..., true).
+A identidade humana é lida exclusivamente dessa fonte, jamais de um
+campo no pedido Agents. Revalida a membership real
+PostgresActiveMembershipStore::within em crm_memberships com FORCE
+RLS e bloqueio de linha. Uma tabela de vínculo **CRM-owned** associa
+tenant_ref sintético à UUID da empresa e ao principal do serviço; o
+vínculo, a operação e os campos exatos são validados antes de persistir
+um testemunho de teste com UUID, hash do pedido canônico, versão da
+membership, validade curta e identificador interno de identidade.
+
+**Verificação do serviço (somente diagnóstico):**
+matchesSignedServiceWitness valida primeiro a chave pública
+autorizada pelo CRM, a assinatura original Ed25519 do Agents e o
+nonce atômico. Sob bloqueio de registro no PostgreSQL descarta
+testemunhos ausentes, expirados, revogados ou de empresa/pedido/chave
+diferentes, revalida o vínculo CRM e consulta novamente a membership
+física da identidade armazenada no servidor, exigindo a **mesma
+versão**. Não há token, sessão ou cookie humano enviado ao Agents.
+
+O teste utiliza senhas/TOTP e chaves **inteiramente fictícios**. A
+matriz cobre ausência de login, empresa errada, emissão duplicada,
+assinatura correta, replay, mudança de projeção/campos, desativação
+do vínculo, revogação e expiração do testemunho, rotação de
+membership, revogação da própria membership, revogação da chave
+pública, sessão IAM revogada antes de nova emissão e limpeza de
+transações.
+
+**Limites críticos:** a tabela de testemunhos é temporária, escrita
+apenas por uma conexão privilegiada do **laboratório**. Não há
+estrutura de provisionamento operacional, login de serviço real,
+delegação aprovada pelo produto/usuário final, ACL de leads ou
+consentimento LGPD. A validade de um testemunho não autoriza
+leitura real: a resposta permanece DENIED_OR_NOT_FOUND. A
+decisão de revogar delegações existentes automaticamente ao
+encerrar a sessão do usuário **ainda precisa ser homologada**;
+por ora, revogação de sessão impede *novas* emissões, enquanto
+versão de membership e revogação explícita invalidam testemunhos
+persistentes.
+
+A próxima etapa de segurança será revisão independente de
+assinatura/vínculo, prova com usuário/serviço em infraestrutura de
+homologação isolada, serialização de revogações sob concorrência e
+eventos auditáveis. CRM #57 permanece **NO-GO**, com 14 gates,
+7 decisões e 13 cenários operacionais pendentes. **NO-MERGE /
+NO-DEPLOY / NO-SECRETS / NO-PII.**
+
+
+## F238 — continuidade da sessão emissora e concorrência de revogações
+
+Esta fase endurece o testemunho F237 (continuamente limitado ao laboratório
+PostgreSQL 16 descartável). A emissão por pessoa autenticada passa a registrar
+o **UUID interno da sessão de IAM que estava efetivamente verificada sob
+bloqueio** e a versão da credencial. Nem o cookie, nem o token da sessão,
+nem o token_hash são incluídos no testemunho ou enviados ao Agents.
+
+Na consulta do serviço, a ponte exige primeiro a assinatura Ed25519 original
+Agents e o keyring público do CRM, o nonce único PG16 e o witness vinculado
+ao hash exato do pedido. Em seguida, AiaPgSessionContinuityLab usa uma
+conexão distinta com papel crm_iam_ci não privilegiado para verificar
+**exatamente aquela sessão de origem**, com status ativo, MFA registrado,
+prazo de sessão/credencial, versão de credencial e operação IAM concluída,
+sem session hold. Essa verificação conserva locks PostgreSQL durante a
+reconsulta de membership física em crm_memberships sob FORCE RLS.
+
+**Semântica conservadora escolhida para o laboratório:** logout ou revogação
+da sessão original impede que o serviço reutilize qualquer witness
+pendente daquela sessão. Uma nova sessão do mesmo usuário não substitui
+a antiga. Rotação de credencial, vínculo empresarial revogado/trocado,
+revogação do grant, alteração de payload/campos ou chave Ed25519 inválida
+também resultam em negativa. O serviço não recebe nenhuma sessão humana.
+
+**Concorrência:** teste F238 com duas conexões PostgreSQL físicas distintas
+demonstra bloqueios de linha enquanto a validação de sessão está ativa,
+com falha por lock_timeout no UPDATE concorrente. Depois que a transação
+termina, a mesma revogação consegue commitar e nova verificação não executa
+efeitos. Outra prova repete esse experimento na linha de delegação com
+FOR UPDATE, usando uma conexão administrativa *apenas de testes*.
+
+Os dados e roles do novo witness não estão em migrations de produção;
+a role do banco de testemunhos ainda é privilegiada somente porque se trata
+de configuração laboratorial, portanto o resultado **não comprova**
+provisionamento real nem isolamento de privilégios de emissão para clientes.
+Também não prova ausência de deadlock em todas as interleavings, auditoria
+operacional sob carga, distribuições/retries nem consentimento. F238 não
+altera o bloqueio de acesso empresarial:
+DENIED_OR_NOT_FOUND e nenhuma projeção de lead.
+
+Próximas condições obrigatórias: revisão independente SEG/CORE/DBA/IAM/LGPD,
+modelagem da sessão de delegação para produção com papel de emissão mínimo,
+testes adversariais de concorrência/cancelamento e 13 cenários operacionais
+do CRM #57. **DRAFT / NO-MERGE / NO-DEPLOY / NO-SECRETS / NO-PII / NO-GO.**
+
+
+## F239 — emissão de testemunhos por papel limitado e FORCE RLS
+
+O testemunho de delegação F237/F238 deixa de utilizar o administrador
+PostgreSQL no caminho de emissão e consulta. A classe
+AiaPgHumanDelegationWitnessLab exige agora a conexão segregada
+crm_aia_grant_ci, sem SUPERUSER, CREATEDB, CREATEROLE, INHERIT ou
+BYPASSRLS, e verifica nome do banco, host local, schema, RLS
+habilitada e FORCE ROW LEVEL SECURITY nas tabelas de vínculos
+e delegações. Nenhum usuário operacional, API ou migration real
+é alterado.
+
+A role tem somente SELECT sobre vínculos e testemunhos da empresa,
+INSERT somente sobre testemunhos, e uma concessão PostgreSQL de
+UPDATE **apenas na coluna sem conteúdo lock_marker**, exigida pelo
+SQL SELECT FOR UPDATE. A política de UPDATE é delimitada por tenant
+e WITH CHECK false, impedindo mutações efetivas na linha. Não há
+UPDATE nos campos de concessão/revogação, DELETE, leitura de chaves
+privadas, acesso às tabelas IAM/membership/leads, nem permissões
+em outros recursos do CRM. O tenant é aplicado por marcador
+**local da transação** após as verificações de ambiente; a
+autoridade efetiva de emissão depende ainda da identidade humana
+com MFA recente e vínculo UUID físico ativos, e a consulta
+do serviço exige Ed25519 + keyring CRM + nonce PG16 + sessão
+original + versão de membership.
+
+A suíte temporária da F237 agora cria a role, tabelas, policies e
+conexões para testar: ausência de dados antes do marcador de
+tenant, isolamento entre duas empresas sintéticas, emissão de
+uma única concessão, proibição de alterações de coluna técnica,
+recusa de consultas a IAM, memberships e keyring, limpeza de
+marcador de tenant e revogação física por administrador
+**somente do laboratório**. Todos os objetos são descartados
+ao final da suíte. Fora do marcador AIA_F239_GRANT_ROLE_LAB=true,
+a classe nega sem consultar a base.
+
+O marcador de tenant ainda é uma capacidade da conexão SQL e não
+constitui autenticação. Esta role não é operacional nem permite
+que o serviço libere dados do cliente. Os limites de
+concorrência demonstrados nas provas anteriores seguem válidos
+apenas para as operações e interleavings realmente testadas.
+F239 não altera o retorno público: DENIED_OR_NOT_FOUND, projeção
+nula e zero chamadas externas.
+
+**Próximos passos:** revisão independente SEG/DBA/CORE/IAM/LGPD,
+provisionamento mínimo de identidades operacionais e emissão
+autorizada, infraestrutura isolada de homologação e 13 cenários
+CRM #57; todos os 14 gates/7 decisões continuam pendentes.
+**NO-GO / DRAFT / NO-MERGE / NO-DEPLOY / NO-PII.**

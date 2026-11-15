@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - dev/fast-track-crm-2026-11-04
+      - review/crm-aia-f232-ed25519-pg16-atomic-2026-11-14
   pull_request:
     branches:
       - main
       - dev/fast-track-crm-2026-11-04
+      - review/crm-aia-f231-ed25519-deny-ci-2026-11-14
 
 permissions:
   contents: read
@@ -156,5 +158,63 @@ jobs:
         run: php artisan test --filter=PostgresMembershipRlsTest --no-ansi
       - name: Prove nonce uniqueness between two disposable PostgreSQL connections
         run: php artisan test --filter=AiaPostgresAtomicNonceCandidateTest --no-ansi
+      - name: Checkout immutable Agents Ed25519 verifier for F232 PostgreSQL lab
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba
+          path: _aia_f231_fixture
+          persist-credentials: false
+      - name: Verify F232-F247 PG16 signed service, identity locks and HTTP test integration
+        env:
+          AIA_ED25519_PG_LAB: 'true'
+          AIA_F235_IAM_LAB: 'true'
+          AIA_F236_AUDIT_LAB: 'true'
+          AIA_F237_DELEGATION_LAB: 'true'
+          AIA_F238_SESSION_LAB: 'true'
+          AIA_F239_GRANT_ROLE_LAB: 'true'
+          AIA_F240_KEYRING_LAB: 'true'
+          AIA_F241_NONCE_ROLE_LAB: 'true'
+          AIA_F242_PEER_ROUTING_LAB: 'true'
+          AIA_F243_BINDING_LOCK_LAB: 'true'
+          AIA_F244_KEY_ROTATION_LOCK_LAB: 'true'
+          AIA_F246_HTTP_LAB: 'true'
+          AIA_F247_HTTP_E2E_LAB: 'true'
+        run: |
+          set -euo pipefail
+          test "$(git -C _aia_f231_fixture rev-parse HEAD)" = "fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba"
+          php -m | grep -qi sodium
+          php -l app/Support/Synthetic/AiaPgEd25519LabBridge.php
+          php -l app/Support/Synthetic/AiaPgServiceKeyringLab.php
+          php -l app/Support/Synthetic/AiaTrustedPublicKeySource.php
+          php -l app/Support/Synthetic/AiaPgRestrictedKeyringLab.php
+          php -l app/Support/Synthetic/AiaNonceClaimSource.php
+          php -l app/Support/Synthetic/AiaPgRestrictedNonceLedgerLab.php
+          php -l app/Support/Synthetic/AiaPgServiceTenantBindingLab.php
+          php -l app/Support/Synthetic/AiaPgTenantBoundServiceProofLab.php
+          php -l app/Support/Synthetic/AiaPgLockedServiceTenantBindingLab.php
+          php -l app/Support/Synthetic/AiaPgLockedServiceKeyringLab.php
+          php -l app/Support/Synthetic/AiaPgServiceScopeLab.php
+          php -l tests/Feature/AiaPostgresEd25519NonceCandidateTest.php
+          php -l _aia_f231_fixture/src/MockBridge/MockServiceIdentityPreflight.php
+          php artisan test --filter=AiaPostgresEd25519NonceCandidateTest --no-ansi
+          php -l app/Support/Synthetic/AiaPgHumanDelegationWitnessLab.php
+          php -l app/Support/Synthetic/AiaPgSessionContinuityLab.php
+          php -l tests/Feature/AiaServiceHumanIamBoundaryTest.php
+          php artisan test --filter=AiaServiceHumanIamBoundaryTest --no-ansi
+          php -l app/Support/Synthetic/AiaPgServiceDenialAuditLab.php
+          php -l tests/Feature/AiaServiceDenialAuditLabTest.php
+          php artisan test --filter=AiaServiceDenialAuditLabTest --no-ansi
+      - name: Verify CRM-Agents F245 NO-GO HTTP route and uniform denial
+        run: |
+          php -l tests/Feature/AiaNoGoHttpBoundaryTest.php
+          php artisan test --filter=AiaNoGoHttpBoundaryTest --no-ansi
+      - name: Verify CRM-Agents F246 isolated HTTP staging envelope without granting access
+        env:
+          AIA_F246_HTTP_LAB: 'true'
+        run: |
+          php -l app/Support/Synthetic/AiaStagingDeniedIngressLab.php
+          php -l tests/Feature/AiaStagingDeniedIngressTest.php
+          php artisan test --filter=AiaStagingDeniedIngressTest --no-ansi
       - name: Run full synthetic test suite
         run: php artisan test --no-ansi
