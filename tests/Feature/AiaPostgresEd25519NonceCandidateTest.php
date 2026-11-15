@@ -672,6 +672,8 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
             $db->statement('DROP TABLE IF EXISTS public.aia_lab_resource_owners');
             $db->statement('DROP TABLE IF EXISTS public.aia_lab_service_delegations');
             $db->statement('DROP TABLE IF EXISTS public.aia_lab_ed25519_service_keys');
+            $db->statement('REVOKE USAGE ON SCHEMA public FROM crm_aia_scope_ci');
+            $db->statement('REVOKE CONNECT ON DATABASE imagine_crm_ci FROM crm_aia_scope_ci');
             $db->statement('DROP ROLE IF EXISTS crm_aia_scope_ci');
         }
     }
