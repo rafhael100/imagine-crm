@@ -203,5 +203,9 @@ jobs:
           php -l app/Support/Synthetic/AiaPgServiceDenialAuditLab.php
           php -l tests/Feature/AiaServiceDenialAuditLabTest.php
           php artisan test --filter=AiaServiceDenialAuditLabTest --no-ansi
+      - name: Verify CRM-Agents F245 NO-GO HTTP route and uniform denial
+        run: |
+          php -l tests/Feature/AiaNoGoHttpBoundaryTest.php
+          php artisan test --filter=AiaNoGoHttpBoundaryTest --no-ansi
       - name: Run full synthetic test suite
         run: php artisan test --no-ansi
