@@ -1,0 +1,64 @@
+# Exemplo de vhost Nginx INTERNO — NÃO é configuração ativa.
+#
+# Preparação sem deploy, sem domínio, sem credenciais e sem TLS público.
+# Protege um servidor HTTP ligado SOMENTE a 127.0.0.1 (porta 18081).
+# O proxy HTTPS frontal, quando homologado, DEVE manter autenticação e
+# não deve publicar este serviço anônimo na Internet.
+# Pré-requisitos de ativação: revisão operacional, autenticação/SSL,
+# arquivo htpasswd seguro FORA do repositório, autorização e smoke VPS.
+# Include this file INSIDE nginx http{} (as conf.d/*.conf normally is).
+# Keep main page strict; only F3-240 synthetic demo allows inline code.
+map $uri $crm_preview_csp {
+    default "default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+    /fluxo-demo/index.html "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+}
+
+server {
+    listen 127.0.0.1:18081;
+    server_name _;
+    root /srv/imagine/crm-preview/current;
+    autoindex off;
+    server_tokens off;
+
+    # O arquivo deve ser provisionado fora do GitHub com permissão restrita.
+    auth_basic "Imagine CRM — revisao privada";
+    auth_basic_user_file /etc/nginx/crm-preview.htpasswd;
+
+    # Cabeçalhos também em respostas 401/403/404.
+    add_header Cache-Control "no-store, private, max-age=0" always;
+    add_header Pragma "no-cache" always;
+    add_header X-Robots-Tag "noindex, nofollow, noarchive" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header Content-Security-Policy "$crm_preview_csp" always;
+
+    # Expõe SOMENTE os arquivos estáticos previstos, sem API ou router Laravel.
+    location = / {
+        limit_except GET HEAD { deny all; }
+        try_files /index.html =404;
+    }
+    location = /index.html {
+        limit_except GET HEAD { deny all; }
+        try_files /index.html =404;
+    }
+    location = /assets/logo-imagine.png {
+        limit_except GET HEAD { deny all; }
+        try_files /assets/logo-imagine.png =404;
+    }
+    location = /assets/site.css {
+        limit_except GET HEAD { deny all; }
+        try_files /assets/site.css =404;
+    }
+    location = /assets/site.js {
+        limit_except GET HEAD { deny all; }
+        try_files /assets/site.js =404;
+    }
+    location = /fluxo-demo/index.html {
+        limit_except GET HEAD { deny all; }
+        try_files /fluxo-demo/index.html =404;
+    }
+    location / {
+        return 404;
+    }
+}
