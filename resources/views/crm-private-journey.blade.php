@@ -142,6 +142,45 @@
 @empty<tr><td colspan="4" class="empty">Nenhuma tarefa registrada.</td></tr>
 @endforelse</tbody></table></div>
 @elseif($section==='reports')
+@php
+    $wonCount=count(array_filter($data['leads'],fn($lead)=>$lead->stage==='won'));
+    $winRate=$total>0 ? round($wonCount*100/$total,1) : 0.0;
+    $reportSay=fn($pt,$en,$es)=>$language==='en'?$en:($language==='es'?$es:$pt);
+@endphp
+<section class="panel" data-report-methodology="imagine">
+<span class="tag">{{ $reportSay('Metodologia Imagine','The Imagine Method','Metodología Imagine') }}</span>
+<h2 class="mt">{{ $reportSay('Visitas → Leads → Clientes','Visits → Leads → Customers','Visitas → Leads → Clientes') }}</h2>
+<p class="quiet">{{ $reportSay(
+'Indicadores calculados somente a partir de oportunidades fictícias da empresa autenticada. Não há rastreamento de visitas neste CRM.',
+'Metrics are calculated only from fictional opportunities of the authenticated company. This CRM does not track visits.',
+'Indicadores calculados solo a partir de oportunidades ficticias de la empresa autenticada. Este CRM no rastrea visitas.'
+) }}</p>
+<div class="metrics">
+<article class="card metric" data-report-stage="visits" data-report-visits="unavailable">
+<span class="quiet">{{ $reportSay('Visitas','Visits','Visitas') }}</span>
+<strong>—</strong><p class="quiet">{{ $reportSay('Não medidas neste CRM','Not measured in this CRM','No medidas en este CRM') }}</p>
+</article>
+<article class="card metric" data-report-stage="leads" data-report-leads="{{ $total }}">
+<span class="quiet">Leads</span><strong>{{ $total }}</strong>
+<p class="quiet">{{ $reportSay('Oportunidades fictícias da empresa','Fictional company opportunities','Oportunidades ficticias de la empresa') }}</p>
+</article>
+<article class="card metric" data-report-stage="customers" data-report-clients="{{ $wonCount }}">
+<span class="quiet">{{ $reportSay('Clientes','Customers','Clientes') }}</span>
+<strong>{{ $wonCount }}</strong>
+<p class="quiet">{{ $reportSay('Negócios marcados como ganhos','Deals marked as won','Negocios marcados como ganados') }}</p>
+</article>
+<article class="card metric" data-report-stage="conversion" data-report-conversion="{{ $winRate }}">
+<span class="quiet">{{ $reportSay('Ganhos por lead','Won per lead','Ganados por lead') }}</span>
+<strong>{{ number_format($winRate,1,$language==='en'?'.':',',$language==='en'?',':'.') }}%</strong>
+<p class="quiet">{{ $reportSay('Ganhos ÷ total de leads fictícios','Won ÷ all fictional leads','Ganados ÷ leads ficticios totales') }}</p>
+</article>
+</div>
+<p class="quiet">{{ $reportSay(
+'A contagem de clientes nesta demonstração representa oportunidades em etapa Ganho, não contratos, pagamentos ou clientes reais.',
+'Customer count in this demo represents opportunities in the Won stage, not actual contracts, payments or customers.',
+'El número de clientes en esta demostración representa oportunidades en etapa Ganado, no contratos, pagos ni clientes reales.'
+) }}</p>
+</section>
 <div class="panel"><h2>Seu funil em números.</h2>
 @foreach($stages as $stage=>$label)
 @php
