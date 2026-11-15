@@ -27,6 +27,8 @@ final readonly class AiaPgServiceDenialAuditLab
 
     /**
      * One immutable audit attempt per server-generated event UUID.
+     * PostgreSQL PRIMARY KEY rejects a duplicate as an error; never use
+     * ON CONFLICT here because that may require forbidden SELECT grants.
      * Returns false on replay, unavailable DB, wrong role or bad input.
      */
     public function appendDenial(
@@ -89,8 +91,7 @@ final readonly class AiaPgServiceDenialAuditLab
                 'INSERT INTO '.self::TABLE.' (
                     event_id,issuer,event_type,request_sha256,
                     tenant_sha256,occurred_at
-                 ) VALUES (?,?,?,?,?,?)
-                 ON CONFLICT (event_id) DO NOTHING',
+                 ) VALUES (?,?,?,?,?,?)',
                 [
                     strtolower($eventId),
                     'SYNTHETIC_AGENT_SERVICE',
