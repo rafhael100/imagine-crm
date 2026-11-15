@@ -283,6 +283,37 @@ final class PostgresSitesProvisioningF399Test extends TestCase
      * F400: signed fake Portal commands are an additional independent gate.
      * The F399 owner registry still decides what may actually be provisioned.
      */
+    /**
+     * F401: use the actual pinned Portal emitter, not the CRM's in-process
+     * fixture signer, when the dedicated cross-repository CI is selected.
+     * The signer output MUST match the independent CRM canonical protocol.
+     * @param array<string,mixed> $claim
+     * @return array<string,mixed>
+     */
+    private function signPortalCommandForCi(
+        LaboratoryPortalS2sBindingGateway $gateway,
+        array $claim,
+    ): array {
+        if (getenv('CRM_SITES_F401_PORTAL_CI') !== '1') {
+            return $gateway->signForCi($claim);
+        }
+        $source = getenv('F401_PORTAL_SOURCE');
+        if (!is_string($source)
+            || !is_file($source.'/app/Labs/SitesF401/PortalSitesCrmSignedBindingCommandLab.php')) {
+            throw new LogicException('Pinned original Portal F401 issuer not available.');
+        }
+        require_once $source.'/app/Labs/SitesF401/PortalSitesCrmSignedBindingCommandLab.php';
+        $wire = \App\Labs\SitesF401\PortalSitesCrmSignedBindingCommandLab::sign(
+            $claim, 1790000000,
+        );
+        $this->assertSame(
+            $gateway->signForCi($claim),
+            $wire,
+            'Portal F401 original wire must equal CRM F400 canonical HMAC exactly.',
+        );
+        return $wire;
+    }
+
     public function test_portal_s2s_scoped_commands_replay_rotation_and_atomic_revoke(): void
     {
         if (getenv('CRM_SITES_F400_S2S_CI') !== '1') {
@@ -324,7 +355,7 @@ final class PostgresSitesProvisioningF399Test extends TestCase
             'issuedAt' => $now - 10,
             'expiresAt' => $now + 40,
         ];
-        $signed = $gateway->signForCi($claim);
+        $signed = $this->signPortalCommandForCi($gateway,$claim);
         $unsigned = $signed;
         unset($unsigned['signature']);
         $this->assertSame('synthetic_s2s_denied',
@@ -354,7 +385,7 @@ final class PostgresSitesProvisioningF399Test extends TestCase
             ['bindingReference' => '00000000-0000-4000-8000-000000000001'],
             ['expectedOrderVersion' => 2],
         ] as $changes) {
-            $reSigned = $gateway->signForCi(array_replace($claim, $changes));
+            $reSigned = $this->signPortalCommandForCi($gateway,array_replace($claim, $changes));
             $this->assertSame('synthetic_s2s_denied',
                 $gateway->consume($reSigned, $now)['status_code']);
         }
@@ -379,7 +410,7 @@ final class PostgresSitesProvisioningF399Test extends TestCase
         $reusingNonce = $claim;
         $reusingNonce['keyId'] = 'lab-portal-crm-provision-b';
         $this->assertSame('synthetic_s2s_denied',
-            $gateway->consume($gateway->signForCi($reusingNonce), $now)['status_code']);
+            $gateway->consume($this->signPortalCommandForCi($gateway,$reusingNonce), $now)['status_code']);
 
         $siteEvent = self::message(self::ORG_A, self::LEAD, self::NONCE);
         $this->assertSame('synthetic_captured',
@@ -395,14 +426,14 @@ final class PostgresSitesProvisioningF399Test extends TestCase
             'nonce' => '40404040-4040-4040-8040-404040404042',
         ]);
         $this->assertSame('synthetic_s2s_denied',
-            $gateway->consume($gateway->signForCi($wrongRole), $now)['status_code']);
+            $gateway->consume($this->signPortalCommandForCi($gateway,$wrongRole), $now)['status_code']);
 
         $rotated = array_replace($claim, [
             'keyId'=>'lab-portal-crm-provision-b',
             'nonce'=>'40404040-4040-4040-8040-404040404043',
         ]);
         $this->assertSame('synthetic_already_provisioned',
-            $gateway->consume($gateway->signForCi($rotated), $now)['status_code']);
+            $gateway->consume($this->signPortalCommandForCi($gateway,$rotated), $now)['status_code']);
         $this->owner->table('crm_lab_site_s2s_keys')
             ->where('key_id','lab-portal-crm-provision-a')
             ->update(['state'=>'revoked','version'=>2]);
@@ -410,7 +441,7 @@ final class PostgresSitesProvisioningF399Test extends TestCase
             'nonce'=>'40404040-4040-4040-8040-404040404044',
         ]);
         $this->assertSame('synthetic_s2s_denied',
-            $gateway->consume($gateway->signForCi($oldKey), $now)['status_code']);
+            $gateway->consume($this->signPortalCommandForCi($gateway,$oldKey), $now)['status_code']);
         $this->assertSame('synthetic_s2s_denied',
             $gateway->consume($signed, $now)['status_code']);
         try {
@@ -428,7 +459,7 @@ final class PostgresSitesProvisioningF399Test extends TestCase
             'nonce'=>'40404040-4040-4040-8040-404040404045',
         ]);
         $this->assertSame('synthetic_revoked',
-            $gateway->consume($gateway->signForCi($revoke), $now)['status_code']);
+            $gateway->consume($this->signPortalCommandForCi($gateway,$revoke), $now)['status_code']);
         $this->assertSame('revoked',
             $this->owner->table('crm_lab_site_delivery_bindings')->value('state'));
         $this->assertSame('revoked',
@@ -439,14 +470,14 @@ final class PostgresSitesProvisioningF399Test extends TestCase
         $this->assertSame(2,$this->owner->table('crm_lab_site_provision_events')->count());
         $this->assertSame(3,$this->owner->table('crm_lab_site_s2s_inbox')->count());
         $this->assertSame('synthetic_s2s_replayed',
-            $gateway->consume($gateway->signForCi($revoke), $now+2)['status_code']);
+            $gateway->consume($this->signPortalCommandForCi($gateway,$revoke), $now+2)['status_code']);
 
         $afterRevoke = array_replace($rotated, [
             'expectedOrderVersion'=>2,
             'nonce'=>'40404040-4040-4040-8040-404040404046',
         ]);
         $this->assertSame('synthetic_s2s_denied',
-            $gateway->consume($gateway->signForCi($afterRevoke), $now+3)['status_code']);
+            $gateway->consume($this->signPortalCommandForCi($gateway,$afterRevoke), $now+3)['status_code']);
         $this->assertSame(3,$this->owner->table('crm_lab_site_s2s_inbox')->count());
 
         foreach ([
