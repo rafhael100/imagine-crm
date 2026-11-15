@@ -146,7 +146,7 @@ final readonly class AiaPgHumanDelegationWitnessLab
         string $signature,
         string $expectedTenant,
         int $now,
-        AiaPgServiceKeyringLab $keyring,
+        AiaTrustedPublicKeySource $keyring,
         AiaPgNonceCandidateLedger $nonceLedger,
         AiaPgSessionContinuityLab $sessionContinuity,
         PostgresActiveMembershipStore $memberships,
