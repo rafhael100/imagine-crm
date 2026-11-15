@@ -1158,6 +1158,7 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
             enabled boolean NOT NULL,
             revoked_at bigint NULL,
             revision integer NOT NULL,
+            lock_marker smallint NOT NULL DEFAULT 0,
             PRIMARY KEY (tenant_ref,key_id)
         )');
         try {
@@ -1499,6 +1500,128 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
             }
             $this->assertTrue($badMutation);
 
+            // F244: the key verifier also holds a physical row lock on
+            // the exact CRM-owned public key during the signed nonce proof.
+            $admin->table('aia_lab_service_tenant_bindings')
+                ->where('key_id',$keyA)->update([
+                    'enabled'=>true,'revision'=>5,
+                ]);
+            $admin->statement("CREATE ROLE crm_aia_key_lock_ci LOGIN
+                PASSWORD 'f244-disposable-role'
+                NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS");
+            $createdRoles[]='crm_aia_key_lock_ci';
+            $admin->statement('GRANT CONNECT ON DATABASE imagine_crm_ci
+                TO crm_aia_key_lock_ci');
+            $admin->statement('GRANT USAGE ON SCHEMA public
+                TO crm_aia_key_lock_ci');
+            $admin->statement('GRANT SELECT ON TABLE
+                public.aia_lab_ed25519_service_keys TO crm_aia_key_lock_ci');
+            $admin->statement('GRANT UPDATE (lock_marker) ON TABLE
+                public.aia_lab_ed25519_service_keys TO crm_aia_key_lock_ci');
+            $admin->statement("CREATE POLICY aia_f244_lock_public_key ON
+                public.aia_lab_ed25519_service_keys FOR UPDATE
+                TO crm_aia_key_lock_ci
+                USING (tenant_ref = current_setting('app.tenant_id',true))
+                WITH CHECK (false)");
+            $admin->statement("CREATE POLICY aia_f244_read_public_key ON
+                public.aia_lab_ed25519_service_keys FOR SELECT
+                TO crm_aia_key_lock_ci
+                USING (tenant_ref = current_setting('app.tenant_id',true))");
+            $keySettings=$settings;
+            $keySettings['username']='crm_aia_key_lock_ci';
+            $keySettings['password']='f244-disposable-role';
+            config(['database.connections.aia_f244_key_lock'=>$keySettings]);
+            config(['database.connections.aia_f244_key_revoker'=>$settings]);
+            DB::purge('aia_f244_key_lock');
+            DB::purge('aia_f244_key_revoker');
+            $keyLockDb=DB::connection('aia_f244_key_lock');
+            $keyRevoker=DB::connection('aia_f244_key_revoker');
+            $this->assertNotSame(
+                $keyLockDb->selectOne('SELECT pg_backend_pid() AS pid')->pid,
+                $keyRevoker->selectOne('SELECT pg_backend_pid() AS pid')->pid
+            );
+            $lockedKey=new \App\Support\Synthetic\AiaPgLockedServiceKeyringLab(
+                $keyLockDb
+            );
+            $blockedKeyRevocation=false;
+            $this->assertTrue($lockedKey->withinLockedPublicKey(
+                $keyA,$tenantA,
+                function (array $trusted) use (
+                    $keyA,$pubA,$tenantA,$keyRevoker,&$blockedKeyRevocation
+                ): bool {
+                    $this->assertSame($pubA,$trusted[$keyA]['public_key']);
+                    $keyRevoker->statement("SET lock_timeout = '180ms'");
+                    try {
+                        $keyRevoker->table('public.aia_lab_ed25519_service_keys')
+                            ->where('key_id',$keyA)
+                            ->where('tenant_ref',$tenantA)
+                            ->update(['revoked_at'=>1794690009]);
+                    } catch (\Throwable) {
+                        $blockedKeyRevocation=true;
+                    } finally {
+                        $keyRevoker->statement('RESET lock_timeout');
+                    }
+                    return $blockedKeyRevocation;
+                }
+            ));
+            $this->assertTrue($blockedKeyRevocation);
+            $this->assertSame(0,$keyLockDb->transactionLevel());
+            $this->assertSame(0,$keyRevoker->transactionLevel());
+
+            [$lockedClaims,$lockedSig]=$sign(
+                $reqA,$tenantA,'SYNTHETIC_F244_VERIFIED_A',$secretA,$keyA
+            );
+            $this->assertSame(
+                ['tenant_ref'=>$tenantA,'organization_id'=>$orgA],
+                \App\Support\Synthetic\AiaPgTenantBoundServiceProofLab::
+                    verifyWithStableIdentity(
+                        $reqA,$lockedClaims,$lockedSig,$now,
+                        $locked,$lockedKey,$nonce
+                    )
+            );
+            $this->assertSame(4,(int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+
+            // Once verification releases both ordered locks, revocation
+            // commits and a correctly signed FRESH nonce fails closed.
+            $this->assertSame(1,$keyRevoker
+                ->table('public.aia_lab_ed25519_service_keys')
+                ->where('key_id',$keyA)
+                ->where('tenant_ref',$tenantA)
+                ->update(['revoked_at'=>1794690009,'revision'=>2]));
+            [$rotatedClaims,$rotatedSig]=$sign(
+                $reqA,$tenantA,'SYNTHETIC_F244_DENY_REVOKED',$secretA,$keyA
+            );
+            $this->assertNull(
+                \App\Support\Synthetic\AiaPgTenantBoundServiceProofLab::
+                    verifyWithStableIdentity(
+                        $reqA,$rotatedClaims,$rotatedSig,$now,
+                        $locked,$lockedKey,$nonce
+                    )
+            );
+            $this->assertSame(4,(int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+            $this->assertSame(0,$lockDb->transactionLevel());
+            $this->assertSame(0,$keyLockDb->transactionLevel());
+            $this->assertSame(0,$nonceDb->transactionLevel());
+            $this->assertSame(0,$keyRevoker->transactionLevel());
+
+            // The key locking role is physically unable to rotate or
+            // revoke key bytes, even though it can acquire a row lock.
+            foreach ([
+                static fn ($db) => $db
+                    ->table('public.aia_lab_ed25519_service_keys')
+                    ->update(['revoked_at'=>null]),
+                static fn ($db) => $db
+                    ->table('public.aia_lab_ed25519_service_keys')
+                    ->update(['public_key_base64'=>'FORGED']),
+            ] as $invalidKeyChange) {
+                $blocked=false;
+                try { $invalidKeyChange($keyLockDb); }
+                catch (\Throwable) { $blocked=true; }
+                $this->assertTrue($blocked);
+            }
+
             self::assertDenial(
                 \App\Support\Synthetic\AiaPgTenantBoundServiceProofLab::inspectDenied(
                     $reqA,$revokedClaims,$revokedSig,$now,$binding,$keyring,$nonce
@@ -1506,7 +1629,8 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
             );
         } finally {
             foreach (['aia_f242_binding','aia_f242_keyring','aia_f242_nonce',
-                'aia_f243_peer_lock','aia_f243_revoker']
+                'aia_f243_peer_lock','aia_f243_revoker',
+                'aia_f244_key_lock','aia_f244_key_revoker']
                 as $name) {
                 DB::disconnect($name);
                 DB::purge($name);
