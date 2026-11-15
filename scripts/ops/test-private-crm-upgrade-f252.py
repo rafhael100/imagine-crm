@@ -36,9 +36,10 @@ def checks() -> dict:
         {"name": "Exact-SHA private maintenance scope / no deploy / manual review",
          "status": "completed", "conclusion": "success"},
         {"name": "private-upgrade-static-policy", "status": "completed", "conclusion": "success"},
+        {"name": "private-f253-post-switch-canary", "status": "completed", "conclusion": "success"},
     ] + [{"name": "other-required-check-" + str(n), "status": "completed",
           "conclusion": "success"} for n in range(19)]
-    return {"total_count": 22, "check_runs": runs}
+    return {"total_count": 23, "check_runs": runs}
 
 
 def workflow() -> dict:
@@ -125,6 +126,8 @@ class UpgradeGuardTests(unittest.TestCase):
         self.assertIn("backup_and_restore", source)
         self.assertIn("--untracked-files=all", source)
         self.assertIn("review_access", source)
+        self.assertIn("verify_candidate_canary()", source)
+        self.assertIn("private-crm-f253-canary.py", source)
 
 
 if __name__ == "__main__":
