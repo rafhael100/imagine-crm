@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   original-ed25519-private-deny:
-    name: PHP 8.3 / pinned Agents verifier / zero private routes
+    name: PHP 8.4 / pinned Agents verifier / zero private routes
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -50,7 +50,7 @@ jobs:
       - name: PHP with sodium (no external services or database)
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.4'
           extensions: mbstring, dom, xml, ctype, fileinfo, openssl, sodium, pdo_sqlite
           coverage: none
           tools: composer
