@@ -116,4 +116,5 @@ marker={'sha':sha,'workflow_run':int(run_id),'url':'https://'+HOST+'/',
 (STATE/'ingress-published-shared.conf').write_text(changed)
 marker['crm_config_sha256']=hashlib.sha256(text.encode()).hexdigest()
 (STATE/'published.json').write_text(json.dumps(marker,indent=2)+'\n')
+(STATE/'data/publication-opened.json').write_text(json.dumps({'sha':sha,'scope':'private-review'})+'\n')
 print('PRIVATE PUBLICATION PASS: exact tested SHA, CRM host only, TLS and BasicAuth preserved; other projects unchanged.')

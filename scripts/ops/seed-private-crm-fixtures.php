@@ -6,6 +6,7 @@ require __DIR__.'/private-crm-toolbox.php';
 umask(0077);
 $file='/private/fixtures.json';
 $mode=$argv[1]??'seed';
+if (is_file('/private/publication-opened.json')) throw new RuntimeException('Private ingress is open; automated fixtures are unavailable.');
 if ($mode==='clear-cache') {
     app('cache')->store('redis')->flush();
     echo "Private cache cleared for isolated pre-publication tests.\n";

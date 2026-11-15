@@ -14,6 +14,8 @@ DATA=PROTECTED/'data'
 PROJECT='imagine-crm-private-journey'
 if os.geteuid()!=0 or ROOT!=Path('/srv/imagine/crm-private-candidate'):
     raise SystemExit('Run only as operator on the dedicated Leaseweb private CRM checkout.')
+if (DATA/'publication-opened.json').exists():
+    raise SystemExit('Private ingress has opened. Fixture preparation requires a separately reviewed maintenance release.')
 
 def run(command):
     subprocess.run(command,cwd=ROOT,check=True,stdin=subprocess.DEVNULL)
@@ -52,8 +54,9 @@ elif mode=='verify':
     marker=PROTECTED/'prepare-verified.json'
     if not marker.is_file() or json.loads(marker.read_text())!={'sha':sha,'restore':'passed','scope':'synthetic-v1'}:
         raise SystemExit('Exact revision needs a verified initial restore before persistent fixtures.')
-    if not (DATA/'fixtures.json').exists():
-        run(compose+['run','--rm','-T','tools','scripts/ops/seed-private-crm-fixtures.php','seed'])
+    if (DATA/'fixtures.json').exists():
+        run(compose+['run','--rm','-T','tools','scripts/ops/seed-private-crm-fixtures.php','revoke'])
+    run(compose+['run','--rm','-T','tools','scripts/ops/seed-private-crm-fixtures.php','seed'])
     run(['python3','scripts/ops/test-private-crm-http.py',str(DATA/'fixtures.json')])
     run(['python3','scripts/ops/backup-private-crm.py',str(DATA/'backups')])
     (PROTECTED/'http-verified.json').write_text(json.dumps({'sha':sha,'private_http':'passed','restore':'passed'})+'\n')
