@@ -163,3 +163,37 @@ ainda é artificial. Identidade de peer mTLS, bloqueios cross-process
 de revogação/rotação, aprovação SEG/CORE/IAM/DBA/LGPD e 13 cenários
 CRM #57 seguem pendentes. O retorno público continua
 `DENIED_OR_NOT_FOUND` — **NO-GO / NO-DEPLOY / NO-MERGE**.
+
+## F243 — serialização da revogação de vínculo com uso da assinatura
+
+A F242 identificou a empresa a partir do key_id, mas uma consulta
+pontual sem bloqueio não impediria que a revogação commitasse
+durante a verificação Ed25519. A F243 adiciona
+`AiaPgLockedServiceTenantBindingLab` com papel independente
+`crm_aia_peer_lock_ci`, com leitura da tabela server-owned
+sob FORCE RLS e somente permissão técnica
+`UPDATE(lock_marker)` necessária ao `SELECT FOR UPDATE`.
+A política `WITH CHECK (false)` impede mutações efetivas.
+
+O caminho `verifyWithStableBinding` de
+`AiaPgTenantBoundServiceProofLab` segura o bloqueio de linha
+até terminar **assinatura original Agents + consulta de chave F240
++ INSERT único nonce F241**, retornando apenas prova sintética.
+Caso outra transação tenha revogado a chave antes, nada é emitido;
+caso tente revogar durante a verificação, a revogação espera
+a transação terminar. O contrato continua sem endpoint e sem ACL
+de dados reais.
+
+A CI testa duas conexões reais: uma mantém o vínculo bloqueado
+e outra tenta `UPDATE enabled=false` com lock_timeout curto,
+comprovando bloqueio; depois, o update consegue commitar
+e um pedido assinado novo é rejeitado antes de consumir nonce.
+Rejeições de alteração de tenant pela role de leitura/bloqueio
+permanecem verificadas. Não se reivindica garantia universal
+de ausência de deadlocks nem atomicidade cruzada com rotação
+da tabela de chaves públicas F240; é o próximo cenário adversarial.
+
+**NO-GO / NO-DEPLOY / NO-MERGE:** identidade operacional do peer,
+segredos/mTLS, provisionamento de chaves, controle de tenant e
+escopo de leads reais, revisão SEG/DBA/CORE/IAM/LGPD e gates
+operacionais de CRM #57 continuam pendentes.
