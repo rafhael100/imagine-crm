@@ -169,6 +169,7 @@ jobs:
         env:
           AIA_ED25519_PG_LAB: 'true'
           AIA_F235_IAM_LAB: 'true'
+          AIA_F236_AUDIT_LAB: 'true'
         run: |
           set -euo pipefail
           test "$(git -C _aia_f231_fixture rev-parse HEAD)" = "fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba"
@@ -181,5 +182,8 @@ jobs:
           php artisan test --filter=AiaPostgresEd25519NonceCandidateTest --no-ansi
           php -l tests/Feature/AiaServiceHumanIamBoundaryTest.php
           php artisan test --filter=AiaServiceHumanIamBoundaryTest --no-ansi
+          php -l app/Support/Synthetic/AiaPgServiceDenialAuditLab.php
+          php -l tests/Feature/AiaServiceDenialAuditLabTest.php
+          php artisan test --filter=AiaServiceDenialAuditLabTest --no-ansi
       - name: Run full synthetic test suite
         run: php artisan test --no-ansi
