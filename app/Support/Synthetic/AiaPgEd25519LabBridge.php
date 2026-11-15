@@ -29,7 +29,7 @@ final class AiaPgEd25519LabBridge
         array $trustedKeys,
         string $expectedTenant,
         int $now,
-        AiaPgNonceCandidateLedger $ledger,
+        AiaNonceClaimSource $ledger,
     ): bool {
         try {
             // Source of identity verification is the exact pinned Agents
@@ -72,7 +72,7 @@ final class AiaPgEd25519LabBridge
         string $expectedTenant,
         int $now,
         AiaTrustedPublicKeySource $keyring,
-        AiaPgNonceCandidateLedger $ledger,
+        AiaNonceClaimSource $ledger,
     ): bool {
         try {
             if ($canonicalClaims === '' || strlen($canonicalClaims) > 1024) {
@@ -119,7 +119,7 @@ final class AiaPgEd25519LabBridge
         string $expectedTenant,
         int $now,
         AiaTrustedPublicKeySource $keyring,
-        AiaPgNonceCandidateLedger $ledger,
+        AiaNonceClaimSource $ledger,
         AiaPgServiceScopeLab $scope,
     ): bool {
         try {
@@ -153,7 +153,7 @@ final class AiaPgEd25519LabBridge
         string $expectedTenant,
         int $now,
         AiaTrustedPublicKeySource $keyring,
-        AiaPgNonceCandidateLedger $ledger,
+        AiaNonceClaimSource $ledger,
         AiaPgServiceScopeLab $scope,
     ): array {
         self::matchesWithServerScope(
@@ -172,7 +172,7 @@ final class AiaPgEd25519LabBridge
         string $expectedTenant,
         int $now,
         AiaTrustedPublicKeySource $keyring,
-        AiaPgNonceCandidateLedger $ledger,
+        AiaNonceClaimSource $ledger,
     ): array {
         self::matchesWithServerKeyring(
             $canonicalRequest, $canonicalClaims, $signatureBase64,
@@ -195,7 +195,7 @@ final class AiaPgEd25519LabBridge
         array $trustedKeys,
         string $expectedTenant,
         int $now,
-        AiaPgNonceCandidateLedger $ledger,
+        AiaNonceClaimSource $ledger,
     ): array {
         self::matchesLabFixture(
             $canonicalRequest, $canonicalClaims, $signatureBase64,
