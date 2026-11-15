@@ -151,6 +151,10 @@ SQL);
             ] as $name) {
                 $this->owner->statement('DROP TABLE IF EXISTS public.'.$name);
             }
+            // PostgreSQL retains schema/database ACL dependencies after
+            // dropping tables. Revoke them before removing this CI-only role.
+            $this->owner->statement('REVOKE USAGE ON SCHEMA public FROM crm_trial_otp_ci');
+            $this->owner->statement('REVOKE CONNECT ON DATABASE imagine_crm_ci FROM crm_trial_otp_ci');
             $this->owner->statement('DROP ROLE IF EXISTS crm_trial_otp_ci');
         }
         parent::tearDown();
