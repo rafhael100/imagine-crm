@@ -385,6 +385,208 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
         }
     }
 
+    /**
+     * F233: an Ed25519 signature and PG nonce are not sufficient to read.
+     * Service delegation, resource owner and each permitted field are
+     * independent synthetic facts controlled by the CRM-side test database.
+     */
+    public function test_pg16_service_delegation_owner_and_fields_are_not_real_authorization(): void
+    {
+        [$secret, $public] = self::publicTestKeys();
+        $tenant = 'SYNTHETIC_TENANT_A';
+        $other = 'SYNTHETIC_TENANT_B';
+        $kid = 'SYNTHETIC_F232_KEY';
+        $principal = 'SYNTHETIC_F232_USER';
+        $resource = 'SYNTHETIC_F232_LEAD';
+        $purpose = 'SYNTHETIC_F232_LAB';
+        $now = 1794690010;
+
+        $db = DB::connection();
+        // These three policy tables and the public-key table exist ONLY in
+        // this disposable CI test, never in a real migration.
+        $db->statement('CREATE TABLE public.aia_lab_ed25519_service_keys (
+            issuer varchar(90) NOT NULL, audience varchar(90) NOT NULL,
+            tenant_ref varchar(90) NOT NULL, key_id varchar(90) NOT NULL,
+            public_key_base64 varchar(44) NOT NULL, enabled boolean NOT NULL,
+            revoked_at bigint NULL, revision integer NOT NULL,
+            PRIMARY KEY (tenant_ref,key_id)
+        )');
+        try {
+            $db->statement('CREATE TABLE public.aia_lab_service_delegations (
+                tenant_ref varchar(90) NOT NULL, key_id varchar(90) NOT NULL,
+                principal_ref varchar(90) NOT NULL, purpose_ref varchar(90) NOT NULL,
+                operation varchar(40) NOT NULL, enabled boolean NOT NULL,
+                revoked_at bigint NULL, not_before bigint NOT NULL,
+                expires_at bigint NOT NULL, revision integer NOT NULL,
+                PRIMARY KEY (tenant_ref,key_id,principal_ref,purpose_ref,operation)
+            )');
+            $db->statement('CREATE TABLE public.aia_lab_resource_owners (
+                tenant_ref varchar(90) NOT NULL, resource_ref varchar(90) NOT NULL,
+                principal_ref varchar(90) NOT NULL, status varchar(20) NOT NULL,
+                PRIMARY KEY (tenant_ref,resource_ref)
+            )');
+            $db->statement('CREATE TABLE public.aia_lab_service_field_grants (
+                tenant_ref varchar(90) NOT NULL, key_id varchar(90) NOT NULL,
+                principal_ref varchar(90) NOT NULL, resource_ref varchar(90) NOT NULL,
+                field_code varchar(30) NOT NULL, enabled boolean NOT NULL,
+                PRIMARY KEY (tenant_ref,key_id,principal_ref,resource_ref,field_code)
+            )');
+
+            $db->table('aia_lab_ed25519_service_keys')->insert([
+                [
+                    'issuer' => 'SYNTHETIC_AGENT_SERVICE',
+                    'audience' => 'SYNTHETIC_CRM_API',
+                    'tenant_ref' => $tenant, 'key_id' => $kid,
+                    'public_key_base64' => base64_encode($public),
+                    'enabled' => true, 'revoked_at' => null, 'revision' => 1,
+                ],
+                [
+                    // Even a correctly signed tenant B request has no
+                    // delegation or records. No cross-company inheritance.
+                    'issuer' => 'SYNTHETIC_AGENT_SERVICE',
+                    'audience' => 'SYNTHETIC_CRM_API',
+                    'tenant_ref' => $other, 'key_id' => $kid,
+                    'public_key_base64' => base64_encode($public),
+                    'enabled' => true, 'revoked_at' => null, 'revision' => 1,
+                ],
+            ]);
+            $delegation = [
+                'tenant_ref' => $tenant, 'key_id' => $kid,
+                'principal_ref' => $principal, 'purpose_ref' => $purpose,
+                'operation' => 'crm.lead.read_minimal', 'enabled' => true,
+                'revoked_at' => null, 'not_before' => 1794690000,
+                'expires_at' => 1794690020, 'revision' => 1,
+            ];
+            $db->table('aia_lab_service_delegations')->insert($delegation);
+            $db->table('aia_lab_resource_owners')->insert([
+                'tenant_ref' => $tenant, 'resource_ref' => $resource,
+                'principal_ref' => $principal, 'status' => 'active',
+            ]);
+            foreach (['ref','stage'] as $field) {
+                $db->table('aia_lab_service_field_grants')->insert([
+                    'tenant_ref' => $tenant, 'key_id' => $kid,
+                    'principal_ref' => $principal, 'resource_ref' => $resource,
+                    'field_code' => $field, 'enabled' => true,
+                ]);
+            }
+
+            $keyring = new \App\Support\Synthetic\AiaPgServiceKeyringLab($db);
+            $scope = new \App\Support\Synthetic\AiaPgServiceScopeLab($db);
+            $ledger = new AiaPgNonceCandidateLedger(
+                DB::connection('aia_f232_second')
+            );
+            $body = self::request($tenant);
+            $counter = 0;
+            $probe = function (
+                string $request,
+                string $expectedCompany,
+                bool $expect,
+            ) use ($secret,$keyring,$scope,$ledger,$now,&$counter): void {
+                ++$counter;
+                $nonce = 'SYNTHETIC_F233_SCOPED_NONCE_'.$counter;
+                [$claims,$signature] = self::signed(
+                    $request,$expectedCompany,$nonce,$secret
+                );
+                $before = (int) DB::table('aia_lab_nonce_atomic_probe')->count();
+                $match = AiaPgEd25519LabBridge::matchesWithServerScope(
+                    $request,$claims,$signature,$expectedCompany,$now,
+                    $keyring,$ledger,$scope
+                );
+                $this->assertSame($expect,$match);
+                // Even a matching synthetic policy is never released to
+                // callers; it only proves a code path in this lab.
+                self::assertDenial(AiaReadOnlyMockBoundary::inspectCanonicalJson($request));
+                $after = (int) DB::table('aia_lab_nonce_atomic_probe')->count();
+                // Valid signatures consume nonce even when policy denies.
+                $this->assertGreaterThanOrEqual($before,$after);
+                $this->assertLessThanOrEqual($before+1,$after);
+                $this->assertFalse(AiaPgEd25519LabBridge::matchesWithServerScope(
+                    $request,$claims,$signature,$expectedCompany,$now,
+                    $keyring,$ledger,$scope
+                ));
+            };
+            $alterBody = static function (array $change) use ($body): string {
+                $original = json_decode($body,true,4,JSON_THROW_ON_ERROR);
+                return \ImagineAI\MockBridge\MockCrmReadRequest::encodeCanonicalJson(
+                    array_replace($original,$change)
+                );
+            };
+
+            $probe($body,$tenant,true);
+            $probe(self::request($other),$other,false); // tenant B has key only
+
+            // No independent delegation or owner record, no candidate.
+            $db->table('aia_lab_service_delegations')
+                ->where('tenant_ref',$tenant)->update(['enabled'=>false]);
+            $probe($body,$tenant,false);
+            $db->table('aia_lab_service_delegations')
+                ->where('tenant_ref',$tenant)->update(['enabled'=>true]);
+
+            $db->table('aia_lab_service_delegations')
+                ->where('tenant_ref',$tenant)->update(['revoked_at'=>1794690005]);
+            $probe($body,$tenant,false);
+            $db->table('aia_lab_service_delegations')
+                ->where('tenant_ref',$tenant)->update(['revoked_at'=>null]);
+
+            $db->table('aia_lab_service_delegations')
+                ->where('tenant_ref',$tenant)->update(['expires_at'=>$now]);
+            $probe($body,$tenant,false);
+            $db->table('aia_lab_service_delegations')
+                ->where('tenant_ref',$tenant)->update(['expires_at'=>1794690020]);
+
+            $db->table('aia_lab_resource_owners')
+                ->where('tenant_ref',$tenant)->update(['status'=>'revoked']);
+            $probe($body,$tenant,false);
+            $db->table('aia_lab_resource_owners')
+                ->where('tenant_ref',$tenant)->update(['status'=>'active']);
+
+            $db->table('aia_lab_service_field_grants')
+                ->where('tenant_ref',$tenant)
+                ->where('field_code','stage')->update(['enabled'=>false]);
+            $probe($body,$tenant,false);
+            // A narrower projection can match when only ref is active.
+            $probe($alterBody(['fields'=>['ref']]),$tenant,true);
+            $db->table('aia_lab_service_field_grants')
+                ->where('tenant_ref',$tenant)
+                ->where('field_code','stage')->update(['enabled'=>true]);
+            $probe($body,$tenant,true);
+
+            $probe($alterBody(['principal_ref'=>'SYNTHETIC_OTHER_PRINCIPAL']),$tenant,false);
+            $probe($alterBody(['resource_ref'=>'SYNTHETIC_OTHER_LEAD']),$tenant,false);
+            $probe($alterBody(['purpose_ref'=>'SYNTHETIC_OTHER_PURPOSE']),$tenant,false);
+
+            // Signature proof still cannot inherit another tenant's owner
+            // or field facts even when the service key happens to be the same.
+            $this->assertSame(2,(int) $db->table('aia_lab_ed25519_service_keys')->count());
+            $this->assertSame(1,(int) $db->table('aia_lab_resource_owners')->count());
+            $this->assertSame(2,(int) $db->table('aia_lab_service_field_grants')->count());
+
+            // A revoked service key prevents PG nonce claim and any policy
+            // lookup; a public result never reveals which fact failed.
+            $db->table('aia_lab_ed25519_service_keys')
+                ->where('tenant_ref',$tenant)->update(['revoked_at'=>$now]);
+            $before = (int) DB::table('aia_lab_nonce_atomic_probe')->count();
+            $probe($body,$tenant,false);
+            $this->assertSame(
+                $before,(int) DB::table('aia_lab_nonce_atomic_probe')->count()
+            );
+            $db->table('aia_lab_ed25519_service_keys')
+                ->where('tenant_ref',$tenant)->update(['revoked_at'=>null]);
+
+            // Failure of the server-owned delegation table must deny
+            // even with a valid signer and previously valid scope.
+            $db->statement('DROP TABLE public.aia_lab_service_delegations');
+            $probe($body,$tenant,false);
+
+            $this->assertSame(14,$counter);
+        } finally {
+            $db->statement('DROP TABLE IF EXISTS public.aia_lab_service_field_grants');
+            $db->statement('DROP TABLE IF EXISTS public.aia_lab_resource_owners');
+            $db->statement('DROP TABLE IF EXISTS public.aia_lab_service_delegations');
+            $db->statement('DROP TABLE IF EXISTS public.aia_lab_ed25519_service_keys');
+        }
+    }
+
     public function test_pg_backend_outage_is_uniformly_denied_even_if_ed25519_passes(): void
     {
         [$secret, ,$trusted] = self::publicTestKeys();
