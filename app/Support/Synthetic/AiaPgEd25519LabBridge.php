@@ -71,7 +71,7 @@ final class AiaPgEd25519LabBridge
         string $signatureBase64,
         string $expectedTenant,
         int $now,
-        AiaPgServiceKeyringLab $keyring,
+        AiaTrustedPublicKeySource $keyring,
         AiaPgNonceCandidateLedger $ledger,
     ): bool {
         try {
@@ -118,7 +118,7 @@ final class AiaPgEd25519LabBridge
         string $signatureBase64,
         string $expectedTenant,
         int $now,
-        AiaPgServiceKeyringLab $keyring,
+        AiaTrustedPublicKeySource $keyring,
         AiaPgNonceCandidateLedger $ledger,
         AiaPgServiceScopeLab $scope,
     ): bool {
@@ -152,7 +152,7 @@ final class AiaPgEd25519LabBridge
         string $signatureBase64,
         string $expectedTenant,
         int $now,
-        AiaPgServiceKeyringLab $keyring,
+        AiaTrustedPublicKeySource $keyring,
         AiaPgNonceCandidateLedger $ledger,
         AiaPgServiceScopeLab $scope,
     ): array {
@@ -171,7 +171,7 @@ final class AiaPgEd25519LabBridge
         string $signatureBase64,
         string $expectedTenant,
         int $now,
-        AiaPgServiceKeyringLab $keyring,
+        AiaTrustedPublicKeySource $keyring,
         AiaPgNonceCandidateLedger $ledger,
     ): array {
         self::matchesWithServerKeyring(
