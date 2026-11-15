@@ -695,4 +695,260 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
         ));
         self::assertDenial(AiaReadOnlyMockBoundary::inspectCanonicalJson($request));
     }
+    /**
+     * F240: the real original Agents Ed25519 verifier reads a CRM-owned
+     * public key through a nonowner SELECT-only PG16 connection under RLS.
+     * All signer keys and companies are artificial; no service endpoint.
+     */
+    public function test_f240_restricted_service_public_keys_rotate_revoke_and_fail_closed(): void
+    {
+        if (getenv('AIA_F240_KEYRING_LAB') !== 'true') {
+            $this->markTestSkipped('F240 requires isolated PG16 CI verifier role.');
+        }
+
+        $admin = DB::connection();
+        $tenantA = 'SYNTHETIC_TENANT_A';
+        $tenantB = 'SYNTHETIC_TENANT_B';
+        $keyId = 'SYNTHETIC_F232_KEY';
+        $keyA = sodium_crypto_sign_seed_keypair(
+            hash('sha256', 'PUBLIC_F240_KEY_A_ONLY', true)
+        );
+        $keyB = sodium_crypto_sign_seed_keypair(
+            hash('sha256', 'PUBLIC_F240_KEY_B_ONLY', true)
+        );
+        $rotatedA = sodium_crypto_sign_seed_keypair(
+            hash('sha256', 'PUBLIC_F240_KEY_A_ROTATED_ONLY', true)
+        );
+        $pubA = sodium_crypto_sign_publickey($keyA);
+        $pubB = sodium_crypto_sign_publickey($keyB);
+        $newPubA = sodium_crypto_sign_publickey($rotatedA);
+        $privateA = sodium_crypto_sign_secretkey($keyA);
+        $privateB = sodium_crypto_sign_secretkey($keyB);
+        $newPrivateA = sodium_crypto_sign_secretkey($rotatedA);
+
+        $admin->statement('CREATE TABLE public.aia_lab_ed25519_service_keys (
+            issuer varchar(90) NOT NULL,
+            audience varchar(90) NOT NULL,
+            tenant_ref varchar(90) NOT NULL,
+            key_id varchar(90) NOT NULL,
+            public_key_base64 varchar(44) NOT NULL,
+            enabled boolean NOT NULL,
+            revoked_at bigint NULL,
+            revision integer NOT NULL,
+            PRIMARY KEY (tenant_ref,key_id)
+        )');
+
+        $roleCreated = false;
+        try {
+            $admin->statement('CREATE ROLE crm_aia_key_verify_ci LOGIN
+                PASSWORD '."'f240-public-test-only'".'
+                NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS');
+            $roleCreated = true;
+            $admin->statement('GRANT CONNECT ON DATABASE imagine_crm_ci
+                TO crm_aia_key_verify_ci');
+            $admin->statement('GRANT USAGE ON SCHEMA public
+                TO crm_aia_key_verify_ci');
+            $admin->statement('ALTER TABLE public.aia_lab_ed25519_service_keys
+                ENABLE ROW LEVEL SECURITY');
+            $admin->statement('ALTER TABLE public.aia_lab_ed25519_service_keys
+                FORCE ROW LEVEL SECURITY');
+            $admin->statement("CREATE POLICY aia_f240_verify_public_key
+                ON public.aia_lab_ed25519_service_keys
+                FOR SELECT TO crm_aia_key_verify_ci
+                USING (tenant_ref = current_setting('app.tenant_id',true))");
+            $admin->statement('GRANT SELECT ON TABLE
+                public.aia_lab_ed25519_service_keys TO crm_aia_key_verify_ci');
+
+            $scope = [
+                'issuer' => 'SYNTHETIC_AGENT_SERVICE',
+                'audience' => 'SYNTHETIC_CRM_API',
+                'key_id' => $keyId,
+            ];
+            foreach ([
+                [$tenantA, $pubA],
+                [$tenantB, $pubB],
+            ] as [$tenant, $public]) {
+                $admin->table('public.aia_lab_ed25519_service_keys')
+                    ->insert($scope + [
+                        'tenant_ref' => $tenant,
+                        'public_key_base64' => base64_encode($public),
+                        'enabled' => true,
+                        'revoked_at' => null,
+                        'revision' => 1,
+                    ]);
+            }
+
+            $settings = config('database.connections.pgsql');
+            $settings['url'] = null;
+            $settings['username'] = 'crm_aia_key_verify_ci';
+            $settings['password'] = 'f240-public-test-only';
+            config(['database.connections.aia_f240_public_keys' => $settings]);
+            DB::purge('aia_f240_public_keys');
+            $restricted = DB::connection('aia_f240_public_keys');
+            $restrictedKeyring = new \App\Support\Synthetic\AiaPgRestrictedKeyringLab(
+                $restricted
+            );
+
+            $this->assertSame('crm_aia_key_verify_ci',
+                $restricted->selectOne('SELECT current_user AS username')->username);
+            $this->assertSame(0, $restricted->transactionLevel());
+            $this->assertSame(0, (int) $restricted
+                ->table('public.aia_lab_ed25519_service_keys')->count());
+            $this->assertSame($pubA,
+                $restrictedKeyring->trustedPublicKey($keyId,$tenantA)[$keyId]['public_key']);
+            $this->assertSame($pubB,
+                $restrictedKeyring->trustedPublicKey($keyId,$tenantB)[$keyId]['public_key']);
+            $this->assertSame(0, $restricted->transactionLevel());
+            $this->assertSame(0, (int) $restricted
+                ->table('public.aia_lab_ed25519_service_keys')->count());
+            $this->assertSame([],
+                $restrictedKeyring->trustedPublicKey('SYNTHETIC_UNKNOWN',$tenantA));
+            $this->assertSame([],
+                $restrictedKeyring->trustedPublicKey($keyId,'INVALID_TENANT'));
+
+            // Even a compromised verifier connection does not have SQL ACL
+            // to create, rotate, revoke, delete, or inspect CRM identities.
+            foreach ([
+                static fn ($db) => $db->table(
+                    'public.aia_lab_ed25519_service_keys'
+                )->where('tenant_ref','SYNTHETIC_TENANT_A')
+                  ->update(['revoked_at' => 1794690001]),
+                static fn ($db) => $db->table(
+                    'public.aia_lab_ed25519_service_keys'
+                )->where('tenant_ref','SYNTHETIC_TENANT_A')->delete(),
+                static fn ($db) => $db->table(
+                    'public.aia_lab_ed25519_service_keys'
+                )->insert([
+                    'issuer'=>'SYNTHETIC_AGENT_SERVICE',
+                    'audience'=>'SYNTHETIC_CRM_API',
+                    'tenant_ref'=>'SYNTHETIC_TENANT_C',
+                    'key_id'=>'SYNTHETIC_F240_FORGED',
+                    'public_key_base64'=>base64_encode($pubA),
+                    'enabled'=>true,'revoked_at'=>null,'revision'=>1,
+                ]),
+                static fn ($db) => $db->table('public.crm_auth_sessions')->count(),
+                static fn ($db) => $db->table('public.crm_memberships')->count(),
+            ] as $operation) {
+                $denied = false;
+                try {
+                    $operation($restricted);
+                } catch (\Throwable) {
+                    $denied = true;
+                }
+                $this->assertTrue($denied, 'Public verifier role gained extra SQL privileges');
+            }
+            $this->assertSame(0, $restricted->transactionLevel());
+
+            $ledger = new AiaPgNonceCandidateLedger(
+                DB::connection('aia_f232_second')
+            );
+            $requestA = self::request($tenantA);
+            $requestB = self::request($tenantB);
+            [$claimsA,$sigA] = self::signed(
+                $requestA,$tenantA,'SYNTHETIC_F240_FIRST_A',$privateA
+            );
+            [$claimsB,$sigB] = self::signed(
+                $requestB,$tenantB,'SYNTHETIC_F240_FIRST_B',$privateB
+            );
+            $this->assertTrue(AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $requestA,$claimsA,$sigA,$tenantA,1794690010,$restrictedKeyring,$ledger
+            ));
+            $this->assertTrue(AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $requestB,$claimsB,$sigB,$tenantB,1794690010,$restrictedKeyring,$ledger
+            ));
+            $this->assertSame(2, (int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+            $this->assertFalse(AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $requestB,$claimsB,$sigB,$tenantA,1794690010,$restrictedKeyring,$ledger
+            ));
+
+            // Revoked key: do not consume nonce despite a correct OLD
+            // signature, even if the customer-provided key selector matches.
+            $admin->table('public.aia_lab_ed25519_service_keys')
+                ->where('tenant_ref',$tenantA)->update([
+                    'revoked_at'=>1794690005,'revision'=>2,
+                ]);
+            $this->assertSame([],
+                $restrictedKeyring->trustedPublicKey($keyId,$tenantA));
+            [$revokedClaims,$revokedSig] = self::signed(
+                $requestA,$tenantA,'SYNTHETIC_F240_NEXT_A',$privateA
+            );
+            $this->assertFalse(AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $requestA,$revokedClaims,$revokedSig,$tenantA,1794690010,
+                $restrictedKeyring,$ledger
+            ));
+            $this->assertSame(2, (int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+
+            // Simulated CRM-controlled rotation to new PUBLIC key bytes.
+            // The old signer cannot spend a fresh nonce. New signer can.
+            $admin->table('public.aia_lab_ed25519_service_keys')
+                ->where('tenant_ref',$tenantA)->update([
+                    'public_key_base64'=>base64_encode($newPubA),
+                    'revoked_at'=>null,'revision'=>3,'enabled'=>true,
+                ]);
+            $this->assertSame($newPubA,
+                $restrictedKeyring->trustedPublicKey($keyId,$tenantA)[$keyId]['public_key']);
+            $this->assertFalse(AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $requestA,$revokedClaims,$revokedSig,$tenantA,1794690010,
+                $restrictedKeyring,$ledger
+            ));
+            [$rotatedClaims,$rotatedSig] = self::signed(
+                $requestA,$tenantA,'SYNTHETIC_F240_NEXT_A',$newPrivateA
+            );
+            $this->assertTrue(AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $requestA,$rotatedClaims,$rotatedSig,$tenantA,1794690010,
+                $restrictedKeyring,$ledger
+            ));
+            $this->assertSame(3, (int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+
+            // Disabling B cannot affect A's public key. Invalid key rows
+            // and unavailable key storage fail closed, without fallback.
+            $admin->table('public.aia_lab_ed25519_service_keys')
+                ->where('tenant_ref',$tenantB)->update([
+                    'enabled'=>false,'revision'=>2,
+                ]);
+            $this->assertSame([],
+                $restrictedKeyring->trustedPublicKey($keyId,$tenantB));
+            $this->assertSame($newPubA,
+                $restrictedKeyring->trustedPublicKey($keyId,$tenantA)[$keyId]['public_key']);
+            $admin->table('public.aia_lab_ed25519_service_keys')
+                ->where('tenant_ref',$tenantB)->update([
+                    'enabled'=>true,'public_key_base64'=>'not-a-valid-base64',
+                    'revision'=>3,
+                ]);
+            $this->assertSame([],
+                $restrictedKeyring->trustedPublicKey($keyId,$tenantB));
+            $admin->statement('DROP TABLE public.aia_lab_ed25519_service_keys');
+            $this->assertSame([],
+                $restrictedKeyring->trustedPublicKey($keyId,$tenantA));
+            [$missingClaims,$missingSig] = self::signed(
+                $requestA,$tenantA,'SYNTHETIC_F240_MISSING_TABLE',$newPrivateA
+            );
+            $this->assertFalse(AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $requestA,$missingClaims,$missingSig,$tenantA,1794690010,
+                $restrictedKeyring,$ledger
+            ));
+            $this->assertSame(3, (int) $admin
+                ->table('aia_lab_nonce_atomic_probe')->count());
+            self::assertDenial(AiaPgEd25519LabBridge::inspectWithServerKeyring(
+                $requestA,$missingClaims,$missingSig,$tenantA,1794690010,
+                $restrictedKeyring,$ledger
+            ));
+        } finally {
+            DB::disconnect('aia_f240_public_keys');
+            DB::purge('aia_f240_public_keys');
+            $admin->statement('DROP TABLE IF EXISTS
+                public.aia_lab_ed25519_service_keys');
+            if ($roleCreated) {
+                $admin->statement('REVOKE USAGE ON SCHEMA public
+                    FROM crm_aia_key_verify_ci');
+                $admin->statement('REVOKE CONNECT ON DATABASE imagine_crm_ci
+                    FROM crm_aia_key_verify_ci');
+                $admin->statement('DROP ROLE crm_aia_key_verify_ci');
+            }
+        }
+    }
+
 }
