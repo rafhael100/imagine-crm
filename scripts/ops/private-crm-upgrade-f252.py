@@ -245,8 +245,8 @@ def apply(ci_id: str, marker: dict, old_text: str, current: str, candidate: str)
     swapped = False
     try:
         backup_and_restore(ENV)
+        swapped = True  # Install can fail midway after app was replaced; rollback is mandatory.
         install(new_env, build=True)
-        swapped = True
         check_live_image(candidate, new_env)
         local_smoke()
         review_access(new_env)
@@ -265,12 +265,16 @@ def apply(ci_id: str, marker: dict, old_text: str, current: str, candidate: str)
             "commercial_production_go": False}, indent=2) + "\n")
         new_env.unlink()  # Do not retain another redundant copy of all application secrets.
     except BaseException:
-        # The schema is unchanged: rollback swaps only the app/web image, never data.
+        # No migrations are permitted. Recover service and both release markers.
         if swapped:
             install(old_env, build=False)
             check_live_image(current, old_env)
             local_smoke()
             protected_https()
+        if ENV.exists() and image_tag(ENV.read_text()) == candidate:
+            atomic_private(ENV, old_text)
+        if PUBLISHED.exists() and json.loads(PUBLISHED.read_text()).get("sha") == candidate:
+            atomic_private(PUBLISHED, json.dumps(marker, indent=2) + "\\n")
         raise
 
 
