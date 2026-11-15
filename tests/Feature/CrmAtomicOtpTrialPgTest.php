@@ -226,6 +226,13 @@ SQL);
         $this->assertSame(0, (new TrialWindowAdvisory($start, $start + 1209600))
             ->remainingSeconds());
 
+        // A second code on day 15 cannot restart a used CNPJ trial.
+        $afterExpiry = $this->issue('email', 'other-fixture@example.test',
+            self::START + 14 * 86400 + 2);
+        $this->assertSame('synthetic_duplicate_marker',
+            $this->observe($afterExpiry, self::START + 14 * 86400 + 3)['status_code']);
+        $this->assertSame(2, $this->owner->table('crm_ci_trial_hmac_aliases')->count());
+
         $dump = json_encode($out, JSON_THROW_ON_ERROR);
         foreach ([self::CNPJ, '12ABC34501DE35', $first['code'], $first['binding'],
             $first['nonce'], 'secret_tag', 'cnpj_hmac'] as $sensitive) {
@@ -233,11 +240,13 @@ SQL);
         }
     }
 
-    public function test_historical_v1_collision_rolls_back_new_v2_alias_but_consumes_otp(): void
+    public function test_historical_v2_collision_rolls_back_new_v1_alias_but_consumes_otp(): void
     {
-        $historical = (new OfflineCnpjTrialHmacBinding())->derive(self::CNPJ, self::KEY_ONE);
+        // Force a collision on the *second* historical alias so the
+        // transaction must roll back a prior successful v1 insert.
+        $historical = (new OfflineCnpjTrialHmacBinding())->derive(self::CNPJ, self::KEY_TWO);
         $this->owner->table('crm_ci_trial_hmac_aliases')->insert([
-            'key_version' => 1,
+            'key_version' => 2,
             'cnpj_hmac' => $historical,
             'started_at' => self::START - 60,
             'expires_at' => self::START - 60 + 1209600,
@@ -247,7 +256,7 @@ SQL);
         $this->assertSame('synthetic_duplicate_marker', $answer['status_code']);
         $this->assertSame(1, $this->owner->table('crm_ci_trial_hmac_aliases')->count());
         $this->assertSame(0, $this->owner->table('crm_ci_trial_hmac_aliases')
-            ->where('key_version', 2)->count());
+            ->where('key_version', 1)->count());
         $this->assertNotNull($this->owner->table('crm_ci_trial_otp_challenges')
             ->where('nonce', $issued['nonce'])->value('consumed_at'));
         $this->assertSame('synthetic_otp_denied',
