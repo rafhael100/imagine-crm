@@ -78,6 +78,8 @@ jobs:
           path: ${{ runner.temp }}/crm-private-evidence/*.png
           retention-days: 7
           if-no-files-found: error
+      - name: Trial OTP service outage and recovery negative journeys
+        run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/test-private-crm-resilience.py "$RUNNER_TEMP/crm-private-data/fixtures.json"
       - name: Sanitized diagnostics on failure
         if: failure()
         run: |

@@ -31,6 +31,7 @@ final readonly class Administration
             $trials=[]; $orders=[];
             foreach ($accounts as $account) {
                 $org=$account->organization_id;
+                if (array_key_exists($org,$trials)) continue;
                 $this->db->selectOne("SELECT set_config('app.tenant_id',?,true)",[$org]);
                 $trials[$org]=$this->db->table('public.crm_private_trials')->where('organization_id',$org)->first();
                 foreach($this->db->table('public.crm_private_orders')->where('organization_id',$org)->orderByDesc('created_at')->limit(50)->get() as $row) $orders[]=$row;

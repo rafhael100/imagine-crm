@@ -291,7 +291,8 @@ def main():
     administrator=dict(FIXTURES['admin'],admin=True)
     page=admin.login(administrator)
     rows=re.findall(r'<tr data-account-id="([^"]+)">(.*?)</tr>',page,re.S)
-    identity=[identity for identity,body in rows if primary['label'] in body][0]
+    identity=[identity for identity,body in rows if primary['label'] in body and 'data-team-role="owner"' in body][0]
+    FIXTURES['member']['identity']=[identity for identity,body in rows if primary['label'] in body and 'data-team-role="member"' in body][0]
     FIXTURES['journey']=dict(primary,identity=identity)
     VAULT.write_text(json.dumps(FIXTURES));VAULT.chmod(0o600)
     admin.post('/admin/contas/'+identity,{'status':'suspended'})
