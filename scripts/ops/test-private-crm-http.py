@@ -191,11 +191,29 @@ def assert_agents_no_go(client, audience):
     print('PASS F249 private Agents HTTP NO-GO audience='+audience)
 
 
+
+def assert_no_agents_impersonation_of_human(client, route, actor):
+    """F250: service claims/key hints cannot turn into human identity/MFA."""
+    for name,value in (
+        ('X-Aia-Claims','SYNTHETIC_FORGED_CLAIMS'),
+        ('X-Aia-Signature','SYNTHETIC_FORGED_SIGNATURE'),
+        ('X-Aia-Key-Id','SYNTHETIC_F250_KEY'),
+        ('X-Service-Identity','SYNTHETIC_AGENT_SERVICE'),
+    ):
+        body,_=client.request(route,expected=400,headers={name:value})
+        check('SYNTHETIC_F250_KEY' not in body
+              and 'SYNTHETIC_FORGED_SIGNATURE' not in body
+              and 'access_token' not in body,
+              'F250 service identity marker leaked to human route')
+    print('PASS F250 human/service header separation actor='+actor)
+
+
 def main():
     scenario('clear-cache')
     a=Client(); b=Client(); admin=Client()
     home=a.get('/')
     assert_agents_no_go(a,'guest')
+    assert_no_agents_impersonation_of_human(a,'/login','guest')
     check('R$ 69,00' in home and 'R$ 89,00' in home,'commercial plan references missing')
     for language,headline,method,pillar in [
         ('en','More control.','Visits → Leads → Customers','ATTRACT'),
@@ -329,6 +347,7 @@ def main():
     b.post('/tarefas',{'lead':lead,'title':'TASK_TESTE_CROSS','due':'2026-12-01'},expected=404)
     print('PASS CSRF → client/admin role denial → forged tenant/role rejection → two-company isolation')
     assert_agents_no_go(a,'authenticated-client')
+    assert_no_agents_impersonation_of_human(a,'/painel','client')
 
     a.get('/painel?section=kanban')
     a.post('/leads/'+lead,{'version':2,'stage':'proposal'})
@@ -420,6 +439,7 @@ def main():
     administrator=dict(FIXTURES['admin'],admin=True)
     page=admin.login(administrator)
     assert_agents_no_go(admin,'authenticated-global-admin')
+    assert_no_agents_impersonation_of_human(admin,'/admin','administrator')
     rows=re.findall(r'<tr data-account-id="([^"]+)">(.*?)</tr>',page,re.S)
     identity=[identity for identity,body in rows if primary['label'] in body and 'data-team-role="owner"' in body][0]
     FIXTURES['member']['identity']=[identity for identity,body in rows if primary['label'] in body and 'data-team-role="member"' in body][0]
