@@ -470,8 +470,89 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
                 ]);
             }
 
+            // F234: the reviewer reads under a non-owner SELECT-only role.
+            // A disabled tenant B fixture exists to expose real RLS filtering.
+            $db->table('aia_lab_service_delegations')->insert(
+                array_replace($delegation, [
+                    'tenant_ref' => $other, 'enabled' => false,
+                ])
+            );
+            $db->table('aia_lab_resource_owners')->insert([
+                'tenant_ref' => $other, 'resource_ref' => $resource,
+                'principal_ref' => $principal, 'status' => 'active',
+            ]);
+            $db->table('aia_lab_service_field_grants')->insert([
+                'tenant_ref' => $other, 'key_id' => $kid,
+                'principal_ref' => $principal, 'resource_ref' => $resource,
+                'field_code' => 'ref', 'enabled' => true,
+            ]);
+
+            $db->statement(
+                "CREATE ROLE crm_aia_scope_ci LOGIN PASSWORD 'ci-aia-scope-only'
+                NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS"
+            );
+            $db->statement('GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_aia_scope_ci');
+            $db->statement('GRANT USAGE ON SCHEMA public TO crm_aia_scope_ci');
+            foreach ([
+                'aia_lab_service_delegations',
+                'aia_lab_resource_owners',
+                'aia_lab_service_field_grants',
+            ] as $table) {
+                $db->statement("ALTER TABLE public.$table ENABLE ROW LEVEL SECURITY");
+                $db->statement("ALTER TABLE public.$table FORCE ROW LEVEL SECURITY");
+                $db->statement("CREATE POLICY aia_f234_tenant_select ON public.$table
+                    FOR SELECT TO crm_aia_scope_ci
+                    USING (tenant_ref = current_setting('app.tenant_id', true))");
+                $db->statement("GRANT SELECT ON public.$table TO crm_aia_scope_ci");
+            }
+            $settings = config('database.connections.pgsql');
+            $settings['url'] = null;
+            $settings['username'] = 'crm_aia_scope_ci';
+            $settings['password'] = 'ci-aia-scope-only';
+            config(['database.connections.aia_f234_scope_read' => $settings]);
+            DB::purge('aia_f234_scope_read');
+            $restricted = DB::connection('aia_f234_scope_read');
+
+            $who = $restricted->selectOne(
+                'SELECT current_user AS username,
+                    r.rolsuper, r.rolbypassrls FROM pg_roles r
+                 WHERE r.rolname = current_user'
+            );
+            $this->assertSame('crm_aia_scope_ci', $who->username);
+            $this->assertFalse((bool) $who->rolsuper);
+            $this->assertFalse((bool) $who->rolbypassrls);
+            $this->assertSame(0,(int) $restricted
+                ->table('public.aia_lab_service_delegations')->count());
+
+            // Even with same table schema, RLS shows only the selected company.
+            foreach ([[$tenant,1],[$other,1]] as [$company,$visibleCount]) {
+                $restricted->transaction(function () use (
+                    $restricted,$company,$visibleCount
+                ): void {
+                    $restricted->selectOne(
+                        "SELECT set_config('app.tenant_id', ?, true)",
+                        [$company]
+                    );
+                    $this->assertSame($visibleCount,(int) $restricted
+                        ->table('public.aia_lab_service_delegations')->count());
+                    $this->assertSame($visibleCount,(int) $restricted
+                        ->table('public.aia_lab_resource_owners')->count());
+                });
+                $this->assertSame(0,(int) $restricted
+                    ->table('public.aia_lab_service_delegations')->count());
+            }
+            // A SELECT-only policy role cannot mutate scope facts or read IAM.
+            $writeBlocked = false;
+            try {
+                $restricted->table('public.aia_lab_service_delegations')
+                    ->where('tenant_ref',$tenant)->update(['enabled'=>true]);
+            } catch (\Throwable) {
+                $writeBlocked = true;
+            }
+            $this->assertTrue($writeBlocked);
+
             $keyring = new \App\Support\Synthetic\AiaPgServiceKeyringLab($db);
-            $scope = new \App\Support\Synthetic\AiaPgServiceScopeLab($db);
+            $scope = new \App\Support\Synthetic\AiaPgServiceScopeLab($restricted);
             $ledger = new AiaPgNonceCandidateLedger(
                 DB::connection('aia_f232_second')
             );
@@ -481,7 +562,7 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
                 string $request,
                 string $expectedCompany,
                 bool $expect,
-            ) use ($secret,$keyring,$scope,$ledger,$now,&$counter): void {
+            ) use ($secret,$keyring,$scope,$ledger,$restricted,$now,&$counter): void {
                 ++$counter;
                 $nonce = 'SYNTHETIC_F233_SCOPED_NONCE_'.$counter;
                 [$claims,$signature] = self::signed(
@@ -504,6 +585,11 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
                     $request,$claims,$signature,$expectedCompany,$now,
                     $keyring,$ledger,$scope
                 ));
+                $this->assertSame(0,$restricted->transactionLevel());
+                $marker = $restricted->selectOne(
+                    "SELECT current_setting('app.tenant_id',true) AS tenant"
+                );
+                $this->assertContains($marker->tenant,[null,'']);
             };
             $alterBody = static function (array $change) use ($body): string {
                 $original = json_decode($body,true,4,JSON_THROW_ON_ERROR);
@@ -558,8 +644,8 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
             // Signature proof still cannot inherit another tenant's owner
             // or field facts even when the service key happens to be the same.
             $this->assertSame(2,(int) $db->table('aia_lab_ed25519_service_keys')->count());
-            $this->assertSame(1,(int) $db->table('aia_lab_resource_owners')->count());
-            $this->assertSame(2,(int) $db->table('aia_lab_service_field_grants')->count());
+            $this->assertSame(2,(int) $db->table('aia_lab_resource_owners')->count());
+            $this->assertSame(3,(int) $db->table('aia_lab_service_field_grants')->count());
 
             // A revoked service key prevents PG nonce claim and any policy
             // lookup; a public result never reveals which fact failed.
@@ -580,10 +666,13 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
 
             $this->assertSame(14,$counter);
         } finally {
+            DB::disconnect('aia_f234_scope_read');
+            DB::purge('aia_f234_scope_read');
             $db->statement('DROP TABLE IF EXISTS public.aia_lab_service_field_grants');
             $db->statement('DROP TABLE IF EXISTS public.aia_lab_resource_owners');
             $db->statement('DROP TABLE IF EXISTS public.aia_lab_service_delegations');
             $db->statement('DROP TABLE IF EXISTS public.aia_lab_ed25519_service_keys');
+            $db->statement('DROP ROLE IF EXISTS crm_aia_scope_ci');
         }
     }
 
