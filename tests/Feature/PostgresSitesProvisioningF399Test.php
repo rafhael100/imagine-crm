@@ -37,6 +37,7 @@ final class PostgresSitesProvisioningF399Test extends TestCase
     private const NONCE='a8888888-8888-4888-8888-888888888888';
     private Connection $owner;
     private Connection $appRole;
+    private bool $f400ImmutableFixture = false;
 
     protected function setUp(): void
     {
@@ -99,7 +100,7 @@ final class PostgresSitesProvisioningF399Test extends TestCase
             // F400 uses an immutable S2S receipt ledger; the entire PG16
             // container is disposable and destroyed at the end of this job.
             // Do not bypass append-only protections to clean the test state.
-            if (getenv('CRM_SITES_F400_S2S_CI') === '1') {
+            if ($this->f400ImmutableFixture) {
                 parent::tearDown();
                 return;
             }
@@ -288,6 +289,7 @@ final class PostgresSitesProvisioningF399Test extends TestCase
             $this->markTestSkipped('F400 dedicated GitHub Actions/PG16 fixture only.');
         }
 
+        $this->f400ImmutableFixture = true;
         $gateway = new LaboratoryPortalS2sBindingGateway($this->owner);
         $now = 1790000000;
 
