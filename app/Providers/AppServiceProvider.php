@@ -83,6 +83,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (\App\Homologation\Environment::enabled()) {
+            $this->callAfterResolving(\Illuminate\Contracts\Debug\ExceptionHandler::class,static function ($handler): void {
+                $handler->reportable(static function (\Throwable $error) {
+                    \App\Homologation\PrivateHeaders::reportFailure($error);
+                    return false;
+                });
+                $handler->renderable(static function (\Throwable $error,\Illuminate\Http\Request $request) {
+                    return \App\Homologation\PrivateHeaders::renderFailure($error,$request);
+                });
+            });
             $this->app->bind(\App\Homologation\Enrollment::class,fn($app)=>new \App\Homologation\Enrollment(
                 $app['db']->connection('crm_enrollment'),$app['encrypter'],$app['hash'],$app['session.store']));
             $this->app->bind(\App\Homologation\Workspace::class,fn($app)=>new \App\Homologation\Workspace(

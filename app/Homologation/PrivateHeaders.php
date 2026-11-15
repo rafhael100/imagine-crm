@@ -79,6 +79,10 @@ final class PrivateHeaders
                 'source'=>basename($error->getFile()),'line'=>$error->getLine()]);
             $response=response()->view('crm-private-journey',['screen'=>'error','language'=>'pt','data'=>['status'=>503]],503);
         }
+        // Preserve the reviewed kernel's JSON 401 outside this private application.
+        if ($response->getStatusCode()===401) {
+            $response=redirect('/login',303)->withErrors(['session'=>'Sessão expirada ou revogada. Entre novamente.']);
+        }
         foreach (['Cache-Control'=>'private, no-store, max-age=0','X-Robots-Tag'=>'noindex, nofollow, noarchive',
             'X-Content-Type-Options'=>'nosniff','X-Frame-Options'=>'DENY','Referrer-Policy'=>'no-referrer',
             'Content-Security-Policy'=>"default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"] as $name=>$value) {

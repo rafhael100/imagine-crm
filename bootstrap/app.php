@@ -16,17 +16,6 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->report(static function (\Throwable $error) {
-            if (\App\Homologation\Environment::enabled()) {
-                \App\Homologation\PrivateHeaders::reportFailure($error);
-                return false;
-            }
-            return null;
-        });
-        $exceptions->render(static function (\Throwable $error,Request $request) {
-            if (\App\Homologation\Environment::enabled()) return \App\Homologation\PrivateHeaders::renderFailure($error,$request);
-            return null;
-        });
         // Until real IAM has an approved public login route, never redirect
         // unauthenticated web users to a non-existent named "login" route.
         // Return a uniform denied response with no credential/session detail.
