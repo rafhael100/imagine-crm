@@ -171,16 +171,16 @@ def main():
 
     # Anonymous Imagine 3-pillar calculator: no contact capture, session
     # provisioning, outbound providers or probability promise.
-    scenario=a.get('/?lang=pt&visits=2500&lead_rate=8&client_rate=13')
-    check('data-home-section="imagine-scenario"' in scenario,
+    scenario_html=a.get('/?lang=pt&visits=2500&lead_rate=8&client_rate=13')
+    check('data-home-section="imagine-scenario"' in scenario_html,
           'Imagine commercial calculator missing')
-    check('data-scenario-visits="2500"' in scenario,
+    check('data-scenario-visits="2500"' in scenario_html,
           'weekly visit scenario not reflected')
-    check('data-scenario-leads="200"' in scenario,
+    check('data-scenario-leads="200"' in scenario_html,
           'visit-to-lead scenario calculation incorrect')
-    check('data-scenario-clients="26"' in scenario,
+    check('data-scenario-clients="26"' in scenario_html,
           'lead-to-customer scenario calculation incorrect')
-    check('data-scenario-form="imagine"' in scenario,
+    check('data-scenario-form="imagine"' in scenario_html,
           'anonymous estimate form missing')
     for lang in ('pt','en','es'):
         localized=a.get('/?lang='+lang+'&visits=1000&lead_rate=4&client_rate=15')
