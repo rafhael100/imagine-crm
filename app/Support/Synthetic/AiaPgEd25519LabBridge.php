@@ -61,6 +61,67 @@ final class AiaPgEd25519LabBridge
     }
 
     /**
+     * F232b: obtain the public verification key from the CRM-owned
+     * ephemeral PostgreSQL registry, never from a request header/claim
+     * or the caller. A successful proof still grants ZERO CRM access.
+     */
+    public static function matchesWithServerKeyring(
+        string $canonicalRequest,
+        string $canonicalClaims,
+        string $signatureBase64,
+        string $expectedTenant,
+        int $now,
+        AiaPgServiceKeyringLab $keyring,
+        AiaPgNonceCandidateLedger $ledger,
+    ): bool {
+        try {
+            if ($canonicalClaims === '' || strlen($canonicalClaims) > 1024) {
+                return false;
+            }
+            $claims = json_decode($canonicalClaims, true, 4, JSON_THROW_ON_ERROR);
+            if (!is_array($claims) || !is_string($claims['key_id'] ?? null)) {
+                return false;
+            }
+            $encoded = json_encode(
+                $claims, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                    | JSON_THROW_ON_ERROR
+            );
+            if (!hash_equals($encoded, $canonicalClaims)) {
+                return false;
+            }
+            $trusted = $keyring->trustedPublicKey(
+                $claims['key_id'], $expectedTenant,
+            );
+            if ($trusted === []) {
+                return false;
+            }
+            return self::matchesLabFixture(
+                $canonicalRequest, $canonicalClaims, $signatureBase64,
+                $trusted, $expectedTenant, $now, $ledger,
+            );
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    /** Uniform denial even after passing PostgreSQL-backed public-key lookup. */
+    public static function inspectWithServerKeyring(
+        string $canonicalRequest,
+        string $canonicalClaims,
+        string $signatureBase64,
+        string $expectedTenant,
+        int $now,
+        AiaPgServiceKeyringLab $keyring,
+        AiaPgNonceCandidateLedger $ledger,
+    ): array {
+        self::matchesWithServerKeyring(
+            $canonicalRequest, $canonicalClaims, $signatureBase64,
+            $expectedTenant, $now, $keyring, $ledger,
+        );
+        return AiaReadOnlyMockBoundary::inspectCanonicalJson($canonicalRequest);
+    }
+
+    /**
      * Public-facing lab result is always a uniform denial. The Ed25519
      * verification result must NEVER influence the exposed CRM read status.
      *
