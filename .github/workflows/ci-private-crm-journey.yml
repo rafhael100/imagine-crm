@@ -69,6 +69,13 @@ jobs:
         run: docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml run --rm -T tools scripts/ops/seed-private-crm-fixtures.php seed
       - name: Real HTTP commercial signup OTP MFA trial CRM and administrator
         run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/test-private-crm-http.py "$RUNNER_TEMP/crm-private-data/fixtures.json"
+      - name: F253 canary - live private loopback UI, 3 languages, Agents NO-GO
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/ops/private-crm-f253-canary.py
+          python3 -m py_compile scripts/ops/test-private-crm-f253-canary.py
+          python3 scripts/ops/test-private-crm-f253-canary.py
+          python3 scripts/ops/private-crm-f253-canary.py
       - name: Prove backup and restore with actual fictional records and tenant scopes
         run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/backup-private-crm.py "$RUNNER_TEMP/crm-private-data/backups"
       - name: Chromium client and administrator desktop/mobile journey
