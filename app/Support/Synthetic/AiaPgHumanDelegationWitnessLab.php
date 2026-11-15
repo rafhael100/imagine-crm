@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support\Synthetic;
 
-use App\Core\Identity\{GuardPrincipalSource, PrincipalReference};
+use App\Core\Identity\{DatabaseSessionAuthority, GuardPrincipalSource, PrincipalReference};
 use App\Core\Tenancy\{MembershipSnapshot, PostgresActiveMembershipStore};
 use Illuminate\Database\Connection;
 use Illuminate\Support\Str;
@@ -34,6 +34,7 @@ final readonly class AiaPgHumanDelegationWitnessLab
      */
     public function issueFromCurrentHuman(
         GuardPrincipalSource $human,
+        DatabaseSessionAuthority $sessionAuthority,
         PostgresActiveMembershipStore $memberships,
         string $organizationId,
         string $canonicalRequest,
@@ -54,8 +55,8 @@ final readonly class AiaPgHumanDelegationWitnessLab
             }
 
             return $this->fixture->transaction(function () use (
-                $human, $memberships, $organizationId, $request,
-                $canonicalRequest, $keyId, $now
+                $human, $sessionAuthority, $memberships, $organizationId,
+                $request, $canonicalRequest, $keyId, $now
             ): bool {
                 $binding = $this->binding(
                     $request['tenant_ref'], $organizationId,
@@ -68,14 +69,29 @@ final readonly class AiaPgHumanDelegationWitnessLab
 
                 return $human->withinCurrent(
                     function (PrincipalReference $verified) use (
-                        $memberships, $organizationId, $request,
-                        $canonicalRequest, $keyId, $now
+                        $sessionAuthority, $memberships, $organizationId,
+                        $request, $canonicalRequest, $keyId, $now
                     ): bool {
+                        // This exact registry row was verified under the
+                        // human's locked MFA transaction. Never accept an
+                        // ID supplied by the Agent or the request itself.
+                        if ($sessionAuthority->db->getName() !== 'crm_iam'
+                            || $sessionAuthority->db->transactionLevel() !== 1) {
+                            return false;
+                        }
+                        $session = $sessionAuthority->sessionRow('crm.auth.token');
+                        if (!$session || $session->identity_id !== $verified->principalId
+                            || $session->state !== 'active'
+                            || !$session->mfa_verified_at
+                            || !Str::isUuid($session->id)
+                            || (int) $session->credential_version < 1) {
+                            return false;
+                        }
                         return $memberships->within(
                             $verified, $organizationId,
                             function (MembershipSnapshot $membership) use (
                                 $organizationId, $request, $canonicalRequest,
-                                $keyId, $now
+                                $keyId, $now, $session
                             ): bool {
                                 $this->fixture
                                     ->table('public.aia_lab_human_service_grants')
@@ -87,6 +103,8 @@ final readonly class AiaPgHumanDelegationWitnessLab
                                         'principal_ref' => $request['principal_ref'],
                                         'human_identity_id' => $membership->principalId,
                                         'membership_version' => $membership->version,
+                                        'iam_session_id' => strtolower($session->id),
+                                        'credential_version' => (int) $session->credential_version,
                                         'request_sha256' => hash('sha256', $canonicalRequest),
                                         'purpose_ref' => $request['purpose_ref'],
                                         'resource_ref' => $request['resource_ref'],
@@ -122,6 +140,7 @@ final readonly class AiaPgHumanDelegationWitnessLab
         int $now,
         AiaPgServiceKeyringLab $keyring,
         AiaPgNonceCandidateLedger $nonceLedger,
+        AiaPgSessionContinuityLab $sessionContinuity,
         PostgresActiveMembershipStore $memberships,
     ): bool {
         if (!self::labSafe($this->fixture)
@@ -150,7 +169,7 @@ final readonly class AiaPgHumanDelegationWitnessLab
             // grant check and the physical membership recheck.
             return $this->fixture->transaction(function () use (
                 $request, $canonicalRequest, $claims, $expectedTenant,
-                $now, $memberships
+                $now, $sessionContinuity, $memberships
             ): bool {
                 $grant = $this->fixture
                     ->table('public.aia_lab_human_service_grants')
@@ -166,12 +185,14 @@ final readonly class AiaPgHumanDelegationWitnessLab
                     ->lockForUpdate()
                     ->first([
                         'organization_id','human_identity_id','membership_version',
-                        'version',
+                        'iam_session_id','credential_version','version',
                     ]);
                 if (!$grant || (int) $grant->version < 1
                     || (int) $grant->membership_version < 1
                     || !Str::isUuid($grant->organization_id)
-                    || !Str::isUuid($grant->human_identity_id)) {
+                    || !Str::isUuid($grant->human_identity_id)
+                    || !Str::isUuid($grant->iam_session_id)
+                    || (int) $grant->credential_version < 1) {
                     return false;
                 }
 
@@ -187,11 +208,17 @@ final readonly class AiaPgHumanDelegationWitnessLab
                 // Real PG16 membership re-read on non-superuser FORCE-RLS
                 // connection; stale or revoked membership blocks the probe.
                 // Human cookies/session are NEVER sent to the Agents.
-                return $memberships->within(
-                    new PrincipalReference(strtolower($grant->human_identity_id)),
-                    strtolower($grant->organization_id),
-                    static fn (MembershipSnapshot $snapshot): bool =>
-                        $snapshot->version === (int) $grant->membership_version,
+                return $sessionContinuity->withinActiveSession(
+                    strtolower($grant->human_identity_id),
+                    strtolower($grant->iam_session_id),
+                    (int) $grant->credential_version,
+                    $now,
+                    fn (): bool => $memberships->within(
+                        new PrincipalReference(strtolower($grant->human_identity_id)),
+                        strtolower($grant->organization_id),
+                        static fn (MembershipSnapshot $snapshot): bool =>
+                            $snapshot->version === (int) $grant->membership_version,
+                    ),
                 );
             }, 1);
         } catch (\Throwable) {
