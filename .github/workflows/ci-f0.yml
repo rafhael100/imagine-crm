@@ -35,6 +35,11 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v4
 
+      - name: Preserve integrated IAM OTP and restore boundaries
+        run: |
+          python3 scripts/ci/check-integrated-candidate.py
+          python3 -m unittest discover -s tests -p integration_source_guard_test.py
+
       - name: Setup PHP and Composer
         uses: shivammathur/setup-php@v2
         with:
