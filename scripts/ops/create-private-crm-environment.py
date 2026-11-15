@@ -10,6 +10,9 @@ import sys
 
 target=Path(sys.argv[1]).resolve()
 data=Path(sys.argv[2]).resolve()
+root=Path(__file__).resolve().parents[2]
+if target.is_relative_to(root) or data.is_relative_to(root):
+    raise SystemExit('Secrets and runtime data must remain outside the source checkout.')
 if target.exists():
     raise SystemExit('Refusing to replace existing environment or rotate keys implicitly.')
 os.umask(0o077)

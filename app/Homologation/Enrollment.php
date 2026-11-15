@@ -246,8 +246,8 @@ final readonly class Enrollment
         $result=$this->db->transaction(function () use ($login,$code,$password) {
             $key=hash('sha256',$login); $window=intdiv(time(),900);
             $this->db->selectOne('SELECT pg_advisory_xact_lock(hashtextextended(?::text,0))',['crm_private_recovery|'.$key]);
-            $this->db->table('public.crm_private_recovery_attempts')->insertOrIgnore(['login_key'=>$key,'window'=>$window]);
-            $q=$this->db->table('public.crm_private_recovery_attempts')->where('login_key',$key)->where('window',$window);
+            $this->db->table('public.crm_private_recovery_attempts')->insertOrIgnore(['login_key'=>$key,'window_start'=>$window]);
+            $q=$this->db->table('public.crm_private_recovery_attempts')->where('login_key',$key)->where('window_start',$window);
             $attempt=(clone $q)->lockForUpdate()->first();
             if ((int)$attempt->attempts>=5) return null;
             $q->update(['attempts'=>(int)$attempt->attempts+1]);

@@ -48,8 +48,8 @@ CREATE TABLE crm_private_signup_requests(nonce varchar(32) PRIMARY KEY, contact_
  consumed_at bigint, completed_at bigint, mfa_attempts integer NOT NULL DEFAULT 0 CHECK(mfa_attempts BETWEEN 0 AND 5),
  payload_ciphertext text NOT NULL, delivery_ciphertext text NOT NULL);
 CREATE INDEX ON crm_private_signup_requests(contact_binding,issued_at);
-CREATE TABLE crm_private_recovery_attempts(login_key varchar(64) NOT NULL, window bigint NOT NULL,
- attempts integer NOT NULL DEFAULT 0 CHECK(attempts BETWEEN 0 AND 5), PRIMARY KEY(login_key,window));
+CREATE TABLE crm_private_recovery_attempts(login_key varchar(64) NOT NULL, window_start bigint NOT NULL,
+ attempts integer NOT NULL DEFAULT 0 CHECK(attempts BETWEEN 0 AND 5), PRIMARY KEY(login_key,window_start));
 CREATE TABLE crm_private_leads(id uuid PRIMARY KEY, organization_id uuid NOT NULL REFERENCES crm_organizations,
  title varchar(64) NOT NULL CHECK(title ~ '^LEAD_TESTE_[A-Z0-9_]{1,40}$'),
  stage varchar(16) NOT NULL DEFAULT 'new' CHECK(stage IN ('new','qualified','proposal','won','lost')),
