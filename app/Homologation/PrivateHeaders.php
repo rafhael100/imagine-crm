@@ -28,8 +28,8 @@ final class PrivateHeaders
         }
         catch(ValidationException $error) {
             $path=match($request->path()) {
-                'cadastro/verificar'=>'/cadastro/codigo','cadastro/concluir'=>'/cadastro/mfa',
-                'cadastro'=>'/cadastro','recuperar'=>'/recuperar',default=>'/painel',
+                'cadastro/reenviar'=>'/cadastro/codigo','cadastro/verificar'=>'/cadastro/codigo','cadastro/concluir'=>'/cadastro/mfa',
+                'cadastro'=>'/cadastro','convite'=>'/convite','recuperar'=>'/recuperar',default=>'/painel',
             };
             $response=redirect($path,303)->withErrors($error->errors())
                 ->withInput($request->only(['login','company','cnpj','email','phone','title','value_cents']));

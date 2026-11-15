@@ -24,8 +24,11 @@ GRANT SELECT ON crm_memberships,crm_private_trials TO crm_homologation_app;
 GRANT UPDATE(lock_marker) ON crm_memberships TO crm_homologation_app;
 GRANT SELECT,INSERT,UPDATE ON crm_private_leads,crm_private_tasks,crm_private_orders,crm_private_preferences TO crm_homologation_app;
 GRANT SELECT,INSERT ON crm_private_events TO crm_homologation_app;
+GRANT SELECT,INSERT ON crm_private_funnels,crm_private_invitations TO crm_homologation_app;
+GRANT UPDATE(state) ON crm_private_invitations TO crm_homologation_app;
 GRANT SELECT,INSERT ON crm_global_identities,crm_organizations,crm_auth_credentials,crm_auth_recovery_codes TO crm_homologation_enrollment;
-GRANT INSERT(identity_id,organization_id,label,created_at,desired_plan) ON crm_private_accounts TO crm_homologation_enrollment;
+GRANT INSERT(identity_id,organization_id,label,created_at,desired_plan,team_role) ON crm_private_accounts TO crm_homologation_enrollment;
+GRANT SELECT(identity_id,organization_id,label,team_role) ON crm_private_accounts TO crm_homologation_enrollment;
 GRANT SELECT,INSERT,UPDATE ON crm_private_signup_requests TO crm_homologation_enrollment;
 GRANT SELECT,INSERT,UPDATE ON crm_private_recovery_attempts TO crm_homologation_enrollment;
 GRANT UPDATE(password_hash,version) ON crm_auth_credentials TO crm_homologation_enrollment;
@@ -33,6 +36,9 @@ GRANT SELECT,UPDATE(consumed_at) ON crm_auth_recovery_codes TO crm_homologation_
 GRANT SELECT,UPDATE(state) ON crm_auth_sessions TO crm_homologation_enrollment;
 GRANT SELECT,INSERT ON crm_private_trial_claims,crm_private_key_versions TO crm_homologation_enrollment;
 GRANT INSERT ON crm_private_trials,crm_memberships,crm_private_preferences TO crm_homologation_enrollment;
+GRANT SELECT ON crm_memberships,crm_private_trials,crm_private_invitations TO crm_homologation_enrollment;
+GRANT INSERT ON crm_private_funnels TO crm_homologation_enrollment;
+GRANT UPDATE(state) ON crm_private_invitations TO crm_homologation_enrollment;
 -- Enrollment may INSERT only within the tenant fixed for its transaction.
 GRANT SELECT ON crm_private_accounts,crm_private_trials TO crm_homologation_operator;
 GRANT SELECT ON crm_private_orders,crm_private_operator_events TO crm_homologation_operator;

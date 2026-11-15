@@ -192,6 +192,8 @@ final readonly class Enrollment
             $this->db->table('public.crm_private_signup_requests')->where('nonce',$row->nonce)->update(['mfa_attempts'=>(int)$row->mfa_attempts+1]);
             $step=(new Totp())->matchStep($p['factor'],$candidate,time());
             if ($step===null) return null;
+            $this->db->selectOne('SELECT pg_advisory_xact_lock(hashtextextended(?::text,0))',['crm_private_login|'.hash('sha256',$p['login'])]);
+            if (($p['type']??'signup')==='invitation') return $this->completeInvitation($p,$step,$row);
             $this->db->selectOne('SELECT pg_advisory_xact_lock(hashtextextended(?::text,0))',['crm_private_trial_keys']);
             $keys=$this->trialKeys();
             $aliases=[];
@@ -203,32 +205,89 @@ final readonly class Enrollment
                 $aliases[]=[$version,$hash];
             }
             if ($this->db->table('public.crm_auth_credentials')->where('login_key',hash('sha256',$p['login']))->exists()) return ['duplicate'=>true];
-            $id=(string)Str::uuid(); $org=(string)Str::uuid(); $now=time();
+            $org=(string)Str::uuid(); $now=time();
             $this->db->selectOne("SELECT set_config('app.tenant_id',?,true)",[$org]);
-            $this->db->table('public.crm_global_identities')->insert(['id'=>$id]);
             $this->db->table('public.crm_organizations')->insert(['id'=>$org]);
-            $this->db->table('public.crm_auth_credentials')->insert(['identity_id'=>$id,'login_key'=>hash('sha256',$p['login']),
-                'password_hash'=>$p['password_hash'],'status'=>'active','verified_at'=>$now,'version'=>1,
-                'factor_ciphertext'=>$this->crypto->encryptString($p['factor']),'factor_confirmed_at'=>$now,'last_totp_step'=>$step]);
-            $this->db->table('public.crm_memberships')->insert(['id'=>(string)Str::uuid(),'organization_id'=>$org,
-                'global_identity_id'=>$id,'status'=>'active','version'=>1]);
-            $this->db->table('public.crm_private_accounts')->insert(['identity_id'=>$id,'organization_id'=>$org,'label'=>$p['label'],'created_at'=>$now,'desired_plan'=>$p['plan']??'basic']);
             $this->db->table('public.crm_private_trials')->insert(['organization_id'=>$org,'started_at'=>$now,'expires_at'=>$now+1209600]);
             $this->db->table('public.crm_private_preferences')->insert(['organization_id'=>$org]);
+            $this->db->table('public.crm_private_funnels')->insert(['id'=>(string)Str::uuid(),'organization_id'=>$org,
+                'title'=>'FUNIL_TESTE_PRINCIPAL','created_at'=>$now]);
             foreach($aliases as [$version,$hash]) $this->db->table('public.crm_private_trial_claims')->insert(['key_version'=>$version,'cnpj_hmac'=>$hash,'organization_id'=>$org]);
-            $codes=[];
-            for($i=0;$i<5;$i++) {
-                $code=bin2hex(random_bytes(12)); $codes[]=$code;
-                $this->db->table('public.crm_auth_recovery_codes')->insert(['id'=>(string)Str::uuid(),'identity_id'=>$id,
-                    'code_hash'=>$this->hasher->make($code),'credential_version'=>1]);
-            }
+            $result=$this->createIdentity($p,$org,$step,'owner');
             $this->db->table('public.crm_private_signup_requests')->where('nonce',$row->nonce)->update(['completed_at'=>$now]);
-            return ['login'=>$p['login'],'recovery_codes'=>$codes];
+            return $result;
         });
         if (!$result) self::invalid('Código MFA inválido, expirado ou limite de tentativas atingido.');
         if (isset($result['duplicate'])) self::invalid('Empresa ou identificador já utilizado. Um trial por CNPJ.');
         $this->session->forget('crm.private.signup');
         return $result;
+    }
+
+    private function createIdentity(array $p,string $org,int $step,string $teamRole): array
+    {
+        $id=(string)Str::uuid();$now=time();
+        $this->db->table('public.crm_global_identities')->insert(['id'=>$id]);
+        $this->db->table('public.crm_auth_credentials')->insert(['identity_id'=>$id,'login_key'=>hash('sha256',$p['login']),
+            'password_hash'=>$p['password_hash'],'status'=>'active','verified_at'=>$now,'version'=>1,
+            'factor_ciphertext'=>$this->crypto->encryptString($p['factor']),'factor_confirmed_at'=>$now,'last_totp_step'=>$step]);
+        $this->db->table('public.crm_memberships')->insert(['id'=>(string)Str::uuid(),'organization_id'=>$org,
+            'global_identity_id'=>$id,'status'=>'active','version'=>1]);
+        $this->db->table('public.crm_private_accounts')->insert(['identity_id'=>$id,'organization_id'=>$org,
+            'label'=>$p['label'],'created_at'=>$now,'desired_plan'=>$p['plan']??'basic','team_role'=>$teamRole]);
+        $codes=[];
+        for($i=0;$i<5;$i++) {
+            $code=bin2hex(random_bytes(12));$codes[]=$code;
+            $this->db->table('public.crm_auth_recovery_codes')->insert(['id'=>(string)Str::uuid(),'identity_id'=>$id,
+                'code_hash'=>$this->hasher->make($code),'credential_version'=>1]);
+        }
+        return ['login'=>$p['login'],'recovery_codes'=>$codes];
+    }
+
+    private function completeInvitation(array $p,int $step,object $request): ?array
+    {
+        $org=$p['organization'];
+        $this->db->selectOne("SELECT set_config('app.tenant_id',?,true)",[$org]);
+        $this->db->selectOne('SELECT pg_advisory_xact_lock(hashtextextended(?::text,0))',['crm_private_quota|'.$org]);
+        $invitation=$this->db->table('public.crm_private_invitations')->where('organization_id',$org)
+            ->where('id',$p['invitation_id'])->where('token_hash',$p['invitation_hash'])->lockForUpdate()->first();
+        $trial=$this->db->table('public.crm_private_trials')->where('organization_id',$org)->first();
+        if (!$invitation || $invitation->state!=='pending' || (int)$invitation->expires_at<=time()
+            || !$trial || (int)$trial->expires_at<=time()
+            || $this->db->table('public.crm_memberships')->where('organization_id',$org)->count()>=2) return null;
+        if ($this->db->table('public.crm_auth_credentials')->where('login_key',hash('sha256',$p['login']))->exists()) return ['duplicate'=>true];
+        $result=$this->createIdentity($p,$org,$step,'member');
+        $this->db->table('public.crm_private_invitations')->where('id',$invitation->id)->update(['state'=>'accepted']);
+        $this->db->table('public.crm_private_signup_requests')->where('nonce',$request->nonce)->update(['completed_at'=>time()]);
+        return $result;
+    }
+
+    public function issueInvitation(#[\SensitiveParameter] array $input): void
+    {
+        Environment::assertConnection($this->db,'enrollment');
+        $token=$input['invitation']??'';
+        $claim=is_string($token)?InvitationToken::inspect($token):null;
+        $login=$input['login']??'';$password=$input['password']??'';
+        if (!$claim || !is_string($login) || preg_match('/\Alab-[a-z0-9-]{3,48}\z/D',$login)!==1
+            || !is_string($password) || strlen($password)<12 || strlen($password)>72
+            || ($input['email']??null)!==$login.'@example.test' || ($input['terms']??null)!=='simulated') {
+            self::invalid('Convite ou identidade fictícia inválidos.');
+        }
+        $label=$this->db->transaction(function () use ($claim) {
+            $org=$claim['organization'];
+            $this->db->selectOne("SELECT set_config('app.tenant_id',?,true)",[$org]);
+            $record=$this->db->table('public.crm_private_invitations')->where('organization_id',$org)
+                ->where('id',$claim['id'])->where('token_hash',$claim['hash'])->first();
+            if (!$record || $record->state!=='pending' || (int)$record->expires_at<=time()) return null;
+            return $this->db->table('public.crm_private_accounts')->where('organization_id',$org)->where('team_role','owner')->value('label');
+        });
+        if (!$label) self::invalid('Convite inválido ou encerrado.');
+        $secret='';$alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+        for($i=0;$i<32;$i++) $secret.=$alphabet[random_int(0,31)];
+        $payload=['type'=>'invitation','organization'=>$claim['organization'],'invitation_id'=>$claim['id'],
+            'invitation_hash'=>$claim['hash'],'login'=>$login,'password_hash'=>$this->hasher->make($password),
+            'label'=>$label,'factor'=>$secret,'plan'=>'basic'];
+        $contact=hash_hmac('sha256',$login.'@example.test',$this->key('contact'));
+        $this->issuePayload($payload,$contact);
     }
 
     private static function invalid(string $message): never

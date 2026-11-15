@@ -28,6 +28,9 @@ final readonly class Workspace
             $account = $this->iam->table('public.crm_private_accounts')
                 ->where('identity_id',$principal->principalId)->first();
             abort_unless($account && $account->status === 'active' && $account->role === 'client',403);
+            if ($account->team_role!=='owner') {
+                abort_unless(in_array($action,['view','leads.create','leads.update','tasks.create','tasks.complete'],true),403);
+            }
             // Tenant is resolved exclusively from this verified identity's binding.
             return (new PostgresActiveMembershipStore($this->db))->within($principal,$account->organization_id,
                 function () use ($account,$principal,$action,$effect,$write) {
@@ -58,10 +61,12 @@ final readonly class Workspace
             $events = $this->table('events',$org)->orderByDesc('occurred_at')->limit(50)->get()->all();
             $orders = $this->table('orders',$org)->orderByDesc('created_at')->get()->all();
             $preferences = $this->table('preferences',$org)->first();
+            $funnels=$this->table('funnels',$org)->orderBy('created_at')->get()->all();
+            $invitations=$this->table('invitations',$org)->orderByDesc('created_at')->limit(20)->get(['id','state','expires_at'])->all();
             $rules = json_decode($preferences->automation_rules ?? '[]',true) ?: [];
             $team = $this->iam->table('public.crm_private_accounts')->where('organization_id',$org)
-                ->get(['identity_id','status','role'])->all();
-            return compact('account','trial','leads','tasks','events','orders','preferences','rules','team');
+                ->get(['identity_id','status','role','team_role'])->all();
+            return compact('account','trial','leads','tasks','events','orders','preferences','rules','team','funnels','invitations');
         });
     }
 
@@ -92,14 +97,18 @@ final readonly class Workspace
             if ($value===false || $value<0 || $value>100000000) {
                 throw ValidationException::withMessages(['value_cents'=>'Valor inválido.']);
             }
-            $validated[]=[$title,$value];
+            $funnel=$row['funnel']??null;
+            abort_unless($funnel===null || (is_string($funnel) && Str::isUuid($funnel)),422);
+            $validated[]=[$title,$value,$funnel];
         }
         $this->run('leads.create',function ($account,$trial,$principal) use ($validated) {
             abort_if($this->table('leads',$account->organization_id)->count()+count($validated)>20,409,'Limite de 20 leads do trial.');
-            foreach ($validated as [$title,$value]) {
+            foreach ($validated as [$title,$value,$funnel]) {
+                $funnel=$funnel??$this->table('funnels',$account->organization_id)->orderBy('created_at')->value('id');
+                abort_unless($funnel && $this->table('funnels',$account->organization_id)->where('id',$funnel)->exists(),404);
                 $id=(string)Str::uuid();
                 $this->db->table('public.crm_private_leads')->insert(['id'=>$id,'organization_id'=>$account->organization_id,
-                    'title'=>$title,'value_cents'=>$value,'created_at'=>time()]);
+                    'title'=>$title,'value_cents'=>$value,'funnel_id'=>$funnel,'created_at'=>time()]);
                 $this->event($account,$principal,$id,'lead.created');
             }
         },true);
@@ -202,5 +211,31 @@ final readonly class Workspace
             $this->event($account,$principal,$id,'payment.simulated_'.$state);
             // Deliberately no entitlement/provisioning: a simulated payment is not a real right.
         });
+    }
+
+    public function createFunnel(mixed $title): void
+    {
+        $title=self::label($title,'FUNIL_TESTE_');
+        $this->run('funnels.create',function ($account,$trial,$principal) use ($title) {
+            abort_if($this->table('funnels',$account->organization_id)->count()>=2,409,'Limite de dois funis do trial.');
+            $id=(string)Str::uuid();
+            $this->db->table('public.crm_private_funnels')->insert(['id'=>$id,'organization_id'=>$account->organization_id,
+                'title'=>$title,'created_at'=>time()]);
+            $this->event($account,$principal,$id,'funnel.created');
+        },true);
+    }
+
+    public function invite(): string
+    {
+        return $this->run('team.invite',function ($account,$trial,$principal) {
+            $members=$this->iam->table('public.crm_private_accounts')->where('organization_id',$account->organization_id)->count();
+            $pending=$this->table('invitations',$account->organization_id)->where('state','pending')->where('expires_at','>',time())->count();
+            abort_if($members+$pending>=2,409,'Limite de dois usuários, incluindo convites pendentes.');
+            $id=(string)Str::uuid();$token=InvitationToken::issue($account->organization_id,$id);
+            $this->db->table('public.crm_private_invitations')->insert(['id'=>$id,'organization_id'=>$account->organization_id,
+                'token_hash'=>hash('sha256',$token),'created_at'=>time(),'expires_at'=>time()+86400]);
+            $this->event($account,$principal,$id,'team.invited');
+            return $token;
+        },true);
     }
 }

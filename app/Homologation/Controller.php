@@ -93,8 +93,8 @@ final class Controller
     public function dashboard(Request $r) { return $this->page($r,'workspace',app(Workspace::class)->overview()); }
     public function leads(Request $r)
     {
-        $r->validate(['title'=>'required|string|max:64','value_cents'=>'required|integer|min:0|max:100000000']);
-        app(Workspace::class)->createLeads([$r->only(['title','value_cents'])]);
+        $r->validate(['title'=>'required|string|max:64','value_cents'=>'required|integer|min:0|max:100000000','funnel'=>'nullable|uuid']);
+        app(Workspace::class)->createLeads([$r->only(['title','value_cents','funnel'])]);
         return redirect('/painel?section=leads',303)->with('notice','Lead fictício persistido.');
     }
     public function lead(Request $r,string $id)
@@ -164,5 +164,24 @@ final class Controller
         $r->validate(['status'=>'required|in:active,suspended']);
         app(Administration::class)->status($id,$r->string('status')->toString());
         return redirect('/admin',303);
+    }
+    public function funnel(Request $r)
+    {
+        $r->validate(['title'=>'required|string|max:64']);
+        app(Workspace::class)->createFunnel($r->input('title'));
+        return redirect('/painel?section=funnels',303);
+    }
+    public function invite(Request $r)
+    {
+        $token=app(Workspace::class)->invite();
+        return $this->page($r,'invitation',['invitation'=>$token]);
+    }
+    public function invitationForm(Request $r) { return $this->page($r,'invitation-signup'); }
+    public function invitationIssue(Request $r)
+    {
+        $r->validate(['invitation'=>'required|string|max:250','login'=>'required|string|max:52',
+            'password'=>'required|string|min:12|max:72','email'=>'required|string|max:80','terms'=>'required|in:simulated']);
+        $this->enrollment()->issueInvitation($r->only(['invitation','login','password','email','terms']));
+        return redirect('/cadastro/codigo',303);
     }
 }

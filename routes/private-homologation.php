@@ -30,3 +30,7 @@ Route::get('/exportar',[Controller::class,'export']);
 Route::post('/importar',[Controller::class,'import']);
 Route::get('/admin',[Controller::class,'admin']);
 Route::post('/admin/contas/{id}',[Controller::class,'status']);
+Route::post('/funis',[Controller::class,'funnel']);
+Route::post('/equipe/convidar',[Controller::class,'invite']);
+Route::get('/convite',[Controller::class,'invitationForm']);
+Route::post('/convite',[Controller::class,'invitationIssue']);

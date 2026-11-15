@@ -36,6 +36,7 @@ CREATE TABLE crm_private_accounts(identity_id uuid PRIMARY KEY REFERENCES crm_gl
  organization_id uuid NOT NULL REFERENCES crm_organizations, label varchar(64) NOT NULL CHECK(label ~ '^EMPRESA_TESTE_[A-Z0-9_]{1,40}$'),
  role varchar(16) NOT NULL DEFAULT 'client' CHECK(role IN ('client','admin')), status varchar(16) NOT NULL DEFAULT 'active'
  CHECK(status IN ('active','suspended')), created_at bigint NOT NULL,
+ team_role varchar(16) NOT NULL DEFAULT 'owner' CHECK(team_role IN ('owner','member')),
  desired_plan varchar(16) NOT NULL DEFAULT 'basic' CHECK(desired_plan IN ('basic','essential','professional','enterprise')));
 CREATE TABLE crm_private_trials(organization_id uuid PRIMARY KEY REFERENCES crm_organizations,
  started_at bigint NOT NULL, expires_at bigint NOT NULL CHECK(expires_at=started_at+1209600));
@@ -50,11 +51,19 @@ CREATE TABLE crm_private_signup_requests(nonce varchar(32) PRIMARY KEY, contact_
 CREATE INDEX ON crm_private_signup_requests(contact_binding,issued_at);
 CREATE TABLE crm_private_recovery_attempts(login_key varchar(64) NOT NULL, window_start bigint NOT NULL,
  attempts integer NOT NULL DEFAULT 0 CHECK(attempts BETWEEN 0 AND 5), PRIMARY KEY(login_key,window_start));
+CREATE TABLE crm_private_funnels(id uuid PRIMARY KEY, organization_id uuid NOT NULL REFERENCES crm_organizations,
+ title varchar(64) NOT NULL CHECK(title ~ '^FUNIL_TESTE_[A-Z0-9_]{1,40}$'), created_at bigint NOT NULL,
+ UNIQUE(organization_id,id));
+CREATE TABLE crm_private_invitations(id uuid PRIMARY KEY, organization_id uuid NOT NULL REFERENCES crm_organizations,
+ token_hash varchar(64) UNIQUE NOT NULL, expires_at bigint NOT NULL, created_at bigint NOT NULL,
+ state varchar(16) NOT NULL DEFAULT 'pending' CHECK(state IN ('pending','accepted','cancelled')));
 CREATE TABLE crm_private_leads(id uuid PRIMARY KEY, organization_id uuid NOT NULL REFERENCES crm_organizations,
+ funnel_id uuid NOT NULL,
  title varchar(64) NOT NULL CHECK(title ~ '^LEAD_TESTE_[A-Z0-9_]{1,40}$'),
  stage varchar(16) NOT NULL DEFAULT 'new' CHECK(stage IN ('new','qualified','proposal','won','lost')),
  value_cents integer NOT NULL DEFAULT 0 CHECK(value_cents BETWEEN 0 AND 100000000),
- version bigint NOT NULL DEFAULT 1 CHECK(version>0), created_at bigint NOT NULL, UNIQUE(organization_id,id));
+ version bigint NOT NULL DEFAULT 1 CHECK(version>0), created_at bigint NOT NULL, UNIQUE(organization_id,id),
+ FOREIGN KEY(organization_id,funnel_id) REFERENCES crm_private_funnels(organization_id,id));
 CREATE TABLE crm_private_tasks(id uuid PRIMARY KEY, organization_id uuid NOT NULL REFERENCES crm_organizations,
  lead_id uuid NOT NULL, title varchar(64) NOT NULL CHECK(title ~ '^TASK_TESTE_[A-Z0-9_]{1,40}$'),
  due_on date NOT NULL, state varchar(16) NOT NULL DEFAULT 'todo' CHECK(state IN ('todo','done','cancelled')),
@@ -78,7 +87,7 @@ CREATE TABLE crm_private_operator_events(id uuid PRIMARY KEY, actor_id uuid NOT 
 
 DO $$ DECLARE t text; BEGIN
  FOREACH t IN ARRAY ARRAY['crm_memberships','crm_private_trials','crm_private_leads','crm_private_tasks',
- 'crm_private_events','crm_private_orders','crm_private_preferences'] LOOP
+ 'crm_private_events','crm_private_orders','crm_private_preferences','crm_private_funnels','crm_private_invitations'] LOOP
   EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY',t);
   EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY',t);
   EXECUTE format('CREATE POLICY tenant_scope ON %I USING (organization_id = NULLIF(current_setting(''app.tenant_id'',true),'''')::uuid) WITH CHECK (organization_id = NULLIF(current_setting(''app.tenant_id'',true),'''')::uuid)',t);

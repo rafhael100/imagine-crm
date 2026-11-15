@@ -23,7 +23,7 @@ if PROJECT not in ('imagine-crm-private-journey','imagine-crm-journey-ci') or EN
 COMPOSE=['docker','compose','--env-file',str(ENVFILE),'-p',PROJECT,'-f',str(ROOT/'infra/homologation/compose.yaml')]
 TABLES=re.findall(r'CREATE TABLE\s+(crm_[a-z0-9_]+)\s*\(', (ROOT/'infra/homologation/schema.sql').read_text())
 TENANT_TABLES=['crm_memberships','crm_private_trials','crm_private_leads','crm_private_tasks',
-    'crm_private_events','crm_private_orders','crm_private_preferences']
+    'crm_private_events','crm_private_orders','crm_private_preferences','crm_private_funnels','crm_private_invitations']
 
 
 def run(command,content=None,environment=None):
@@ -80,7 +80,7 @@ def main():
     archive.chmod(0o600)
     decrypted=run(crypt+['decrypt'],encrypted)
     if not hashlib.sha256(decrypted).digest()==hashlib.sha256(dump).digest():
-        raise RuntimeError('Backup decryption mismatch.')
+        raise RuntimeError('Backup wire mismatch: source bytes='+str(len(dump))+', restored bytes='+str(len(decrypted))+', source PG header='+str(dump.startswith(b'PGDMP'))+', restored PG header='+str(decrypted.startswith(b'PGDMP'))+', PG header offset='+str(decrypted.find(b'PGDMP')))
     tampered=encrypted[:-1]+bytes([encrypted[-1]^1])
     bad=subprocess.run(crypt+['decrypt'],input=tampered,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     if bad.returncode==0: raise RuntimeError('Tampered backup was accepted.')

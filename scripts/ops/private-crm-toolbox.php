@@ -53,6 +53,7 @@ function privateCrmSeedAccount(PDO $db,string $login,#[SensitiveParameter] strin
     privateCrmSql($db,'INSERT INTO crm_private_accounts(identity_id,organization_id,label,role,created_at) VALUES (?,?,?,?,?)',[$id,$org,$label,$role,$now]);
     privateCrmSql($db,'INSERT INTO crm_private_trials(organization_id,started_at,expires_at) VALUES (?,?,?)',[$org,$now,$now+1209600]);
     privateCrmSql($db,'INSERT INTO crm_private_preferences(organization_id) VALUES (?)',[$org]);
+    privateCrmSql($db,'INSERT INTO crm_private_funnels(id,organization_id,title,created_at) VALUES (?,?,?,?)',[(string)Str::uuid(),$org,'FUNIL_TESTE_PRINCIPAL',$now]);
     $codes=[];
     for($i=0;$i<5;$i++) {
         $code=bin2hex(random_bytes(12));$codes[]=$code;
