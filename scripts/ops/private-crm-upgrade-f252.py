@@ -57,7 +57,10 @@ def validate_approval(approval: dict, current: str, candidate: str) -> None:
     require(approval.get("published_sha") == current, "Approval baseline differs.")
     require(approval.get("candidate_sha") == candidate, "Approval candidate differs.")
     require(approval.get("scope") == "private-synthetic-only", "Unapproved upgrade scope.")
-    require(approval.get("authorized_by") not in (None, "", "bot", "assistant"), "Human owner approval absent.")
+    owner = approval.get("authorized_by")
+    require(isinstance(owner, str) and len(owner.strip()) >= 3
+            and owner.casefold() not in ("bot", "assistant", "codex", "chatgpt"),
+            "Named human owner approval absent.")
     reviews = approval.get("reviews")
     require(isinstance(reviews, dict), "Two explicit reviews required.")
     security = reviews.get("security")
@@ -83,7 +86,7 @@ def validate_checks(workflow: dict, checks: dict, sha: str) -> None:
     items = checks.get("check_runs")
     require(isinstance(items, list) and checks.get("total_count") == len(items),
             "All exact-commit checks must be inspected; pagination not allowed.")
-    require(len(items) >= 3 and all(c.get("status") == "completed"
+    require(len(items) >= 22 and all(c.get("status") == "completed"
             and c.get("conclusion") == "success" for c in items),
             "All exact-commit checks must be green.")
     names = {c.get("name") for c in items}
@@ -179,6 +182,8 @@ def preflight(current: str, candidate: str) -> None:
     require(call(["git", "rev-parse", "HEAD"], capture=True) == candidate,
             "Checkout must match exact candidate SHA.")
     call(["git", "diff", "--quiet", "HEAD"])
+    require(not call(["git", "status", "--porcelain", "--untracked-files=all"], capture=True),
+            "Candidate checkout has untracked or modified source files.")
     report = json.loads(call(["python3", "scripts/ops/private-crm-release-preflight.py",
                               current, candidate], capture=True))
     require(report.get("status") == "MANUAL_REVIEW_REQUIRED"
