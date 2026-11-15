@@ -165,7 +165,7 @@ jobs:
           ref: fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba
           path: _aia_f231_fixture
           persist-credentials: false
-      - name: Verify F232-F244 PG16 signed service, revocation and rotation
+      - name: Verify F232-F247 PG16 signed service, identity locks and HTTP test integration
         env:
           AIA_ED25519_PG_LAB: 'true'
           AIA_F235_IAM_LAB: 'true'
@@ -178,6 +178,8 @@ jobs:
           AIA_F242_PEER_ROUTING_LAB: 'true'
           AIA_F243_BINDING_LOCK_LAB: 'true'
           AIA_F244_KEY_ROTATION_LOCK_LAB: 'true'
+          AIA_F246_HTTP_LAB: 'true'
+          AIA_F247_HTTP_E2E_LAB: 'true'
         run: |
           set -euo pipefail
           test "$(git -C _aia_f231_fixture rev-parse HEAD)" = "fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba"
