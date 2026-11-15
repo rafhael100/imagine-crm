@@ -1,5 +1,7 @@
 # imagine-crm
 
+> **Diretriz transversal (15/11/2026):** **Visitas → Leads → Clientes** orienta o ecossistema Imagine. [Papel deste projeto na metodologia](docs/METODOLOGIA-IMAGINE-VISITAS-LEADS-CLIENTES-2026-11-15.md). A alteração é documental e não libera dados, integrações, alterações de UI ou produção.
+
 > **Atualização executiva de 04/11/2026 — DESENVOLVIMENTO F0 INICIADO EM BRANCH ISOLADA:** o responsável [autorizou o fast-track](docs/planejamento/CRM-DEC-FASTTRACK-autorizacao-desenvolvimento-controlado-2026-11-04.md), substituindo parcialmente a antiga regra de proibição de programação para permitir o scaffold técnico **apenas em [`dev/fast-track-crm-2026-11-04`](https://github.com/rafhael100/imagine-crm/tree/dev/fast-track-crm-2026-11-04)**. Os 67 IDs CORE e bloqueios ARQ/SEG/INT/FIN continuam abertos **quanto ao fechamento técnico**. **NÃO** há autorização de produção, dados de clientes, cobranças, integrações reais ou testes declarados como executados. A implantação e liberações sensíveis exigem gates específicos. Trechos históricos abaixo de “não programar” são anteriores a esta autorização restrita.
 
 > **Situação em 03/11/2026:** planejamento do CRM Imagine em consolidação. **Não iniciar programação** antes de revisão global e aprovação expressa da documentação final. Este README é um índice de navegação, não uma declaração de conclusão.
