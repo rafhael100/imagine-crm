@@ -201,3 +201,35 @@ de serviço e chaves protegidas, RLS/RBAC reais para leads,
 revogação efetiva sob concorrência, auditoria de decisões sem PII,
 revisão SEG/CORE/DBA/LGPD e 13 cenários de homologação. F235 não
 implementa nenhum ALLOW. **NO-GO / DRAFT / NO-MERGE / NO-DEPLOY.**
+
+
+## F236 — auditoria mínima de negativas sem dados pessoais
+
+Esta fase acrescenta a classe `AiaPgServiceDenialAuditLab` e a prova
+`AiaServiceDenialAuditLabTest`, exclusivamente no PostgreSQL16 efêmero.
+Os eventos contêm apenas **UUID do evento gerado pelo servidor**,
+identificador fixo do emissor sintético, `DENIED_OR_NOT_FOUND`,
+`sha256` dos bytes canônicos do pedido sintético, `sha256` com
+domínio do tenant sintético e instante fixo. **Não** incluem pedido
+bruto, headers, identificação humana, telefone, e-mail, nome ou dados
+de leads.
+
+A CI cria uma role `crm_aia_audit_ci` dedicada, não privilegiada e
+sem BYPASSRLS. Ela recebe somente `INSERT` na tabela descartável
+`aia_lab_service_denial_audit`, que aplica `FORCE ROW LEVEL SECURITY`
+e uma política `WITH CHECK` restrita a registros de negativa. A role
+não possui `SELECT`, `UPDATE` nem `DELETE`; as consultas de
+inspeção no teste são realizadas pelo administrador **somente da CI**.
+A auditoria prova unicidade do evento entre duas conexões independentes,
+rejeição de duplicatas, conteúdo não identificável, falta de privilégios,
+recusa de JSON não canônico, identidade SQL errada e indisponibilidade
+da tabela. Ausência de auditoria não pode produzir uma decisão de
+acesso positiva.
+
+**Limites:** ainda não existe trilha de auditoria em produção,
+persistência/retenção LGPD homologada, transação distribuída com
+gerador de evento, alertas operacionais ou anexação a um endpoint real.
+A tabela e a role só existem no ensaio descartável e são removidas no
+final. As decisões do produto permanecem negadas. Faltam revisão
+SEG/DBA/LGPD/CORE e os 14 gates/13 cenários de CRM #57.
+**NO-GO / DRAFT / NO-MERGE / NO-DEPLOY.**
