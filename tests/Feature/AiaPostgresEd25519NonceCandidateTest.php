@@ -265,6 +265,126 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
         $this->assertSame(1, (int) DB::table('aia_lab_nonce_atomic_probe')->count());
     }
 
+    public function test_server_owned_pg_keyring_revocation_rotation_and_tenant_scope(): void
+    {
+        [$privateA, $publicA] = self::publicTestKeys();
+        $pairB = sodium_crypto_sign_seed_keypair(
+            hash('sha256', 'PUBLIC_F232_ROTATION_TEST_ONLY', true)
+        );
+        $privateB = sodium_crypto_sign_secretkey($pairB);
+        $publicB = sodium_crypto_sign_publickey($pairB);
+        $tenant = 'SYNTHETIC_TENANT_A';
+        $other = 'SYNTHETIC_TENANT_B';
+        $keyId = 'SYNTHETIC_F232_KEY';
+        $request = self::request($tenant);
+        $ledger = new AiaPgNonceCandidateLedger(DB::connection('aia_f232_second'));
+
+        DB::statement('CREATE TABLE public.aia_lab_ed25519_service_keys (
+            issuer varchar(90) NOT NULL,
+            audience varchar(90) NOT NULL,
+            tenant_ref varchar(90) NOT NULL,
+            key_id varchar(90) NOT NULL,
+            public_key_base64 varchar(44) NOT NULL,
+            enabled boolean NOT NULL,
+            revoked_at bigint NULL,
+            revision integer NOT NULL,
+            PRIMARY KEY (tenant_ref,key_id)
+        )');
+        try {
+            $scope = [
+                'issuer' => 'SYNTHETIC_AGENT_SERVICE',
+                'audience' => 'SYNTHETIC_CRM_API',
+                'tenant_ref' => $tenant,
+                'key_id' => $keyId,
+            ];
+            DB::table('aia_lab_ed25519_service_keys')->insert(
+                $scope + [
+                    'public_key_base64' => base64_encode($publicA),
+                    'enabled' => true, 'revoked_at' => null, 'revision' => 1,
+                ]
+            );
+            $keyring = new \App\Support\Synthetic\AiaPgServiceKeyringLab(
+                DB::connection()
+            );
+
+            $this->assertSame([], $keyring->trustedPublicKey($keyId, $other));
+            $this->assertSame([], $keyring->trustedPublicKey(
+                'SYNTHETIC_F232_UNKNOWN', $tenant
+            ));
+            $this->assertSame(
+                $publicA,
+                $keyring->trustedPublicKey($keyId, $tenant)[$keyId]['public_key']
+            );
+            [$claimsA,$sigA] = self::signed(
+                $request,$tenant,'SYNTHETIC_F232_KEYRING_NONCE_A',$privateA
+            );
+            $this->assertTrue(AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $request,$claimsA,$sigA,$tenant,1794690010,$keyring,$ledger
+            ));
+            $this->assertSame(1, (int) DB::table('aia_lab_nonce_atomic_probe')->count());
+            // A client-supplied test key never overrides the server row:
+            // only a database-trusted key can be selected.
+            $this->assertFalse(AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $request,$claimsA,$sigA,$tenant,1794690010,$keyring,$ledger
+            ));
+            self::assertDenial(AiaPgEd25519LabBridge::inspectWithServerKeyring(
+                $request,$claimsA,$sigA,$tenant,1794690010,$keyring,$ledger
+            ));
+
+            DB::table('aia_lab_ed25519_service_keys')
+                ->where('tenant_ref',$tenant)
+                ->where('key_id',$keyId)
+                ->update(['revoked_at'=>1794690005,'revision'=>2]);
+            $this->assertSame([], $keyring->trustedPublicKey($keyId,$tenant));
+            [$claimsB,$sigB] = self::signed(
+                $request,$tenant,'SYNTHETIC_F232_KEYRING_NONCE_B',$privateA
+            );
+            $this->assertFalse(AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $request,$claimsB,$sigB,$tenant,1794690010,$keyring,$ledger
+            ));
+            $this->assertSame(1, (int) DB::table('aia_lab_nonce_atomic_probe')->count());
+
+            // Rotate the server-owned public key and reject the old signer
+            // before it can consume the next nonce.
+            DB::table('aia_lab_ed25519_service_keys')
+                ->where('tenant_ref',$tenant)
+                ->where('key_id',$keyId)
+                ->update([
+                    'revoked_at'=>null,
+                    'public_key_base64'=>base64_encode($publicB),
+                    'revision'=>3,
+                ]);
+            $this->assertSame(
+                $publicB,
+                $keyring->trustedPublicKey($keyId,$tenant)[$keyId]['public_key']
+            );
+            $this->assertFalse(AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $request,$claimsB,$sigB,$tenant,1794690010,$keyring,$ledger
+            ));
+            $this->assertSame(1, (int) DB::table('aia_lab_nonce_atomic_probe')->count());
+
+            [$rotatedClaims,$rotatedSig] = self::signed(
+                $request,$tenant,'SYNTHETIC_F232_KEYRING_NONCE_B',$privateB
+            );
+            $this->assertTrue(AiaPgEd25519LabBridge::matchesWithServerKeyring(
+                $request,$rotatedClaims,$rotatedSig,$tenant,1794690010,$keyring,$ledger
+            ));
+            $this->assertSame(2, (int) DB::table('aia_lab_nonce_atomic_probe')->count());
+
+            // Removing the key registry must fail closed without damaging the
+            // already written replay evidence or exposing a positive read.
+            DB::statement('DROP TABLE public.aia_lab_ed25519_service_keys');
+            $this->assertSame([], $keyring->trustedPublicKey($keyId,$tenant));
+            self::assertDenial(AiaPgEd25519LabBridge::inspectWithServerKeyring(
+                $request,$rotatedClaims,$rotatedSig,$tenant,1794690010,
+                $keyring,$ledger
+            ));
+            $this->assertSame(2, (int) DB::table('aia_lab_nonce_atomic_probe')->count());
+        } finally {
+            DB::statement('DROP TABLE IF EXISTS public.aia_lab_ed25519_service_keys');
+        }
+    }
+
     public function test_pg_backend_outage_is_uniformly_denied_even_if_ed25519_passes(): void
     {
         [$secret, ,$trusted] = self::publicTestKeys();
