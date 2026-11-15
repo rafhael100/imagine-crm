@@ -1,0 +1,78 @@
+name: CRM AIA F248 - private signed ingress NO-GO (original Agents Ed25519)
+
+on:
+  pull_request:
+    branches: [dev/fast-track-crm-2026-11-04]
+    paths:
+      - 'app/Homologation/AgentsSignedIngressCandidate.php'
+      - 'tests/Feature/AgentsPrivateIngressCandidateTest.php'
+      - '.github/workflows/ci-crm-aia-f248-private.yml'
+      - 'docs/operations/private-complete-journey.md'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-aia-f248-private-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  original-ed25519-private-deny:
+    name: PHP 8.3 / pinned Agents verifier / zero private routes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      APP_ENV: testing
+      CRM_AIA_F248_PARITY_LAB: 'true'
+    steps:
+      - name: Checkout CRM exact pull-request HEAD, no credentials retained
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Checkout original, immutable Agents verifier for synthetic proof
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba
+          path: _aia_f248_fixture
+          persist-credentials: false
+
+      - name: Assert only the expected repository and immutable verifier
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REPOSITORY" = "rafhael100/imagine-crm" ]]
+          [[ "$GITHUB_EVENT_NAME" = "pull_request" ]]
+          [[ "$(git -C _aia_f248_fixture rev-parse HEAD)" = "fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba" ]]
+          [[ "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}" ]]
+
+      - name: PHP with sodium (no external services or database)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, dom, xml, ctype, fileinfo, openssl, sodium, pdo_sqlite
+          coverage: none
+          tools: composer
+
+      - name: Restore exact locked Laravel dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
+
+      - name: Verify source and original verifier parse
+        run: |
+          set -euo pipefail
+          php -m | grep -qi sodium
+          php -l app/Homologation/AgentsSignedIngressCandidate.php
+          php -l tests/Feature/AgentsPrivateIngressCandidateTest.php
+          php -l _aia_f248_fixture/src/Domain/MockError.php
+          php -l _aia_f248_fixture/src/MockBridge/MockCrmReadRequest.php
+          php -l _aia_f248_fixture/src/MockBridge/MockServiceIdentityPreflight.php
+
+      - name: Exercise signed, replayed, tampered and forbidden-header evidence
+        run: php artisan test --filter=AgentsPrivateIngressCandidateTest --no-ansi
+
+      - name: Verify no business route was added
+        run: |
+          set -euo pipefail
+          ! grep -R -E 'AgentsSignedIngressCandidate|__synthetic_f248' routes bootstrap || exit 1
+          [[ ! -f routes/api.php ]]
