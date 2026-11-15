@@ -25,6 +25,7 @@ async function login(page, account, admin = false) {
 }
 async function width(page) {
   const values = await page.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
+  if (values[0] > values[1]+1) console.log('PRIVATE LAYOUT WIDTH: document='+values[0]+', viewport='+values[1]+', phase='+phase);
   check(values[0] <= values[1] + 1, 'Page overflows viewport');
 }
 (async () => {
@@ -55,8 +56,8 @@ async function width(page) {
     await page.screenshot({ path: path.join(output, 'crm-client-desktop.png'), fullPage: true });
     await page.setViewportSize({ width: 390, height: 844 });
     phase = 'client-mobile';
-    await width(page);
     await page.screenshot({ path: path.join(output, 'crm-client-mobile.png'), fullPage: true });
+    await width(page);
     const administrator = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
     const adminPage = await administrator.newPage();
     await login(adminPage, fixtures.admin, true);
@@ -67,8 +68,8 @@ async function width(page) {
     await adminPage.screenshot({ path: path.join(output, 'crm-admin-desktop.png'), fullPage: true });
     await adminPage.setViewportSize({ width: 390, height: 844 });
     phase = 'administrator-mobile';
-    await width(adminPage);
     await adminPage.screenshot({ path: path.join(output, 'crm-admin-mobile.png'), fullPage: true });
+    await width(adminPage);
     check(failures.length === 0, 'Browser JavaScript failure');
     console.log('PRIVATE CHROMIUM PASS: ' + checks + ' assertions; desktop/mobile client and administrator.');
   } finally { await browser.close(); }

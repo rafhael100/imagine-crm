@@ -144,6 +144,12 @@ def signup(client,login,label,document,password):
         'email':login+'@example.test','phone':'+5500000000000','terms':'simulated','plan':'essential'})
 
 
+def upload_csv(client,csv_text,expected=303):
+    boundary='crm-private-'+secrets.token_hex(8)
+    body=f'--{boundary}\r\nContent-Disposition: form-data; name="_token"\r\n\r\n{client.csrf}\r\n--{boundary}\r\nContent-Disposition: form-data; name="csv"; filename="fictional.csv"\r\nContent-Type: text/csv\r\n\r\n{csv_text}\r\n--{boundary}--\r\n'
+    client.request('/importar',expected=expected,body=body,headers={'Content-Type':'multipart/form-data; boundary='+boundary})
+
+
 def main():
     scenario('clear-cache')
     a=Client(); b=Client(); admin=Client()
@@ -244,6 +250,24 @@ def main():
     b.post('/tarefas',{'lead':lead,'title':'TASK_TESTE_CROSS','due':'2026-12-01'},expected=404)
     print('PASS CSRF → client/admin role denial → forged tenant/role rejection → two-company isolation')
 
+    a.get('/painel?section=kanban')
+    a.post('/leads/'+lead,{'version':2,'stage':'proposal'})
+    a.post('/leads/'+lead,{'version':3,'stage':'won'})
+    a.post('/leads/'+lead,{'version':4,'stage':'lost'},expected=422)
+    other=next(identity for identity in leads(a) if identity!=lead)
+    a.post('/leads/'+other,{'version':1,'stage':'lost'})
+    a.post('/leads/'+other,{'version':2,'stage':'qualified'},expected=422)
+    check('TASK_TESTE_AUTO_PROPOSAL' in a.get('/painel?section=tasks'),'proposal automation missing')
+    print('PASS proposal → won/lost → terminal state protection → proposal follow-up task')
+    exported=a.get('/exportar')
+    check(',won,' in exported and ',lost,' in exported,'exported sales stages missing')
+    before_import=len(leads(a))
+    upload_csv(a,exported)
+    check(len(leads(a))==before_import*2,'exported CSV cannot be reimported')
+    upload_csv(a,'title,stage,value_cents\nLEAD_TESTE_ATOMIC,new,1\n=INVALID,new,1\n')
+    check(len(leads(a))==before_import*2,'invalid CSV partially committed')
+    print('PASS exported CSV round trip preserves stages → invalid-row import is atomic')
+
     a.get('/painel?section=billing')
     for state in ['approved','refused','cancelled']:
         key=str(uuid.uuid4())
@@ -265,7 +289,7 @@ def main():
     print('PASS simulated pending/approved/refused/cancelled payments → order/event idempotency → tenant binding')
 
     scenario('clear-cache')
-    for i in range(17):
+    for i in range(20-len(leads(a))):
         a.get('/painel?section=leads')
         a.post('/leads',{'title':f'LEAD_TESTE_QUOTA_{i}','value_cents':0})
     check(len(leads(a))==20,'20-lead quota setup failed')

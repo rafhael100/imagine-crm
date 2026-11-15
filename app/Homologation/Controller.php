@@ -148,14 +148,16 @@ final class Controller
         $r->validate(['csv'=>'required|file|max:20']);
         $file=fopen($r->file('csv')->getRealPath(),'r');
         try {
-            abort_unless(fgetcsv($file,1024,',','"','')===['title','value_cents'],422,'Cabeçalho esperado: title,value_cents');
+            $header=fgetcsv($file,1024,',','"','');
+            abort_unless(in_array($header,[['title','value_cents'],['title','stage','value_cents']],true),422,'Use o CSV exportado ou o cabeçalho title,value_cents.');
             $rows=[];
             while(($row=fgetcsv($file,1024,',','"',''))!==false) {
-                abort_unless(count($row)===2 && count($rows)<20,422);
-                $rows[]=['title'=>$row[0],'value_cents'=>$row[1]];
+                abort_unless(count($row)===count($header) && count($rows)<20,422);
+                $rows[]=['title'=>$row[0],'value_cents'=>$row[count($header)-1],
+                    'stage'=>count($header)===3?$row[1]:'new'];
             }
         } finally { fclose($file); }
-        app(Workspace::class)->createLeads($rows);
+        app(Workspace::class)->createLeads($rows,true);
         return redirect('/painel?section=leads',303);
     }
     public function admin(Request $r) { return $this->page($r,'admin',app(Administration::class)->overview()); }

@@ -85,7 +85,7 @@ final readonly class Workspace
             'object_id'=>$object,'action'=>$action,'occurred_at'=>time()]);
     }
 
-    public function createLeads(array $rows): void
+    public function createLeads(array $rows,bool $historicalImport=false): void
     {
         if (count($rows)<1 || count($rows)>20) {
             throw ValidationException::withMessages(['csv'=>'O arquivo deve ter de 1 a 20 linhas fictícias.']);
@@ -99,17 +99,19 @@ final readonly class Workspace
             }
             $funnel=$row['funnel']??null;
             abort_unless($funnel===null || (is_string($funnel) && Str::isUuid($funnel)),422);
-            $validated[]=[$title,$value,$funnel];
+            $stage=$historicalImport?($row['stage']??'new'):'new';
+            abort_unless(in_array($stage,['new','qualified','proposal','won','lost'],true),422);
+            $validated[]=[$title,$value,$funnel,$stage];
         }
-        $this->run('leads.create',function ($account,$trial,$principal) use ($validated) {
+        $this->run('leads.create',function ($account,$trial,$principal) use ($validated,$historicalImport) {
             abort_if($this->table('leads',$account->organization_id)->count()+count($validated)>20,409,'Limite de 20 leads do trial.');
-            foreach ($validated as [$title,$value,$funnel]) {
+            foreach ($validated as [$title,$value,$funnel,$stage]) {
                 $funnel=$funnel??$this->table('funnels',$account->organization_id)->orderBy('created_at')->value('id');
                 abort_unless($funnel && $this->table('funnels',$account->organization_id)->where('id',$funnel)->exists(),404);
                 $id=(string)Str::uuid();
                 $this->db->table('public.crm_private_leads')->insert(['id'=>$id,'organization_id'=>$account->organization_id,
-                    'title'=>$title,'value_cents'=>$value,'funnel_id'=>$funnel,'created_at'=>time()]);
-                $this->event($account,$principal,$id,'lead.created');
+                    'title'=>$title,'value_cents'=>$value,'stage'=>$stage,'funnel_id'=>$funnel,'created_at'=>time()]);
+                $this->event($account,$principal,$id,$historicalImport?'lead.imported':'lead.created');
             }
         },true);
     }

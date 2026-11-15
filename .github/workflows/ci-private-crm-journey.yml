@@ -72,12 +72,13 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/private-crm-browser" --ignore-scripts --no-audit --no-fund playwright@1.56.1
           sudo env CRM_PRIVATE_PLAYWRIGHT_DIR="$RUNNER_TEMP/private-crm-browser" node scripts/ops/test-private-crm-browser.cjs "$RUNNER_TEMP/crm-private-data/fixtures.json" "$RUNNER_TEMP/crm-private-evidence"
       - name: Preserve credential-free desktop and mobile evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: private-crm-desktop-mobile
           path: ${{ runner.temp }}/crm-private-evidence/*.png
           retention-days: 7
-          if-no-files-found: error
+          if-no-files-found: ignore
       - name: Trial OTP service outage and recovery negative journeys
         run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/test-private-crm-resilience.py "$RUNNER_TEMP/crm-private-data/fixtures.json"
       - name: Sanitized diagnostics on failure
