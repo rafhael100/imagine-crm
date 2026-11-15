@@ -62,6 +62,11 @@ nos três idiomas, as proteções de entrada e o resultado persistido
 do relatório após mover leads pelo funil; o teste Unit
 `OpportunityScenarioTest` verifica também limites e
 isolamento de campos não relacionados ao cenário.
+A suíte Chromium preenche e envia o formulário sem JavaScript de
+aplicação, confirma os cálculos em PT/EN/ES, procura indevidamente
+campos de nome/e-mail/CNPJ e inspeciona o layout em 320, 390, 768 e
+1.440 pixels. A CI só aprova a revisão depois desse fluxo e da
+conferência dos acessos separados de cliente e administrador.
 
 **Este recorte não cria lead magnet real, captação de PII, envio
 de e-mail ou automação de nutrição.** Qualquer serviço comercial
