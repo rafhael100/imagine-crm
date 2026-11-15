@@ -160,3 +160,27 @@ mTLS e testes de invasão independentes.** Todos os endpoints
 Agents e leituras reais continuam no estado NO-GO.
 
 **Correção do gate de isolamento:** o primeiro candidato residia em `app/Homologation`; os testes gerais F0/PG16 recusaram corretamente a referência a `App\\Support\\Synthetic` num arquivo de runtime. O código foi movido para `app/Support/Synthetic`, a classe antiga excluída e o workflow passou a validar o caminho explicitamente sintético. O tripwire `SyntheticRuntimeIsolationTest` foi preservado sem exceções ou relaxamento.
+
+## F250 — bloquear confusão entre identidade do serviço e sessão humana
+
+A camada `App\\Homologation\\PrivateHeaders` do CRM privado nega
+explicitamente as seguintes sugestões de identidade de serviço nos
+**endpoints humanos**: `X-Aia-Claims`,
+`X-Aia-Signature`, `X-Aia-Key-Id` e
+`X-Service-Identity`. Tais campos não são login, cookie,
+membership, MFA nem autorização. A presença de qualquer um
+deles em rotas comerciais humanas resulta em HTTP 400 antes de
+execução do controller.
+
+No teste HTTP da pilha real, isso é verificado sobre `/login`
+de visitante, `/painel` do cliente com sessão válida e
+`/admin` do administrador com senha + MFA, garantindo
+que nenhum desses perfis seja elevado ou redirecionado para
+uma identidade de serviço apenas por headers. As regras de
+negação de rotas Agents e a prova Ed25519 de laboratório F248
+continuam independentes.
+
+**O bloqueio não autoriza uma rota S2S futura**, não cria tokens,
+não abre leitura de leads e não identifica provedores externos.
+Uma eventual integração real requer um ingresso separado e
+homologado que nunca reutilize login/CSRF/sessão humanos.
