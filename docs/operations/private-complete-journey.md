@@ -133,3 +133,28 @@ A workflow `ci-crm-aia-f248-private.yml` baixa o verificador **original** do Ima
 `fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba` (não copia nem altera o algoritmo original). Confere a SHA, assina uma mensagem artificial com chave gerada deterministicamente só para teste e exercita a primeira prova, replay, alteração de conteúdo, assinatura forjada, cabeçalhos conflitantes e callback com exceção. O teste não registra rota no Laravel e verifica que nenhum endpoint real foi publicado.
 
 **Essa entrega não inclui:** chave privada real, mTLS, cadastro operacional de peer, origem confiável da empresa, nonce PG distribuído, consentimento LGPD, auditoria de dados reais, política de acesso a leads, deploy ou `ALLOW`. F242–F247 continuam condicionadas à revisão/portabilidade individual e à autorização SEG/CORE/IAM/DBA/LGPD; não há nenhuma ativação da integração operacional.
+
+## F249 — regressão de rotas Agents na aplicação privada real
+
+A F248 garante que o adaptador sintético não foi registrado em roteamento;
+a F249 complementa isso com um **teste HTTP de verdade no contêiner
+isolado do CRM privado**, executado por
+`scripts/ops/test-private-crm-http.py`.
+
+O teste faz GET/POST com envelope artificial e cabeçalhos falsos para
+endereços representativos de serviço (`/api/aia/lead/read`,
+`/api/agents/op01/leads`, `/api/crm/agents/leads/*`,
+`/internal/aia/op01/leads` e a rota inexistente F248).
+Repete a matriz com (1) visitante, (2) cliente logado por
+senha+MFA e (3) administrador global logado por senha+MFA.
+Todos devem receber 404 e nenhuma resposta pode conter
+referência de lead, principal, assinatura falsa ou `access_token`.
+O teste não usa clientes reais, não cria rotas, não desabilita
+CSRF e não tenta ler nenhum dado de empresa; ele procura
+regressões que poderiam escapar dos testes F0, pois a homologação
+possui rotas próprias legítimas.
+
+**Os resultados de F248/F249 não substituem autorização específica,
+identidade de serviço verdadeira, revisão SEG/CORE/IAM/DBA/LGPD,
+mTLS e testes de invasão independentes.** Todos os endpoints
+Agents e leituras reais continuam no estado NO-GO.
