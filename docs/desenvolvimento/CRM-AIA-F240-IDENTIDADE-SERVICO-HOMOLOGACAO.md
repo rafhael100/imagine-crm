@@ -250,3 +250,28 @@ não sua exclusão silenciosa.
 
 **Estado:** DRAFT, ausência de deploy, ausência de dados reais,
 todos os gates de segurança ainda pendentes.
+
+## F246 — contrato HTTP de homologação sem rota operacional
+
+`AiaStagingDeniedIngressLab` recebe um `Request` Laravel **somente quando
+montado diretamente pelo teste**, nunca por `routes/web.php` ou API pública.
+Sua ativação exige `AIA_F246_HTTP_LAB=true`, repositório GitHub Actions exato,
+`APP_ENV=testing` e método POST `Content-Type: application/json`.
+
+A porta valida corpo canônico do protocolo sintético existente, tamanho máximo,
+claims JSON canônicas, assinatura Ed25519 com encoding estrito,
+headers de valor único e recusa `Authorization`, `Cookie` e headers de tenant
+paralelos. Quando essas verificações de envelope passam, somente uma
+callback diagnóstica **de laboratório** pode invocar o verificador SHA-fixado;
+não existe serviço/endpoint operacional, banco de leads ou leitura de PII.
+O resultado da callback jamais aparece no HTTP: há sempre 404,
+`DENIED_OR_NOT_FOUND`, `projection=null`,
+`real_authorization=false`, `external_calls=0`, `Cache-Control:no-store`
+e nenhuma informação de sessão. Exceções internas tampouco vazam detalhes.
+
+`AiaStagingDeniedIngressTest` monta rota efêmera exclusivamente no teste e
+exercita envelope assinado sintético, ausência da flag, tentativas de header
+extra/injeção, body excedente, JSON duplicado, cookie, bearer e callback
+com falha. O objetivo é ensaiar o **contrato de entrada** sem cruzar os
+gates para API real, cuja autenticação de transporte, provisionamento,
+identidade do peer e autorização de negócio continuam pendentes.
