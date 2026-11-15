@@ -197,3 +197,32 @@ da tabela de chaves públicas F240; é o próximo cenário adversarial.
 segredos/mTLS, provisionamento de chaves, controle de tenant e
 escopo de leads reais, revisão SEG/DBA/CORE/IAM/LGPD e gates
 operacionais de CRM #57 continuam pendentes.
+
+## F244 — proteger revogação/rotação da chave pública durante prova
+
+A etapa F243 mantém o bloqueio do vínculo chave→empresa, mas não
+protegia a chave pública de uma revogação/rotação simultânea na
+tabela F240. A F244 adiciona `AiaPgLockedServiceKeyringLab`,
+usando a role efêmera `crm_aia_key_lock_ci`: SELECT e apenas
+UPDATE da coluna técnica `lock_marker` sob FORCE RLS, com
+política `WITH CHECK(false)` que impede modificações de chaves.
+
+O novo `verifyWithStableIdentity` mantém a **ordem estável de
+locks**: vínculo CRM por key_id global → linha de chave pública
+específica da empresa → verificação Ed25519 original Agents →
+inserção atômica nonce F241. Apenas depois dos commits de
+verificação podem concluir revogações concorrentes de vínculo e
+chave. A saída continua sendo diagnóstico sintético, não ALLOW.
+
+A CI exercita duas conexões reais e confirma que a revogação da
+chave fica bloqueada enquanto a verificação mantém a linha
+travada, que a mesma revogação consegue commitar depois e que
+um nonce novo com assinatura antiga é rejeitado. A role de
+leitura/bloqueio não pode editar `revoked_at` nem os bytes da
+chave. A integração continua sem interface HTTP, credenciais
+reais, autorização empresarial, mTLS ou fonte operacional de
+provisionamento da identidade de serviço.
+
+Riscos ainda não eliminados: falhas de rede, vários processos,
+deadlocks externos, retenção dos nonces, revisão LGPD/SEG/DBA,
+segredos reais e gates de CRM #57. **DRAFT / NO-GO / NO-DEPLOY.**
