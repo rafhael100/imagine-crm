@@ -1582,6 +1582,88 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
             $this->assertSame(4,(int) $admin
                 ->table('aia_lab_nonce_atomic_probe')->count());
 
+            // F247: an ephemeral HTTP route, mounted ONLY in this exact
+            // PG16 CI test, forwards the canonical request into the
+            // production-equivalent F244 diagnostic chain:
+            // route -> envelope -> binding lock -> key lock ->
+            // ORIGINAL SHA-pinned Agents verifier -> INSERT-only nonce.
+            // A valid proof, replay, or revocation all return identical
+            // HTTP 404 with zero data and zero external calls.
+            if (getenv('AIA_F247_HTTP_E2E_LAB') === 'true') {
+                $httpPath = '/__synthetic_f247_http_pg16';
+                $httpVerifications = 0;
+                \Illuminate\Support\Facades\Route::post(
+                    $httpPath,
+                    function (\Illuminate\Http\Request $incoming) use (
+                        $now,$locked,$lockedKey,$nonce,&$httpVerifications
+                    ) {
+                        return \App\Support\Synthetic\AiaStagingDeniedIngressLab::
+                            respond(
+                                $incoming,
+                                static function (
+                                    string $receivedBody,
+                                    string $receivedClaims,
+                                    string $receivedSignature
+                                ) use (
+                                    $now,$locked,$lockedKey,$nonce,
+                                    &$httpVerifications
+                                ): bool {
+                                    $httpVerifications++;
+                                    return \App\Support\Synthetic\
+                                        AiaPgTenantBoundServiceProofLab::
+                                            verifyWithStableIdentity(
+                                                $receivedBody,$receivedClaims,
+                                                $receivedSignature,$now,
+                                                $locked,$lockedKey,$nonce
+                                            ) !== null;
+                                }
+                            );
+                    }
+                );
+
+                [$wireClaims,$wireSignature] = $sign(
+                    $reqA,$tenantA,'SYNTHETIC_F247_HTTP_VALID_A',
+                    $secretA,$keyA
+                );
+                $sendHttp = function (string $claims, string $sig) use (
+                    $httpPath,$reqA
+                ): void {
+                    $response = $this->call(
+                        'POST',$httpPath,[],[],[],
+                        [
+                            'CONTENT_TYPE'=>'application/json',
+                            'HTTP_X_AIA_CLAIMS'=>$claims,
+                            'HTTP_X_AIA_SIGNATURE'=>$sig,
+                        ],$reqA
+                    );
+                    $response->assertStatus(404)->assertExactJson([
+                        'contract'=>'SYNTHETIC_CRM_AIA_PUBLIC_V1',
+                        'state'=>'DENIED_OR_NOT_FOUND',
+                        'projection'=>null,
+                        'real_authorization'=>false,
+                        'external_calls'=>0,
+                    ]);
+                    $this->assertStringContainsString(
+                        'no-store',
+                        (string) $response->headers->get('cache-control')
+                    );
+                    $this->assertSame(
+                        '',(string) $response->headers->get('set-cookie')
+                    );
+                };
+                $sendHttp($wireClaims,$wireSignature);
+                $this->assertSame(1,$httpVerifications);
+                $this->assertSame(5,(int) $admin
+                    ->table('aia_lab_nonce_atomic_probe')->count());
+                $sendHttp($wireClaims,$wireSignature);
+                $this->assertSame(2,$httpVerifications);
+                $this->assertSame(5,(int) $admin
+                    ->table('aia_lab_nonce_atomic_probe')->count());
+                $this->assertSame(0,$lockDb->transactionLevel());
+                $this->assertSame(0,$keyLockDb->transactionLevel());
+                $this->assertSame(0,$nonceDb->transactionLevel());
+            }
+
             // Once verification releases both ordered locks, revocation
             // commits and a correctly signed FRESH nonce fails closed.
             $this->assertSame(1,$keyRevoker
@@ -1599,8 +1681,10 @@ final class AiaPostgresEd25519NonceCandidateTest extends TestCase
                         $locked,$lockedKey,$nonce
                     )
             );
-            $this->assertSame(4,(int) $admin
-                ->table('aia_lab_nonce_atomic_probe')->count());
+            $this->assertSame(
+                getenv('AIA_F247_HTTP_E2E_LAB') === 'true' ? 5 : 4,
+                (int) $admin->table('aia_lab_nonce_atomic_probe')->count()
+            );
             $this->assertSame(0,$lockDb->transactionLevel());
             $this->assertSame(0,$keyLockDb->transactionLevel());
             $this->assertSame(0,$nonceDb->transactionLevel());
