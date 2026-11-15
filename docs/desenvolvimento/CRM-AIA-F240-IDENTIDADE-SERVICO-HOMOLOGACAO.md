@@ -275,3 +275,33 @@ extra/injeção, body excedente, JSON duplicado, cookie, bearer e callback
 com falha. O objetivo é ensaiar o **contrato de entrada** sem cruzar os
 gates para API real, cuja autenticação de transporte, provisionamento,
 identidade do peer e autorização de negócio continuam pendentes.
+
+## F247 — percurso HTTP → assinatura Agents → PostgreSQL
+
+A F247 integra o envelope F246 ao caminho F244 em uma rota
+**montada exclusivamente dentro de um teste da CI PG16**.
+A sequência exercitada é:
+
+1. Recebimento POST JSON e claims em headers do laboratório,
+   validação canônica e ausência de cookie/bearer;
+2. Consulta CRM do vínculo global entre key_id e empresa, sob lock;
+3. Chave pública da empresa consultada e bloqueada por role distinta;
+4. Assinatura Ed25519 validada pelo **verificador original SHA-fixado
+   do repositório Agents**, sem reimplementação local;
+5. Nonce registrado sob role PostgreSQL somente INSERT, com
+   uniqueness entre conexões e tenants;
+6. Para o mesmo HTTP repetido, o nonce não é consumido novamente;
+7. Todos os casos retornam **sempre 404/negação uniforme**, inclusive
+   primeira assinatura válida, assinatura repetida e exceção.
+
+O teste comprova o protocolo de entrada e a ligação real entre as
+peças existentes, sem criar `routes/api.php`, middleware
+de negócio, cliente operacional ou leitura de dados privados.
+Os três locks/roles são independentes e a entrada de HTTP não
+recebe informações sobre a conclusão interna. A análise continua
+sendo **diagnóstica** e não fornece qualquer autoridade.
+
+Próximos requisitos de produção permanecem: identidade de transporte
+real, cadastro controlado de emissor e organização, consentimento,
+regras por usuário/campo/finalidade, auditoria e retenção, métricas
+e gates de segurança independentes. Nenhum deploy ou merge automático.
