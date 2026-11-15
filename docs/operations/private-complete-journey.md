@@ -27,6 +27,41 @@ Após expirar o trial, os registros continuam legíveis e as alterações no CRM
 mesmo que um pedido simulado tenha sido aprovado. Anexos, IA externa, mensagens e gateways reais
 ficam expressamente indisponíveis; as franquias de 20 MB e IA 10 + 10 são referências do trial.
 
+## Metodologia Imagine — Visitas → Leads → Clientes (homologação)
+
+A versão de revisão da página comercial possui bloco trilingue (PT/EN/ES)
+com os três pilares da Imagine e um formulário de simulação sem JavaScript:
+visitas por semana, percentual hipotético de visitantes convertidos em
+leads e percentual hipotético de leads que viram clientes.
+
+O formulário realiza apenas uma solicitação GET da própria página.
+`OpportunityScenario` aceita inteiros estritos com limites de 0 a
+1.000.000 visitas e taxas de 0% a 100%; valores inválidos retornam
+aos exemplos seguros. O cálculo arredonda a contagem de leads e,
+em seguida, de clientes com aritmética inteira. Os parâmetros
+não incluem nome, e-mail, CNPJ, consentimento ou contatos e não
+são gravados no CRM. As hipóteses não representam médias de mercado,
+estimativas contratuais ou garantias de conversão.
+
+Dentro do CRM autenticado, o painel **Relatórios** possui agora a
+assinatura da metodologia com dados obtidos somente da empresa
+autenticada: quantidade de leads fictícios, negócios marcados
+`won` (como indicação de clientes) e taxa de
+`won / leads`. **Visitas permanecem “não medidas”**:
+sem integração real de analytics não pode haver números fabricados.
+A etapa `won` não prova contrato, pagamento ou cliente real.
+
+O teste HTTP completo na suíte privada valida a calculadora
+nos três idiomas, as proteções de entrada e o resultado persistido
+do relatório após mover leads pelo funil; o teste Unit
+`OpportunityScenarioTest` verifica também limites e
+isolamento de campos não relacionados ao cenário.
+
+**Este recorte não cria lead magnet real, captação de PII, envio
+de e-mail ou automação de nutrição.** Qualquer serviço comercial
+com esses recursos depende de consentimento, retenção, LGPD e
+gates de produção independentes.
+
 ## Instalação privada na VPS
 
 Checkout dedicado: `/srv/imagine/crm-private-candidate`.
