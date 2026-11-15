@@ -71,3 +71,24 @@ a uma IA ou a CI verde.
 
 **Conclusão:** uma única HEAD para revisão técnica da camada Core,
 páginas privadas e laboratório de IAM. Não é homologação operacional.
+
+
+## Regressão de restauração CI — readiness PostgreSQL definitivo
+
+O primeiro pipeline deste candidato passou em 9/10 workflows, mas o smoke
+Docker falhou em `rehearse-crm-full-schema-restore.sh` após `pg_isready`:
+`FATAL: the database system is shutting down`. O PostgreSQL oficial
+inicializa um postmaster **temporário** (durante `initdb`) e depois
+o desliga antes do servidor definitivo. A checagem anterior aceitava
+a conexão temporária e a primeira operação `CREATE ROLE` podia ocorrer
+durante o desligamento.
+
+O preflight do restaurador em CI passou a exigir cumulativamente:
+1. `/proc/1/comm` igual a `postgres` dentro do contêiner isolado;
+2. `pg_isready` no banco de restauração;
+3. `SELECT current_database()` no mesmo banco com o resultado esperado.
+
+São 45 tentativas limitadas com falha explícita (fail-closed). O servidor
+continua com `--network none`, sem portas expostas, sem credenciais reais
+e volume descartável, sem relaxar checks de FORCE RLS nem de contagem
+e comparação de dados. Exigir nova CI na HEAD que contém essa correção.
