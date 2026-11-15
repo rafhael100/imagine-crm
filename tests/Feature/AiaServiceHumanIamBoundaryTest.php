@@ -391,17 +391,17 @@ final class AiaServiceHumanIamBoundaryTest extends TestCase
                 $db->statement('GRANT UPDATE (lock_marker) ON TABLE public.'.
                     $table.' TO crm_aia_grant_ci');
             }
-            $db->statement('CREATE POLICY aia_f239_issue ON
+            $db->statement("CREATE POLICY aia_f239_issue ON
                 public.aia_lab_human_service_grants
                 FOR INSERT TO crm_aia_grant_ci
                 WITH CHECK (
-                    tenant_ref = current_setting('. "'app.tenant_id',true)" .')
+                    tenant_ref = current_setting('app.tenant_id', true)
                     AND revoked_at IS NULL
                     AND version = 1 AND membership_version > 0
                     AND credential_version > 0
                     AND expires_at > issued_at
                     AND expires_at <= issued_at + 30
-                )');
+                )");
             $db->statement('GRANT INSERT ON TABLE
                 public.aia_lab_human_service_grants TO crm_aia_grant_ci');
             $grantSettings = config('database.connections.pgsql');
