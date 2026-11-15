@@ -72,8 +72,9 @@ não é uma credencial: qualquer código que controle a conexão pode tentar
 definir o marcador. A role exclusiva do keyring e a policy RLS evitam
 leitura acidental fora da empresa configurada pela transação, mas
 **não substituem a identidade operacional confiável do serviço**.
-A verificação de nonce existente em F232 também usa a conexão
-administrativa da CI; a F240 não promove a integração a produção.
+O ledger original F232 usa a conexão administrativa da CI, enquanto
+a F241 adiciona uma alternativa segregada somente INSERT no PG16.
+Nenhuma das duas variantes promove o fluxo a produção.
 
 ## Evidências
 
@@ -87,3 +88,41 @@ administrativa da CI; a F240 não promove a integração a produção.
 
 **Sem deploy, endpoints de serviço, segredos, efeitos, novas despesas
 ou acesso real a leads.** Manter a PR em DRAFT e `main`/DEV inalteradas.
+
+## F241 — nonce sob conexão PG somente INSERT
+
+A F241 complementa a leitura de chaves F240 com a interface
+`AiaNonceClaimSource` e o laboratório
+`AiaPgRestrictedNonceLedgerLab`. A role `crm_aia_nonce_ci`
+não é superusuária, não é proprietária, não herda papéis, não
+contorna RLS e **não tem SELECT, UPDATE ou DELETE** sobre o
+registro de nonces. Só pode tentar INSERT na tabela efêmera
+`aia_lab_nonce_atomic_probe`, protegida por FORCE RLS, com
+issuer/audience fixos e tenant transaction-local.
+
+A implementação usa INSERT simples: a chave primária
+`(issuer,audience,nonce)` rejeita repetições mesmo quando
+ocorrem por outra empresa ou outra conexão. **Não usa
+`ON CONFLICT DO NOTHING`**, que em certas políticas PG
+exige permissões de SELECT proibidas a essa role. O erro da
+constraint resulta em negativa e rollback, sem retry de
+um efeito protegido.
+
+Teste em **duas conexões PostgreSQL independentes** verifica:
+o primeiro INSERT é único, duplicata na mesma e em outra empresa
+é rejeitada, SELECT/UPDATE/DELETE e leituras de IAM/membership
+não são permitidos, inserção com tenant divergente é
+barrada pelo RLS, assinatura inválida do Agents não
+consome nonce e assinatura válida consome **exatamente uma vez**.
+Remover FORCE RLS faz o ledger negar antes de inserir.
+O bridge criptográfico Ed25519 original permanece fixado
+no SHA do Agents citado acima.
+
+**Gates remanescentes:** fonte independente e operacional
+da identidade de serviço e do tenant (não confiar na GUC SQL),
+distribuição de chaves reais, TLS/mTLS, revisão de
+privilégios, retenção e auditoria de ledger, provisionamento,
+políticas por recurso/campo e aprovações independentes.
+Nenhuma rota operacional, IAM de serviço real, ALLOW ou
+leitura de leads foi habilitada. DRAFT / NO-GO /
+NO-MERGE / NO-DEPLOY.
