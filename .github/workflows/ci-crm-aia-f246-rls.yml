@@ -1,0 +1,102 @@
+name: CRM F246 - FORCE RLS and read-only Ed25519 public-key role
+
+on:
+  pull_request:
+    branches:
+      - dev/aia-f245-private-owned-keyring-2026-11-15
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-aia-f246-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  restricted-rls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_crm_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d imagine_crm_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      APP_URL: http://127.0.0.1
+      AIA_F246_RLS_LAB: 'true'
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: '5432'
+      DB_DATABASE: imagine_crm_ci
+      DB_USERNAME: postgres
+      DB_PASSWORD: ci-only-password
+      RLS_TEST_USERNAME: crm_app_ci
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+    steps:
+      - name: Checkout exact CRM PR HEAD without write permission
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Checkout pinned original Agents verifier
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5
+          path: _aia_f246_fixture
+          persist-credentials: false
+      - name: Verify trusted CI environment and both exact SHAs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "rafhael100/imagine-crm"
+          test "$GITHUB_EVENT_NAME" = "pull_request"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test "$(git -C _aia_f246_fixture rev-parse HEAD)" = "fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5"
+          test "$DB_DATABASE" = "imagine_crm_ci"
+          test "$DB_HOST" = "127.0.0.1"
+      - name: PHP 8.4 and PostgreSQL/Sodium test extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, ctype, openssl, sodium, pdo_pgsql, pgsql
+          coverage: none
+          tools: composer
+      - name: Restore locked dependencies and test-only app key
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer install --no-interaction --prefer-dist --no-progress --no-scripts
+          cp .env.example .env
+          php artisan key:generate --force --no-interaction
+      - name: Check source and forbid route additions
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l app/Support/Synthetic/AgentsPrivateRestrictedKeyringLab.php
+          php -l tests/Feature/AgentsPrivateRestrictedKeyringTest.php
+          php -l _aia_f246_fixture/src/MockBridge/MockServiceIdentityPreflight.php
+          if grep -R -E 'AgentsPrivateRestrictedKeyringLab|__synthetic_f246' routes bootstrap; then
+            echo 'F246_UNAUTHORIZED_ROUTE'; exit 1
+          fi
+          test ! -e routes/api.php
+      - name: Execute SELECT-only FORCE RLS verification and denial tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          php artisan test --filter=AgentsPrivateRestrictedKeyringTest --no-ansi
+          echo 'F246_RLS_KEYRING_LAB_ONLY operational_decision=NO_GO' >> "$GITHUB_STEP_SUMMARY"
