@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Support\Synthetic\{AgentsPrivateRestrictedKeyringLab, AiaReadOnlyMockBoundary};
+use App\Support\Synthetic\{
+    AgentsPrivateRestrictedKeyringLab, AgentsPrivatePgDiagnostic,
+    AgentsSignedIngressCandidate, AiaPgNonceCandidateLedger, AiaReadOnlyMockBoundary
+};
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -165,7 +170,10 @@ final class AgentsPrivateRestrictedKeyringTest extends TestCase
         ))->resolve($id,$now);
     }
 
-    private static function signed(string $keyId,string $tenant,string $seed): array
+    private static function signed(
+        string $keyId, string $tenant, string $seed,
+        string $nonce='SYNTHETIC_F246_NONCE_A'
+    ): array
     {
         [, $secret]=self::pair($seed);
         $body=\ImagineAI\MockBridge\MockCrmReadRequest::encodeCanonicalJson([
@@ -186,7 +194,7 @@ final class AgentsPrivateRestrictedKeyringTest extends TestCase
             'subject'=>'SYNTHETIC_AGENTS_READ_ONLY',
             'tenant_ref'=>$tenant,
             'operation'=>'crm.lead.read_minimal',
-            'nonce'=>'SYNTHETIC_F246_NONCE_A',
+            'nonce'=>$nonce,
             'issued_at'=>self::NOW-5,
             'expires_at'=>self::NOW+10,
             'request_sha256'=>hash('sha256',$body),
@@ -303,4 +311,117 @@ final class AgentsPrivateRestrictedKeyringTest extends TestCase
         $this->tableCreated=false;
         self::assertNull($this->lookup('SYNTHETIC_F246_KEY_A'));
     }
+    public function test_f247_private_http_uses_restricted_keyring_then_pg_nonce_with_uniform_denial(): void
+    {
+        if (getenv('AIA_F247_COMPOSED_LAB') !== 'true'
+            || getenv('AIA_F243_PG_LAB') !== 'true'
+            || getenv('CRM_AIA_F248_PARITY_LAB') !== 'true') {
+            $this->markTestSkipped('F247 requires exact disposable composed CI gate.');
+        }
+
+        $nonceTable='public.aia_lab_nonce_atomic_probe';
+        DB::statement('CREATE TABLE '.$nonceTable.' (
+            issuer varchar(90) NOT NULL,
+            audience varchar(90) NOT NULL,
+            nonce varchar(90) NOT NULL,
+            tenant_ref varchar(90) NOT NULL,
+            claimed_at bigint NOT NULL,
+            PRIMARY KEY(issuer,audience,nonce)
+        )');
+        try {
+            $this->register('SYNTHETIC_F246_KEY_A','SYNTHETIC_TENANT_A','A');
+            $owner=DB::connection();
+            $observed=[];
+            // Claims may select a synthetic key_id, NEVER tenant or public key.
+            // Tenant and Ed25519 verification key MUST come from the restricted
+            // RLS-filtered CRM public-key table on every attempt.
+            $callback=function(string $body,string $claims,string $signature)
+                use(&$observed,$owner): bool {
+                try {
+                    $decoded=json_decode($claims,true,4,JSON_THROW_ON_ERROR);
+                    $keyId=$decoded['key_id'] ?? null;
+                    $owned=is_string($keyId) ? $this->lookup($keyId) : null;
+                    if ($owned === null) {
+                        $observed[]=false;
+                        return false;
+                    }
+                    $scope=[
+                        'tenant_ref'=>$owned['tenant_ref'],
+                        'principal_ref'=>'SYNTHETIC_F246_PRINCIPAL',
+                        'resource_ref'=>'SYNTHETIC_F246_LEAD',
+                        'purpose_ref'=>'SYNTHETIC_F246_PURPOSE',
+                        'fields'=>['ref','stage'],
+                    ];
+                    $diagnostic=new AgentsPrivatePgDiagnostic(
+                        new AiaPgNonceCandidateLedger($owner),
+                        $owned['trusted_keys'],$scope,$owned['tenant_ref'],self::NOW
+                    );
+                    $value=$diagnostic->inspect($body,$claims,$signature);
+                    $observed[]=$value;
+                    return $value;
+                } catch (\Throwable) {
+                    $observed[]=false;
+                    return false;
+                }
+            };
+            $send=function(array $signed,array $extra=[]) use($callback): void {
+                [$body,$claims,$sig]=$signed;
+                $request=Request::create(
+                    '/__synthetic_f247_not_registered',
+                    'POST',[],[],[],
+                    array_merge([
+                        'CONTENT_TYPE'=>'application/json',
+                        'HTTP_X_AIA_CLAIMS'=>$claims,
+                        'HTTP_X_AIA_SIGNATURE'=>$sig,
+                    ],$extra),
+                    $body,
+                );
+                $routeCount=Route::getRoutes()->count();
+                $response=AgentsSignedIngressCandidate::inspect($request,$callback);
+                self::assertSame(404,$response->getStatusCode());
+                self::assertSame([
+                    'contract'=>'SYNTHETIC_CRM_AIA_PUBLIC_V1',
+                    'state'=>'DENIED_OR_NOT_FOUND',
+                    'projection'=>null,
+                    'real_authorization'=>false,
+                    'external_calls'=>0,
+                ],$response->getData(true));
+                self::assertNull($response->headers->get('set-cookie'));
+                self::assertSame($routeCount,Route::getRoutes()->count());
+            };
+            $valid=self::signed('SYNTHETIC_F246_KEY_A','SYNTHETIC_TENANT_A','A',
+                'SYNTHETIC_F247_NONCE_A');
+            $cross=self::signed('SYNTHETIC_F246_KEY_A','SYNTHETIC_TENANT_B','A',
+                'SYNTHETIC_F247_NONCE_B');
+            $send($cross);
+            self::assertSame([false],$observed);
+            self::assertSame(0,(int)$owner->table('aia_lab_nonce_atomic_probe')->count());
+            $send($valid);
+            $send($valid); // Different verifier instance, same PG nonce.
+            self::assertSame([false,true,false],$observed);
+            self::assertSame(1,(int)$owner->table('aia_lab_nonce_atomic_probe')->count());
+
+            // Malicious tenant header is rejected before any callback.
+            $send($valid,['HTTP_X_TENANT_ID'=>'SYNTHETIC_TENANT_B']);
+            self::assertSame([false,true,false],$observed);
+
+            $owner->table('aia_lab_service_keys_f246')
+                ->where('key_id','SYNTHETIC_F246_KEY_A')
+                ->update(['enabled'=>false,'revoked_at'=>self::NOW]);
+            $later=self::signed('SYNTHETIC_F246_KEY_A','SYNTHETIC_TENANT_A','A',
+                'SYNTHETIC_F247_NONCE_AFTER_REVOKE');
+            $send($later);
+            self::assertSame([false,true,false,false],$observed);
+            self::assertSame(1,(int)$owner->table('aia_lab_nonce_atomic_probe')->count());
+
+            // Simulate RLS drift: even previously valid key cannot be used.
+            $owner->statement('ALTER TABLE '.self::TABLE.' DISABLE ROW LEVEL SECURITY');
+            $send($later);
+            self::assertSame([false,true,false,false,false],$observed);
+            self::assertSame(1,(int)$owner->table('aia_lab_nonce_atomic_probe')->count());
+        } finally {
+            DB::statement('DROP TABLE IF EXISTS '.$nonceTable);
+        }
+    }
+
 }
