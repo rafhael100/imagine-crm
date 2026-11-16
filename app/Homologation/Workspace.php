@@ -63,10 +63,11 @@ final readonly class Workspace
             $preferences = $this->table('preferences',$org)->first();
             $funnels=$this->table('funnels',$org)->orderBy('created_at')->get()->all();
             $invitations=$this->table('invitations',$org)->orderByDesc('created_at')->limit(20)->get(['id','state','expires_at'])->all();
-            $rules = json_decode($preferences->automation_rules ?? '[]',true) ?: [];
+            $automation = AutomationSettings::read($preferences->automation_rules ?? '[]');
+            $rules = $automation->rules;
             $team = $this->iam->table('public.crm_private_accounts')->where('organization_id',$org)
                 ->get(['identity_id','status','role','team_role'])->all();
-            return compact('account','trial','leads','tasks','events','orders','preferences','rules','team','funnels','invitations');
+            return compact('account','trial','leads','tasks','events','orders','preferences','rules','team','funnels','invitations','automation');
         });
     }
 
@@ -133,9 +134,10 @@ final readonly class Workspace
             $query->update($values);
             $this->event($account,$principal,$id,isset($values['stage'])?'lead.moved':'lead.updated');
             if (isset($values['stage']) && in_array($values['stage'],['qualified','proposal'],true)) {
-                $rules=json_decode($this->table('preferences',$account->organization_id)->value('automation_rules')??'[]',true);
+                $rules=AutomationSettings::read($this->table('preferences',$account->organization_id)->value('automation_rules')??'[]')->rules;
                 $rule='followup_'.$values['stage'];
                 if (is_array($rules) && in_array($rule,$rules,true)) {
+                    abort_if($this->table('tasks',$account->organization_id)->count()>=200,409,'Limite de segurança das tarefas fictícias.');
                     $task=(string)Str::uuid();
                     $this->db->table('public.crm_private_tasks')->insert(['id'=>$task,'organization_id'=>$account->organization_id,
                         'lead_id'=>$id,'title'=>'TASK_TESTE_AUTO_'.strtoupper($values['stage']),'due_on'=>gmdate('Y-m-d',time()+86400)]);
@@ -173,13 +175,20 @@ final readonly class Workspace
         },true);
     }
 
-    public function preferences(string $language,array $rules): void
+    public function preferences(string $language,array $rules,int $expectedVersion): void
     {
         abort_unless(in_array($language,['pt','en','es'],true)
             && count($rules)<=2 && count(array_unique($rules))===count($rules)
             && array_diff($rules,['followup_qualified','followup_proposal'])===[],422);
-        $this->run('preferences.update',function ($account,$trial,$principal) use ($language,$rules) {
-            $this->table('preferences',$account->organization_id)->update(['language'=>$language,'automation_rules'=>json_encode(array_values($rules))]);
+        $this->run('preferences.update',function ($account,$trial,$principal) use ($language,$rules,$expectedVersion) {
+            $query=$this->table('preferences',$account->organization_id);
+            $row=(clone $query)->lockForUpdate()->first();
+            abort_unless($row,409);
+            $current=AutomationSettings::read($row->automation_rules ?? '[]');
+            abort_unless($current->version===$expectedVersion && $current->version<20,409,'As automações mudaram ou atingiram o limite de revisões da homologação.');
+            $next=$current->revise($expectedVersion,array_values($rules),$principal->principalId,time());
+            $query->update(['language'=>$language,'automation_rules'=>$next->json()]);
+            $this->event($account,$principal,$account->organization_id,'automation.settings.v'.$next->version);
             $this->event($account,$principal,$account->organization_id,'preferences.updated');
         },true);
     }
