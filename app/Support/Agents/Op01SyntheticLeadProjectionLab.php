@@ -53,6 +53,7 @@ final readonly class Op01SyntheticLeadProjectionLab
             || !self::syntheticRef($resourceRef)
             || !array_is_list($requestedFields)
             || count($requestedFields) < 1 || count($requestedFields) > 2
+            || count(array_filter($requestedFields,static fn (mixed $field): bool => !is_string($field))) > 0
             || count(array_unique($requestedFields)) !== count($requestedFields)
             || count(array_diff($requestedFields, self::FIELDS)) > 0
         ) {
