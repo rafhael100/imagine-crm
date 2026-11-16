@@ -1,0 +1,70 @@
+name: CENTRAL AUTO incremental ledger migration candidate
+on:
+  pull_request:
+    paths: ['infra/homologation/migrations/**', 'scripts/ci/check_automation_incremental.sql', '.github/workflows/central-auto-incremental-migration.yml']
+permissions:
+  contents: read
+jobs:
+  upgrade-existing-synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      pg:
+        image: postgres:16
+        env:
+          POSTGRES_USER: crm_homologation_owner
+          POSTGRES_DB: imagine_crm_private_homologation
+          POSTGRES_PASSWORD: synthetic-migration-ci-only
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 3s --health-retries 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: cc17350fd4a0dc82b29e88d485a62f20e9e57c93
+          path: previous-private-schema
+          persist-credentials: false
+      - name: Initialize actual previous schema without automation ledger
+        env:
+          PG_CONTAINER: ${{ job.services.pg.id }}
+        run: |
+          docker exec -i "$PG_CONTAINER" psql -X -v ON_ERROR_STOP=1 -U crm_homologation_owner -d imagine_crm_private_homologation < previous-private-schema/infra/homologation/schema.sql
+          docker exec -i "$PG_CONTAINER" psql -X -v ON_ERROR_STOP=1 -U crm_homologation_owner -d imagine_crm_private_homologation <<'SQL'
+          CREATE ROLE crm_homologation_app NOLOGIN NOSUPERUSER NOBYPASSRLS;
+          GRANT USAGE ON SCHEMA public TO crm_homologation_app;
+          INSERT INTO crm_global_identities(id) VALUES('cccccccc-cccc-4ccc-8ccc-cccccccccccc');
+          INSERT INTO crm_organizations(id) VALUES('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'),('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb');
+          INSERT INTO crm_private_funnels(id,organization_id,title,created_at) VALUES('dddddddd-dddd-4ddd-8ddd-dddddddddddd','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','FUNIL_TESTE_MIGRATION',1800000000);
+          INSERT INTO crm_private_leads(id,organization_id,funnel_id,title,created_at) VALUES('ffffffff-ffff-4fff-8fff-ffffffffffff','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','dddddddd-dddd-4ddd-8ddd-dddddddddddd','LEAD_TESTE_MIGRATION',1800000000);
+          SQL
+      - name: Upgrade, insert under RLS, reapply, preserve both baseline and new ledger
+        env:
+          PG_CONTAINER: ${{ job.services.pg.id }}
+        run: |
+          set -euo pipefail
+          psql=(docker exec -i "$PG_CONTAINER" psql -X -qAt -v ON_ERROR_STOP=1 -U crm_homologation_owner -d imagine_crm_private_homologation)
+          "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql
+          "${psql[@]}" < scripts/ci/check_automation_incremental.sql
+          "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql
+          test "$("${psql[@]}" -c 'SELECT count(*) FROM crm_private_automation_runs')" = 1
+          test "$("${psql[@]}" -c 'SELECT count(*) FROM crm_private_leads')" = 1
+          if docker exec -i "$PG_CONTAINER" psql -X -v ON_ERROR_STOP=1 -U crm_homologation_owner -d postgres < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-negative.log 2>&1; then exit 1; fi
+          # Same number of constraints, different meaning: must fail closed.
+          "${psql[@]}" -c "ALTER TABLE crm_private_automation_runs DROP CONSTRAINT crm_private_automation_runs_state_check; ALTER TABLE crm_private_automation_runs ADD CONSTRAINT crm_private_automation_runs_state_check CHECK(state IN ('pending','completed','cancelled','failed','unapproved'))"
+          if "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-constraint.log 2>&1; then exit 1; fi
+          grep -F 'INCOMPATIBLE_AUTOMATION_CONSTRAINT_DEFINITIONS' /tmp/migration-constraint.log
+          "${psql[@]}" -c "ALTER TABLE crm_private_automation_runs DROP CONSTRAINT crm_private_automation_runs_state_check; ALTER TABLE crm_private_automation_runs ADD CONSTRAINT crm_private_automation_runs_state_check CHECK(state IN ('pending','completed','cancelled','failed'))"
+          "${psql[@]}" -c 'ALTER TABLE crm_private_automation_runs ALTER COLUMN command DROP NOT NULL'
+          if "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-null.log 2>&1; then exit 1; fi
+          grep -F 'INCOMPATIBLE_AUTOMATION_NULLABILITY' /tmp/migration-null.log
+          "${psql[@]}" -c 'ALTER TABLE crm_private_automation_runs ALTER COLUMN command SET NOT NULL; ALTER TABLE crm_private_automation_runs ALTER COLUMN attempts SET DEFAULT 1'
+          if "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-default.log 2>&1; then exit 1; fi
+          grep -F 'INCOMPATIBLE_AUTOMATION_DEFAULTS' /tmp/migration-default.log
+          "${psql[@]}" -c 'ALTER TABLE crm_private_automation_runs ALTER COLUMN attempts SET DEFAULT 0'
+          "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql
+          "${psql[@]}" -c 'ALTER TABLE crm_private_automation_runs ADD COLUMN incompatible_fixture text'
+          if "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-drift.log 2>&1; then exit 1; fi
+          test "$("${psql[@]}" -c 'SELECT count(*) FROM crm_private_automation_runs')" = 1
+          echo CRM_INCREMENTAL_UPGRADE_REPEAT_DRIFT_DENIAL_PASS operational_apply=0
