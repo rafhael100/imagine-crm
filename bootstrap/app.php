@@ -11,6 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function (): void {
+            if (app()->environment('staging') && getenv('CRM_AUTO_S2S_PROFILE') === 'synthetic-private-v1') {
+                \Illuminate\Support\Facades\Route::post('/private/automations/state', \App\Homologation\S2S\StateReceiver::class);
+            }
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         //
