@@ -419,3 +419,39 @@ sem simular tráfego real, contas comerciais ou pagamento.
 homologação descartável**, com sessões e MFA distintos por
 empresa. Não cria endpoints Agents, migrações, autorização
 para dados reais ou custos.
+
+
+## QA-01 — correções auditáveis de UX sem ampliar o escopo de upgrade
+
+Esta atualização deriva da auditoria independente da versão privada em
+revisão na [PR #614](https://github.com/rafhael100/imagine-crm/pull/614).
+Os resultados completos e riscos foram registrados nas issues
+[UX #416](https://github.com/rafhael100/imagine-crm/issues/416) e
+[GO #557](https://github.com/rafhael100/imagine-crm/issues/557).
+
+**Alterações da PR #616**:
+- A visão cliente/admin possui 16 rótulos de formulário corrigidos com
+  `for/id` sem alterar nomes de campos, permissões ou validações.
+- O Kanban e a tabela de contas recebem instruções explícitas de rolagem
+  horizontal em telas estreitas e região de rolagem focável por teclado,
+  com tradução PT/EN/ES.
+- Os títulos, indicadores e descrições da área administrativa são
+  traduzidos em PT/EN/ES sem alterar os estados persistidos nem os rótulos
+  de `name` dos formulários.
+- O `scripts/ops/test-private-crm-browser.cjs` verifica, em Chromium,
+  `label.control`, IDs únicos, acesso de teclado aos scrollers,
+  alcance das colunas e ações no celular, e traduções EN/ES.
+
+**Política de release:** para não alargar a allowlist de segurança
+F251/F252, a auditoria permanece nas issues existentes e neste
+runbook previamente classificado; os testes foram incorporados ao
+script Chromium já autorizado na lista F251. Não alterar F251/F252
+ou permitir que novos documentos/classes contornem o gate.
+Este ajuste não implica parecer de acessibilidade independente, revisão
+SEG/OPS, deploy automático ou promoção de clientes reais.
+
+**Aceite pendente:** mesma SHA com CI completa e F251/F252 verdes;
+revisão humana de UX/segurança/operacional; acesso autenticado em
+`crm-dev.imaginecomunica.com.br` para confirmar o commit efetivamente
+publicado, backup/restauração e rollback na VPS; foco/teclado e teste
+com tecnologia assistiva em 320, 390, 768 e 1440 px.
