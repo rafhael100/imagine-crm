@@ -104,7 +104,7 @@ async function width(page) {
     const opportunity=page.locator('article[data-lead-id]').filter({hasText:title});
     await opportunity.getByRole('button',{name:'Avançar →',exact:true}).click();
     await page.goto(base+'/painel?section=automation');
-    const completed=page.locator('[data-automation-id]').filter({hasText:'completed'});
+    const completed=page.locator('[data-automation-id]:has([data-automation-state=completed])');
     check(await completed.count()===1,'Browser action did not complete one native run');
     const executionId=await completed.getAttribute('data-automation-id');
     await page.goto(base+'/painel?section=tasks');
