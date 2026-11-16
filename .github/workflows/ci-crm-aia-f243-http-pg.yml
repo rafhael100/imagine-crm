@@ -1,0 +1,102 @@
+name: CRM F243 - F248 HTTP + Agents Ed25519 + PG16
+
+on:
+  pull_request:
+    branches:
+      - dev/aia-f242-private-ed25519-pg16-2026-11-15
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-aia-f243-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  postgres-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 13
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_crm_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d imagine_crm_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      APP_URL: http://127.0.0.1
+      AIA_F243_PG_LAB: 'true'
+      CRM_AIA_F248_PARITY_LAB: 'true'
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: '5432'
+      DB_DATABASE: imagine_crm_ci
+      DB_USERNAME: postgres
+      DB_PASSWORD: ci-only-password
+      RLS_TEST_USERNAME: crm_app_ci
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+    steps:
+      - name: Checkout exact functional CRM review HEAD
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Read immutable original Agents Ed25519 source from CI-reviewed commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5
+          path: _aia_f243_fixture
+          persist-credentials: false
+      - name: Assert immutable input and isolate runner database
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "rafhael100/imagine-crm"
+          test "$GITHUB_EVENT_NAME" = "pull_request"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test "$(git -C _aia_f243_fixture rev-parse HEAD)" = "fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5"
+          test "$DB_HOST" = "127.0.0.1"
+          test "$DB_DATABASE" = "imagine_crm_ci"
+      - name: PHP 8.4 with PostgreSQL and sodium
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, ctype, openssl, sodium, pdo_pgsql, pgsql
+          coverage: none
+          tools: composer
+      - name: Install locked dependencies and temporary test key
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer install --no-interaction --prefer-dist --no-progress --no-scripts
+          cp .env.example .env
+          php artisan key:generate --force --no-interaction
+      - name: Validate source without modifying application routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l app/Support/Synthetic/AgentsPrivatePgDiagnostic.php
+          php -l tests/Feature/AgentsPrivateHttpPgCycleTest.php
+          php -l app/Support/Synthetic/AiaPgNonceCandidateLedger.php
+          php -l _aia_f243_fixture/src/MockBridge/MockServiceIdentityPreflight.php
+          test ! -e routes/api.php
+      - name: Execute private F248 HTTP and PG16 nonce plus previous atomic regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          php artisan test --filter=AgentsPrivateHttpPgCycleTest --no-ansi
+          php artisan test --filter=AiaPostgresAtomicNonceCandidateTest --no-ansi
+          echo 'CRM_F243_PRIVATE_HTTP_PG_LAB_ONLY operational_decision=NO_GO' >> "$GITHUB_STEP_SUMMARY"
