@@ -1,0 +1,61 @@
+name: CRM AIA P0 - real IAM seam stays deny-only (NO-GO)
+
+on:
+  push:
+    branches:
+      - dev/aia-p0-op01-gated-backend-adapter-2026-11-16
+  pull_request:
+    branches:
+      - review/crm-aia-f241-f248-integrated-2026-11-15
+
+permissions:
+  contents: read
+
+jobs:
+  op01-deny-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+    steps:
+      - name: Checkout exact review HEAD without write credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, ctype, openssl, sodium, pdo_pgsql
+          coverage: none
+          tools: composer
+      - name: Install locked Laravel dependencies without scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer install --no-interaction --prefer-dist --no-progress --no-scripts
+          cp .env.example .env
+          php artisan key:generate --force --no-interaction
+      - name: OP-01 authorization seam syntax and no service route guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l app/Support/Agents/Op01GatedBackendAdapter.php
+          php -l tests/Feature/Op01GatedBackendAdapterTest.php
+          php -l config/aia_agents.php
+          if grep -R -E 'Op01GatedBackendAdapter|api/agents/op01' routes bootstrap; then
+            echo 'OP01_UNAUTHORIZED_SERVICE_ROUTE'; exit 1
+          fi
+          test ! -e routes/api.php
+      - name: Execute real CRM IAM-boundary negative tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          php artisan test --filter=Op01GatedBackendAdapterTest --no-ansi
+          php artisan test --filter=AgentsOp01NoHttpSurfaceTest --no-ansi
+          echo 'OP01_CONTRACT_PREPARATION_ONLY real_read=false operational_decision=NO_GO' >> "$GITHUB_STEP_SUMMARY"
