@@ -1,0 +1,87 @@
+name: CRM F241 - reciprocal Agents private 404-only HTTP fixture
+
+on:
+  pull_request:
+    branches:
+      - review/crm-private-complete-journey-2026-11-15
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-aia-f241-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  signed-denial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      CRM_AIA_F248_PARITY_LAB: 'true'
+      CRM_AIA_F241_PARITY_LAB: 'true'
+    steps:
+      - name: Checkout exact CRM pull request head without write credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Checkout immutable original Agents F238-F240 source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5
+          path: _aia_f241_fixture
+          persist-credentials: false
+      - name: Checkout original immutable Agents verifier expected by F248 regression
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba
+          path: _aia_f248_fixture
+          persist-credentials: false
+      - name: Assert exact head and non-secret public original code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "rafhael100/imagine-crm"
+          test "$GITHUB_EVENT_NAME" = "pull_request"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test "$(git -C _aia_f241_fixture rev-parse HEAD)" = "fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5"
+          test "$(git -C _aia_f248_fixture rev-parse HEAD)" = "fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba"
+      - name: PHP with sodium
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, ctype, fileinfo, openssl, sodium, pdo_sqlite
+          coverage: none
+          tools: composer
+      - name: Install only existing locked Laravel dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
+      - name: Parse original CRM plus Agents sources (no runtime API)
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l app/Support/Synthetic/AgentsSignedIngressCandidate.php
+          php -l tests/Feature/AgentsPrivateHttpCycleTest.php
+          php -l _aia_f241_fixture/src/MockBridge/MockCrmReadRequest.php
+          php -l _aia_f248_fixture/src/MockBridge/MockServiceIdentityPreflight.php
+          php -l _aia_f241_fixture/src/MockBridge/MockServiceIdentityPreflight.php
+          php -l _aia_f241_fixture/src/MockBridge/MockSyntheticHttpEnvelope.php
+          php -l _aia_f241_fixture/src/MockBridge/MockSyntheticHttpDenialReceipt.php
+      - name: Execute live Laravel objects in isolated in-memory reciprocal test
+        shell: bash
+        run: |
+          set -euo pipefail
+          php artisan test --filter=AgentsPrivateHttpCycleTest --no-ansi
+          php artisan test --filter=AgentsPrivateIngressCandidateTest --no-ansi
+      - name: Assert no Agents routes were exposed or deployments added
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R -E 'AgentsSignedIngressCandidate|__synthetic_f241' routes bootstrap; then
+            echo 'F241_UNAUTHORIZED_ROUTE'; exit 1
+          fi
+          test ! -e routes/api.php
+          echo 'F241_HTTP_CYCLE_LARAVEL_NO_GO tests=synthetic_only' >> "$GITHUB_STEP_SUMMARY"
