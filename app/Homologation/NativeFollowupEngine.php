@@ -11,6 +11,9 @@ final readonly class NativeFollowupEngine
 {
  public function __construct(private Connection $db,private Connection $iam,private string $tenant,private string $actor) {
   if(!Environment::enabled() || $db->transactionLevel()!==1 || $iam->transactionLevel()!==1)throw new \LogicException('Verified private unit required');
+  $db->statement("SET LOCAL lock_timeout = '2s'");
+  $db->statement("SET LOCAL statement_timeout = '5s'");
+  $iam->statement("SET LOCAL lock_timeout = '2s'");
  }
  private function runs(){return $this->db->table('public.crm_private_automation_runs')->where('organization_id',$this->tenant);}
  private function audit(string $id,string $action):void {
@@ -55,6 +58,15 @@ final readonly class NativeFollowupEngine
     && $lead && $lead->stage===substr($row->template,9) && (int)$lead->version===(int)$row->lead_version
     && ($command['tenant']??null)==='t-'.$this->tenant && ($command['recipient']??null)==='p-'.$this->actor
     && ($command['action']??null)==='task.followup.create' && ($command['ai_calls']??null)===0;
+   if($active){
+    $expectedRule=RuleDefinition::fromArray(['tenant'=>'t-'.$this->tenant,'id'=>$row->template,'version'=>max(1,$settings->version),
+     'template'=>$row->template,'delay_seconds'=>$settings->delaySeconds,'recipient'=>'p-'.$this->actor]);
+    $expected=$expectedRule->plan('t-'.$this->tenant,['tenant'=>'t-'.$this->tenant,'id'=>'e-'.$row->lead_id.'-'.$row->lead_version,
+     'resource'=>'r-'.$row->lead_id,'stage'=>$lead->stage,'trigger'=>'lead.stage.changed','occurred_at'=>(int)$row->created_at],(int)$row->created_at);
+    ksort($expected);ksort($command);
+    $active=hash_equals(hash('sha256',json_encode($expected,JSON_THROW_ON_ERROR)),hash('sha256',json_encode($command,JSON_THROW_ON_ERROR)))
+       && hash_equals($row->execution_key,$command['idempotency_key']);
+   }
    if(!$active){$this->cancel($row->id);continue;}
    $tasks=$this->db->table('public.crm_private_tasks')->where('organization_id',$this->tenant);
    if((clone $tasks)->count()>=200){
