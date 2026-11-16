@@ -49,6 +49,24 @@ final class AgentsPrivateRestrictedKeyReaderTest extends TestCase
             throw new \RuntimeException('F246_DB_IDENTITY_DENIED');
         }
 
+        $original=base_path('_aia_f246_fixture');
+        foreach ([
+            'src/Domain/MockError.php',
+            'src/MockBridge/MockCrmReadRequest.php',
+            'src/MockBridge/MockServiceIdentityPreflight.php',
+        ] as $file) {
+            self::assertFileExists($original.'/'.$file);
+        }
+        spl_autoload_register(static function (string $name) use ($original): void {
+            $prefix='ImagineAI\\';
+            if (str_starts_with($name,$prefix)) {
+                $path=$original.'/src/'.str_replace(
+                    '\\','/',substr($name,strlen($prefix))
+                ).'.php';
+                if (is_file($path)) require_once $path;
+            }
+        });
+
         DB::statement('CREATE TABLE '.self::TABLE.' (
             key_id varchar(90) PRIMARY KEY,
             tenant_ref varchar(90) NOT NULL,
@@ -151,6 +169,42 @@ final class AgentsPrivateRestrictedKeyReaderTest extends TestCase
         self::assertSame('SYNTHETIC_TENANT_B',$b['tenant_ref']);
         self::assertSame(self::pub('A'),$a['trusted_keys']['SYNTHETIC_F246_KEY_A']['public_key']);
         self::assertNull(self::reader()->resolve('SYNTHETIC_F246_KEY_UNKNOWN',self::NOW));
+
+        // Cryptographic validation uses the ORIGINAL Agents Ed25519 verifier
+        // with ONLY the trusted public key and tenant supplied by the PG role.
+        $body=\ImagineAI\MockBridge\MockCrmReadRequest::encodeCanonicalJson([
+            'contract'=>'SYNTHETIC_CRM_AIA_READ_V1',
+            'request_ref'=>'SYNTHETIC_F246_REQUEST',
+            'operation'=>'crm.lead.read_minimal',
+            'tenant_ref'=>$a['tenant_ref'],
+            'principal_ref'=>'SYNTHETIC_F246_PRINCIPAL',
+            'resource_ref'=>'SYNTHETIC_F246_RESOURCE',
+            'purpose_ref'=>'SYNTHETIC_F246_PURPOSE',
+            'fields'=>['ref','stage'],
+        ]);
+        $claims=json_encode([
+            'contract'=>'SYNTHETIC_AIA_SERVICE_IDENTITY_V1',
+            'issuer'=>'SYNTHETIC_AGENT_SERVICE',
+            'audience'=>'SYNTHETIC_CRM_API',
+            'key_id'=>'SYNTHETIC_F246_KEY_A',
+            'subject'=>'SYNTHETIC_AGENTS_READ_ONLY',
+            'tenant_ref'=>$a['tenant_ref'],
+            'operation'=>'crm.lead.read_minimal',
+            'nonce'=>'SYNTHETIC_F246_SIGNATURE_PROOF',
+            'issued_at'=>self::NOW-5,
+            'expires_at'=>self::NOW+10,
+            'request_sha256'=>hash('sha256',$body),
+        ],JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+        $pair=sodium_crypto_sign_seed_keypair(
+            hash('sha256','PUBLIC_F246_A_TEST_ONLY',true)
+        );
+        $sig=base64_encode(sodium_crypto_sign_detached(
+            "SYNTHETIC_AIA_SERVICE_ED25519_V1\n".$claims,
+            sodium_crypto_sign_secretkey($pair)
+        ));
+        self::assertTrue((new \ImagineAI\MockBridge\MockServiceIdentityPreflight())
+            ->verifyOnce($body,$claims,$sig,$a['trusted_keys'],$a['tenant_ref'],self::NOW));
+
 
         $rejected=false;
         try {
