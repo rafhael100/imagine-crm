@@ -48,3 +48,7 @@ Ainda não entregue: UI cliente/Portal, RBAC/MFA operacional, cancelamento indiv
 ### Prova bilateral adicionada
 
 O job `pinned-agents-contract` faz checkout separado da SHA Agents acima, inicializa seu receiver PostgreSQL **sem copiar/modificar a implementação** e exercita assinatura PHP, inserção idempotente, troca de tenant, alteração de payload, operação sensível/IA bloqueadas e revogação de chave seguida do replay exato. Evento testado é o `lead.ingest` já catalogado, não um disfarce para os comandos de tarefas. SQL gerado apenas entre processos do runner; não é HTTP, mTLS, serviço n8n ou autorização operacional.
+
+### Permissões de laboratório reforçadas
+
+A tabela separada `automation_operators` permite testar administrar/executar, destinatário habilitado, validade e revogação. Publicação/pausa e admissão consultam concessões persistentes; consumo consulta novamente o operador original e o destinatário. As linhas de permissão permanecem sob `FOR SHARE` até commit, tornando efeito e revogação ordenáveis na transação. Testa-se operador dois revogado/expirado e replay exato negado; não existe concessão derivada do navegador. Isso é harness sintético, não substitui identidade/MFA/roles reais nem libera o autorizador CORE.

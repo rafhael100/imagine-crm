@@ -38,7 +38,9 @@ jobs:
           PGUSER=postgres PGPASSWORD=synthetic-ci-only psql -v ON_ERROR_STOP=1 <<'SQL'
           CREATE ROLE automation_runner LOGIN PASSWORD 'synthetic-runtime-ci-only' NOSUPERUSER NOBYPASSRLS;
           INSERT INTO automation_tenants VALUES ('lab-alfa',true,2,20,2),('lab-beta',true,2,20,2),('lab-race',true,2,20,2);
-          GRANT SELECT,INSERT,UPDATE ON automation_tenants,automation_rules,automation_executions TO automation_runner;
+          INSERT INTO automation_operators SELECT tenant,'operator-one',true,true,1900000000,false FROM automation_tenants;
+          INSERT INTO automation_operators SELECT tenant,'operator-two',true,true,1900000000,false FROM automation_tenants;
+          GRANT SELECT,INSERT,UPDATE ON automation_operators,automation_tenants,automation_rules,automation_executions TO automation_runner;
           GRANT SELECT,INSERT ON automation_versions,automation_effects,automation_audit TO automation_runner;
           GRANT USAGE ON SEQUENCE automation_audit_id_seq TO automation_runner;
           SQL

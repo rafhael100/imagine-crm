@@ -58,6 +58,18 @@ denied(fn()=>$store->enqueue('lab-beta','followup',$beta,$now),'revoked replay')
 $db->beginTransaction(); $db->exec("SELECT set_config('app.automation_tenant','lab-beta',true)");
 check((int)$db->query("SELECT count(*) FROM automation_effects WHERE tenant='lab-alfa'")->fetchColumn()===0,'cross-company RLS'); $db->rollBack();
 check($db->query("SELECT current_setting('app.automation_tenant',true)")->fetchColumn()==='','transaction context cleaned');
+// Operators are backend fixture grants, separate from browser claims and tenant state.
+$other=new LabRuleStore($db,'operator-two');
+$otherEvent=array_replace($event,['id'=>'event-operator-two']);
+$other->enqueue('lab-alfa','followup',$otherEvent,$now);
+$db->beginTransaction();$db->exec("SELECT set_config('app.automation_tenant','lab-alfa',true)");
+$db->exec("UPDATE automation_operators SET revoked=true WHERE tenant='lab-alfa' AND operator_id='operator-two'");$db->commit();
+check($store->drainOne('lab-alfa',$now)==='cancelled','operator revoked before effect');
+denied(fn()=>$other->enqueue('lab-alfa','followup',$otherEvent,$now),'revoked operator exact replay');
+denied(fn()=>$other->pause('lab-alfa','followup',$now),'revoked cannot edit');
+$db->beginTransaction();$db->exec("SELECT set_config('app.automation_tenant','lab-alfa',true)");
+$db->exec("UPDATE automation_operators SET revoked=false,valid_until=1800000000 WHERE tenant='lab-alfa' AND operator_id='operator-two'");$db->commit();
+denied(fn()=>$other->enqueue('lab-alfa','followup',$otherEvent,$now),'expired operator binding');
 // Quotas are server policy, never browser/plan claims.
 $store->publish(rule(template:'overdue_notice',id:'notices'),0,true,$now);
 denied(fn()=>$store->publish(rule(template:'lead_distribution',id:'distribute'),0,true,$now),'rule plan limit');
