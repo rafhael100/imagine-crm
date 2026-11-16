@@ -118,6 +118,10 @@ final class AgentsPrivateRestrictedKeyringTest extends TestCase
                 DB::statement('DROP TABLE IF EXISTS '.self::TABLE);
             }
             if ($this->roleCreated) {
+                // Grants on schema/database survive DROP TABLE; release all
+                // disposable CI privileges before dropping the test role.
+                DB::statement('REVOKE USAGE ON SCHEMA public FROM '.self::ROLE);
+                DB::statement('REVOKE CONNECT ON DATABASE imagine_crm_ci FROM '.self::ROLE);
                 DB::statement('DROP ROLE IF EXISTS '.self::ROLE);
             }
         } finally {
