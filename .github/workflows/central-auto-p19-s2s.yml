@@ -1,0 +1,26 @@
+name: CENTRAL AUTO P19 real Laravel private service read
+on:
+  pull_request:
+    paths: ['app/Homologation/S2S/**', 'bootstrap/app.php', 'infra/homologation/s2s/**', 'scripts/ci/s2s/**', '.github/workflows/central-auto-p19-s2s.yml']
+permissions:
+  contents: read
+concurrency:
+  group: central-auto-p19-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real-products-mtls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-portal
+          ref: 95dc618c4c4a05229b78685a5d565e4e13232719
+          path: pinned-portal
+          persist-credentials: false
+      - name: Real separate Laravel applications and private PostgreSQL TLS verify-full
+        run: sudo -E python3 scripts/ci/s2s/run_p19.py "$GITHUB_WORKSPACE/pinned-portal"
