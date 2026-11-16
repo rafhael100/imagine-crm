@@ -34,6 +34,13 @@ jobs:
           ref: fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5
           path: _aia_f241_fixture
           persist-credentials: false
+      - name: Checkout original immutable Agents verifier expected by F248 regression
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba
+          path: _aia_f248_fixture
+          persist-credentials: false
       - name: Assert exact head and non-secret public original code
         shell: bash
         run: |
@@ -42,6 +49,7 @@ jobs:
           test "$GITHUB_EVENT_NAME" = "pull_request"
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
           test "$(git -C _aia_f241_fixture rev-parse HEAD)" = "fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5"
+          test "$(git -C _aia_f248_fixture rev-parse HEAD)" = "fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba"
       - name: PHP with sodium
         uses: shivammathur/setup-php@v2
         with:
@@ -58,6 +66,7 @@ jobs:
           php -l app/Support/Synthetic/AgentsSignedIngressCandidate.php
           php -l tests/Feature/AgentsPrivateHttpCycleTest.php
           php -l _aia_f241_fixture/src/MockBridge/MockCrmReadRequest.php
+          php -l _aia_f248_fixture/src/MockBridge/MockServiceIdentityPreflight.php
           php -l _aia_f241_fixture/src/MockBridge/MockServiceIdentityPreflight.php
           php -l _aia_f241_fixture/src/MockBridge/MockSyntheticHttpEnvelope.php
           php -l _aia_f241_fixture/src/MockBridge/MockSyntheticHttpDenialReceipt.php
