@@ -22,5 +22,16 @@ jobs:
           ref: 95dc618c4c4a05229b78685a5d565e4e13232719
           path: pinned-portal
           persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: 94dcfeabd24f180113d2a378afe6232c67053664
+          path: pinned-agents
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export existing P18 consolidated tree and overlay reviewed P19 receiver
+        working-directory: pinned-agents
+        run: |
+          python3 runtime/central-auto/export-integration-tree.py
       - name: Real separate Laravel applications and private PostgreSQL TLS verify-full
-        run: sudo -E python3 scripts/ci/s2s/run_p19.py "$GITHUB_WORKSPACE/pinned-portal"
+        run: sudo -E python3 scripts/ci/s2s/run_p19.py "$GITHUB_WORKSPACE/pinned-portal" "$RUNNER_TEMP/central-auto-p18b-merged"
