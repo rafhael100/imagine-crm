@@ -53,6 +53,17 @@ def validate_container(container, network, volume, project, service, volume_name
     return address
 
 
+def normalize_fixture_sql(sql):
+    # PDO exception mode supplies ON_ERROR_STOP. Never interpret any other psql command.
+    lines = []
+    for line in sql.splitlines():
+        if line.strip() == r'\set ON_ERROR_STOP on':
+            continue
+        require(not line.lstrip().startswith('\\'), 'UNSUPPORTED_PSQL_DIRECTIVE')
+        lines.append(line)
+    return '\n'.join(lines)
+
+
 class ServiceTargets:
     def __init__(self, dc, project, folder, certs, run):
         self.dc, self.project, self.folder, self.certs, self.run = dc, project, folder, certs, run
@@ -94,7 +105,10 @@ class ServiceTargets:
         if role == owner:
             # Bootstrap-only one-shot. This secret is never mounted into product service containers.
             args += ['-v',str(self.certs/password)+':/p20/bootstrap.password:ro']
-        args += [app,'/p20-code/service-target.php','check' if query is None else 'prepare',role]
+        mode = 'check' if query is None else ('read' if query.lstrip().upper().startswith('SELECT ') else 'prepare')
+        if query is not None:
+            query = normalize_fixture_sql(query)
+        args += [app,'/p20-code/service-target.php',mode,role]
         result = self.run(args, data=query)
         proofs = [json.loads(line) for line in result.stderr.splitlines() if line.startswith('{"schema":"P20_SERVICE_TARGET_V1"')]
         require(len(proofs) == 1 and proofs[0]['product'] == product and proofs[0]['role'] == role, 'MISSING_PROCESS_PROOF')

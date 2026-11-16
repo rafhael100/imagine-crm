@@ -2,7 +2,7 @@
 declare(strict_types=1);
 require __DIR__.'/ServiceTargetGuard.php';
 ServiceTargetGuard::entry(static function () use ($argv): array {
-    ServiceTargetGuard::require(count($argv) === 3 && in_array($argv[1], ['check','prepare'], true));
+    ServiceTargetGuard::require(count($argv) === 3 && in_array($argv[1], ['check','prepare','read'], true));
     $expected = json_decode(file_get_contents('/p20/expected.json'), true, 32, JSON_THROW_ON_ERROR);
     $product = $expected['product'];
     $p = ServiceTargetGuard::PROFILES[$product] ?? null;
@@ -38,15 +38,13 @@ ServiceTargetGuard::entry(static function () use ($argv): array {
                 (SELECT rolsuper OR rolbypassrls OR rolcreaterole OR rolcreatedb OR rolreplication FROM pg_roles WHERE rolname=current_user) AS unsafe".$extra)->fetch(PDO::FETCH_ASSOC);
         });
     ServiceTargetGuard::require($snapshot() === $before && $db instanceof PDO);
-    if ($argv[1] === 'prepare') {
+    if ($argv[1] !== 'check') {
         ServiceTargetGuard::require($role === $p['owner']);
         // The same verified PDO connection performs the fixture SQL; no reconnect or second bootstrap.
         $sql = stream_get_contents(STDIN);
         ServiceTargetGuard::require(is_string($sql) && $sql !== '');
-        $statement = $db->query($sql);
-        if ($statement->columnCount() > 0) {
-            foreach ($statement->fetchAll(PDO::FETCH_COLUMN) as $value) echo (is_bool($value) ? ($value ? 't' : 'f') : $value)."\n";
-        }
+        require __DIR__.'/fixture-sql.php';
+        p20ExecuteFixture($db, $argv[1], $sql);
     }
     return $proof;
 });

@@ -64,6 +64,11 @@ final class ServiceTargetGuard
             fwrite(STDERR, json_encode($proof, JSON_THROW_ON_ERROR)."\n");
             $completed = true;
             exit(0);
-        } catch (Throwable) { fwrite(STDERR, "P20_SERVICE_TARGET_DENIED\n"); exit(1); }
+        } catch (Throwable $error) {
+            // SQLSTATE/location only, never SQL text, credentials or exception messages.
+            $state = $error instanceof PDOException && preg_match('/^[A-Z0-9]{5}$/', (string)$error->getCode()) ? (string)$error->getCode() : 'NONE';
+            fwrite(STDERR, "P20_SERVICE_TARGET_DENIED state=".$state." file=".basename($error->getFile())." line=".$error->getLine()."\n");
+            exit(1);
+        }
     }
 }
