@@ -1,0 +1,64 @@
+name: Central automation P0 native rules
+on:
+  pull_request:
+  push:
+    branches: ['feat/central-automation-p0-*']
+permissions:
+  contents: read
+jobs:
+  native-postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: synthetic-ci-only
+          POSTGRES_DB: automation_lab
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 3s --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGDATABASE: automation_lab
+      PGUSER: automation_runner
+      PGPASSWORD: synthetic-runtime-ci-only
+      AUTOMATION_PG_DSN: 'pgsql:host=127.0.0.1;port=5432;dbname=automation_lab'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql
+          coverage: none
+      - name: Prepare disposable schema and least-privilege lab role
+        run: |
+          PGUSER=postgres PGPASSWORD=synthetic-ci-only psql -v ON_ERROR_STOP=1 -f tools/automation/001_lab.sql
+          PGUSER=postgres PGPASSWORD=synthetic-ci-only psql -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE ROLE automation_runner LOGIN PASSWORD 'synthetic-runtime-ci-only' NOSUPERUSER NOBYPASSRLS;
+          INSERT INTO automation_tenants VALUES ('lab-alfa',true,2,20,2),('lab-beta',true,2,20,2),('lab-race',true,2,20,2);
+          GRANT SELECT,INSERT,UPDATE ON automation_tenants,automation_rules,automation_executions TO automation_runner;
+          GRANT SELECT,INSERT ON automation_versions,automation_effects,automation_audit TO automation_runner;
+          GRANT USAGE ON SEQUENCE automation_audit_id_seq TO automation_runner;
+          SQL
+      - name: Lint and native rules PostgreSQL regressions
+        run: |
+          php -l app/Core/Automation/RuleDefinition.php
+          php -l tools/automation/LabRuleStore.php
+          php tools/automation/check.php
+      - name: Race independent processes against the same event
+        run: |
+          php -r 'require "app/Core/Automation/RuleDefinition.php"; require "tools/automation/LabRuleStore.php"; $db=new PDO(getenv("AUTOMATION_PG_DSN"),getenv("PGUSER"),getenv("PGPASSWORD")); (new Imagine\AutomationLab\LabRuleStore($db))->publish(App\Core\Automation\RuleDefinition::fromArray(["tenant"=>"lab-race","id"=>"followup","version"=>1,"template"=>"followup_qualified","delay_seconds"=>0,"recipient"=>"operator-one"]),0,true,1800000000);'
+          php tools/automation/worker.php > /tmp/automation-one & one=$!
+          php tools/automation/worker.php > /tmp/automation-two & two=$!
+          wait "$one"
+          wait "$two"
+          PGUSER=postgres PGPASSWORD=synthetic-ci-only psql -v ON_ERROR_STOP=1 <<'SQL'
+          DO $$ BEGIN
+          IF (SELECT count(*) FROM automation_executions WHERE tenant='lab-race')<>1 OR
+             (SELECT count(*) FROM automation_effects WHERE tenant='lab-race')<>1 THEN
+            RAISE EXCEPTION 'concurrency duplicated an execution or effect';
+          END IF;
+          END $$;
+          SQL
