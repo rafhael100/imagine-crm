@@ -67,10 +67,12 @@ with tempfile.TemporaryDirectory(prefix='central-auto-p19-',dir=os.environ['RUNN
  try:
   run(dc+['build','crm-app','portal','agents-app'],timeout=900)
   run(dc+['up','-d','crm-db','agents-db'],timeout=90)
-  for _ in range(30):
-   p=run(dc+['exec','-T','crm-db','pg_isready','-U','crm_homologation_owner'],ok=False)
-   if p.returncode==0:break
-   time.sleep(1)
+  for service,owner in [('crm-db','crm_homologation_owner'),('agents-db','agents_ci_owner')]:
+   for _ in range(30):
+    p=run(dc+['exec','-T',service,'pg_isready','-U',owner],ok=False)
+    if p.returncode==0:break
+    time.sleep(1)
+   else:raise RuntimeError('DATABASE_READINESS_DENIED_'+service)
   sql((ROOT/'infra/homologation/schema.sql').read_text())
   sql((ROOT/'infra/homologation/s2s/install-candidate.sql').read_text())
   password=(certs/'db.password').read_text()
@@ -93,6 +95,11 @@ VALUES('{uuid.uuid4()}','{A}','{C}','{uuid.uuid4()}','followup_qualified',0,'{F}
 INSERT INTO crm_auto_service.grants VALUES('{A}','{fingerprint}','portal-automation-admin','automation.state.read',1,true,{now+600});""")
   run(dc+['up','-d','crm-app','crm-s2s','agents-app','agents-s2s'],timeout=90)
   time.sleep(3)
+  for service,forbidden in [('portal',['db.password','sender.password','agents-db.password','crm.key','server.key']),('crm-app',['agents-db.password','portal.key','agents.key']),('agents-app',['db.password','sender.password','crm.key','portal.key'])]:
+   code='foreach('+json.dumps(['/certs/'+x for x in forbidden])+" as $p){if(file_exists($p))exit(1);} echo 'SECRETS_ISOLATED';"
+   command=dc+(['run','--rm','--no-deps','-T','--entrypoint','php','portal'] if service=='portal' else ['exec','-T',service,'php'])+['-r',code]
+   assert run(command).stdout.strip()=='SECRETS_ISOLATED'
+  print('P19_PRODUCT_PRIVATE_KEYS_DATABASE_PASSWORDS_ISOLATED_PASS')
   initial=state();assert initial['counts']['pending']==1 and initial['counts']['completed']==0
   sql(f"UPDATE crm_private_automation_runs SET state='completed' WHERE organization_id='{A}'; INSERT INTO crm_private_events VALUES('{uuid.uuid4()}','{A}','{C}','{F}','automation.task_created',{int(time.time())});")
   updated=state();assert updated['counts']['completed']==1 and updated['counts']['pending']==0 and updated['events'][0]['action']=='automation.task_created'
@@ -120,6 +127,12 @@ INSERT INTO crm_auto_service.grants VALUES('{A}','{fingerprint}','portal-automat
   sql(f"UPDATE crm_auto_service.grants SET active=true,revision=3 WHERE company_id='{A}';")
   assert state()['counts']['completed']==1
   print('P19_REVOKED_REPLAY_AND_FRESH_DENIED_RECOVERY_PASS')
+  sql(f"UPDATE crm_auto_service.grants SET expires_at={int(time.time())-1} WHERE company_id='{A}';")
+  assert client().returncode!=0
+  sql(f"UPDATE crm_auto_service.grants SET expires_at={int(time.time())+600} WHERE company_id='{A}';")
+  scoped=sql(f"BEGIN; SET ROLE crm_auto_reader_owner; SELECT set_config('app.tenant_id','{B}',true); SELECT count(*) FROM crm_private_automation_runs; ROLLBACK;")
+  assert scoped.splitlines()[-1]=='0'
+  print('P19_EXPIRED_GRANT_AND_SOURCE_RLS_DENIED_PASS')
   # Hold only a CI fixture source table, proving the in-flight read retains the grant lock.
   with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
    blocker=pool.submit(sql,"BEGIN; LOCK public.crm_private_automation_runs IN ACCESS EXCLUSIVE MODE; SELECT pg_sleep(4); COMMIT;")
@@ -191,6 +204,16 @@ INSERT INTO crm_auto_service.grants VALUES('{A}','{fingerprint}','portal-automat
   assert agents_sql("SELECT has_table_privilege('aia_private_transport','auto_ia_lab.event_inbox','INSERT')")=='f'
   assert sql("SELECT has_table_privilege('crm_auto_sender','crm_private_events','SELECT')")=='f'
   print('P19_EVENT_CONCURRENCY_DESTINATION_SOURCE_REVOCATION_CROSS_TENANT_PASS')
+  # Restore actual event-state records after the two-way delivery/retry tests.
+  for service,owner,database,restore,table in [('crm-db','crm_homologation_owner','imagine_crm_private_homologation','p19_crm_events_restore','crm_auto_service.outbox'),('agents-db','agents_ci_owner','imagine_agents_ci','p19_agents_events_restore','auto_ia_lab.event_inbox')]:
+   dump=run(dc+['exec','-T',service,'pg_dump','-U',owner,database]).stdout
+   run(dc+['exec','-T',service,'createdb','-U',owner,restore])
+   run(dc+['exec','-T',service,'psql','-X','-q','-v','ON_ERROR_STOP=1','-U',owner,'-d',restore],dump)
+   count=run(dc+['exec','-T',service,'psql','-X','-qAt','-U',owner,'-d',restore,'-c','SELECT count(*) FROM '+table]).stdout.strip()
+   assert count=='3'
+   forced=run(dc+['exec','-T',service,'psql','-X','-qAt','-U',owner,'-d',restore,'-c',"SELECT relrowsecurity AND relforcerowsecurity FROM pg_class WHERE oid='"+table+"'::regclass"]).stdout.strip()
+   assert forced=='t'
+  print('P19_EVENT_OUTBOX_INBOX_RECORDS_RESTORED_RLS_FORCE_PASS external_backup=0')
   print('P19_THREE_PRODUCT_INTEGRATION_PASS n8n_dispatch=DISABLED paid_ai_calls=0 synthetic_business_data=1')
  finally:
   run(dc+['down','-v','--remove-orphans'],ok=False,timeout=90)
