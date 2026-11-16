@@ -6,7 +6,7 @@
 
 Testar o envelope assinado gerado pelo **código original Imagine AI Agents** (F238/F239, PR #332), dentro do aplicativo **Laravel funcional privado** (CRM PR #614), sem registrar API de leitura de leads.
 
-A prova fixa Agents SHA `7622ba358655c7f9d0afbcddb47ac16e163521fe`, que passou CI Agents R01/CRM no respectivo commit. A origem CRM é a branch da PR #614, não a árvore F0 de segurança da PR #602. Não há merge entre árvores.
+A prova fixa Agents SHA `fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5`, que passou CI Agents R01/CRM no respectivo commit. A origem CRM é a branch da PR #614, não a árvore F0 de segurança da PR #602. Não há merge entre árvores.
 
 ## Código
 
@@ -22,3 +22,5 @@ O ensaio é de **prova executável de compatibilidade sintética**. Não demonst
 **CRM #57:** 14 gates, 7 decisões e 13 cenários reais permanecem sem homologação. A reconciliação controlada dos mecanismos de CRM #602 com o aplicativo privado #614 exige revisão independente de CORE/SEG/IAM/DBA/LGPD antes de qualquer GO.
 
 **Nenhuma ação posterior é autorizada automaticamente pela aprovação da CI.**
+
+**Ajuste do contrato de cache:** o teste recíproco revelou que Symfony normaliza o cabeçalho do CRM F248 para `max-age=0, no-store, private` e não a ordem literal declarada na classe. A revisão Agents `fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5` preserva dois perfis fechados de negativa (F246/F248), aceitando essa normalização sem permitir 2xx/ALLOW. A verificação CRM F241 exige CI recíproca verde nesta revisão exata.
