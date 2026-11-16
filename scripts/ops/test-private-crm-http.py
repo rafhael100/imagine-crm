@@ -2,6 +2,7 @@
 """Real HTTP E2E on the isolated loopback stack. Never prints credentials or HTML."""
 import base64
 import csv
+import concurrent.futures
 from datetime import datetime, timedelta, timezone
 import hashlib
 import hmac
@@ -46,6 +47,25 @@ def scenario(name):
         'run','--rm','-T','tools','scripts/ops/seed-private-crm-fixtures.php',name]
     result=subprocess.run(command,capture_output=True,text=True)
     check(result.returncode==0,'private fixture operation failed: '+name)
+
+
+
+def owner_sql(query):
+    envfile=os.environ.get('CRM_PRIVATE_ENV_FILE')
+    project=os.environ.get('CRM_PRIVATE_PROJECT')
+    check(project=='imagine-crm-journey-ci','concurrent native probe requires disposable CI stack')
+    command=['docker','compose','--env-file',envfile,'-p',project,'-f',str(ROOT/'infra/homologation/compose.yaml'),
+        'exec','-T','postgres','psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','crm_homologation_owner','-d','imagine_crm_private_homologation','-c',query]
+    result=subprocess.run(command,capture_output=True,text=True,timeout=15)
+    check(result.returncode==0,'read-only concurrency probe failed; no SQL payload logged')
+    return result.stdout.strip()
+
+
+def wait_for_database_lock(role,event):
+    for _ in range(30):
+        if owner_sql("SELECT count(*) FROM pg_stat_activity WHERE usename='"+role+"' AND wait_event='"+event+"'")!='0':return
+        time.sleep(.05)
+    raise AssertionError('expected concurrent database lock was not observed')
 
 
 def totp(secret,offset=0):
@@ -541,7 +561,38 @@ def main():
     FIXTURES['member']['identity']=[identity for identity,body in rows if primary['label'] in body and 'data-team-role="member"' in body][0]
     FIXTURES['journey']=dict(primary,identity=identity)
     VAULT.write_text(json.dumps(FIXTURES));VAULT.chmod(0o600)
-    admin.post('/admin/contas/'+identity,{'status':'suspended'})
+    # Real nominal client/admin race. A DB barrier holds the tenant lock while IAM locks are live.
+    a.get('/painel?section=automation')
+    settings_version=int(re.search(r'name="automation_version" value="(\d+)"',a.last).group(1))
+    a.post('/preferencias',{'automation_version':settings_version,'delay_seconds':1,'language':'pt','rules[]':['followup_qualified']})
+    race_lead=next(value for value in leads(a) if value not in [lead,other,final_lead])
+    a.get('/painel?section=kanban');a.post('/leads/'+race_lead,{'version':1,'stage':'qualified'})
+    page=a.get('/painel?section=automation')
+    race_runs=[rid for rid,body in re.findall(r'<tr data-automation-id="([^"]+)">(.*?)</tr>',page,re.S) if 'pending' in body]
+    check(len(race_runs)==1,'race requires one scheduled native effect')
+    time.sleep(1.1)
+    company=str(uuid.UUID(state['company_id']))
+    envfile=os.environ['CRM_PRIVATE_ENV_FILE'];project=os.environ['CRM_PRIVATE_PROJECT']
+    check(project=='imagine-crm-journey-ci','race barrier is CI-only')
+    command=['docker','compose','--env-file',envfile,'-p',project,'-f',str(ROOT/'infra/homologation/compose.yaml'),
+        'exec','-T','postgres','psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','crm_homologation_owner','-d','imagine_crm_private_homologation','-c',
+        "BEGIN; SELECT pg_advisory_xact_lock(hashtextextended('crm_private_quota|"+company+"',0)); SELECT pg_sleep(8); COMMIT;"]
+    barrier=subprocess.Popen(command,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    try:
+        wait_for_database_lock('crm_homologation_owner','PgSleep')
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            processing=pool.submit(a.post,'/automacoes/processar',{})
+            wait_for_database_lock('crm_homologation_app','advisory')
+            revocation=pool.submit(admin.post,'/admin/contas/'+identity,{'status':'suspended'})
+            wait_for_database_lock('crm_homologation_operator','transactionid')
+            check(barrier.wait(timeout=12)==0,'native transaction barrier failed')
+            processing.result(timeout=15);revocation.result(timeout=15)
+        check(owner_sql("SELECT state FROM crm_private_automation_runs WHERE id='"+str(uuid.UUID(race_runs[0]))+"'")=='completed','admitted native operation was cut by revocation')
+        check(owner_sql("SELECT count(*) FROM crm_private_tasks WHERE id='"+str(uuid.UUID(race_runs[0]))+"'")=='1','concurrent operation duplicated native task')
+        print('CENTRAL_AUTO_P1_CONCURRENT_REVOKE_PASS nominal_client_admin=1 admission_commits_before_revocation=1 effect_count=1')
+    finally:
+        if barrier.poll() is None:barrier.terminate();barrier.wait(timeout=5)
+
     a.get('/painel',expected=303)
     admin.get('/admin');admin.post('/admin/contas/'+identity,{'status':'active'})
     a.get('/painel',expected=303)
