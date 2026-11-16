@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: rafhael100/imagine-ai-agents
-          ref: 7622ba358655c7f9d0afbcddb47ac16e163521fe
+          ref: fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5
           path: _aia_f241_fixture
           persist-credentials: false
       - name: Assert exact head and non-secret public original code
@@ -41,7 +41,7 @@ jobs:
           test "$GITHUB_REPOSITORY" = "rafhael100/imagine-crm"
           test "$GITHUB_EVENT_NAME" = "pull_request"
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
-          test "$(git -C _aia_f241_fixture rev-parse HEAD)" = "7622ba358655c7f9d0afbcddb47ac16e163521fe"
+          test "$(git -C _aia_f241_fixture rev-parse HEAD)" = "fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5"
       - name: PHP with sodium
         uses: shivammathur/setup-php@v2
         with:
