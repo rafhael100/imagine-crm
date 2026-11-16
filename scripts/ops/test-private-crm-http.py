@@ -2,6 +2,7 @@
 """Real HTTP E2E on the isolated loopback stack. Never prints credentials or HTML."""
 import base64
 import csv
+import concurrent.futures
 from datetime import datetime, timedelta, timezone
 import hashlib
 import hmac
@@ -46,6 +47,25 @@ def scenario(name):
         'run','--rm','-T','tools','scripts/ops/seed-private-crm-fixtures.php',name]
     result=subprocess.run(command,capture_output=True,text=True)
     check(result.returncode==0,'private fixture operation failed: '+name)
+
+
+
+def owner_sql(query):
+    envfile=os.environ.get('CRM_PRIVATE_ENV_FILE')
+    project=os.environ.get('CRM_PRIVATE_PROJECT')
+    check(project=='imagine-crm-journey-ci','concurrent native probe requires disposable CI stack')
+    command=['docker','compose','--env-file',envfile,'-p',project,'-f',str(ROOT/'infra/homologation/compose.yaml'),
+        'exec','-T','postgres','psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','crm_homologation_owner','-d','imagine_crm_private_homologation','-c',query]
+    result=subprocess.run(command,capture_output=True,text=True,timeout=15)
+    check(result.returncode==0,'read-only concurrency probe failed; no SQL payload logged')
+    return result.stdout.strip()
+
+
+def wait_for_database_lock(role,event):
+    for _ in range(30):
+        if owner_sql("SELECT count(*) FROM pg_stat_activity WHERE usename='"+role+"' AND wait_event='"+event+"'")!='0':return
+        time.sleep(.05)
+    raise AssertionError('expected concurrent database lock was not observed')
 
 
 def totp(secret,offset=0):
@@ -315,6 +335,63 @@ def main():
     body=f'--{boundary}\r\nContent-Disposition: form-data; name="_token"\r\n\r\n{a.csrf}\r\n--{boundary}\r\nContent-Disposition: form-data; name="csv"; filename="fictional.csv"\r\nContent-Type: text/csv\r\n\r\n{csv_text}\r\n--{boundary}--\r\n'
     a.request('/importar',expected=303,body=body,headers={'Content-Type':'multipart/form-data; boundary='+boundary})
     check(len(leads(a))==3,'CSV import not persisted')
+    # UI configuration is interpreted by the native planner and persisted as a durable run.
+    a.get('/painel?section=automation')
+    a.post('/preferencias',{'automation_version':3,'delay_seconds':1,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
+    a.get('/painel?section=kanban');a.post('/leads/'+lead,{'version':2,'stage':'proposal'})
+    page=a.get('/painel?section=automation')
+    check('pending' in page,'scheduled native run missing')
+    time.sleep(1.1)
+    a.post('/automacoes/processar',{})
+    check('TASK_TESTE_AUTO_PROPOSAL' in a.get('/painel?section=tasks'),'native scheduled effect missing')
+    before_tasks=len(re.findall(r'data-task-id=',a.get('/painel?section=tasks')))
+    a.post('/automacoes/processar',{})
+    check(len(re.findall(r'data-task-id=',a.get('/painel?section=tasks')))==before_tasks,'duplicate native effect')
+    a.post('/preferencias',{'automation_version':4,'delay_seconds':3600,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
+    other=[value for value in leads(a) if value!=lead][0]
+    a.get('/painel?section=kanban');a.post('/leads/'+other,{'version':1,'stage':'qualified'})
+    page=a.get('/painel?section=automation')
+    scheduled=[identity for identity,body in re.findall(r'<tr data-automation-id="([^"]+)">(.*?)</tr>',page,re.S) if 'pending' in body]
+    check(len(scheduled)==1,'pending cancellation target missing')
+    a.post('/automacoes/'+scheduled[0]+'/cancelar',{})
+    a.post('/automacoes/'+scheduled[0]+'/cancelar',{})
+    check('cancelled' in a.get('/painel?section=automation'),'cancel not persisted')
+    a.get('/painel?section=kanban');a.post('/leads/'+other,{'version':2,'stage':'proposal'})
+    a.post('/preferencias',{'automation_version':5,'delay_seconds':0,'language':'pt'})
+    page=a.get('/painel?section=automation')
+    check(not any('pending' in body for _,body in re.findall(r'<tr data-automation-id="([^"]+)">(.*?)</tr>',page,re.S)),'pause did not cancel pending runs')
+    # Real resource failure: fill the disposable native task table, then recover after server backoff.
+    a.post('/preferencias',{'automation_version':6,'delay_seconds':0,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
+    final_lead=[value for value in leads(a) if value not in [lead,other]][0]
+    scenario('automation-fill-capacity')
+    a.get('/painel?section=kanban');a.post('/leads/'+final_lead,{'version':1,'stage':'qualified'})
+    pending=a.get('/painel?section=automation')
+    capacity_runs=[identity for identity,body in re.findall(r'<tr data-automation-id="([^"]+)">(.*?)</tr>',pending,re.S) if 'pending' in body]
+    check(len(capacity_runs)==1,'capacity failure not retained for retry')
+    scenario('automation-free-capacity')
+    time.sleep(30.2)
+    a.post('/automacoes/processar',{})
+    recovered_tasks=a.get('/painel?section=tasks')
+    check(recovered_tasks.count('data-task-id="'+capacity_runs[0]+'"')==1,'retry recovery did not create exactly the expected native task')
+    # A new authenticated session cannot resurrect the revoked causal session of a scheduled run.
+    a.post('/preferencias',{'automation_version':7,'delay_seconds':1,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
+    a.get('/painel?section=kanban');a.post('/leads/'+final_lead,{'version':2,'stage':'proposal'})
+    before_revoke_tasks=len(re.findall(r'data-task-id=',a.get('/painel?section=tasks')))
+    a.post('/logout',{})
+    a.login(primary,recovery=primary['recovery'][4])
+    time.sleep(1.1)
+    a.post('/automacoes/processar',{})
+    check(len(re.findall(r'data-task-id=',a.get('/painel?section=tasks')))==before_revoke_tasks,'revoked causal session produced an effect')
+    page=a.get('/painel?section=automation')
+    check(not any('pending' in body for _,body in re.findall(r'<tr data-automation-id="([^"]+)">(.*?)</tr>',page,re.S)),'revoked source run not cancelled')
+    automation_state=json.loads(a.get('/automacoes/estado'))
+    check(automation_state['schema']=='CRM_AUTOMATION_STATE_V1' and automation_state['source_kind']=='synthetic_private_database','native read contract missing')
+    check(automation_state['counts']['completed']>=3 and automation_state['counts']['cancelled']>=3,'read contract not backed by persisted execution results')
+    check(automation_state['ai_provider_calls']==0 and automation_state['operational_authorization'] is False,'read contract invented spend or authority')
+    check(all(set(item)=={'action','at'} for item in automation_state['events']),'read contract exposes private identifiers')
+    check(owner_sql("SELECT NOT has_column_privilege('crm_homologation_app','crm_private_automation_runs','command','UPDATE') AND NOT has_column_privilege('crm_homologation_app','crm_private_automation_runs','actor_id','UPDATE') AND NOT has_column_privilege('crm_homologation_app','crm_private_automation_runs','execution_key','UPDATE') AND NOT has_column_privilege('crm_homologation_app','crm_private_automation_runs','authority_session_id','UPDATE') AND has_column_privilege('crm_homologation_app','crm_private_automation_runs','state','UPDATE')")=='t','native runtime may rewrite immutable authority or command')
+    a.get('/automacoes/estado?company_id=forged',expected=422)
+    print('PASS CENTRAL-AUTO-P1 UI → version → planner → PostgreSQL schedule → native task → dedupe → cancel → pause; AI calls zero by closed action catalog')
     print('PASS lead create/edit protections → Kanban versioning → automation → tasks → reports → CSV')
 
     a.get('/painel?section=funnels')
@@ -338,7 +415,8 @@ def main():
     teammate['recovery']=re.findall(r'<div>([a-f0-9]{24})</div>',page)
     check(primary['label'] in member.login(teammate),'invited member cannot see same company')
     check(title in member.get('/painel?section=leads'),'invited member cannot see same company leads')
-    member.post('/preferencias',{'automation_version':3,'language':'pt'},expected=403)
+    member.get('/automacoes/estado',expected=403)
+    member.post('/preferencias',{'automation_version':8,'language':'pt'},expected=403)
     member.post('/funis',{'title':'FUNIL_TESTE_DENIED'},expected=403)
     member.post('/equipe/convidar',{},expected=403)
     member.get('/admin',expected=403)
@@ -368,18 +446,24 @@ def main():
           all(int(row[1])==0 and int(row[2])==0 for row in bPipelines),
           'F255 foreign leads or won status visible in other tenant pipeline')
     b.post('/leads/'+lead,{'version':2,'stage':'proposal'},expected=404)
+    other_state=json.loads(b.get('/automacoes/estado'))
+    check(sum(other_state['counts'].values())==0 and other_state['company_id']!=automation_state['company_id'],'read contract crosses tenant boundaries')
+    b.post('/automacoes/'+scheduled[0]+'/cancelar',{},expected=404)
+    check(scheduled[0] not in b.get('/painel?section=automation'),'foreign native run exposed')
+    b.post('/automacoes/processar',{})
     b.post('/tarefas',{'lead':lead,'title':'TASK_TESTE_CROSS','due':'2026-12-01'},expected=404)
     print('PASS CSRF → client/admin role denial → forged tenant/role rejection → two-company isolation')
     assert_agents_no_go(a,'authenticated-client')
     assert_no_agents_impersonation_of_human(a,'/painel','client')
 
     a.get('/painel?section=kanban')
-    a.post('/leads/'+lead,{'version':2,'stage':'proposal'})
+    # Proposal was already reached by the integrated native-engine scenario above.
     a.post('/leads/'+lead,{'version':3,'stage':'won'})
     a.post('/leads/'+lead,{'version':4,'stage':'lost'},expected=422)
     other=next(identity for identity in leads(a) if identity!=lead)
-    a.post('/leads/'+other,{'version':1,'stage':'lost'})
-    a.post('/leads/'+other,{'version':2,'stage':'qualified'},expected=422)
+    other_version=int(version(a,other))
+    a.post('/leads/'+other,{'version':other_version,'stage':'lost'})
+    a.post('/leads/'+other,{'version':other_version+1,'stage':'qualified'},expected=422)
     check('TASK_TESTE_AUTO_PROPOSAL' in a.get('/painel?section=tasks'),'proposal automation missing')
     report=a.get('/painel?section=reports')
     check('data-report-methodology="imagine"' in report,
@@ -478,7 +562,39 @@ def main():
     FIXTURES['member']['identity']=[identity for identity,body in rows if primary['label'] in body and 'data-team-role="member"' in body][0]
     FIXTURES['journey']=dict(primary,identity=identity)
     VAULT.write_text(json.dumps(FIXTURES));VAULT.chmod(0o600)
-    admin.post('/admin/contas/'+identity,{'status':'suspended'})
+    # Real nominal client/admin race. A DB barrier holds the tenant lock while IAM locks are live.
+    a.get('/painel?section=automation')
+    settings_version=int(re.search(r'name="automation_version" value="(\d+)"',a.last).group(1))
+    a.post('/preferencias',{'automation_version':settings_version,'delay_seconds':1,'language':'pt','rules[]':['followup_qualified']})
+    race_page=a.get('/painel?section=leads')
+    race_lead=next(value for value,body in re.findall(r'<tr data-lead-id="([^"]+)">(.*?)</tr>',race_page,re.S) if 'LEAD_TESTE_QUOTA_' in body)
+    a.get('/painel?section=kanban');a.post('/leads/'+race_lead,{'version':1,'stage':'qualified'})
+    page=a.get('/painel?section=automation')
+    race_runs=[rid for rid,body in re.findall(r'<tr data-automation-id="([^"]+)">(.*?)</tr>',page,re.S) if 'pending' in body]
+    check(len(race_runs)==1,'race requires one scheduled native effect')
+    time.sleep(1.1)
+    company=str(uuid.UUID(automation_state['company_id']))
+    envfile=os.environ['CRM_PRIVATE_ENV_FILE'];project=os.environ['CRM_PRIVATE_PROJECT']
+    check(project=='imagine-crm-journey-ci','race barrier is CI-only')
+    command=['docker','compose','--env-file',envfile,'-p',project,'-f',str(ROOT/'infra/homologation/compose.yaml'),
+        'exec','-T','postgres','psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','crm_homologation_owner','-d','imagine_crm_private_homologation','-c',
+        "BEGIN; SELECT pg_advisory_xact_lock(hashtextextended('crm_private_quota|"+company+"',0)); SELECT pg_sleep(8); COMMIT;"]
+    barrier=subprocess.Popen(command,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    try:
+        wait_for_database_lock('crm_homologation_owner','PgSleep')
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            processing=pool.submit(a.post,'/automacoes/processar',{})
+            wait_for_database_lock('crm_homologation_app','advisory')
+            revocation=pool.submit(admin.post,'/admin/contas/'+identity,{'status':'suspended'})
+            wait_for_database_lock('crm_homologation_operator','transactionid')
+            check(barrier.wait(timeout=12)==0,'native transaction barrier failed')
+            processing.result(timeout=15);revocation.result(timeout=15)
+        check(owner_sql("SELECT state FROM crm_private_automation_runs WHERE id='"+str(uuid.UUID(race_runs[0]))+"'")=='completed','admitted native operation was cut by revocation')
+        check(owner_sql("SELECT count(*) FROM crm_private_tasks WHERE id='"+str(uuid.UUID(race_runs[0]))+"'")=='1','concurrent operation duplicated native task')
+        print('CENTRAL_AUTO_P1_CONCURRENT_REVOKE_PASS nominal_client_admin=1 admission_commits_before_revocation=1 effect_count=1')
+    finally:
+        if barrier.poll() is None:barrier.terminate();barrier.wait(timeout=5)
+
     a.get('/painel',expected=303)
     admin.get('/admin');admin.post('/admin/contas/'+identity,{'status':'active'})
     a.get('/painel',expected=303)

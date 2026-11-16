@@ -96,8 +96,20 @@ async function width(page) {
     await page.goto(base + '/painel?section=automation');
     const automationVersion = Number(await page.locator('[name=automation_version]').inputValue());
     await page.locator('[name="rules[]"][value=followup_qualified]').check();
+    await page.locator('[name=delay_seconds]').selectOption('0');
     await Promise.all([page.waitForURL('**/painel?section=settings'), page.getByRole('button', {name:'Salvar nova versão →',exact:true}).click()]);
     check(Number(await page.locator('[name=automation_version]').inputValue())===automationVersion+1,'Automation revision not persisted');
+    phase='browser-native-effect';
+    await page.goto(base+'/painel?section=kanban');
+    const opportunity=page.locator('article[data-lead-id]').filter({hasText:title});
+    await opportunity.getByRole('button',{name:'Avançar →',exact:true}).click();
+    await page.goto(base+'/painel?section=automation');
+    const completed=page.locator('[data-automation-id]:has([data-automation-state=completed])');
+    check(await completed.count()===1,'Browser action did not complete one native run');
+    const executionId=await completed.getAttribute('data-automation-id');
+    await page.goto(base+'/painel?section=tasks');
+    check(await page.locator('[data-task-id="'+executionId+'"]').count()===1,'Native browser run did not create exactly its task');
+    await page.goto(base+'/painel?section=automation');
     await page.setViewportSize({width:1440,height:1000});
     await page.screenshot({path:path.join(output,'crm-automation-desktop.png'),fullPage:true});
     for (const viewport of [320,390,768]) { await page.setViewportSize({width:viewport,height:844}); await width(page); }

@@ -46,7 +46,15 @@ if ($mode==='revoke') {
     $db->commit();unlink($file);
     echo "Fixture credentials revoked; private vault removed, audit retained.\n";exit;
 }
-if ($mode==='expire-clientB') {
+if (in_array($mode,['automation-fill-capacity','automation-free-capacity'],true)) {
+    $scope=$db->query('SELECT organization_id,lead_id FROM crm_private_automation_runs ORDER BY created_at DESC,id LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+    if(!$scope)throw new RuntimeException('Native run fixture required');
+    if($mode==='automation-fill-capacity')privateCrmSql($db,"INSERT INTO crm_private_tasks(id,organization_id,lead_id,title,due_on)
+      SELECT gen_random_uuid(),?::uuid,?::uuid,'TASK_TESTE_CAPACITY_'||i::text,current_date FROM generate_series(1,
+       GREATEST(0,200-(SELECT count(*)::integer FROM crm_private_tasks WHERE organization_id=?::uuid))) i",
+       [$scope['organization_id'],$scope['lead_id'],$scope['organization_id']]);
+    else privateCrmSql($db,"DELETE FROM crm_private_tasks WHERE organization_id=? AND title LIKE 'TASK_TESTE_CAPACITY_%'",[$scope['organization_id']]);
+} elseif ($mode==='expire-clientB') {
     privateCrmSql($db,'UPDATE crm_auth_sessions SET expires_at=? WHERE identity_id=?',[time()-1,$records['clientB']['identity']]);
 } elseif ($mode==='revoke-membershipB') {
     privateCrmSql($db,"UPDATE crm_memberships SET status='revoked',version=version+1 WHERE global_identity_id=?",[$records['clientB']['identity']]);

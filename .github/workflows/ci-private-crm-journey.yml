@@ -1,9 +1,10 @@
 name: Private CRM complete journey - isolated synthetic staging
 on:
   pull_request:
-    branches: [dev/fast-track-crm-2026-11-04, review/crm-private-complete-journey-2026-11-15]
+    branches: [dev/fast-track-crm-2026-11-04, review/crm-private-complete-journey-2026-11-15, feat/central-automation-p0-private-ui-2026-11-16]
     paths:
       - 'app/Homologation/**'
+      - 'app/Core/Automation/**'
       - 'tests/Unit/PrivateAutomationSettingsTest.php'
       - 'app/Core/Identity/**'
       - 'app/Providers/AppServiceProvider.php'
@@ -70,6 +71,8 @@ jobs:
         run: docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml run --rm -T tools scripts/ops/seed-private-crm-fixtures.php seed
       - name: Real HTTP commercial signup OTP MFA trial CRM and administrator
         run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/test-private-crm-http.py "$RUNNER_TEMP/crm-private-data/fixtures.json"
+      - name: Native execution ledger survives application restart
+        run: python3 scripts/ops/test-private-crm-automation-restart.py
       - name: F253 canary - live private loopback UI, 3 languages, Agents NO-GO
         run: |
           set -euo pipefail
