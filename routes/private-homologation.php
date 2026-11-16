@@ -34,3 +34,6 @@ Route::post('/funis',[Controller::class,'funnel']);
 Route::post('/equipe/convidar',[Controller::class,'invite']);
 Route::get('/convite',[Controller::class,'invitationForm']);
 Route::post('/convite',[Controller::class,'invitationIssue']);
+
+Route::post('/automacoes/processar',[Controller::class,'processAutomations']);
+Route::post('/automacoes/{id}/cancelar',[Controller::class,'cancelAutomation']);

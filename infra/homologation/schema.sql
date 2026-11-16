@@ -81,13 +81,23 @@ CREATE TABLE crm_private_orders(id uuid PRIMARY KEY, organization_id uuid NOT NU
 CREATE TABLE crm_private_preferences(organization_id uuid PRIMARY KEY REFERENCES crm_organizations,
  language varchar(2) NOT NULL DEFAULT 'pt' CHECK(language IN ('pt','en','es')),
  automation_rules jsonb NOT NULL DEFAULT '[]'::jsonb);
+-- Candidate CI-only extension; never apply to an existing VPS installation without migration review.
+CREATE TABLE crm_private_automation_runs(
+ id uuid PRIMARY KEY, organization_id uuid NOT NULL REFERENCES crm_organizations,
+ actor_id uuid NOT NULL REFERENCES crm_global_identities, authority_session_id uuid NOT NULL REFERENCES crm_auth_sessions,
+ template varchar(32) NOT NULL CHECK(template IN ('followup_qualified','followup_proposal')),
+ settings_version integer NOT NULL, lead_id uuid NOT NULL, lead_version bigint NOT NULL,
+ execution_key varchar(64) NOT NULL, command jsonb NOT NULL,
+ state varchar(16) NOT NULL DEFAULT 'pending' CHECK(state IN ('pending','completed','cancelled','failed')),
+ due_at bigint NOT NULL, created_at bigint NOT NULL, attempts integer NOT NULL DEFAULT 0 CHECK(attempts BETWEEN 0 AND 3),
+ UNIQUE(organization_id,execution_key), FOREIGN KEY(organization_id,lead_id) REFERENCES crm_private_leads(organization_id,id));
 CREATE TABLE crm_private_operator_events(id uuid PRIMARY KEY, actor_id uuid NOT NULL REFERENCES crm_global_identities,
  subject_id uuid NOT NULL, action varchar(32) NOT NULL CHECK(action IN ('suspend','resume')),
  occurred_at bigint NOT NULL);
 
 DO $$ DECLARE t text; BEGIN
  FOREACH t IN ARRAY ARRAY['crm_memberships','crm_private_trials','crm_private_leads','crm_private_tasks',
- 'crm_private_events','crm_private_orders','crm_private_preferences','crm_private_funnels','crm_private_invitations'] LOOP
+ 'crm_private_automation_runs','crm_private_events','crm_private_orders','crm_private_preferences','crm_private_funnels','crm_private_invitations'] LOOP
   EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY',t);
   EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY',t);
   EXECUTE format('CREATE POLICY tenant_scope ON %I USING (organization_id = NULLIF(current_setting(''app.tenant_id'',true),'''')::uuid) WITH CHECK (organization_id = NULLIF(current_setting(''app.tenant_id'',true),'''')::uuid)',t);

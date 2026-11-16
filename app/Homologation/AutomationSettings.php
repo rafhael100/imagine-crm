@@ -7,7 +7,7 @@ use InvalidArgumentException;
 /** Bounded settings for the existing two native templates; never an n8n workflow definition. */
 final readonly class AutomationSettings
 {
-    private function __construct(public int $version,public array $rules,public array $history) {}
+    private function __construct(public int $version,public array $rules,public array $history,public int $delaySeconds=0) {}
 
     public static function read(string $json): self
     {
@@ -24,7 +24,8 @@ final readonly class AutomationSettings
             self::rules($revision['rules']??null);
         }
         if($data['history'][count($data['history'])-1]['rules']!==$data['rules']) throw new InvalidArgumentException('AUTOMATION_HISTORY_MISMATCH');
-        return new self($data['version'],$data['rules'],$data['history']);
+        if(!is_int($data['delay_seconds']??0) || ($data['delay_seconds']??0)<0 || ($data['delay_seconds']??0)>86400)throw new InvalidArgumentException('INVALID_DELAY');
+        return new self($data['version'],$data['rules'],$data['history'],$data['delay_seconds']??0);
     }
 
     private static function rules(mixed $rules): void
@@ -34,19 +35,20 @@ final readonly class AutomationSettings
         if(count(array_unique($rules))!==count($rules)) throw new InvalidArgumentException('DUPLICATE_RULE');
     }
 
-    public function revise(int $expected,array $rules,string $actor,int $now): self
+    public function revise(int $expected,array $rules,string $actor,int $now,int $delaySeconds=0): self
     {
         self::rules($rules);
+        if($delaySeconds<0 || $delaySeconds>86400)throw new InvalidArgumentException('INVALID_DELAY');
         if($expected!==$this->version) throw new \LogicException('AUTOMATION_VERSION_CONFLICT');
         if($this->version>=20) throw new \LogicException('LAB_REVISION_LIMIT');
         if($actor==='' || strlen($actor)>64 || $now<0) throw new InvalidArgumentException('INVALID_SERVER_AUDIT');
         $rules=array_values($rules);sort($rules);
         $version=$this->version+1;
-        return new self($version,$rules,[...$this->history,['version'=>$version,'rules'=>$rules,'actor'=>$actor,'at'=>$now]]);
+        return new self($version,$rules,[...$this->history,['version'=>$version,'rules'=>$rules,'actor'=>$actor,'at'=>$now,'delay_seconds'=>$delaySeconds]],$delaySeconds);
     }
 
     public function json(): string
     {
-        return json_encode(['schema'=>'CRM_PRIVATE_AUTOMATION_V1','version'=>$this->version,'rules'=>$this->rules,'history'=>$this->history],JSON_THROW_ON_ERROR);
+        return json_encode(['schema'=>'CRM_PRIVATE_AUTOMATION_V1','version'=>$this->version,'rules'=>$this->rules,'delay_seconds'=>$this->delaySeconds,'history'=>$this->history],JSON_THROW_ON_ERROR);
     }
 }

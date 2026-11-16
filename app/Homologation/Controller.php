@@ -121,11 +121,13 @@ final class Controller
     }
     public function preferences(Request $r)
     {
-        $r->validate(['automation_version'=>'required|integer|min:0|max:19','language'=>'required|in:pt,en,es','rules'=>'nullable|array|max:2','rules.*'=>'string|in:followup_qualified,followup_proposal']);
-        app(Workspace::class)->preferences($r->string('language')->toString(),$r->input('rules',[]),$r->integer('automation_version'));
+        $r->validate(['delay_seconds'=>'nullable|integer|min:0|max:86400','automation_version'=>'required|integer|min:0|max:19','language'=>'required|in:pt,en,es','rules'=>'nullable|array|max:2','rules.*'=>'string|in:followup_qualified,followup_proposal']);
+        app(Workspace::class)->preferences($r->string('language')->toString(),$r->input('rules',[]),$r->integer('automation_version'),$r->integer('delay_seconds'));
         $r->session()->put('crm.private.lang',$r->input('language'));
         return redirect('/painel?section=settings',303);
     }
+    public function processAutomations(Request $r) { app(Workspace::class)->processAutomations(); return redirect('/painel?section=automation',303); }
+    public function cancelAutomation(Request $r,string $id) { app(Workspace::class)->cancelAutomation($id); return redirect('/painel?section=automation',303); }
     public function order(Request $r)
     {
         $r->validate(['plan'=>'required|string','method'=>'required|string','key'=>'required|uuid']);
