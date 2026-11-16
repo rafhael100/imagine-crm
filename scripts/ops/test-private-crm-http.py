@@ -389,6 +389,7 @@ def main():
     check(automation_state['counts']['completed']>=3 and automation_state['counts']['cancelled']>=3,'read contract not backed by persisted execution results')
     check(automation_state['ai_provider_calls']==0 and automation_state['operational_authorization'] is False,'read contract invented spend or authority')
     check(all(set(item)=={'action','at'} for item in automation_state['events']),'read contract exposes private identifiers')
+    check(owner_sql("SELECT NOT has_column_privilege('crm_homologation_app','crm_private_automation_runs','command','UPDATE') AND NOT has_column_privilege('crm_homologation_app','crm_private_automation_runs','actor_id','UPDATE') AND NOT has_column_privilege('crm_homologation_app','crm_private_automation_runs','execution_key','UPDATE') AND NOT has_column_privilege('crm_homologation_app','crm_private_automation_runs','authority_session_id','UPDATE') AND has_column_privilege('crm_homologation_app','crm_private_automation_runs','state','UPDATE')")=='t','native runtime may rewrite immutable authority or command')
     a.get('/automacoes/estado?company_id=forged',expected=422)
     print('PASS CENTRAL-AUTO-P1 UI → version → planner → PostgreSQL schedule → native task → dedupe → cancel → pause; AI calls zero by closed action catalog')
     print('PASS lead create/edit protections → Kanban versioning → automation → tasks → reports → CSV')

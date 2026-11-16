@@ -22,7 +22,9 @@ GRANT SELECT,UPDATE(consumed_at) ON crm_auth_recovery_codes TO crm_homologation_
 GRANT INSERT ON crm_iam_audit_events TO crm_homologation_iam;
 GRANT SELECT ON crm_memberships,crm_private_trials TO crm_homologation_app;
 GRANT UPDATE(lock_marker) ON crm_memberships TO crm_homologation_app;
-GRANT SELECT,INSERT,UPDATE ON crm_private_automation_runs,crm_private_leads,crm_private_tasks,crm_private_orders,crm_private_preferences TO crm_homologation_app;
+GRANT SELECT,INSERT,UPDATE ON crm_private_leads,crm_private_tasks,crm_private_orders,crm_private_preferences TO crm_homologation_app;
+GRANT SELECT,INSERT ON crm_private_automation_runs TO crm_homologation_app;
+GRANT UPDATE(state,attempts,due_at) ON crm_private_automation_runs TO crm_homologation_app;
 GRANT SELECT,INSERT ON crm_private_events TO crm_homologation_app;
 GRANT SELECT,INSERT ON crm_private_funnels,crm_private_invitations TO crm_homologation_app;
 GRANT UPDATE(state) ON crm_private_invitations TO crm_homologation_app;
