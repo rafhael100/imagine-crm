@@ -52,3 +52,10 @@ O job `pinned-agents-contract` faz checkout separado da SHA Agents acima, inicia
 ### Permissões de laboratório reforçadas
 
 A tabela separada `automation_operators` permite testar administrar/executar, destinatário habilitado, validade e revogação. Publicação/pausa e admissão consultam concessões persistentes; consumo consulta novamente o operador original e o destinatário. As linhas de permissão permanecem sob `FOR SHARE` até commit, tornando efeito e revogação ordenáveis na transação. Testa-se operador dois revogado/expirado e replay exato negado; não existe concessão derivada do navegador. Isso é harness sintético, não substitui identidade/MFA/roles reais nem libera o autorizador CORE.
+
+
+### Pin corrigido e ordem de revogação
+
+A integração encontrou uma janela de concorrência na leitura de chave do receiver original. A correção está na AI Agents #384, SHA `21c820b56d53bce243969a4fdd440bf1e26644e5`, baseada na RC03 atualizada `7fc36f23ba9955693afaa99eef1822ce376d2c19`. `FOR SHARE` mantém validade da chave até commit; duas sessões PostgreSQL comprovam a ordem admissão → revogação → replay negado. CI do upstream: https://github.com/rafhael100/imagine-ai-agents/actions/runs/43870761224 . O consumidor CRM passa a fixar essa SHA verificada e repetir a prova de revogação, sem presumir merge da candidata.
+
+O motor também ganhou cancelamento individual idempotente por empresa e teste de falha real de privilégio INSERT na auditoria: a admissão deve reverter completamente e a recuperação gerar exatamente um efeito. Dois operadores fictícios distintos competem pelo mesmo evento. Todos os controles são de CI; autorização operacional, scheduler e entrega n8n continuam indisponíveis.
