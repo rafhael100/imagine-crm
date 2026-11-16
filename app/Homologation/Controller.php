@@ -126,6 +126,7 @@ final class Controller
         $r->session()->put('crm.private.lang',$r->input('language'));
         return redirect('/painel?section=settings',303);
     }
+    public function automationState(Request $r) { abort_if($r->query()!==[],422); return response()->json(app(Workspace::class)->automationState()); }
     public function processAutomations(Request $r) { app(Workspace::class)->processAutomations(); return redirect('/painel?section=automation',303); }
     public function cancelAutomation(Request $r,string $id) { app(Workspace::class)->cancelAutomation($id); return redirect('/painel?section=automation',303); }
     public function order(Request $r)

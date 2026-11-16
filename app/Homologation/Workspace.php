@@ -38,7 +38,7 @@ final readonly class Workspace
                         ->where('organization_id',$account->organization_id)->first();
                     abort_unless($trial,403);
                     if ($write) abort_if((int)$trial->expires_at <= time(),403,'Trial fictício encerrado.');
-                    if ($write || str_starts_with($action,'orders.')) {
+                    if ($write || $action==='automation.export' || str_starts_with($action,'orders.')) {
                         $this->db->selectOne('SELECT pg_advisory_xact_lock(hashtextextended(?::text,0))',
                             ['crm_private_quota|'.$account->organization_id]);
                     }
@@ -188,6 +188,20 @@ final readonly class Workspace
             $this->event($account,$principal,$account->organization_id,'automation.settings.v'.$next->version);
             $this->event($account,$principal,$account->organization_id,'preferences.updated');
         },true);
+    }
+
+    public function automationState(): array
+    {
+        return $this->run('automation.export',function($account,$trial,$principal){
+            $settings=AutomationSettings::read($this->table('preferences',$account->organization_id)->value('automation_rules')??'[]');
+            $counts=['pending'=>0,'completed'=>0,'cancelled'=>0,'failed'=>0];
+            foreach($this->table('automation_runs',$account->organization_id)->selectRaw('state,count(*) AS total')->groupBy('state')->get() as $row)$counts[$row->state]=(int)$row->total;
+            $events=$this->table('events',$account->organization_id)->where('action','like','automation.%')->orderByDesc('occurred_at')->orderByDesc('id')->limit(20)->get(['action','occurred_at']);
+            return ['schema'=>'CRM_AUTOMATION_STATE_V1','source_kind'=>'synthetic_private_database','company_id'=>$account->organization_id,
+                'observed_at'=>time(),'settings_version'=>$settings->version,'counts'=>$counts,
+                'events'=>array_map(fn($event)=>['action'=>$event->action,'at'=>(int)$event->occurred_at],$events->all()),
+                'ai_provider_calls'=>0,'operational_authorization'=>false];
+        });
     }
 
     public function processAutomations(): void

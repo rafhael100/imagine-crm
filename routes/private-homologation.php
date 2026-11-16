@@ -37,3 +37,5 @@ Route::post('/convite',[Controller::class,'invitationIssue']);
 
 Route::post('/automacoes/processar',[Controller::class,'processAutomations']);
 Route::post('/automacoes/{id}/cancelar',[Controller::class,'cancelAutomation']);
+
+Route::get('/automacoes/estado',[Controller::class,'automationState']);
