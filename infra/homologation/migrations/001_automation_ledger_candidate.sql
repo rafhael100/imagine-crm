@@ -24,8 +24,18 @@ CREATE TABLE IF NOT EXISTS public.crm_private_automation_runs(
  due_at bigint NOT NULL, created_at bigint NOT NULL, attempts integer NOT NULL DEFAULT 0 CHECK(attempts BETWEEN 0 AND 3),
  UNIQUE(organization_id,execution_key), FOREIGN KEY(organization_id,lead_id) REFERENCES crm_private_leads(organization_id,id));
 
+CREATE TEMPORARY TABLE central_auto_expected_ledger(
+ id uuid PRIMARY KEY, organization_id uuid NOT NULL,
+ actor_id uuid NOT NULL, authority_session_id uuid NOT NULL, -- Verified through IAM connection; no cross-connection FK lock inversion.
+ template varchar(32) NOT NULL CHECK(template IN ('followup_qualified','followup_proposal')),
+ settings_version integer NOT NULL, lead_id uuid NOT NULL, lead_version bigint NOT NULL,
+ execution_key varchar(64) NOT NULL, command jsonb NOT NULL,
+ state varchar(16) NOT NULL DEFAULT 'pending' CHECK(state IN ('pending','completed','cancelled','failed')),
+ due_at bigint NOT NULL, created_at bigint NOT NULL, attempts integer NOT NULL DEFAULT 0 CHECK(attempts BETWEEN 0 AND 3),
+ UNIQUE(organization_id,execution_key) ) ON COMMIT DROP;
+
 -- Reject an incompatible preexisting table instead of pretending IF NOT EXISTS proves compatibility.
-DO $$ DECLARE names text[]; types text[]; BEGIN
+DO $$ DECLARE names text[]; types text[]; actual text[]; expected text[]; BEGIN
  SELECT array_agg(attname::text ORDER BY attnum) INTO names FROM pg_attribute
  WHERE attrelid='public.crm_private_automation_runs'::regclass AND attnum>0 AND NOT attisdropped;
  IF names IS DISTINCT FROM ARRAY['id','organization_id','actor_id','authority_session_id','template','settings_version','lead_id','lead_version','execution_key','command','state','due_at','created_at','attempts'] THEN
@@ -36,6 +46,33 @@ DO $$ DECLARE names text[]; types text[]; BEGIN
  RAISE EXCEPTION 'INCOMPATIBLE_AUTOMATION_TYPES'; END IF;
  IF (SELECT count(*) FROM pg_constraint WHERE conrelid='public.crm_private_automation_runs'::regclass)<>8 THEN
  RAISE EXCEPTION 'INCOMPATIBLE_AUTOMATION_CONSTRAINTS'; END IF;
+ -- Constraint counts alone cannot detect a weakened CHECK or a retargeted FK.
+ SELECT array_agg(pg_get_constraintdef(oid) ORDER BY pg_get_constraintdef(oid)) INTO actual
+ FROM pg_constraint WHERE conrelid='public.crm_private_automation_runs'::regclass AND contype<>'f';
+ SELECT array_agg(pg_get_constraintdef(oid) ORDER BY pg_get_constraintdef(oid)) INTO expected
+ FROM pg_constraint WHERE conrelid='pg_temp.central_auto_expected_ledger'::regclass;
+ IF actual IS DISTINCT FROM expected THEN RAISE EXCEPTION 'INCOMPATIBLE_AUTOMATION_CONSTRAINT_DEFINITIONS'; END IF;
+ SELECT array_agg(pg_get_constraintdef(oid) ORDER BY pg_get_constraintdef(oid)) INTO actual
+ FROM pg_constraint WHERE conrelid='public.crm_private_automation_runs'::regclass AND contype='f';
+ SELECT array_agg(definition ORDER BY definition) INTO expected FROM (VALUES
+ ('FOREIGN KEY (organization_id) REFERENCES crm_organizations(id)'),
+ ('FOREIGN KEY (actor_id) REFERENCES crm_global_identities(id)'),
+ ('FOREIGN KEY (organization_id, lead_id) REFERENCES crm_private_leads(organization_id, id)')
+ ) AS approved(definition);
+ IF actual IS DISTINCT FROM expected OR EXISTS (
+ SELECT 1 FROM pg_constraint WHERE conrelid='public.crm_private_automation_runs'::regclass
+ AND (NOT convalidated OR condeferrable OR condeferred)
+ ) THEN RAISE EXCEPTION 'INCOMPATIBLE_AUTOMATION_FOREIGN_KEYS'; END IF;
+ SELECT array_agg(attname::text||':'||attnotnull::text ORDER BY attnum) INTO actual
+ FROM pg_attribute WHERE attrelid='public.crm_private_automation_runs'::regclass AND attnum>0 AND NOT attisdropped;
+ SELECT array_agg(attname::text||':'||attnotnull::text ORDER BY attnum) INTO expected
+ FROM pg_attribute WHERE attrelid='pg_temp.central_auto_expected_ledger'::regclass AND attnum>0 AND NOT attisdropped;
+ IF actual IS DISTINCT FROM expected THEN RAISE EXCEPTION 'INCOMPATIBLE_AUTOMATION_NULLABILITY'; END IF;
+ SELECT array_agg(adnum::text||':'||pg_get_expr(adbin,adrelid) ORDER BY adnum) INTO actual
+ FROM pg_attrdef WHERE adrelid='public.crm_private_automation_runs'::regclass;
+ SELECT array_agg(adnum::text||':'||pg_get_expr(adbin,adrelid) ORDER BY adnum) INTO expected
+ FROM pg_attrdef WHERE adrelid='pg_temp.central_auto_expected_ledger'::regclass;
+ IF actual IS DISTINCT FROM expected THEN RAISE EXCEPTION 'INCOMPATIBLE_AUTOMATION_DEFAULTS'; END IF;
  IF (SELECT relowner FROM pg_class WHERE oid='public.crm_private_automation_runs'::regclass)<>(SELECT oid FROM pg_roles WHERE rolname=current_user)
  THEN RAISE EXCEPTION 'UNEXPECTED_AUTOMATION_OWNER'; END IF;
 END $$;

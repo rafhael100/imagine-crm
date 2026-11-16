@@ -51,6 +51,19 @@ jobs:
           test "$("${psql[@]}" -c 'SELECT count(*) FROM crm_private_automation_runs')" = 1
           test "$("${psql[@]}" -c 'SELECT count(*) FROM crm_private_leads')" = 1
           if docker exec -i "$PG_CONTAINER" psql -X -v ON_ERROR_STOP=1 -U crm_homologation_owner -d postgres < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-negative.log 2>&1; then exit 1; fi
+          # Same number of constraints, different meaning: must fail closed.
+          "${psql[@]}" -c "ALTER TABLE crm_private_automation_runs DROP CONSTRAINT crm_private_automation_runs_state_check; ALTER TABLE crm_private_automation_runs ADD CONSTRAINT crm_private_automation_runs_state_check CHECK(state IN ('pending','completed','cancelled','failed','unapproved'))"
+          if "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-constraint.log 2>&1; then exit 1; fi
+          rg 'INCOMPATIBLE_AUTOMATION_CONSTRAINT_DEFINITIONS' /tmp/migration-constraint.log
+          "${psql[@]}" -c "ALTER TABLE crm_private_automation_runs DROP CONSTRAINT crm_private_automation_runs_state_check; ALTER TABLE crm_private_automation_runs ADD CONSTRAINT crm_private_automation_runs_state_check CHECK(state IN ('pending','completed','cancelled','failed'))"
+          "${psql[@]}" -c 'ALTER TABLE crm_private_automation_runs ALTER COLUMN command DROP NOT NULL'
+          if "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-null.log 2>&1; then exit 1; fi
+          rg 'INCOMPATIBLE_AUTOMATION_NULLABILITY' /tmp/migration-null.log
+          "${psql[@]}" -c 'ALTER TABLE crm_private_automation_runs ALTER COLUMN command SET NOT NULL; ALTER TABLE crm_private_automation_runs ALTER COLUMN attempts SET DEFAULT 1'
+          if "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-default.log 2>&1; then exit 1; fi
+          rg 'INCOMPATIBLE_AUTOMATION_DEFAULTS' /tmp/migration-default.log
+          "${psql[@]}" -c 'ALTER TABLE crm_private_automation_runs ALTER COLUMN attempts SET DEFAULT 0'
+          "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql
           "${psql[@]}" -c 'ALTER TABLE crm_private_automation_runs ADD COLUMN incompatible_fixture text'
           if "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-drift.log 2>&1; then exit 1; fi
           test "$("${psql[@]}" -c 'SELECT count(*) FROM crm_private_automation_runs')" = 1
