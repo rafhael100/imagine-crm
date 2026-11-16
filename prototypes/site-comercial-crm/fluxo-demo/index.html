@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self'; connect-src 'none'; font-src 'none'; frame-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'">
+<title>Imagine CRM — Cadastro fictício, sem conexão</title>
+<style>
+*{box-sizing:border-box}
+:root{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#171b19;background:#f7f7f8;line-height:1.5}
+body{margin:0;min-width:0}
+[hidden]{display:none!important}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #d36b00;outline-offset:4px}
+.skip{position:absolute;left:-10000px;top:10px;padding:12px 18px;background:#fff;border-radius:8px;z-index:20}
+.skip:focus{left:12px}
+.shell{max-width:1260px;min-height:100vh;margin:auto;display:grid;grid-template-columns:minmax(0,0.82fr) minmax(0,1.18fr);box-shadow:0 0 35px rgba(23,27,25,.035)}
+.brand{min-width:0;background:#171b19;color:#fff;padding:clamp(24px,5vw,66px);display:flex;flex-direction:column;gap:30px}
+.logo{display:inline-flex;background:#fff;max-width:245px;border-radius:13px;padding:10px 16px;align-self:flex-start}
+.logo img{display:block;max-width:100%;width:auto;max-height:62px;height:auto}
+.eyebrow{text-transform:uppercase;color:#f9941d;font-weight:850;font-size:.73rem;letter-spacing:.15em}
+.brand h2{margin:0;font-size:clamp(2rem,3.7vw,3.6rem);letter-spacing:-.055em;line-height:1.12;max-width:490px}
+.brand p{color:#cfd5d0;font-size:1rem;max-width:420px}
+.perks{display:flex;gap:9px;flex-wrap:wrap}
+.perks span{font-size:.83rem;border:1px solid #576057;padding:9px 12px;border-radius:30px;color:#f2f4f0}
+.brand footer{margin-top:auto;color:#b4c1b8;font-size:.76rem}
+.content{min-width:0;padding:clamp(20px,5vw,64px);background:#f7f7f8}
+.topline{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.kicker{font-weight:850;color:#a45000;letter-spacing:.11em;font-size:.73rem;text-transform:uppercase}
+.small{color:#5e6860;font-size:.86rem}
+h1{font-size:clamp(1.9rem,3vw,2.65rem);line-height:1.15;letter-spacing:-.04em;margin:13px 0 10px}
+.intro{color:#56645b;max-width:580px;margin:0 0 22px}
+.notice{border:1px solid #eac796;border-radius:14px;background:#fff5e7;padding:14px 16px;font-size:.9rem;color:#664516;font-weight:650;margin:18px 0}
+.steps{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:21px;padding:0;list-style:none}
+.steps li{padding:8px 12px;background:#e8ece8;color:#56645b;border-radius:20px;font-size:.77rem;font-weight:750}
+.steps li.current{background:#fff0db;color:#874300;border:1px solid #f3cf9c}
+.panel{background:#fff;border:1px solid #e5e9e5;border-radius:20px;padding:clamp(17px,3vw,27px);box-shadow:0 12px 25px rgba(23,27,25,.035);margin:16px 0}
+.panel h2{font-size:1.15rem;letter-spacing:-.025em;margin:0 0 8px}
+.panel p{color:#5a665d;font-size:.91rem;margin:0 0 15px}
+.group-title{font-weight:760;font-size:.9rem;margin:18px 0 8px}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.choice{text-align:left;background:#fff;border:1.5px solid #dce2de;padding:14px;border-radius:12px;color:#171b19;min-width:0}
+.choice strong{display:block;overflow-wrap:anywhere;font-size:.93rem}
+.choice small{display:block;color:#647066;font-size:.78rem;margin-top:4px;overflow-wrap:anywhere}
+.choice[aria-pressed="true"]{border-color:#f9941d;background:#fff7eb;box-shadow:inset 0 0 0 1px #f9941d}
+.action-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px}
+.primary{background:#171b19;color:#fff;border:0;border-radius:11px;padding:12px 18px;font-weight:780}
+.primary:hover{background:#353b35}
+.secondary{background:#fff;color:#171b19;border:1px solid #ccd4cd;border-radius:11px;padding:11px 16px;font-weight:700}
+.primary:disabled{background:#d8ded8;color:#667167;cursor:not-allowed}
+.value{background:#f7f8f7;border:1px solid #e4e9e4;border-radius:10px;padding:10px 13px;color:#3e4b41;font-size:.84rem;overflow-wrap:anywhere}
+#code{width:100%;max-width:240px;letter-spacing:.26em;font-variant-numeric:tabular-nums;font-size:1.5rem;font-weight:800;text-align:center;border-radius:12px;padding:11px;border:1.5px solid #bdc9bd;background:#fff}
+#code-hint{color:#66736a;font-size:.82rem;margin:9px 0}
+#status,#code-status{margin-top:13px;background:#f4f8f3;border-left:4px solid #f9941d;border-radius:8px;padding:12px;color:#425a46;font-weight:690;font-size:.88rem}
+.locked{font-size:.86rem;color:#8a4630;font-weight:730}
+.meta{text-align:center;color:#657066;font-size:.78rem;margin-top:22px}
+.quota-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.quota{border:1px solid #e2e7e2;background:#f9faf9;border-radius:11px;padding:12px;min-width:0}
+.quota strong{font-size:1.1rem;letter-spacing:-.02em;display:block;color:#171b19}
+.quota span{font-size:.79rem;color:#59665d;display:block;overflow-wrap:anywhere}
+.quota-note{font-size:.79rem;color:#5e6c60}
+.trial-outcome{margin-top:14px;padding:12px;background:#fff8ed;border-left:4px solid #f9941d;border-radius:8px;color:#6c4c21;font-weight:680}
+@media(max-width:880px){.shell{grid-template-columns:1fr;min-height:0}.brand{gap:15px;padding:24px}.brand h2{font-size:2rem;max-width:660px}.brand p{margin:0}.brand footer{display:none}.content{padding:28px 22px}}
+@media(max-width:440px){.brand{padding:16px;gap:8px}.logo{max-width:188px;padding:7px 10px}.brand h2,.brand p,.perks{display:none}.eyebrow{font-size:.7rem;letter-spacing:.09em}.content{padding:18px 12px}.choices,.quota-grid{grid-template-columns:1fr}.panel{padding:17px 14px}.steps li{padding:7px 9px}.action-row button{width:100%}h1{font-size:1.9rem}}
+.return-link{color:#ffbf76;text-decoration:underline;font-weight:750;font-size:.9rem;align-self:flex-start}.return-link:focus-visible{outline:3px solid #fff;outline-offset:4px}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<div class="shell">
+<aside class="brand" aria-label="Apresentação Imagine CRM">
+  <span class="logo"><img src="../assets/logo-imagine.png" alt="Logomarca original da Imagine"></span>
+  <a class="return-link" href="../index.html#planos">← Voltar aos planos do CRM</a>
+  <span class="eyebrow">Um jeito simples de evoluir suas vendas</span>
+  <h2>Seu CRM, com uma experiência mais leve.</h2>
+  <p>Teste a navegação de uma futura jornada de cadastro. Este protótipo é independente do Portal e não cria empresas nem usuários.</p>
+  <div class="perks"><span>14 dias ilustrativos</span><span>Sem cartão</span><span>6 dígitos</span><span>15 minutos</span></div>
+  <footer>Imagine Comunicação Digital · Identidade visual original · Ambiente de revisão local</footer>
+</aside>
+<main class="content" id="conteudo">
+  <div class="topline"><span class="kicker">Experiência Imagine CRM</span><span class="small">Protótipo navegável • Dados fictícios</span></div>
+  <h1>Uma confirmação clara, sem complicação.</h1>
+  <p class="intro">Escolha os exemplos de empresa e canal, simule a entrega de um código e teste a interação. Tudo funciona apenas na memória desta página.</p>
+  <aside class="notice" role="note">PROTÓTIPO — DADOS FICTÍCIOS. Não digite documentos, e-mails, telefones ou códigos reais. Nenhuma mensagem é enviada, nenhum cadastro é criado e nenhum dado é salvo.</aside>
+  <ol class="steps" aria-label="Etapas demonstrativas"><li class="current" id="step-a">01 · Empresa</li><li id="step-b">02 · Código</li><li id="step-c">03 · Revisão</li><li id="step-d">04 · Trial</li></ol>
+  <section class="panel" id="step-one" aria-labelledby="first-title">
+    <h2 id="first-title">1. Escolha uma empresa fictícia</h2>
+    <p>Dados de exemplo fixos, sem campo para documento real.</p>
+    <div class="choices" role="group" aria-label="Exemplos de CNPJ">
+      <button class="choice" type="button" data-company="legacy" aria-pressed="true"><strong>CNPJ numérico</strong><small>11.222.333/0001-81 · exemplo</small></button>
+      <button class="choice" type="button" data-company="alpha" aria-pressed="false"><strong>CNPJ alfanumérico</strong><small>12.ABC.345/01DE-35 · exemplo</small></button>
+    </div>
+    <div class="group-title">Como deseja simular a confirmação?</div>
+    <div class="choices" role="group" aria-label="Canal de confirmação">
+      <button class="choice" type="button" data-channel="email" aria-pressed="true"><strong>E-mail</strong><small>Composição Imagine em HTML e texto</small></button>
+      <button class="choice" type="button" data-channel="whatsapp" aria-pressed="false"><strong>WhatsApp</strong><small>Modelo textual ainda sem aprovação</small></button>
+    </div>
+    <div class="action-row"><button class="primary" type="button" id="simulate">Simular entrega do código</button></div>
+    <p id="status" role="status" aria-live="polite">Pronto para simular; nenhum dado será enviado.</p>
+  </section>
+  <section class="panel" id="step-two" aria-labelledby="second-title" hidden>
+    <h2 id="second-title" tabindex="-1">2. Digite o código fictício</h2>
+    <p id="channel-review">Canal selecionado: e-mail de exemplo.</p>
+    <p class="value">Código da demonstração: <strong id="fixture-code">012345</strong> · prazo simulado: <strong>15 minutos</strong></p>
+    <label class="group-title" for="code">Código de seis dígitos (somente teste)</label>
+    <input id="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" spellcheck="false" aria-describedby="code-hint" placeholder="000000">
+    <p id="code-hint">Insira apenas os dígitos do exemplo mostrado acima.</p>
+    <div class="action-row">
+      <button class="primary" type="button" id="validate">Validar exemplo</button>
+      <button class="secondary" type="button" id="expire">Simular expiração</button>
+    </div>
+    <p id="code-status" role="status" aria-live="polite">Aguardando a digitação do código de exemplo.</p>
+  </section>
+  <section class="panel" id="step-three" aria-labelledby="third-title" hidden>
+    <h2 id="third-title" tabindex="-1">3. Revisão concluída no protótipo</h2>
+    <p>O código de demonstração coincidiu, mas nenhuma identidade, empresa ou permissão foi confirmada.</p>
+    <p class="locked">Cadastro real: bloqueado até revisão de segurança, identidade, consentimento e infraestrutura.</p>
+    <div class="action-row"><button class="secondary" type="button" id="show-trial">Ver prévia do trial fictício</button></div>
+    <button class="primary" type="button" disabled id="finish">Concluir cadastro (indisponível)</button>
+  </section>
+  <section class="panel" id="step-four" aria-labelledby="fourth-title" hidden>
+    <h2 id="fourth-title" tabindex="-1">4. Conheça o trial fictício</h2>
+    <p id="trial-company">Empresa de exemplo: CNPJ numérico. Nenhuma titularidade foi verificada.</p>
+    <div class="value">Janela demonstrativa de <strong>14 dias</strong> · Não há contratação, elegibilidade ou acesso ativo.</div>
+    <div class="group-title">Franquias ilustrativas do plano de teste</div>
+    <div class="quota-grid" aria-label="Sete franquias ilustrativas, sem consumo real">
+      <div class="quota" data-meter="users" data-limit="2"><strong>2</strong><span>Usuários</span></div>
+      <div class="quota" data-meter="leads" data-limit="20"><strong>20</strong><span>Leads</span></div>
+      <div class="quota" data-meter="automations" data-limit="2"><strong>2</strong><span>Automações</span></div>
+      <div class="quota" data-meter="pipelines" data-limit="2"><strong>2</strong><span>Funis</span></div>
+      <div class="quota" data-meter="attachments_bytes" data-limit="20971520"><strong>20 MB</strong><span>Anexos</span></div>
+      <div class="quota" data-meter="ai_initial_credits" data-limit="10"><strong>10</strong><span>Créditos IA iniciais</span></div>
+      <div class="quota" data-meter="ai_bonus_credits" data-limit="10"><strong>10</strong><span>Créditos IA bônus</span></div>
+    </div>
+    <p class="quota-note">Todos os limites acima são exemplos do Core Imagine CRM; nenhum saldo foi concedido.</p>
+    <div class="action-row">
+      <button class="secondary" type="button" id="trial-duplicate">Simular tentativa duplicada</button>
+      <button class="secondary" type="button" id="trial-expire">Simular fim de 14 dias</button>
+    </div>
+    <p class="trial-outcome" id="trial-status" role="status" aria-live="polite">Prévia apenas: nenhum trial foi iniciado.</p>
+    <button class="primary" type="button" disabled id="activate-trial">Ativar trial real (indisponível)</button>
+    <p class="small"><a class="return-link" href="../painel-demo/index.html">Continuar para os painéis demonstrativos (sem criar conta)</a></p>
+  </section>
+  <div class="action-row"><button class="secondary" type="button" id="restart">Reiniciar demonstração</button><span class="small">Nenhum dado sai deste navegador.</span></div>
+  <p class="meta">Imagine CRM · Interface para revisão visual · Sem integração, rede, armazenamento ou cobrança</p>
+</main>
+</div>
+<script>
+(function(){
+  'use strict';
+  const byId=id=>document.getElementById(id);
+  const state={company:'legacy',channel:'email',expired:false};
+  const groups={company:Array.from(document.querySelectorAll('[data-company]')),channel:Array.from(document.querySelectorAll('[data-channel]'))};
+  function setPressed(name,value){
+    state[name]=value;
+    groups[name].forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset[name]===value)));
+  }
+  groups.company.forEach(btn=>btn.addEventListener('click',()=>setPressed('company',btn.dataset.company)));
+  groups.channel.forEach(btn=>btn.addEventListener('click',()=>setPressed('channel',btn.dataset.channel)));
+  function stage(stage){
+    ['step-a','step-b','step-c','step-d'].forEach((id,i)=>byId(id).classList.toggle('current',i===stage));
+  }
+  byId('simulate').addEventListener('click',()=>{
+    state.expired=false;
+    byId('step-two').hidden=false;
+    byId('step-three').hidden=true;
+    byId('step-four').hidden=true;
+    byId('code').value='';
+    byId('code-status').textContent='Aguardando o código de exemplo. Nenhum envio ocorreu.';
+    byId('status').textContent='Simulação realizada. Não houve e-mail, WhatsApp ou SMS real.';
+    byId('channel-review').textContent=state.channel==='email'?'Canal selecionado: e-mail de exemplo.':'Canal selecionado: WhatsApp de exemplo (template não aprovado).';
+    stage(1);
+    byId('code').focus();
+  });
+  byId('code').addEventListener('input',event=>{
+    event.target.value=event.target.value.replace(/[^0-9]/g,'').slice(0,6);
+  });
+  byId('validate').addEventListener('click',()=>{
+    if(state.expired){
+      byId('code-status').textContent='Código expirado neste exemplo. Reinicie a simulação.';
+      return;
+    }
+    if(byId('code').value!=='012345'){
+      byId('step-three').hidden=true;
+      byId('step-four').hidden=true;
+      byId('code-status').textContent='O exemplo não coincide. Utilize somente 012345.';
+      return;
+    }
+    byId('code-status').textContent='Correspondência visual simulada. Nenhum cadastro foi autorizado.';
+    byId('step-three').hidden=false;
+    byId('step-four').hidden=true;
+    stage(2);
+    byId('third-title').focus();
+  });
+  byId('expire').addEventListener('click',()=>{
+    state.expired=true;
+    byId('step-three').hidden=true;
+    byId('step-four').hidden=true;
+    stage(1);
+    byId('code-status').textContent='Expiração de 15 minutos simulada. Nenhum código permite cadastro.';
+  });
+  byId('show-trial').addEventListener('click',()=>{
+    if(byId('step-three').hidden || state.expired)return;
+    byId('step-four').hidden=false;
+    byId('trial-company').textContent=state.company==='alpha'
+      ?'Empresa de exemplo: CNPJ alfanumérico. Nenhuma titularidade foi verificada.'
+      :'Empresa de exemplo: CNPJ numérico. Nenhuma titularidade foi verificada.';
+    byId('trial-status').textContent='Prévia apenas: nenhum trial foi iniciado.';
+    stage(3);
+    byId('fourth-title').focus();
+  });
+  byId('trial-duplicate').addEventListener('click',()=>{
+    byId('trial-status').textContent='Duplicidade simulada: um segundo trial seria recusado. Nenhum CNPJ real foi consultado.';
+  });
+  byId('trial-expire').addEventListener('click',()=>{
+    byId('trial-status').textContent='Fim dos 14 dias simulado: nenhuma conta foi suspensa, ativada ou cobrada.';
+  });
+  byId('restart').addEventListener('click',()=>{
+    setPressed('company','legacy');
+    setPressed('channel','email');
+    state.expired=false;
+    byId('code').value='';
+    byId('step-two').hidden=true;
+    byId('step-three').hidden=true;
+    byId('step-four').hidden=true;
+    byId('status').textContent='Pronto para simular; nenhum dado será enviado.';
+    stage(0);
+    byId('simulate').focus();
+  });
+  // Local screenshot fixture only. The URL fragment never reaches a server.
+  if(location.hash==='#previsualizar-trial'){
+    setPressed('company','alpha');
+    byId('simulate').click();
+    byId('code').value='012345';
+    byId('validate').click();
+    byId('show-trial').click();
+  }
+})();
+</script>
+</body>
+</html>
