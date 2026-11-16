@@ -98,6 +98,15 @@ final readonly class Op01SyntheticLeadProjectionLab
                     return null;
                 }
 
+                // Inherited tenant context from a reused connection is a
+                // contamination signal; never silently overwrite it.
+                $previous = $db->selectOne(
+                    "SELECT current_setting('app.tenant_id', true) AS tenant"
+                );
+                if (!$previous || ($previous->tenant !== null && $previous->tenant !== '')) {
+                    return null;
+                }
+
                 // RLS adds a second filter; session tenant markers alone are
                 // NOT authentication. Here the input is a CI-only fixture.
                 $db->selectOne(
