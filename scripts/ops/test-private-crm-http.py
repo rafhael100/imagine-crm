@@ -565,7 +565,8 @@ def main():
     a.get('/painel?section=automation')
     settings_version=int(re.search(r'name="automation_version" value="(\d+)"',a.last).group(1))
     a.post('/preferencias',{'automation_version':settings_version,'delay_seconds':1,'language':'pt','rules[]':['followup_qualified']})
-    race_lead=next(value for value in leads(a) if value not in [lead,other,final_lead])
+    race_page=a.get('/painel?section=leads')
+    race_lead=next(value for value,body in re.findall(r'<tr data-lead-id="([^"]+)">(.*?)</tr>',race_page,re.S) if 'LEAD_TESTE_QUOTA_' in body)
     a.get('/painel?section=kanban');a.post('/leads/'+race_lead,{'version':1,'stage':'qualified'})
     page=a.get('/painel?section=automation')
     race_runs=[rid for rid,body in re.findall(r'<tr data-automation-id="([^"]+)">(.*?)</tr>',page,re.S) if 'pending' in body]
