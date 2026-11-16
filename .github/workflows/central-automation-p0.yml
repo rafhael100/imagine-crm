@@ -52,6 +52,15 @@ jobs:
           php -l app/Core/Automation/RuleDefinition.php
           php -l tools/automation/LabRuleStore.php
           php tools/automation/check.php
+      - name: Real audit privilege failure rolls back admission, then recovers
+        run: |
+          PGUSER=postgres PGPASSWORD=synthetic-ci-only psql -v ON_ERROR_STOP=1 <<'SQL'
+          UPDATE automation_tenants SET daily_limit=20 WHERE tenant='lab-alfa';
+          REVOKE INSERT ON automation_audit FROM automation_runner;
+          SQL
+          php tools/automation/check_rollback.php
+          PGUSER=postgres PGPASSWORD=synthetic-ci-only psql -v ON_ERROR_STOP=1 -c 'GRANT INSERT ON automation_audit TO automation_runner'
+          php tools/automation/check_rollback.php restored
       - name: Race independent processes against the same event
         run: |
           php -r 'require "app/Core/Automation/RuleDefinition.php"; require "tools/automation/LabRuleStore.php"; $db=new PDO(getenv("AUTOMATION_PG_DSN"),getenv("PGUSER"),getenv("PGPASSWORD")); (new Imagine\AutomationLab\LabRuleStore($db))->publish(App\Core\Automation\RuleDefinition::fromArray(["tenant"=>"lab-race","id"=>"followup","version"=>1,"template"=>"followup_qualified","delay_seconds"=>0,"recipient"=>"operator-one"]),0,true,1800000000);'
