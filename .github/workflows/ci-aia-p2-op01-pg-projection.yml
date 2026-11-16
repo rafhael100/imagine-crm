@@ -1,0 +1,90 @@
+name: CRM OP01 P2 - scoped synthetic lead ref/stage via PG16 RLS
+
+on:
+  push:
+    branches:
+      - dev/aia-p2-op01-synthetic-lead-projection-2026-11-16
+  pull_request:
+    branches:
+      - dev/aia-p0-op01-gated-backend-adapter-2026-11-16
+
+permissions:
+  contents: read
+
+jobs:
+  pg16-projection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_crm_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d imagine_crm_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      APP_URL: http://127.0.0.1
+      AIA_OP01_P2_PG_LAB: 'true'
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: '5432'
+      DB_DATABASE: imagine_crm_ci
+      DB_USERNAME: postgres
+      DB_PASSWORD: ci-only-password
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+    steps:
+      - name: Checkout source without write tokens
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Assert disposable local DB and correct repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "rafhael100/imagine-crm"
+          test "$DB_HOST" = "127.0.0.1"
+          test "$DB_DATABASE" = "imagine_crm_ci"
+          test "$DB_USERNAME" = "postgres"
+      - name: PHP 8.4 with PostgreSQL 16 adapter
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, ctype, openssl, sodium, pdo_pgsql, pgsql
+          coverage: none
+          tools: composer
+      - name: Restore immutable dependencies, no scripts or plugins
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer install --no-interaction --prefer-dist --no-progress --no-scripts --no-plugins
+          cp .env.example .env
+          php artisan key:generate --force --no-interaction
+      - name: Ensure code is closed to production route registration
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l app/Support/Agents/Op01SyntheticLeadProjectionLab.php
+          php -l tests/Feature/Op01SyntheticLeadProjectionLabTest.php
+          if grep -R -E 'Op01SyntheticLeadProjectionLab|/api/agents/op01' routes bootstrap; then
+            echo 'OP01_P2_UNAUTHORIZED_ROUTE'; exit 1
+          fi
+          test ! -e routes/api.php
+      - name: Execute real PG16 RLS and field-level permission matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          php artisan test --filter=Op01SyntheticLeadProjectionLabTest --no-ansi
+          php artisan test --filter=Op01GatedBackendAdapterTest --no-ansi
+          echo 'OP01_P2_PG_RLS_SIMULATED_POSITIVE=true runtime_authorization=false real_lead_read=false operational_decision=NO_GO' >> "$GITHUB_STEP_SUMMARY"
