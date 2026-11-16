@@ -153,9 +153,12 @@ final class AgentsPrivateHttpCycleTest extends TestCase
             'x-robots-tag'=>(string)$response->headers->get('x-robots-tag'),
             'x-content-type-options'=>(string)$response->headers->get('x-content-type-options'),
         ];
+        $responseBody = $response->getContent();
         self::assertTrue(\ImagineAI\MockBridge\MockSyntheticHttpDenialReceipt::matches(
-            404,$headers,$response->getContent()
-        ));
+            404,$headers,$responseBody
+        ), 'F241_PUBLIC_HEADER_PROFILE='.json_encode($headers,JSON_THROW_ON_ERROR)
+            .' body_len='.strlen($responseBody)
+            .' body_sha256='.hash('sha256',$responseBody));
     }
 
     public function test_f241_original_agents_envelope_passes_private_callback_but_http_stays_denied(): void
