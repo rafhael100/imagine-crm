@@ -10,7 +10,7 @@
     'Novo'=>'New','Qualificado'=>'Qualified','Proposta'=>'Proposal','Ganho'=>'Won','Perdido'=>'Lost','Concluir'=>'Complete',
     'Título'=>'Title','Etapa'=>'Stage','Valor em centavos'=>'Amount in BRL cents','Vencimento'=>'Due date',
     'Criar pedido simulado'=>'Create simulated order','Aprovar'=>'Approve','Recusar'=>'Decline','Cancelar'=>'Cancel',
-    'Suspender'=>'Suspend','Reativar'=>'Resume','Idioma'=>'Language','Atividade recente'=>'Recent activity'];,
+    'Suspender'=>'Suspend','Reativar'=>'Resume','Idioma'=>'Language','Atividade recente'=>'Recent activity',
     'Deslize horizontalmente para ver todas as etapas.'=>'Swipe horizontally to see every stage.',
     'Deslize para ver as colunas e ações da tabela.'=>'Swipe to see all table columns and actions.',
     'Contas e acesso'=>'Accounts and access',
@@ -35,7 +35,7 @@
     'Administrador · MFA recente'=>'Administrator · recent MFA',
     'Suspender revoga as sessões existentes. Reativar exige novo login e MFA. Esta administração vê metadados operacionais fictícios; não abre leads e tarefas de outra empresa.'=>'Suspending revokes active sessions. Resuming requires a fresh sign-in and MFA. Administrators see test operational metadata, never leads or tasks from another company.',
     'Avançar'=>'Advance',
-    'Marcar perdido'=>'Mark as lost'
+    'Marcar perdido'=>'Mark as lost'];
     $es = ['Início'=>'Inicio','Entrar'=>'Ingresar','Sair'=>'Salir','Voltar ao site'=>'Volver al sitio','Criar meu teste'=>'Iniciar prueba',
     'Visão geral'=>'Resumen','Leads'=>'Leads','Funis'=>'Embudos','Kanban'=>'Embudo','Tarefas'=>'Tareas','Relatórios'=>'Informes','Equipe'=>'Equipo',
     'Automações'=>'Automatizaciones','Preferências'=>'Preferencias','Plano e pedidos'=>'Plan y pedidos','Administração'=>'Administración',
@@ -46,7 +46,7 @@
     'Novo'=>'Nuevo','Qualificado'=>'Calificado','Proposta'=>'Propuesta','Ganho'=>'Ganado','Perdido'=>'Perdido','Concluir'=>'Completar',
     'Título'=>'Título','Etapa'=>'Etapa','Valor em centavos'=>'Importe en centavos BRL','Vencimento'=>'Vencimiento',
     'Criar pedido simulado'=>'Crear pedido simulado','Aprovar'=>'Aprobar','Recusar'=>'Rechazar','Cancelar'=>'Cancelar',
-    'Suspender'=>'Suspender','Reativar'=>'Reactivar','Idioma'=>'Idioma','Atividade recente'=>'Actividad reciente'];,
+    'Suspender'=>'Suspender','Reativar'=>'Reactivar','Idioma'=>'Idioma','Atividade recente'=>'Actividad reciente',
     'Deslize horizontalmente para ver todas as etapas.'=>'Deslice horizontalmente para ver todas las etapas.',
     'Deslize para ver as colunas e ações da tabela.'=>'Deslice para ver todas las columnas y acciones de la tabla.',
     'Contas e acesso'=>'Cuentas y acceso',
@@ -71,7 +71,7 @@
     'Administrador · MFA recente'=>'Administrador · MFA reciente',
     'Suspender revoga as sessões existentes. Reativar exige novo login e MFA. Esta administração vê metadados operacionais fictícios; não abre leads e tarefas de outra empresa.'=>'Suspender revoca las sesiones existentes. Reactivar requiere un nuevo inicio de sesión y MFA. La administración solo ve metadatos de prueba, no contactos ni tareas de otras empresas.',
     'Avançar'=>'Avanzar',
-    'Marcar perdido'=>'Marcar como perdido'
+    'Marcar perdido'=>'Marcar como perdido'];
     $t = fn($text) => $language==='en' ? ($en[$text]??$text) : ($language==='es' ? ($es[$text]??$text) : $text);
     $money=fn($cents)=>'R$ '.number_format($cents/100,2,',','.');
     $stages=['new'=>$t('Novo'),'qualified'=>$t('Qualificado'),'proposal'=>$t('Proposta'),'won'=>$t('Ganho'),'lost'=>$t('Perdido')];
