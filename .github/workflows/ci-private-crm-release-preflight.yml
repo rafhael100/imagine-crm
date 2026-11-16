@@ -1,0 +1,67 @@
+name: CRM Private release F251 - read-only upgrade diff gate (NO DEPLOY)
+
+on:
+  pull_request:
+    branches: [dev/fast-track-crm-2026-11-04]
+    paths:
+      - 'scripts/ops/private-crm-release-preflight.py'
+      - 'scripts/ops/test-private-crm-release-preflight.py'
+      - '.github/workflows/ci-private-crm-release-preflight.yml'
+      - 'docs/operations/private-complete-journey.md'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-private-release-f251-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  source-manifest:
+    name: Exact-SHA private maintenance scope / no deploy / manual review
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact review commit and published history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate repository identity and pinned release baseline
+        env:
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REPOSITORY" == "rafhael100/imagine-crm" ]]
+          [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]
+          [[ "$(git rev-parse HEAD)" == "$CANDIDATE_SHA" ]]
+          git merge-base --is-ancestor ea5d320addaeb7ab970bdfa3931d55ddea37afac "$CANDIDATE_SHA"
+
+      - name: Test fail-closed scope classifier without network or deploy
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/ops/private-crm-release-preflight.py
+          python3 -m py_compile scripts/ops/test-private-crm-release-preflight.py
+          python3 scripts/ops/test-private-crm-release-preflight.py
+
+      - name: Classify full app update candidate relative to published revision
+        env:
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/ops/private-crm-release-preflight.py \
+            ea5d320addaeb7ab970bdfa3931d55ddea37afac \
+            "$CANDIDATE_SHA" > "$RUNNER_TEMP/crm-private-upgrade-review.json"
+          python3 - "$RUNNER_TEMP/crm-private-upgrade-review.json" <<'PY'
+          import json,sys
+          result=json.load(open(sys.argv[1]))
+          assert result['status']=='MANUAL_REVIEW_REQUIRED'
+          assert result['deploy_approved'] is False
+          assert result['no_deploy_executed'] is True
+          assert not result['blocked']
+          assert result['runtime_review_files']
+          print('F251 PRIVATE RELEASE PREFLIGHT PASS: exact reviewable scope, no deployment or approval.')
+          print('Files in scope: '+str(result['files_changed']))
+          PY
