@@ -121,8 +121,8 @@ final class Controller
     }
     public function preferences(Request $r)
     {
-        $r->validate(['language'=>'required|in:pt,en,es','rules'=>'nullable|array|max:2','rules.*'=>'string|in:followup_qualified,followup_proposal']);
-        app(Workspace::class)->preferences($r->string('language')->toString(),$r->input('rules',[]));
+        $r->validate(['automation_version'=>'required|integer|min:0|max:19','language'=>'required|in:pt,en,es','rules'=>'nullable|array|max:2','rules.*'=>'string|in:followup_qualified,followup_proposal']);
+        app(Workspace::class)->preferences($r->string('language')->toString(),$r->input('rules',[]),$r->integer('automation_version'));
         $r->session()->put('crm.private.lang',$r->input('language'));
         return redirect('/painel?section=settings',303);
     }
