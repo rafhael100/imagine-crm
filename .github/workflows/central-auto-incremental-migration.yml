@@ -54,14 +54,14 @@ jobs:
           # Same number of constraints, different meaning: must fail closed.
           "${psql[@]}" -c "ALTER TABLE crm_private_automation_runs DROP CONSTRAINT crm_private_automation_runs_state_check; ALTER TABLE crm_private_automation_runs ADD CONSTRAINT crm_private_automation_runs_state_check CHECK(state IN ('pending','completed','cancelled','failed','unapproved'))"
           if "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-constraint.log 2>&1; then exit 1; fi
-          rg 'INCOMPATIBLE_AUTOMATION_CONSTRAINT_DEFINITIONS' /tmp/migration-constraint.log
+          grep -F 'INCOMPATIBLE_AUTOMATION_CONSTRAINT_DEFINITIONS' /tmp/migration-constraint.log
           "${psql[@]}" -c "ALTER TABLE crm_private_automation_runs DROP CONSTRAINT crm_private_automation_runs_state_check; ALTER TABLE crm_private_automation_runs ADD CONSTRAINT crm_private_automation_runs_state_check CHECK(state IN ('pending','completed','cancelled','failed'))"
           "${psql[@]}" -c 'ALTER TABLE crm_private_automation_runs ALTER COLUMN command DROP NOT NULL'
           if "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-null.log 2>&1; then exit 1; fi
-          rg 'INCOMPATIBLE_AUTOMATION_NULLABILITY' /tmp/migration-null.log
+          grep -F 'INCOMPATIBLE_AUTOMATION_NULLABILITY' /tmp/migration-null.log
           "${psql[@]}" -c 'ALTER TABLE crm_private_automation_runs ALTER COLUMN command SET NOT NULL; ALTER TABLE crm_private_automation_runs ALTER COLUMN attempts SET DEFAULT 1'
           if "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-default.log 2>&1; then exit 1; fi
-          rg 'INCOMPATIBLE_AUTOMATION_DEFAULTS' /tmp/migration-default.log
+          grep -F 'INCOMPATIBLE_AUTOMATION_DEFAULTS' /tmp/migration-default.log
           "${psql[@]}" -c 'ALTER TABLE crm_private_automation_runs ALTER COLUMN attempts SET DEFAULT 0'
           "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql
           "${psql[@]}" -c 'ALTER TABLE crm_private_automation_runs ADD COLUMN incompatible_fixture text'
