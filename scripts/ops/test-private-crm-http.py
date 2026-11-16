@@ -346,11 +346,13 @@ def main():
     scenario('automation-fill-capacity')
     a.get('/painel?section=kanban');a.post('/leads/'+final_lead,{'version':1,'stage':'qualified'})
     pending=a.get('/painel?section=automation')
-    check('pending' in pending,'capacity failure not retained for retry')
+    capacity_runs=[identity for identity,body in re.findall(r'<tr data-automation-id="([^"]+)">(.*?)</tr>',pending,re.S) if 'pending' in body]
+    check(len(capacity_runs)==1,'capacity failure not retained for retry')
     scenario('automation-free-capacity')
     time.sleep(30.2)
     a.post('/automacoes/processar',{})
-    check('TASK_TESTE_AUTO_QUALIFIED' in a.get('/painel?section=tasks'),'retry recovery task missing')
+    recovered_tasks=a.get('/painel?section=tasks')
+    check(recovered_tasks.count('data-task-id="'+capacity_runs[0]+'"')==1,'retry recovery did not create exactly the expected native task')
     # A new authenticated session cannot resurrect the revoked causal session of a scheduled run.
     a.post('/preferencias',{'automation_version':7,'delay_seconds':1,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
     a.get('/painel?section=kanban');a.post('/leads/'+final_lead,{'version':2,'stage':'proposal'})
@@ -416,18 +418,22 @@ def main():
           all(int(row[1])==0 and int(row[2])==0 for row in bPipelines),
           'F255 foreign leads or won status visible in other tenant pipeline')
     b.post('/leads/'+lead,{'version':2,'stage':'proposal'},expected=404)
+    b.post('/automacoes/'+scheduled[0]+'/cancelar',{},expected=404)
+    check(scheduled[0] not in b.get('/painel?section=automation'),'foreign native run exposed')
+    b.post('/automacoes/processar',{})
     b.post('/tarefas',{'lead':lead,'title':'TASK_TESTE_CROSS','due':'2026-12-01'},expected=404)
     print('PASS CSRF → client/admin role denial → forged tenant/role rejection → two-company isolation')
     assert_agents_no_go(a,'authenticated-client')
     assert_no_agents_impersonation_of_human(a,'/painel','client')
 
     a.get('/painel?section=kanban')
-    a.post('/leads/'+lead,{'version':2,'stage':'proposal'})
+    # Proposal was already reached by the integrated native-engine scenario above.
     a.post('/leads/'+lead,{'version':3,'stage':'won'})
     a.post('/leads/'+lead,{'version':4,'stage':'lost'},expected=422)
     other=next(identity for identity in leads(a) if identity!=lead)
-    a.post('/leads/'+other,{'version':1,'stage':'lost'})
-    a.post('/leads/'+other,{'version':2,'stage':'qualified'},expected=422)
+    other_version=int(version(a,other))
+    a.post('/leads/'+other,{'version':other_version,'stage':'lost'})
+    a.post('/leads/'+other,{'version':other_version+1,'stage':'qualified'},expected=422)
     check('TASK_TESTE_AUTO_PROPOSAL' in a.get('/painel?section=tasks'),'proposal automation missing')
     report=a.get('/painel?section=reports')
     check('data-report-methodology="imagine"' in report,
