@@ -62,3 +62,44 @@ jobs:
           END IF;
           END $$;
           SQL
+  pinned-agents-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: synthetic-ci-only
+          POSTGRES_DB: contract_lab
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 3s --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGDATABASE: contract_lab
+      PGUSER: postgres
+      PGPASSWORD: synthetic-ci-only
+      AGENTS_CONTRACT_ROOT: agents-contract
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: b408fa97b3b23df4763556e76ad854ea4e2fa5d6
+          path: agents-contract
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - name: Initialize existing pinned receiver without copying its implementation
+        run: |
+          test "$(git -C agents-contract rev-parse HEAD)" = b408fa97b3b23df4763556e76ad854ea4e2fa5d6
+          psql -v ON_ERROR_STOP=1 -f agents-contract/tools/auto_ia/pg/001_auto_ia_pg_lab.sql
+          psql -v ON_ERROR_STOP=1 -f agents-contract/tools/auto_ia/pg/002_no_ai_inbox.sql
+          psql -v ON_ERROR_STOP=1 -f agents-contract/tools/auto_ia/pg/003_signed_ingress_lab.sql
+      - name: CRM fixture versus actual Agents verifier and persistent inbox
+        run: |
+          php tools/automation/check_agents_contract.php > /tmp/crm-agents-automation.sql
+          psql -v ON_ERROR_STOP=1 -f /tmp/crm-agents-automation.sql

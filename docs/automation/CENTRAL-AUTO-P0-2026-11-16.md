@@ -44,3 +44,7 @@ Antes de instalar: inventário VPS, capacidade/portas, licença aplicável, imag
 Workflow `central-automation-p0.yml` executa PHP 8.4/PDO/PG16 com dados fictícios: condições, novo lead/atraso, cross-tenant, esquema fechado, ações sensíveis, duplicidade/hash conflitante, pausa, edição, versões, revogação, quotas, retry/backoff, duas execuções PHP concorrentes e exatamente um efeito durável. Resultados devem ser lidos na SHA efetiva; não inferir sucesso pelo arquivo de teste.
 
 Ainda não entregue: UI cliente/Portal, RBAC/MFA operacional, cancelamento individual autenticado, revisão independente, contratos bilaterais operacionalizados, scheduler/worker real, integração com tarefas reais, alertas externos e teste Portal→Sites deste recorte. Nenhuma nova URL e nenhum deploy. Próxima entrega: conectar autoridade e armazenamento nativo à jornada privada em branch própria, com formulários versionados/CSRF/RBAC, auditoria e testes HTTP; depois adaptar somente eventos técnicos aprovados à inbox existente dos Agents.
+
+### Prova bilateral adicionada
+
+O job `pinned-agents-contract` faz checkout separado da SHA Agents acima, inicializa seu receiver PostgreSQL **sem copiar/modificar a implementação** e exercita assinatura PHP, inserção idempotente, troca de tenant, alteração de payload, operação sensível/IA bloqueadas e revogação de chave seguida do replay exato. Evento testado é o `lead.ingest` já catalogado, não um disfarce para os comandos de tarefas. SQL gerado apenas entre processos do runner; não é HTTP, mTLS, serviço n8n ou autorização operacional.
