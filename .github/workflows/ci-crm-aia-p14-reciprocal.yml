@@ -1,0 +1,97 @@
+name: CRM OP01 P14 - reciprocal Agents source and PG16 RLS
+
+on:
+  push:
+    branches:
+      - dev/crm-aia-p14-reciprocal-field-contract-2026-11-16
+  pull_request:
+    branches:
+      - dev/aia-p2-op01-synthetic-lead-projection-2026-11-16
+
+permissions:
+  contents: read
+
+jobs:
+  agents-crm-projection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_crm_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d imagine_crm_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      APP_URL: http://127.0.0.1
+      AIA_OP01_P2_PG_LAB: 'true'
+      AIA_OP01_P14_PINNED_LAB: 'true'
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: '5432'
+      DB_DATABASE: imagine_crm_ci
+      DB_USERNAME: postgres
+      DB_PASSWORD: ci-only-password
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+    steps:
+      - name: Checkout CRM exactly and read-only
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Checkout pinned original Agents P12 source, separately
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: aacbfdaa9fbfd878834d3c7b46eeaf99b4b8fdd9
+          path: _agents_pinned_source
+          persist-credentials: false
+      - name: Verify repository, SHA, DB identity and absence of routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "rafhael100/imagine-crm"
+          test "$(git -C _agents_pinned_source rev-parse HEAD)" = "aacbfdaa9fbfd878834d3c7b46eeaf99b4b8fdd9"
+          test "$DB_HOST" = "127.0.0.1"
+          test "$DB_DATABASE" = "imagine_crm_ci"
+          test "$DB_USERNAME" = "postgres"
+          test -f _agents_pinned_source/src/MockBridge/MockCrmReadRequest.php
+          if grep -R -E 'Op01SyntheticLeadProjectionLab|/api/agents/op01' routes bootstrap; then
+            echo 'P14_UNAUTHORIZED_ROUTE'; exit 1
+          fi
+          test ! -e routes/api.php
+      - name: PHP 8.4 and PDO PG16
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, ctype, openssl, sodium, pdo_pgsql, pgsql
+          coverage: none
+          tools: composer
+      - name: Restore locked dependencies without executable scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer install --no-interaction --prefer-dist --no-progress --no-scripts --no-plugins
+          cp .env.example .env
+          php artisan key:generate --force --no-interaction
+      - name: Run actual request contract source + actual PG16 CRM field grants
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l tests/Feature/Op01AgentsReciprocalFieldContractTest.php
+          php -l app/Support/Agents/Op01SyntheticLeadProjectionLab.php
+          php artisan test --filter=Op01AgentsReciprocalFieldContractTest --no-ansi
+          php artisan test --filter=Op01SyntheticLeadProjectionLabTest --no-ansi
+          php artisan test --filter=Op01GatedBackendAdapterTest --no-ansi
+          echo 'P14_RECIPROCAL_CRM_AGENTS_FIELD_PARITY_PASS original_agents=sha_pinned pg16_rls=true real_lead_access=false operational_decision=NO_GO' >> "$GITHUB_STEP_SUMMARY"
