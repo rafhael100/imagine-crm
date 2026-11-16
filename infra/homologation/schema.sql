@@ -84,7 +84,7 @@ CREATE TABLE crm_private_preferences(organization_id uuid PRIMARY KEY REFERENCES
 -- Candidate CI-only extension; never apply to an existing VPS installation without migration review.
 CREATE TABLE crm_private_automation_runs(
  id uuid PRIMARY KEY, organization_id uuid NOT NULL REFERENCES crm_organizations,
- actor_id uuid NOT NULL REFERENCES crm_global_identities, authority_session_id uuid NOT NULL REFERENCES crm_auth_sessions,
+ actor_id uuid NOT NULL REFERENCES crm_global_identities, authority_session_id uuid NOT NULL, -- Verified through IAM connection; no cross-connection FK lock inversion.
  template varchar(32) NOT NULL CHECK(template IN ('followup_qualified','followup_proposal')),
  settings_version integer NOT NULL, lead_id uuid NOT NULL, lead_version bigint NOT NULL,
  execution_key varchar(64) NOT NULL, command jsonb NOT NULL,
