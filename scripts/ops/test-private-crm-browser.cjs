@@ -92,6 +92,18 @@ async function width(page) {
       check(response.status() === 200, 'Workspace navigation failed: ' + section);
       await width(page);
     }
+    phase = 'versioned-automation';
+    await page.goto(base + '/painel?section=automation');
+    const automationVersion = Number(await page.locator('[name=automation_version]').inputValue());
+    await page.locator('[name="rules[]"][value=followup_qualified]').check();
+    await Promise.all([page.waitForURL('**/painel?section=settings'), page.getByRole('button', {name:'Salvar nova versão →',exact:true}).click()]);
+    check(Number(await page.locator('[name=automation_version]').inputValue())===automationVersion+1,'Automation revision not persisted');
+    await page.setViewportSize({width:1440,height:1000});
+    await page.screenshot({path:path.join(output,'crm-automation-desktop.png'),fullPage:true});
+    for (const viewport of [320,390,768]) { await page.setViewportSize({width:viewport,height:844}); await width(page); }
+    await page.setViewportSize({width:390,height:844});
+    await page.screenshot({path:path.join(output,'crm-automation-mobile.png'),fullPage:true});
+    await page.setViewportSize({width:1440,height:1000});
     await page.goto(base + '/painel?section=kanban');
     await page.screenshot({ path: path.join(output, 'crm-client-desktop.png'), fullPage: true });
     await page.setViewportSize({ width: 390, height: 844 });
