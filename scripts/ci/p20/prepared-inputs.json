@@ -1,0 +1,42 @@
+{
+  "historical_p18_tree_not_reexecuted": "5d700f82c0a92f8b9252e9d9465010123f758954",
+  "historical_p19_run": 43927603208,
+  "n8n_dispatch": "DISABLED",
+  "operational_authorization": false,
+  "products": {
+    "agents": {
+      "commit": "94dcfeabd24f180113d2a378afe6232c67053664",
+      "sha256": {
+        "runtime/central-auto/export-integration-tree.py": "ae1bb5b2398c60f9df9fe9da402342cf4605a64288601fb6a9e4f5c6eb1ca81e",
+        "runtime/central-auto/index.php": "ce41d2e071b4d17d370a92af55dc5ed7e55ba90d8d85a6192f257f7a5a601390",
+        "runtime/central-auto/receiver-grants.sql": "467c40c7f8bc48f9dd69293c0e796ae42404c6203d7bf760709e5c540ba549c2",
+        "tools/auto_ia/central_transport/check_crosslane_merge_tree.py": "efbd8454396566383fe1696f7f35d6bd2d1249a3ed92b56e548ee10112df9482",
+        "tools/auto_ia/central_transport/rehearse_identity_merge_tree.py": "662e52298142a6b3ea46566e613b727ce56aa98d861fb9705ee302f33c1c153d"
+      }
+    },
+    "crm": {
+      "commit": "cca5055608acff8c767b888b6322df77fe966558",
+      "sha256": {
+        ".github/workflows/central-auto-p19-s2s.yml": "655ba588ec55445c28576dc32c192e3afc44e83f9792d476a97df024a8e240e7",
+        "composer.lock": "08c77fe9d787be841633dea38461bbbdc4c3edfa419ff676d8fadf7581636f5c",
+        "infra/homologation/s2s/install-candidate.sql": "c9f376ded1f1ae85876640fdf913679d0a75163883aa3f26009cfa3f8c8b5d9e",
+        "infra/homologation/s2s/outbound-candidate.sql": "185ea02c4ca1d70e6890cf76bcfc0586d2c639d02ff936c2f9266f9c8817937b",
+        "infra/homologation/schema.sql": "82f109cb2fd6475f827a2e9cc3b3491b68d40e751ee3ca75c9d879af94cb25fa",
+        "scripts/ci/s2s/run_p19.py": "beae2aeb731a791c2e36cf9e28b884dcbb8e0c19bc8cd730fff5abf9dac6f9ff",
+        "scripts/ci/s2s/send-event.php": "6dd511bf7ff09c71ea265688ed0f6c16ab93243fb16c3993d6a4f39a789c8ef4"
+      }
+    },
+    "portal": {
+      "commit": "c87f39c8c761c9a9c64d13d14bf45de889061a32",
+      "sha256": {
+        "apps/portal/app/Domain/AutomationAdministration/DatabaseAutomationAuthority.php": "ff07e41c633bc967f2cacb675904ddce5ae25c5ea238682f2bccb2c7e0b09ae2",
+        "apps/portal/composer.lock": "161cfffc9922862c8ef60a1ebcab7fd0445f309b94310a915a49436faa0eddb2",
+        "apps/portal/tests/Feature/AutomationDatabaseAuthorityTest.php": "60d8354c61b4a320cafa1d925e5b6e5a4611aca4b6a0971d3bb6946f1981ef28",
+        "apps/portal/tests/Fixtures/p20/authority-role.php": "a15f9978c7e4084c7529a69c43bda7eeef5d04254bfdd78480e96454764c5a62",
+        "apps/portal/tools/p20/DisposablePreparation.php": "4fdfd39e8362c144c30a7f822e0f7469e1473072ff01bbaa3a932a6d5d3f1c34",
+        "apps/portal/tools/p20/prepare.php": "0c6a4c1817f41ef7433809d02417d5128c96df19d51ba4cff882a1c2fa09d805"
+      }
+    }
+  },
+  "status": "PREPARED_INPUTS_ONLY_NOT_EXECUTED"
+}

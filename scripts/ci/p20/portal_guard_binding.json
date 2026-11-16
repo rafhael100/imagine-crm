@@ -1,0 +1,11 @@
+{
+  "status": "BOUND_SOURCE_VERIFIED",
+  "repository": "rafhael100/imagine-portal",
+  "commit": "c87f39c8c761c9a9c64d13d14bf45de889061a32",
+  "adapter_sha256": "71e9f3d3118f1801dcfbe82ee06ff413971400906a86a380ac8475d655a53045",
+  "guard_files_sha256": {
+    "apps/portal/tools/p20/prepare.php": "0c6a4c1817f41ef7433809d02417d5128c96df19d51ba4cff882a1c2fa09d805",
+    "apps/portal/tools/p20/DisposablePreparation.php": "4fdfd39e8362c144c30a7f822e0f7469e1473072ff01bbaa3a932a6d5d3f1c34",
+    "apps/portal/tests/Fixtures/p20/authority-role.php": "a15f9978c7e4084c7529a69c43bda7eeef5d04254bfdd78480e96454764c5a62"
+  }
+}
