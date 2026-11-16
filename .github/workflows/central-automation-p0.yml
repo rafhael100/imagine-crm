@@ -27,6 +27,9 @@ jobs:
       AUTOMATION_PG_DSN: 'pgsql:host=127.0.0.1;port=5432;dbname=automation_lab'
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
@@ -53,7 +56,7 @@ jobs:
         run: |
           php -r 'require "app/Core/Automation/RuleDefinition.php"; require "tools/automation/LabRuleStore.php"; $db=new PDO(getenv("AUTOMATION_PG_DSN"),getenv("PGUSER"),getenv("PGPASSWORD")); (new Imagine\AutomationLab\LabRuleStore($db))->publish(App\Core\Automation\RuleDefinition::fromArray(["tenant"=>"lab-race","id"=>"followup","version"=>1,"template"=>"followup_qualified","delay_seconds"=>0,"recipient"=>"operator-one"]),0,true,1800000000);'
           php tools/automation/worker.php > /tmp/automation-one & one=$!
-          php tools/automation/worker.php > /tmp/automation-two & two=$!
+          php tools/automation/worker.php operator-two > /tmp/automation-two & two=$!
           wait "$one"
           wait "$two"
           PGUSER=postgres PGPASSWORD=synthetic-ci-only psql -v ON_ERROR_STOP=1 <<'SQL'
@@ -85,6 +88,9 @@ jobs:
       AGENTS_CONTRACT_ROOT: agents-contract
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - uses: actions/checkout@v4
         with:
           repository: rafhael100/imagine-ai-agents

@@ -70,6 +70,13 @@ denied(fn()=>$other->pause('lab-alfa','followup',$now),'revoked cannot edit');
 $db->beginTransaction();$db->exec("SELECT set_config('app.automation_tenant','lab-alfa',true)");
 $db->exec("UPDATE automation_operators SET revoked=false,valid_until=1800000000 WHERE tenant='lab-alfa' AND operator_id='operator-two'");$db->commit();
 denied(fn()=>$other->enqueue('lab-alfa','followup',$otherEvent,$now),'expired operator binding');
+$cancelEvent=array_replace($event,['id'=>'event-cancel']);
+$store->enqueue('lab-alfa','followup',$cancelEvent,$now);
+$cancelKey=rule(version:3)->plan('lab-alfa',$cancelEvent,$now)['idempotency_key'];
+check(!$store->cancel('lab-beta',$cancelKey,$now),'cross tenant cancellation has no effect');
+check($store->cancel('lab-alfa',$cancelKey,$now),'cancel pending schedule');
+check(!$store->cancel('lab-alfa',$cancelKey,$now),'cancel is idempotent');
+check($store->drainOne('lab-alfa',$now)==='empty','cancel cannot be executed');
 // Quotas are server policy, never browser/plan claims.
 $store->publish(rule(template:'overdue_notice',id:'notices'),0,true,$now);
 denied(fn()=>$store->publish(rule(template:'lead_distribution',id:'distribute'),0,true,$now),'rule plan limit');

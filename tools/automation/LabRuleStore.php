@@ -101,6 +101,17 @@ final class LabRuleStore
         });
     }
 
+    public function cancel(string $tenant, string $key, int $now): bool
+    {
+        return $this->transaction($tenant,function() use($tenant,$key,$now): bool {
+            if (!$this->permitted($tenant,$this->operator,'can_manage',$now)) throw new RuntimeException('OPERATOR_DENIED');
+            $q=$this->db->prepare("UPDATE automation_executions SET state='cancelled' WHERE tenant=? AND execution_key=? AND state='pending'");
+            $q->execute([$tenant,$key]);
+            if ($q->rowCount()===0) return false;
+            $this->audit($tenant,'execution.cancelled',$key,$now);return true;
+        });
+    }
+
     /** Native durable effect fixture only, in the same transaction. No network callback or arbitrary code. */
     public function drainOne(string $tenant, int $now, bool $simulateTransientFailure=false): string
     {
