@@ -23,6 +23,17 @@ async function login(page, account, admin = false) {
   await Promise.all([page.waitForURL(admin ? '**/admin' : '**/painel'), page.locator('form[action="/mfa"] button').click()]);
   check(await page.locator('h1').isVisible(), 'Authenticated workspace missing');
 }
+async function accessibleLabels(page, screen) {
+  const invalid = await page.locator('label').evaluateAll(labels => labels
+    .filter(label => label.control === null)
+    .map(label => label.textContent.trim().slice(0, 36)));
+  check(invalid.length === 0, 'Unassociated labels in ' + screen + ': ' + invalid.join('|'));
+  const repeated = await page.locator('[id]').evaluateAll(nodes => {
+    const ids = nodes.map(node => node.id);
+    return ids.length - new Set(ids).size;
+  });
+  check(repeated === 0, 'Duplicate DOM ids in ' + screen);
+}
 async function width(page) {
   const values = await page.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
   if (values[0] > values[1]+1) console.log('PRIVATE LAYOUT WIDTH: document='+values[0]+', viewport='+values[1]+', phase='+phase);
@@ -78,6 +89,14 @@ async function width(page) {
     await page.setViewportSize({width:390,height:844});
     await page.screenshot({path:path.join(output,'crm-home-mobile.png'),fullPage:true});
     await page.setViewportSize({width:1440,height:1000});
+    for (const entry of [
+      ['/cadastro', 'signup'], ['/convite', 'invitation'],
+      ['/recuperar', 'recovery'], ['/login', 'login']
+    ]) {
+      phase = 'a11y-' + entry[1];
+      await page.goto(base + entry[0]);
+      await accessibleLabels(page, entry[1]);
+    }
     await login(page, fixtures.clientA);
     await page.goto(base + '/painel?section=leads');
     phase = 'lead-creation';
@@ -91,25 +110,58 @@ async function width(page) {
       const response = await page.goto(base + '/painel?section=' + section);
       check(response.status() === 200, 'Workspace navigation failed: ' + section);
       await width(page);
+      await accessibleLabels(page, 'client-' + section);
     }
     await page.goto(base + '/painel?section=kanban');
     await page.screenshot({ path: path.join(output, 'crm-client-desktop.png'), fullPage: true });
     await page.setViewportSize({ width: 390, height: 844 });
     phase = 'client-mobile';
+    check(await page.locator('[data-scroll-hint="kanban"]').isVisible(), 'Mobile Kanban scroll help is hidden');
+    const kanban = page.locator('.kanban[role="region"][tabindex="0"]');
+    check(await kanban.count() === 1, 'Keyboard accessible Kanban scroller absent');
+    const kb = await kanban.evaluate(el => {
+      const max = el.scrollWidth - el.clientWidth;
+      el.scrollLeft = max;
+      return {max, at: el.scrollLeft, lanes: el.querySelectorAll('section.lane').length};
+    });
+    check(kb.max > 0 && kb.at > 0 && kb.lanes === 5, 'Last Kanban columns unreachable on mobile');
+    await kanban.focus();
+    check(await kanban.evaluate(el => document.activeElement === el), 'Kanban not keyboard focusable');
     await page.screenshot({ path: path.join(output, 'crm-client-mobile.png'), fullPage: true });
     await width(page);
     const administrator = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
     const adminPage = await administrator.newPage();
     await login(adminPage, fixtures.admin, true);
     phase = 'administrator-desktop';
+    await accessibleLabels(adminPage, 'admin-pt');
     check(await adminPage.locator('[data-account-id]').count() >= 3, 'Administrator accounts missing');
     check(!(await adminPage.content()).includes(title), 'Administrator exposed tenant lead content');
     await width(adminPage);
     await adminPage.screenshot({ path: path.join(output, 'crm-admin-desktop.png'), fullPage: true });
     await adminPage.setViewportSize({ width: 390, height: 844 });
     phase = 'administrator-mobile';
+    check(await adminPage.locator('[data-scroll-hint="admin"]').isVisible(), 'Mobile admin table scroll help is hidden');
+    const adminTable = adminPage.locator('.tablewrap[role="region"][tabindex="0"]');
+    check(await adminTable.count() === 1, 'Keyboard accessible admin accounts scroller missing');
+    await adminTable.locator('form[action^="/admin/contas/"] button').first().scrollIntoViewIfNeeded();
+    check(await adminTable.locator('form[action^="/admin/contas/"] button').first().isVisible(),
+      'Account suspend/resume control inaccessible on mobile');
+    await adminTable.focus();
+    check(await adminTable.evaluate(el => document.activeElement === el), 'Admin table not keyboard focusable');
     await adminPage.screenshot({ path: path.join(output, 'crm-admin-mobile.png'), fullPage: true });
     await width(adminPage);
+    for (const [lang, heading, helper] of [
+      ['en', 'Accounts and access', 'Swipe to see all table columns and actions.'],
+      ['es', 'Cuentas y acceso', 'Deslice para ver todas las columnas y acciones de la tabla.']
+    ]) {
+      phase = 'admin-' + lang;
+      await adminPage.goto(base + '/admin?lang=' + lang);
+      check(await adminPage.getByRole('heading', {name: heading}).isVisible(), 'Admin translation not applied: ' + lang);
+      await adminPage.setViewportSize({width:390,height:844});
+      check(await adminPage.locator('[data-scroll-hint="admin"]').innerText() === helper,
+        'Mobile admin scroll hint untranslated: ' + lang);
+      await accessibleLabels(adminPage, 'admin-' + lang);
+    }
     check(failures.length === 0, 'Browser JavaScript failure');
     console.log('PRIVATE CHROMIUM PASS: ' + checks + ' assertions; desktop/mobile client and administrator.');
   } finally { await browser.close(); }
