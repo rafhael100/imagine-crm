@@ -1,0 +1,134 @@
+name: CRM F247 - unified F241-F246 private Agents security contract
+
+on:
+  pull_request:
+    branches:
+      - review/crm-private-complete-journey-2026-11-15
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-aia-f247-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  integrated-no-go:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_crm_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d imagine_crm_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      APP_URL: http://127.0.0.1
+      CRM_AIA_F248_PARITY_LAB: 'true'
+      CRM_AIA_F241_PARITY_LAB: 'true'
+      AIA_F242_PG_LAB: 'true'
+      AIA_F243_PG_LAB: 'true'
+      AIA_F245_KEYRING_LAB: 'true'
+      AIA_F246_MINPRIV_LAB: 'true'
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: '5432'
+      DB_DATABASE: imagine_crm_ci
+      DB_USERNAME: postgres
+      DB_PASSWORD: ci-only-password
+      RLS_TEST_USERNAME: crm_app_ci
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+    steps:
+      - name: Checkout exact private CRM HEAD with read only GitHub token
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Checkout Agents F240 original code at immutable reviewed SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5
+          path: _aia_f241_fixture
+          persist-credentials: false
+      - name: Checkout original F248 historical Ed25519 verifier unchanged
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba
+          path: _aia_f248_fixture
+          persist-credentials: false
+      - name: Verify every input SHA and prepare identical local fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "rafhael100/imagine-crm"
+          test "$GITHUB_EVENT_NAME" = "pull_request"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test "$(git -C _aia_f241_fixture rev-parse HEAD)" = "fbf50543e7c52e6c59c6ffec58b7f6a6d30564b5"
+          test "$(git -C _aia_f248_fixture rev-parse HEAD)" = "fe79e7e9a55e4d6728ab42c2ef578e40d9bd68ba"
+          test "$DB_HOST" = "127.0.0.1"
+          test "$DB_DATABASE" = "imagine_crm_ci"
+          cp -a _aia_f241_fixture _aia_f242_fixture
+          cp -a _aia_f241_fixture _aia_f243_fixture
+          cp -a _aia_f241_fixture _aia_f245_fixture
+          cp -a _aia_f241_fixture _aia_f246_fixture
+      - name: PHP 8.4 PostgreSQL and sodium
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, ctype, openssl, sodium, pdo_pgsql, pgsql
+          coverage: none
+          tools: composer
+      - name: Install only locked dependencies and ephemeral app key
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer install --no-interaction --prefer-dist --no-progress --no-scripts
+          cp .env.example .env
+          php artisan key:generate --force --no-interaction
+      - name: Syntax and immutable no-route guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l tests/Feature/AgentsPrivateHttpCycleTest.php
+          php -l tests/Feature/AgentsPrivatePgNonceTest.php
+          php -l tests/Feature/AgentsPrivateHttpPgCycleTest.php
+          php -l app/Support/Synthetic/AgentsSignedIngressCandidate.php
+          php -l app/Support/Synthetic/AgentsPrivatePgDiagnostic.php
+          php -l app/Support/Synthetic/AiaPgNonceCandidateLedger.php
+          php -l app/Support/Synthetic/AgentsPrivateOwnedKeyringLab.php
+          php -l app/Support/Synthetic/AgentsPrivateRestrictedKeyReaderLab.php
+          php -l tests/Feature/AgentsPrivateOwnedKeyringTest.php
+          php -l tests/Feature/AgentsPrivateRestrictedKeyReaderTest.php
+          php -l _aia_f241_fixture/src/MockBridge/MockSyntheticHttpEnvelope.php
+          php -l _aia_f241_fixture/src/MockBridge/MockSyntheticHttpDenialReceipt.php
+          if grep -R -E 'AgentsSignedIngressCandidate|AgentsPrivatePgDiagnostic|__synthetic_f24' routes bootstrap; then
+            echo 'F244_UNAUTHORIZED_APP_ROUTE'; exit 1
+          fi
+          test ! -e routes/api.php
+      - name: Run F241-F246 + original CRM tests on the same reviewed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          php artisan test --filter=AgentsPrivateIngressCandidateTest --no-ansi
+          php artisan test --filter=AgentsPrivateHttpCycleTest --no-ansi
+          php artisan test --filter=AgentsPrivatePgNonceTest --no-ansi
+          php artisan test --filter=AgentsPrivateHttpPgCycleTest --no-ansi
+          php artisan test --filter=AgentsPrivateOwnedKeyringTest --no-ansi
+          php artisan test --filter=AgentsPrivateRestrictedKeyReaderTest --no-ansi
+          php artisan test --filter=AiaPostgresAtomicNonceCandidateTest --no-ansi
+          echo 'F247_INTEGRATED_LAB_SUCCESS production_approved=false operational_decision=NO_GO' >> "$GITHUB_STEP_SUMMARY"
