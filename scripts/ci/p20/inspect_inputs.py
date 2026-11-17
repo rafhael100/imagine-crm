@@ -7,21 +7,24 @@ import subprocess
 from pathlib import Path
 
 PINS = {
-    'crm': '1bf4a80afb4e40f3a03deebab9009f9375b03948',
+    'crm': '91f2236a33f38ae0a4c95f835b248c1caac1ffe1',
     'portal': 'c87f39c8c761c9a9c64d13d14bf45de889061a32',
-    'agents': '94dcfeabd24f180113d2a378afe6232c67053664',
+    'agents': '8041c022776bbc1f998224a880726a8a3e69db37',
 }
 FILES = {
     'crm': ['.github/workflows/central-auto-p19-s2s.yml', 'scripts/ci/s2s/run_p19.py',
             'scripts/ci/s2s/send-event.php', 'infra/homologation/schema.sql',
             'infra/homologation/s2s/install-candidate.sql', 'infra/homologation/s2s/outbound-candidate.sql', 'composer.lock',
             'app/Homologation/S2S/StateReceiver.php', 'app/Homologation/S2S/AgentsEventAdapter.php',
-            'app/Homologation/S2S/StrictJson.php', 'app/Homologation/S2S/AgentsAcknowledgement.php'],
+            'app/Homologation/S2S/StrictJson.php', 'app/Homologation/S2S/AgentsAcknowledgement.php',
+            'app/Homologation/S2S/AgentsReceipt.php', 'app/Homologation/S2S/AgentsReceiptReconciler.php',
+            'scripts/ci/s2s/run_p22.py'],
     'portal': ['apps/portal/composer.lock', 'apps/portal/tools/p20/prepare.php', 'apps/portal/tools/p20/DisposablePreparation.php', 'apps/portal/tests/Fixtures/p20/authority-role.php',
                'apps/portal/tests/Feature/AutomationDatabaseAuthorityTest.php',
                'apps/portal/app/Domain/AutomationAdministration/DatabaseAutomationAuthority.php'],
     'agents': ['runtime/central-auto/export-integration-tree.py', 'runtime/central-auto/index.php',
-               'runtime/central-auto/receiver-grants.sql',
+               'runtime/central-auto/receiver-grants.sql', 'runtime/central-auto/event-status.php',
+               'runtime/central-auto/receipt-status.sql', 'runtime/central-auto/nginx.conf', 'runtime/central-auto/Dockerfile',
                'tools/auto_ia/central_transport/rehearse_identity_merge_tree.py',
                'tools/auto_ia/central_transport/check_crosslane_merge_tree.py'],
 }

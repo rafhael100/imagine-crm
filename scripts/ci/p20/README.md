@@ -1,6 +1,12 @@
 # Preparação P20 integrada — 16/11/2026
 
-## Continuidade P21 — 17/11/2026
+## Continuidade P22 — 17/11/2026
+
+O inventário atual fixa o CRM no commit de implementação `91f2236a33f38ae0a4c95f835b248c1caac1ffe1` e o Agents no contrato de recibo #461, `8041c022776bbc1f998224a880726a8a3e69db37`. O Portal permanece em `c87f39c8c761c9a9c64d13d14bf45de889061a32`. São comparados também os dois consumidores PHP novos, o overlay P22 e os arquivos do endpoint de recibo Agents; os pins são registrados após o commit de implementação para evitar referência circular.
+
+O ensaio P20 continua verificando autoridade nominal persistente do Portal e entrega/ACK/repetição. A recuperação de recibo expirado tem seu próprio ensaio P22 com a mesma dependência Agents. O harness original P19, os guards de destino e o contrato de autoridade P20 são preservados. Resultados efetivos desta candidata: consultar a PR e os checks da SHA concreta. Ver [CENTRAL-AUTO-P22](../../../docs/automation/CENTRAL-AUTO-P22.md).
+
+## Registro histórico da continuidade P21 — 17/11/2026
 
 O registro de preparação abaixo é histórico. O ensaio P20 foi posteriormente
 executado com sucesso na [PR CRM #637](https://github.com/rafhael100/imagine-crm/pull/637),
