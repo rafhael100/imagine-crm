@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## CENTRAL-AUTO-P21 — continuação funcional S2S em revisão (17/11/2026)
+
+Retomada da [PR #637](https://github.com/rafhael100/imagine-crm/pull/637), HEAD `4d6ccd842b9b9ee6adfbe317736ca94e4d5b7980`, após a comunicação privada Portal → CRM → Agents comprovada em CI. O histórico OPS-70 e anteriores abaixo não descreve o estado mais recente das candidatas #632–#637; consultar a [issue #557](https://github.com/rafhael100/imagine-crm/issues/557) e as HEADs atuais.
+
+A candidata P21 corrige a repetição de evento já confirmado após expirar a janela de transporte e recusa JSON com campos repetidos no receiver e no ACK. Mantém concessão/tenant/origem válidos, confirmação assinada e pendentes expirados bloqueados. Código, critérios e limites: [CENTRAL-AUTO-P21](docs/automation/CENTRAL-AUTO-P21.md). A PR de continuação registra SHA final e resultados efetivos; esta nota não declara CI concluída antecipadamente.
+
+**DRAFT / NO-MERGE / NO-DEPLOY.** Testes somente com identidades e eventos sintéticos. A alteração SQL pertence ao laboratório descartável; não é migration operacional. A homologação #617 continua condicionada a revisão SEG/OPS humana e aceite privado; nenhum acesso à VPS ou liberação comercial foi inferido. A recuperação bilateral de evento pendente sem ACK depois da expiração segue aberta.
+
 ## OPS-70 — staging comprovado em CI descartável; VPS ainda NO-GO (14/11/2026)
 
 **Base DEV antes deste dossiê:** `3a723ae74b21a4b499c41dc9e132ae7f343d4508`; `main` preservada em `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012`. A PR [#517](https://github.com/rafhael100/imagine-crm/pull/517) permanece **DRAFT / NO-MERGE / NO-DEPLOY**. F3-267/268/269/270 passaram em contêineres reais *somente no GitHub*: imagens PHP/Nginx, /up HTTP 200 em loopback, FPM isolado sem rota padrão, serviço web limitado a 127.0.0.1 e transições de saúde `healthy → unhealthy → healthy` após suspensão/retomada do FPM. **6/6 workflows success** na HEAD F3-270 [`9c249dbf`](https://github.com/rafhael100/imagine-crm/actions/runs/43546705237). A F3-271 produziu inventário sanitizado de dependências e hashes em [Actions #43547265544](https://github.com/rafhael100/imagine-crm/actions/runs/43547265544) com **6/6 CI verdes** na SHA `240a01c5258616c9eb491604b3836a49e7858058`; [artifact #14094049896](https://github.com/rafhael100/imagine-crm/actions/runs/43547265544/artifacts/14094049896), expira em 21/11/2026.

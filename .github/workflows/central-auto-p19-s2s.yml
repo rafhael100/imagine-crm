@@ -1,4 +1,4 @@
-name: CENTRAL AUTO P19 real Laravel private service read
+name: CENTRAL AUTO P21 private service integrity and durable confirmations
 on:
   pull_request:
     paths: ['app/Homologation/S2S/**', 'bootstrap/app.php', 'infra/homologation/s2s/**', 'scripts/ci/s2s/**', '.github/workflows/central-auto-p19-s2s.yml']
@@ -8,9 +8,34 @@ concurrency:
   group: central-auto-p19-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  strict-messages:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - name: Lint and exercise the actual JSON and acknowledgement validators
+        run: |
+          set -euo pipefail
+          for file in app/Homologation/S2S/*.php scripts/ci/s2s/*.php; do php -l "$file"; done
+          php scripts/ci/s2s/test-strict-json.php
+          php scripts/ci/s2s/test-agents-ack.php
+      - name: Verify the pinned laboratory overlay and execution boundary
+        run: python3 -m unittest discover -s scripts/ci/s2s -p 'test_*.py' -v
   real-products-mtls:
+    needs: strict-messages
+    if: github.event.repository.private == false
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    env:
+      CRM_P21_REPOSITORY_PUBLIC: 'true'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -33,5 +58,5 @@ jobs:
         working-directory: pinned-agents
         run: |
           python3 runtime/central-auto/export-integration-tree.py
-      - name: Real separate Laravel applications and private PostgreSQL TLS verify-full
-        run: sudo -E python3 scripts/ci/s2s/run_p19.py "$GITHUB_WORKSPACE/pinned-portal" "$RUNNER_TEMP/central-auto-p18b-merged"
+      - name: Real separate products, ambiguous JSON rejection and expired receipt replay
+        run: sudo -E python3 scripts/ci/s2s/run_p21.py "$GITHUB_WORKSPACE/pinned-portal" "$RUNNER_TEMP/central-auto-p18b-merged"

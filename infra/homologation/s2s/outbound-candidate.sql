@@ -31,7 +31,15 @@ BEGIN
  VALUES(company,event,g.tenant_ref,'SYNTHETIC_'||upper(replace(gen_random_uuid()::text,'-','')),'SYNTHETIC_'||upper(replace(gen_random_uuid()::text,'-','')),
  jsonb_build_object('schema','CRM_LEAD_EVENT_V1','action','lead.created','company_id',company,'event_id',event,'lead_id',e.object_id)::text,n,n+120) ON CONFLICT DO NOTHING;
  SELECT * INTO o FROM crm_auto_service.outbox WHERE company_id=company AND event_id=event FOR UPDATE;
- IF o.tenant_ref<>g.tenant_ref OR o.expires_at<=n THEN RAISE EXCEPTION 'OUTBOX_SCOPE_OR_WINDOW_DENIED'; END IF;
+ IF o.tenant_ref<>g.tenant_ref THEN RAISE EXCEPTION 'OUTBOX_SCOPE_OR_WINDOW_DENIED'; END IF;
+ -- A verified receipt is durable. Its original transport window only limits pending sends.
+ -- Current source grant, event and tenant checks above still apply to accepted replays.
+ IF o.state='accepted' THEN
+  IF o.ack_hash IS NULL OR o.ack_hash !~ '^[a-f0-9]{64}$' THEN RAISE EXCEPTION 'OUTBOX_RECEIPT_DENIED'; END IF;
+ ELSIF o.expires_at<=n THEN
+  -- A missing ACK does not prove non-delivery: never renew the envelope automatically.
+  RAISE EXCEPTION 'OUTBOX_SCOPE_OR_WINDOW_DENIED';
+ END IF;
  RETURN to_jsonb(o);
 END $$;
 CREATE FUNCTION crm_auto_service.ack_outbound(company uuid,event uuid,ack text) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,public AS $$

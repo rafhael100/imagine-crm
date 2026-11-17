@@ -7,14 +7,16 @@ import subprocess
 from pathlib import Path
 
 PINS = {
-    'crm': 'cca5055608acff8c767b888b6322df77fe966558',
+    'crm': '1bf4a80afb4e40f3a03deebab9009f9375b03948',
     'portal': 'c87f39c8c761c9a9c64d13d14bf45de889061a32',
     'agents': '94dcfeabd24f180113d2a378afe6232c67053664',
 }
 FILES = {
     'crm': ['.github/workflows/central-auto-p19-s2s.yml', 'scripts/ci/s2s/run_p19.py',
             'scripts/ci/s2s/send-event.php', 'infra/homologation/schema.sql',
-            'infra/homologation/s2s/install-candidate.sql', 'infra/homologation/s2s/outbound-candidate.sql', 'composer.lock'],
+            'infra/homologation/s2s/install-candidate.sql', 'infra/homologation/s2s/outbound-candidate.sql', 'composer.lock',
+            'app/Homologation/S2S/StateReceiver.php', 'app/Homologation/S2S/AgentsEventAdapter.php',
+            'app/Homologation/S2S/StrictJson.php', 'app/Homologation/S2S/AgentsAcknowledgement.php'],
     'portal': ['apps/portal/composer.lock', 'apps/portal/tools/p20/prepare.php', 'apps/portal/tools/p20/DisposablePreparation.php', 'apps/portal/tests/Fixtures/p20/authority-role.php',
                'apps/portal/tests/Feature/AutomationDatabaseAuthorityTest.php',
                'apps/portal/app/Domain/AutomationAdministration/DatabaseAutomationAuthority.php'],
