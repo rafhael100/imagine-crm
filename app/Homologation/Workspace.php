@@ -126,12 +126,19 @@ final readonly class Workspace
             $row=(clone $query)->lockForUpdate()->first();
             abort_unless($row,404);
             abort_unless((int)$row->version===$version,409,'Registro atualizado em outra aba. Recarregue.');
-            $values=['version'=>$version+1];
-            if (isset($input['title'])) $values['title']=self::label($input['title'],'LEAD_TESTE_');
+            $values=[];
+            if (isset($input['title'])) {
+                $title=self::label($input['title'],'LEAD_TESTE_');
+                if ($title!==$row->title) $values['title']=$title;
+            }
             if (isset($input['stage'])) {
                 abort_unless(in_array($input['stage'],self::NEXT[$row->stage]??[],true),422,'Transição de etapa inválida.');
                 $values['stage']=$input['stage'];
             }
+            // Saving unchanged fields must not invalidate a scheduled follow-up.
+            // Authorization, row lock, stale-version and field checks still run.
+            if ($values===[]) return;
+            $values['version']=$version+1;
             $query->update($values);
             $this->event($account,$principal,$id,isset($values['stage'])?'lead.moved':'lead.updated');
             if (isset($values['stage']) && in_array($values['stage'],['qualified','proposal'],true)) {

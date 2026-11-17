@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — preservar follow-up ao salvar sem alterações (17/11/2026)
+
+A [PR #638](https://github.com/rafhael100/imagine-crm/pull/638), HEAD `33e80b87f1969aa9790b72b9053f9f7496b1bd3f`, concluiu **3/3 jobs success**: [P21](https://github.com/rafhael100/imagine-crm/actions/runs/44189295838) e [P20](https://github.com/rafhael100/imagine-crm/actions/runs/44189295917). Foram executadas 67 verificações JSON, 49 ACK, 3 testes Python P21, 8 casos HTTP/mTLS e as provas de repetição aceita expirada/recusas/restore; o ensaio nominal P20 também foi preservado. Essa evidência é de CI sintético, sem homologação operacional.
+
+O recorte seguinte corrige `Workspace::updateLead`: salvar o mesmo título não incrementa versão nem invalida o acompanhamento agendado. Autorização, lock, versão antiga (409), campos e transições (422) continuam verificados antes do retorno. A regressão está na jornada HTTP existente e mantém prova de edição real, efeito exato e deduplicação. [Detalhes e critérios](docs/automation/CRM-NATIVE-FOLLOWUP-NOOP.md); resultado efetivo da nova SHA registrado na PR de continuação, sem sucesso antecipado.
+
+Ambas candidatas permanecem **DRAFT / NO-MERGE / NO-DEPLOY**. A etapa funcional seguinte deve preservar integração e observar os gates da #617/#557; nenhuma revisão humana, liberação comercial ou ação na VPS foi presumida.
+
 ## CENTRAL-AUTO-P21 — continuação funcional S2S em revisão (17/11/2026)
 
 Retomada da [PR #637](https://github.com/rafhael100/imagine-crm/pull/637), HEAD `4d6ccd842b9b9ee6adfbe317736ca94e4d5b7980`, após a comunicação privada Portal → CRM → Agents comprovada em CI. O histórico OPS-70 e anteriores abaixo não descreve o estado mais recente das candidatas #632–#637; consultar a [issue #557](https://github.com/rafhael100/imagine-crm/issues/557) e as HEADs atuais.
