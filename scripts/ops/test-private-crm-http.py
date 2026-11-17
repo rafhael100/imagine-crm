@@ -337,16 +337,41 @@ def main():
     check(len(leads(a))==3,'CSV import not persisted')
     # UI configuration is interpreted by the native planner and persisted as a durable run.
     a.get('/painel?section=automation')
-    a.post('/preferencias',{'automation_version':3,'delay_seconds':1,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
+    a.post('/preferencias',{'automation_version':3,'delay_seconds':3,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
     a.get('/painel?section=kanban');a.post('/leads/'+lead,{'version':2,'stage':'proposal'})
     page=a.get('/painel?section=automation')
-    check('pending' in page,'scheduled native run missing')
-    time.sleep(1.1)
+    proposal_runs=[identity for identity,body in re.findall(r'<tr data-automation-id="([^"]+)">(.*?)</tr>',page,re.S)
+                   if 'data-automation-state="pending"' in body]
+    check(len(proposal_runs)==1,'scheduled native run missing or ambiguous')
+    proposal_run=proposal_runs[0]
+    lead_ref=str(uuid.UUID(lead))
+    audit_query="SELECT count(*) FROM public.crm_private_events WHERE object_id='"+lead_ref+"'"
+    lead_audit_before=owner_sql(audit_query)
+    # The ordinary title form submits its current value even without edits.
+    # This must preserve the causal lead version and its scheduled native run.
+    a.get('/painel?section=leads')
+    a.post('/leads/'+lead,{'version':3,'title':title})
+    a.post('/leads/'+lead,{'version':3,'title':title})
+    a.post('/leads/'+lead,{'version':2,'title':title},expected=409)
+    a.post('/leads/'+lead,{'version':3,'title':title,'stage':'proposal'},expected=422)
+    check(version(a,lead)=='3','unchanged save or rejected command mutated lead version')
+    check(owner_sql(audit_query)==lead_audit_before,'unchanged save or rejected command wrote a lead event')
+    after_save=a.get('/painel?section=automation')
+    preserved_runs=[identity for identity,body in re.findall(r'<tr data-automation-id="([^"]+)">(.*?)</tr>',after_save,re.S)
+                    if 'data-automation-state="pending"' in body]
+    check(preserved_runs==proposal_runs,'unchanged title save changed the scheduled native run')
+    time.sleep(3.1)
     a.post('/automacoes/processar',{})
-    check('TASK_TESTE_AUTO_PROPOSAL' in a.get('/painel?section=tasks'),'native scheduled effect missing')
-    before_tasks=len(re.findall(r'data-task-id=',a.get('/painel?section=tasks')))
+    proposal_tasks=a.get('/painel?section=tasks')
+    check('TASK_TESTE_AUTO_PROPOSAL' in proposal_tasks,'native scheduled effect missing')
+    check(proposal_tasks.count('data-task-id="'+proposal_run+'"')==1,
+          'unchanged save prevented the exact scheduled task or produced a duplicate')
+    check(owner_sql("SELECT state FROM public.crm_private_automation_runs WHERE id='"+str(uuid.UUID(proposal_run))+"'")=='completed',
+          'scheduled run did not complete after unchanged save')
+    before_tasks=len(re.findall(r'data-task-id=',proposal_tasks))
     a.post('/automacoes/processar',{})
     check(len(re.findall(r'data-task-id=',a.get('/painel?section=tasks')))==before_tasks,'duplicate native effect')
+    print('PASS unchanged lead save preserves version/audit/schedule → exact native task once; stale and invalid transitions denied')
     a.post('/preferencias',{'automation_version':4,'delay_seconds':3600,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
     other=[value for value in leads(a) if value!=lead][0]
     a.get('/painel?section=kanban');a.post('/leads/'+other,{'version':1,'stage':'qualified'})
@@ -505,6 +530,17 @@ def main():
     upload_csv(a,'title,stage,value_cents\nLEAD_TESTE_ATOMIC,new,1\n=INVALID,new,1\n')
     check(len(leads(a))==before_import*2,'invalid CSV partially committed')
     print('PASS exported CSV round trip preserves stages → invalid-row import is atomic')
+
+    # A real title edit retains its original versioning and audit semantics.
+    edited_title='LEAD_TESTE_EDITED_'+suffix.upper()
+    prior_version=int(version(a,lead))
+    prior_audit=int(owner_sql(audit_query))
+    a.post('/leads/'+lead,{'version':prior_version,'title':edited_title})
+    check(int(version(a,lead))==prior_version+1,'real title edit did not advance version once')
+    check(owner_sql("SELECT title FROM public.crm_private_leads WHERE id='"+lead_ref+"'")==edited_title,
+          'real title edit was discarded as unchanged')
+    check(int(owner_sql(audit_query))==prior_audit+1,'real title edit did not append exactly one event')
+    print('PASS real lead title change persists with one version and one audit event')
 
     a.get('/painel?section=billing')
     for state in ['approved','refused','cancelled']:
