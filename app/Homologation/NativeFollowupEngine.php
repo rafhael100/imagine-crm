@@ -3,6 +3,7 @@
 declare(strict_types=1);
 namespace App\Homologation;
 use App\Core\Automation\RuleDefinition;
+use App\Core\Identity\DatabaseSessionAuthority;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Str;
 
@@ -54,13 +55,19 @@ final readonly class NativeFollowupEngine
   }
  }
  public function process(AutomationSettings $settings):void {
+  $authority=app(DatabaseSessionAuthority::class);
+  if($authority->db!==$this->iam)throw new \LogicException('Causal authority must use the verified IAM connection');
   $now=time();
   $rows=$this->runs()->where('actor_id',$this->actor)->where('state','pending')->where('due_at','<=',$now)->orderBy('due_at')->orderBy('id')->limit(20)->lockForUpdate()->get();
   foreach($rows as $row){
    $source=$this->iam->table('public.crm_auth_sessions')->where('id',$row->authority_session_id)->where('identity_id',$this->actor)->lockForUpdate()->first();
+   // A lock wait cannot preserve an earlier expiry decision. The native task
+   // is never the IAM operation allowed to work through its own security hold.
+   $now=time();
    $lead=$this->db->table('public.crm_private_leads')->where('organization_id',$this->tenant)->where('id',$row->lead_id)->first();
    $command=json_decode($row->command,true,32,JSON_THROW_ON_ERROR);
-   $active=$source && $source->state==='active' && (int)$source->expires_at>$now && (int)$source->absolute_expires_at>$now
+   $active=$source && $source->security_hold===null && $authority->usable($source)
+    && $source->state==='active' && (int)$source->expires_at>$now && (int)$source->absolute_expires_at>$now
     && $row->actor_id===$this->actor && (int)$row->settings_version===$settings->version && in_array($row->template,$settings->rules,true)
     && $lead && $lead->stage===substr($row->template,9) && (int)$lead->version===(int)$row->lead_version
     && ($command['tenant']??null)==='t-'.$this->tenant && ($command['recipient']??null)==='p-'.$this->actor

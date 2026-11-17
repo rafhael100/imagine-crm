@@ -70,6 +70,72 @@ if (in_array($mode,['automation-deny-enqueue','automation-restore-enqueue'],true
         $db->exec('GRANT INSERT ON public.crm_private_automation_runs TO crm_homologation_app');
         if ($db->query($probe)->fetchColumn()!=='yes') throw new RuntimeException('Enqueue fixture restoration failed.');
     }
+} elseif (in_array($mode,['automation-deny-causal-logout','automation-restore-causal-logout'],true)) {
+    // This scoped fault makes the existing IAM runner persist its real hold.
+    // It never inserts a hold/operation or changes a session into an accepted state.
+    $gate='/private/native-causal-session-ci.json';
+    if (getenv('CRM_PRIVATE_CI_CAUSAL_SESSION_PROFILE')!=='native-causal-session-hold-v1'
+        || getenv('CRM_PRIVATE_CI_PROJECT')!=='imagine-crm-journey-ci'
+        || !app()->environment('staging') || !is_file($gate) || is_link($gate)
+        || (fileperms($gate)&0077)!==0) throw new RuntimeException('Disposable causal session profile required.');
+    $marker=json_decode(file_get_contents($gate),true,8,JSON_THROW_ON_ERROR);
+    if (!is_array($marker) || ($marker['profile']??null)!=='native-causal-session-hold-v1'
+        || ($marker['project']??null)!=='imagine-crm-journey-ci'
+        || !is_int($marker['created_at']??null)) throw new RuntimeException('Invalid causal session marker.');
+    foreach (['probe','actor','company','run','source'] as $field) {
+        if (!is_string($marker[$field]??null) || !preg_match('/\A[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\z/D',$marker[$field])) {
+            throw new RuntimeException('Invalid causal session fixture reference.');
+        }
+    }
+    if ($marker['actor']!==($records['clientB']['identity']??null)
+        || $marker['company']!==($records['clientB']['organization']??null)) {
+        throw new RuntimeException('Causal session fixture must belong to the protected client B.');
+    }
+    $tag='native-causal-session-hold-v1:'.$marker['probe'];
+    $db->beginTransaction();
+    try {
+        $function=$db->query("SELECT p.oid,obj_description(p.oid,'pg_proc') AS marker
+            FROM pg_proc p WHERE p.oid=to_regprocedure('public.crm_private_ci_causal_state_denial()')")->fetch(PDO::FETCH_ASSOC);
+        $trigger=$db->query("SELECT t.oid,obj_description(t.oid,'pg_trigger') AS marker FROM pg_trigger t
+            WHERE t.tgrelid='public.crm_auth_sessions'::regclass AND t.tgname='crm_private_ci_causal_state_denial'")->fetch(PDO::FETCH_ASSOC);
+        if ($mode==='automation-deny-causal-logout') {
+            if (abs(time()-$marker['created_at'])>300 || $function || $trigger) {
+                throw new RuntimeException('Unexpected causal session fault baseline.');
+            }
+            $stmt=$db->prepare("SELECT r.state AS run_state,r.due_at,s.state,s.security_hold,s.expires_at,s.absolute_expires_at,
+                CASE WHEN EXISTS(SELECT 1 FROM public.crm_auth_operations o WHERE o.id=s.operation_id AND o.state='completed')
+                    THEN 'yes' ELSE 'no' END AS origin_completed
+                FROM public.crm_private_automation_runs r JOIN public.crm_auth_sessions s
+                    ON s.id=r.authority_session_id AND s.identity_id=r.actor_id
+                WHERE r.id=?::uuid AND r.actor_id=?::uuid AND r.organization_id=?::uuid AND s.id=?::uuid FOR UPDATE OF r,s");
+            $stmt->execute([$marker['run'],$marker['actor'],$marker['company'],$marker['source']]);
+            $source=$stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$source || $source['run_state']!=='pending' || (int)$source['due_at']<=time()
+                || $source['state']!=='active' || $source['security_hold']!==null
+                || (int)$source['expires_at']<=time() || (int)$source['absolute_expires_at']<=time()
+                || $source['origin_completed']!=='yes') throw new RuntimeException('Usable causal session and future run required.');
+            $db->exec("CREATE FUNCTION public.crm_private_ci_causal_state_denial() RETURNS trigger LANGUAGE plpgsql AS \$fault\$
+                BEGIN RAISE EXCEPTION USING ERRCODE='42501',MESSAGE='SYNTHETIC_CAUSAL_SESSION_STATE_DENIED'; END; \$fault\$");
+            $db->exec("REVOKE ALL ON FUNCTION public.crm_private_ci_causal_state_denial() FROM PUBLIC");
+            $db->exec("CREATE TRIGGER crm_private_ci_causal_state_denial BEFORE UPDATE OF state ON public.crm_auth_sessions
+                FOR EACH ROW WHEN (OLD.id=".$db->quote($marker['source'])."::uuid AND OLD.identity_id=".$db->quote($marker['actor'])."::uuid
+                    AND OLD.state IS DISTINCT FROM NEW.state) EXECUTE FUNCTION public.crm_private_ci_causal_state_denial()");
+            $db->exec("COMMENT ON FUNCTION public.crm_private_ci_causal_state_denial() IS ".$db->quote($tag));
+            $db->exec("COMMENT ON TRIGGER crm_private_ci_causal_state_denial ON public.crm_auth_sessions IS ".$db->quote($tag));
+        } else {
+            // Drop only this probe's temporary objects, including after assertion failure.
+            // The real prepared operation and unresolved hold remain as denial evidence.
+            foreach ([$function,$trigger] as $object) {
+                if ($object && $object['marker']!==$tag) throw new RuntimeException('Causal fault ownership mismatch.');
+            }
+            $db->exec('DROP TRIGGER IF EXISTS crm_private_ci_causal_state_denial ON public.crm_auth_sessions');
+            $db->exec('DROP FUNCTION IF EXISTS public.crm_private_ci_causal_state_denial()');
+        }
+        $db->commit();
+    } catch (Throwable $error) {
+        if ($db->inTransaction()) $db->rollBack();
+        throw $error;
+    }
 } elseif (in_array($mode,['automation-fill-capacity','automation-free-capacity'],true)) {
     $scope=$db->query('SELECT organization_id,lead_id FROM crm_private_automation_runs ORDER BY created_at DESC,id LIMIT 1')->fetch(PDO::FETCH_ASSOC);
     if(!$scope)throw new RuntimeException('Native run fixture required');
