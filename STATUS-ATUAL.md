@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — autoridade da sessão causal (17/11/2026)
+
+A [PR #645](https://github.com/rafhael100/imagine-crm/pull/645), HEAD `62e119d3cbc0936b3ecb7ae6360742a543c9d3b9`, passou no [ensaio dedicado de backup 44202645832](https://github.com/rafhael100/imagine-crm/actions/runs/44202645832): base/S2S com snapshot consistente, divergência antiga reproduzida, INSERT/UPDATE concorrentes preservados, cleanup normal e em falhas, dois timeouts reais do cliente e sessão sentinela alheia preservada. Nenhum ajuste foi necessário depois da publicação.
+
+A próxima candidata impede que outra sessão válida do mesmo usuário execute um acompanhamento cuja sessão de origem esteja com bloqueio de segurança não resolvido. O motor reaproveita o contrato IAM existente, exige ausência de hold, verifica a operação de origem e atualiza o relógio depois do lock. Não altera política de recuperação nem libera sessões.
+
+A regressão causa uma falha real de logout e de compensação em uma sessão sintética específica. Exige o hold, a operação prepared e a auditoria attempted produzidos pelo próprio IAM, remove somente o trigger temporário e prova cancelamento sem tarefa; a segunda sessão conclui seu comando exatamente uma vez. [Contrato, restrições e prova](docs/automation/CRM-NATIVE-CAUSAL-SESSION-HOLD.md). Código revisado; execução efetiva fica registrada na PR/HEAD candidata. DRAFT / NO-MERGE / NO-DEPLOY.
+
 ## Continuidade — snapshot único para backup concorrente (17/11/2026)
 
 A [PR #644](https://github.com/rafhael100/imagine-crm/pull/644), HEAD `894eb57fb60ad0f44dcd1bbfbaaaef1e929c86f0`, concluiu os dois jobs da [CI 44201222884](https://github.com/rafhael100/imagine-crm/actions/runs/44201222884), com 1.442 verificações HTTP, 121 assertions Chromium, 177 de resiliência e 49 de acesso. A navegação real preservou a seção e os valores do formulário nos três idiomas; capturas em inglês desktop e espanhol mobile foram inspecionadas sem defeito concreto identificado. Isso não equivale a aceite visual humano.

@@ -52,6 +52,12 @@ def scenario(name):
               'explicit CI enqueue fault opt-in required')
         command+=['-e','CRM_PRIVATE_CI_PROJECT='+project,
                   '-e','CRM_PRIVATE_CI_FAULT_PROFILE=native-followup-enqueue-v1']
+    if name in ('automation-deny-causal-logout','automation-restore-causal-logout'):
+        check(project=='imagine-crm-journey-ci','causal session fault requires exact disposable CI project')
+        check(os.environ.get('CRM_PRIVATE_CI_CAUSAL_SESSION_PROFILE')=='native-causal-session-hold-v1',
+              'explicit CI causal session fault opt-in required')
+        command+=['-e','CRM_PRIVATE_CI_PROJECT='+project,
+                  '-e','CRM_PRIVATE_CI_CAUSAL_SESSION_PROFILE=native-causal-session-hold-v1']
     command+=['tools','scripts/ops/seed-private-crm-fixtures.php',name]
     result=subprocess.run(command,capture_output=True,text=True)
     check(result.returncode==0,'private fixture operation failed: '+name)
@@ -122,6 +128,33 @@ def denied_native_enqueue():
         scenario('automation-restore-enqueue')
         # Keep the witness if restoration failed, so failure is not hidden and
         # the closed CI tools can retry cleanup before the stack is destroyed.
+        marker.unlink(missing_ok=True)
+
+
+@contextmanager
+def denied_causal_logout(run):
+    """Cause a real IAM hold; restore only this probe's temporary SQL objects."""
+    check(os.environ.get('CRM_PRIVATE_PROJECT')=='imagine-crm-journey-ci'
+          and os.environ.get('CRM_PRIVATE_CI_CAUSAL_SESSION_PROFILE')=='native-causal-session-hold-v1',
+          'disposable causal session fault context required')
+    marker=VAULT.parent/'native-causal-session-ci.json'
+    descriptor=os.open(marker,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+    with os.fdopen(descriptor,'w') as stream:
+        json.dump({'profile':'native-causal-session-hold-v1','project':'imagine-crm-journey-ci',
+                   'created_at':int(time.time()),'probe':str(uuid.uuid4()),
+                   'actor':str(uuid.UUID(FIXTURES['clientB']['identity'])),
+                   'company':str(uuid.UUID(FIXTURES['clientB']['organization'])),
+                   'run':str(uuid.UUID(run['id'])),
+                   'source':str(uuid.UUID(run['authority_session_id']))},stream)
+    try:
+        scenario('automation-deny-causal-logout')
+        yield
+    finally:
+        scenario('automation-restore-causal-logout')
+        check(owner_sql("SELECT to_regprocedure('public.crm_private_ci_causal_state_denial()') IS NULL "
+                        "AND NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.crm_auth_sessions'::regclass "
+                        "AND tgname='crm_private_ci_causal_state_denial')")=='t',
+              'temporary causal fault objects were not removed')
         marker.unlink(missing_ok=True)
 
 
@@ -224,6 +257,117 @@ def assert_native_superseded(client,peer_company,suffix):
     check(snapshot(peer_company)==peer_before,'supersession crossed the company boundary')
     print('PASS future follow-up supersession: stage/title/terminal changes cancel only stale pending commands; completed tasks preserved')
     print('PASS denied replacement INSERT rolls back lead/run/events/tasks; restored request queues exactly one current-session replacement')
+
+
+def assert_native_causal_session(source_client,peer_company,suffix):
+    """An independent valid session cannot execute a command from held authority."""
+    company=str(uuid.UUID(FIXTURES['clientB']['organization']))
+    actor=str(uuid.UUID(FIXTURES['clientB']['identity']))
+    peer_company=str(uuid.UUID(peer_company))
+    rules=['followup_qualified','followup_proposal']
+
+    def snapshot(tenant):
+        return json.loads(owner_sql("SELECT jsonb_build_object("
+            "'preferences',(SELECT to_jsonb(p) FROM public.crm_private_preferences p WHERE organization_id='"+tenant+"'),"
+            "'leads',(SELECT coalesce(jsonb_agg(to_jsonb(l) ORDER BY l.id),'[]'::jsonb) FROM public.crm_private_leads l WHERE organization_id='"+tenant+"'),"
+            "'runs',(SELECT coalesce(jsonb_agg(to_jsonb(r) ORDER BY r.id),'[]'::jsonb) FROM public.crm_private_automation_runs r WHERE organization_id='"+tenant+"'),"
+            "'events',(SELECT coalesce(jsonb_agg(to_jsonb(e) ORDER BY e.id),'[]'::jsonb) FROM public.crm_private_events e WHERE organization_id='"+tenant+"'),"
+            "'tasks',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY t.id),'[]'::jsonb) FROM public.crm_private_tasks t WHERE organization_id='"+tenant+"'))::text"))
+
+    def authority(session):
+        session=str(uuid.UUID(session))
+        return json.loads(owner_sql("SELECT jsonb_build_object('id',s.id,'identity_id',s.identity_id,"
+            "'state',s.state,'security_hold',s.security_hold,'operation_id',s.operation_id,"
+            "'expires_at',s.expires_at,'absolute_expires_at',s.absolute_expires_at,"
+            "'origin_completed',EXISTS(SELECT 1 FROM public.crm_auth_operations o WHERE o.id=s.operation_id AND o.state='completed'),"
+            "'hold_operation',(SELECT to_jsonb(o) FROM public.crm_auth_operations o WHERE o.id=s.security_hold),"
+            "'hold_outcomes',(SELECT coalesce(jsonb_agg(a.outcome ORDER BY a.outcome),'[]'::jsonb) "
+            "FROM public.crm_iam_audit_events a WHERE a.correlation_id=s.security_hold))::text "
+            "FROM public.crm_auth_sessions s WHERE s.id='"+session+"' AND s.identity_id='"+actor+"'"))
+
+    def create_lead(client,tag):
+        before=set(leads(client))
+        client.post('/leads',{'title':'LEAD_TESTE_CAUSAL_'+tag+'_'+suffix.upper(),'value_cents':0})
+        created=set(leads(client))-before
+        check(len(created)==1,'causal authority lead fixture not created once')
+        return created.pop()
+
+    peer_before=snapshot(peer_company)
+    initial=snapshot(company)
+    settings=initial['preferences']['automation_rules']
+    revision=settings['version']
+    check(revision<18 and settings['delay_seconds']==3600
+          and sorted(settings['rules'])==sorted(rules),'causal scenario requires the existing native B baseline')
+    # Code 0 is reserved for the final HTTP expiry scenario; code 1 for Chromium.
+    current=Client()
+    current.login(FIXTURES['clientB'],recovery=FIXTURES['clientB']['recovery'][2])
+    source_client.post('/preferencias',{'automation_version':revision,'delay_seconds':30,
+                                      'language':'pt','rules[]':rules})
+    source_lead=create_lead(source_client,'HELD')
+    nominal_lead=create_lead(current,'VALID')
+    source_client.post('/leads/'+source_lead,{'version':1,'stage':'qualified'})
+    current.post('/leads/'+nominal_lead,{'version':1,'stage':'qualified'})
+    scheduled=snapshot(company)
+    source_runs=[run for run in scheduled['runs'] if run['lead_id']==source_lead]
+    nominal_runs=[run for run in scheduled['runs'] if run['lead_id']==nominal_lead]
+    check(len(source_runs)==len(nominal_runs)==1,'causal/nominal command fixtures are ambiguous')
+    source_run=source_runs[0];nominal_run=nominal_runs[0]
+    check(source_run['state']==nominal_run['state']=='pending'
+          and source_run['actor_id']==nominal_run['actor_id']==actor
+          and source_run['authority_session_id']!=nominal_run['authority_session_id']
+          and min(source_run['due_at'],nominal_run['due_at'])>int(time.time()),
+          'two future commands must belong to distinct authenticated sessions of the same actor')
+    original_authority=authority(source_run['authority_session_id'])
+    check(original_authority['state']=='active' and original_authority['security_hold'] is None
+          and original_authority['origin_completed'],'original source authority was already inconclusive')
+
+    with denied_causal_logout(source_run):
+        _,location=source_client.post('/logout',{})
+        check(urllib.parse.urlparse(location).path=='/login','failed logout did not close the browser session')
+    held=authority(source_run['authority_session_id'])
+    operation=held['hold_operation']
+    check(held['state']=='active' and held['security_hold'] is not None
+          and held['operation_id']==original_authority['operation_id'] and held['origin_completed']
+          and operation is not None and operation['id']==held['security_hold']
+          and operation['subject_id']==actor and operation['action']=='logout' and operation['state']=='prepared'
+          and held['hold_outcomes']==['attempted'],
+          'real IAM failure did not leave an active source behind a prepared audited hold')
+    source_client.get('/painel',expected=303)
+    current.get('/painel?section=automation')
+    valid=authority(nominal_run['authority_session_id'])
+    check(valid['state']=='active' and valid['security_hold'] is None and valid['origin_completed'],
+          'independent current session was not usable after source failure')
+    check(snapshot(company)==scheduled,'fault injection changed business rows before native processing')
+
+    remaining=max(0,max(source_run['due_at'],nominal_run['due_at'])-time.time()+0.2)
+    check(remaining<=31,'unexpected long causal session scheduling delay')
+    time.sleep(remaining)
+    current.post('/automacoes/processar',{})
+    processed=snapshot(company)
+    expected_runs=[dict(run,state='cancelled') if run['id']==source_run['id'] else
+                   dict(run,state='completed',attempts=1) if run['id']==nominal_run['id'] else run
+                   for run in scheduled['runs']]
+    check(processed['runs']==expected_runs,'held source was executed or unrelated/native command fields changed')
+    check(not any(task['id']==source_run['id'] for task in processed['tasks'])
+          and sum(task['id']==nominal_run['id'] for task in processed['tasks'])==1
+          and len(processed['tasks'])==len(scheduled['tasks'])+1,
+          'held source produced a task or nominal command was not applied exactly once')
+    check(processed['leads']==scheduled['leads'] and processed['preferences']==scheduled['preferences'],
+          'causal rejection changed lead or settings')
+    added=[event for event in processed['events'] if event['id'] not in {item['id'] for item in scheduled['events']}]
+    check(sorted((event['action'],event['object_id'],event['actor_id']) for event in added)==sorted([
+          ('automation.cancelled',source_run['id'],actor),('automation.task_created',nominal_run['id'],actor)]),
+          'causal denial/nominal execution audit is missing or misattributed')
+    current.post('/automacoes/processar',{})
+    check(snapshot(company)==processed,'repeated processing resurrected held work or duplicated nominal work')
+    check(authority(source_run['authority_session_id'])==held,'native processing rewrote the IAM hold or operation')
+    check(snapshot(peer_company)==peer_before,'causal handling changed another company or actor business data')
+    # Restore the requested rule delay through normal CAS; never restore session A.
+    current.post('/preferencias',{'automation_version':revision+1,'delay_seconds':3600,
+                                 'language':'pt','rules[]':rules})
+    print('PASS real failed logout leaves prepared IAM hold; another valid session cancels held causal run without task')
+    print('PASS same-actor nominal run completes once; repeat, peer tenant and unresolved IAM evidence preserved')
+    return current
 
 
 def assert_preference_preservation(client,peer_company,suffix):
@@ -849,6 +993,7 @@ def main():
     print('PASS simulated pending/approved/refused/cancelled payments → order/event idempotency → tenant binding')
 
     assert_native_superseded(b,automation_state['company_id'],suffix)
+    b=assert_native_causal_session(b,automation_state['company_id'],suffix)
     assert_preference_preservation(b,automation_state['company_id'],suffix)
 
     scenario('clear-cache')
