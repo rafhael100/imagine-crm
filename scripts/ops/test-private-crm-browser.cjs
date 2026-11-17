@@ -166,6 +166,51 @@ async function width(page) {
       && JSON.stringify(await preferenceValues()) === JSON.stringify({...priorPreferences, language: nextLanguage}),
       'Real capped language form submission lost its values, language or revision');
     await preferencePage.screenshot({path: path.join(output, 'crm-preferences-revision-20.png'), fullPage: true});
+    const savedPreferenceValues = await preferenceValues();
+    const localizedAutomation = {
+      pt: {link:'PT-BR', title:'Seu próximo atendimento começa aqui.', template:'Modelos de acompanhamento', delay:'Após 5 segundos', completed:'Concluída', submit:'Salvar idioma'},
+      en: {link:'EN', title:'Your next follow-up starts here.', template:'Follow-up templates', delay:'After 5 seconds', completed:'Completed', submit:'Save language'},
+      es: {link:'ES', title:'Tu próximo seguimiento empieza aquí.', template:'Plantillas de seguimiento', delay:'Después de 5 segundos', completed:'Completada', submit:'Guardar idioma'},
+    };
+    for (const section of ['settings','automation']) {
+      await preferencePage.goto(base + '/painel?section=' + section);
+      for (const locale of ['pt','en','es']) {
+        phase = 'automation-locale-' + section + '-' + locale;
+        const copy = localizedAutomation[locale];
+        await Promise.all([preferencePage.waitForNavigation(),
+          preferencePage.locator('.languages').getByRole('link',{name:copy.link,exact:true}).click()]);
+        const location = new URL(preferencePage.url());
+        check(location.searchParams.get('section') === section && location.searchParams.get('lang') === locale,
+          'Language switch lost the selected CRM section');
+        const localized = preferencePage.locator('[data-automation-locale="' + locale + '"]');
+        check(await localized.getByRole('heading',{name:copy.title,exact:true}).isVisible()
+          && await localized.locator('legend').innerText() === copy.template,
+          'Automation content does not use the selected language');
+        check(await preferenceForm.locator('select[name=delay_seconds] option:checked').innerText() === copy.delay
+          && await localized.locator('[data-automation-state=completed]').first().innerText() === copy.completed
+          && await preferenceForm.getByRole('button',{name:copy.submit,exact:true}).isEnabled(),
+          'Automation timing, status or available action is not translated');
+        check(JSON.stringify(await preferenceValues()) === JSON.stringify(savedPreferenceValues),
+          'Viewing another language mutated the saved preference form values');
+        for (const viewport of [390,1440]) {
+          await preferencePage.setViewportSize({width:viewport,height:900});
+          await width(preferencePage);
+          if (section === 'automation' && locale === 'es') {
+            await preferencePage.screenshot({path:path.join(output,'crm-automation-es-' + viewport + '.png'),fullPage:true});
+          }
+        }
+      }
+    }
+    const invalidSection = await preferencePage.goto(base + '/painel?section%5B%5D=settings&lang=en&extra=do-not-forward');
+    check(invalidSection.status() === 200
+      && await preferencePage.getByRole('heading',{name:'Overview',exact:true}).isVisible(),
+      'Non-string section did not safely fall back to overview');
+    const safeLanguageLinks = await preferencePage.locator('.languages a').evaluateAll(links => links.map(link => link.href));
+    check(safeLanguageLinks.every(link => {
+      const query = new URL(link).searchParams;
+      return query.get('section') === 'overview' && [...query.keys()].sort().join(',') === 'lang,section';
+    }), 'Language links copied unvalidated section or unrelated query parameters');
+    console.log('PRIVATE AUTOMATION LOCALES CHROMIUM PASS: PT/EN/ES, current section retained, exact values preserved, desktop/mobile.');
     await preferenceContext.close();
     console.log('PRIVATE CAPPED PREFERENCES CHROMIUM PASS: enabled language submit, preserved disabled controls, revision 20 unchanged.');
 
