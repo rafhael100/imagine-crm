@@ -51,6 +51,35 @@ perfil, a presença da consulta de recibo, a comparação de owners, a quantidad
 funções verificadas e o digest do contrato de segurança. Nenhum dump em claro,
 senha ou definição de função é gravado nesse manifesto.
 
+## Consistência durante escritas concorrentes
+
+`private_crm_backup_snapshot.py` abre uma sessão dedicada em `REPEATABLE READ READ
+ONLY` e obtém um snapshot real por `pg_export_snapshot()`. Inventário, contagens,
+amostra de tenants e provas de escopo importam exatamente esse snapshot em
+transações read-only próprias. O `pg_dump` recebe o mesmo identificador por
+`--snapshot`, enquanto a sessão exportadora continua aberta. O helper de escopos
+possui modo explícito sem controle de transação para esses importadores; não há
+`BEGIN` aninhado ou troca silenciosa do snapshot.
+
+A janela de captura é limitada a 120 segundos, com limites adicionais para
+inicialização, statements e espera de locks. O exportador é encerrado e sua saída
+confirmada antes de começar a criptografia ou restauração. Exportador, cada
+importador e `pg_dump` recebem marcadores `PGAPPNAME` próprios, registrados antes
+da conexão. Um timeout do cliente Docker não é tratado como prova de saída do
+backend: o cleanup encerra o grupo local de processos, consulta a identidade real
+no PostgreSQL e, se necessário, termina somente os backends próprios por PID,
+início da sessão, banco, owner e marcador aleatório. Confirma sua ausência depois.
+As consultas de controle também são identificadas e têm limites de conexão e
+statement inferiores ao timeout do cliente. Falha antes de receber metadata do
+exportador usa seu marcador registrado previamente para descobrir e encerrar a
+sessão; não depende apenas de EOF ou do timeout de idle.
+
+O manifesto registra `consistent_source_snapshot=true`, protocolo e instante UTC
+de exportação. Não guarda o identificador efêmero como se fosse um snapshot
+reutilizável depois do encerramento. O mecanismo segue os contratos de
+[exportação/importação de snapshots](https://www.postgresql.org/docs/16/functions-admin.html#FUNCTIONS-SNAPSHOT-SYNCHRONIZATION)
+e de [pg_dump --snapshot](https://www.postgresql.org/docs/16/app-pgdump.html).
+
 ## Regressão executável
 
 O workflow `ci-private-crm-backup-restore.yml` inicia somente o PostgreSQL de
@@ -73,6 +102,26 @@ criptografia. Não inicia web, ingress ou aplicação HTTP. O harness:
 - Verifica que transportes e aplicação continuam sem acesso direto às tabelas de
   serviço e que as contagens da origem permanecem inalteradas.
 
+Uma etapa adicional inicia um escritor em outra conexão **depois** da exportação:
+ele insere um lead e altera um título com commit real. As contagens, o título lido
+pelo snapshot e o arquivo restaurado devem permanecer no estado anterior, enquanto
+a conexão live continua vendo as escritas novas. Essa prova inclui RLS e o
+contrato completo S2S no clone. Uma contraprova executa também `pg_dump` sem
+importar o snapshot e restaura esse arquivo em outro clone: o lead novo deve
+aparecer, reproduzindo a divergência entre manifesto anterior e dump posterior.
+Outros casos verificam a saída do backend em conclusão normal, exceção do
+chamador, perda de metadata, escrita recusada com SQLSTATE `25006` e perda do
+exportador. Importação do token real depois do encerramento deve falhar; nenhum
+snapshot é inventado pelo teste.
+
+Duas contraprovas adicionais observam o backend real de `pg_dump` esperando um
+lock curto de fixture e um importador executando `pg_sleep`. Só depois dessa
+observação o harness encurta seu orçamento local, exigindo que o timeout do cliente
+ocorra antes dos limites nativos de lock/statement. O backend da operação deve
+desaparecer, enquanto uma sessão sentinela de outro marcador continua viva. O
+exportador também deve permanecer vivo até o fechamento do contexto. O lock de
+escrita existe somente nessa contraprova CI; o fluxo de backup não o adquire.
+
 O resultado efetivo depende da CI na SHA candidata e será registrado na PR;
 este documento não antecipa aprovação. O ambiente local permite compilação
 Python e validação YAML, mas não dispõe de PostgreSQL ou Docker.
@@ -82,7 +131,9 @@ Python e validação YAML, mas não dispõe de PostgreSQL ou Docker.
 Este é um ensaio de restauração verificável, sem ativação das identidades
 restauradas ou reintegração operacional. Chaves de criptografia, retenção,
 armazenamento externo, restore autorizado de cliente e plano de desastre continuam
-dependências próprias. O backup permanece destinado a uma janela sem escritas;
-este recorte não implementa um snapshot MVCC compartilhado entre inventário,
-contagens e `pg_dump`. Alterações concorrentes podem impedir a verificação e não
-devem ser tratadas como backup confirmado.
+dependências próprias. A captura agora aceita escritas concorrentes nas tabelas
+transacionais. Mudanças concorrentes de DDL/permissões, indisponibilidade e estouro
+dos limites continuam podendo impedir o backup, sem gerar marcador de sucesso.
+O snapshot não congela contadores de sequences, que não são transacionais; a cópia
+preserva seus owners/grants e pode conter um contador adiantado em relação às
+linhas arquivadas.
