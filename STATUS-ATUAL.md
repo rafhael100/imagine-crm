@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## CENTRAL-AUTO-P22 — recuperação explícita de recibo em revisão (17/11/2026)
+
+Continuação da [PR #640](https://github.com/rafhael100/imagine-crm/pull/640), que corrige acompanhamento causal e compatibilidade da ledger. A candidata P22 conecta o CRM ao endpoint privado de recibos da [PR Agents #461](https://github.com/rafhael100/imagine-ai-agents/pull/461), SHA `8041c022776bbc1f998224a880726a8a3e69db37`, para recuperar confirmação perdida sem reenviar ou renovar o evento.
+
+A consulta exige mTLS, grant próprio, assinatura, identidade exata de empresa/tenant/evento/payload e vínculo com request/nonce. Somente `RECEIVED / DISABLED / NOT_DISPATCHED` pode confirmar recebimento; ausência, expiração ou revogação preserva a pendência. Também são recusados ACK SQL NULL e grants/janelas que expiram durante espera por lock. Código e critérios: [CENTRAL-AUTO-P22](docs/automation/CENTRAL-AUTO-P22.md).
+
+O harness reaproveita integralmente as regressões P19/P21, fixa os bytes do Agents e acrescenta recuperação concorrente, negativas reais e repetição com destino parado. O ensaio nominal P20 recebe pins coerentes em commit posterior. Resultados efetivos são registrados na PR da SHA candidata; esta nota não antecipa sucesso integrado. DRAFT / NO-MERGE / NO-DEPLOY; backup em outro cluster e preservação de agendamento ao mudar idioma seguem na sequência de implementação.
+
 ## Continuidade — acompanhamento e compatibilidade da ledger (17/11/2026)
 
 A [PR #639](https://github.com/rafhael100/imagine-crm/pull/639), HEAD `403a2b735e77bd72b529e296b20e63eab1c00859`, concluiu a [jornada privada](https://github.com/rafhael100/imagine-crm/actions/runs/44190323795) com os dois jobs em success: 1.172 verificações HTTP, 75 Chromium, 177 de resiliência, 49 de acesso separado e quatro testes unitários. Essa prova permanece restrita ao CI sintético.

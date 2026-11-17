@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: rafhael100/imagine-ai-agents
-          ref: 94dcfeabd24f180113d2a378afe6232c67053664
+          ref: 8041c022776bbc1f998224a880726a8a3e69db37
           path: pinned-agents
           fetch-depth: 0
           persist-credentials: false
