@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — idioma na Central de Automações (17/11/2026)
+
+A [PR #643](https://github.com/rafhael100/imagine-crm/pull/643), HEAD `3c04f28341fe5cd945f9f206cb9d8c3defb11fc3`, concluiu os dois jobs da [CI 44198701287](https://github.com/rafhael100/imagine-crm/actions/runs/44198701287): 1.442 verificações HTTP, 83 assertions Chromium, 177 de resiliência e 49 de acesso, além de unidade, canário, backup e restart. O formulário real no limite de revisões preservou valores e permitiu alterar idioma.
+
+A inspeção da captura mostrou textos de automação ainda em português quando o idioma selecionado era inglês. A próxima candidata localiza a Central de Automações/Preferências em PT/EN/ES, incluindo prazos personalizados, estados e ações, e mantém a seção atual ao clicar no idioma do cabeçalho. O Chromium verifica os três idiomas nas duas seções sem alterar FormData, em desktop/mobile. [Escopo e prova](docs/automation/CRM-AUTOMATION-LOCALES.md).
+
+Snapshot consistente do backup e verificação de bloqueios da sessão causal seguem em implementação paralela. Resultados da nova candidata serão registrados na PR/HEAD; não se presume tradução completa das demais telas nem aceite humano. DRAFT / NO-MERGE / NO-DEPLOY, dados sintéticos.
+
 ## Continuidade — preferências preservam agendamentos (17/11/2026)
 
 A [PR #642](https://github.com/rafhael100/imagine-crm/pull/642), HEAD `6376fc23497ca1e4df81e43b8e4e487659d03873`, concluiu três jobs success: [backup base/S2S em cluster separado](https://github.com/rafhael100/imagine-crm/actions/runs/44197374340) e [jornada privada completa](https://github.com/rafhael100/imagine-crm/actions/runs/44197374478). A prova preservou owners de funções, ACLs, FORCE RLS, dados e negativas efetivas; reproduziu as falhas da lista incompleta de roles e de `--no-owner`.
