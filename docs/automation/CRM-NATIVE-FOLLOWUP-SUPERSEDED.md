@@ -40,6 +40,12 @@ MFA, CSRF, rotas e PostgreSQL reais da instalação descartável existente:
   ausência da nova execução, auditoria e tarefas; repetição após restaurar a
   permissão conclui a mudança uma única vez.
 
+O erro de banco retorna HTTP 503 pelo handler privado existente. O teste também
+exige um novo registro sanitizado `QueryException`, código SQLSTATE `42501`,
+com origem em `NativeFollowupEngine.php`, entre as leituras anteriores e
+posteriores à request. Os logs são inspecionados sem imprimir o seu conteúdo.
+Uma falha genérica antes de chegar ao motor não satisfaz essa contraprova.
+
 A contraprova de rollback usa somente os modos CLI
 `automation-deny-enqueue` / `automation-restore-enqueue`. O harness exige
 `CRM_PRIVATE_PROJECT=imagine-crm-journey-ci` e o opt-in explícito

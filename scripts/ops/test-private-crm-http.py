@@ -76,6 +76,32 @@ def wait_for_database_lock(role,event):
     raise AssertionError('expected concurrent database lock was not observed')
 
 
+def native_enqueue_denials():
+    """Count sanitized SQL permission errors from the real native engine only."""
+    envfile=os.environ.get('CRM_PRIVATE_ENV_FILE')
+    project=os.environ.get('CRM_PRIVATE_PROJECT')
+    check(project=='imagine-crm-journey-ci','enqueue error witness requires disposable CI stack')
+    command=['docker','compose','--env-file',envfile,'-p',project,'-f',str(ROOT/'infra/homologation/compose.yaml'),
+        'logs','--no-color','--no-log-prefix','app']
+    result=subprocess.run(command,capture_output=True,text=True,timeout=15)
+    check(result.returncode==0,'native enqueue error witness unavailable; no log content printed')
+    count=0
+    for line in (result.stdout+'\n'+result.stderr).splitlines():
+        _,marker,context=line.partition('CRM_PRIVATE_REQUEST_UNAVAILABLE ')
+        if not marker: continue
+        try:
+            data,_=json.JSONDecoder().raw_decode(context)
+        except (ValueError,TypeError):
+            continue
+        if not isinstance(data,dict): continue
+        if any(cause.get('type')=='Illuminate\\Database\\QueryException'
+               and cause.get('code')=='42501'
+               and re.fullmatch(r'NativeFollowupEngine\.php:[1-9][0-9]*',cause.get('origin',''))
+               for cause in data.get('causes',[]) if isinstance(cause,dict)):
+            count+=1
+    return count
+
+
 @contextmanager
 def denied_native_enqueue():
     """Temporary INSERT denial in the closed, disposable CI stack only."""
@@ -156,8 +182,11 @@ def assert_native_superseded(client,peer_company,suffix):
 
     # Failure occurs at INSERT of the replacement, after old-run cancellation.
     # The lead, old run, new-run absence, tasks and all native events must roll back.
+    errors_before=native_enqueue_denials()
     with denied_native_enqueue():
-        client.post('/leads/'+target,{'version':2,'stage':'proposal'},expected=500)
+        client.post('/leads/'+target,{'version':2,'stage':'proposal'},expected=503)
+    check(native_enqueue_denials()==errors_before+1,
+          'expected native enqueue SQL permission failure was not observed')
     check(snapshot(company)==before,'failed replacement partially changed lead/ledger/audit/tasks')
     check(owner_sql("SELECT has_table_privilege('crm_homologation_app','public.crm_private_automation_runs','INSERT')")=='t',
           'native enqueue privilege not restored')
