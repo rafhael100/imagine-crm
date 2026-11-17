@@ -1,11 +1,12 @@
 name: CENTRAL AUTO incremental ledger migration candidate
 on:
   pull_request:
-    paths: ['infra/homologation/migrations/**', 'scripts/ci/check_automation_incremental.sql', '.github/workflows/central-auto-incremental-migration.yml']
+    paths: ['infra/homologation/migrations/**', 'scripts/ci/check_automation_incremental.sql', 'scripts/ci/test_automation_incremental_drift.py', '.github/workflows/central-auto-incremental-migration.yml']
 permissions:
   contents: read
 jobs:
   upgrade-existing-synthetic:
+    if: github.repository == 'rafhael100/imagine-crm' && github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     services:
@@ -26,6 +27,12 @@ jobs:
           ref: cc17350fd4a0dc82b29e88d485a62f20e9e57c93
           path: previous-private-schema
           persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 403a2b735e77bd72b529e296b20e63eab1c00859
+          path: previous-migration
+          persist-credentials: false
+          sparse-checkout: infra/homologation/migrations
       - name: Initialize actual previous schema without automation ledger
         env:
           PG_CONTAINER: ${{ job.services.pg.id }}
@@ -50,6 +57,7 @@ jobs:
           "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql
           test "$("${psql[@]}" -c 'SELECT count(*) FROM crm_private_automation_runs')" = 1
           test "$("${psql[@]}" -c 'SELECT count(*) FROM crm_private_leads')" = 1
+          python3 scripts/ci/test_automation_incremental_drift.py
           if docker exec -i "$PG_CONTAINER" psql -X -v ON_ERROR_STOP=1 -U crm_homologation_owner -d postgres < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-negative.log 2>&1; then exit 1; fi
           # Same number of constraints, different meaning: must fail closed.
           "${psql[@]}" -c "ALTER TABLE crm_private_automation_runs DROP CONSTRAINT crm_private_automation_runs_state_check; ALTER TABLE crm_private_automation_runs ADD CONSTRAINT crm_private_automation_runs_state_check CHECK(state IN ('pending','completed','cancelled','failed','unapproved'))"
@@ -68,3 +76,33 @@ jobs:
           if "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql >/tmp/migration-drift.log 2>&1; then exit 1; fi
           test "$("${psql[@]}" -c 'SELECT count(*) FROM crm_private_automation_runs')" = 1
           echo CRM_INCREMENTAL_UPGRADE_REPEAT_DRIFT_DENIAL_PASS operational_apply=0
+  verify-current-synthetic-schema:
+    if: github.repository == 'rafhael100/imagine-crm' && github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      pg:
+        image: postgres:16
+        env:
+          POSTGRES_USER: crm_homologation_owner
+          POSTGRES_DB: imagine_crm_private_homologation
+          POSTGRES_PASSWORD: synthetic-migration-ci-only
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 3s --health-retries 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Current fresh schema and repeated migration keep the same contract
+        env:
+          PG_CONTAINER: ${{ job.services.pg.id }}
+        run: |
+          set -euo pipefail
+          psql=(docker exec -i "$PG_CONTAINER" psql -X -qAt -v ON_ERROR_STOP=1 -U crm_homologation_owner -d imagine_crm_private_homologation)
+          "${psql[@]}" < infra/homologation/schema.sql
+          "${psql[@]}" -c 'CREATE ROLE crm_homologation_app NOLOGIN NOSUPERUSER NOBYPASSRLS; GRANT USAGE ON SCHEMA public TO crm_homologation_app'
+          "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql
+          "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql
+          test "$("${psql[@]}" -c 'SELECT count(*) FROM crm_private_automation_runs')" = 0
+          echo CRM_CURRENT_SCHEMA_INCREMENTAL_COMPATIBILITY_PASS operational_apply=0
+

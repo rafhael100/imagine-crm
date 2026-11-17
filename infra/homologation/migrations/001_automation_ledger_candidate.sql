@@ -33,6 +33,9 @@ CREATE TEMPORARY TABLE central_auto_expected_ledger(
  state varchar(16) NOT NULL DEFAULT 'pending' CHECK(state IN ('pending','completed','cancelled','failed')),
  due_at bigint NOT NULL, created_at bigint NOT NULL, attempts integer NOT NULL DEFAULT 0 CHECK(attempts BETWEEN 0 AND 3),
  UNIQUE(organization_id,execution_key) ) ON COMMIT DROP;
+CREATE POLICY tenant_scope ON pg_temp.central_auto_expected_ledger
+ USING (organization_id=NULLIF(current_setting('app.tenant_id',true),'')::uuid)
+ WITH CHECK (organization_id=NULLIF(current_setting('app.tenant_id',true),'')::uuid);
 
 -- Reject an incompatible preexisting table instead of pretending IF NOT EXISTS proves compatibility.
 DO $$ DECLARE names text[]; types text[]; actual text[]; expected text[]; BEGIN
@@ -76,6 +79,25 @@ DO $$ DECLARE names text[]; types text[]; actual text[]; expected text[]; BEGIN
  IF (SELECT relowner FROM pg_class WHERE oid='public.crm_private_automation_runs'::regclass)<>(SELECT oid FROM pg_roles WHERE rolname=current_user)
  THEN RAISE EXCEPTION 'UNEXPECTED_AUTOMATION_OWNER'; END IF;
 END $$;
+-- A replay must not preserve an unreviewed right or silently repair policy drift.
+-- REVOKE UPDATE does not remove DELETE/TRUNCATE or rights held through another role.
+DO $$ BEGIN
+ IF EXISTS (
+  SELECT 1 FROM pg_class c CROSS JOIN LATERAL aclexplode(c.relacl) acl
+  WHERE c.oid='public.crm_private_automation_runs'::regclass AND acl.grantee<>c.relowner
+   AND (acl.grantee<>(SELECT oid FROM pg_roles WHERE rolname='crm_homologation_app')
+    OR acl.privilege_type NOT IN ('SELECT','INSERT') OR acl.is_grantable)
+ ) THEN RAISE EXCEPTION 'UNEXPECTED_AUTOMATION_TABLE_PRIVILEGES'; END IF;
+ IF EXISTS (
+  SELECT 1 FROM pg_attribute a JOIN pg_class c ON c.oid=a.attrelid
+   CROSS JOIN LATERAL aclexplode(a.attacl) acl
+  WHERE a.attrelid='public.crm_private_automation_runs'::regclass AND a.attnum>0
+   AND NOT a.attisdropped AND acl.grantee<>c.relowner
+   AND (acl.grantee<>(SELECT oid FROM pg_roles WHERE rolname='crm_homologation_app')
+    OR acl.privilege_type<>'UPDATE' OR a.attname NOT IN ('state','attempts','due_at')
+    OR acl.is_grantable)
+ ) THEN RAISE EXCEPTION 'UNEXPECTED_AUTOMATION_COLUMN_PRIVILEGES'; END IF;
+END $$;
 ALTER TABLE public.crm_private_automation_runs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.crm_private_automation_runs FORCE ROW LEVEL SECURITY;
 DO $$ BEGIN
@@ -86,19 +108,29 @@ DO $$ BEGIN
  END IF;
  IF (SELECT count(*) FROM pg_policy WHERE polrelid='public.crm_private_automation_runs'::regclass)<>1 THEN
  RAISE EXCEPTION 'UNEXPECTED_AUTOMATION_POLICY'; END IF;
+ IF EXISTS (
+  SELECT 1 FROM pg_policy actual CROSS JOIN pg_policy expected
+  WHERE actual.polrelid='public.crm_private_automation_runs'::regclass
+   AND expected.polrelid='pg_temp.central_auto_expected_ledger'::regclass
+   AND (actual.polcmd IS DISTINCT FROM expected.polcmd
+    OR actual.polpermissive IS DISTINCT FROM expected.polpermissive
+    OR actual.polroles IS DISTINCT FROM expected.polroles
+    OR pg_get_expr(actual.polqual,actual.polrelid) IS DISTINCT FROM pg_get_expr(expected.polqual,expected.polrelid)
+    OR pg_get_expr(actual.polwithcheck,actual.polrelid) IS DISTINCT FROM pg_get_expr(expected.polwithcheck,expected.polrelid))
+ ) THEN RAISE EXCEPTION 'UNEXPECTED_AUTOMATION_POLICY_DEFINITION'; END IF;
 END $$;
-ALTER POLICY tenant_scope ON public.crm_private_automation_runs
- USING (organization_id=NULLIF(current_setting('app.tenant_id',true),'')::uuid)
- WITH CHECK (organization_id=NULLIF(current_setting('app.tenant_id',true),'')::uuid);
 REVOKE ALL ON public.crm_private_automation_runs FROM PUBLIC;
 REVOKE UPDATE ON public.crm_private_automation_runs FROM crm_homologation_app;
 GRANT SELECT,INSERT ON public.crm_private_automation_runs TO crm_homologation_app;
 GRANT UPDATE(state,attempts,due_at) ON public.crm_private_automation_runs TO crm_homologation_app;
 DO $$ BEGIN
- IF has_column_privilege('crm_homologation_app','public.crm_private_automation_runs','command','UPDATE')
-  OR has_column_privilege('crm_homologation_app','public.crm_private_automation_runs','actor_id','UPDATE')
-  OR has_column_privilege('crm_homologation_app','public.crm_private_automation_runs','authority_session_id','UPDATE')
- THEN RAISE EXCEPTION 'IMMUTABLE_COLUMN_PRIVILEGE_DRIFT'; END IF;
+ IF EXISTS (
+  SELECT 1 FROM pg_attribute WHERE attrelid='public.crm_private_automation_runs'::regclass
+   AND attnum>0 AND NOT attisdropped AND attname NOT IN ('state','attempts','due_at')
+   AND has_column_privilege('crm_homologation_app',attrelid,attname,'UPDATE')
+ ) OR has_table_privilege('crm_homologation_app','public.crm_private_automation_runs','DELETE,TRUNCATE,REFERENCES,TRIGGER')
+ THEN RAISE EXCEPTION 'UNEXPECTED_AUTOMATION_EFFECTIVE_PRIVILEGES'; END IF;
 END $$;
 COMMIT;
 \echo CENTRAL_AUTO_LEDGER_INCREMENTAL_V1_READY
+

@@ -3,6 +3,7 @@
 import base64
 import csv
 import concurrent.futures
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 import hashlib
 import hmac
@@ -44,7 +45,14 @@ def scenario(name):
     check(project in ('imagine-crm-private-journey','imagine-crm-journey-ci'),'isolated project required')
     check(envfile and Path(envfile).is_file(),'protected environment required')
     command=['docker','compose','--env-file',envfile,'-p',project,'-f',str(ROOT/'infra/homologation/compose.yaml'),
-        'run','--rm','-T','tools','scripts/ops/seed-private-crm-fixtures.php',name]
+        'run','--rm','-T']
+    if name in ('automation-deny-enqueue','automation-restore-enqueue'):
+        check(project=='imagine-crm-journey-ci','enqueue fault requires exact disposable CI project')
+        check(os.environ.get('CRM_PRIVATE_CI_FAULT_PROFILE')=='native-followup-enqueue-v1',
+              'explicit CI enqueue fault opt-in required')
+        command+=['-e','CRM_PRIVATE_CI_PROJECT='+project,
+                  '-e','CRM_PRIVATE_CI_FAULT_PROFILE=native-followup-enqueue-v1']
+    command+=['tools','scripts/ops/seed-private-crm-fixtures.php',name]
     result=subprocess.run(command,capture_output=True,text=True)
     check(result.returncode==0,'private fixture operation failed: '+name)
 
@@ -66,6 +74,127 @@ def wait_for_database_lock(role,event):
         if owner_sql("SELECT count(*) FROM pg_stat_activity WHERE usename='"+role+"' AND wait_event='"+event+"'")!='0':return
         time.sleep(.05)
     raise AssertionError('expected concurrent database lock was not observed')
+
+
+@contextmanager
+def denied_native_enqueue():
+    """Temporary INSERT denial in the closed, disposable CI stack only."""
+    check(os.environ.get('CRM_PRIVATE_PROJECT')=='imagine-crm-journey-ci'
+          and os.environ.get('CRM_PRIVATE_CI_FAULT_PROFILE')=='native-followup-enqueue-v1',
+          'disposable CI fault context required')
+    check(owner_sql("SELECT has_table_privilege('crm_homologation_app','public.crm_private_automation_runs','INSERT')")=='t',
+          'native enqueue privilege baseline missing')
+    marker=VAULT.parent/'native-followup-enqueue-ci.json'
+    descriptor=os.open(marker,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+    with os.fdopen(descriptor,'w') as stream:
+        json.dump({'profile':'native-followup-enqueue-v1','project':'imagine-crm-journey-ci',
+                   'created_at':int(time.time())},stream)
+    try:
+        scenario('automation-deny-enqueue')
+        yield
+    finally:
+        scenario('automation-restore-enqueue')
+        # Keep the witness if restoration failed, so failure is not hidden and
+        # the closed CI tools can retry cleanup before the stack is destroyed.
+        marker.unlink(missing_ok=True)
+
+
+def assert_native_superseded(client,peer_company,suffix):
+    """Exercise supersession through real authenticated HTTP and persisted rows."""
+    company=str(uuid.UUID(FIXTURES['clientB']['organization']))
+    peer_company=str(uuid.UUID(peer_company))
+
+    def snapshot(tenant):
+        return json.loads(owner_sql("SELECT jsonb_build_object("
+            "'leads',(SELECT coalesce(jsonb_agg(to_jsonb(l) ORDER BY l.id),'[]'::jsonb) FROM public.crm_private_leads l WHERE organization_id='"+tenant+"'),"
+            "'runs',(SELECT coalesce(jsonb_agg(to_jsonb(r) ORDER BY r.id),'[]'::jsonb) FROM public.crm_private_automation_runs r WHERE organization_id='"+tenant+"'),"
+            "'events',(SELECT coalesce(jsonb_agg(to_jsonb(e) ORDER BY e.id),'[]'::jsonb) FROM public.crm_private_events e WHERE organization_id='"+tenant+"'),"
+            "'tasks',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY t.id),'[]'::jsonb) FROM public.crm_private_tasks t WHERE organization_id='"+tenant+"'))::text"))
+
+    def create_lead(tag):
+        before=set(leads(client))
+        client.post('/leads',{'title':'LEAD_TESTE_SUPER_'+tag+'_'+suffix.upper(),'value_cents':0})
+        created=set(leads(client))-before
+        check(len(created)==1,'supersession lead fixture not created once')
+        return created.pop()
+
+    def rows_for(model,lead):
+        return [row for row in model['runs'] if row['lead_id']==lead]
+
+    def only_state_changed(before,after,state):
+        expected=dict(before,state=state)
+        check(after==expected,'supersession rewrote causal actor/session/command or another immutable field')
+
+    peer_before=snapshot(peer_company)
+    page=client.get('/painel?section=automation')
+    settings_version=int(re.search(r'name="automation_version" value="(\d+)"',page).group(1))
+    client.post('/preferencias',{'automation_version':settings_version,'delay_seconds':0,'language':'pt',
+                                'rules[]':['followup_qualified','followup_proposal']})
+    completed_lead=create_lead('DONE')
+    client.post('/leads/'+completed_lead,{'version':1,'stage':'qualified'})
+    completed_before=rows_for(snapshot(company),completed_lead)
+    check(len(completed_before)==1 and completed_before[0]['state']=='completed',
+          'completed native control execution missing')
+    client.post('/leads/'+completed_lead,{'version':2,'stage':'lost'})
+    completed_after=snapshot(company)
+    check(rows_for(completed_after,completed_lead)==completed_before,'terminal lead change rewrote completed execution')
+    check(len(completed_after['tasks'])==1,'completed task disappeared after terminal lead change')
+
+    client.post('/preferencias',{'automation_version':settings_version+1,'delay_seconds':3600,'language':'pt',
+                                'rules[]':['followup_qualified','followup_proposal']})
+    target=create_lead('TARGET')
+    sibling=create_lead('SIBLING')
+    client.post('/leads/'+target,{'version':1,'stage':'qualified'})
+    client.post('/leads/'+sibling,{'version':1,'stage':'qualified'})
+    before=snapshot(company)
+    target_before=rows_for(before,target)
+    sibling_before=rows_for(before,sibling)
+    check(len(target_before)==len(sibling_before)==1
+          and target_before[0]['state']==sibling_before[0]['state']=='pending'
+          and target_before[0]['due_at']>int(time.time())+300,
+          'future native runs not available for immediate cancellation test')
+
+    # Failure occurs at INSERT of the replacement, after old-run cancellation.
+    # The lead, old run, new-run absence, tasks and all native events must roll back.
+    with denied_native_enqueue():
+        client.post('/leads/'+target,{'version':2,'stage':'proposal'},expected=500)
+    check(snapshot(company)==before,'failed replacement partially changed lead/ledger/audit/tasks')
+    check(owner_sql("SELECT has_table_privilege('crm_homologation_app','public.crm_private_automation_runs','INSERT')")=='t',
+          'native enqueue privilege not restored')
+    client.get('/painel?section=kanban')
+    client.post('/leads/'+target,{'version':2,'stage':'proposal'})
+    advanced=snapshot(company)
+    target_advanced=rows_for(advanced,target)
+    check(len(target_advanced)==2,'valid stage change did not enqueue exactly one replacement')
+    previous=next(row for row in target_advanced if row['id']==target_before[0]['id'])
+    replacement=next(row for row in target_advanced if row['id']!=target_before[0]['id'])
+    only_state_changed(target_before[0],previous,'cancelled')
+    check(replacement['state']=='pending' and replacement['template']=='followup_proposal'
+          and replacement['lead_version']==3
+          and replacement['actor_id']==target_before[0]['actor_id']
+          and replacement['authority_session_id']==target_before[0]['authority_session_id'],
+          'replacement execution lost its current actor/session/lead version')
+    check(rows_for(advanced,sibling)==sibling_before,'stage change cancelled another lead execution')
+    check(advanced['tasks']==before['tasks'],'future replacement produced an early task')
+
+    client.post('/leads/'+target,{'version':3,'stage':'lost'})
+    terminal=snapshot(company)
+    cancelled=next(row for row in rows_for(terminal,target) if row['id']==replacement['id'])
+    only_state_changed(replacement,cancelled,'cancelled')
+    check(rows_for(terminal,sibling)==sibling_before,'terminal lead cancelled sibling execution')
+    client.post('/leads/'+sibling,{'version':2,'title':'LEAD_TESTE_SUPER_EDITED_'+suffix.upper()})
+    edited=snapshot(company)
+    only_state_changed(sibling_before[0],rows_for(edited,sibling)[0],'cancelled')
+    check(len(edited['runs'])==len(terminal['runs']),'title edit created an unrequested native run')
+    check(rows_for(edited,completed_lead)==completed_before,'completed execution changed during later supersession')
+    check(edited['tasks']==before['tasks'],'cancelled future execution created or removed a task')
+    page=client.get('/painel?section=automation')
+    check('data-automation-state="pending"' not in page,'invalid future runs still shown as scheduled')
+    client.post('/automacoes/processar',{})
+    check(snapshot(company)==edited,'processing superseded executions changed terminal history')
+    check(snapshot(peer_company)==peer_before,'supersession crossed the company boundary')
+    print('PASS future follow-up supersession: stage/title/terminal changes cancel only stale pending commands; completed tasks preserved')
+    print('PASS denied replacement INSERT rolls back lead/run/events/tasks; restored request queues exactly one current-session replacement')
 
 
 def totp(secret,offset=0):
@@ -561,6 +690,8 @@ def main():
     billing=a.get('/painel?section=billing')
     check(all(state in billing for state in ('approved','refused','cancelled')),'payment state missing')
     print('PASS simulated pending/approved/refused/cancelled payments → order/event idempotency → tenant binding')
+
+    assert_native_superseded(b,automation_state['company_id'],suffix)
 
     scenario('clear-cache')
     for i in range(20-len(leads(a))):

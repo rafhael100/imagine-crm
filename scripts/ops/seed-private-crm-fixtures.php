@@ -46,7 +46,31 @@ if ($mode==='revoke') {
     $db->commit();unlink($file);
     echo "Fixture credentials revoked; private vault removed, audit retained.\n";exit;
 }
-if (in_array($mode,['automation-fill-capacity','automation-free-capacity'],true)) {
+if (in_array($mode,['automation-deny-enqueue','automation-restore-enqueue'],true)) {
+    // Fault injection is available only to the explicit disposable-CI CLI.
+    // The web app never receives these flags or the protected marker mount.
+    $gate='/private/native-followup-enqueue-ci.json';
+    if (getenv('CRM_PRIVATE_CI_FAULT_PROFILE')!=='native-followup-enqueue-v1'
+        || getenv('CRM_PRIVATE_CI_PROJECT')!=='imagine-crm-journey-ci'
+        || !app()->environment('staging') || !is_file($gate) || is_link($gate)
+        || (fileperms($gate)&0077)!==0) throw new RuntimeException('Disposable CI fault profile required.');
+    $marker=json_decode(file_get_contents($gate),true,8,JSON_THROW_ON_ERROR);
+    if (!is_array($marker) || ($marker['profile']??null)!=='native-followup-enqueue-v1'
+        || ($marker['project']??null)!=='imagine-crm-journey-ci'
+        || !is_int($marker['created_at']??null)) throw new RuntimeException('Invalid CI fault marker.');
+    $probe="SELECT CASE WHEN has_table_privilege('crm_homologation_app','public.crm_private_automation_runs','INSERT') THEN 'yes' ELSE 'no' END";
+    if ($mode==='automation-deny-enqueue') {
+        if (abs(time()-$marker['created_at'])>300 || $db->query($probe)->fetchColumn()!=='yes') {
+            throw new RuntimeException('Unexpected native enqueue fixture baseline.');
+        }
+        $db->exec('REVOKE INSERT ON public.crm_private_automation_runs FROM crm_homologation_app');
+        if ($db->query($probe)->fetchColumn()!=='no') throw new RuntimeException('Enqueue denial fixture failed.');
+    } else {
+        // Restoration may outlive the short injection window after a failed assertion.
+        $db->exec('GRANT INSERT ON public.crm_private_automation_runs TO crm_homologation_app');
+        if ($db->query($probe)->fetchColumn()!=='yes') throw new RuntimeException('Enqueue fixture restoration failed.');
+    }
+} elseif (in_array($mode,['automation-fill-capacity','automation-free-capacity'],true)) {
     $scope=$db->query('SELECT organization_id,lead_id FROM crm_private_automation_runs ORDER BY created_at DESC,id LIMIT 1')->fetch(PDO::FETCH_ASSOC);
     if(!$scope)throw new RuntimeException('Native run fixture required');
     if($mode==='automation-fill-capacity')privateCrmSql($db,"INSERT INTO crm_private_tasks(id,organization_id,lead_id,title,due_on)
@@ -67,3 +91,4 @@ if (in_array($mode,['automation-fill-capacity','automation-free-capacity'],true)
     privateCrmSql($db,'UPDATE crm_private_trials SET started_at=?,expires_at=? WHERE organization_id=?',[$now-1209601,$now-1,$records['clientA']['organization']]);
 } else throw new RuntimeException('Unknown private fixture scenario.');
 echo "Private negative test scenario prepared.\n";
+

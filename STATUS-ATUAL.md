@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — acompanhamento e compatibilidade da ledger (17/11/2026)
+
+A [PR #639](https://github.com/rafhael100/imagine-crm/pull/639), HEAD `403a2b735e77bd72b529e296b20e63eab1c00859`, concluiu a [jornada privada](https://github.com/rafhael100/imagine-crm/actions/runs/44190323795) com os dois jobs em success: 1.172 verificações HTTP, 75 Chromium, 177 de resiliência, 49 de acesso separado e quatro testes unitários. Essa prova permanece restrita ao CI sintético.
+
+A continuação corrige dois problemas funcionais: acompanhamentos pendentes da versão anterior são cancelados imediatamente na mesma transação da alteração do lead, e a migration incremental recusa permissões/políticas incompatíveis antes de anunciar compatibilidade. A regressão HTTP inclui falha real de INSERT e rollback integral; a regressão PostgreSQL compara a migration anterior e verifica preservação de registros/metadados nas recusas. Detalhes: [acompanhamentos substituídos](docs/automation/CRM-NATIVE-FOLLOWUP-SUPERSEDED.md) e [ACL/política da ledger](docs/automation/CRM-AUTOMATION-MIGRATION-DRIFT.md).
+
+Os resultados efetivos desta nova candidata serão registrados na PR da SHA testada. DRAFT / NO-MERGE / NO-DEPLOY; a implementação de recuperação de recibos e a restauração S2S em servidor separado continuam na sequência de desenvolvimento, sem espera por nova solicitação. Gates de homologação operacional e revisões humanas permanecem independentes.
+
 ## Continuidade — preservar follow-up ao salvar sem alterações (17/11/2026)
 
 A [PR #638](https://github.com/rafhael100/imagine-crm/pull/638), HEAD `33e80b87f1969aa9790b72b9053f9f7496b1bd3f`, concluiu **3/3 jobs success**: [P21](https://github.com/rafhael100/imagine-crm/actions/runs/44189295838) e [P20](https://github.com/rafhael100/imagine-crm/actions/runs/44189295917). Foram executadas 67 verificações JSON, 49 ACK, 3 testes Python P21, 8 casos HTTP/mTLS e as provas de repetição aceita expirada/recusas/restore; o ensaio nominal P20 também foi preservado. Essa evidência é de CI sintético, sem homologação operacional.

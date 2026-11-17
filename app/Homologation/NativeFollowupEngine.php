@@ -46,6 +46,13 @@ final readonly class NativeFollowupEngine
  public function invalidate():void {
   foreach($this->runs()->where('state','pending')->limit(200)->get() as $row)$this->cancel($row->id);
  }
+ public function invalidateLead(string $lead):void {
+  // A committed lead version change makes its earlier commands ineligible.
+  // Reflect that immediately, in the same transaction, even before due_at.
+  foreach($this->runs()->where('lead_id',$lead)->where('state','pending')->orderBy('id')->limit(200)->lockForUpdate()->get(['id']) as $row) {
+   $this->cancel($row->id);
+  }
+ }
  public function process(AutomationSettings $settings):void {
   $now=time();
   $rows=$this->runs()->where('actor_id',$this->actor)->where('state','pending')->where('due_at','<=',$now)->orderBy('due_at')->orderBy('id')->limit(20)->lockForUpdate()->get();
