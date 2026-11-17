@@ -101,6 +101,8 @@ def main() -> None:
         manifest = json.loads(created.pop().read_text())
         require(manifest["database_profile"] == expected_profile and manifest["restore_verified"]
                 and manifest["tamper_rejected"] and manifest["object_owners_preserved"]
+                and manifest["consistent_source_snapshot"] is True
+                and manifest["snapshot_protocol"] == "postgresql-export-v1"
                 and manifest["restore_network"] == "none" and not manifest["plaintext_dump_on_disk"],
                 "Encrypted backup did not verify its complete profile.")
         require((directory / manifest["encrypted_archive"]).is_file(), "Encrypted archive missing.")

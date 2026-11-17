@@ -157,14 +157,19 @@ def table_counts(query, profile: dict) -> dict:
             for table in profile["tables"]}
 
 
-def scoped_counts(query, tenant: str, *, role: str, tables: tuple[str, ...]) -> str:
+def scoped_counts(query, tenant: str, *, role: str, tables: tuple[str, ...], manage_transaction: bool = True) -> str:
     require(not tenant or re.fullmatch(r"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}", tenant),
             "Invalid private tenant UUID.")
     require(role in ("crm_homologation_app", "crm_auto_reader_owner")
             and set(tables) <= set(BASE_TENANT_TABLES + S2S_TABLES), "Unsupported RLS probe.")
     body = " || '|' || ".join("(SELECT count(*) FROM " + table + ")" for table in tables)
-    result = query("BEGIN; SET ROLE " + role + "; SELECT set_config('app.tenant_id','" + tenant
-                   + "',true); SELECT 'SCOPED|' || " + body + "; ROLLBACK;")
+    statement = "SET ROLE " + role + "; SELECT set_config('app.tenant_id','" + tenant
+    statement += "',true); SELECT 'SCOPED|' || " + body + ";"
+    # Snapshot importers already own a read-only transaction. Restoration callers
+    # keep the original explicit BEGIN/ROLLBACK; never nest these implicitly.
+    if manage_transaction:
+        statement = "BEGIN; " + statement + " ROLLBACK;"
+    result = query(statement)
     lines = [line for line in result.splitlines() if line.startswith("SCOPED|")]
     require(len(lines) == 1, "Missing private RLS evidence.")
     return lines[0]

@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — snapshot único para backup concorrente (17/11/2026)
+
+A [PR #644](https://github.com/rafhael100/imagine-crm/pull/644), HEAD `894eb57fb60ad0f44dcd1bbfbaaaef1e929c86f0`, concluiu os dois jobs da [CI 44201222884](https://github.com/rafhael100/imagine-crm/actions/runs/44201222884), com 1.442 verificações HTTP, 121 assertions Chromium, 177 de resiliência e 49 de acesso. A navegação real preservou a seção e os valores do formulário nos três idiomas; capturas em inglês desktop e espanhol mobile foram inspecionadas sem defeito concreto identificado. Isso não equivale a aceite visual humano.
+
+A próxima candidata faz inventário, contagens, escopos e dump usarem um único snapshot PostgreSQL, fechado antes da criptografia. Gravações concorrentes deixam de gerar divergência entre manifesto e arquivo restaurado. Todas as conexões criadas recebem identificação própria; erro ou timeout exige encerramento verificado, preservando sessões alheias. [Contrato e limites](docs/automation/CRM-S2S-BACKUP-RESTORE.md).
+
+A regressão reproduz a divergência anterior e cobre INSERT/UPDATE concorrentes, restauração separada, escrita recusada, perda do exportador e timeouts reais de dump/importador com uma sessão sentinela preservada. Código revisado; resultados PostgreSQL/Docker dependem da CI da HEAD publicada. A correção da sessão causal também está pronta para o pacote seguinte. DRAFT / NO-MERGE / NO-DEPLOY, fixtures sintéticas.
+
 ## Continuidade — idioma na Central de Automações (17/11/2026)
 
 A [PR #643](https://github.com/rafhael100/imagine-crm/pull/643), HEAD `3c04f28341fe5cd945f9f206cb9d8c3defb11fc3`, concluiu os dois jobs da [CI 44198701287](https://github.com/rafhael100/imagine-crm/actions/runs/44198701287): 1.442 verificações HTTP, 83 assertions Chromium, 177 de resiliência e 49 de acesso, além de unidade, canário, backup e restart. O formulário real no limite de revisões preservou valores e permitiu alterar idioma.

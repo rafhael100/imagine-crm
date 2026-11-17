@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Encrypted backup + real restore on a separate network-none PostgreSQL16.
 
-Source is read-only and fixed to the fictional CRM stack. No plaintext dump is
-written to disk. Run before opening ingress and during quiet maintenance windows.
+Source is read-only and fixed to the fictional CRM stack. Its inventory, scopes
+and dump share one bounded PostgreSQL snapshot. No plaintext dump is written to disk.
 """
 from datetime import datetime, timezone
 import hashlib
@@ -17,6 +17,7 @@ from private_crm_backup_contract import (
     BASE_TENANT_TABLES, DATABASE, S2S_TABLES, detect_profile, isolated_restore_cluster,
     manifest_digest, scoped_counts, table_counts, verify_restored_security,
 )
+from private_crm_backup_snapshot import exported_snapshot
 
 ROOT=Path(__file__).resolve().parents[2]
 PROJECT=os.environ.get('CRM_PRIVATE_PROJECT','imagine-crm-private-journey')
@@ -36,23 +37,16 @@ def run(command,content=None,environment=None):
     return result.stdout
 
 
-def sql(command,text):
-    return run(command+['psql','-X','-qAt','-v','ON_ERROR_STOP=1']+text).decode().strip()
-
-
 SOURCE=COMPOSE+['exec','-T','postgres']
 
 
-def source_sql(query):
-    return sql(SOURCE,['-U','crm_homologation_owner','-d','imagine_crm_private_homologation','-c',query])
-
-
-def scope_evidence(query, profile, tenants):
+def scope_evidence(query, profile, tenants, *, manage_transaction=True):
     roles={'crm_homologation_app':BASE_TENANT_TABLES}
     if profile['s2s']: roles['crm_auto_reader_owner']=S2S_TABLES
     evidence={}
     for role,tables in roles.items():
-        evidence[role]={tenant:scoped_counts(query,tenant,role=role,tables=tables)
+        evidence[role]={tenant:scoped_counts(query,tenant,role=role,tables=tables,
+                                           manage_transaction=manage_transaction)
                         for tenant in ['',*tenants]}
         if evidence[role]['']!='SCOPED|'+'|'.join('0' for _ in tables):
             raise RuntimeError('Source or restored role leaks unscoped tenant records.')
@@ -62,13 +56,16 @@ def scope_evidence(query, profile, tenants):
 def main():
     directory=Path(sys.argv[1]).resolve()
     os.umask(0o077);directory.mkdir(parents=True,exist_ok=True)
-    profile,security=detect_profile(source_sql,TABLES)
-    before=table_counts(source_sql,profile)
-    tenants=source_sql("SELECT DISTINCT organization_id::text FROM crm_private_accounts WHERE role='client' ORDER BY organization_id::text LIMIT 2").splitlines()
-    tenants=[tenant for tenant in tenants if tenant]
-    source_scope=scope_evidence(source_sql,profile,tenants)
-    dump=run(SOURCE+['pg_dump','-U','crm_homologation_owner','-d','imagine_crm_private_homologation','-Fc'])
-    if len(dump)>67108864: raise RuntimeError('Private dump size limit exceeded.')
+    with exported_snapshot(SOURCE) as capture:
+        profile,security=detect_profile(capture.query,TABLES)
+        before=table_counts(capture.query,profile)
+        tenants=capture.query("SELECT DISTINCT organization_id::text FROM crm_private_accounts WHERE role='client' ORDER BY organization_id::text LIMIT 2").splitlines()
+        tenants=[tenant for tenant in tenants if tenant]
+        source_scope=scope_evidence(capture.query,profile,tenants,manage_transaction=False)
+        dump=capture.dump()
+        if len(dump)>67108864: raise RuntimeError('Private dump size limit exceeded.')
+        source_snapshot_utc=capture.exported_at
+    # The source exporter is verified closed before encryption or restore starts.
     crypt=COMPOSE+['run','--rm','-T','tools','scripts/ops/private-backup-crypt.php']
     encrypted=run(crypt+['encrypt'],dump)
     stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-'+secrets.token_hex(3)
@@ -94,6 +91,8 @@ def main():
         manifest={'manifest_version':2,'scope':'fictional-private-crm-only','project':PROJECT,'created_utc':stamp,
             'encrypted_archive':archive.name,'sha256':hashlib.sha256(encrypted).hexdigest(),
             'database_profile':profile['name'],'s2s_receipt_reconciliation':profile['receipt_reconciliation'],
+            'consistent_source_snapshot':True,'snapshot_protocol':'postgresql-export-v1',
+            'source_snapshot_utc':source_snapshot_utc,
             'table_counts':before,'force_rls_tables':[table.removeprefix('public.') for table in profile['rls_tables']],
             'security_manifest_sha256':manifest_digest(security),'object_owners_preserved':True,
             's2s_function_owners_verified':len(security['functions']),'restore_network':'none',
@@ -101,7 +100,7 @@ def main():
             'tenant_scopes_verified':len(source_scope['crm_homologation_app']),
             'scope_roles_verified':sorted(source_scope)}
         (directory/('crm-'+stamp+'.json')).write_text(json.dumps(manifest,indent=2)+'\n')
-        print('PRIVATE BACKUP PASS: authenticated encryption, tamper rejection, separate PG16 restore, counts, FORCE RLS, grants and restricted ownership; profile='+profile['name'])
+        print('PRIVATE BACKUP PASS: authenticated encryption, tamper rejection, separate PG16 restore, counts, FORCE RLS, grants and restricted ownership; profile='+profile['name']+' consistent_snapshot=1')
 
 
 if __name__=='__main__': main()

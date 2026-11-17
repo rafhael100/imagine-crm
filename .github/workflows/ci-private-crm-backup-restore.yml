@@ -4,8 +4,10 @@ on:
     paths:
       - 'scripts/ops/backup-private-crm.py'
       - 'scripts/ops/private_crm_backup_contract.py'
+      - 'scripts/ops/private_crm_backup_snapshot.py'
       - 'scripts/ops/private-backup-crypt.php'
       - 'scripts/ci/test_private_crm_backup_restore.py'
+      - 'scripts/ci/test_private_crm_backup_snapshot.py'
       - 'infra/homologation/schema.sql'
       - 'infra/homologation/20-runtime-roles.sh'
       - 'infra/homologation/s2s/**'
@@ -41,7 +43,7 @@ jobs:
       - name: Build exact crypto tool image and start only the isolated source database
         run: |
           set -euo pipefail
-          python3 -m py_compile scripts/ops/backup-private-crm.py scripts/ops/private_crm_backup_contract.py scripts/ci/test_private_crm_backup_restore.py
+          python3 -m py_compile scripts/ops/backup-private-crm.py scripts/ops/private_crm_backup_contract.py scripts/ops/private_crm_backup_snapshot.py scripts/ci/test_private_crm_backup_restore.py scripts/ci/test_private_crm_backup_snapshot.py
           docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml config --quiet
           docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml build app
           docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml up -d --no-build postgres
@@ -56,6 +58,11 @@ jobs:
           sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" \
             GITHUB_ACTIONS=true GITHUB_REPOSITORY="$GITHUB_REPOSITORY" GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" \
             python3 scripts/ci/test_private_crm_backup_restore.py "$RUNNER_TEMP/crm-backup-data/backups"
+      - name: Prove concurrent writes stay outside the manifest and dump snapshot; close every exporter
+        run: |
+          sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" \
+            GITHUB_ACTIONS=true GITHUB_REPOSITORY="$GITHUB_REPOSITORY" GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" \
+            python3 scripts/ci/test_private_crm_backup_snapshot.py
       - name: Remove only this disposable project and generated local archives
         if: always()
         run: |
