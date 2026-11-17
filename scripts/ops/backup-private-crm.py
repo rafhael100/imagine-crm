@@ -64,7 +64,7 @@ def main():
     os.umask(0o077);directory.mkdir(parents=True,exist_ok=True)
     profile,security=detect_profile(source_sql,TABLES)
     before=table_counts(source_sql,profile)
-    tenants=source_sql("SELECT organization_id::text FROM crm_private_accounts WHERE role='client' ORDER BY identity_id LIMIT 2").splitlines()
+    tenants=source_sql("SELECT DISTINCT organization_id::text FROM crm_private_accounts WHERE role='client' ORDER BY organization_id::text LIMIT 2").splitlines()
     tenants=[tenant for tenant in tenants if tenant]
     source_scope=scope_evidence(source_sql,profile,tenants)
     dump=run(SOURCE+['pg_dump','-U','crm_homologation_owner','-d','imagine_crm_private_homologation','-Fc'])

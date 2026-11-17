@@ -47,7 +47,7 @@ jobs:
           docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml up -d --no-build postgres
           ready=0
           for attempt in $(seq 1 40); do
-            if test "$(docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T postgres psql -X -qAt -U crm_homologation_owner -d imagine_crm_private_homologation -c "SELECT count(*) FROM pg_roles WHERE rolname='crm_homologation_operator'" 2>/dev/null)" = 1; then ready=1; break; fi
+            if test "$(docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T postgres cat /proc/1/comm 2>/dev/null)" = postgres && test "$(docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T postgres psql -X -qAt -U crm_homologation_owner -d imagine_crm_private_homologation -c "SELECT count(*) FROM pg_roles WHERE rolname='crm_homologation_operator'" 2>/dev/null)" = 1; then ready=1; break; fi
             sleep 2
           done
           test "$ready" = 1
