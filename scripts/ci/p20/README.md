@@ -1,5 +1,26 @@
 # Preparação P20 integrada — 16/11/2026
 
+## Continuidade P21 — 17/11/2026
+
+O registro de preparação abaixo é histórico. O ensaio P20 foi posteriormente
+executado com sucesso na [PR CRM #637](https://github.com/rafhael100/imagine-crm/pull/637),
+HEAD `4d6ccd842b9b9ee6adfbe317736ca94e4d5b7980`,
+[CI 43951158689](https://github.com/rafhael100/imagine-crm/actions/runs/43951158689).
+
+Nesta continuação, `inspect_inputs.py` e `prepared-inputs.json` fixam o CRM no
+commit de implementação P21 `1bf4a80afb4e40f3a03deebab9009f9375b03948`.
+Além do SQL, workflow e harness, são conferidos os quatro arquivos runtime S2S:
+receiver, sender, decodificador JSON e validador de ACK. Os pins Portal/Agents,
+o guard de destinos e o hash original de `run_p19.py` são preservados. O inventário
+continua recusando diferenças de bytes em relação ao commit fixado.
+
+O workflow P19 evoluiu para a regressão P21; o workflow nominal P20 continua
+separado. A execução da candidata atual deve ser consultada na PR de continuação;
+o sucesso histórico da #637 não equivale a sucesso da nova SHA. Ver
+[CENTRAL-AUTO-P21](../../../docs/automation/CENTRAL-AUTO-P21.md).
+
+## Registro histórico da preparação inicial
+
 **Estado: preparação local verificada; ensaio Docker e integração NÃO EXECUTADOS.** Nenhuma migration, conexão de negócio, banco ou serviço foi iniciado nesta tarefa. O runner ainda não foi acionado na validação local. O novo workflow foi preparado para `.github/workflows/central-auto-p20-integrated.yml`; nenhum workflow existente mudou.
 
 ## Runner e coordenação

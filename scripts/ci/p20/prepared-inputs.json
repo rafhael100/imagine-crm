@@ -15,12 +15,16 @@
       }
     },
     "crm": {
-      "commit": "cca5055608acff8c767b888b6322df77fe966558",
+      "commit": "1bf4a80afb4e40f3a03deebab9009f9375b03948",
       "sha256": {
-        ".github/workflows/central-auto-p19-s2s.yml": "655ba588ec55445c28576dc32c192e3afc44e83f9792d476a97df024a8e240e7",
+        ".github/workflows/central-auto-p19-s2s.yml": "a141ee25f2da3a58cc5a9d8f75ae26f34e73046c5905af98747f8d300db86a44",
+        "app/Homologation/S2S/AgentsAcknowledgement.php": "f51fbf90a21acb83e2bfd96c181ea426886bd8e07d42fa67df3f2f0642c747a2",
+        "app/Homologation/S2S/AgentsEventAdapter.php": "0b39d468b9b5f70e63e4aa52e233211832631b3880a0f5149e93dc6bce57d587",
+        "app/Homologation/S2S/StateReceiver.php": "0d116a5e6095a7f871d9888dfe4b66334de0ec6e91205b9532cd44e7cef3e33f",
+        "app/Homologation/S2S/StrictJson.php": "5a4cbcc671492b90dc9b3ff54c15d6698815cd6ef6b8464e8e173a3ee71e9643",
         "composer.lock": "08c77fe9d787be841633dea38461bbbdc4c3edfa419ff676d8fadf7581636f5c",
         "infra/homologation/s2s/install-candidate.sql": "c9f376ded1f1ae85876640fdf913679d0a75163883aa3f26009cfa3f8c8b5d9e",
-        "infra/homologation/s2s/outbound-candidate.sql": "185ea02c4ca1d70e6890cf76bcfc0586d2c639d02ff936c2f9266f9c8817937b",
+        "infra/homologation/s2s/outbound-candidate.sql": "575910a9a55905e183535da608be45c42e5c8ba67b93da31d09493f6ff1d53c7",
         "infra/homologation/schema.sql": "82f109cb2fd6475f827a2e9cc3b3491b68d40e751ee3ca75c9d879af94cb25fa",
         "scripts/ci/s2s/run_p19.py": "beae2aeb731a791c2e36cf9e28b884dcbb8e0c19bc8cd730fff5abf9dac6f9ff",
         "scripts/ci/s2s/send-event.php": "6dd511bf7ff09c71ea265688ed0f6c16ab93243fb16c3993d6a4f39a789c8ef4"
