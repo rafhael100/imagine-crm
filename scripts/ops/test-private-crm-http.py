@@ -337,7 +337,7 @@ def main():
     check(len(leads(a))==3,'CSV import not persisted')
     # UI configuration is interpreted by the native planner and persisted as a durable run.
     a.get('/painel?section=automation')
-    a.post('/preferencias',{'automation_version':3,'delay_seconds':1,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
+    a.post('/preferencias',{'automation_version':3,'delay_seconds':3,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
     a.get('/painel?section=kanban');a.post('/leads/'+lead,{'version':2,'stage':'proposal'})
     page=a.get('/painel?section=automation')
     proposal_runs=[identity for identity,body in re.findall(r'<tr data-automation-id="([^"]+)">(.*?)</tr>',page,re.S)
@@ -360,7 +360,7 @@ def main():
     preserved_runs=[identity for identity,body in re.findall(r'<tr data-automation-id="([^"]+)">(.*?)</tr>',after_save,re.S)
                     if 'data-automation-state="pending"' in body]
     check(preserved_runs==proposal_runs,'unchanged title save changed the scheduled native run')
-    time.sleep(1.1)
+    time.sleep(3.1)
     a.post('/automacoes/processar',{})
     proposal_tasks=a.get('/painel?section=tasks')
     check('TASK_TESTE_AUTO_PROPOSAL' in proposal_tasks,'native scheduled effect missing')
