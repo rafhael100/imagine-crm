@@ -141,9 +141,10 @@ final readonly class Workspace
             $values['version']=$version+1;
             $query->update($values);
             $this->event($account,$principal,$id,isset($values['stage'])?'lead.moved':'lead.updated');
+            $engine=new NativeFollowupEngine($this->db,$this->iam,$account->organization_id,$principal->principalId);
+            $engine->invalidateLead($id);
             if (isset($values['stage']) && in_array($values['stage'],['qualified','proposal'],true)) {
                 $settings=AutomationSettings::read($this->table('preferences',$account->organization_id)->value('automation_rules')??'[]');
-                $engine=new NativeFollowupEngine($this->db,$this->iam,$account->organization_id,$principal->principalId);
                 $engine->enqueue($id,$values['stage'],$version+1,$settings);
                 $engine->process($settings);
             }
