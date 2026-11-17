@@ -29,13 +29,8 @@ final class AgentsEventAdapter
     'http'=>['method'=>'POST','header'=>"Content-Type: application/json\r\nConnection: close\r\n",'content'=>$body,'timeout'=>3,'follow_location'=>0,'max_redirects'=>0,'ignore_errors'=>true]]);
    $raw=@file_get_contents('https://agents-s2s:8443/private/events',false,$ctx,0,4097);
    if(!is_string($raw)||strlen($raw)>4096||!preg_match('/\AHTTP\/\S+ 200(?: |$)/',$http_response_header[0]??''))throw new RuntimeException('AGENTS_TRANSPORT_DENIED');
-   $ack=json_decode($raw,true,8,JSON_THROW_ON_ERROR);$keys=array_keys($ack);sort($keys);
-   if($keys!==['company_id','decision','dispatch','event_ref','payload_hash','schema','signature'])throw new RuntimeException('ACK_SCHEMA');
-   foreach($ack as $value)if(!is_string($value))throw new RuntimeException('ACK_TYPE');
-   if($ack['schema']!=='AUTO_IA_ACK_V1'||$ack['company_id']!==$company||$ack['event_ref']!==$e['event_ref']||$ack['payload_hash']!==$e['payload_hash']||$ack['dispatch']!=='DISABLED'||!in_array($ack['decision'],['LAB_RECEIVED_NO_DELIVERY','LAB_DUPLICATE_NO_DELIVERY'],true))throw new RuntimeException('ACK_SCOPE');
-   $canonical=implode("\n",array_map(fn($k)=>$ack[$k],['schema','company_id','event_ref','payload_hash','decision','dispatch']));
-   if(!hash_equals(hash_hmac('sha256',$canonical,$key),$ack['signature']))throw new RuntimeException('ACK_SIGNATURE');
-   $q=$db->prepare('SELECT crm_auto_service.ack_outbound(CAST(? AS uuid),CAST(? AS uuid),?)');$q->execute([$company,$event,hash('sha256',$raw)]);$db->commit();
+   $ackHash=AgentsAcknowledgement::validate($raw,$company,$e['event_ref'],$e['payload_hash'],$key);
+   $q=$db->prepare('SELECT crm_auto_service.ack_outbound(CAST(? AS uuid),CAST(? AS uuid),?)');$q->execute([$company,$event,$ackHash]);$db->commit();
   } catch(Throwable $e){if($db->inTransaction())$db->rollBack();throw $e;}
  }
 }

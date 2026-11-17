@@ -20,7 +20,7 @@ final class StateReceiver
    $pem=rawurldecode((string)$r->server('IMAGINE_MTLS_CERT',''));
    if(strlen($pem)>8192 || !($fingerprint=openssl_x509_fingerprint($pem,'sha256')))return $deny(403);
    $raw=$r->getContent(); if(strlen($raw)>4096)return $deny(413);
-   $v=json_decode($raw,true,8,JSON_THROW_ON_ERROR);if(!is_array($v))return $deny(403);
+   try {$v=StrictJson::decodeObject($raw,4096,8);} catch(\JsonException) {return $deny(403);}
    $keys=array_keys($v);sort($keys);
    if($keys!==['audience','company_id','issued_at','issuer','mac','nonce','operation','request_id','schema'])return $deny(403);
    foreach(['audience','company_id','issuer','mac','nonce','operation','request_id','schema'] as $key)if(!is_string($v[$key]))return $deny(403);
