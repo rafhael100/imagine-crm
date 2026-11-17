@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — backup S2S em servidor separado (17/11/2026)
+
+A [PR #640](https://github.com/rafhael100/imagine-crm/pull/640), HEAD `0bd2742eca1e0bc042875a6eae629d161a1fce81`, concluiu quatro jobs success, incluindo [1.298 verificações HTTP e jornada completa](https://github.com/rafhael100/imagine-crm/actions/runs/44195851671) e [28 recusas de deriva da migration](https://github.com/rafhael100/imagine-crm/actions/runs/44195851695). A [PR #641](https://github.com/rafhael100/imagine-crm/pull/641), HEAD `aacff69a890cb5cf92cd31b11e9d87f0687adc14`, concluiu cinco jobs success: [recuperação P22](https://github.com/rafhael100/imagine-crm/actions/runs/44196236388), [P20 nominal](https://github.com/rafhael100/imagine-crm/actions/runs/44196236371) e [jornada privada](https://github.com/rafhael100/imagine-crm/actions/runs/44196236267). Os recibos expirados foram recuperados sem reenviar eventos, com as negativas e concorrência comprovadas.
+
+A próxima candidata corrige restauração S2S em outro cluster: o backup antigo criava apenas as cinco roles base e usava `--no-owner`, incompatível com os owners restritos das funções de serviço. O novo contrato identifica base/S2S, recria apenas roles inertes previstas e preserva owners, ACLs, funções, políticas, RLS e contagens das tabelas de serviço. A regressão executa criptografia/restauração reais, reproduz as duas falhas anteriores e testa as quatro funções P22 no destino separado. [Detalhes](docs/automation/CRM-S2S-BACKUP-RESTORE.md).
+
+A execução efetiva desta nova candidata será registrada na PR/HEAD específica. O backup ainda exige janela sem escritas enquanto o suporte a snapshot compartilhado é desenvolvido na continuação. DRAFT / NO-MERGE / NO-DEPLOY; nenhum dado real, VPS, autorização operacional ou aceite humano foi presumido.
+
 ## CENTRAL-AUTO-P22 — recuperação explícita de recibo em revisão (17/11/2026)
 
 Continuação da [PR #640](https://github.com/rafhael100/imagine-crm/pull/640), que corrige acompanhamento causal e compatibilidade da ledger. A candidata P22 conecta o CRM ao endpoint privado de recibos da [PR Agents #461](https://github.com/rafhael100/imagine-ai-agents/pull/461), SHA `8041c022776bbc1f998224a880726a8a3e69db37`, para recuperar confirmação perdida sem reenviar ou renovar o evento.
