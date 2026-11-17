@@ -121,7 +121,8 @@ final class Controller
     }
     public function preferences(Request $r)
     {
-        $r->validate(['delay_seconds'=>'nullable|integer|min:0|max:86400','automation_version'=>'required|integer|min:0|max:19','language'=>'required|in:pt,en,es','rules'=>'nullable|array|max:2','rules.*'=>'string|in:followup_qualified,followup_proposal']);
+        // Revision 20 remains a valid comparison token for language/no-op saves.
+        $r->validate(['delay_seconds'=>'nullable|integer|min:0|max:86400','automation_version'=>'required|integer|min:0|max:20','language'=>'required|in:pt,en,es','rules'=>'nullable|array|max:2','rules.*'=>'string|in:followup_qualified,followup_proposal']);
         app(Workspace::class)->preferences($r->string('language')->toString(),$r->input('rules',[]),$r->integer('automation_version'),$r->integer('delay_seconds'));
         $r->session()->put('crm.private.lang',$r->input('language'));
         return redirect('/painel?section=settings',303);

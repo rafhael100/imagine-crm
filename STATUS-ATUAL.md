@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — preferências preservam agendamentos (17/11/2026)
+
+A [PR #642](https://github.com/rafhael100/imagine-crm/pull/642), HEAD `6376fc23497ca1e4df81e43b8e4e487659d03873`, concluiu três jobs success: [backup base/S2S em cluster separado](https://github.com/rafhael100/imagine-crm/actions/runs/44197374340) e [jornada privada completa](https://github.com/rafhael100/imagine-crm/actions/runs/44197374478). A prova preservou owners de funções, ACLs, FORCE RLS, dados e negativas efetivas; reproduziu as falhas da lista incompleta de roles e de `--no-owner`.
+
+A próxima candidata corrige salvamentos de preferências que consumiam revisões e cancelavam acompanhamentos mesmo sem mudança de regras ou prazo. Agora, salvar os mesmos valores preserva todo o estado; alterar apenas o idioma muda esse campo e um evento de auditoria. CAS, autorização e limite de 20 revisões continuam ativos. Na revisão 20, o formulário permite alterar idioma e envia os valores exatos dos controles de automação bloqueados. [Contrato e provas](docs/automation/CRM-NATIVE-PREFERENCES-PRESERVE-SCHEDULE.md).
+
+O ensaio HTTP compara preferências, execuções, tarefas, eventos e outra empresa; alcança a revisão 20 por requests reais e exige uma única tarefa no vencimento. Chromium verifica e submete o formulário real no limite. Resultados efetivos ficam na PR/HEAD específica. O snapshot consistente do backup segue em desenvolvimento paralelo. DRAFT / NO-MERGE / NO-DEPLOY, apenas fixtures sintéticas.
+
 ## Continuidade — backup S2S em servidor separado (17/11/2026)
 
 A [PR #640](https://github.com/rafhael100/imagine-crm/pull/640), HEAD `0bd2742eca1e0bc042875a6eae629d161a1fce81`, concluiu quatro jobs success, incluindo [1.298 verificações HTTP e jornada completa](https://github.com/rafhael100/imagine-crm/actions/runs/44195851671) e [28 recusas de deriva da migration](https://github.com/rafhael100/imagine-crm/actions/runs/44195851695). A [PR #641](https://github.com/rafhael100/imagine-crm/pull/641), HEAD `aacff69a890cb5cf92cd31b11e9d87f0687adc14`, concluiu cinco jobs success: [recuperação P22](https://github.com/rafhael100/imagine-crm/actions/runs/44196236388), [P20 nominal](https://github.com/rafhael100/imagine-crm/actions/runs/44196236371) e [jornada privada](https://github.com/rafhael100/imagine-crm/actions/runs/44196236267). Os recibos expirados foram recuperados sem reenviar eventos, com as negativas e concorrência comprovadas.

@@ -229,13 +229,30 @@
 @csrf<button>Convidar usuário fictício →</button></form><p class="quiet mt">Convites pendentes também reservam uma vaga. O ingresso exige OTP, MFA e convite válido de uso único.</p>
 @endif<p class="quiet mt">Cada usuário tem login independente. Nenhum perfil de cliente recebe acesso à administração global.</p></div>
 @elseif(in_array($section,['automation','settings']))
+@php
+    $automationAtLimit=$data['automation']->version>=20;
+    $automationSay=fn($pt,$en,$es)=>$language==='en'?$en:($language==='es'?$es:$pt);
+    $automationDelays=[0=>'Imediatamente',1=>'Após 1 segundo · teste',60=>'Após 1 minuto',3600=>'Após 1 hora',86400=>'Após 1 dia'];
+    if (!array_key_exists($data['automation']->delaySeconds,$automationDelays)) {
+        $automationDelays[$data['automation']->delaySeconds]='Após '.$data['automation']->delaySeconds.' segundos';
+    }
+@endphp
 <div class="panel"><span class="eyebrow">Central de automações · CRM</span><h2>Seu próximo atendimento começa aqui.</h2><p>Escolha ações internas para acompanhar as oportunidades da sua empresa. O CRM aplica as regras; nenhuma inteligência artificial paga é acionada.</p><div class="metrics"><div class="card metric"><span>Regras ativas</span><strong>{{ count($data['rules']) }} / 2</strong></div><div class="card metric"><span>Versão atual</span><strong>{{ $data['automation']->version }}</strong></div><div class="card metric"><span>Chamadas de IA</span><strong>0</strong></div></div>
 @if($data['account']->team_role==='owner')<form method="post" action="/preferencias">
+@if($automationAtLimit)
+<p class="notice mt" id="automation-revision-limit" data-automation-revision-limit="20">{{ $automationSay(
+'O limite de 20 revisões de automação foi atingido. As regras e o prazo ficam preservados; você pode continuar alterando o idioma.',
+'The 20-revision automation limit has been reached. Rules and timing are preserved; you can still change the language.',
+'Se alcanzó el límite de 20 revisiones de automatización. Se conservan las reglas y el plazo; puedes seguir cambiando el idioma.'
+) }}</p>
+<input type="hidden" name="delay_seconds" value="{{ $data['automation']->delaySeconds }}">
+@foreach($data['rules'] as $selectedRule)<input type="hidden" name="rules[]" value="{{ $selectedRule }}">@endforeach
+@endif
 @csrf<input type="hidden" name="automation_version" value="{{ $data['automation']->version }}"><div class="field"><label for="automation-language">{{ $t('Idioma') }}</label><select id="automation-language" name="language">
 @foreach(['pt'=>'Português','en'=>'English','es'=>'Español'] as $lang=>$name)<option value="{{ $lang }}" {{ ($data['preferences']->language??'pt')===$lang?'selected':'' }}>{{ $name }}</option>
-@endforeach</select></div><div class="field"><label for="automation-delay">Quando executar a regra</label><select id="automation-delay" name="delay_seconds">@foreach([0=>'Imediatamente',1=>'Após 1 segundo · teste',60=>'Após 1 minuto',3600=>'Após 1 hora',86400=>'Após 1 dia'] as $seconds=>$label)<option value="{{ $seconds }}" {{ $data['automation']->delaySeconds===$seconds?'selected':'' }}>{{ $label }}</option>@endforeach</select></div><fieldset><legend>Modelos de acompanhamento</legend>
+@endforeach</select></div><div class="field"><label for="automation-delay">Quando executar a regra</label><select id="automation-delay" name="delay_seconds" {{ $automationAtLimit?'disabled aria-describedby=automation-revision-limit':'' }}>@foreach($automationDelays as $seconds=>$label)<option value="{{ $seconds }}" {{ $data['automation']->delaySeconds===$seconds?'selected':'' }}>{{ $label }}</option>@endforeach</select></div><fieldset {{ $automationAtLimit?'disabled aria-describedby=automation-revision-limit':'' }}><legend>Modelos de acompanhamento</legend>
 @foreach(['followup_qualified'=>['Lead qualificado','Ao qualificar um lead, criar uma tarefa interna para o próximo dia.'],'followup_proposal'=>['Proposta em andamento','Ao avançar para proposta, criar uma tarefa interna para o próximo dia.']] as $rule=>$copy)<div class="card mt"><label><input type="checkbox" name="rules[]" value="{{ $rule }}" {{ in_array($rule,$data['rules'],true)?'checked':'' }}> <strong>{{ $copy[0] }}</strong></label><p>{{ $copy[1] }}</p><span class="tag">{{ in_array($rule,$data['rules'],true)?'Ativa':'Pausada' }}</span></div>
-@endforeach</fieldset><p class="quiet mt">Desmarcar pausa novas execuções; tarefas já criadas permanecem no seu CRM. Os modelos não enviam e-mail ou WhatsApp. Editar ou pausar cancela execuções pendentes da configuração anterior. As versões impedem alterações por abas desatualizadas.</p><button class="mt" {{ $data['automation']->version>=20?'disabled':'' }}>Salvar nova versão →</button></form>
+@endforeach</fieldset><p class="quiet mt">Desmarcar pausa novas execuções; tarefas já criadas permanecem no seu CRM. Os modelos não enviam e-mail ou WhatsApp. Editar ou pausar cancela execuções pendentes da configuração anterior. As versões impedem alterações por abas desatualizadas.</p><button type="submit" class="mt">{{ $automationAtLimit?$automationSay('Salvar idioma','Save language','Guardar idioma'):'Salvar nova versão →' }}</button></form>
 @else<div class="notice">Seu perfil pode consultar as automações. Somente o responsável da empresa pode alterar as regras.</div>
 @endif</div><div class="panel"><h3>Histórico das configurações</h3><p class="quiet">Até 20 revisões nesta candidata de homologação. Sem editor de workflows ou acesso ao n8n.</p><div class="tablewrap"><table><thead><tr><th>Versão</th><th>Quando (UTC)</th><th>Modelos ativos</th></tr></thead><tbody>
 @forelse(array_reverse($data['automation']->history) as $revision)<tr><td>{{ $revision['version'] }}</td><td>{{ gmdate('d/m/Y H:i',$revision['at']) }}</td><td>{{ count($revision['rules']) }} / 2</td></tr>
