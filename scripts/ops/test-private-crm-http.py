@@ -226,6 +226,134 @@ def assert_native_superseded(client,peer_company,suffix):
     print('PASS denied replacement INSERT rolls back lead/run/events/tasks; restored request queues exactly one current-session replacement')
 
 
+def assert_preference_preservation(client,peer_company,suffix):
+    """Language/no-op saves preserve native schedules, including at revision 20."""
+    company=str(uuid.UUID(FIXTURES['clientB']['organization']))
+    actor=str(uuid.UUID(FIXTURES['clientB']['identity']))
+    peer_company=str(uuid.UUID(peer_company))
+    rules=['followup_qualified','followup_proposal']
+
+    def snapshot(tenant):
+        return json.loads(owner_sql("SELECT jsonb_build_object("
+            "'preferences',(SELECT to_jsonb(p) FROM public.crm_private_preferences p WHERE organization_id='"+tenant+"'),"
+            "'leads',(SELECT coalesce(jsonb_agg(to_jsonb(l) ORDER BY l.id),'[]'::jsonb) FROM public.crm_private_leads l WHERE organization_id='"+tenant+"'),"
+            "'runs',(SELECT coalesce(jsonb_agg(to_jsonb(r) ORDER BY r.id),'[]'::jsonb) FROM public.crm_private_automation_runs r WHERE organization_id='"+tenant+"'),"
+            "'events',(SELECT coalesce(jsonb_agg(to_jsonb(e) ORDER BY e.id),'[]'::jsonb) FROM public.crm_private_events e WHERE organization_id='"+tenant+"'),"
+            "'tasks',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY t.id),'[]'::jsonb) FROM public.crm_private_tasks t WHERE organization_id='"+tenant+"'))::text"))
+
+    def save(version,delay,language,selected=rules,expected=303):
+        return client.post('/preferencias',{'automation_version':version,'delay_seconds':delay,
+                    'language':language,'rules[]':selected},expected=expected)
+
+    def language_change(before,after,language):
+        old_ids={event['id'] for event in before['events']}
+        added=[event for event in after['events'] if event['id'] not in old_ids]
+        check(len(added)==1 and added[0]['action']=='preferences.language_changed'
+              and added[0]['actor_id']==actor and added[0]['object_id']==company,
+              'language change audit missing or misattributed')
+        expected=dict(before,preferences=dict(before['preferences'],language=language),
+                      events=sorted(before['events']+added,key=lambda event:event['id']))
+        check(after==expected,'language change mutated automation settings/history, lead, run or task')
+
+    peer_before=snapshot(peer_company)
+    initial=snapshot(company)
+    settings=initial['preferences']['automation_rules']
+    revision=settings['version'];delay=settings['delay_seconds']
+    check(revision<19 and delay==3600 and sorted(settings['rules'])==sorted(rules),
+          'preference preservation requires the existing native tenant B fixtures')
+    save(revision,delay,'pt',list(reversed(rules)))
+    check(snapshot(company)==initial,'unchanged/reordered preferences consumed a revision or audit event')
+
+    before_ids=set(leads(client))
+    client.post('/leads',{'title':'LEAD_TESTE_PREFERENCES_'+suffix.upper(),'value_cents':0})
+    created=set(leads(client))-before_ids
+    check(len(created)==1,'preference schedule lead not created once')
+    lead=created.pop()
+    client.post('/leads/'+lead,{'version':1,'stage':'qualified'})
+    before=snapshot(company)
+    pending=[run for run in before['runs'] if run['lead_id']==lead]
+    check(len(pending)==1 and pending[0]['state']=='pending'
+          and pending[0]['due_at']>int(time.time())+300,'preference test requires a future native command')
+    original_run=pending[0]
+    save(revision,delay,'en',list(reversed(rules)))
+    localized=snapshot(company)
+    language_change(before,localized,'en')
+    check('<html lang="en"' in client.get('/painel?section=automation'),'saved language absent from HTTP view')
+    save(revision,delay,'en')
+    save(revision-1,delay,'en',expected=409)
+    save(revision,delay,'en',['followup_qualified','followup_qualified'],expected=422)
+    check(snapshot(company)==localized,'no-op, stale or duplicate-rule preference mutated persisted state')
+
+    # A real automation change still advances once and cancels the prior command.
+    save(revision,3,'en')
+    changed=snapshot(company)
+    check(changed['preferences']['automation_rules']['version']==revision+1
+          and changed['preferences']['automation_rules']['delay_seconds']==3,
+          'changed automation delay did not consume exactly one revision')
+    expected_runs=[dict(run,state='cancelled') if run['id']==original_run['id'] else run
+                   for run in localized['runs']]
+    check(changed['runs']==expected_runs and changed['leads']==localized['leads']
+          and changed['tasks']==localized['tasks'],'real preference change failed to cancel only pending commands')
+    added=[event for event in changed['events'] if event['id'] not in {item['id'] for item in localized['events']}]
+    check(sorted(event['action'] for event in added)==sorted([
+          'automation.cancelled','automation.settings.v'+str(revision+1),'preferences.updated']),
+          'real preference revision/cancellation audit changed')
+    revision+=1;delay=3
+
+    # Reach the existing cap through real HTTP changes; no privileged fixture rewrite.
+    while revision<20:
+        delay=5 if revision==19 else (2 if delay!=2 else 3)
+        save(revision,delay,'en')
+        revision+=1
+    capped=snapshot(company)
+    capped_settings=capped['preferences']['automation_rules']
+    check(capped_settings['version']==20 and len(capped_settings['history'])==20
+          and capped_settings['delay_seconds']==5,'real configuration revisions did not stop at the existing cap')
+    check(capped['runs']==changed['runs'],'later settings revisions rewrote terminal runs')
+    client.post('/leads/'+lead,{'version':2,'stage':'proposal'})
+    scheduled=snapshot(company)
+    replacement=[run for run in scheduled['runs'] if run['lead_id']==lead and run['state']=='pending']
+    check(len(replacement)==1 and replacement[0]['settings_version']==20
+          and replacement[0]['lead_version']==3 and replacement[0]['due_at']>int(time.time()),
+          'revision-20 pending command missing')
+    replacement=replacement[0]
+    save(20,5,'en',list(reversed(rules)))
+    check(snapshot(company)==scheduled,'revision-20 unchanged save mutated the schedule or audit')
+    save(20,5,'es')
+    translated=snapshot(company)
+    language_change(scheduled,translated,'es')
+    check('<html lang="es"' in client.get('/painel?section=automation'),'revision-20 language change was rejected')
+    save(19,5,'es',expected=409)
+    save(20,6,'pt',expected=409)
+    save(20,5,'pt',['followup_qualified'],expected=409)
+    save(20,5,'es',['followup_proposal','followup_proposal'],expected=422)
+    # Existing HTTP field validation redirects with errors; it must not become a no-op.
+    for invalid_delay,invalid_rules in ((-1,rules),(5,['billing.charge'])):
+        _,location=save(20,invalid_delay,'es',invalid_rules)
+        redirected=urllib.parse.urlparse(location)
+        check(redirected.path=='/painel' and redirected.query=='',
+              'invalid preference field bypassed the existing HTTP validation response')
+    check(snapshot(company)==translated,'capped/stale/invalid preference request changed language, history or schedule')
+
+    remaining=max(0,replacement['due_at']-time.time()+0.2)
+    check(remaining<=6,'unexpected long native preference test delay')
+    time.sleep(remaining)
+    client.post('/automacoes/processar',{})
+    completed=snapshot(company)
+    exact=[task for task in completed['tasks'] if task['id']==replacement['id']]
+    check(len(exact)==1 and exact[0]['lead_id']==lead
+          and len(completed['tasks'])==len(translated['tasks'])+1,
+          'preserved preference command did not create exactly its native task')
+    finished=next(run for run in completed['runs'] if run['id']==replacement['id'])
+    check(finished==dict(replacement,state='completed',attempts=1),
+          'preserved preference command did not complete once without rewriting its causal fields')
+    client.post('/automacoes/processar',{})
+    check(snapshot(company)==completed,'repeating preserved preference command duplicated task or audit')
+    check(snapshot(peer_company)==peer_before,'preference preservation crossed the tenant boundary')
+    print('PASS language/no-op preferences preserve exact native schedule and audit; real delay changes invalidate once')
+    print('PASS revision 20 accepts language/no-op only; stale 19 and revision 21 denied; preserved task created exactly once')
+
+
 def totp(secret,offset=0):
     step=int(time.time())//30+offset
     digest=hmac.new(base64.b32decode(secret),struct.pack('>Q',step),hashlib.sha1).digest()
@@ -721,6 +849,7 @@ def main():
     print('PASS simulated pending/approved/refused/cancelled payments → order/event idempotency → tenant binding')
 
     assert_native_superseded(b,automation_state['company_id'],suffix)
+    assert_preference_preservation(b,automation_state['company_id'],suffix)
 
     scenario('clear-cache')
     for i in range(20-len(leads(a))):

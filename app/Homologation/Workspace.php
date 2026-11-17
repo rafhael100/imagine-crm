@@ -182,15 +182,28 @@ final readonly class Workspace
     public function preferences(string $language,array $rules,int $expectedVersion,int $delaySeconds=0): void
     {
         abort_unless(in_array($language,['pt','en','es'],true)
+            && $delaySeconds>=0 && $delaySeconds<=86400
             && count($rules)<=2 && count(array_unique($rules))===count($rules)
             && array_diff($rules,['followup_qualified','followup_proposal'])===[],422);
+        $rules=array_values($rules);sort($rules);
         $this->run('preferences.update',function ($account,$trial,$principal) use ($language,$rules,$expectedVersion,$delaySeconds) {
             $query=$this->table('preferences',$account->organization_id);
             $row=(clone $query)->lockForUpdate()->first();
             abort_unless($row,409);
             $current=AutomationSettings::read($row->automation_rules ?? '[]');
-            abort_unless($current->version===$expectedVersion && $current->version<20,409,'As automações mudaram ou atingiram o limite de revisões da homologação.');
-            $next=$current->revise($expectedVersion,array_values($rules),$principal->principalId,time(),$delaySeconds);
+            abort_unless($current->version===$expectedVersion,409,'As automações mudaram. Recarregue.');
+            $currentRules=$current->rules;sort($currentRules);
+            if ($currentRules===$rules && $current->delaySeconds===$delaySeconds) {
+                // Language and an unchanged form do not alter a scheduled command.
+                // Authorization and the locked version check above still apply.
+                if ($row->language!==$language) {
+                    $query->update(['language'=>$language]);
+                    $this->event($account,$principal,$account->organization_id,'preferences.language_changed');
+                }
+                return;
+            }
+            abort_unless($current->version<20,409,'Limite de revisões da homologação atingido.');
+            $next=$current->revise($expectedVersion,$rules,$principal->principalId,time(),$delaySeconds);
             $query->update(['language'=>$language,'automation_rules'=>$next->json()]);
             (new NativeFollowupEngine($this->db,$this->iam,$account->organization_id,$principal->principalId))->invalidate();
             $this->event($account,$principal,$account->organization_id,'automation.settings.v'.$next->version);

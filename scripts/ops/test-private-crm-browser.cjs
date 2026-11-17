@@ -122,6 +122,53 @@ async function width(page) {
     phase = 'client-mobile';
     await page.screenshot({ path: path.join(output, 'crm-client-mobile.png'), fullPage: true });
     await width(page);
+
+    // HTTP reached revision 20 for client B. Submit its real browser form:
+    // disabled automation controls must preserve their values via hidden inputs.
+    const preferenceContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    const preferencePage = await preferenceContext.newPage();
+    preferencePage.on('pageerror', () => failures.push('preference-pageerror'));
+    // Recovery code 0 was consumed by the final HTTP session-expiry scenario.
+    await login(preferencePage, {...fixtures.clientB, recovery: [fixtures.clientB.recovery[1]]});
+    phase = 'capped-preferences-form';
+    await preferencePage.goto(base + '/painel?section=settings');
+    const preferenceForm = preferencePage.locator('form[action="/preferencias"]');
+    const preferenceValues = () => preferenceForm.evaluate(form => {
+      const values = new FormData(form);
+      return {version: values.getAll('automation_version'), delay: values.getAll('delay_seconds'),
+        rules: values.getAll('rules[]').sort(), language: values.get('language')};
+    });
+    const priorPreferences = await preferenceValues();
+    check(JSON.stringify(priorPreferences.version) === '["20"]'
+      && JSON.stringify(priorPreferences.delay) === '["5"]'
+      && JSON.stringify(priorPreferences.rules) === '["followup_proposal","followup_qualified"]',
+      'Capped form lost or duplicated its persisted automation values');
+    check(await preferenceForm.locator('button[type=submit]').isEnabled()
+      && await preferenceForm.locator('[name=language]').isEnabled(), 'Capped language form is disabled');
+    check(await preferenceForm.locator('select[name=delay_seconds]').isDisabled()
+      && await preferenceForm.locator('select[name=delay_seconds]').inputValue() === '5',
+      'Capped timing control is editable or shows a different persisted delay');
+    const cappedRules = preferenceForm.locator('input[type=checkbox][name="rules[]"]');
+    check(await cappedRules.count() === 2
+      && await cappedRules.evaluateAll(inputs => inputs.every(input => input.matches(':disabled'))),
+      'Capped automation rules remain editable');
+    check(await preferencePage.locator('[data-automation-revision-limit="20"]').isVisible(),
+      'Capped form does not explain the preserved rules and available language change');
+    await Promise.all([preferencePage.waitForNavigation(), preferenceForm.locator('button[type=submit]').click()]);
+    check(new URL(preferencePage.url()).search === '?section=settings'
+      && JSON.stringify(await preferenceValues()) === JSON.stringify(priorPreferences),
+      'Real capped no-op form submission failed or changed automation values');
+    const nextLanguage = priorPreferences.language === 'en' ? 'pt' : 'en';
+    await preferenceForm.locator('[name=language]').selectOption(nextLanguage);
+    await Promise.all([preferencePage.waitForNavigation(), preferenceForm.locator('button[type=submit]').click()]);
+    check(new URL(preferencePage.url()).search === '?section=settings'
+      && await preferencePage.locator('html').getAttribute('lang') === (nextLanguage === 'pt' ? 'pt-BR' : nextLanguage)
+      && JSON.stringify(await preferenceValues()) === JSON.stringify({...priorPreferences, language: nextLanguage}),
+      'Real capped language form submission lost its values, language or revision');
+    await preferencePage.screenshot({path: path.join(output, 'crm-preferences-revision-20.png'), fullPage: true});
+    await preferenceContext.close();
+    console.log('PRIVATE CAPPED PREFERENCES CHROMIUM PASS: enabled language submit, preserved disabled controls, revision 20 unchanged.');
+
     const administrator = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
     const adminPage = await administrator.newPage();
     await login(adminPage, fixtures.admin, true);
