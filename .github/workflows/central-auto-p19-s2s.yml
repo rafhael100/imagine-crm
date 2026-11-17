@@ -1,4 +1,4 @@
-name: CENTRAL AUTO P21 private service integrity and durable confirmations
+name: CENTRAL AUTO P22 private receipt reconciliation and integrity
 on:
   pull_request:
     paths: ['app/Homologation/S2S/**', 'bootstrap/app.php', 'infra/homologation/s2s/**', 'scripts/ci/s2s/**', '.github/workflows/central-auto-p19-s2s.yml']
@@ -27,6 +27,7 @@ jobs:
           for file in app/Homologation/S2S/*.php scripts/ci/s2s/*.php; do php -l "$file"; done
           php scripts/ci/s2s/test-strict-json.php
           php scripts/ci/s2s/test-agents-ack.php
+          php scripts/ci/s2s/test-agents-receipt.php
       - name: Verify the pinned laboratory overlay and execution boundary
         run: python3 -m unittest discover -s scripts/ci/s2s -p 'test_*.py' -v
   real-products-mtls:
@@ -36,6 +37,7 @@ jobs:
     timeout-minutes: 25
     env:
       CRM_P21_REPOSITORY_PUBLIC: 'true'
+      CRM_P22_REPOSITORY_PUBLIC: 'true'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -50,13 +52,13 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: rafhael100/imagine-ai-agents
-          ref: 94dcfeabd24f180113d2a378afe6232c67053664
+          ref: 8041c022776bbc1f998224a880726a8a3e69db37
           path: pinned-agents
           fetch-depth: 0
           persist-credentials: false
-      - name: Export existing P18 consolidated tree and overlay reviewed P19 receiver
+      - name: Export existing P18 tree with pinned P19 receiver and P27 receipt endpoint
         working-directory: pinned-agents
         run: |
           python3 runtime/central-auto/export-integration-tree.py
-      - name: Real separate products, ambiguous JSON rejection and expired receipt replay
-        run: sudo -E python3 scripts/ci/s2s/run_p21.py "$GITHUB_WORKSPACE/pinned-portal" "$RUNNER_TEMP/central-auto-p18b-merged"
+      - name: Real separate products, strict messages and expired pending receipt recovery
+        run: sudo -E python3 scripts/ci/s2s/run_p22.py "$GITHUB_WORKSPACE/pinned-portal" "$RUNNER_TEMP/central-auto-p18b-merged"
