@@ -256,13 +256,27 @@ def isolated_restore_cluster(profile: dict, run):
 def verify_restored_security(query, profile: dict, expected: dict, base_tables: list[str]) -> None:
     restored_profile, actual = detect_profile(query, base_tables)
     require(restored_profile == profile, "Restored private backup profile differs.")
-    changed = [key for key in expected if actual.get(key) != expected[key]]
+    def comparable(manifest):
+        # pg_dump/restore can distribute varchar[] -> text[] coercions into
+        # each literal of legacy CHECK arrays. pg_get_constraintdef decompiles
+        # those equivalent trees differently. This extension does not attempt
+        # a general SQL-equivalence rewrite. Keep EVERY constraint's identity,
+        # kind and validation state; compare exact definitions for PK/FK/UNIQUE
+        # and for every CHECK in the three newly introduced execution tables.
+        constraints = [({key: value for key, value in item.items() if key != "definition"}
+                        if item["type"] == "c" and item["table"] not in EXECUTION_TABLES else item)
+                       for item in manifest["constraints"]]
+        return {**manifest, "constraints": constraints}
+
+    expected_comparable, actual_comparable = comparable(expected), comparable(actual)
+    changed = [key for key in expected_comparable
+               if actual_comparable.get(key) != expected_comparable[key]]
     diagnostic = ""
     if "constraints" in changed:
         # Schema-only diagnostics: never print rows, wire receipts, queries,
         # role credentials or a backup payload when identifying a restore drift.
-        before = {(item["table"], item["name"]): item for item in expected["constraints"]}
-        after = {(item["table"], item["name"]): item for item in actual["constraints"]}
+        before = {(item["table"], item["name"]): item for item in expected_comparable["constraints"]}
+        after = {(item["table"], item["name"]): item for item in actual_comparable["constraints"]}
         differences = [{"source": before.get(key), "restored": after.get(key)}
                        for key in sorted(set(before) | set(after)) if before.get(key) != after.get(key)]
         diagnostic = "; constraint_schema_diff=" + json.dumps(differences[:3], sort_keys=True)

@@ -80,6 +80,13 @@ objetos desconhecidos continuam recusados. O backup usa o snapshot PostgreSQL
 consistente existente, inclui as tabelas novas nas contagens e nas provas de
 isolamento e preserva owners, ACLs e FORCE RLS.
 
+A comparação mantém o inventário e o estado de validação de todas as constraints,
+as definições exatas de PK/FK/UNIQUE e os CHECKs exatos das três tabelas novas.
+Os CHECKs legados de `varchar IN (...)` podem ser decompilados de forma diferente
+após `pg_dump`/restore, como observado na CI; a equivalência textual dessas
+definições antigas fica fora desta ampliação. Nenhuma constraint é removida ou
+modificada para acomodar essa diferença, e não se aplica normalização genérica a SQL.
+
 A restauração cria a role nova sem login ou privilégios elevados. Restaurar
 projeção e histórico não chama o n8n nem autoriza uma repetição. O ensaio bilateral
 usa um resultado produzido pelo n8n real e uma resposta HTTP verificada pelo CRM;
