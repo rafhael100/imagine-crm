@@ -18,7 +18,7 @@ import time
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/ops"))
 from private_crm_backup_contract import (  # noqa: E402
-    BASE_TENANT_TABLES, DATABASE, S2S_TABLES, detect_profile, isolated_restore_cluster,
+    BASE_TENANT_TABLES, DATABASE, EXECUTION_TABLES, S2S_TABLES, detect_profile, isolated_restore_cluster,
     require, scoped_counts, table_counts, verify_restored_security,
 )
 from private_crm_backup_snapshot import exported_snapshot  # noqa: E402
@@ -107,6 +107,7 @@ def main() -> None:
                              (ROOT / "infra/homologation/schema.sql").read_text())
     live_profile, _ = detect_profile(sql, base_tables)
     require(live_profile["receipt_reconciliation"], "Complete current S2S fixture required.")
+    service_tables = S2S_TABLES + (EXECUTION_TABLES if live_profile["execution_feedback"] else ())
     before = table_counts(sql, live_profile)
     old_title = sql(f"SELECT title FROM public.crm_private_leads WHERE id='{LEAD_A}'")
     require(old_title == "LEAD_TESTE_BACKUP_A", "Expected controlled backup fixture missing.")
@@ -134,7 +135,7 @@ def main() -> None:
             require(snapshot.query(f"SELECT title FROM public.crm_private_leads WHERE id='{LEAD_A}'") == old_title,
                     "Snapshot observed a later committed update.")
             scopes = {}
-            for role, tables in (("crm_homologation_app", BASE_TENANT_TABLES), ("crm_auto_reader_owner", S2S_TABLES)):
+            for role, tables in (("crm_homologation_app", BASE_TENANT_TABLES), ("crm_auto_reader_owner", service_tables)):
                 scopes[role] = {tenant: scoped_counts(snapshot.query, tenant, role=role, tables=tables,
                                                      manage_transaction=False) for tenant in ("", A, B)}
             dump = snapshot.dump()
@@ -161,7 +162,7 @@ def main() -> None:
             require(query(f"SELECT count(*) FROM public.crm_private_leads WHERE id='{CONCURRENT_LEAD}'") == "0"
                     and query(f"SELECT title FROM public.crm_private_leads WHERE id='{LEAD_A}'") == old_title,
                     "pg_dump imported a different snapshot from the manifest.")
-            for role, tables in (("crm_homologation_app", BASE_TENANT_TABLES), ("crm_auto_reader_owner", S2S_TABLES)):
+            for role, tables in (("crm_homologation_app", BASE_TENANT_TABLES), ("crm_auto_reader_owner", service_tables)):
                 for tenant in ("", A, B):
                     require(scoped_counts(query, tenant, role=role, tables=tables) == scopes[role][tenant],
                             "Restored scopes differ from the exported source snapshot.")
