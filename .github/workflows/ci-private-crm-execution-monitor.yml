@@ -1,0 +1,138 @@
+name: Private CRM n8n monitor - authenticated synthetic UI
+on:
+  pull_request:
+    branches: [dev/fast-track-crm-2026-11-04, feat/crm-n8n-execution-feedback-2026-11-17]
+    paths:
+      - 'app/Homologation/**'
+      - 'app/Core/Identity/**'
+      - 'app/Core/Tenancy/**'
+      - 'app/Providers/AppServiceProvider.php'
+      - 'config/**'
+      - 'bootstrap/app.php'
+      - 'routes/private-homologation.php'
+      - 'resources/views/crm-private-journey.blade.php'
+      - 'resources/views/partials/crm-execution-monitor*.blade.php'
+      - 'infra/homologation/**'
+      - 'scripts/ops/*private-crm*'
+      - 'scripts/ops/private_crm_backup_*.py'
+      - 'scripts/ops/private-backup-crypt.php'
+      - 'tests/Unit/ExecutionMonitorTest.php'
+      - 'tests/Feature/ExecutionMonitorSurfaceTest.php'
+      - '.github/workflows/ci-private-crm-execution-monitor.yml'
+permissions:
+  contents: read
+concurrency:
+  group: private-crm-execution-monitor-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real-private-execution-monitor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CRM_PRIVATE_PROJECT: imagine-crm-journey-ci
+      CRM_N8N_EXECUTION_MONITOR: synthetic-private-v1
+      CRM_PRIVATE_CI_MONITOR_PROFILE: execution-monitor-v1
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Create fresh isolated credentials and guard the hosted pull request
+        env:
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REPOSITORY" == rafhael100/imagine-crm ]]
+          [[ "$GITHUB_EVENT_NAME" == pull_request ]]
+          [[ "$GITHUB_ACTIONS" == true && "$RUNNER_ENVIRONMENT" == github-hosted ]]
+          [[ "$(git rev-parse HEAD)" == "$CANDIDATE_SHA" ]]
+          python3 scripts/ops/create-private-crm-environment.py "$RUNNER_TEMP/crm-private.env" "$RUNNER_TEMP/crm-private-data" "$CANDIDATE_SHA"
+          sudo chown root:root "$RUNNER_TEMP/crm-private-data"
+          echo "CRM_PRIVATE_ENV_FILE=$RUNNER_TEMP/crm-private.env" >> "$GITHUB_ENV"
+      - name: Build exact application and start the existing private loopback stack
+        run: |
+          set -euo pipefail
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml config --quiet
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml build app
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml up -d --no-build
+          ready=0
+          for attempt in $(seq 1 40); do
+            if curl -fsS --max-time 3 -o /dev/null http://127.0.0.1:18086/up; then ready=1; break; fi
+            sleep 2
+          done
+          test "$ready" = 1
+      - name: Compile Blade, lint PHP and parse the dedicated harnesses
+        run: |
+          set -euo pipefail
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T app sh -c 'find app/Homologation -name "*.php" -exec php -l {} \; && php -l scripts/ops/seed-private-crm-execution-monitor.php && php artisan view:cache && for view in storage/framework/views/*.php; do php -l "$view" || exit 1; done'
+          python3 -m py_compile scripts/ops/test-private-crm-execution-monitor.py
+          node --check scripts/ops/test-private-crm-execution-monitor.cjs
+      - name: Install optional reviewed synthetic SQL profiles with the isolated owner
+        run: |
+          set -euo pipefail
+          for candidate in install-candidate outbound-candidate execution-feedback-candidate execution-monitor-candidate; do
+            docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T postgres psql -X -q -v ON_ERROR_STOP=1 -U crm_homologation_owner -d imagine_crm_private_homologation < "infra/homologation/s2s/$candidate.sql"
+          done
+      - name: Seed protected fictional identities and explicit presentation fixtures
+        run: |
+          set -euo pipefail
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml run --rm -T tools scripts/ops/seed-private-crm-fixtures.php seed
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml run --rm -T -e CRM_PRIVATE_CI_PROJECT="$CRM_PRIVATE_PROJECT" -e CRM_PRIVATE_CI_MONITOR_PROFILE="$CRM_PRIVATE_CI_MONITOR_PROFILE" tools scripts/ops/seed-private-crm-execution-monitor.php seed
+      - name: Real HTTP session MFA tenant isolation immutable reads and closed profiles
+        run: |
+          sudo env GITHUB_ACTIONS="$GITHUB_ACTIONS" RUNNER_ENVIRONMENT="$RUNNER_ENVIRONMENT" GITHUB_REPOSITORY="$GITHUB_REPOSITORY" GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" CRM_N8N_EXECUTION_MONITOR="$CRM_N8N_EXECUTION_MONITOR" CRM_PRIVATE_CI_MONITOR_PROFILE="$CRM_PRIVATE_CI_MONITOR_PROFILE" python3 scripts/ops/test-private-crm-execution-monitor.py "$RUNNER_TEMP/crm-private-data/execution-monitor-fixtures.json"
+      - name: Record protected business and S2S snapshot before browser reads
+        run: |
+          sudo env GITHUB_ACTIONS="$GITHUB_ACTIONS" RUNNER_ENVIRONMENT="$RUNNER_ENVIRONMENT" GITHUB_REPOSITORY="$GITHUB_REPOSITORY" GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" CRM_N8N_EXECUTION_MONITOR="$CRM_N8N_EXECUTION_MONITOR" CRM_PRIVATE_CI_MONITOR_PROFILE="$CRM_PRIVATE_CI_MONITOR_PROFILE" python3 scripts/ops/test-private-crm-execution-monitor.py "$RUNNER_TEMP/crm-private-data/execution-monitor-fixtures.json" before-browser
+      - name: Authenticated Chromium PT EN ES list and detail desktop mobile
+        run: |
+          set -euo pipefail
+          npm install --prefix "$RUNNER_TEMP/private-crm-browser" --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          sudo env GITHUB_ACTIONS="$GITHUB_ACTIONS" RUNNER_ENVIRONMENT="$RUNNER_ENVIRONMENT" GITHUB_REPOSITORY="$GITHUB_REPOSITORY" GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" CRM_PRIVATE_CI_MONITOR_PROFILE="$CRM_PRIVATE_CI_MONITOR_PROFILE" CRM_PRIVATE_PLAYWRIGHT_DIR="$RUNNER_TEMP/private-crm-browser" node scripts/ops/test-private-crm-execution-monitor.cjs "$RUNNER_TEMP/crm-private-data/execution-monitor-fixtures.json" "$RUNNER_TEMP/crm-execution-monitor-evidence"
+      - name: Prove all browser navigation left business and S2S data unchanged
+        run: |
+          sudo env GITHUB_ACTIONS="$GITHUB_ACTIONS" RUNNER_ENVIRONMENT="$RUNNER_ENVIRONMENT" GITHUB_REPOSITORY="$GITHUB_REPOSITORY" GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" CRM_N8N_EXECUTION_MONITOR="$CRM_N8N_EXECUTION_MONITOR" CRM_PRIVATE_CI_MONITOR_PROFILE="$CRM_PRIVATE_CI_MONITOR_PROFILE" python3 scripts/ops/test-private-crm-execution-monitor.py "$RUNNER_TEMP/crm-private-data/execution-monitor-fixtures.json" after-browser
+      - name: Restore the persisted synthetic history and optional reader in a separate cluster
+        run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" CRM_N8N_EXECUTION_MONITOR="$CRM_N8N_EXECUTION_MONITOR" python3 scripts/ops/backup-private-crm.py "$RUNNER_TEMP/crm-private-data/backups"
+      - name: Make only credential-free screenshots readable by the artifact runner
+        if: always()
+        run: |
+          if test -d "$RUNNER_TEMP/crm-execution-monitor-evidence"; then
+            sudo chown -R "$(id -u):$(id -g)" "$RUNNER_TEMP/crm-execution-monitor-evidence"
+          fi
+      - name: Preserve only sanitized monitor PNGs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: private-crm-execution-monitor-pt-en-es
+          path: ${{ runner.temp }}/crm-execution-monitor-evidence/*.png
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Sanitized failure diagnostics
+        if: failure()
+        run: |
+          if test -f "$CRM_PRIVATE_ENV_FILE"; then
+            docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml logs --tail 40 app web
+          fi
+      - name: Remove only this runner's isolated project and volumes
+        if: always()
+        run: |
+          if test -f "$CRM_PRIVATE_ENV_FILE"; then
+            docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml down --volumes --remove-orphans
+          fi
+  execution-monitor-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, pdo_sqlite
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: vendor/bin/phpunit tests/Unit/ExecutionMonitorTest.php tests/Feature/ExecutionMonitorSurfaceTest.php

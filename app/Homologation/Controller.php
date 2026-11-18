@@ -94,7 +94,20 @@ final class Controller
         $codes=$this->enrollment()->recover($r->string('login')->toString(),$r->string('code')->toString(),$r->string('password')->toString());
         return $this->page($r,'recovered',['recovery_codes'=>$codes]);
     }
-    public function dashboard(Request $r) { return $this->page($r,'workspace',app(Workspace::class)->overview()); }
+    public function dashboard(Request $r)
+    {
+        $section = $r->query('section');
+        // Preserve the existing overview fallback for unrecognized sections.
+        // Only this exact scalar selects the optional, closed monitor query.
+        $monitor = $section === 'n8n';
+        $selectedEvent = null;
+        if ($monitor) {
+            abort_unless(ExecutionMonitor::enabled(),404);
+            try { $selectedEvent = ExecutionMonitor::selectedEvent($r->query()); }
+            catch (\InvalidArgumentException) { abort(422); }
+        }
+        return $this->page($r,'workspace',app(Workspace::class)->overview($monitor,$selectedEvent));
+    }
     public function leads(Request $r)
     {
         $r->validate(['title'=>'required|string|max:64','value_cents'=>'required|integer|min:0|max:100000000','funnel'=>'nullable|uuid']);

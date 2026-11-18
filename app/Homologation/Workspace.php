@@ -52,9 +52,9 @@ final readonly class Workspace
         return $this->db->table('public.crm_private_'.$name)->where('organization_id',$organization);
     }
 
-    public function overview(): array
+    public function overview(bool $withExecutionMonitor = false, ?string $selectedEvent = null): array
     {
-        return $this->run('view',function ($account,$trial) {
+        return $this->run('view',function ($account,$trial) use ($withExecutionMonitor,$selectedEvent) {
             $org = $account->organization_id;
             $leads = $this->table('leads',$org)->orderBy('created_at')->orderBy('id')->get()->all();
             $tasks = $this->table('tasks',$org)->orderBy('due_on')->get()->all();
@@ -68,7 +68,19 @@ final readonly class Workspace
             $automationRuns=$this->table('automation_runs',$org)->orderByDesc('created_at')->limit(50)->get()->all();
             $team = $this->iam->table('public.crm_private_accounts')->where('organization_id',$org)
                 ->get(['identity_id','status','role','team_role'])->all();
-            return compact('account','trial','leads','tasks','events','orders','preferences','rules','team','funnels','invitations','automation','automationRuns');
+            $data = compact('account','trial','leads','tasks','events','orders','preferences','rules','team','funnels','invitations','automation','automationRuns');
+            if ($withExecutionMonitor) {
+                abort_unless(ExecutionMonitor::enabled(),404);
+                // The existing IAM and membership locks remain held through this
+                // local read and its validation. No service credentials or HTTP.
+                $row = $this->db->selectOne('SELECT crm_auto_service.read_execution_monitor(?::uuid)::text AS monitor',[$selectedEvent]);
+                if (!$row || !is_string($row->monitor ?? null)) {
+                    throw new \UnexpectedValueException('Execution monitor unavailable.');
+                }
+                $data['executionMonitor'] = ExecutionMonitor::read($row->monitor,$org,$selectedEvent);
+                abort_if($selectedEvent !== null && $data['executionMonitor']['selected'] === null,404);
+            }
+            return $data;
         });
     }
 

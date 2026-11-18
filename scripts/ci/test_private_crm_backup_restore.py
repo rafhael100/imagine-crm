@@ -6,17 +6,20 @@ The production/operator script is executed unchanged, including crypto checks.
 """
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
 import os
 from pathlib import Path
 import re
+import secrets
 import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/ops"))
 from private_crm_backup_contract import (  # noqa: E402
-    BASE_ROLES, BASE_TENANT_TABLES, DATABASE, EXECUTION_TABLES, S2S_TABLES, detect_profile,
+    BASE_ROLES, BASE_TENANT_TABLES, DATABASE, EXECUTION_TABLES, MONITOR_FUNCTION, S2S_TABLES, detect_profile,
     isolated_restore_cluster, require, scoped_counts, table_counts, verify_restored_security,
 )
 
@@ -261,6 +264,120 @@ def main() -> None:
                 raise AssertionError("Partial execution backup profile was accepted.")
         finally:
             sql(cleanup)
+
+    # A fourth optional profile adds exactly one human-facing local reader. Its
+    # own SQL counterproofs use rolled-back fixtures and a real READ ONLY call.
+    sql((ROOT / "infra/homologation/s2s/execution-monitor-candidate.sql").read_text())
+    monitor_checks = sql((ROOT / "scripts/ci/s2s/test-execution-monitor.sql").read_text())
+    for marker in ("CRM_N8N_MONITOR_SQL_PASS", "CRM_N8N_MONITOR_READ_ONLY_PASS"):
+        require(marker in monitor_checks, "Execution monitor SQL counterproof missing.")
+    print("CRM_N8N_MONITOR_SQL_COUNTERPROOFS_PASS local_reads_only=1 source_and_history_tamper_denied=1")
+
+    # This is a controlled verifier fixture for persistence/restore, not a claim
+    # that native n8n executed the task. Native execution is covered separately
+    # by the bilateral Agents harness. The fictional HMAC keys never leave RAM.
+    def literal(value: str) -> str:
+        return "'" + value.replace("'", "''") + "'"
+
+    sql(f"INSERT INTO crm_auto_service.execution_read_grants VALUES ('{A}','SYNTHETIC_BACKUP_A',"
+        "'imagine-ai-agents','event.execution.read',true,1,floor(extract(epoch FROM clock_timestamp()))::bigint+900)")
+    candidate = json.loads(sql(f"SELECT crm_auto_service.execution_candidate('{A}','{EVENT_A}')"))
+    ingress_key, response_key = secrets.token_bytes(32), secrets.token_bytes(32)
+    task_hash = hashlib.sha256(b"SYNTHETIC_MONITOR_BACKUP_VERIFIER_FIXTURE").hexdigest()
+    observation_fields = ("company_id", "tenant_ref", "event_ref", "payload_hash", "lead_id",
+                          "task_payload_hash", "execution_state", "queue_state", "result_code", "attempt")
+    for state, queue in (("NOT_STAGED", "NONE"), ("STARTED", "LEASED"), ("RESULT", "LEASED"), ("ACKED", "ACKED")):
+        now = int(sql("SELECT floor(extract(epoch FROM clock_timestamp()))::bigint"))
+        request = {
+            "schema": "AUTO_IA_EXECUTION_QUERY_V1", "issuer": "imagine-crm", "audience": "imagine-ai-agents",
+            "product": "imagine-crm", "operation": "event.execution.read", "company_id": A,
+            "tenant_ref": candidate["tenant_ref"], "event_ref": candidate["event_ref"],
+            "payload_hash": candidate["payload_hash"], "request_ref": "SYNTHETIC_" + secrets.token_hex(16).upper(),
+            "nonce_ref": "SYNTHETIC_" + secrets.token_hex(16).upper(), "issued_at": now, "expires_at": now + 30,
+            "key_id": "SYNTHETIC_KEY_A",
+        }
+        request["signature"] = hmac.new(ingress_key, ("IMAGINE_AGENTS_EXECUTION_QUERY_V1\n" +
+            "\n".join(str(value) for value in request.values())).encode(), hashlib.sha256).hexdigest()
+        facts = {"company_id": A, "tenant_ref": candidate["tenant_ref"], "event_ref": candidate["event_ref"],
+                 "payload_hash": candidate["payload_hash"], "lead_id": candidate["lead_id"],
+                 "task_payload_hash": "" if state == "NOT_STAGED" else task_hash,
+                 "execution_state": state, "queue_state": queue,
+                 "result_code": "PREPARED" if state in ("RESULT", "ACKED") else "NONE",
+                 "attempt": 0 if state == "NOT_STAGED" else 1}
+        observation_hash = hashlib.sha256(("IMAGINE_AGENTS_EXECUTION_OBSERVATION_V1\n" +
+            "\n".join(str(facts[field]) for field in observation_fields)).encode()).hexdigest()
+        response = {"schema": "AUTO_IA_EXECUTION_STATUS_V1", "issuer": "imagine-ai-agents", "audience": "imagine-crm",
+                    **{field: facts[field] for field in observation_fields[:-1]}, "observation_hash": observation_hash,
+                    "attempt": facts["attempt"], "request_ref": request["request_ref"], "nonce_ref": request["nonce_ref"],
+                    "issued_at": now, "expires_at": now + 30, "key_id": "SYNTHETIC_EXECUTION_STATUS_KEY"}
+        response["signature"] = hmac.new(response_key, ("IMAGINE_AGENTS_EXECUTION_STATUS_V1\n" +
+            "\n".join(str(value) for value in response.values())).encode(), hashlib.sha256).hexdigest()
+        sql(f"SELECT crm_auto_service.project_execution('{A}','{EVENT_A}',"
+            + literal(json.dumps(request, separators=(",", ":"))) + "::jsonb,"
+            + literal(json.dumps(response, separators=(",", ":"))) + ")")
+    # Historical local display is independent of these revoked service grants.
+    sql(f"UPDATE crm_auto_service.execution_read_grants SET active=false,expires_at=0 WHERE company_id='{A}';"
+        f"UPDATE crm_auto_service.outbound_grants SET active=false WHERE company_id='{A}'")
+
+    def monitor_view(query):
+        value = query("BEGIN READ ONLY; SET LOCAL ROLE crm_homologation_app; "
+            f"SELECT set_config('app.tenant_id','{A}',true); "
+            f"SELECT 'MONITOR|' || crm_auto_service.read_execution_monitor('{EVENT_A}')::text; ROLLBACK;")
+        records = [json.loads(line[8:]) for line in value.splitlines() if line.startswith("MONITOR|")]
+        require(len(records) == 1, "Execution monitor local view missing.")
+        view = records[0]
+        require(view["selected"]["observation"]["execution_state"] == "ACKED"
+                and view["selected"]["history_count"] == 4
+                and [item["sequence"] for item in view["selected"]["history"]] == [4, 3, 2, 1],
+                "Historical monitor projection differs.")
+        view.pop("generated_at")
+        return view
+
+    expected_monitor = monitor_view(sql)
+    monitor_manifest = encrypted_backup("synthetic-private-s2s-execution-monitor-v1")
+    require(monitor_manifest["s2s_execution_monitor"] is True
+            and monitor_manifest["s2s_execution_feedback"] is True
+            and monitor_manifest["s2s_function_owners_verified"] == 9
+            and monitor_manifest["table_counts"]["crm_auto_service.execution_observations"] == 4,
+            "Monitor encrypted backup omitted its complete non-empty read model.")
+    monitor_profile, monitor_security = detect_profile(sql, base_tables)
+    monitor_counts = table_counts(sql, monitor_profile)
+    monitor_dump = run(source + ["pg_dump", "-U", "crm_homologation_owner", "-d", DATABASE, "-Fc"])
+    with isolated_restore_cluster(monitor_profile, run) as (query, command):
+        run(command + ["pg_restore", "--exit-on-error", "-U", "crm_homologation_restore", "-d", DATABASE], monitor_dump)
+        verify_restored_security(query, monitor_profile, monitor_security, base_tables)
+        require(table_counts(query, monitor_profile) == monitor_counts and monitor_view(query) == expected_monitor,
+                "Separate restored monitor history differs after service revocation.")
+    for setup, cleanup in (
+        ("ALTER FUNCTION " + MONITOR_FUNCTION + " RENAME TO execution_monitor_missing",
+         "ALTER FUNCTION crm_auto_service.execution_monitor_missing(uuid) RENAME TO read_execution_monitor"),
+        ("ALTER FUNCTION " + MONITOR_FUNCTION + " VOLATILE", "ALTER FUNCTION " + MONITOR_FUNCTION + " STABLE"),
+        ("ALTER FUNCTION " + MONITOR_FUNCTION + " STRICT", "ALTER FUNCTION " + MONITOR_FUNCTION + " CALLED ON NULL INPUT"),
+        ("GRANT EXECUTE ON FUNCTION " + MONITOR_FUNCTION + " TO PUBLIC",
+         "REVOKE EXECUTE ON FUNCTION " + MONITOR_FUNCTION + " FROM PUBLIC"),
+        ("GRANT EXECUTE ON FUNCTION crm_auto_service.project_execution(uuid,uuid,jsonb,text) TO crm_homologation_app",
+         "REVOKE EXECUTE ON FUNCTION crm_auto_service.project_execution(uuid,uuid,jsonb,text) FROM crm_homologation_app"),
+        ("GRANT SELECT ON crm_auto_service.execution_observations TO crm_homologation_app",
+         "REVOKE SELECT ON crm_auto_service.execution_observations FROM crm_homologation_app"),
+        ("GRANT SELECT(receipt) ON crm_auto_service.execution_observations TO crm_homologation_app",
+         "REVOKE SELECT(receipt) ON crm_auto_service.execution_observations FROM crm_homologation_app"),
+        ("GRANT CREATE ON SCHEMA crm_auto_service TO crm_homologation_app",
+         "REVOKE CREATE ON SCHEMA crm_auto_service FROM crm_homologation_app"),
+    ):
+        sql(setup)
+        try:
+            try:
+                detect_profile(sql, base_tables)
+            except RuntimeError:
+                pass
+            else:
+                raise AssertionError("Unsafe or incomplete monitor backup profile was accepted.")
+        finally:
+            sql(cleanup)
+    require(table_counts(sql, monitor_profile) == monitor_counts and monitor_view(sql) == expected_monitor,
+            "Monitor backup tests changed their source evidence.")
+    print("CRM_BACKUP_EXECUTION_MONITOR_PASS local_history_restored=1 revoked_service_grants=1 "
+          "stable_function=1 execute_only_app=1 unsafe_profile_denied=1 raw_receipts_exposed=0 operational_apply=0")
     print("CRM_BACKUP_BASE_S2S_SEPARATE_CLUSTER_PASS encrypted=1 tamper_rejected=1 "
           "owners_preserved=1 force_rls=1 functions_executed=1 source_preserved=1 "
           "execution_profile_verified=1 partial_execution_profile_denied=1 operational_apply=0")
