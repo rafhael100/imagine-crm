@@ -130,10 +130,14 @@ async function width(page) {
     const audits = auditCount();
     const response = await action();
     check(response && response.status() === 200, 'summary navigation failed');
-    const headers = response.headers();
-    check(headers['cache-control']?.includes('no-store') && headers['x-content-type-options'] === 'nosniff'
-      && headers['content-type']?.startsWith('text/html')
-      && !Object.keys(headers).some(key => key.startsWith('access-control-')), 'summary privacy headers missing');
+    // headers() omits security headers. Read the complete wire headers without
+    // printing them; both the private middleware and nginx can emit nosniff.
+    const headers = await response.allHeaders();
+    check(headers['cache-control']?.includes('no-store'), 'summary must prohibit storage');
+    const contentOptions = (headers['x-content-type-options'] || '').split(',').map(value => value.trim());
+    check(contentOptions.every(value => value === 'nosniff'), 'summary must prevent content sniffing');
+    check(headers['content-type']?.startsWith('text/html'), 'summary must be HTML');
+    check(!Object.keys(headers).some(key => key.startsWith('access-control-')), 'summary must not expose CORS');
     check(summaryRequests.length === requests + 1 && summaryRequests.at(-1) === 'GET'
       && jsonRequests === 0, 'summary performs duplicate or JSON fetches');
     check(auditCount() === audits + 1, 'one summary navigation must audit exactly once');
