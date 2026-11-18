@@ -31,6 +31,7 @@ FILES = frozenset((
 ))
 DATABASE = "imagine_crm_private_homologation"
 OWNER = "crm_homologation_owner"
+ADMIN = "ci_inspection_admin"
 SECRET = "SYNTHETIC_INSPECTION_SECRET_MUST_NOT_LEAVE_DATABASE"
 CHECKS = 0
 
@@ -111,7 +112,7 @@ def main():
                 "--label", "com.docker.compose.project=" + project,
                 "--label", "com.docker.compose.service=postgres",
                 "--label", "imagine.inspection.ci-owner=" + nonce,
-                "--env", "POSTGRES_USER=" + OWNER, "--env", "POSTGRES_DB=" + DATABASE,
+                "--env", "POSTGRES_USER=" + ADMIN, "--env", "POSTGRES_DB=" + DATABASE,
                 "--env", "POSTGRES_HOST_AUTH_METHOD=trust", "postgres:16"], timeout=120)
             container = result.stdout.decode().strip()
             require(re.fullmatch(r"[a-f0-9]{64}", container) is not None, "FIXTURE_CONTAINER_ID_INVALID")
@@ -126,7 +127,7 @@ def main():
                 # The image's temporary initdb server accepts only Unix sockets.
                 # TCP readiness waits for the final server after database creation.
                 result = command(docker + ["exec", container, "pg_isready", "-h", "127.0.0.1",
-                    "-p", "5432", "-U", OWNER, "-d", DATABASE],
+                    "-p", "5432", "-U", ADMIN, "-d", DATABASE],
                                  check=False, timeout=5)
                 if result.returncode == 0:
                     ready = True
@@ -141,10 +142,14 @@ def main():
                     "-h", "/var/run/postgresql", "-U", user, "-d", database,
                     "-v", "ON_ERROR_STOP=1", "-f", "-"], statement.encode(), check=check)
 
-            version_result = psql("SHOW server_version_num;", check=False)
+            version_result = psql("SHOW server_version_num;", user=ADMIN, check=False)
             require(version_result.returncode == 0, "POSTGRES_VERSION_QUERY_FAILED_EXIT_" + str(version_result.returncode))
             version = version_result.stdout.decode().strip()
             require(version.isdigit() and int(version) // 10000 == 16, "POSTGRES_16_REQUIRED")
+            # PostgreSQL forbids removing SUPERUSER from its bootstrap role.
+            # Keep that fixture admin separate from the owner tested under RLS.
+            psql("CREATE ROLE " + OWNER + " LOGIN SUPERUSER;"
+                 "ALTER DATABASE " + DATABASE + " OWNER TO " + OWNER + ";", user=ADMIN)
             psql((ROOT / "infra/homologation/schema.sql").read_text())
             roles_environment = ["POSTGRES_DB=" + DATABASE, "POSTGRES_USER=" + OWNER,
                 "CRM_PRIVATE_APP_PASSWORD=synthetic_ci_app", "CRM_PRIVATE_IAM_PASSWORD=synthetic_ci_iam",
@@ -218,13 +223,12 @@ def main():
                  "ALTER TABLE public.crm_private_installation ADD CONSTRAINT crm_private_installation_mode_check CHECK(mode='synthetic-v1');")
 
             # A malicious RLS expression must never be called by the marker probe.
-            psql("CREATE ROLE ci_inspection_admin LOGIN SUPERUSER;"
-                 "CREATE FUNCTION public.inspection_policy_canary() RETURNS boolean LANGUAGE plpgsql AS $$BEGIN RAISE EXCEPTION 'INSPECTION_POLICY_CALLED';END$$;"
+            psql("CREATE FUNCTION public.inspection_policy_canary() RETURNS boolean LANGUAGE plpgsql AS $$BEGIN RAISE EXCEPTION 'INSPECTION_POLICY_CALLED';END$$;"
                  "ALTER TABLE public.crm_private_installation ENABLE ROW LEVEL SECURITY;"
                  "ALTER TABLE public.crm_private_installation FORCE ROW LEVEL SECURITY;"
                  "CREATE POLICY inspection_canary ON public.crm_private_installation USING (public.inspection_policy_canary());"
                  "ALTER ROLE crm_homologation_owner NOSUPERUSER NOBYPASSRLS;")
-            fixture_admin = "ci_inspection_admin"
+            fixture_admin = ADMIN
             called = psql("SELECT * FROM public.crm_private_installation;", check=False)
             require(called.returncode != 0 and b"INSPECTION_POLICY_CALLED" in called.stderr,
                     "POLICY_COUNTERPROOF_NOT_REACHABLE")
@@ -237,7 +241,7 @@ def main():
                  "DROP POLICY inspection_canary ON public.crm_private_installation;"
                  "ALTER TABLE public.crm_private_installation DISABLE ROW LEVEL SECURITY;"
                  "ALTER TABLE public.crm_private_installation NO FORCE ROW LEVEL SECURITY;"
-                 "DROP FUNCTION public.inspection_policy_canary();", user="ci_inspection_admin")
+                 "DROP FUNCTION public.inspection_policy_canary();", user=ADMIN)
             print("CRM_OWNER_PRIVATE_INSPECTION_PG16_NEGATIVES_PASS", flush=True)
 
             psql("ALTER DATABASE " + DATABASE + " RENAME TO ci_unavailable_database;", database="postgres")
