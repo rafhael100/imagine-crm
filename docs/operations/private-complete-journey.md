@@ -104,6 +104,120 @@ Para usar o serviço CLI, informar `--env-file /srv/imagine/private-crm-journey/
 `-p imagine-crm-private-journey` e `-f infra/homologation/compose.yaml` ao `docker compose run --rm -T tools`.
 Os scripts recusam sobrescrever credenciais ou configurações inesperadas.
 
+## Recuperação automática após reinício (18/11/2026)
+
+Os serviços permanentes `postgres`, `redis`, `app` e `web` usam
+`restart: unless-stopped`. O Docker deve recolocá-los em execução depois de
+reiniciar, respeitando uma parada manual para manutenção. O serviço `tools`
+permanece de execução pontual, sem reinício automático. `on-failure` não cobre
+reinício do daemon e não substitui esta política.
+
+O incidente relatado em 18/11 mostrou HTTP 502 após reinício da VPS. A ausência
+de `restart` foi confirmada no Compose histórico, mas o estado dos contêineres
+na VPS ainda precisa ser observado. Este registro não declara recuperação
+operacional nem teste de reboot já realizado na Leaseweb.
+
+### Aplicação na instalação existente
+
+Alterar o Compose no Git não muda a política dos contêineres já criados.
+Na VPS autorizada, confirmar primeiro o projeto, os quatro serviços, a imagem
+publicada e os volumes da instalação atual. Consultar apenas campos necessários;
+não imprimir `runtime.env`, `Config.Env`, cofres, senhas ou tokens.
+
+```bash
+sudo docker ps -a \
+  --filter label=com.docker.compose.project=imagine-crm-private-journey \
+  --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+sudo systemctl is-enabled docker.service containerd.service nginx.service
+sudo systemctl is-active docker.service containerd.service nginx.service
+```
+
+Se houver unidade ausente, mascarada, Docker rootless ou supervisão específica,
+investigar essa configuração antes de aplicar comandos do host. Para a
+instalação Ubuntu/systemd registrada, habilitar as unidades existentes e
+confirmadas que estiverem desabilitadas com `systemctl enable UNIDADE`.
+`enable` registra a partida no boot; não inicia uma unidade inativa.
+Iniciar o Docker, se necessário, com `sudo systemctl start docker.service`.
+
+Aplicar a política aos quatro contêineres atuais, sem depender de nomes
+adivinhados. O bloco abaixo deve ser executado com Bash na VPS correta;
+valida todos os alvos antes da primeira alteração e exclui tarefas avulsas:
+
+```bash
+(
+  set -euo pipefail
+  crm_restart_ids=()
+  for crm_restart_service in postgres redis app web; do
+    mapfile -t crm_restart_matches < <(
+      sudo docker ps -aq \
+        --filter label=com.docker.compose.project=imagine-crm-private-journey \
+        --filter "label=com.docker.compose.service=${crm_restart_service}" \
+        --filter label=com.docker.compose.oneoff=False
+    )
+    if [ "${#crm_restart_matches[@]}" -ne 1 ]; then
+      echo "Recusado: esperado um contêiner permanente para ${crm_restart_service}." >&2
+      exit 1
+    fi
+    crm_restart_ids+=("${crm_restart_matches[0]}")
+  done
+  sudo docker inspect \
+    --format '{{.Name}} state={{.State.Status}} restart={{.HostConfig.RestartPolicy.Name}}' \
+    "${crm_restart_ids[@]}"
+  sudo docker update --restart unless-stopped "${crm_restart_ids[@]}"
+  sudo docker inspect \
+    --format '{{.Name}} state={{.State.Status}} restart={{.HostConfig.RestartPolicy.Name}}' \
+    "${crm_restart_ids[@]}"
+)
+```
+
+Conferir `restart=unless-stopped` nos quatro resultados. `docker update` não
+inicia um contêiner parado. Se os serviços estiverem parados pelo incidente e
+os caminhos corresponderem à instalação verificada, iniciar os existentes:
+
+```bash
+sudo docker compose \
+  --env-file /srv/imagine/private-crm-journey/runtime.env \
+  -p imagine-crm-private-journey \
+  -f /srv/imagine/crm-private-candidate/infra/homologation/compose.yaml \
+  start postgres redis app web
+```
+
+Confirmar a política e o estado dos quatro contêineres, PostgreSQL saudável,
+HTTP interno em `127.0.0.1:18086`, HTTPS/BasicAuth e login/MFA pelo domínio.
+O ajuste deve acompanhar o Compose versionado em futuras recriações.
+Registrar horário, IDs e políticas anterior/final, unidades habilitadas e
+resultado funcional em evidência protegida. Se a operação falhar no meio,
+reconsultar os quatro alvos e completar apenas os faltantes; não declarar
+sucesso a partir do código de saída de uma parte do procedimento.
+
+Esta manutenção não requer reconstruir imagens, executar migrations, remover
+volumes, trocar a versão instalada ou reiniciar o daemon compartilhado. Os
+gates F251/F252 de atualização de versão continuam aplicáveis ao seu próprio
+escopo; esta mudança de infraestrutura não deve ser disfarçada de atualização
+de telas permitida por esses gates.
+
+### Prova de recuperação e limites
+
+O teste de reinício automático roda apenas no runner GitHub descartável da
+jornada privada, com dados sintéticos. Deve observar o retorno dos mesmos
+quatro contêineres após reiniciar o daemon, sem `compose up`, `start` ou
+`restart` de resgate, e confirmar HTTP, sessão autenticada e dados persistidos.
+Isso testa a recuperação do Docker, não o boot completo da VPS.
+
+Na VPS compartilhada, a confirmação após reboot deve ocorrer em uma janela
+operacional combinada que considere os demais projetos e o acesso de retorno.
+Até esse ensaio, registrar separadamente: configuração versionada, política
+aplicada aos contêineres, serviços habilitados no boot e reboot real pendente.
+
+`depends_on` ordena operações do Compose, não a partida autônoma do daemon.
+Uma política de restart recupera processos encerrados; um processo travado que
+continua em execução ou marcado `unhealthy` exige diagnóstico e monitoramento.
+Falhas de disco, rede ou provedor também não são resolvidas por esta política.
+
+Referências: [Docker restart policies](https://docs.docker.com/engine/containers/start-containers-automatically/),
+[Docker no boot](https://docs.docker.com/engine/install/linux-postinstall/) e
+[ordem de partida do Compose](https://docs.docker.com/compose/how-tos/startup-order/).
+
 ## Acesso e roteiro de revisão
 
 Abra o endereço do CRM, passe pela proteção privada existente e clique em **Entrar**.

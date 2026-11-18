@@ -1,7 +1,7 @@
 name: Private CRM complete journey - isolated synthetic staging
 on:
   pull_request:
-    branches: [dev/fast-track-crm-2026-11-04]
+    branches: [dev/fast-track-crm-2026-11-04, review/crm-qa-independent-a11y-2026-11-15]
     paths:
       - 'app/Homologation/**'
       - 'app/Core/Identity/**'
@@ -96,6 +96,21 @@ jobs:
           path: ${{ runner.temp }}/crm-private-evidence/*.png
           retention-days: 7
           if-no-files-found: ignore
+      - name: Automatic return after isolated Docker daemon restart
+        timeout-minutes: 5
+        env:
+          CRM_PRIVATE_CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          sudo env CI="$CI" GITHUB_ACTIONS="$GITHUB_ACTIONS" \
+            RUNNER_ENVIRONMENT="$RUNNER_ENVIRONMENT" RUNNER_OS="$RUNNER_OS" \
+            GITHUB_REPOSITORY="$GITHUB_REPOSITORY" GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" \
+            GITHUB_JOB="$GITHUB_JOB" GITHUB_RUN_ID="$GITHUB_RUN_ID" \
+            GITHUB_WORKSPACE="$GITHUB_WORKSPACE" RUNNER_TEMP="$RUNNER_TEMP" \
+            CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" \
+            CRM_PRIVATE_CANDIDATE_SHA="$CRM_PRIVATE_CANDIDATE_SHA" \
+            python3 scripts/ops/test-private-crm-autostart.py \
+              "$RUNNER_TEMP/crm-private-data/fixtures.json" --allow-isolated-github-daemon-restart
       - name: Trial OTP service outage and recovery negative journeys
         run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/test-private-crm-resilience.py "$RUNNER_TEMP/crm-private-data/fixtures.json"
       - name: Revoke automated fixtures and prove separate client/admin reviewer access
@@ -115,3 +130,4 @@ jobs:
           if test -f "$CRM_PRIVATE_ENV_FILE"; then
             docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml down --volumes --remove-orphans
           fi
+
