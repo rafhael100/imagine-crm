@@ -1,5 +1,525 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — preferências com regras vazias ou nulas (18/11/2026)
+
+A branch `fix/crm-nullable-automation-preferences-2026-11-18` continua a
+[#666](https://github.com/rafhael100/imagine-crm/pull/666), commit
+`2a6d2950c54873ebbb233b64ef7985e0750c0576`. O Controller passa a converter
+`rules` nulo para a lista vazia já usada quando o campo está ausente,
+alinhando a validação `nullable` à assinatura tipada do Workspace.
+
+O harness acrescenta dois salvamentos pela rota autenticada: campo de
+formulário vazio e JSON nulo. Usa a pausa nominal já existente e os valores
+observados de versão, idioma e atraso. Exige o destino de sucesso
+`/painel?section=settings`, além do 303, e igualdade das seis tabelas de
+negócio e auditoria das duas empresas depois de cada solicitação. Nenhuma
+fixture ou operação de pausa/reativação é acrescentada ao roteiro.
+
+O guard admite a oitava tupla fechada, exige nove ancestrais e conserva
+os sete contextos anteriores. Vinte e um testes locais de admissão passaram.
+PHP, HTTP, banco e navegador desta alteração
+devem passar na CI da própria HEAD. A #666 já encerrou com 25 workflows
+aprovados e F251/F252 bloqueados pelo escopo, sem aprovação herdada para
+esta candidata. O possível 503 anterior da entrada nula é inferido das
+fontes; não se declara uma execução HTTP histórica.
+
+Contrato:
+[CRM-NULLABLE-AUTOMATION-PREFERENCES-2026-11-18](docs/desenvolvimento/CRM-NULLABLE-AUTOMATION-PREFERENCES-2026-11-18.md).
+**DRAFT / NO-MERGE / NO-DEPLOY.** Workspace, schema, rotas, fixtures e
+critérios operacionais permanecem preservados.
+
+## Continuidade — data de tarefa compatível com PostgreSQL (18/11/2026)
+
+A branch `fix/crm-private-task-date-validation-2026-11-18` continua a
+[#665](https://github.com/rafhael100/imagine-crm/pull/665), commit
+`c073cfeb8d29fc6cd0a9f33642ccc1275b8b6f59`. O `Workspace::createTask`
+passa a exigir ano positivo, junto do formato e da igualdade de data já
+verificados, antes de abrir a transação. Isso recusa `0000-01-01`, aceito
+pelas primitivas PHP anteriores mas incompatível com a entrada AD da coluna
+PostgreSQL `date`. As regras de prazo, demais datas e tarefa nominal permanecem.
+
+O harness acrescenta uma prova PHP 8.4 sem bootstrap da aplicação e uma
+consulta PG16 em transação somente leitura, para observar a divergência.
+Depois exige 422 pela rota real e compara as seis tabelas de negócio e
+auditoria das duas empresas. A tarefa manual nominal deve já estar gravada
+e concluída; nenhuma nova tarefa positiva é criada. A validade SQL de
+`0001-01-01` é observada separadamente, sem atribuir a ela uma criação HTTP.
+
+O guard admite a sétima tupla fechada e exige oito ancestrais, incluindo
+#665, preservando os seis contextos anteriores. Vinte testes locais passaram.
+PHP, PostgreSQL e HTTP desta alteração ainda dependem da CI da própria HEAD.
+O possível 503 anterior é uma inferência do caminho de código; este lote não
+executa uma aplicação histórica nem alega ter observado esse 503.
+
+Contrato:
+[CRM-PRIVATE-TASK-DATE-VALIDATION-2026-11-18](docs/desenvolvimento/CRM-PRIVATE-TASK-DATE-VALIDATION-2026-11-18.md).
+**DRAFT / NO-MERGE / NO-DEPLOY.** A correção atua na validação existente;
+o schema, a autorização, os gates F251/F252 e a revisão operacional permanecem.
+
+## Continuidade — importação CSV estrita na jornada privada (18/11/2026)
+
+A branch `fix/crm-private-csv-strict-decoding-2026-11-18` continua a
+[#664](https://github.com/rafhael100/imagine-crm/pull/664), commit
+`7e1b00a0c173bcfcac3a9051ef6cad3aededcdb8`. O recorte conecta a rota
+`/importar` ao `PortableCsvTableCodec` já existente, para recusar estruturas
+CSV ambíguas antes de encaminhar linhas ao `Workspace`, com o limite
+estrutural de 4.096 bytes por célula do codec. A representação fica mais
+estrita. Os limites de 20 KiB e 1–20 linhas, os dois cabeçalhos aceitos, a validação dos campos,
+a autorização por empresa e a transação permanecem como contratos da rota.
+
+A prova histórica carrega o Controller completo da #664, com commit, árvore,
+modo, blob e SHA-256 conferidos, em um processo PHPUnit separado no PHP 8.4.
+Substitui somente o destino `Workspace` por um capturador: observa parsing e
+encaminhamento históricos, sem declarar persistência ou autorização HTTP
+histórica. A prova candidata usa a rota HTTP real no ambiente descartável e
+compara os dados das duas empresas após entradas recusadas. Os formatos
+válidos e o round trip do CSV exportado permanecem critérios de regressão.
+
+O guard owner acrescenta uma sexta combinação fechada de branch e base DEV,
+exigindo também a ancestralidade da #664. Dezenove testes locais passaram;
+os cinco contextos anteriores e os seis testes da fronteira de sessão foram
+preservados. A CI própria desta HEAD ainda deve confirmar PHP, HTTP, bancos,
+browser e os demais workflows aplicáveis. A CI #664 não a aprova por herança.
+
+Contrato e limites:
+[CRM-PRIVATE-CSV-STRICT-IMPORT-2026-11-18](docs/desenvolvimento/CRM-PRIVATE-CSV-STRICT-IMPORT-2026-11-18.md).
+A Central IN-118 conserva sua proposta e decisões próprias. Esta correção
+trata a importação sintética já existente. **DRAFT / NO-MERGE / NO-DEPLOY**;
+F251/F252 e a revisão operacional permanecem preservados.
+
+## Continuidade — candidata incremental da base25 para o monitor33 (18/11/2026)
+
+A branch `feat/crm-base-monitor-incremental-migration-2026-11-18` continua a
+[#663](https://github.com/rafhael100/imagine-crm/pull/663), commit
+`082a1fda4af9b1871854d0db8cbfe54858894f25`, com um recorte anterior à migração
+33→35 da [#662](https://github.com/rafhael100/imagine-crm/pull/662). O perfil25
+é construído por `schema.sql` e `20-runtime-roles.sh` pinados na96db e já contém
+a ledger. Não se presume que a001 aplicada ao schema histórico cc173 produza
+essa mesma base. Os ensaios25→33 e33→35 permanecem provas separadas.
+
+Os quatro bootstraps S2S existentes passam a ter um caminho de admissão
+incremental estrito: fonte25 exata recebe o delta; destino33 exato retorna
+ALREADY_PRESENT sem DDL; estado parcial ou divergente é recusado sem reparo.
+Duas referências são construídas independentemente dos seis inputs96db. O novo
+módulo usa Transaction e capture_inventory da662 com seus bytes verificados,
+sem editar esse core, o bootstrap owner ou os SQLs existentes. Somente os
+envelopes externos dos quatro scripts são extraídos para aplicar os corpos
+literais em uma conexão e transação.
+
+O resultado esperado acrescenta oito tabelas, quatro roles NOLOGIN, nove funções
+e uma sequência. As 25 tabelas de origem conservam suas colunas e dados. O delta
+público permitido entre referências é fechado: USAGE no schema public e SELECT
+em installation, automation_runs, preferences, events, trials e leads para o
+reader. O restante do inventário deve permanecer exato, sem equivalências de
+restore ou descarte genérico de ACLs.
+
+O ensaio usa dois clusters de referência e quatro alvos em tmpfs, sem rede,
+portas, binds ou app. A origem25 tem 12 tabelas povoadas e13 vazias. Depois do
+primeiro apply, as oito tabelas novas devem estar vazias e a sequência no estado
+inicial. Para provar a reaplicação, as oito são povoadas: o destino33 passa a
+ter20 tabelas com dados e13 vazias, incluindo identidade da auditoria usada.
+Dados e estado da sequência devem permanecer iguais após ALREADY_PRESENT.
+
+A matriz recusa parcial28 produzido pelo bootstrap install inteiro, atributo
+de role alterado na fonte25 e grant extra no destino33. A contraprova tardia
+mantém CREATE ROLE crm_auto_sender não commitado em outra sessão; exige que
+o CREATE literal do outbound espere por esse transactionid depois do install,
+com query, PID bloqueador, lock e SQLSTATE55P03 observados. Após rollback de
+ambas as sessões, catálogo/dados devem coincidir com a fonte25 e os objetos,
+roles e sequência acrescentados devem estar ausentes. Essa espera de unicidade
+é um requisito da nova CI, sem alegação de observação local ou migração online.
+
+O core preserva sua admissão de containers; o novo módulo a restringe ainda
+mais por nome e label próprios. Finally e cleanup selecionam somente recursos
+com a HEAD, run, tentativa e escopo desta etapa. O workflow mantém os20 passos
+reais e quatro contratuais anteriores, acrescenta o ensaio e sua limpeza e
+preserva timeout global de30 minutos. O quinto contexto completo do guard
+exige os ancestrais anteriores e082; os quatro contextos históricos continuam
+iguais. Os18 testes de admissão/fronteira e seis testes locais de contrato
+passaram. PostgreSQL real desta candidata depende da CI da HEAD publicada.
+
+[Contrato e critérios](docs/desenvolvimento/CRM-BASE-MONITOR-INCREMENTAL-MIGRATION-2026-11-18.md).
+Nenhum fluxo HTTP/n8n, sessão humana, instalação persistente, recuperação
+distribuída ou autorização operacional é acrescentado por esta etapa.
+F251/F252 e detectores de backup permanecem intactos.
+**DRAFT / NO-MERGE / NO-DEPLOY / NO-GO operacional.**
+
+## Continuidade — reaplicação da ledger recusa proteções ausentes (18/11/2026)
+
+Esta candidata continua a [#662](https://github.com/rafhael100/imagine-crm/pull/662)
+em uma branch separada, `feat/crm-ledger-reapply-rls-2026-11-18`. O recorte é a
+migration001 da ledger de automações. Seu contrato proíbe reparar silenciosamente
+políticas divergentes, mas o SQL pinado na96db executava ENABLE/FORCE RLS e
+recriava `tenant_scope` quando ausente, mesmo em uma tabela preexistente. As
+28 fixtures anteriores combinavam outro desvio com ambas as flags desligadas;
+por isso não demonstravam a recusa desses três estados isolados.
+
+A candidata distingue criação inicial de reaplicação. Tabela ausente segue um
+CREATE estrito, preservando o corpo do bootstrap; uma criação externa concorrente
+não pode virar um skip de IF NOT EXISTS. Tabela existente exige relação ordinária,
+lock ACCESS EXCLUSIVE, identidade OID preservada, RLS e FORCE ligados e política
+presente antes de qualquer normalização. O isolamento READ COMMITTED é explícito;
+timeouts e advisory existentes permanecem. Comparadores de estrutura, política,
+ACLs e direitos efetivos, grants, COMMIT e marcador READY são mantidos.
+
+A prova exige executar o SQL antigo da96db em três fixtures independentes e
+observar seu reparo antes de emitir READY. A candidata deve recusar cada mesma
+fixture pelo motivo específico, sem mudar seu snapshot. As 28 negativas de ACL
+ou definição de política conservam seus próprios marcadores e passam a rodar
+sem desligar RLS como efeito acessório. Também são mantidas a atualização permitida,
+as 13 operações SQL proibidas, o caminho de tabela ausente a partir do schema
+histórico e as duas reaplicações sobre o schema atual em um segundo PostgreSQL.
+
+O guard owner admite somente o quarto contexto completo desta branch, exigindo
+os ancestrais anteriores e o pai da candidata incremental. Os contextos históricos
+permanecem iguais; combinações de campos e branches vizinhas continuam recusadas.
+Os 17 testes locais de admissão/fronteira passaram, com revisão independente do
+delta do guard. Sintaxe e composição do SQL não substituem execução: os novos
+reparos antigos e recusas da candidata aguardam PostgreSQL real na CI desta HEAD.
+
+Este recorte não afirma migração online nem prova de corrida concorrente. Não
+muda o bootstrap owner, o caminho33→35, detectores de backup, F251/F252 ou os
+registros existentes. [Contrato e critérios](docs/automation/CRM-AUTOMATION-MIGRATION-DRIFT.md).
+**DRAFT / NO-MERGE / NO-DEPLOY / NO-GO operacional.**
+
+## Continuidade — candidata de migração monitor33 para owner+monitor35 (18/11/2026)
+
+A branch `feat/crm-owner-monitor-incremental-migration-2026-11-18` parte da
+[#660](https://github.com/rafhael100/imagine-crm/pull/660), HEAD
+`96dbf1aed2d1cf3237bc3631c4594540a0168d2a`. A
+[CI owner da base](https://github.com/rafhael100/imagine-crm/actions/runs/44246202205/job/134605651011)
+passou em 18/11 a jornada real, recuperação27, convivência e recuperação35,
+Chromium combinado, desligamento e cleanup. A prova anterior permanece
+separada da migração desta filha.
+
+O novo recorte admite apenas monitor33 exato → owner+monitor35 exato e
+reaplicação35 sem alterações. O migrador usa uma transação limitada por
+timeouts e compara catálogo, segurança e metadados com referências limpas,
+construídas independentemente dos sete inputs pinados da base. O bootstrap
+owner original permanece literal; a API remove somente seu envelope externo
+para inseri-lo na transação controlada. Estados parciais e divergentes são
+recusados antes do delta, sem reparo automático.
+
+O ensaio cria dois clusters de referência e cinco alvos PostgreSQL16 novos,
+sem rede, portas, binds ou app, com dados em tmpfs e identidade da CI real.
+Os dados sintéticos ocupam 20 das 33 tabelas; as 13 vazias também têm
+fingerprints preservados. Contas são comparadas pelas oito colunas antigas,
+com backfill zero do marker. A reaplicação precisa preservar grants/intents
+povoados e marker não zero. Mantêm-se nove roles, nove funções e uma sequência,
+cujo estado é observado separadamente.
+
+A matriz focal recusa instalação parcial, CHECK(true), grant extra no35 e
+owner incorreto do database. Também exige timeout antes do delta e rollback
+tardio: um blocker SHARE em organizações deve parar no CREATE com FK depois
+do ALTER de contas, observado por backend/instrução/locks e SQLSTATE55P03.
+A coluna e os objetos novos precisam desaparecer após rollback. Isso não é
+prova de migração online ou de reaplicações concorrentes.
+
+O hook entra após as provas owner/monitor existentes e seu desligamento,
+sem repetir HTTP/n8n/restore. O timeout global de 30 minutos é preservado;
+finally e cleanup adicional ficam restritos aos recursos desta execução.
+Admissão, sintaxe e diff têm verificação local; PostgreSQL/Docker da nova
+candidata ainda dependem da CI da HEAD publicada, sem PASS antecipado.
+[Contrato e critérios](docs/desenvolvimento/CRM-OWNER-MONITOR-INCREMENTAL-MIGRATION-2026-11-18.md).
+
+Bootstrap, detectores legados33, F251/F252 e fontes anteriores permanecem
+preservados. `ReferencePair` é interno ao builder pinado, não autenticação de
+JSON externo. **DRAFT / NO-MERGE / NO-DEPLOY / NO-GO operacional**, sem acesso
+a dados reais, instalação persistente, nova autoridade ou execução owner.
+
+## Continuidade — cabeçalho Chromium e primeira prova real de recuperação35 (18/11/2026)
+
+A HEAD `f2a0c06a0fdb05758162b46903202f971979c69f` da [#660](https://github.com/rafhael100/imagine-crm/pull/660) concluiu 27 workflows: 24 passaram; F251/F252 recusaram o escopo; o job owner parou na verificação de cabeçalhos do novo Chromium combinado. No [mesmo job](https://github.com/rafhael100/imagine-crm/actions/runs/44244268181/job/134599286149), os estágios anteriores passaram: 407 verificações HTTP/52 requisições owner, recuperação27 com 842 verificações, navegador owner existente e a nova recuperação35 com **1.909 verificações**.
+
+A prova35 confirmou as 35 tabelas, uma sequência, nove funções e nove roles inertes; vínculos exatos catálogo/segurança, quinze equivalências restritas, 18 + 3 mutações recusadas e 17 recusas SQL. O snapshot conservou a intenção pendente no clone enquanto a origem viva foi reconciliada para confirmada. As janelas owner e monitor preservaram os dados exigidos; os detectores legado e owner27 recusaram35. Continua sendo apresentação sintética do monitor, com zero novas execuções n8n.
+
+A falha seguinte ocorreu no GET de login, antes de consumir senha ou fator reservado. Nginx e aplicação retornam `X-Content-Type-Options: nosniff`; Chromium apresenta os valores reunidos. O novo teste exigia um único valor literal. Este ajuste usa o mesmo critério do navegador owner existente: lista não vazia e todos os valores exatamente `nosniff`. Ausência, vazio e valores mistos continuam recusados; status, no-store e ausência de CORS permanecem exigidos.
+
+O delta executável é somente +2/-1 no helper do teste, sem alterar headers de produto, runtime, pins, gates, SQL, composição ou fatores MFA. Revisão independente, sintaxe Node, aplicação exata e regressão do helper real passaram: três casos válidos, nove negativos e recusas de status incorreto/resposta ausente. O Chromium combinado e o desligamento posterior **ainda não passaram** na f2; esta revisão exige nova execução real antes de registrar esse resultado.
+
+Backup com a contraprova PostgreSQL CHECK(true), jornada completa, monitor separado, P20, P22, OP01 e F0/RLS concluíram com sucesso na f2. DRAFT / NO-MERGE / NO-DEPLOY; main, DEV e fontes preservadas.
+
+
+## Continuidade — convivência owner e monitor com recuperação inerte35 (18/11/2026)
+
+A revisão `82e74716fe891b2423fa5e198fcbcbcc8ca061de` da [#660](https://github.com/rafhael100/imagine-crm/pull/660) concluiu 25/27 workflows, somente F251/F252 recusando o escopo. O [P20](https://github.com/rafhael100/imagine-crm/actions/runs/44243121697) voltou a passar os quinze testes e o laboratório funcional com os inputs pinados intactos; o teste de recibo transferido passou suas 159 verificações no job do monitor. O [backup](https://github.com/rafhael100/imagine-crm/actions/runs/44243121482/job/134595503854) demonstrou no PostgreSQL16 que a projeção anterior aceita CHECK(true) e o novo verificador a recusa, com restauração exata dos manifestos e contagens. Quatro perfis, snapshot/cleanup/timeouts, jornada, monitor, owner27, OP01, P22 e F0/RLS passaram. Esses resultados identificam a base validada da etapa seguinte.
+
+A nova prova acrescenta a convivência de rascunhos owner e monitor ao mesmo laboratório, depois dos estágios owner27 e Chromium existentes. Mantém sessão/MFA reais, chamadas mTLS ao Agents pinado, composição owner, pins e admissão. Dois planos são criados antes do seed56 do monitor, sem ajustar quota ou repetir fatores. Os códigos de recuperação reservados evitam reutilizar os que as provas anteriores já consumiram.
+
+As janelas têm oráculos separados: uma consulta owner deve acrescentar exatamente a auditoria causal esperada e manter os hashes por ID de todos os eventos anteriores; a navegação posterior no monitor deve deixar integrais os fingerprints de negócio/addon/S2S. Chromium percorre owner, monitor, detalhe, PT/EN/ES e retorno, incluindo member, outra empresa e administrador. Depois de desligar owner, uma sessão member com fator ainda não utilizado comprova leitura própria do monitor e recusas de referência estrangeira e rascunho desligado.
+
+O contrato de recuperação fixa 35 tabelas, uma sequência, nove funções e nove roles. Um único snapshot exportado captura dados, catálogo dos dois schemas, segurança, escopos e dump enquanto uma reconciliação HTTP real confirma a intenção na origem viva. A cópia inerte deve conservar a intenção pendente e os hashes das 35 tabelas. A sequência é observada antes/depois do dump e no clone, sem tratá-la como congelada pelo snapshot. O clone não tem rede, porta publicada, senhas, LOGIN ou processo CRM conectado; owners/ACLs/FORCE RLS/colunas/histórico e recusas SQL permanecem exigidos.
+
+A comparação reutiliza o módulo de catálogo já validado, a regra fechada dos quinze pares e as 18 + 3 negativas. Os detectores legado e owner27 devem recusar o conjunto35 antes e depois do restore; nenhum perfil operacional é ampliado. As execuções exibidas continuam sendo fixtures sintéticas declaradas, com zero novas execuções n8n. A prova nativa do Agents permanece evidência separada.
+
+O pacote tem dois harnesses novos, acréscimos ao workflow owner, um documento de contrato e este STATUS. Revisões independentes, AST/Node/YAML, preservação de passos/pins/guards/cleanup, aplicação exata e contraprovas do oráculo de eventos passaram localmente. Nenhum PASS de PostgreSQL/HTTP/Chromium combinado é antecipado; a CI da nova HEAD deverá executá-lo. Consulte [o contrato da prova](docs/desenvolvimento/CRM-OWNER-MONITOR-COEXISTENCE-2026-11-18.md).
+
+DRAFT / NO-MERGE / NO-DEPLOY. Esta prova não restaura autoridade atual, reutiliza sessão, comprova recuperação distribuída CRM/Agents ou autoriza religamento operacional. Main, DEV e fontes permanecem intactos.
+
+## Continuidade — fidelidade das constraints e compatibilidade do laboratório P20 (18/11/2026)
+
+A integração do monitor na [#660](https://github.com/rafhael100/imagine-crm/pull/660), `2dd3ad959f6d293e458ee05b3544e677175b0c34`, concluiu 24/27 workflows. [Jornada](https://github.com/rafhael100/imagine-crm/actions/runs/44241862406) passou 6.669 HTTP, 643 Chromium, 177 resiliência e 49 acesso; [monitor](https://github.com/rafhael100/imagine-crm/actions/runs/44241862570), 89 testes/139 assertions, 3.864 HTTP, 315 Chromium e restauração do perfil com histórico; [owner](https://github.com/rafhael100/imagine-crm/actions/runs/44241862684), 407 HTTP/52 requisições, recuperação27 com 842 verificações, 18 mutações de catálogo e três de segurança recusadas, mais 607 Chromium. Os quatro perfis do backup, snapshot/timeout, OP01, F0/RLS e P22 passaram. As capturas PT do monitor foram inspecionadas após conferência do digest; nenhuma execução n8n nova foi produzida.
+
+O [P20](https://github.com/rafhael100/imagine-crm/actions/runs/44241862607/job/134591425564) passou seus quinze testes e recusou o laboratório antes de criar serviços: a #654 havia acrescentado uma chamada de teste ao workflow P19 fixado byte a byte. Esta correção restaura esse arquivo exatamente ao pin `91f2236a33f38ae0a4c95f835b248c1caac1ffe1`, SHA256 `78b15b0a61d87c653cf6a0f7f4cee4b10b9822225692ca1320c93c3124951a4e`, e move a mesma chamada PHP ao job de contrato do monitor, com HEAD explícita, PHP 8.4 e filtro do próprio script. Os quatorze arquivos CRM exigidos pelo inventário foram comparados à árvore pinada: só esse workflow divergia. Nenhum pin, guard ou assert é relaxado. A falha continua documentada; a nova HEAD deverá comprovar a correção real.
+
+F251/F252 emitiram relatórios iguais na 2dd: 159 caminhos, 23 conhecidos, 136 bloqueados, BLOCKED/exit1, sem aprovação ou deploy. São gates de escopo preservados, distintos da incompatibilidade P20.
+
+A revisão também fecha a omissão de CHECKs legados identificada no verificador genérico. O novo módulo `private_crm_backup_catalog.py` compartilha a regra restrita de quinze pares já exercitada pelo owner27. O catálogo da origem torna-se obrigatório e é capturado no mesmo snapshot do manifesto e do dump. A comparação exige vínculos exatos das constraints ao catálogo, tipos/NOT NULL/collation/defaults/flags de coluna e collation do banco, além dos demais metadados de segurança integrais. Não existe descarte genérico de definições nem fallback sem catálogo.
+
+Uma nova contraprova PostgreSQL 16, executável apenas no clone descartável, troca a constraint de estado de tarefas por `CHECK (true)`, conservando nome/tipo/validated. A projeção antiga precisa aceitar essa corrupção e o novo verificador precisa recusá-la especificamente por fidelidade. O finally restaura a definição original do clone e confere manifestos brutos e contagens; a origem não recebe a alteração. Os relatórios acrescentam hashes brutos de catálogo/segurança da fonte e da cópia e distinguem igualdade de equivalência.
+
+A extração preserva as APIs e as 18 + 3 negativas do owner27. A auditoria dos 47 arquivos Python da árvore remota identificou todos os cinco chamadores anteriores; todos agora passam catálogo explícito, inclusive as capturas manuais ajustadas para snapshot único. Os workflows de backup e jornada passam a reconhecer alterações no módulo novo. Os detectores legados continuam fechados e recusam o addon owner; esta mudança não cria perfil operacional35.
+
+A prova focal owner+monitor com 35 tabelas continua em desenvolvimento separado. Esta etapa aguarda sua própria CI, sem reutilizar o PASS de 2dd para o código novo. DRAFT / NO-MERGE / NO-DEPLOY; nenhuma branch de origem, DEV ou main é movida, nenhuma autoridade restaurada é ativada e nenhuma aprovação humana é presumida.
+
+## Continuidade — monitor n8n reunido às jornadas e aos rascunhos owner (18/11/2026)
+
+A [PR #660](https://github.com/rafhael100/imagine-crm/pull/660), base desta etapa em `79065460d5cdf9f13a8bc1cb1356849cb5e9d02b`, concluiu 24/26 workflows: somente F251/F252 recusaram o escopo. A [jornada](https://github.com/rafhael100/imagine-crm/actions/runs/44238235103) confirmou 6.669 HTTP, 643 Chromium, 177 resiliência e 49 acesso; [OP01](https://github.com/rafhael100/imagine-crm/actions/runs/44238235207), 668 HTTP e 247 Chromium; [owner](https://github.com/rafhael100/imagine-crm/actions/runs/44238235693), 407 HTTP/52 requisições, recuperação de 27 tabelas com 836 verificações, 18 mutações recusadas e 607 Chromium. Esses resultados pertencem à base congelada, não antecipam a CI da nova combinação.
+
+A próxima fonte é a [#654](https://github.com/rafhael100/imagine-crm/pull/654), `e1b3b7f118eff0350a00789aecc7bb2bb2331464`, árvore `73231c5d749a4df3ef07f045db45936957a86aac`, incluindo os cinco commits exclusivos desde o ancestral #647. A [CI do monitor na fonte](https://github.com/rafhael100/imagine-crm/actions/runs/44224140953) passou 89 testes/139 assertions, 3.864 HTTP e 315 Chromium. Seus dados de apresentação são fixtures sintéticas: nenhuma nova execução n8n. A prova nativa do Agents é distinta e não se transfere automaticamente à navegação combinada.
+
+A candidata acrescenta Execuções n8n à área privada em PT/EN/ES, com lista limitada aos últimos 50 eventos e detalhe de até 20 observações. O leitor usa a sessão/MFA e o vínculo atual à própria empresa, mantém o administrador global excluído e não expõe credenciais S2S. Estados sem observação e de resultado incerto permanecem explícitos, sem repetição automática. A flag continua desligada por padrão. Foram conservados literalmente os 26 formulários e seus CSRF, os caminhos owner e as correções de navegação, acessibilidade e idioma da base; os links do monitor preservam apenas seção, evento válido e idioma.
+
+Os perfis de backup da fonte e seus testes foram integrados preservando a correção de ACL de sequência da #659. O ensaio owner27 agora vincula exatamente as constraints de cada manifesto de segurança ao catálogo correspondente antes da regra fechada dos quinze pares PostgreSQL já revisados. Todo o restante dos manifestos exige igualdade integral. Três novas negativas recusam definição sem vínculo, definição perigosa vinculada e outro metadado alterado; hashes brutos da fonte e restauração permanecem distintos quando aplicável.
+
+Esta etapa não declara a convivência owner+monitor nem uma recuperação de 35 tabelas comprovadas. A comparação genérica herdada da #654 ainda omite a definição dos CHECKs legados fora das tabelas de execução; a fronteira owner27 não usa essa omissão. O reforço dessa comparação e a prova focal do conjunto35 são os próximos trabalhos, em áreas isoladas, sem ampliar os detectores legados. A CI da SHA integrada será registrada na PR, inclusive qualquer falha, antes de se atribuir PASS ao conjunto.
+
+DRAFT / NO-MERGE / NO-DEPLOY. A integração conserva ambas as fontes como ancestrais, sem mover suas branches, DEV ou main. Os guards de admissão, pins, classificadores de escopo e requisitos de aceite humano permanecem válidos.
+
+## Continuidade — recuperação inerte do addon owner integrada à candidata (18/11/2026)
+
+A revisão `2f9ae19a6479634749e46032fb964341abd3400a` da [PR #660](https://github.com/rafhael100/imagine-crm/pull/660) concluiu 24/26 workflows, somente F251/F252 recusando o escopo: [jornada principal](https://github.com/rafhael100/imagine-crm/actions/runs/44236624223) com 6.669 HTTP, 643 Chromium, 177 resiliência e 49 acesso; [OP01 corrigido](https://github.com/rafhael100/imagine-crm/actions/runs/44236624241) com 668 HTTP e 247 Chromium; owner com 407 HTTP/52 requisições e 607 Chromium. O [backup](https://github.com/rafhael100/imagine-crm/actions/runs/44236624248) confirmou a correção ACL da #659 nessa mesma SHA. O resultado e a falha inicial anterior permanecem registrados na PR.
+
+Sem interromper a continuidade, a etapa seguinte incorpora a recuperação publicada na [#658](https://github.com/rafhael100/imagine-crm/pull/658), fonte congelada `e390c56af2a544d8191cce86752637efe6a35e43`, árvore `075a89a510c292084338800da27377f371e997b2`. Essa fonte concluiu seus cinco workflows; o [job de recuperação](https://github.com/rafhael100/imagine-crm/actions/runs/44237380307/job/134576669668) comprovou 836 verificações, 27 tabelas, cinco roles inertes, 13 recusas SQL, 18 mutações recusadas do catálogo e 15 equivalências de representação. HTTP 407/52, Chromium 607, desativação e cleanup também passaram. São evidências da fonte; a candidata combinada executará a prova na sua própria HEAD.
+
+O ensaio captura um snapshot único enquanto um GET autorizado reconcilia um rascunho: intenção pending no snapshot, confirmed na fonte viva e pending no PostgreSQL restaurado. Exige os hashes completos das 27 tabelas, preservação dos estados e autoria, owners/ACLs/FORCE RLS/privilégios por coluna, criptografia e adulteração recusada. O destino separado não tem rede, porta publicada, credencial nas roles restauradas ou processo CRM conectado. A prova preserva o estado histórico e não reativa autoridade atual.
+
+As falhas de `ab8359e…` e `f79ac67…` identificaram uma reescrita do PostgreSQL 16 em quinze CHECKs legados. O comparador agora aceita somente os quinze pares completos previstos por identidade, coluna, largura, valores e ordem, mantendo iguais os demais metadados e a collation do banco. Não há normalização genérica. A [semântica do cast de construtor de array](https://www.postgresql.org/docs/16/sql-expressions.html#SQL-SYNTAX-ARRAY-CONSTRUCTORS) sustenta o caso específico; duas revisões independentes conferiram os pares e as negativas. O resultado distingue os hashes brutos e registra `catalog_raw_equal=false`; nenhuma igualdade textual é fabricada. Esta é uma prova de fidelidade da restauração, não uma validação normativa de qualquer schema arbitrário.
+
+A incorporação traz o script e os dois documentos com bytes exatos da fonte, e acrescenta apenas o novo arquivo ao py_compile e o passo de recuperação ao workflow. O trigger DEV, os dois contextos de admissão, todos os ancestrais/pins, a correção de ACL da #659 e os diagnósticos F251/F252 permanecem preservados. O delta próprio tem esses quatro caminhos e este STATUS; a nova fonte é segundo pai da candidata, sem mover as branches de origem.
+
+O backup legado continua recusando o perfil adicional, como a própria prova exige. Recuperação distribuída CRM/Agents, reutilização de sessão e religamento operacional permanecem fora deste ensaio inerte. DRAFT, dados fictícios e sem merge em DEV/main ou deploy. O relatório da nova CI será vinculado à HEAD integrada, sem reutilizar o PASS da fonte como se fosse da combinação.
+
+## Continuidade — correção da expectativa OP01 e integração do backup #659 (18/11/2026)
+
+A primeira HEAD da [PR #660](https://github.com/rafhael100/imagine-crm/pull/660), `652e541239ff27acb685a4bcd6e88055502d73b8`, concluiu 23/26 workflows: F251/F252 recusaram o escopo como previsto, e OP01 encontrou uma expectativa de idioma incompatível com o middleware integrado. A [jornada principal](https://github.com/rafhael100/imagine-crm/actions/runs/44235507975) passou 6.669 checks HTTP, 643 assertions Chromium, 177 de resiliência e 49 de acesso; as [jornadas owner](https://github.com/rafhael100/imagine-crm/actions/runs/44235508123) passaram a admissão real, 407 checks em 52 requisições HTTP, 607 Chromium e duas passagens default-off de 12 checks. Esses resultados pertencem à primeira HEAD, sem antecipar o resultado da revisão seguinte.
+
+No [OP01](https://github.com/rafhael100/imagine-crm/actions/runs/44235508073/job/134570554068), o controle após restaurar INSERT de auditoria esperava ES. Entretanto, uma requisição negativa anterior contém `lang=en&fields=ref`: PrivateHeaders persiste EN antes de o controller recusar os campos extras com 422. As requisições seguintes não mudam o idioma. A expectativa final passa a EN, mantendo literalmente os asserts de idioma HTML e destino de retorno, as recusas, snapshots e controles de auditoria. A contraprova sintética verifica apenas essa expectativa; a comprovação HTTP real depende da nova CI. Nenhum código de runtime muda por essa correção.
+
+A [PR #659](https://github.com/rafhael100/imagine-crm/pull/659), congelada em `b86f6f7005b3c8aa79e64fa8dfe9abecab99ad01`, acrescenta dois arquivos sem conflito com #660: o fallback de ACL usa `acldefault('s', owner)` para sequências, preservando o teste de `relkind='S'`; e a regressão PG16 comprova ACL implícita, equivalência da ACL explicitada, detecção do grant extra, rejeição da interpretação anterior e remoção da fixture antes do backup. A [CI da fonte](https://github.com/rafhael100/imagine-crm/actions/runs/44234701904) passou; a incorporação mantém esse commit como segundo pai e será testada novamente na candidata. Nenhuma permissão real é ampliada.
+
+Na primeira HEAD, F251 e F252 passaram seus 5 e 10 testes de diagnóstico e exibiram o mesmo JSON validado: referência `ea5d320addaeb7ab970bdfa3931d55ddea37afac`, candidata `652e541239ff27acb685a4bcd6e88055502d73b8`, 139 caminhos alterados, 23 conhecidos e 116 bloqueados, `status=BLOCKED`, `deploy_approved=false`, `no_deploy_executed=true`. Ambos mantiveram retorno 1; nenhuma etapa de liberação prosseguiu.
+
+A recuperação adicional do addon owner continua na frente #658. As tentativas `ab8359e…` e `f79ac67…` falharam na igualdade de definições do catálogo e não são incluídas nesta revisão. O backup base/S2S aprovado não é apresentado como prova das duas tabelas owner. O histórico de falhas permanece registrado. Esta atualização conserva o escopo DRAFT, dados sintéticos, sem merge em DEV/main, deploy ou aprovação humana presumida.
+
+## Continuidade — integração das jornadas privadas e diagnóstico de recusa (18/11/2026)
+
+A Direção aprovou continuar após a [PR #657](https://github.com/rafhael100/imagine-crm/pull/657). A consulta às fontes atuais encontrou uma evolução concorrente: a [PR #658](https://github.com/rafhael100/imagine-crm/pull/658), de criação/consulta de rascunhos pelo owner no Agents, parte da #651 e não contém as correções de interface da linha #657. As duas linhas divergem da #647: onze commits exclusivos da #657, sete da #658 e quatro arquivos sobrepostos. Uma nova candidata isolada reconcilia esses conteúdos, conservando os dois históricos como pais; nenhuma ref existente, DEV ou main é movida.
+
+Fontes congeladas: #657 `8c62702d02138233404fda73506b779f3ebb3143`, árvore `bbe69b1b8197ff063f59ca97705222dbb8fadd04`; #658 `fe88dd15d42dbda0bab206dfdbc9f8ce65093212`, árvore `0770cd93c09a7a5b65eef9c11fd609b0c2251b2c`; ancestral comum #647 `a2c7218f28aac58796387c939832ff1bfae3cba0`. O alvo de revisão é DEV `d7c7aacc766c7ade4c65dcd211ed4569442144a9`, sem merge da PR.
+
+A #657 terminou 22/24 workflows, apenas F251/F252 recusando o escopo, com [6.671 checks HTTP e 643 Chromium](https://github.com/rafhael100/imagine-crm/actions/runs/44226370467). A #658 terminou seus cinco workflows; sua [jornada owner](https://github.com/rafhael100/imagine-crm/actions/runs/44232095371) comprovou 407 checks/52 requisições HTTP, 607 Chromium e duas passagens default-off de 12 checks. Esses resultados pertencem às bases; a candidata combinada precisa de execução própria.
+
+Foram resolvidos seis blocos do Blade: projeção dos links de idioma e flags opt-in; CSS acessível e novas telas; idioma passivo das confirmações e logout das novas páginas; recuperação localizada e blocos de resumo/rascunho; cabeçalhos de leads e coluna de consulta; edição/CSV acessíveis e link/colspan condicionado. Os 24 formulários da #657 e os dois formulários novos da #658 permanecem literais. Os blocos de resumo e rascunho são idênticos à #658. Flash e erros de outros fluxos continuam ausentes dessas duas páginas, sem alterar as telas anteriores. Controller e workflow da jornada foram combinados sem conflito textual.
+
+A admissão do laboratório owner mantém o contexto original e acrescenta somente o par exato DEV/nova branch de integração, com SHA da base fixa e ancestrais #651, #657 e #658 obrigatórios. Evento, repositório, runner hospedado, HEAD limpa, imagem, projeto, Docker local e pins Agents/Central permanecem exigidos. Isso habilita o teste descartável da integração; não concede autoridade operacional.
+
+Também foi reproduzido um defeito de diagnóstico: F251 gera JSON válido e retorna 1 para BLOCKED, mas o shell descartava sua visualização e F252 descartava o stdout antes de ler a recusa. Os workflows preservam o relatório no log e no arquivo, mantendo pipefail e o mesmo retorno. O operador aceita apenas o formato validado, identidades/flags/estado/retorno coerentes e caminhos relativos seguros para formar o diagnóstico; continua recusando a operação e não mostra stderr, texto livre ou dados de host. SCOPE, aprovações, checks exigidos, apply e rollback permanecem intactos.
+
+A restauração adicional do addon owner está em implementação na frente da #658 e não pertence à SHA funcional congelada aqui. O PASS do backup legado não cobre suas duas tabelas novas; sua recusa de perfil desconhecido é preservada. Os testes e capturas desta integração serão registrados na PR e HEAD próprias. DRAFT, dados fictícios, sem merge em DEV/main, deploy/VPS, provider operacional ou aprovação humana presumida.
+
+## Continuidade — contexto da jornada e ações por perfil (18/11/2026)
+
+Este pacote reúne quatro correções já desenvolvidas e revisadas separadamente sobre a [PR #656](https://github.com/rafhael100/imagine-crm/pull/656), HEAD `cd530f273a8e05e141a0898d8736c26c4b631c32`. O [P20 44225681022](https://github.com/rafhael100/imagine-crm/actions/runs/44225681022) dessa base passou os 15 testes Python e o laboratório real Portal→CRM→Agents, incluindo autoridade nominal, ACK perdido e idempotência; dispatch n8n e autorização operacional continuam desligados. A integração conjunta evita quatro rodadas repetidas de toda a CI e conserva todas as regressões preparadas. A confirmação da jornada combinada fica registrada na PR e SHA próprias, sem atribuir a ela resultados de uma base anterior.
+
+Erros estruturais de login e MFA passam a retornar diretamente ao próprio formulário, por dois destinos constantes, preservando a autoridade pendente e o restante da política IAM. Membros consultam os pedidos da própria empresa sem receber formulários de operações reservadas ao responsável; os formulários do responsável e a autorização de servidor permanecem iguais.
+
+Nas respostas de conclusão de cadastro, convite e recuperação, o idioma escolhido é um indicador passivo: os links anteriores fariam GET em uma resposta de POST ou abandonariam a exibição única. Nenhum código é armazenado novamente ou transportado pela URL. Na página inicial, os links de idioma preservam somente os três inteiros normalizados da calculadora, mantendo a fórmula e os limites existentes; o filtro de funil do workspace continua preservado.
+
+A regressão HTTP reutiliza as autoridades e operações anteriores: erros de login/MFA com IAM invariável; pedidos em consulta e 12 POSTs diretos recusados sem efeitos; quatro resultados POST já existentes sem nova emissão/recuperação; e links reais da calculadora para oito conjuntos de entradas normalizadas. O Chromium calcula uma vez e segue EN/ES/PT, verificando inputs, query, FormData e resultados. Todos os testes anteriores permanecem. Revisões independentes concluídas; a execução conjunta ainda está pendente.
+
+Alterações limitadas a PrivateHeaders, Blade, catálogo, HTTP, Chromium e este STATUS. Nenhum schema, grant, provider, pin ou guard operacional muda. DRAFT / NO-MERGE / NO-DEPLOY, fixtures sintéticas; leitor de tela, aceite humano e autorização operacional permanecem requisitos independentes.
+
+## Continuidade — nomes válidos e isolamento do ambiente P20 (18/11/2026)
+
+A [PR #655](https://github.com/rafhael100/imagine-crm/pull/655), HEAD `7f8776f65bfa94d835e610f52554cbd0a393d373`, concluiu a [jornada 44224520545](https://github.com/rafhael100/imagine-crm/actions/runs/44224520545): 4.937 checks HTTP, 628 assertions Chromium, 177 de resiliência, 49 de acesso e unidades 4/9 + 13/217. O ajuste dos doubles incompatíveis com PHPUnit preservou as provas de leitura proibida; F0 e RLS também voltaram a passar. A matriz dos formulários e os fingerprints de Enrollment passaram.
+
+O conjunto teve 21/24 workflows aprovados. Além dos gates F251/F252, o P20 encontrou um defeito independente antes do laboratório funcional nas duas tentativas: `p20-central-auto-p19-njrmy51_-crm-app` na [primeira](https://github.com/rafhael100/imagine-crm/actions/runs/44223254949) e `p20-central-auto-p19-_yrzfs24-portal` na [segunda](https://github.com/rafhael100/imagine-crm/actions/runs/44224520607). O nome aleatório da pasta, usado diretamente como projeto Compose, pode formar uma referência de imagem inválida. Não se declara P20 executado nessas rodadas.
+
+Esta correção altera somente o overlay P20 e seu teste: o projeto usa o prefixo `p20-` seguido de 24 caracteres hexadecimais derivados do caminho temporário resolvido. O mesmo valor continua no guard, Compose, ServiceTargets e cleanup. O P19 pinado em SHA-256 `beae2aeb731a791c2e36cf9e28b884dcbb8e0c19bc8cd730fff5abf9dac6f9ff`, os guards de recursos e o runtime permanecem intactos.
+
+Oito testes locais do harness passaram. A regressão executa os nós reais gerados de derivação, guard, comando e finally com callbacks gravadores, cobrindo os dois nomes observados, underscores consecutivos e basenames iguais em pastas diferentes. O mesmo teste falhou contra o renderer anterior. Nenhum Docker foi executado localmente; a prova funcional efetiva depende da CI da nova HEAD. A revisão independente não identificou bloqueador.
+
+Depois desta correção de execução, os quatro recortes de interface já preparados — retorno de login/MFA, ações de pedidos por papel, idioma nas confirmações e calculadora — serão integrados e validados juntos. DRAFT / NO-MERGE / NO-DEPLOY; nenhuma ampliação de pin, permissão, infraestrutura ou gate.
+
+## Continuidade — reapresentação segura de formulários (18/11/2026)
+
+A [PR #653](https://github.com/rafhael100/imagine-crm/pull/653), HEAD `56600a319226fc50f65b9127feb98221f2bfeaad`, passou a [jornada 44221933223](https://github.com/rafhael100/imagine-crm/actions/runs/44221933223): 3.263 checks HTTP, 628 assertions Chromium, 177 de resiliência, 49 de acesso e unidades 4/9 + 8/134. Os testes novos confirmaram preservação do funil e isolamento entre empresas. Na mesma HEAD, 22/24 workflows passaram; os gates F251/F252 mantêm a recusa do escopo acumulado.
+
+O [artefato 14390294408](https://github.com/rafhael100/imagine-crm/actions/runs/44221933223/artifacts/14390294408), SHA-256 `7d88d430e465270d366983acc877c13282893a5aec4cdbeb66212fa02da22ccc`, foi conferido e inspecionado. O funil filtrado está legível e as novas viewports mostram contas, pedidos, auditoria e rodapé administrativos; auditoria/rodapé compartilham a mesma viewport final. A antiga captura ES incompleta de página inteira não faz parte do artefato.
+
+O próximo incremento corrige o retorno dos formulários quando a validação recebe arrays ou outros tipos incompatíveis em campos de texto. A apresentação lê somente login, company e email: preserva strings e o escape HTML, trata null como vazio e usa o fallback fictício existente para tipos não textuais, sem converter objetos nem consultar campos secretos. A allowlist de old-input, a validação, os redirects e as regras de Enrollment permanecem intactos.
+
+O unitário acrescenta cinco métodos aos oito existentes, incluindo objetos que proíbem conversão e prova de sessão inalterada. O HTTP preparado acrescenta 57 renders nos três idiomas, POST com CSRF real seguido de 303→GET 200, valores/escape corretos e fingerprints de 15 tabelas de Enrollment invariáveis. Os agregados são calculados dentro do PostgreSQL, sem devolver linhas ou códigos. A cadeia de código fundamenta o defeito; não houve execução separada da view antiga. Resultados da nova candidata serão vinculados à sua PR/HEAD.
+
+Os próximos recortes já estão isolados: destinos de validação de login/MFA, ações de pedidos conforme o papel, indicadores de idioma em confirmações com informação única e preservação da calculadora na troca de idioma. DRAFT / NO-MERGE / NO-DEPLOY, fixtures sintéticas e aceites operacionais independentes.
+
+## Continuidade — filtro de funil e evidência móvel (18/11/2026)
+
+A [PR #652](https://github.com/rafhael100/imagine-crm/pull/652), HEAD `70db3b9953866da15b06462576f17133a6988959`, concluiu a [jornada 44220369430](https://github.com/rafhael100/imagine-crm/actions/runs/44220369430): 2.415 checks HTTP, 582 assertions Chromium, 177 de resiliência, 49 de acesso e unitários 4/9 + 8/134. Na mesma HEAD, 22/24 workflows passaram; F251/F252 continuam bloqueando 92 de 115 caminhos contra a baseline publicada, sem ampliar allowlists. Relatórios passou em 390 px, com foco e acesso por teclado à última coluna nos três idiomas.
+
+O [artefato 14389733334](https://github.com/rafhael100/imagine-crm/actions/runs/44220369430/artifacts/14389733334) teve SHA-256 `cc036287fc98ce7c6275a2748a44afee9650e5e1ff15069e238748011cd28875` conferido. As capturas de cliente e o crop administrativo de pedidos estão legíveis. A imagem administrativa de página inteira ainda omite o cartão, a auditoria e o rodapé. Nesta rodada, o ensaio mantém o crop e todas as provas anteriores, substituindo apenas a imagem ES incompleta por quatro capturas da viewport visível de 390 × 844 px, com nomes explícitos para contas, pedidos, auditoria e rodapé. Cada captura exige antes pixels de texto pintados no elemento correspondente. A causa interna da omissão em fullPage não foi demonstrada; nenhum CSS, critério de layout ou dimensão extra é alterado, e não se presume aceite visual humano.
+
+O próximo incremento corrige a navegação exigida pela [#416](https://github.com/rafhael100/imagine-crm/issues/416): ao abrir um funil e trocar PT/EN/ES, o Kanban mantém o filtro selecionado. O link carrega somente a seção, o idioma e um ID escalar pertencente ao snapshot já autorizado da empresa. Não copia outros parâmetros, não consulta outro tenant e não grava preferências. Um filtro não reconhecido recebe aviso neutro e caminho para escolher os próprios funis; a filtragem anterior do quadro permanece intacta, inclusive o comportamento preexistente de valor vazio/`0`.
+
+As regressões preparadas usam dois funis da própria empresa e verificam os links reais, IDs, títulos, formulários e ausência de mudanças de negócio nos três idiomas. Incluem filtros desconhecidos, arrays, vazio e tentativas entre empresas, sem refletir parâmetros estranhos. A execução efetiva será registrada na PR e SHA deste incremento; os resultados da #652 não são atribuídos à candidata seguinte.
+
+Já estão preparados separadamente o tratamento de old-input de tipo inadequado e os destinos fixos de erros de validação de login/MFA. A tela de pedidos também está sendo ajustada para respeitar o papel do membro, mantendo a autorização existente no servidor. DRAFT / NO-MERGE / NO-DEPLOY; continuidade de desenvolvimento com dados sintéticos e gates operacionais preservados.
+
+## Continuidade — interface privada completa PT/EN/ES (18/11/2026)
+
+Na [PR #652](https://github.com/rafhael100/imagine-crm/pull/652), a primeira rodada revelou uma suposição excessiva do teste sobre rotação antes da admissão IAM. O ajuste somente no harness respeita o backoff e distingue a recusa anterior à autenticação. A segunda HEAD, `06317219b6d5cb5b0c88950b012a6709ed033894`, passou 2.415 checks HTTP e os unitários (4/9 e 8/134), mas o Chromium detectou overflow real em Relatórios: 484 px de documento para viewport de 390 px. A correção atual limita apenas a largura mínima do painel por funil e torna seu wrapper nomeado/focável, sem alterar linhas, cálculos ou ocultar colunas. O teste preserva a tolerância original e exige Tab/setas, foco visível e cabeçalho/valor da última coluna inteiramente acessíveis nos três idiomas. A nova execução ainda está pendente; não se atribuem resultados anteriores à nova HEAD.
+
+A base desta continuação é a [PR #648](https://github.com/rafhael100/imagine-crm/pull/648), HEAD `b85da1ce56edd9ac45198020d94c3ae1dcbce83a`. A [jornada corrigida](https://github.com/rafhael100/imagine-crm/actions/runs/44213336198) concluiu 1.552 verificações HTTP, 283 assertions Chromium, 177 de resiliência e 49 de acesso, além de quatro testes unitários/nove assertions. Na mesma HEAD, 22 dos 24 workflows passaram; F251/F252 mantiveram a recusa do escopo acumulado. A primeira falha de seletor de label foi corrigida delimitando a busca aos formulários, sem remover critérios.
+
+A inspeção do [artefato da #648](https://github.com/rafhael100/imagine-crm/actions/runs/44213336198/artifacts/14386504467) confirmou o desktop administrativo legível, mas encontrou o cartão de pedidos vazio na captura ES mobile feita após teclado/resize. A causa permanece em investigação nesta continuação: o próximo ensaio deve trazer o cartão ao viewport, verificar seu conteúdo e geometria e capturá-lo separadamente. Não se transforma uma imagem incompleta em aceite visual.
+
+O incremento seguinte atende à cobertura completa do cliente ainda pendente na [#416](https://github.com/rafhael100/imagine-crm/issues/416#issuecomment-6904892977): login, MFA, recuperação, cadastro/OTP, visão geral, leads/CSV, funis, tarefas, equipe/convites, pedidos, estados e mensagens. Um catálogo privado centraliza PT/EN/ES e traduz somente rótulos conhecidos, preservando dados cadastrados, códigos canônicos, valores de formulário, preços em BRL, regras, permissões, limites e CAS. Os três controles remanescentes sem nome acessível — edição de título do lead, CSV e título do funil — passam a ter nomes localizados.
+
+O helper de apresentação aceita apenas `pt/en/es`, sem alterar locale global ou preferências de negócio. Ele localiza erros de validação já calculados, sem reexecutar regras/SQL, e substitui mensagens desconhecidas por texto genérico. Status, destinos 303, allowlist de old-input e os contratos distintos de headers são preservados. As rotações existentes do IAM continuam intactas: login, conclusão de MFA e logout restauram somente `crm.private.lang`, sem copiar identidade, tenant, tokens ou outros dados de sessão. Redirects anteriores ao controller também preservam a escolha de idioma.
+
+A prova preparada inclui matriz HTTP/Chromium por idioma, textos e nomes acessíveis, formulários/dados invariantes, erros sanitizados, headers/destinos, sessão/CSRF antigos recusados e testes unitários do helper. PHP, PostgreSQL e Chromium reais dependem da CI da HEAD publicada; os resultados efetivos serão registrados na PR, sem antecipar aprovação.
+
+A continuidade já identificou dois defeitos preexistentes para os próximos recortes: a troca de idioma descarta o funil selecionado no Kanban; valores de old-input recebidos como arrays podem quebrar a reapresentação de formulários. Eles permanecem separados deste incremento até reprodução e correção próprias. DRAFT / NO-MERGE / NO-DEPLOY; aceites operacionais e humanos seguem independentes.
+
+## Continuidade — restauração de idioma e acessibilidade QA-02 (17/11/2026)
+
+A [PR #647](https://github.com/rafhael100/imagine-crm/pull/647), HEAD `a2c7218f28aac58796387c939832ff1bfae3cba0`, terminou a consolidação: 22 de 24 workflows passaram. [F0](https://github.com/rafhael100/imagine-crm/actions/runs/44208097556) passou 2.252 testes/71.599 assertions e 25 passos de navegador; [RLS](https://github.com/rafhael100/imagine-crm/actions/runs/44208097369), 2.376 testes/73.694 assertions. F0/RLS usaram um merge de teste cuja árvore é idêntica à candidata. Os três [PG07 obrigatórios](https://github.com/rafhael100/imagine-crm/actions/runs/44208096937) passaram sem skip, com 591 assertions. A [jornada privada](https://github.com/rafhael100/imagine-crm/actions/runs/44208097255) confirmou 1.550 verificações HTTP, 121 Chromium, 177 de resiliência e 49 de acesso. Backup, P20/P22, Sites F398–F401 e migration passaram. Os skips/depreciações e todos os runs estão registrados na PR.
+
+F251/F252 continuam bloqueando a candidata acumulada: 89 de 112 caminhos fora da allowlist, com os testes internos dos scripts aprovados. Nenhum guard foi relaxado. Isso impede a classificação operacional; não impede a continuação dos requisitos de interface já documentados.
+
+A próxima correção restaura regressões da QA-02 da [PR #616](https://github.com/rafhael100/imagine-crm/pull/616), registradas na [issue #416](https://github.com/rafhael100/imagine-crm/issues/416#issuecomment-6904892977) e exigidas pela [Etapa D da #617](https://github.com/rafhael100/imagine-crm/issues/617). A fonte atual perdeu a associação de 15 labels, as regiões de rolagem focáveis do Kanban/admin e traduções administrativas/ações Kanban. O décimo sexto label histórico já foi corrigido como `automation-language` na #644 e deve ser preservado. A restauração altera apresentação e semântica acessível, mantendo valores, rotas, versões, CSRF e regras de negócio.
+
+O Chromium deve verificar os 16 campos, foco por Tab e setas nas regiões com overflow, trocas reais PT/EN/ES e igualdade de FormData/ações entre idiomas. Os resultados efetivos serão vinculados à próxima PR/HEAD. Cobertura integral dos textos do cliente, também pendente na #416, segue em inventário para a continuação; nenhuma revisão humana, leitor de tela real, aceite visual ou homologação operacional é presumida.
+
+## OP-01 — resumo mínimo pela lista de leads (17/11/2026)
+
+A consulta privada da [PR #649](https://github.com/rafhael100/imagine-crm/pull/649), HEAD `810f6815f4d8dc35ba46dbe7accf78c6b63b7dc1`, passou na [CI OP-01 44215580347](https://github.com/rafhael100/imagine-crm/actions/runs/44215580347): 43 leituras reais HTTP, 12 admitidas e 31 recusadas, com auditoria exata e estado de negócio preservado. O consumidor Agents original #471 também passou. A entrega seguinte acrescenta o link na lista e o resumo HTML com somente referência e etapa como dados de negócio, nos três idiomas, reutilizando uma única leitura autorizada por abertura.
+
+O ensaio da nova candidata cobre a API preservada, a página, a auditoria e a navegação Chromium em desktop/celular. Ambas as rotas continuam desligadas por padrão; nenhum acesso S2S, merge, deploy ou aceite humano é inferido. Resultados efetivos permanecem associados à PR/HEAD executada. [Contrato e prova do resumo](docs/operations/CRM-OP01-NAVIGABLE-MINIMAL-SUMMARY.md).
+
+## OP-01 — consulta mínima privada autorizada (17/11/2026)
+
+A Direção aprovou o recorte funcional de um lead fictício consultado por usuário autenticado no CRM. A candidata, derivada da [PR #647](https://github.com/rafhael100/imagine-crm/pull/647) `a2c7218f28aac58796387c939832ff1bfae3cba0`, acrescenta GET `/agentes/leads/{id}/minimo`, desligado por padrão e exclusivo do perfil privado. Reutiliza a autoridade de sessão/MFA/conta/membership existente, seleciona somente id/stage e exige auditoria na mesma transação. Não altera a política global de produção ou a proposta documental #57.
+
+O consumidor original Agents [#471](https://github.com/rafhael100/imagine-ai-agents/pull/471), SHA `740abafc813dbde70f5a2ad6e138402ed7945276`, passou na [CI 44213754313](https://github.com/rafhael100/imagine-ai-agents/actions/runs/44213754313). O novo ensaio CRM fixa essa fonte e entrega a resposta HTTP real ao consumidor sem cookies, credenciais ou rede no contêiner leitor. A jornada privada anterior é revalidada separadamente na mesma candidata. Resultados efetivos são registrados na PR/HEAD; não se antecipa aprovação HTTP. [Contrato, autoridade e limites](docs/operations/CRM-OP01-PRIVATE-MINIMAL-READ.md).
+
+Os gates F251/F252 da base continuam preservados; esta candidata não libera merge, deploy, produção ou delegação S2S. A próxima etapa de leitura não depende de criação de tarefa ou execução n8n.
+
+## Continuidade — tela privada de acompanhamento n8n
+
+A [PR #650](https://github.com/rafhael100/imagine-crm/pull/650), HEAD `be9c1243a45ab867309a89f8c40d61dc44b7a7f4`, concluiu contratos e integração anterior em [44215797078](https://github.com/rafhael100/imagine-crm/actions/runs/44215797078) e backup em [44215797048](https://github.com/rafhael100/imagine-crm/actions/runs/44215797048). O [ensaio Agents #472](https://github.com/rafhael100/imagine-ai-agents/actions/runs/44215857012), HEAD `8e7f1f21a2927bde3e337edaace0e1e6dffdc29a`, comprovou retorno da execução nativa ao histórico do CRM e restore de 33 tabelas, com dados sintéticos.
+
+A continuação acrescenta a seção privada **Execuções n8n**, lista de eventos e histórico em PT/EN/ES. A leitura reaproveita sessão/MFA e membership da própria empresa, usa uma função SQL específica sem acesso do web às credenciais do reconciliador e não dispara comunicação externa ou efeitos de negócio. Sem retorno, intenção de início, resultado e confirmação permanecem distintos. [Contrato, testes e limites](docs/automation/CRM-N8N-EXECUTION-MONITOR.md).
+
+O perfil novo fica desligado por padrão e o backup reconhece sua função de leitura de forma explícita. As evidências de CI e navegador serão registradas na PR da HEAD candidata. A base de revisão é #650; os gates F251/F252 não são ampliados. DRAFT / NO-MERGE / NO-DEPLOY, sem aceite visual humano ou homologação operacional presumidos.
+
+## Continuidade — retorno do n8n ao acompanhamento do CRM
+
+A candidata de execução nativa do Agents [#469](https://github.com/rafhael100/imagine-ai-agents/pull/469) produziu resultado técnico `PREPARED` e confirmação durável na CI. Este recorte acrescenta consulta privada assinada, projeção e histórico separados do recibo de entrega. O CRM verifica a origem e a resposta, impede regressão e duplicação de observações e preserva o estado após falha ou recuperação.
+
+O [contrato de acompanhamento](docs/automation/CRM-N8N-EXECUTION-FEEDBACK.md) explica estados, grants próprios, persistência e backup. O perfil de backup fechado passa a reconhecer os objetos de execução, mantendo owners, ACLs e FORCE RLS. A instalação não cria grants ativos ou logins por padrão. Resultados efetivos ficam registrados na PR e na SHA da CI; esta nota não antecipa aprovação.
+
+Base de implementação: [#647](https://github.com/rafhael100/imagine-crm/pull/647), SHA `a2c7218f28aac58796387c939832ff1bfae3cba0`, com as correções #641–#646 já ancestrais. F0, PostgreSQL, jornada, P22 e backup dessa base passaram; F251/F252 continuam recusando o escopo acumulado, sem ampliação de allowlists. DRAFT / NO-MERGE / NO-DEPLOY, somente dados sintéticos.
+
+## Continuidade — contraprovas Sites→CRM com captura real (17/11/2026)
+
+Na candidata consolidada `76cfef1d026c8b9f0e88f343b27cff44aced6e48`, as [três contraprovas PG07](https://github.com/rafhael100/imagine-crm/actions/runs/44207277042) passaram sem skip (589 assertions): revogação primeiro, timeout real `55P03` com retry/replay na mesma conexão e falha tardia `23514` com rollback integral. A suíte anterior passou 31 testes/360 assertions, com o skip F398 esperado; o [job F398 dedicado](https://github.com/rafhael100/imagine-crm/actions/runs/44207277196) executou o emissor original e passou 1 teste/32 assertions. A [suíte geral PostgreSQL/RLS](https://github.com/rafhael100/imagine-crm/actions/runs/44207277488) passou 2.376 testes/73.694 assertions, com 103 skips e uma depreciação registrados.
+
+F0 detectou um pin desatualizado de `bootstrap/app.php`. A revisão de todos os 15 arquivos confirmou que os outros 14 hashes continuam idênticos. O único delta corresponde às cinco linhas de registro da rota S2S privada do [commit P19 `d88da402`](https://github.com/rafhael100/imagine-crm/commit/d88da4029001dac4702a8c1f68327570131e91b5), PR #636: staging e perfil sintético obrigatórios, receiver igual ao P22 #641, mTLS/assinatura/grant/replay preservados e tratamento IAM 401/no-store intacto. Atualiza-se somente esse hash no manifesto após revisão técnica, mantendo o guard. Não é parecer humano nem autorização operacional.
+
+Os [gates F251](https://github.com/rafhael100/imagine-crm/actions/runs/44207277013) e [F252](https://github.com/rafhael100/imagine-crm/actions/runs/44207276767) recusaram corretamente o diff acumulado contra sua baseline fixada: os testes dos scripts passaram, mas o classificador identificou 88 de 111 caminhos fora da allowlist de manutenção. As allowlists não são ampliadas. O [F253](https://github.com/rafhael100/imagine-crm/actions/runs/44207277014) passou seus testes de canário e as contraprovas F254 sem executar host, troca de release ou deploy. O resultado final de F0 e dos demais workflows fica associado à SHA seguinte na PR #647.
+
+A primeira execução da [PR #647](https://github.com/rafhael100/imagine-crm/pull/647), HEAD `c308445c015ae5820156ee6ace3451b918b2772e`, foi recusada pelo SEC-CI-02 antes do DDL: a base empilhada #646 não é um alvo elegível. Os [runs PG07](https://github.com/rafhael100/imagine-crm/actions/runs/44206794106) e [F398](https://github.com/rafhael100/imagine-crm/actions/runs/44206794108) não executaram os testes PostgreSQL. O guard permanece intacto. A #647 é redirecionada à DEV `d7c7aacc766c7ade4c65dcd211ed4569442144a9`, ancestral da candidata (175 commits à frente, nenhum atrás), para validar a versão acumulada na mesma SHA. O [delta PG07 em relação à #646](https://github.com/rafhael100/imagine-crm/compare/f719b9dcdeebbc5b07a6472f9b86fb9b31028332...c308445c015ae5820156ee6ace3451b918b2772e) permanece revisável separadamente. Os gates de escopo F251/F252 não são ampliados por essa consolidação; falhas devem ser registradas pelo motivo real.
+
+A [PR #646](https://github.com/rafhael100/imagine-crm/pull/646), HEAD `f719b9dcdeebbc5b07a6472f9b86fb9b31028332`, concluiu os dois jobs da [CI 44203304835](https://github.com/rafhael100/imagine-crm/actions/runs/44203304835): 1.550 verificações HTTP, 121 Chromium, 177 de resiliência, 49 de acesso e unidade 4 testes/9 assertions. A falha real de logout/compensação deixou a evidência IAM exigida, a origem bloqueada foi cancelada sem tarefa e a sessão válida concluiu uma vez. As sete candidatas #640–#646 totalizam 21 jobs finais success e permanecem abertas, DRAFT e sem merge.
+
+A próxima candidata atende às contraprovas explicitamente pendentes na [issue #564](https://github.com/rafhael100/imagine-crm/issues/564#issuecomment-6879911096): revogação antes da captura, timeout SQL e falha tardia com rollback. Um processo PHP separado usa a role restrita e chama captureSigned real; a prova observa backends e locks e exige recuperação na mesma conexão sem contexto residual. A falha de auditoria deve desfazer lead, claim e nonce e liberar o revogador que esperava. [Escopo e método](docs/desenvolvimento/CRM-LEADS-PG07-interleavings-capture-real-ci.md).
+
+O workflow usa a SHA da HEAD e executa os três casos em etapa que falha em skip, incomplete ou suíte vazia. O ensaio F398 histórico depende de checkout externo e continua distinguido da nova prova PG07; não se declara sua execução quando estiver pulado. Este pacote modifica somente testes, helper CI, workflow e documentação. Resultados reais ficam na PR/HEAD candidata. A #564 permanece aberta para parecer independente e requisitos operacionais. DRAFT / NO-MERGE / NO-DEPLOY.
+
+## Continuidade — autoridade da sessão causal (17/11/2026)
+
+A [PR #645](https://github.com/rafhael100/imagine-crm/pull/645), HEAD `62e119d3cbc0936b3ecb7ae6360742a543c9d3b9`, passou no [ensaio dedicado de backup 44202645832](https://github.com/rafhael100/imagine-crm/actions/runs/44202645832): base/S2S com snapshot consistente, divergência antiga reproduzida, INSERT/UPDATE concorrentes preservados, cleanup normal e em falhas, dois timeouts reais do cliente e sessão sentinela alheia preservada. Nenhum ajuste foi necessário depois da publicação.
+
+A próxima candidata impede que outra sessão válida do mesmo usuário execute um acompanhamento cuja sessão de origem esteja com bloqueio de segurança não resolvido. O motor reaproveita o contrato IAM existente, exige ausência de hold, verifica a operação de origem e atualiza o relógio depois do lock. Não altera política de recuperação nem libera sessões.
+
+A regressão causa uma falha real de logout e de compensação em uma sessão sintética específica. Exige o hold, a operação prepared e a auditoria attempted produzidos pelo próprio IAM, remove somente o trigger temporário e prova cancelamento sem tarefa; a segunda sessão conclui seu comando exatamente uma vez. [Contrato, restrições e prova](docs/automation/CRM-NATIVE-CAUSAL-SESSION-HOLD.md). Código revisado; execução efetiva fica registrada na PR/HEAD candidata. DRAFT / NO-MERGE / NO-DEPLOY.
+
+## Continuidade — snapshot único para backup concorrente (17/11/2026)
+
+A [PR #644](https://github.com/rafhael100/imagine-crm/pull/644), HEAD `894eb57fb60ad0f44dcd1bbfbaaaef1e929c86f0`, concluiu os dois jobs da [CI 44201222884](https://github.com/rafhael100/imagine-crm/actions/runs/44201222884), com 1.442 verificações HTTP, 121 assertions Chromium, 177 de resiliência e 49 de acesso. A navegação real preservou a seção e os valores do formulário nos três idiomas; capturas em inglês desktop e espanhol mobile foram inspecionadas sem defeito concreto identificado. Isso não equivale a aceite visual humano.
+
+A próxima candidata faz inventário, contagens, escopos e dump usarem um único snapshot PostgreSQL, fechado antes da criptografia. Gravações concorrentes deixam de gerar divergência entre manifesto e arquivo restaurado. Todas as conexões criadas recebem identificação própria; erro ou timeout exige encerramento verificado, preservando sessões alheias. [Contrato e limites](docs/automation/CRM-S2S-BACKUP-RESTORE.md).
+
+A regressão reproduz a divergência anterior e cobre INSERT/UPDATE concorrentes, restauração separada, escrita recusada, perda do exportador e timeouts reais de dump/importador com uma sessão sentinela preservada. Código revisado; resultados PostgreSQL/Docker dependem da CI da HEAD publicada. A correção da sessão causal também está pronta para o pacote seguinte. DRAFT / NO-MERGE / NO-DEPLOY, fixtures sintéticas.
+
+## Continuidade — idioma na Central de Automações (17/11/2026)
+
+A [PR #643](https://github.com/rafhael100/imagine-crm/pull/643), HEAD `3c04f28341fe5cd945f9f206cb9d8c3defb11fc3`, concluiu os dois jobs da [CI 44198701287](https://github.com/rafhael100/imagine-crm/actions/runs/44198701287): 1.442 verificações HTTP, 83 assertions Chromium, 177 de resiliência e 49 de acesso, além de unidade, canário, backup e restart. O formulário real no limite de revisões preservou valores e permitiu alterar idioma.
+
+A inspeção da captura mostrou textos de automação ainda em português quando o idioma selecionado era inglês. A próxima candidata localiza a Central de Automações/Preferências em PT/EN/ES, incluindo prazos personalizados, estados e ações, e mantém a seção atual ao clicar no idioma do cabeçalho. O Chromium verifica os três idiomas nas duas seções sem alterar FormData, em desktop/mobile. [Escopo e prova](docs/automation/CRM-AUTOMATION-LOCALES.md).
+
+Snapshot consistente do backup e verificação de bloqueios da sessão causal seguem em implementação paralela. Resultados da nova candidata serão registrados na PR/HEAD; não se presume tradução completa das demais telas nem aceite humano. DRAFT / NO-MERGE / NO-DEPLOY, dados sintéticos.
+
+## Continuidade — preferências preservam agendamentos (17/11/2026)
+
+A [PR #642](https://github.com/rafhael100/imagine-crm/pull/642), HEAD `6376fc23497ca1e4df81e43b8e4e487659d03873`, concluiu três jobs success: [backup base/S2S em cluster separado](https://github.com/rafhael100/imagine-crm/actions/runs/44197374340) e [jornada privada completa](https://github.com/rafhael100/imagine-crm/actions/runs/44197374478). A prova preservou owners de funções, ACLs, FORCE RLS, dados e negativas efetivas; reproduziu as falhas da lista incompleta de roles e de `--no-owner`.
+
+A próxima candidata corrige salvamentos de preferências que consumiam revisões e cancelavam acompanhamentos mesmo sem mudança de regras ou prazo. Agora, salvar os mesmos valores preserva todo o estado; alterar apenas o idioma muda esse campo e um evento de auditoria. CAS, autorização e limite de 20 revisões continuam ativos. Na revisão 20, o formulário permite alterar idioma e envia os valores exatos dos controles de automação bloqueados. [Contrato e provas](docs/automation/CRM-NATIVE-PREFERENCES-PRESERVE-SCHEDULE.md).
+
+O ensaio HTTP compara preferências, execuções, tarefas, eventos e outra empresa; alcança a revisão 20 por requests reais e exige uma única tarefa no vencimento. Chromium verifica e submete o formulário real no limite. Resultados efetivos ficam na PR/HEAD específica. O snapshot consistente do backup segue em desenvolvimento paralelo. DRAFT / NO-MERGE / NO-DEPLOY, apenas fixtures sintéticas.
+
+## Continuidade — backup S2S em servidor separado (17/11/2026)
+
+A [PR #640](https://github.com/rafhael100/imagine-crm/pull/640), HEAD `0bd2742eca1e0bc042875a6eae629d161a1fce81`, concluiu quatro jobs success, incluindo [1.298 verificações HTTP e jornada completa](https://github.com/rafhael100/imagine-crm/actions/runs/44195851671) e [28 recusas de deriva da migration](https://github.com/rafhael100/imagine-crm/actions/runs/44195851695). A [PR #641](https://github.com/rafhael100/imagine-crm/pull/641), HEAD `aacff69a890cb5cf92cd31b11e9d87f0687adc14`, concluiu cinco jobs success: [recuperação P22](https://github.com/rafhael100/imagine-crm/actions/runs/44196236388), [P20 nominal](https://github.com/rafhael100/imagine-crm/actions/runs/44196236371) e [jornada privada](https://github.com/rafhael100/imagine-crm/actions/runs/44196236267). Os recibos expirados foram recuperados sem reenviar eventos, com as negativas e concorrência comprovadas.
+
+A próxima candidata corrige restauração S2S em outro cluster: o backup antigo criava apenas as cinco roles base e usava `--no-owner`, incompatível com os owners restritos das funções de serviço. O novo contrato identifica base/S2S, recria apenas roles inertes previstas e preserva owners, ACLs, funções, políticas, RLS e contagens das tabelas de serviço. A regressão executa criptografia/restauração reais, reproduz as duas falhas anteriores e testa as quatro funções P22 no destino separado. [Detalhes](docs/automation/CRM-S2S-BACKUP-RESTORE.md).
+
+A execução efetiva desta nova candidata será registrada na PR/HEAD específica. O backup ainda exige janela sem escritas enquanto o suporte a snapshot compartilhado é desenvolvido na continuação. DRAFT / NO-MERGE / NO-DEPLOY; nenhum dado real, VPS, autorização operacional ou aceite humano foi presumido.
+
+## CENTRAL-AUTO-P22 — recuperação explícita de recibo em revisão (17/11/2026)
+
+Continuação da [PR #640](https://github.com/rafhael100/imagine-crm/pull/640), que corrige acompanhamento causal e compatibilidade da ledger. A candidata P22 conecta o CRM ao endpoint privado de recibos da [PR Agents #461](https://github.com/rafhael100/imagine-ai-agents/pull/461), SHA `8041c022776bbc1f998224a880726a8a3e69db37`, para recuperar confirmação perdida sem reenviar ou renovar o evento.
+
+A consulta exige mTLS, grant próprio, assinatura, identidade exata de empresa/tenant/evento/payload e vínculo com request/nonce. Somente `RECEIVED / DISABLED / NOT_DISPATCHED` pode confirmar recebimento; ausência, expiração ou revogação preserva a pendência. Também são recusados ACK SQL NULL e grants/janelas que expiram durante espera por lock. Código e critérios: [CENTRAL-AUTO-P22](docs/automation/CENTRAL-AUTO-P22.md).
+
+O harness reaproveita integralmente as regressões P19/P21, fixa os bytes do Agents e acrescenta recuperação concorrente, negativas reais e repetição com destino parado. O ensaio nominal P20 recebe pins coerentes em commit posterior. Resultados efetivos são registrados na PR da SHA candidata; esta nota não antecipa sucesso integrado. DRAFT / NO-MERGE / NO-DEPLOY; backup em outro cluster e preservação de agendamento ao mudar idioma seguem na sequência de implementação.
+
+## Continuidade — acompanhamento e compatibilidade da ledger (17/11/2026)
+
+A [PR #639](https://github.com/rafhael100/imagine-crm/pull/639), HEAD `403a2b735e77bd72b529e296b20e63eab1c00859`, concluiu a [jornada privada](https://github.com/rafhael100/imagine-crm/actions/runs/44190323795) com os dois jobs em success: 1.172 verificações HTTP, 75 Chromium, 177 de resiliência, 49 de acesso separado e quatro testes unitários. Essa prova permanece restrita ao CI sintético.
+
+A continuação corrige dois problemas funcionais: acompanhamentos pendentes da versão anterior são cancelados imediatamente na mesma transação da alteração do lead, e a migration incremental recusa permissões/políticas incompatíveis antes de anunciar compatibilidade. A regressão HTTP inclui falha real de INSERT e rollback integral; a regressão PostgreSQL compara a migration anterior e verifica preservação de registros/metadados nas recusas. Detalhes: [acompanhamentos substituídos](docs/automation/CRM-NATIVE-FOLLOWUP-SUPERSEDED.md) e [ACL/política da ledger](docs/automation/CRM-AUTOMATION-MIGRATION-DRIFT.md).
+
+Os resultados efetivos desta nova candidata serão registrados na PR da SHA testada. DRAFT / NO-MERGE / NO-DEPLOY; a implementação de recuperação de recibos e a restauração S2S em servidor separado continuam na sequência de desenvolvimento, sem espera por nova solicitação. Gates de homologação operacional e revisões humanas permanecem independentes.
+
+## Continuidade — preservar follow-up ao salvar sem alterações (17/11/2026)
+
+A [PR #638](https://github.com/rafhael100/imagine-crm/pull/638), HEAD `33e80b87f1969aa9790b72b9053f9f7496b1bd3f`, concluiu **3/3 jobs success**: [P21](https://github.com/rafhael100/imagine-crm/actions/runs/44189295838) e [P20](https://github.com/rafhael100/imagine-crm/actions/runs/44189295917). Foram executadas 67 verificações JSON, 49 ACK, 3 testes Python P21, 8 casos HTTP/mTLS e as provas de repetição aceita expirada/recusas/restore; o ensaio nominal P20 também foi preservado. Essa evidência é de CI sintético, sem homologação operacional.
+
+O recorte seguinte corrige `Workspace::updateLead`: salvar o mesmo título não incrementa versão nem invalida o acompanhamento agendado. Autorização, lock, versão antiga (409), campos e transições (422) continuam verificados antes do retorno. A regressão está na jornada HTTP existente e mantém prova de edição real, efeito exato e deduplicação. [Detalhes e critérios](docs/automation/CRM-NATIVE-FOLLOWUP-NOOP.md); resultado efetivo da nova SHA registrado na PR de continuação, sem sucesso antecipado.
+
+Ambas candidatas permanecem **DRAFT / NO-MERGE / NO-DEPLOY**. A etapa funcional seguinte deve preservar integração e observar os gates da #617/#557; nenhuma revisão humana, liberação comercial ou ação na VPS foi presumida.
+
+## CENTRAL-AUTO-P21 — continuação funcional S2S em revisão (17/11/2026)
+
+Retomada da [PR #637](https://github.com/rafhael100/imagine-crm/pull/637), HEAD `4d6ccd842b9b9ee6adfbe317736ca94e4d5b7980`, após a comunicação privada Portal → CRM → Agents comprovada em CI. O histórico OPS-70 e anteriores abaixo não descreve o estado mais recente das candidatas #632–#637; consultar a [issue #557](https://github.com/rafhael100/imagine-crm/issues/557) e as HEADs atuais.
+
+A candidata P21 corrige a repetição de evento já confirmado após expirar a janela de transporte e recusa JSON com campos repetidos no receiver e no ACK. Mantém concessão/tenant/origem válidos, confirmação assinada e pendentes expirados bloqueados. Código, critérios e limites: [CENTRAL-AUTO-P21](docs/automation/CENTRAL-AUTO-P21.md). A PR de continuação registra SHA final e resultados efetivos; esta nota não declara CI concluída antecipadamente.
+
+**DRAFT / NO-MERGE / NO-DEPLOY.** Testes somente com identidades e eventos sintéticos. A alteração SQL pertence ao laboratório descartável; não é migration operacional. A homologação #617 continua condicionada a revisão SEG/OPS humana e aceite privado; nenhum acesso à VPS ou liberação comercial foi inferido. A recuperação bilateral de evento pendente sem ACK depois da expiração segue aberta.
+
 ## OPS-70 — staging comprovado em CI descartável; VPS ainda NO-GO (14/11/2026)
 
 **Base DEV antes deste dossiê:** `3a723ae74b21a4b499c41dc9e132ae7f343d4508`; `main` preservada em `e85e5dae2e8bd7a6af1e5c8d131f212fdc19c012`. A PR [#517](https://github.com/rafhael100/imagine-crm/pull/517) permanece **DRAFT / NO-MERGE / NO-DEPLOY**. F3-267/268/269/270 passaram em contêineres reais *somente no GitHub*: imagens PHP/Nginx, /up HTTP 200 em loopback, FPM isolado sem rota padrão, serviço web limitado a 127.0.0.1 e transições de saúde `healthy → unhealthy → healthy` após suspensão/retomada do FPM. **6/6 workflows success** na HEAD F3-270 [`9c249dbf`](https://github.com/rafhael100/imagine-crm/actions/runs/43546705237). A F3-271 produziu inventário sanitizado de dependências e hashes em [Actions #43547265544](https://github.com/rafhael100/imagine-crm/actions/runs/43547265544) com **6/6 CI verdes** na SHA `240a01c5258616c9eb491604b3836a49e7858058`; [artifact #14094049896](https://github.com/rafhael100/imagine-crm/actions/runs/43547265544/artifacts/14094049896), expira em 21/11/2026.
@@ -895,3 +1415,9 @@ O `AGENTS.md` é instrução de programação, `STATUS-ATUAL.md` é resumo hist�
 **Gates separados Portal ↔ CRM:** [PR #209](https://github.com/rafhael100/imagine-crm/pull/209) (F3-40), [#210](https://github.com/rafhael100/imagine-crm/pull/210) (F3-41), [#211](https://github.com/rafhael100/imagine-crm/pull/211) (F3-42), [#215](https://github.com/rafhael100/imagine-crm/pull/215) (F3-43), [#218](https://github.com/rafhael100/imagine-crm/pull/218) (F3-44 do Portal) permanecem DRAFT empilhados, com CI própria aprovada em HEADs antigas. São laboratórios de PostgreSQL descartável, comunicação loopback e testes de falhas; não são endpoints de CRM de produção. Antes de qualquer integração, precisam de reconciliação da DEV, diff e CI na SHA aplicável e revisão de segurança. [PR #214](https://github.com/rafhael100/imagine-crm/pull/214) e [PR #175](https://github.com/rafhael100/imagine-crm/pull/175) continuam DRAFT documentais.
 
 **Risco residual:** os testes aprovados comprovam comportamentos limitados de fixtures e configuração da aplicação. Não comprovam serviço autenticado, política multiempresa concedente, auditoria independente, retenção legal, migrações seguras em banco persistente ou entrega real de leads. **67 CORE, SEG/DBA #27, OP-01 #57, AUT, S01, IN-118, LGPD e FIN/CON continuam abertos.** Nenhuma aprovação de `ALLOW`, grants, API, dados de clientes, deploy, VPS, custos ou `main` foi inferida. **Não há GO de produção.**
+
+## Continuidade aprovada — rascunhos CRM/Agents, 17/11/2026
+
+A aprovação específica do responsável autoriza implementar, em homologação fictícia isolada, criação e consulta de rascunhos pelo owner ativo da empresa. Esta candidata parte do resumo mínimo #651, mantém o motor comercial no CRM e acrescenta intenção durável, autoria atestada, mTLS por operações separadas e reconciliação após resultado indeterminado. Member não pode criar nem consultar. [Contrato, jornada e limites](docs/desenvolvimento/CRM-OWNER-AGENTS-DRAFTS-2026-11-17.md).
+
+As novas rotas dependem do perfil privado exato e da flag adicional, desativada por padrão. A prova integrada fixa a fonte original Agents P67 e verifica sessão/MFA, regra de origem, persistência e navegador. Os resultados efetivos pertencem à PR da HEAD executada. Os registros anteriores acima são históricos; esta autorização não aprova produção, alterações em main/DEV, dados de clientes, APIs pagas ou instalação persistente.

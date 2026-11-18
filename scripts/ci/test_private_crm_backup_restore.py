@@ -1,0 +1,561 @@
+#!/usr/bin/env python3
+"""Real encrypted backup and isolated PG16 restore: base and complete S2S.
+
+Only an ephemeral public-repository PR job may install these synthetic fixtures.
+The production/operator script is executed unchanged, including crypto checks.
+"""
+from __future__ import annotations
+
+import hashlib
+import hmac
+import json
+import os
+from pathlib import Path
+import re
+import secrets
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts/ops"))
+from private_crm_backup_catalog import CATALOG_RULE, catalog_manifest  # noqa: E402
+from private_crm_backup_contract import (  # noqa: E402
+    BASE_ROLES, BASE_TENANT_TABLES, DATABASE, EXECUTION_TABLES, MONITOR_FUNCTION, S2S_TABLES, detect_profile,
+    isolated_restore_cluster, require, scoped_counts, security_manifest, table_counts, verify_restored_security,
+)
+from private_crm_backup_snapshot import exported_snapshot  # noqa: E402
+
+A = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+B = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+ACTOR_A = "cccccccc-cccc-4ccc-8ccc-cccccccccccc"
+ACTOR_B = "dddddddd-dddd-4ddd-8ddd-dddddddddddd"
+FUNNEL_A = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1"
+FUNNEL_B = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee2"
+LEAD_A = "ffffffff-ffff-4fff-8fff-fffffffffff1"
+LEAD_B = "ffffffff-ffff-4fff-8fff-fffffffffff2"
+EVENT_A = "11111111-1111-4111-8111-111111111111"
+EVENT_B = "22222222-2222-4222-8222-222222222222"
+
+
+def run(command, content=None, environment=None):
+    result = subprocess.run(command, input=content, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE, env=environment, timeout=180)
+    if result.returncode and command[:2] == [sys.executable, str(ROOT / "scripts/ops/backup-private-crm.py")]:
+        # The operator script's RuntimeError messages are deliberately sanitized.
+        # Keep its phase failure visible without echoing subprocess SQL or secrets.
+        for line in result.stderr.decode(errors="replace").splitlines():
+            if line.startswith("RuntimeError: "):
+                print(line, file=sys.stderr)
+    if result.returncode and "psql" in command:
+        # A failed SQL counterproof must expose its cause, not merely "docker".
+        # Never print query text, wire receipts, bound values or arbitrary error
+        # messages. Verbose psql supplies a stable SQLSTATE and schema-only location.
+        diagnostics = []
+        for line in result.stderr.decode(errors="replace").splitlines():
+            error = re.search(r"\bERROR:\s+([0-9A-Z]{5}):\s+(.*)", line)
+            if error:
+                item = "CRM_BACKUP_SQL_FAILURE sqlstate=" + error.group(1)
+                message = error.group(2)
+                if re.fullmatch(r"[A-Z][A-Z0-9_]{2,100}", message):
+                    item += " marker=" + message
+                identifier = re.fullmatch(r'column reference "([a-z_][a-z0-9_]{0,80})" is ambiguous', message)
+                if identifier:
+                    item += " ambiguous_column=" + identifier.group(1)
+                diagnostics.append(item)
+            context = re.search(r"PL/pgSQL function ([a-z_][a-z0-9_.]*)\([^\r\n)]*\) line ([0-9]+) at ([A-Za-z ]+)$", line)
+            if context:
+                diagnostics.append("CRM_BACKUP_SQL_CONTEXT function=" + context.group(1)
+                                   + " line=" + context.group(2) + " operation=" + context.group(3))
+        for diagnostic in diagnostics[:5]:
+            print(diagnostic, file=sys.stderr)
+    require(result.returncode == 0, "Synthetic backup command failed: " + Path(command[0]).name)
+    return result.stdout
+
+
+def verify_sequence_acl_manifest(query) -> None:
+    """Exercise NULL/default and explicit sequence ACLs on the actual PG16."""
+    sequence = "public.crm_ci_sequence_acl_probe"
+    owner = "crm_homologation_owner"
+    grantee = "crm_homologation_app"
+    require(re.fullmatch(r"16\d{4}", query("SHOW server_version_num")) is not None,
+            "Sequence ACL regression requires the disposable PostgreSQL 16.")
+    require(query("SELECT to_regclass('" + sequence + "') IS NULL") == "t",
+            "Sequence ACL fixture must be new.")
+    before = security_manifest(query)
+    try:
+        query("CREATE SEQUENCE " + sequence)
+        require(query("SELECT relacl IS NULL FROM pg_class WHERE oid='" + sequence + "'::regclass") == "t",
+                "Sequence fixture must begin with a NULL ACL.")
+        implicit = security_manifest(query)
+        expected_acl = [[owner, owner, privilege, False] for privilege in ("SELECT", "UPDATE", "USAGE")]
+        rows = [item for item in implicit["relations"] if item["name"] == sequence]
+        require(rows == [{"name": sequence, "kind": "S", "owner": owner,
+                          "rls": False, "force_rls": False, "acl": expected_acl}],
+                "Sequence manifest lost the owner's SELECT, UPDATE or USAGE privilege.")
+
+        # Read-only counterproof of the old fallback. pg_class's relkind is 'S',
+        # but acldefault('S', ...) describes a foreign server, not a sequence.
+        legacy_privileges = json.loads(query(
+            "SELECT jsonb_agg(item.privilege_type ORDER BY item.privilege_type) "
+            "FROM pg_class c CROSS JOIN LATERAL aclexplode(acldefault('S',c.relowner)) item "
+            "WHERE c.oid='" + sequence + "'::regclass"))
+        require(legacy_privileges == ["USAGE"]
+                and legacy_privileges != [item[2] for item in rows[0]["acl"]],
+                "Old foreign-server fallback was not distinguished from sequence privileges.")
+
+        query("REVOKE ALL ON SEQUENCE " + sequence + " FROM PUBLIC")
+        require(query("SELECT relacl IS NOT NULL FROM pg_class WHERE oid='" + sequence + "'::regclass") == "t",
+                "Public revoke must materialize the equivalent sequence ACL.")
+        require(security_manifest(query) == implicit,
+                "Equivalent NULL and explicit sequence ACLs changed the security manifest.")
+
+        query("GRANT USAGE ON SEQUENCE " + sequence + " TO " + grantee)
+        expanded_acl = sorted(expected_acl + [[owner, grantee, "USAGE", False]])
+        expanded_relations = [{**item, "acl": expanded_acl} if item["name"] == sequence else item
+                              for item in implicit["relations"]]
+        changed = security_manifest(query)
+        require(changed != implicit and changed == {**implicit, "relations": expanded_relations},
+                "An additional sequence grant must change exactly its manifest ACL.")
+    finally:
+        # Remove the fixture before any closed-profile detection or backup.
+        query("DROP SEQUENCE IF EXISTS " + sequence)
+    require(security_manifest(query) == before, "Sequence ACL probe altered the original security profile.")
+    print("CRM_BACKUP_SEQUENCE_ACL_PASS null_default=1 explicit_equivalent=1 extra_grant_detected=1 "
+          "legacy_type_rejected=1 fixture_removed=1")
+
+
+def verify_legacy_check_fidelity(query, profile, expected, base_tables, *, source_catalog):
+    """Corrupt one CHECK in the disposable clone, then restore its exact catalog."""
+    # Preserve the previous comparator's projection as a read-only witness of
+    # its actual blind spot. It is never used to approve a restored archive.
+    def comparable(manifest):
+        # pg_dump/restore can distribute varchar[] -> text[] coercions into
+        # each literal of legacy CHECK arrays. pg_get_constraintdef decompiles
+        # those equivalent trees differently. This extension does not attempt
+        # a general SQL-equivalence rewrite. Keep EVERY constraint's identity,
+        # kind and validation state; compare exact definitions for PK/FK/UNIQUE
+        # and for every CHECK in the three newly introduced execution tables.
+        constraints = [({key: value for key, value in item.items() if key != "definition"}
+                        if item["type"] == "c" and item["table"] not in EXECUTION_TABLES else item)
+                       for item in manifest["constraints"]]
+        return {**manifest, "constraints": constraints}
+
+    require(re.fullmatch(r"16\d{4}", query("SHOW server_version_num")) is not None,
+            "CHECK fidelity regression requires the disposable PostgreSQL 16.")
+    table = "public.crm_private_tasks"
+    constraint = "crm_private_tasks_state_check"
+    schemas = ("public", "crm_auto_service") if profile["s2s"] else ("public",)
+    before_security = security_manifest(query)
+    before_catalog = catalog_manifest(query, schemas=schemas)
+    before_counts = table_counts(query, profile)
+    records = [row for row in before_catalog["constraints"]
+               if (row["table"], row["name"]) == (table, constraint)]
+    require(len(records) == 1 and records[0]["type"] == "c"
+            and records[0]["validated"] is True and records[0]["definition"] != "CHECK (true)",
+            "Original validated task CHECK fixture missing.")
+    original_definition = records[0]["definition"]
+
+    def replace_definition(rows):
+        return [{**row, "definition": "CHECK (true)"}
+                if (row["table"], row["name"]) == (table, constraint) else row for row in rows]
+
+    try:
+        query("BEGIN; ALTER TABLE " + table + " DROP CONSTRAINT " + constraint + "; "
+              "ALTER TABLE " + table + " ADD CONSTRAINT " + constraint + " CHECK (true); COMMIT;")
+        changed_profile, changed_security = detect_profile(query, base_tables)
+        changed_catalog = catalog_manifest(query, schemas=schemas)
+        require(changed_profile == profile
+                and changed_security == {**before_security,
+                    "constraints": replace_definition(before_security["constraints"])}
+                and changed_catalog == {**before_catalog,
+                    "constraints": replace_definition(before_catalog["constraints"])},
+                "CHECK probe changed more than its definition or lost identity/type/validated.")
+        require(comparable(expected) == comparable(changed_security),
+                "Previous definition-dropping comparator did not accept the corrupted CHECK.")
+        try:
+            verify_restored_security(query, profile, expected, base_tables, source_catalog=source_catalog)
+        except RuntimeError as error:
+            require(str(error) == "Restored private catalog or security differs.",
+                    "Corrupted CHECK failed for a reason other than catalog fidelity.")
+        else:
+            raise AssertionError("A weakened legacy CHECK was accepted after restore.")
+    finally:
+        # Both DDL replacements are atomic. Restore the clone's original form,
+        # not the differently decompiled source form; never touch the source DB.
+        query("BEGIN; ALTER TABLE " + table + " DROP CONSTRAINT IF EXISTS " + constraint + "; "
+              "ALTER TABLE " + table + " ADD CONSTRAINT " + constraint + " "
+              + original_definition + "; COMMIT;")
+        require(security_manifest(query) == before_security
+                and catalog_manifest(query, schemas=schemas) == before_catalog
+                and table_counts(query, profile) == before_counts,
+                "CHECK probe did not restore its exact manifests and counts.")
+        verify_restored_security(query, profile, expected, base_tables, source_catalog=source_catalog)
+    print("CRM_BACKUP_LEGACY_CHECK_FIDELITY_PASS old_projection_accepts=1 check_true_denied=1 "
+          "identity_type_validated_preserved=1 manifests_restored=1 data_counts_unchanged=1")
+
+
+def main() -> None:
+    require(os.environ.get("GITHUB_ACTIONS") == "true"
+            and os.environ.get("GITHUB_REPOSITORY") == "rafhael100/imagine-crm"
+            and os.environ.get("GITHUB_EVENT_NAME") == "pull_request"
+            and os.environ.get("CRM_PRIVATE_PROJECT") == "imagine-crm-journey-ci",
+            "Disposable public-repository PR backup job required.")
+    envfile = Path(os.environ["CRM_PRIVATE_ENV_FILE"]).resolve()
+    directory = Path(sys.argv[1]).resolve()
+    require(not directory.is_relative_to(ROOT) and not envfile.is_relative_to(ROOT),
+            "Runner-only protected files must remain outside the checkout.")
+    compose = ["docker", "compose", "--env-file", str(envfile), "-p", "imagine-crm-journey-ci",
+               "-f", str(ROOT / "infra/homologation/compose.yaml")]
+    source = compose + ["exec", "-T", "postgres"]
+
+    def sql(statement: str) -> str:
+        return run(source + ["psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=1", "-v", "VERBOSITY=verbose", "-U",
+                   "crm_homologation_owner", "-d", DATABASE], statement.encode()).decode().strip()
+
+    verify_sequence_acl_manifest(sql)
+    base_tables = re.findall(r"CREATE TABLE\s+(crm_[a-z0-9_]+)\s*\(",
+                             (ROOT / "infra/homologation/schema.sql").read_text())
+    sql(f"""
+      INSERT INTO crm_global_identities(id) VALUES ('{ACTOR_A}'),('{ACTOR_B}');
+      INSERT INTO crm_organizations(id) VALUES ('{A}'),('{B}');
+      INSERT INTO crm_private_accounts(identity_id,organization_id,label,created_at) VALUES
+        ('{ACTOR_A}','{A}','EMPRESA_TESTE_BACKUP_A',floor(extract(epoch FROM now()))::bigint),
+        ('{ACTOR_B}','{B}','EMPRESA_TESTE_BACKUP_B',floor(extract(epoch FROM now()))::bigint);
+      INSERT INTO crm_private_trials SELECT id,floor(extract(epoch FROM now()))::bigint,
+        floor(extract(epoch FROM now()))::bigint+1209600 FROM crm_organizations;
+      INSERT INTO crm_private_preferences(organization_id,automation_rules) VALUES
+        ('{A}','{{"version":1}}'),('{B}','{{"version":1}}');
+      INSERT INTO crm_private_funnels(id,organization_id,title,created_at) VALUES
+        ('{FUNNEL_A}','{A}','FUNIL_TESTE_BACKUP_A',1800000000),
+        ('{FUNNEL_B}','{B}','FUNIL_TESTE_BACKUP_B',1800000000);
+      INSERT INTO crm_private_leads(id,organization_id,funnel_id,title,created_at) VALUES
+        ('{LEAD_A}','{A}','{FUNNEL_A}','LEAD_TESTE_BACKUP_A',1800000000),
+        ('{LEAD_B}','{B}','{FUNNEL_B}','LEAD_TESTE_BACKUP_B',1800000000);
+      INSERT INTO crm_private_events(id,organization_id,actor_id,object_id,action,occurred_at) VALUES
+        ('{EVENT_A}','{A}','{ACTOR_A}','{LEAD_A}','lead.created',1800000000),
+        ('{EVENT_B}','{B}','{ACTOR_B}','{LEAD_B}','lead.created',1800000000);
+      INSERT INTO crm_private_automation_runs(id,organization_id,actor_id,authority_session_id,template,
+        settings_version,lead_id,lead_version,execution_key,command,state,due_at,created_at) VALUES
+        (gen_random_uuid(),'{A}','{ACTOR_A}',gen_random_uuid(),'followup_qualified',1,'{LEAD_A}',1,
+          repeat('a',64),'{{}}','completed',1800000000,1800000000),
+        (gen_random_uuid(),'{B}','{ACTOR_B}',gen_random_uuid(),'followup_qualified',1,'{LEAD_B}',1,
+          repeat('b',64),'{{}}','pending',1800000000,1800000000);
+    """)
+
+    def encrypted_backup(expected_profile: str) -> dict:
+        before = set(directory.glob("*.json")) if directory.exists() else set()
+        output = run([sys.executable, str(ROOT / "scripts/ops/backup-private-crm.py"), str(directory)])
+        print(output.decode().strip())
+        created = set(directory.glob("*.json")) - before
+        require(len(created) == 1, "One verified encrypted archive manifest required.")
+        manifest = json.loads(created.pop().read_text())
+        require(manifest["database_profile"] == expected_profile and manifest["restore_verified"]
+                and manifest["tamper_rejected"] and manifest["object_owners_preserved"]
+                and manifest["consistent_source_snapshot"] is True
+                and manifest["snapshot_protocol"] == "postgresql-export-v1"
+                and manifest["restore_network"] == "none" and not manifest["plaintext_dump_on_disk"],
+                "Encrypted backup did not verify its complete profile.")
+        require((directory / manifest["encrypted_archive"]).is_file(), "Encrypted archive missing.")
+        for field in ("security_manifest_sha256", "restored_security_manifest_sha256",
+                      "source_catalog_sha256", "restored_catalog_sha256"):
+            require(re.fullmatch(r"[a-f0-9]{64}", manifest[field]) is not None,
+                    "Verified backup omitted a raw manifest digest.")
+        require(type(manifest["security_raw_equal"]) is bool
+                and type(manifest["catalog_raw_equal"]) is bool
+                and manifest["security_raw_equal"] == (manifest["security_manifest_sha256"]
+                                                       == manifest["restored_security_manifest_sha256"])
+                and manifest["catalog_raw_equal"] == (manifest["source_catalog_sha256"]
+                                                      == manifest["restored_catalog_sha256"])
+                and manifest["security_catalog_bindings_exact"] is True,
+                "Verified backup confused raw equality with catalog equivalence.")
+        require(type(manifest["catalog_roundtrip_equivalences"]) is int
+                and ((manifest["catalog_roundtrip_rule"] == "EXACT"
+                      and manifest["catalog_roundtrip_equivalences"] == 0)
+                     or (manifest["catalog_roundtrip_rule"] == CATALOG_RULE
+                         and 1 <= manifest["catalog_roundtrip_equivalences"] <= 15)),
+                "Verified backup used an unreviewed catalog rule.")
+        return manifest
+
+    base_manifest = encrypted_backup("synthetic-private-base-v1")
+    require(len(base_manifest["table_counts"]) == len(base_tables), "Incomplete base counts.")
+    for path in ("install-candidate.sql", "outbound-candidate.sql"):
+        sql((ROOT / "infra/homologation/s2s" / path).read_text())
+    for company, fingerprint, tenant in ((A, "a", "SYNTHETIC_BACKUP_A"), (B, "b", "SYNTHETIC_BACKUP_B")):
+        sql(f"""
+          INSERT INTO crm_auto_service.grants VALUES ('{company}',repeat('{fingerprint}',64),
+            'portal-automation-admin','automation.state.read',1,true,
+            floor(extract(epoch FROM now()))::bigint+7200);
+          INSERT INTO crm_auto_service.outbound_grants VALUES ('{company}','{tenant}',
+            'imagine-ai-agents','lead.ingest',true,1,floor(extract(epoch FROM now()))::bigint+7200);
+        """)
+    for company, event, fingerprint in ((A, EVENT_A, "a"), (B, EVENT_B, "b")):
+        sql(f"""
+          SET ROLE crm_auto_sender;
+          SELECT crm_auto_service.stage_outbound('{company}','{event}');
+          RESET ROLE;
+          SET ROLE crm_auto_transport;
+          SELECT crm_auto_service.read_state('{company}',repeat('{fingerprint}',64),'portal-automation-admin',
+            'automation.state.read',gen_random_uuid(),repeat('{fingerprint}',64),repeat('c',64),
+            floor(extract(epoch FROM now()))::bigint);
+          RESET ROLE;
+        """)
+    sql(f"SET ROLE crm_auto_sender; SELECT crm_auto_service.ack_outbound('{A}','{EVENT_A}',repeat('d',64)); RESET ROLE;")
+    s2s_manifest = encrypted_backup("synthetic-private-s2s-v1")
+    require(all(s2s_manifest["table_counts"][table] == 2 for table in S2S_TABLES),
+            "S2S grants/nonces/audit/outbox not completely covered by the manifest.")
+    require(s2s_manifest["s2s_function_owners_verified"] == 4
+            and s2s_manifest["s2s_receipt_reconciliation"] is True
+            and s2s_manifest["scope_roles_verified"] == ["crm_auto_reader_owner", "crm_homologation_app"],
+            "Current P22 fixture must verify all four restricted functions, including receipt_candidate.")
+
+    # Unknown or partial profiles cannot receive a verified-backup marker.
+    for setup, cleanup in (
+        ("CREATE SCHEMA backup_unreviewed", "DROP SCHEMA backup_unreviewed"),
+        ("ALTER TABLE crm_auto_service.outbox RENAME TO outbox_unknown",
+         "ALTER TABLE crm_auto_service.outbox_unknown RENAME TO outbox"),
+    ):
+        sql(setup)
+        try:
+            try:
+                detect_profile(sql, base_tables)
+            except RuntimeError:
+                pass
+            else:
+                raise AssertionError("Unreviewed source profile was accepted.")
+        finally:
+            sql(cleanup)
+    with exported_snapshot(source) as snapshot:
+        profile, security = detect_profile(snapshot.query, base_tables)
+        catalog = catalog_manifest(snapshot.query, schemas=("public", "crm_auto_service"))
+        counts = table_counts(snapshot.query, profile)
+        dump = snapshot.dump()
+
+    # Reproduce both legacy failures, each in its own disposable cluster.
+    with isolated_restore_cluster({"roles": BASE_ROLES}, run) as (_, command):
+        missing = subprocess.run(command + ["pg_restore", "--no-owner", "--exit-on-error", "-U",
+                        "crm_homologation_restore", "-d", DATABASE], input=dump, capture_output=True)
+        require(missing.returncode != 0 and re.search(rb'role "crm_auto_[a-z_]+" does not exist', missing.stderr),
+                "Missing-role legacy restore failure not reproduced.")
+    print("REPRODUCED legacy base-only role list cannot restore the S2S archive in another cluster")
+    with isolated_restore_cluster(profile, run) as (query, command):
+        run(command + ["pg_restore", "--no-owner", "--exit-on-error", "-U", "crm_homologation_restore", "-d", DATABASE], dump)
+        require(query("SELECT bool_and(pg_get_userbyid(p.proowner)='crm_homologation_restore' AND r.rolsuper) "
+                      "FROM pg_proc p JOIN pg_roles r ON r.oid=p.proowner JOIN pg_namespace n ON n.oid=p.pronamespace "
+                      "WHERE n.nspname='crm_auto_service' AND p.prosecdef") == "t",
+                "Legacy SECURITY DEFINER owner failure not reproduced.")
+        try:
+            verify_restored_security(query, profile, security, base_tables, source_catalog=catalog)
+        except RuntimeError:
+            pass
+        else:
+            raise AssertionError("Legacy privileged-owner restore was accepted.")
+    print("REPRODUCED --no-owner transfers SECURITY DEFINER functions to the restore superuser; verifier rejects")
+
+    with isolated_restore_cluster(profile, run) as (query, command):
+        run(command + ["pg_restore", "--exit-on-error", "-U", "crm_homologation_restore", "-d", DATABASE], dump)
+        verify_restored_security(query, profile, security, base_tables, source_catalog=catalog)
+        verify_legacy_check_fidelity(query, profile, security, base_tables, source_catalog=catalog)
+        require(table_counts(query, profile) == counts, "Separate-cluster table counts differ.")
+        require(run(["docker", "inspect", "--format", "{{.HostConfig.NetworkMode}}", command[-1]]).strip() == b"none",
+                "Restore cluster acquired a network.")
+        for role, tables in (("crm_homologation_app", BASE_TENANT_TABLES), ("crm_auto_reader_owner", S2S_TABLES)):
+            for tenant in ("", A, B):
+                require(scoped_counts(query, tenant, role=role, tables=tables)
+                        == scoped_counts(sql, tenant, role=role, tables=tables), "Restored RLS scope differs.")
+
+        def result(role: str, expression: str) -> dict:
+            output = query("BEGIN; SET ROLE " + role + "; SELECT 'RESULT|' || (" + expression + ")::text; ROLLBACK;")
+            lines = [line[7:] for line in output.splitlines() if line.startswith("RESULT|")]
+            require(len(lines) == 1, "Function result missing.")
+            return json.loads(lines[0])
+
+        read = (f"crm_auto_service.read_state('{A}',repeat('a',64),'portal-automation-admin','automation.state.read',"
+                "'33333333-3333-4333-8333-333333333333',repeat('e',64),repeat('f',64),"
+                "floor(extract(epoch FROM now()))::bigint)")
+        state = result("crm_auto_transport", read)
+        require(state["decision"] == "READ_OK" and state["body"]["company_id"] == A
+                and state["body"]["counts"]["completed"] == 1
+                and state["body"]["counts"]["pending"] == 0, "Restored read_state functional scope failed.")
+        query(f"UPDATE crm_auto_service.grants SET active=false WHERE company_id='{A}'")
+        require(result("crm_auto_transport", read)["decision"] == "DENIED", "Restored revoked grant accepted.")
+        query(f"UPDATE crm_auto_service.grants SET active=true WHERE company_id='{A}'")
+        receipt = result("crm_auto_sender", f"crm_auto_service.stage_outbound('{A}','{EVENT_A}')")
+        require(receipt["state"] == "accepted" and receipt["ack_hash"] == "d" * 64,
+                "Restored durable accepted receipt differs.")
+        require(profile["receipt_reconciliation"], "Current P22 receipt function missing after restore.")
+        pending = result("crm_auto_sender", f"crm_auto_service.receipt_candidate('{B}','{EVENT_B}')")
+        require(pending["state"] == "pending" and pending["ack_hash"] is None,
+                "Restored receipt candidate differs.")
+        acknowledged = query("BEGIN; SET ROLE crm_auto_sender; "
+            f"SELECT crm_auto_service.ack_outbound('{B}','{EVENT_B}',repeat('e',64)); "
+            f"SELECT 'RESULT|' || crm_auto_service.receipt_candidate('{B}','{EVENT_B}')::text; ROLLBACK;")
+        receipts = [json.loads(line[7:]) for line in acknowledged.splitlines() if line.startswith("RESULT|")]
+        require(len(receipts) == 1 and receipts[0]["state"] == "accepted"
+                and receipts[0]["ack_hash"] == "e" * 64, "Restored ack_outbound did not confirm the pending event.")
+        after_rollback = result("crm_auto_sender", f"crm_auto_service.receipt_candidate('{B}','{EVENT_B}')")
+        require(after_rollback == pending, "Acknowledgement probe did not roll back its complete receipt state.")
+        for role, table in (("crm_auto_transport", "crm_auto_service.grants"),
+                            ("crm_auto_sender", "crm_auto_service.outbox"),
+                            ("crm_homologation_app", "crm_auto_service.outbox")):
+            denied = subprocess.run(command + ["psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=1", "-U",
+                       "crm_homologation_restore", "-d", DATABASE, "-c", f"SET ROLE {role}; SELECT * FROM {table}"],
+                       capture_output=True)
+            require(denied.returncode != 0 and b"permission denied" in denied.stderr,
+                    "Restored transport/application acquired raw service-table access.")
+        require(table_counts(query, profile) == counts, "Rolled-back function probes altered restored records.")
+    require(table_counts(sql, profile) == counts, "Restore tests altered the source database.")
+    require(security_manifest(sql) == security
+            and catalog_manifest(sql, schemas=("public", "crm_auto_service")) == catalog,
+            "Restore counterproofs altered the source security or catalog.")
+    # The optional execution extension is a complete third profile, not a
+    # wildcard for additional schemas, functions or table access. The actual
+    # non-empty execution history is also restored by the cross-product test.
+    sql((ROOT / "infra/homologation/s2s/execution-feedback-candidate.sql").read_text())
+    sql((ROOT / "scripts/ci/s2s/test-execution-feedback.sql").read_text())
+    execution_manifest = encrypted_backup("synthetic-private-s2s-execution-v1")
+    require(execution_manifest["s2s_execution_feedback"] is True
+            and execution_manifest["s2s_function_owners_verified"] == 8
+            and all(execution_manifest["table_counts"][table] == 0 for table in EXECUTION_TABLES),
+            "Execution backup profile did not preserve its closed, initially inert extension.")
+    for setup, cleanup in (
+        ("ALTER TABLE crm_auto_service.execution_observations RENAME TO execution_unknown",
+         "ALTER TABLE crm_auto_service.execution_unknown RENAME TO execution_observations"),
+        ("ALTER FUNCTION crm_auto_service.read_execution_projection(uuid,uuid) RENAME TO execution_unknown",
+         "ALTER FUNCTION crm_auto_service.execution_unknown(uuid,uuid) RENAME TO read_execution_projection"),
+        ("ALTER TABLE crm_auto_service.execution_observations DISABLE TRIGGER execution_history_immutable",
+         "ALTER TABLE crm_auto_service.execution_observations ENABLE TRIGGER execution_history_immutable"),
+    ):
+        sql(setup)
+        try:
+            try:
+                detect_profile(sql, base_tables)
+            except RuntimeError:
+                pass
+            else:
+                raise AssertionError("Partial execution backup profile was accepted.")
+        finally:
+            sql(cleanup)
+
+    # A fourth optional profile adds exactly one human-facing local reader. Its
+    # own SQL counterproofs use rolled-back fixtures and a real READ ONLY call.
+    sql((ROOT / "infra/homologation/s2s/execution-monitor-candidate.sql").read_text())
+    monitor_checks = sql((ROOT / "scripts/ci/s2s/test-execution-monitor.sql").read_text())
+    for marker in ("CRM_N8N_MONITOR_SQL_PASS", "CRM_N8N_MONITOR_READ_ONLY_PASS"):
+        require(marker in monitor_checks, "Execution monitor SQL counterproof missing.")
+    print("CRM_N8N_MONITOR_SQL_COUNTERPROOFS_PASS local_reads_only=1 source_and_history_tamper_denied=1")
+
+    # This is a controlled verifier fixture for persistence/restore, not a claim
+    # that native n8n executed the task. Native execution is covered separately
+    # by the bilateral Agents harness. The fictional HMAC keys never leave RAM.
+    def literal(value: str) -> str:
+        return "'" + value.replace("'", "''") + "'"
+
+    sql(f"INSERT INTO crm_auto_service.execution_read_grants VALUES ('{A}','SYNTHETIC_BACKUP_A',"
+        "'imagine-ai-agents','event.execution.read',true,1,floor(extract(epoch FROM clock_timestamp()))::bigint+900)")
+    candidate = json.loads(sql(f"SELECT crm_auto_service.execution_candidate('{A}','{EVENT_A}')"))
+    ingress_key, response_key = secrets.token_bytes(32), secrets.token_bytes(32)
+    task_hash = hashlib.sha256(b"SYNTHETIC_MONITOR_BACKUP_VERIFIER_FIXTURE").hexdigest()
+    observation_fields = ("company_id", "tenant_ref", "event_ref", "payload_hash", "lead_id",
+                          "task_payload_hash", "execution_state", "queue_state", "result_code", "attempt")
+    for state, queue in (("NOT_STAGED", "NONE"), ("STARTED", "LEASED"), ("RESULT", "LEASED"), ("ACKED", "ACKED")):
+        now = int(sql("SELECT floor(extract(epoch FROM clock_timestamp()))::bigint"))
+        request = {
+            "schema": "AUTO_IA_EXECUTION_QUERY_V1", "issuer": "imagine-crm", "audience": "imagine-ai-agents",
+            "product": "imagine-crm", "operation": "event.execution.read", "company_id": A,
+            "tenant_ref": candidate["tenant_ref"], "event_ref": candidate["event_ref"],
+            "payload_hash": candidate["payload_hash"], "request_ref": "SYNTHETIC_" + secrets.token_hex(16).upper(),
+            "nonce_ref": "SYNTHETIC_" + secrets.token_hex(16).upper(), "issued_at": now, "expires_at": now + 30,
+            "key_id": "SYNTHETIC_KEY_A",
+        }
+        request["signature"] = hmac.new(ingress_key, ("IMAGINE_AGENTS_EXECUTION_QUERY_V1\n" +
+            "\n".join(str(value) for value in request.values())).encode(), hashlib.sha256).hexdigest()
+        facts = {"company_id": A, "tenant_ref": candidate["tenant_ref"], "event_ref": candidate["event_ref"],
+                 "payload_hash": candidate["payload_hash"], "lead_id": candidate["lead_id"],
+                 "task_payload_hash": "" if state == "NOT_STAGED" else task_hash,
+                 "execution_state": state, "queue_state": queue,
+                 "result_code": "PREPARED" if state in ("RESULT", "ACKED") else "NONE",
+                 "attempt": 0 if state == "NOT_STAGED" else 1}
+        observation_hash = hashlib.sha256(("IMAGINE_AGENTS_EXECUTION_OBSERVATION_V1\n" +
+            "\n".join(str(facts[field]) for field in observation_fields)).encode()).hexdigest()
+        response = {"schema": "AUTO_IA_EXECUTION_STATUS_V1", "issuer": "imagine-ai-agents", "audience": "imagine-crm",
+                    **{field: facts[field] for field in observation_fields[:-1]}, "observation_hash": observation_hash,
+                    "attempt": facts["attempt"], "request_ref": request["request_ref"], "nonce_ref": request["nonce_ref"],
+                    "issued_at": now, "expires_at": now + 30, "key_id": "SYNTHETIC_EXECUTION_STATUS_KEY"}
+        response["signature"] = hmac.new(response_key, ("IMAGINE_AGENTS_EXECUTION_STATUS_V1\n" +
+            "\n".join(str(value) for value in response.values())).encode(), hashlib.sha256).hexdigest()
+        sql(f"SELECT crm_auto_service.project_execution('{A}','{EVENT_A}',"
+            + literal(json.dumps(request, separators=(",", ":"))) + "::jsonb,"
+            + literal(json.dumps(response, separators=(",", ":"))) + ")")
+    # Historical local display is independent of these revoked service grants.
+    sql(f"UPDATE crm_auto_service.execution_read_grants SET active=false,expires_at=0 WHERE company_id='{A}';"
+        f"UPDATE crm_auto_service.outbound_grants SET active=false WHERE company_id='{A}'")
+
+    def monitor_view(query):
+        value = query("BEGIN READ ONLY; SET LOCAL ROLE crm_homologation_app; "
+            f"SELECT set_config('app.tenant_id','{A}',true); "
+            f"SELECT 'MONITOR|' || crm_auto_service.read_execution_monitor('{EVENT_A}')::text; ROLLBACK;")
+        records = [json.loads(line[8:]) for line in value.splitlines() if line.startswith("MONITOR|")]
+        require(len(records) == 1, "Execution monitor local view missing.")
+        view = records[0]
+        require(view["selected"]["observation"]["execution_state"] == "ACKED"
+                and view["selected"]["history_count"] == 4
+                and [item["sequence"] for item in view["selected"]["history"]] == [4, 3, 2, 1],
+                "Historical monitor projection differs.")
+        view.pop("generated_at")
+        return view
+
+    expected_monitor = monitor_view(sql)
+    monitor_manifest = encrypted_backup("synthetic-private-s2s-execution-monitor-v1")
+    require(monitor_manifest["s2s_execution_monitor"] is True
+            and monitor_manifest["s2s_execution_feedback"] is True
+            and monitor_manifest["s2s_function_owners_verified"] == 9
+            and monitor_manifest["table_counts"]["crm_auto_service.execution_observations"] == 4,
+            "Monitor encrypted backup omitted its complete non-empty read model.")
+    with exported_snapshot(source) as snapshot:
+        monitor_profile, monitor_security = detect_profile(snapshot.query, base_tables)
+        monitor_catalog = catalog_manifest(snapshot.query, schemas=("public", "crm_auto_service"))
+        monitor_counts = table_counts(snapshot.query, monitor_profile)
+        monitor_dump = snapshot.dump()
+    with isolated_restore_cluster(monitor_profile, run) as (query, command):
+        run(command + ["pg_restore", "--exit-on-error", "-U", "crm_homologation_restore", "-d", DATABASE], monitor_dump)
+        verify_restored_security(query, monitor_profile, monitor_security, base_tables,
+                                 source_catalog=monitor_catalog)
+        require(table_counts(query, monitor_profile) == monitor_counts and monitor_view(query) == expected_monitor,
+                "Separate restored monitor history differs after service revocation.")
+    for setup, cleanup in (
+        ("ALTER FUNCTION " + MONITOR_FUNCTION + " RENAME TO execution_monitor_missing",
+         "ALTER FUNCTION crm_auto_service.execution_monitor_missing(uuid) RENAME TO read_execution_monitor"),
+        ("ALTER FUNCTION " + MONITOR_FUNCTION + " VOLATILE", "ALTER FUNCTION " + MONITOR_FUNCTION + " STABLE"),
+        ("ALTER FUNCTION " + MONITOR_FUNCTION + " STRICT", "ALTER FUNCTION " + MONITOR_FUNCTION + " CALLED ON NULL INPUT"),
+        ("GRANT EXECUTE ON FUNCTION " + MONITOR_FUNCTION + " TO PUBLIC",
+         "REVOKE EXECUTE ON FUNCTION " + MONITOR_FUNCTION + " FROM PUBLIC"),
+        ("GRANT EXECUTE ON FUNCTION crm_auto_service.project_execution(uuid,uuid,jsonb,text) TO crm_homologation_app",
+         "REVOKE EXECUTE ON FUNCTION crm_auto_service.project_execution(uuid,uuid,jsonb,text) FROM crm_homologation_app"),
+        ("GRANT SELECT ON crm_auto_service.execution_observations TO crm_homologation_app",
+         "REVOKE SELECT ON crm_auto_service.execution_observations FROM crm_homologation_app"),
+        ("GRANT SELECT(receipt) ON crm_auto_service.execution_observations TO crm_homologation_app",
+         "REVOKE SELECT(receipt) ON crm_auto_service.execution_observations FROM crm_homologation_app"),
+        ("GRANT CREATE ON SCHEMA crm_auto_service TO crm_homologation_app",
+         "REVOKE CREATE ON SCHEMA crm_auto_service FROM crm_homologation_app"),
+    ):
+        sql(setup)
+        try:
+            try:
+                detect_profile(sql, base_tables)
+            except RuntimeError:
+                pass
+            else:
+                raise AssertionError("Unsafe or incomplete monitor backup profile was accepted.")
+        finally:
+            sql(cleanup)
+    require(table_counts(sql, monitor_profile) == monitor_counts and monitor_view(sql) == expected_monitor,
+            "Monitor backup tests changed their source evidence.")
+    print("CRM_BACKUP_EXECUTION_MONITOR_PASS local_history_restored=1 revoked_service_grants=1 "
+          "stable_function=1 execute_only_app=1 unsafe_profile_denied=1 raw_receipts_exposed=0 operational_apply=0")
+    print("CRM_BACKUP_BASE_S2S_SEPARATE_CLUSTER_PASS encrypted=1 tamper_rejected=1 "
+          "owners_preserved=1 force_rls=1 functions_executed=1 source_preserved=1 "
+          "execution_profile_verified=1 partial_execution_profile_denied=1 operational_apply=0")
+
+
+if __name__ == "__main__":
+    main()
