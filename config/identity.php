@@ -3,6 +3,8 @@
 return [
     // Candidate laboratory profile only. No public authentication routes.
     'experimental' => (bool) env('CRM_AUTH_EXPERIMENTAL', false),
+    // Explicit private database/role/session profile; no default staging admission.
+    'private_staging_profile' => env('CRM_PRIVATE_STAGING_IDENTITY_PROFILE'),
     'pending_seconds' => 300,
     'idle_seconds' => 1800,
     'absolute_seconds' => 43200,
