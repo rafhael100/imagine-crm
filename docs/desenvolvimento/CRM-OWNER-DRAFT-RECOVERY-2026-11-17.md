@@ -169,10 +169,22 @@ exata. Nenhum helper legado, schema, grant ou runtime é alterado por essa regra
 
 ## Resultado e limites
 
-Apenas a execução completa emite `CRM_OWNER_DRAFT_INERT_RECOVERY_PASS_NO_GO`.
-O marcador exige observar `pending` no snapshot, `confirmed` na fonte viva e
-`pending` na cópia restaurada, preservando o rascunho remoto original. Não se
-antecipa PASS neste documento.
+A [CI 44237380307](https://github.com/rafhael100/imagine-crm/actions/runs/44237380307),
+job `134576669668`, concluiu em **SUCCESS** na HEAD
+`e390c56af2a544d8191cce86752637efe6a35e43` da
+[PR #658](https://github.com/rafhael100/imagine-crm/pull/658).
+O marcador `CRM_OWNER_DRAFT_INERT_RECOVERY_PASS_NO_GO` foi emitido após
+**836 verificações**, sobre **27 tabelas** e cinco roles, incluindo **13 negativas
+SQL** e **18 mutações de catálogo recusadas**. Foram observados `pending` no
+snapshot, `confirmed` na fonte viva e `pending` na cópia restaurada, preservando
+o rascunho remoto original, com cleanup concluído.
+
+A execução registrou exatamente **15 equivalências** pela regra fechada acima.
+Os hashes brutos dos catálogos fonte/destino permaneceram **diferentes**,
+`catalog_raw_equal=false`; dados e demais metadados mantiveram igualdade exata.
+A falha de diagnóstico anterior permanece registrada como etapa histórica,
+sem ser reclassificada como sucesso. Esta atualização documental referencia a
+execução da candidata funcional e não constitui novo ensaio de runtime.
 
 Este recorte não comprova recuperação distribuída CRM/Agents, atualidade de
 grants/revogações depois do snapshot, religamento de serviço ou recuperação de

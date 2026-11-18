@@ -53,7 +53,7 @@ A matriz HTTP usa login/MFA reais, criação da origem pelo motor nativo, mTLS, 
 
 Chromium cria sua própria origem na sessão atual, usa o formulário nativo e navega entre Central e detalhe. Verifica PT/EN/ES, larguras de celular/desktop, apresentação pendente e permissão member. Somente capturas verificadas sem credenciais são preservadas. Os workflows anteriores de jornada completa e leitura mínima também são executados na mesma candidata, com o novo perfil desativado.
 
-Resultados, contagens e links de CI são registrados na PR da SHA executada. Sintaxe ou revisão textual local não são anunciadas como execução de PHP, banco, transporte ou navegador.
+A [PR #658](https://github.com/rafhael100/imagine-crm/pull/658), HEAD `e390c56af2a544d8191cce86752637efe6a35e43`, concluiu a [CI 44237380307](https://github.com/rafhael100/imagine-crm/actions/runs/44237380307): 407 verificações HTTP / 52 requisições, 607 verificações Chromium e 836 verificações de recuperação inerte. O fornecedor executado foi o [P67 original #476](https://github.com/rafhael100/imagine-ai-agents/pull/476), SHA `0c722eee6bd53a7ee46c4ba68ab70200fc191b78`. As quatro suítes anteriores também passaram nessa HEAD; [estado e dependências verificados](../../STATUS-ATUAL.md). Esses resultados pertencem à candidata funcional executada, sem atribuir execução de runtime à atualização documental.
 
 ## Recuperação do estado local
 
@@ -62,3 +62,5 @@ O ensaio adicional de [recuperação das intenções e grants](CRM-OWNER-DRAFT-R
 ## Limites restantes
 
 Este addon não foi aplicado a uma instalação persistente. Restauração e promoção precisam incluir as novas estruturas e preservar autoria, histórico de intenção e anti-replay. A existência de infraestrutura ou storage externo não é autorização para migrar estes registros. GO operacional, promoção de branches, custódia de credenciais reais e qualquer efeito executável da regra permanecem decisões separadas do recorte implementado.
+
+O próximo marco é disponibilizar este mesmo fluxo owner em homologação persistente, com ativação da candidata e evidências do destino ainda pendentes. A escolha de owner para criar/consultar já está resolvida; a continuidade de desenvolvimento, testes e PRs no recorte aprovado permanece vigente. O [roteiro privado da base](../operations/private-complete-journey.md) é referência histórica: seu instalador prepara apenas a base, o backup legado recusa o addon e F251/F252 não admitem essa alteração de rotas/roles/schema. Instalação, dados persistentes e revogações atuais precisam de plano específico para o destino, preservando os guards existentes. Este registro não presume falta de VPS, R2, MFA ou credenciais nem amplia os efeitos do rascunho.
