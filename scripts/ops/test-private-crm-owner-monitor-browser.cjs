@@ -98,7 +98,8 @@ function ownerAuditOnly(before, after) {
 async function headers(response, status) {
   check(response && response.status() === status, 'DOCUMENT_STATUS');
   const values = await response.allHeaders();
-  check(values['cache-control']?.includes('no-store') && values['x-content-type-options'] === 'nosniff'
+  const sniff = (values['x-content-type-options'] || '').split(',').map(value => value.trim());
+  check(values['cache-control']?.includes('no-store') && sniff.length > 0 && sniff.every(value => value === 'nosniff')
     && !Object.keys(values).some(key => key.startsWith('access-control-')), 'PRIVATE_RESPONSE_HEADERS');
 }
 

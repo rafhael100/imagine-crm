@@ -1,5 +1,18 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — cabeçalho Chromium e primeira prova real de recuperação35 (18/11/2026)
+
+A HEAD `f2a0c06a0fdb05758162b46903202f971979c69f` da [#660](https://github.com/rafhael100/imagine-crm/pull/660) concluiu 27 workflows: 24 passaram; F251/F252 recusaram o escopo; o job owner parou na verificação de cabeçalhos do novo Chromium combinado. No [mesmo job](https://github.com/rafhael100/imagine-crm/actions/runs/44244268181/job/134599286149), os estágios anteriores passaram: 407 verificações HTTP/52 requisições owner, recuperação27 com 842 verificações, navegador owner existente e a nova recuperação35 com **1.909 verificações**.
+
+A prova35 confirmou as 35 tabelas, uma sequência, nove funções e nove roles inertes; vínculos exatos catálogo/segurança, quinze equivalências restritas, 18 + 3 mutações recusadas e 17 recusas SQL. O snapshot conservou a intenção pendente no clone enquanto a origem viva foi reconciliada para confirmada. As janelas owner e monitor preservaram os dados exigidos; os detectores legado e owner27 recusaram35. Continua sendo apresentação sintética do monitor, com zero novas execuções n8n.
+
+A falha seguinte ocorreu no GET de login, antes de consumir senha ou fator reservado. Nginx e aplicação retornam `X-Content-Type-Options: nosniff`; Chromium apresenta os valores reunidos. O novo teste exigia um único valor literal. Este ajuste usa o mesmo critério do navegador owner existente: lista não vazia e todos os valores exatamente `nosniff`. Ausência, vazio e valores mistos continuam recusados; status, no-store e ausência de CORS permanecem exigidos.
+
+O delta executável é somente +2/-1 no helper do teste, sem alterar headers de produto, runtime, pins, gates, SQL, composição ou fatores MFA. Revisão independente, sintaxe Node, aplicação exata e regressão do helper real passaram: três casos válidos, nove negativos e recusas de status incorreto/resposta ausente. O Chromium combinado e o desligamento posterior **ainda não passaram** na f2; esta revisão exige nova execução real antes de registrar esse resultado.
+
+Backup com a contraprova PostgreSQL CHECK(true), jornada completa, monitor separado, P20, P22, OP01 e F0/RLS concluíram com sucesso na f2. DRAFT / NO-MERGE / NO-DEPLOY; main, DEV e fontes preservadas.
+
+
 ## Continuidade — convivência owner e monitor com recuperação inerte35 (18/11/2026)
 
 A revisão `82e74716fe891b2423fa5e198fcbcbcc8ca061de` da [#660](https://github.com/rafhael100/imagine-crm/pull/660) concluiu 25/27 workflows, somente F251/F252 recusando o escopo. O [P20](https://github.com/rafhael100/imagine-crm/actions/runs/44243121697) voltou a passar os quinze testes e o laboratório funcional com os inputs pinados intactos; o teste de recibo transferido passou suas 159 verificações no job do monitor. O [backup](https://github.com/rafhael100/imagine-crm/actions/runs/44243121482/job/134595503854) demonstrou no PostgreSQL16 que a projeção anterior aceita CHECK(true) e o novo verificador a recusa, com restauração exata dos manifestos e contagens. Quatro perfis, snapshot/cleanup/timeouts, jornada, monitor, owner27, OP01, P22 e F0/RLS passaram. Esses resultados identificam a base validada da etapa seguinte.
