@@ -24,7 +24,7 @@ DOCKER = ["docker", "--host", "unix:///var/run/docker.sock"]
 INSPECT = (
     '{"id":{{json .Id}},"image":{{json .Config.Image}},'
     '"status":{{json .State.Status}},"started":{{json .State.StartedAt}},'
-    '"health":{{if .State.Health}}{{json .State.Health.Status}}{{else}}""{{end}},'
+    '"health":{{with (index .State "Health")}}{{json .Status}}{{else}}""{{end}},'
     '"policy":{{json .HostConfig.RestartPolicy.Name}},'
     '"project":{{json (index .Config.Labels "com.docker.compose.project")}},'
     '"service":{{json (index .Config.Labels "com.docker.compose.service")}},'
@@ -42,9 +42,28 @@ def require(condition, message):
         raise Refused(message)
 
 
-def command(args, timeout=10):
+def command(args, timeout=10, *, operation):
     result = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
-    require(result.returncode == 0, "local daemon operation failed; output withheld")
+    if result.returncode:
+        # All callers read metadata or operate Docker's service. Extract only
+        # allowlisted error classes/field names; never dump inspect data or logs.
+        missing = re.search(r'map has no entry for key "([A-Za-z0-9_]+)"', result.stderr)
+        detail = "unclassified error; raw output withheld"
+        if missing:
+            detail = "metadata template missing field " + missing.group(1)
+        else:
+            for needle, label in (
+                ("template", "metadata template error"),
+                ("permission denied", "permission denied"),
+                ("cannot connect", "local daemon unavailable"),
+                ("could not be found", "local service unit absent"),
+                ("api version", "Docker API version mismatch"),
+                ("no such object", "container disappeared"),
+            ):
+                if needle in result.stderr.lower():
+                    detail = label
+                    break
+        raise Refused(operation + " failed (exit " + str(result.returncode) + "): " + detail)
     return result.stdout.strip()
 
 
@@ -88,20 +107,20 @@ def guard(vault, allow):
     require("CRM_PRIVATE_IMAGE_TAG='" + sha + "'" in settings.splitlines()
             and "CRM_PRIVATE_DATA_DIR='" + str(vault.parent) + "'" in settings.splitlines(),
             "runtime image or fixture path does not match this CI run")
-    require(command(DOCKER + ["info", "--format", "{{json .LiveRestoreEnabled}}"] ) == "false",
+    require(command(DOCKER + ["info", "--format", "{{json .LiveRestoreEnabled}}"], operation="Docker live-restore query") == "false",
             "live restore would bypass the required container restart")
-    require(command(DOCKER + ["info", "--format", "{{.Swarm.LocalNodeState}}"] ) == "inactive",
+    require(command(DOCKER + ["info", "--format", "{{.Swarm.LocalNodeState}}"], operation="Docker Swarm-state query") == "inactive",
             "Swarm daemon refused")
-    require(command(["systemctl", "is-active", "docker"]) == "active", "local Docker service must be active")
+    require(command(["systemctl", "is-active", "docker"], operation="Docker systemd-state query") == "active", "local Docker service must be active")
     return sha
 
 
 def inventory(sha):
     # Check ALL containers, not just our filter: restarting a shared daemon is forbidden.
-    ids = command(DOCKER + ["ps", "-aq"], timeout=3).splitlines()
+    ids = command(DOCKER + ["ps", "-aq"], timeout=3, operation="Docker container inventory").splitlines()
     require(len(ids) == 4, "daemon must contain exactly the four isolated CRM containers")
     rows = [json.loads(line) for line in
-            command(DOCKER + ["inspect", "--format", INSPECT] + ids, timeout=3).splitlines()]
+            command(DOCKER + ["inspect", "--format", INSPECT] + ids, timeout=3, operation="Docker container metadata").splitlines()]
     require(len(rows) == 4 and {row["service"] for row in rows} == SERVICES,
             "unexpected or duplicate service on daemon")
     for row in rows:
@@ -171,9 +190,10 @@ def main():
             and stable[s]["started"] == before[s]["started"] for s in SERVICES),
             "stack changed before daemon restart")
     print("Starting isolated CI daemon restart; no container start command will follow.", flush=True)
-    command(["systemctl", "restart", "docker"], timeout=60)
+    command(["systemctl", "restart", "docker"], timeout=60, operation="Isolated Docker daemon restart")
     deadline = time.monotonic() + 120
     recovered = False
+    last_diagnostic = "containers or public HTTP not ready"
     while time.monotonic() < deadline:
         try:
             after = inventory(sha)
@@ -182,10 +202,13 @@ def main():
             if ready(after) and all(after[s]["started"] != before[s]["started"] for s in SERVICES) and public_ready():
                 recovered = True
                 break
-        except (Refused, OSError, subprocess.TimeoutExpired, http.client.HTTPException, json.JSONDecodeError):
-            pass
+            last_diagnostic = "containers or public HTTP not ready"
+        except Refused as error:
+            last_diagnostic = str(error)
+        except (OSError, subprocess.TimeoutExpired, http.client.HTTPException, json.JSONDecodeError) as error:
+            last_diagnostic = type(error).__name__
         time.sleep(2)
-    require(recovered, "automatic recovery timed out; no Compose start was attempted")
+    require(recovered, "automatic recovery timed out: " + last_diagnostic + "; no Compose start was attempted")
     require(sorted(harness.leads(client)) == lead_ids, "Redis session or persistent tenant records lost")
     require(hashlib.sha256(client.get("/exportar").encode()).digest() == digest, "persistent lead fields changed")
     fresh = harness.Client()
