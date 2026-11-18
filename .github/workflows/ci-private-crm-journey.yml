@@ -1,0 +1,139 @@
+name: Private CRM complete journey - isolated synthetic staging
+on:
+  pull_request:
+    branches: [dev/fast-track-crm-2026-11-04, review/crm-private-complete-journey-2026-11-15, feat/central-automation-p0-private-ui-2026-11-16, fix/crm-p21-s2s-durable-confirmation-2026-11-17, fix/crm-preserve-scheduled-followup-on-noop-2026-11-17, fix/crm-followup-and-ledger-consistency-2026-11-17, feat/crm-p22-private-receipt-reconciliation-2026-11-17, fix/crm-backup-preserve-s2s-ownership-2026-11-17, fix/crm-preferences-preserve-scheduled-work-2026-11-17, fix/crm-automation-locales-and-navigation-2026-11-17, fix/crm-backup-consistent-source-snapshot-2026-11-17]
+    paths:
+      - 'app/Homologation/**'
+      - 'app/Core/Automation/**'
+      - 'tests/Unit/PrivateAutomationSettingsTest.php'
+      - 'app/Core/Identity/**'
+      - 'app/Providers/AppServiceProvider.php'
+      - 'config/**'
+      - 'bootstrap/app.php'
+      - 'routes/private-homologation.php'
+      - 'resources/views/crm-private-journey.blade.php'
+      - 'resources/views/crm-marketing-home.blade.php'
+      - 'infra/homologation/**'
+      - 'scripts/ops/*private-crm*'
+      - 'scripts/ops/private_crm_backup_contract.py'
+      - 'scripts/ops/private_crm_backup_snapshot.py'
+      - 'scripts/ops/test-private-crm-browser.cjs'
+      - 'scripts/ops/private-backup-crypt.php'
+      - '.github/workflows/ci-private-crm-journey.yml'
+permissions:
+  contents: read
+concurrency:
+  group: private-crm-journey-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real-private-http:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CRM_PRIVATE_PROJECT: imagine-crm-journey-ci
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Create fresh, masked, runner-only credentials
+        env:
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REPOSITORY" == rafhael100/imagine-crm ]]
+          [[ "$GITHUB_EVENT_NAME" == pull_request ]]
+          python3 scripts/ops/create-private-crm-environment.py "$RUNNER_TEMP/crm-private.env" "$RUNNER_TEMP/crm-private-data" "$CANDIDATE_SHA"
+          sudo chown root:root "$RUNNER_TEMP/crm-private-data"
+          echo "CRM_PRIVATE_ENV_FILE=$RUNNER_TEMP/crm-private.env" >> "$GITHUB_ENV"
+      - name: Render Compose quietly; build exact private application
+        run: |
+          set -euo pipefail
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml config --quiet
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml build app
+      - name: Start only isolated loopback staging stack
+        run: |
+          set -euo pipefail
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml up -d --no-build
+          ready=0
+          for attempt in $(seq 1 40); do
+            if curl -fsS --max-time 3 -o /dev/null http://127.0.0.1:18086/up; then ready=1; break; fi
+            sleep 2
+          done
+          test "$ready" = 1
+      - name: Compile all Blade views and lint private PHP implementation
+        run: |
+          set -euo pipefail
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T app sh -c 'find app/Homologation -name "*.php" -exec php -l {} \; && php artisan view:cache && for view in storage/framework/views/*.php; do php -l "$view" || exit 1; done'
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T app sh -c 'for file in scripts/ops/*private*.php; do php -l "$file" || exit 1; done'
+          python3 -m py_compile scripts/ops/*private-crm*.py
+      - name: Prove encrypted empty-schema backup and separate restore before persistent fixtures
+        run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/backup-private-crm.py "$RUNNER_TEMP/crm-private-data/backups"
+      - name: Seed temporary fictional identities without printing credentials
+        run: docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml run --rm -T tools scripts/ops/seed-private-crm-fixtures.php seed
+      - name: Real HTTP commercial signup OTP MFA trial CRM and administrator
+        run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" CRM_PRIVATE_CI_FAULT_PROFILE=native-followup-enqueue-v1 CRM_PRIVATE_CI_CAUSAL_SESSION_PROFILE=native-causal-session-hold-v1 python3 scripts/ops/test-private-crm-http.py "$RUNNER_TEMP/crm-private-data/fixtures.json"
+      - name: Native execution ledger survives application restart
+        run: python3 scripts/ops/test-private-crm-automation-restart.py
+      - name: F253 canary - live private loopback UI, 3 languages, Agents NO-GO
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/ops/private-crm-f253-canary.py
+          python3 -m py_compile scripts/ops/test-private-crm-f253-canary.py
+          python3 scripts/ops/test-private-crm-f253-canary.py
+          python3 scripts/ops/private-crm-f253-canary.py
+      - name: Prove backup and restore with actual fictional records and tenant scopes
+        run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/backup-private-crm.py "$RUNNER_TEMP/crm-private-data/backups"
+      - name: Chromium client and administrator desktop/mobile journey
+        run: |
+          npm install --prefix "$RUNNER_TEMP/private-crm-browser" --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          sudo env CRM_PRIVATE_PLAYWRIGHT_DIR="$RUNNER_TEMP/private-crm-browser" node scripts/ops/test-private-crm-browser.cjs "$RUNNER_TEMP/crm-private-data/fixtures.json" "$RUNNER_TEMP/crm-private-evidence"
+      - name: Make only credential-free browser evidence readable by the artifact runner
+        if: always()
+        run: |
+          if test -d "$RUNNER_TEMP/crm-private-evidence"; then
+            sudo chown -R "$(id -u):$(id -g)" "$RUNNER_TEMP/crm-private-evidence"
+          fi
+      - name: Preserve credential-free desktop and mobile evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: private-crm-desktop-mobile
+          path: ${{ runner.temp }}/crm-private-evidence/*.png
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Trial OTP service outage and recovery negative journeys
+        run: sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/test-private-crm-resilience.py "$RUNNER_TEMP/crm-private-data/fixtures.json"
+      - name: Revoke automated fixtures and prove separate client/admin reviewer access
+        run: |
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml run --rm -T tools scripts/ops/seed-private-crm-fixtures.php revoke
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml run --rm -T tools scripts/ops/seed-private-crm-review-access.php
+          sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" python3 scripts/ops/test-private-crm-http.py "$RUNNER_TEMP/crm-private-data/review-access.json" review-access
+      - name: Sanitized diagnostics on failure
+        if: failure()
+        run: |
+          if test -f "$CRM_PRIVATE_ENV_FILE"; then
+            docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml logs --tail 50 app web postgres
+          fi
+      - name: Remove only this runner's synthetic project and volumes
+        if: always()
+        run: |
+          if test -f "$CRM_PRIVATE_ENV_FILE"; then
+            docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml down --volumes --remove-orphans
+          fi
+  automation-settings-unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, pdo_sqlite
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: vendor/bin/phpunit tests/Unit/PrivateAutomationSettingsTest.php

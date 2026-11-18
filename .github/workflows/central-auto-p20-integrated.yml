@@ -1,0 +1,44 @@
+name: CENTRAL AUTO P20 private functional integration
+on:
+  pull_request:
+    paths: ['scripts/ci/p20/**', '.github/workflows/central-auto-p20-integrated.yml']
+permissions:
+  contents: read
+concurrency:
+  group: central-auto-p20-integrated-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  private-functional:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      P20_REPOSITORY_PUBLIC: 'true'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-portal
+          ref: c87f39c8c761c9a9c64d13d14bf45de889061a32
+          path: pinned-portal
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: 8041c022776bbc1f998224a880726a8a3e69db37
+          path: pinned-agents
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require pinned Portal guard before exporting or starting services
+        run: python3 -c "import sys; from pathlib import Path; sys.path.insert(0,'scripts/ci/p20'); from p20_runtime import load_portal; load_portal(Path.cwd())"
+      - name: Synthetic process and topology guards without database or network
+        run: python3 -m unittest discover -s scripts/ci/p20/tests -v
+      - name: Export existing P18 tree and receiver overlay
+        working-directory: pinned-agents
+        run: python3 runtime/central-auto/export-integration-tree.py
+      - name: Private functional laboratory only
+        run: sudo -E python3 scripts/ci/p20/run_integrated.py "$GITHUB_WORKSPACE/pinned-portal" "$RUNNER_TEMP/central-auto-p18b-merged"
