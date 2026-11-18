@@ -74,6 +74,7 @@ final class PrivateMinimalLeadReadBoundaryTest extends TestCase
         putenv('CRM_PRIVATE_JOURNEY=synthetic-v1');
         self::assertFalse(Environment::minimalLeadReadEnabled());
         $this->get('/agentes/leads/'.self::REF.'/minimo')->assertNotFound();
+        $this->get('/agentes/leads/'.self::REF.'/resumo')->assertNotFound();
     }
 
     public function test_private_profile_still_requires_the_exact_explicit_flag(): void
@@ -101,6 +102,7 @@ final class PrivateMinimalLeadReadBoundaryTest extends TestCase
         });
         $cases = [
             ['GET','fields=ref','',422],
+            ['GET','lang=en','',422],
             ['GET','tenant_ref=foreign','',422],
             ['GET','field=ref&field=stage','',422],
             ['GET','&&','',422],
@@ -166,6 +168,59 @@ final class PrivateMinimalLeadReadBoundaryTest extends TestCase
         foreach (['','SYNTHETIC_LEAD','AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA',
             self::REF.' ',str_replace('-','',self::REF),self::REF.'/other'] as $ref) {
             $this->assertHttpFailure(404,fn ()=>$workspace->minimalLead($ref));
+        }
+    }
+
+    public function test_summary_rejects_query_ambiguity_body_methods_and_service_hints_before_read(): void
+    {
+        $this->configurePrivateProfile();
+        $resolved = 0;
+        $this->app->bind(Workspace::class,function () use (&$resolved): never {
+            ++$resolved;
+            throw new \LogicException('Workspace must not be reached.');
+        });
+        foreach (['lang=en&lang=es','lang[]=en','lang=%65n','%6cang=en','lang=EN',
+            'lang=','lang=pt&','&lang=pt','lang=pt&fields=ref','tenant_ref=foreign','&&'] as $query) {
+            $request = Request::create('/agentes/leads/'.self::REF.'/resumo');
+            $request->server->set('QUERY_STRING',$query);
+            $this->assertHttpFailure(422,fn ()=>(new MinimalLeadReadController())->summary($request,self::REF));
+        }
+        foreach (['HEAD','POST'] as $method) {
+            $request = Request::create('/agentes/leads/'.self::REF.'/resumo',$method);
+            $this->assertHttpFailure(405,fn ()=>(new MinimalLeadReadController())->summary($request,self::REF));
+        }
+        $request = Request::create('/agentes/leads/'.self::REF.'/resumo','GET',[],[],[],[],'{}');
+        $this->assertHttpFailure(422,fn ()=>(new MinimalLeadReadController())->summary($request,self::REF));
+        $request = Request::create('/agentes/leads/'.self::REF.'/resumo');
+        $request->headers->set('Authorization','Bearer UNTRUSTED');
+        $this->assertHttpFailure(400,fn ()=>(new MinimalLeadReadController())->summary($request,self::REF));
+        putenv('CRM_PRIVATE_OP01');
+        $request = Request::create('/agentes/leads/'.self::REF.'/resumo');
+        $this->assertHttpFailure(404,fn ()=>(new MinimalLeadReadController())->summary($request,self::REF));
+        self::assertSame(0,$resolved);
+    }
+
+    public function test_summary_renders_from_only_the_projection_without_unrelated_flash_content(): void
+    {
+        $this->app['session.store']->flash('notice','UNRELATED_PRIVATE_NOTICE');
+        $errors = new \Illuminate\Support\ViewErrorBag();
+        $errors->put('default',new \Illuminate\Support\MessageBag(['field'=>'UNRELATED_PRIVATE_ERROR']));
+        $this->app['view']->share('errors',$errors);
+
+        foreach (['pt'=>['pt-BR','Ganho'],'en'=>['en','Won'],'es'=>['es','Ganado']] as $language=>[$htmlLanguage,$stage]) {
+            $html = view('crm-private-journey',[
+                'screen'=>'minimal-lead','language'=>$language,
+                'data'=>['projection'=>['ref'=>self::REF,'stage'=>'won']],
+            ])->render();
+            self::assertStringContainsString('<html lang="'.$htmlLanguage.'">',$html);
+            self::assertStringContainsString('data-minimal-lead-ref="'.self::REF.'">'.self::REF,$html);
+            self::assertStringContainsString('data-minimal-lead-stage="won">'.$stage,$html);
+            self::assertStringContainsString('/painel?section=leads&amp;lang='.$language,$html);
+            self::assertStringContainsString('action="/logout"',$html);
+            foreach (['UNRELATED_PRIVATE_NOTICE','UNRELATED_PRIVATE_ERROR','data-lead-id=',
+                'LEAD_TESTE_','EMPRESA_TESTE_','/tarefas','/leads/'.self::REF.'"'] as $unrelated) {
+                self::assertStringNotContainsString($unrelated,$html);
+            }
         }
     }
 }

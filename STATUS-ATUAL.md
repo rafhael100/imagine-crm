@@ -1,5 +1,11 @@
 # CRM Imagine — STATUS ATUAL
 
+## OP-01 — resumo mínimo pela lista de leads (17/11/2026)
+
+A consulta privada da [PR #649](https://github.com/rafhael100/imagine-crm/pull/649), HEAD `810f6815f4d8dc35ba46dbe7accf78c6b63b7dc1`, passou na [CI OP-01 44215580347](https://github.com/rafhael100/imagine-crm/actions/runs/44215580347): 43 leituras reais HTTP, 12 admitidas e 31 recusadas, com auditoria exata e estado de negócio preservado. O consumidor Agents original #471 também passou. A entrega seguinte acrescenta o link na lista e o resumo HTML com somente referência e etapa como dados de negócio, nos três idiomas, reutilizando uma única leitura autorizada por abertura.
+
+O ensaio da nova candidata cobre a API preservada, a página, a auditoria e a navegação Chromium em desktop/celular. Ambas as rotas continuam desligadas por padrão; nenhum acesso S2S, merge, deploy ou aceite humano é inferido. Resultados efetivos permanecem associados à PR/HEAD executada. [Contrato e prova do resumo](docs/operations/CRM-OP01-NAVIGABLE-MINIMAL-SUMMARY.md).
+
 ## OP-01 — consulta mínima privada autorizada (17/11/2026)
 
 A Direção aprovou o recorte funcional de um lead fictício consultado por usuário autenticado no CRM. A candidata, derivada da [PR #647](https://github.com/rafhael100/imagine-crm/pull/647) `a2c7218f28aac58796387c939832ff1bfae3cba0`, acrescenta GET `/agentes/leads/{id}/minimo`, desligado por padrão e exclusivo do perfil privado. Reutiliza a autoridade de sessão/MFA/conta/membership existente, seleciona somente id/stage e exige auditoria na mesma transação. Não altera a política global de produção ou a proposta documental #57.
