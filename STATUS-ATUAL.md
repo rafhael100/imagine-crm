@@ -1,5 +1,33 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — data de tarefa compatível com PostgreSQL (18/11/2026)
+
+A branch `fix/crm-private-task-date-validation-2026-11-18` continua a
+[#665](https://github.com/rafhael100/imagine-crm/pull/665), commit
+`c073cfeb8d29fc6cd0a9f33642ccc1275b8b6f59`. O `Workspace::createTask`
+passa a exigir ano positivo, junto do formato e da igualdade de data já
+verificados, antes de abrir a transação. Isso recusa `0000-01-01`, aceito
+pelas primitivas PHP anteriores mas incompatível com a entrada AD da coluna
+PostgreSQL `date`. As regras de prazo, demais datas e tarefa nominal permanecem.
+
+O harness acrescenta uma prova PHP 8.4 sem bootstrap da aplicação e uma
+consulta PG16 em transação somente leitura, para observar a divergência.
+Depois exige 422 pela rota real e compara as seis tabelas de negócio e
+auditoria das duas empresas. A tarefa manual nominal deve já estar gravada
+e concluída; nenhuma nova tarefa positiva é criada. A validade SQL de
+`0001-01-01` é observada separadamente, sem atribuir a ela uma criação HTTP.
+
+O guard admite a sétima tupla fechada e exige oito ancestrais, incluindo
+#665, preservando os seis contextos anteriores. Vinte testes locais passaram.
+PHP, PostgreSQL e HTTP desta alteração ainda dependem da CI da própria HEAD.
+O possível 503 anterior é uma inferência do caminho de código; este lote não
+executa uma aplicação histórica nem alega ter observado esse 503.
+
+Contrato:
+[CRM-PRIVATE-TASK-DATE-VALIDATION-2026-11-18](docs/desenvolvimento/CRM-PRIVATE-TASK-DATE-VALIDATION-2026-11-18.md).
+**DRAFT / NO-MERGE / NO-DEPLOY.** A correção atua na validação existente;
+o schema, a autorização, os gates F251/F252 e a revisão operacional permanecem.
+
 ## Continuidade — importação CSV estrita na jornada privada (18/11/2026)
 
 A branch `fix/crm-private-csv-strict-decoding-2026-11-18` continua a

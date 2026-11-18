@@ -653,6 +653,58 @@ def private_business_snapshot(companies):
     return json.loads(owner_sql('SELECT jsonb_build_object('+','.join(parts)+')::text'))
 
 
+def assert_task_date_boundary(client,lead,company,peer_company):
+    """Observe the PHP/SQL date mismatch without writing; deny year zero over real HTTP."""
+    company=str(uuid.UUID(company));peer_company=str(uuid.UUID(peer_company));lead=str(uuid.UUID(lead))
+    before=private_business_snapshot([company,peer_company])
+    check(any(row['id']==lead and row['organization_id']==company for row in before['leads']),
+          'task date probe requires a real lead of the requesting tenant')
+    check(any(row['lead_id']==lead and row['organization_id']==company
+              and row['title']=='TASK_TESTE_MANUAL' and row['state']=='done' for row in before['tasks']),
+          'the existing nominal task must already be persisted and completed')
+    envfile=os.environ.get('CRM_PRIVATE_ENV_FILE');project=os.environ.get('CRM_PRIVATE_PROJECT')
+    check(project=='imagine-crm-journey-ci' and envfile and Path(envfile).is_file(),
+          'task date witness requires the existing disposable CI stack')
+    # Autoload only: no application bootstrap, identity, connection or historical Controller.
+    php=r"""
+require 'vendor/autoload.php';
+$factory=new Illuminate\Validation\Factory(new Illuminate\Translation\Translator(new Illuminate\Translation\ArrayLoader(),'en'));
+$date=DateTimeImmutable::createFromFormat('!Y-m-d','0000-01-01');
+echo json_encode([
+    'php_version'=>PHP_VERSION,'php_version_id'=>PHP_VERSION_ID,
+    'date_format_accepts'=>$factory->make(['due'=>'0000-01-01'],['due'=>'required|date_format:Y-m-d'])->passes(),
+    'roundtrip_accepts'=>$date!==false && $date->format('Y-m-d')==='0000-01-01',
+],JSON_THROW_ON_ERROR);
+"""
+    command=['docker','compose','--env-file',envfile,'-p',project,'-f',str(ROOT/'infra/homologation/compose.yaml'),
+             'exec','-T','app','php','-r',php]
+    result=subprocess.run(command,capture_output=True,text=True,timeout=15)
+    check(result.returncode==0,'PHP date witness failed; no process output logged')
+    observed=json.loads(result.stdout)
+    check(set(observed)=={'php_version','php_version_id','date_format_accepts','roundtrip_accepts'}
+          and type(observed['php_version_id']) is int and 80400<=observed['php_version_id']<80500
+          and isinstance(observed['php_version'],str) and re.fullmatch(r'8\.4\.[0-9]+',observed['php_version'])
+          and observed['date_format_accepts'] is True and observed['roundtrip_accepts'] is True,
+          'PHP 8.4 must witness the current date-format and roundtrip acceptance of year zero')
+    database=json.loads(owner_sql(
+        "BEGIN READ ONLY; SELECT jsonb_build_object("
+        "'server_version_num',current_setting('server_version_num')::integer,"
+        "'read_only',current_setting('transaction_read_only')='on',"
+        "'zero_valid',pg_catalog.pg_input_is_valid('0000-01-01','pg_catalog.date'),"
+        "'zero_sqlstate',(pg_catalog.pg_input_error_info('0000-01-01','pg_catalog.date')).sql_error_code,"
+        "'year_one_valid',pg_catalog.pg_input_is_valid('0001-01-01','pg_catalog.date'))::text; ROLLBACK;"))
+    check(set(database)=={'server_version_num','read_only','zero_valid','zero_sqlstate','year_one_valid'}
+          and type(database['server_version_num']) is int and 160000<=database['server_version_num']<170000
+          and database['read_only'] is True and database['zero_valid'] is False
+          and database['zero_sqlstate']=='22008' and database['year_one_valid'] is True,
+          'PostgreSQL 16 must reject AD year zero with 22008 and accept year one in a read-only transaction')
+    client.post('/tarefas',{'lead':lead,'title':'TASK_TESTE_YEAR_ZERO','due':'0000-01-01'},expected=422)
+    check(private_business_snapshot([company,peer_company])==before,
+          'year-zero task refusal changed either tenant business/audit rows')
+    print('PASS task date: PHP '+observed['php_version']+' accepts year zero; PostgreSQL '
+          +str(database['server_version_num'])+' rejects it with 22008 read-only; HTTP 422 preserves both tenant business/audit snapshots and the completed nominal task')
+
+
 def assert_entry_locales():
     """Errors before Controller::page still keep only the selected UI locale."""
     for locale,copy in LOCALE_COPY.items():
@@ -1767,6 +1819,7 @@ def main():
     a.get('/automacoes/estado?company_id=forged',expected=422)
     print('PASS CENTRAL-AUTO-P1 UI → version → planner → PostgreSQL schedule → native task → dedupe → cancel → pause; AI calls zero by closed action catalog')
     print('PASS lead create/edit protections → Kanban versioning → automation → tasks → reports → CSV')
+    assert_task_date_boundary(a,lead,automation_state['company_id'],FIXTURES['clientB']['organization'])
 
     a.get('/painel?section=funnels')
     a.post('/funis',{'title':'FUNIL_TESTE_SEGUNDO'})

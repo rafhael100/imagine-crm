@@ -238,7 +238,9 @@ final readonly class Workspace
     {
         $title=self::label($title,'TASK_TESTE_');
         $date=\DateTimeImmutable::createFromFormat('!Y-m-d',$due);
-        abort_unless(Str::isUuid($lead) && $date && $date->format('Y-m-d')===$due,422);
+        // PHP accepts ISO year zero; PostgreSQL's AD date input does not.
+        abort_unless(Str::isUuid($lead) && $date && $date->format('Y-m-d')===$due
+            && (int)$date->format('Y')>0,422);
         $this->run('tasks.create',function ($account,$trial,$principal) use ($lead,$title,$due) {
             abort_unless($this->table('leads',$account->organization_id)->where('id',$lead)->exists(),404);
             abort_if($this->table('tasks',$account->organization_id)->count()>=200,409,'Limite de segurança das tarefas fictícias.');
