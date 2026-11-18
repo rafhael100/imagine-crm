@@ -28,6 +28,41 @@ ADDON_TABLES = ("public.crm_private_owner_draft_grants", "public.crm_private_own
 LEGACY_DENIAL = "Incomplete or unknown private backup relation profile."
 UUID = re.compile(r"[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}")
 HASH = re.compile(r"[a-f0-9]{64}")
+# Only these fifteen pairs were observed in job 134571533998 on PG16. These
+# are complete expected forms, not a general SQL parser or cast-removal rule.
+CATALOG_RULE = "CRM_PG16_VARCHAR_LITERAL_ARRAY_CAST_V1"
+ARRAY_CHECKS = {
+    ("public.crm_memberships", "crm_memberships_status_check"):
+        ("status", 16, ("active", "suspended", "revoked")),
+    ("public.crm_private_accounts", "crm_private_accounts_desired_plan_check"):
+        ("desired_plan", 16, ("basic", "essential", "professional", "enterprise")),
+    ("public.crm_private_accounts", "crm_private_accounts_role_check"):
+        ("role", 16, ("client", "admin")),
+    ("public.crm_private_accounts", "crm_private_accounts_status_check"):
+        ("status", 16, ("active", "suspended")),
+    ("public.crm_private_accounts", "crm_private_accounts_team_role_check"):
+        ("team_role", 16, ("owner", "member")),
+    ("public.crm_private_automation_runs", "crm_private_automation_runs_state_check"):
+        ("state", 16, ("pending", "completed", "cancelled", "failed")),
+    ("public.crm_private_automation_runs", "crm_private_automation_runs_template_check"):
+        ("template", 32, ("followup_qualified", "followup_proposal")),
+    ("public.crm_private_invitations", "crm_private_invitations_state_check"):
+        ("state", 16, ("pending", "accepted", "cancelled")),
+    ("public.crm_private_leads", "crm_private_leads_stage_check"):
+        ("stage", 16, ("new", "qualified", "proposal", "won", "lost")),
+    ("public.crm_private_operator_events", "crm_private_operator_events_action_check"):
+        ("action", 32, ("suspend", "resume")),
+    ("public.crm_private_orders", "crm_private_orders_payment_method_check"):
+        ("payment_method", 16, ("pix", "card", "boleto")),
+    ("public.crm_private_orders", "crm_private_orders_plan_check"):
+        ("plan", 16, ("basic", "essential", "professional", "enterprise")),
+    ("public.crm_private_orders", "crm_private_orders_state_check"):
+        ("state", 16, ("pending", "approved", "refused", "cancelled")),
+    ("public.crm_private_preferences", "crm_private_preferences_language_check"):
+        ("language", 2, ("pt", "en", "es")),
+    ("public.crm_private_tasks", "crm_private_tasks_state_check"):
+        ("state", 16, ("todo", "done", "cancelled")),
+}
 
 
 def check(value, label):
@@ -115,6 +150,10 @@ def catalog_manifest(query):
     # these definitions additionally bind FK/unique/check and column semantics.
     return json.loads(query("""
       SELECT jsonb_build_object(
+       'database_collation',(SELECT jsonb_build_object(
+         'encoding',pg_encoding_to_char(encoding),'provider',datlocprovider,
+         'collate',datcollate,'ctype',datctype,'icu_locale',daticulocale,'icu_rules',daticurules,'version',datcollversion)
+         FROM pg_database WHERE datname=current_database()),
        'constraints',COALESCE((SELECT jsonb_agg(jsonb_build_object(
          'table',n.nspname||'.'||c.relname,'name',k.conname,'type',k.contype,
          'deferrable',k.condeferrable,'deferred',k.condeferred,'validated',k.convalidated,
@@ -124,6 +163,8 @@ def catalog_manifest(query):
        'columns',COALESCE((SELECT jsonb_agg(jsonb_build_object(
          'table',n.nspname||'.'||c.relname,'name',a.attname,'position',a.attnum,
          'type',format_type(a.atttypid,a.atttypmod),'not_null',a.attnotnull,
+         'collation',(SELECT cn.nspname||'.'||co.collname FROM pg_collation co
+           JOIN pg_namespace cn ON cn.oid=co.collnamespace WHERE co.oid=a.attcollation),
          'default',pg_get_expr(d.adbin,d.adrelid),'identity',a.attidentity,'generated',a.attgenerated)
          ORDER BY c.relname,a.attnum)
          FROM pg_attribute a JOIN pg_class c ON c.oid=a.attrelid
@@ -172,8 +213,52 @@ def sql_shape(value, identifiers):
     return {"sql_shape": shape, "literal_tokens_sha256": manifest_digest(literals)}
 
 
-def exact_catalog(expected, actual, tables):
-    if actual != expected:
+def catalog_comparison(expected, actual):
+    """Exact catalog, or the fifteen observed PG16 pairs with every other byte exact."""
+    if set(expected) != {"constraints", "columns", "database_collation"} or set(actual) != set(expected):
+        return None
+    if actual == expected:
+        return {"rule": "EXACT", "equivalences": 0, "constraints": []}
+    if expected["columns"] != actual["columns"] or expected["database_collation"] != actual["database_collation"]:
+        return None
+    if len(expected["constraints"]) != len(actual["constraints"]):
+        return None
+    changed = []
+    # Compare the original ordered lists, not dictionaries that could hide a
+    # duplicate, deletion or reordering of a constraint.
+    for before, after in zip(expected["constraints"], actual["constraints"]):
+        if before == after:
+            continue
+        identity = (before.get("table"), before.get("name"))
+        specification = ARRAY_CHECKS.get(identity)
+        if specification is None or set(before) != set(after) or set(before) != {
+                "table", "name", "type", "deferrable", "deferred", "validated", "definition"}:
+            return None
+        if {key: value for key, value in before.items() if key != "definition"} != {
+                key: value for key, value in after.items() if key != "definition"}:
+            return None
+        if before["type"] != "c" or before["deferrable"] or before["deferred"] or before["validated"] is not True:
+            return None
+        column, width, literals = specification
+        columns = [item for item in expected["columns"] if item["table"] == identity[0] and item["name"] == column]
+        if len(columns) != 1 or columns[0]["type"] != "character varying(" + str(width) + ")" \
+                or columns[0]["collation"] != "pg_catalog.default" or columns[0]["not_null"] is not True:
+            return None
+        source_items = ", ".join("'" + value + "'::character varying" for value in literals)
+        target_items = ", ".join("('" + value + "'::character varying)::text" for value in literals)
+        source_form = "CHECK (((" + column + ")::text = ANY ((ARRAY[" + source_items + "])::text[])))"
+        target_form = "CHECK (((" + column + ")::text = ANY (ARRAY[" + target_items + "])))"
+        if before["definition"] != source_form or after["definition"] != target_form:
+            return None
+        changed.append(identity[0] + "." + identity[1])
+    if not changed or len(changed) != len(set(changed)):
+        return None
+    return {"rule": CATALOG_RULE, "equivalences": len(changed), "constraints": changed}
+
+
+def verify_catalog(expected, actual, tables):
+    comparison = catalog_comparison(expected, actual)
+    if comparison is None:
         check(len(tables) == 27 and len(set(tables)) == 27, "CATALOG_DIAGNOSTIC_INVENTORY")
         allowed_tables = set(tables)
         identifiers = {row["name"].lower() for row in expected["columns"] if row["table"] in allowed_tables}
@@ -199,13 +284,70 @@ def exact_catalog(expected, actual, tables):
                                     "source_sha256": manifest_digest(old), "restored_sha256": manifest_digest(new),
                                     "sql": details})
         report = {"check": "CRM_OWNER_DRAFT_RECOVERY_CATALOG_DIFFERENCE",
-                  "object_differences": len(differences), "order_only": not differences,
+                  "object_differences": len(differences),
+                  "order_only": not differences and expected.get("database_collation") == actual.get("database_collation"),
+                  "database_collation_equal": expected.get("database_collation") == actual.get("database_collation"),
                   "differences": differences[:20]}
         if len(wire(report)) > 65536:
             report["differences"] = [{**item, "sql": {}} for item in differences[:20]]
             report["shapes_omitted_for_size"] = True
         print(json.dumps(report, sort_keys=True), flush=True)
-    check(actual == expected, "CONSTRAINTS_COLUMNS_EXACT")
+    check(comparison is not None, "CLOSED_CATALOG_COMPARISON")
+    return comparison
+
+
+def catalog_mutation_probes(expected, actual, comparison):
+    """Mutate the two catalogs actually captured from PG, never a parser mirror."""
+    before_hashes = manifest_digest(expected), manifest_digest(actual)
+    target = next((i for i, row in enumerate(expected["constraints"])
+                   if (row["table"], row["name"]) in ARRAY_CHECKS
+                   and (not comparison["equivalences"] or row != actual["constraints"][i])), None)
+    check(target is not None, "REAL_MUTATION_TARGET")
+    identity = (expected["constraints"][target]["table"], expected["constraints"][target]["name"])
+    column, _, values = ARRAY_CHECKS[identity]
+    column_index = next(i for i, row in enumerate(expected["columns"]) if row["table"] == identity[0] and row["name"] == column)
+    unrelated = next(i for i, row in enumerate(expected["constraints"]) if (row["table"], row["name"]) not in ARRAY_CHECKS)
+    negatives = []
+
+    def deny(label, change, *, both=False):
+        left, right = copy.deepcopy(expected), copy.deepcopy(actual)
+        change(right)
+        if both:
+            change(left)
+        check(catalog_comparison(left, right) is None, "CATALOG_MUTATION_" + label)
+        negatives.append(label)
+
+    def definition(catalog, transform, index=target):
+        catalog["constraints"][index]["definition"] = transform(catalog["constraints"][index]["definition"])
+
+    def swap_literals(sql):
+        return sql.replace("'" + values[0] + "'", "'ORDER_SWAP_FIXTURE'", 1) \
+                  .replace("'" + values[1] + "'", "'" + values[0] + "'", 1) \
+                  .replace("'ORDER_SWAP_FIXTURE'", "'" + values[1] + "'", 1)
+
+    deny("LITERAL", lambda value: definition(value, lambda sql: sql.replace("'" + values[0] + "'", "'unreviewed_value'", 1)))
+    deny("LITERAL_ORDER", lambda value: definition(value, swap_literals))
+    deny("OPERATOR", lambda value: definition(value, lambda sql: sql.replace(" = ANY ", " <> ANY ", 1)))
+    deny("UNOBSERVED_FORM", lambda value: definition(value, lambda sql: sql.replace("::character varying", "::varchar", 1)))
+    deny("COLUMN_TYPE", lambda value: value["columns"][column_index].__setitem__("type", "character varying(99)"))
+    deny("COLUMN_COLLATION", lambda value: value["columns"][column_index].__setitem__("collation", "pg_catalog.C"))
+    deny("DATABASE_COLLATION", lambda value: value["database_collation"].__setitem__("collate", "UNREVIEWED_COLLATION"))
+    deny("DATABASE_ICU_RULES", lambda value: value["database_collation"].__setitem__("icu_rules", "UNREVIEWED_ICU_RULES"))
+    deny("FLAGS", lambda value: value["constraints"][target].__setitem__("validated", False))
+    deny("UNKNOWN_OBJECT", lambda value: value["constraints"][target].__setitem__("name", "unreviewed_constraint"))
+    deny("UNRELATED_FIELD", lambda value: value["columns"][0].__setitem__("default", "unreviewed_default"))
+    deny("UNRELATED_CONSTRAINT", lambda value: definition(value, lambda sql: sql + " ", unrelated))
+    deny("MISSING_CONSTRAINT", lambda value: value["constraints"].pop())
+    deny("EXTRA_CONSTRAINT", lambda value: value["constraints"].append(copy.deepcopy(value["constraints"][target])))
+    deny("CONSTRAINT_ORDER", lambda value: value["constraints"].reverse())
+    if comparison["equivalences"]:
+        # Equal mutations on both sides must not turn a changed cast pair into
+        # a new permitted enum/type/collation merely because their values match.
+        deny("SHARED_LITERAL", lambda value: definition(value, lambda sql: sql.replace("'" + values[0] + "'", "'unreviewed_value'", 1)), both=True)
+        deny("SHARED_TYPE", lambda value: value["columns"][column_index].__setitem__("type", "character varying(99)"), both=True)
+        deny("SHARED_COLLATION", lambda value: value["columns"][column_index].__setitem__("collation", "pg_catalog.C"), both=True)
+    check((manifest_digest(expected), manifest_digest(actual)) == before_hashes, "MUTATIONS_PRESERVED_REAL_CATALOGS")
+    return len(negatives)
 
 
 def row_hashes(query, tables):
@@ -386,7 +528,9 @@ def main():
 
         restored_tables, restored_security = owner_profile(restored_query, original_tables)
         check(restored_tables == tables and restored_security == security, "OWNERS_ACLS_RLS_COLUMN_GRANTS_EXACT")
-        exact_catalog(catalog, catalog_manifest(restored_query), tables)
+        restored_catalog = catalog_manifest(restored_query)
+        catalog_comparison_result = verify_catalog(catalog, restored_catalog, tables)
+        catalog_negatives = catalog_mutation_probes(catalog, restored_catalog, catalog_comparison_result)
         check(row_hashes(restored_query, tables) == hashes, "ALL_27_TABLES_EXACT")
         restored_pending = json.loads(restored_query("SELECT to_jsonb(i)::text FROM public.crm_private_owner_draft_intents i WHERE draft_ref=" + literal(reference)))
         restored_confirmed = json.loads(restored_query("SELECT to_jsonb(i)::text FROM public.crm_private_owner_draft_intents i WHERE draft_ref=" + literal(confirmed["draft_ref"])))
@@ -414,7 +558,10 @@ def main():
         "checks": CHECKS + owner.CHECKS + helper.CHECKS, "owner_http_requests": owner.REQUESTS,
         "tables": len(tables), "restored_roles": len(BASE_ROLES), "sql_denials": negatives,
         "data_manifest_sha256": manifest_digest(hashes), "security_manifest_sha256": manifest_digest(security),
-        "catalog_sha256": manifest_digest(catalog), "snapshot_exported_at": exported_at,
+        "source_catalog_sha256": manifest_digest(catalog), "restored_catalog_sha256": manifest_digest(restored_catalog),
+        "catalog_raw_equal": catalog == restored_catalog, "catalog_roundtrip_rule": catalog_comparison_result["rule"],
+        "catalog_roundtrip_equivalences": catalog_comparison_result["equivalences"],
+        "catalog_mutation_denials": catalog_negatives, "snapshot_exported_at": exported_at,
         "legacy_backup_rejects_addon": True, "snapshot_pending_live_confirmed_restored_pending": True,
         "crypto_roundtrip": True, "authenticated_tamper_denied": True,
         "current_authority_restored": False, "restored_session_reused": False,

@@ -84,7 +84,9 @@ ou diagnóstico do driver com conteúdo de dados nos logs.
 ## Contraprovas de privilégio e isolamento
 
 Após restaurar, o ensaio compara exatamente owners, grants, privilégios por coluna,
-FORCE RLS, policies, constraints, definições de coluna e os 27 conjuntos de dados.
+FORCE RLS, policies, definições de coluna e os 27 conjuntos de dados. A comparação
+das constraints admite exclusivamente os pares de representação descritos abaixo;
+todos os seus demais campos continuam exatos.
 Verifica também que as roles continuam inertes, sem senha e sem memberships.
 
 As consultas sob `SET LOCAL ROLE` e o contexto de tenant são sondas SQL do
@@ -98,6 +100,72 @@ hash, autor, empresa e origem de uma intenção; exclusão da intenção; altera
 grant pelo app; alteração de status, papel e empresa pelo IAM; leitura das
 credenciais e sessões pelo app. Todos os conjuntos são novamente comparados após
 as negativas para comprovar ausência de escrita parcial.
+
+## Quinze representações observadas no PostgreSQL 16
+
+A [execução de diagnóstico 44235805157](https://github.com/rafhael100/imagine-crm/actions/runs/44235805157),
+job `134571533998`, HEAD `f79ac6704679683113ef0c67c3177f9ad83eb421`,
+passou novamente a jornada HTTP (407 verificações, 52 requisições) e recusou a
+recuperação na comparação textual do catálogo. O diagnóstico mascarado identificou
+15 diferenças, todas apenas no campo `definition` de CHECKs sobre `varchar`.
+As colunas e os demais metadados não divergiram; os hashes dos tokens literais
+foram iguais em cada par. O restante da prova de recuperação e o Chromium foram
+pulados nessa execução. Esse diagnóstico não é um PASS de recuperação.
+
+O ciclo de dump/restauro mudou o cast aplicado ao array para casts aplicados aos
+elementos, com as duas formas observadas abaixo:
+
+```sql
+-- Forma da fonte; LITERAL representa cada valor mascarado.
+CHECK (((campo)::text = ANY ((ARRAY['LITERAL'::character varying, ...])::text[])))
+-- Forma restaurada.
+CHECK (((campo)::text = ANY (ARRAY[('LITERAL'::character varying)::text, ...])))
+```
+
+A regra `CRM_PG16_VARCHAR_LITERAL_ARRAY_CAST_V1` lista explicitamente as quinze
+identidades de constraints, suas colunas, tipos, valores e ordem do schema:
+
+| Tabela | CHECKs admitidos pelo par observado | Tipo da coluna |
+| --- | --- | --- |
+| `crm_memberships` | `status` | `varchar(16)` |
+| `crm_private_accounts` | `desired_plan`, `role`, `status`, `team_role` | `varchar(16)` |
+| `crm_private_automation_runs` | `state`; `template` | `varchar(16)`; `varchar(32)` |
+| `crm_private_invitations` | `state` | `varchar(16)` |
+| `crm_private_leads` | `stage` | `varchar(16)` |
+| `crm_private_operator_events` | `action` | `varchar(32)` |
+| `crm_private_orders` | `payment_method`, `plan`, `state` | `varchar(16)` |
+| `crm_private_preferences` | `language` | `varchar(2)` |
+| `crm_private_tasks` | `state` | `varchar(16)` |
+
+O comparador exige a forma completa da fonte e a forma completa do destino para
+cada identidade, com os valores literais e sua ordem fixados no código. Não remove
+casts ou parênteses, não aceita aliases SQL alternativos e não reescreve SQL
+genérico. Constraints não listadas permanecem sob igualdade exata. As listas
+ordenadas originais são comparadas integralmente, preservando entradas, ordem e
+eventuais duplicatas, sem colapsá-las em mapas.
+
+Cada coluna elegível deve conservar seu tipo exato, NOT NULL e collation
+`pg_catalog.default`. Todas as definições de coluna são comparadas integralmente.
+Como a collation default depende do banco, o catálogo também inclui e compara
+exatamente encoding, provedor de locale, `datcollate`, `datctype`, locale ICU,
+regras ICU (`daticurules`) e versão da collation de
+[`pg_database` no PostgreSQL 16](https://www.postgresql.org/docs/16/catalog-pg-database.html).
+Nenhum owner, senha ou parâmetro de conexão é lido por essa projeção.
+
+O ensaio aplica contraprovas de mutação aos próprios catálogos reais capturados,
+sem alterar os bancos. Muda um literal, a ordem dos literais, o operador, a forma
+SQL, tipo/collation de coluna, collation e regras ICU do banco, flags, identidade do objeto,
+campo ou constraint não relacionados; remove, duplica ou reordena uma constraint.
+Quando há equivalência, também altera igualmente nos dois lados literal, tipo e
+collation: igualdade entre as mutações não pode ampliar a lista aprovada. O
+comparador precisa recusar cada uma. Os hashes dos catálogos originais devem
+permanecer intactos após todas as mutações em memória.
+
+O resultado registra separadamente os hashes **brutos** dos catálogos fonte e
+restaurado, `catalog_raw_equal`, a regra e o número de equivalências. Quando esse
+par de representações ocorre, os hashes brutos diferem; não se declara igualdade
+byte a byte das definições. Dados e demais metadados continuam exigindo igualdade
+exata. Nenhum helper legado, schema, grant ou runtime é alterado por essa regra.
 
 ## Resultado e limites
 
