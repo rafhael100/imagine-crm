@@ -44,6 +44,28 @@ def run(command, content=None, environment=None):
         for line in result.stderr.decode(errors="replace").splitlines():
             if line.startswith("RuntimeError: "):
                 print(line, file=sys.stderr)
+    if result.returncode and "psql" in command:
+        # A failed SQL counterproof must expose its cause, not merely "docker".
+        # Never print query text, wire receipts, bound values or arbitrary error
+        # messages. Verbose psql supplies a stable SQLSTATE and schema-only location.
+        diagnostics = []
+        for line in result.stderr.decode(errors="replace").splitlines():
+            error = re.search(r"\bERROR:\s+([0-9A-Z]{5}):\s+(.*)", line)
+            if error:
+                item = "CRM_BACKUP_SQL_FAILURE sqlstate=" + error.group(1)
+                message = error.group(2)
+                if re.fullmatch(r"[A-Z][A-Z0-9_]{2,100}", message):
+                    item += " marker=" + message
+                identifier = re.fullmatch(r'column reference "([a-z_][a-z0-9_]{0,80})" is ambiguous', message)
+                if identifier:
+                    item += " ambiguous_column=" + identifier.group(1)
+                diagnostics.append(item)
+            context = re.search(r"PL/pgSQL function ([a-z_][a-z0-9_.]*)\([^\r\n)]*\) line ([0-9]+) at ([A-Za-z ]+)$", line)
+            if context:
+                diagnostics.append("CRM_BACKUP_SQL_CONTEXT function=" + context.group(1)
+                                   + " line=" + context.group(2) + " operation=" + context.group(3))
+        for diagnostic in diagnostics[:5]:
+            print(diagnostic, file=sys.stderr)
     require(result.returncode == 0, "Synthetic backup command failed: " + Path(command[0]).name)
     return result.stdout
 
@@ -63,7 +85,7 @@ def main() -> None:
     source = compose + ["exec", "-T", "postgres"]
 
     def sql(statement: str) -> str:
-        return run(source + ["psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=1", "-U",
+        return run(source + ["psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=1", "-v", "VERBOSITY=verbose", "-U",
                    "crm_homologation_owner", "-d", DATABASE], statement.encode()).decode().strip()
 
     base_tables = re.findall(r"CREATE TABLE\s+(crm_[a-z0-9_]+)\s*\(",

@@ -55,7 +55,7 @@ END $$;
 
 DO $$
 DECLARE a record;b record;c jsonb;q jsonb;r jsonb;v jsonb;observed jsonb;step record;
- old_pointer text;old_receipt text;old_source text;event_id uuid;counter integer;
+ old_pointer text;old_receipt text;old_source text;new_event_id uuid;counter integer;
  before_state jsonb;after_state jsonb;table_name text;role_name text;original_total bigint;
 BEGIN
  SELECT * INTO a FROM monitor_test_sources WHERE position=1;
@@ -189,11 +189,11 @@ BEGIN
  UPDATE crm_auto_service.outbound_grants SET active=true,expires_at=floor(extract(epoch FROM clock_timestamp()))::bigint+900
   WHERE company_id=a.company_id;
  FOR counter IN 1..52 LOOP
-  event_id:=gen_random_uuid();
+  new_event_id:=gen_random_uuid();
   INSERT INTO public.crm_private_events(id,organization_id,actor_id,object_id,action,occurred_at)
-   SELECT event_id,organization_id,actor_id,object_id,'lead.created',occurred_at+counter FROM public.crm_private_events
+   SELECT new_event_id,organization_id,actor_id,object_id,'lead.created',occurred_at+counter FROM public.crm_private_events
    WHERE id=a.event_id AND organization_id=a.company_id;
-  PERFORM crm_auto_service.stage_outbound(a.company_id,event_id);
+  PERFORM crm_auto_service.stage_outbound(a.company_id,new_event_id);
  END LOOP;
  EXECUTE 'SET LOCAL ROLE crm_homologation_app';
  PERFORM set_config('app.tenant_id',a.company_id::text,true);
