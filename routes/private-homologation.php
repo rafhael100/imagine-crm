@@ -42,4 +42,5 @@ Route::get('/automacoes/estado',[Controller::class,'automationState']);
 
 if (\App\Homologation\Environment::minimalLeadReadEnabled()) {
     Route::get('/agentes/leads/{id}/minimo',\App\Homologation\MinimalLeadReadController::class);
+    Route::get('/agentes/leads/{id}/resumo',[\App\Homologation\MinimalLeadReadController::class,'summary']);
 }

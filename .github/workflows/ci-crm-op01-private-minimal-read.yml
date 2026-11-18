@@ -4,12 +4,15 @@ on:
     branches:
       - dev/fast-track-crm-2026-11-04
       - test/crm-sites-capture-revocation-ordering-2026-11-17
+      - feat/crm-op01-authenticated-minimal-read-2026-11-17
     paths:
       - 'app/Homologation/**'
       - 'routes/private-homologation.php'
+      - 'resources/views/crm-private-journey.blade.php'
       - 'tests/Feature/PrivateMinimalLeadReadBoundaryTest.php'
       - 'infra/homologation/**'
       - 'scripts/ops/test-private-crm-op01.py'
+      - 'scripts/ops/test-private-crm-op01-browser.cjs'
       - '.github/workflows/ci-crm-op01-private-minimal-read.yml'
 permissions:
   contents: read
@@ -44,6 +47,7 @@ jobs:
           sudo chown root:root "$RUNNER_TEMP/crm-op01-data"
           echo "CRM_PRIVATE_ENV_FILE=$RUNNER_TEMP/crm-op01.env" >> "$GITHUB_ENV"
           python3 -m py_compile scripts/ops/test-private-crm-op01.py
+          node --check scripts/ops/test-private-crm-op01-browser.cjs
       - name: Build the CRM source before checking out the independent consumer
         run: |
           set -euo pipefail
@@ -88,6 +92,25 @@ jobs:
       - name: Real authentication, minimal reads, authorization denials and audit rollback
         run: |
           sudo env GITHUB_ACTIONS="$GITHUB_ACTIONS" GITHUB_REPOSITORY="$GITHUB_REPOSITORY" GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" GITHUB_EVENT_PATH="$GITHUB_EVENT_PATH" GITHUB_SHA="$GITHUB_SHA" CRM_OP01_RUNNER_ENVIRONMENT="$CRM_OP01_RUNNER_ENVIRONMENT" CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" CRM_PRIVATE_IMAGE_TAG="$CRM_PRIVATE_IMAGE_TAG" CRM_PRIVATE_OP01="$CRM_PRIVATE_OP01" AIA_P65_SOURCE_DIR="$AIA_P65_SOURCE_DIR" AIA_P65_SOURCE_SHA="$AIA_P65_SOURCE_SHA" python3 scripts/ops/test-private-crm-op01.py "$RUNNER_TEMP/crm-op01-data/fixtures.json"
+      - name: Chromium navigation, three locales and responsive minimal summary
+        run: |
+          set -euo pipefail
+          npm install --prefix "$RUNNER_TEMP/crm-op01-browser" --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          sudo env GITHUB_ACTIONS="$GITHUB_ACTIONS" GITHUB_REPOSITORY="$GITHUB_REPOSITORY" GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" GITHUB_EVENT_PATH="$GITHUB_EVENT_PATH" GITHUB_SHA="$GITHUB_SHA" CRM_OP01_RUNNER_ENVIRONMENT="$CRM_OP01_RUNNER_ENVIRONMENT" CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" CRM_PRIVATE_IMAGE_TAG="$CRM_PRIVATE_IMAGE_TAG" CRM_PRIVATE_OP01="$CRM_PRIVATE_OP01" CRM_PRIVATE_PLAYWRIGHT_DIR="$RUNNER_TEMP/crm-op01-browser" node scripts/ops/test-private-crm-op01-browser.cjs "$RUNNER_TEMP/crm-op01-data/fixtures.json" "$RUNNER_TEMP/crm-op01-evidence"
+      - name: Make only credential-free screenshots readable by the artifact runner
+        if: always()
+        run: |
+          if test -d "$RUNNER_TEMP/crm-op01-evidence"; then
+            sudo chown -R "$(id -u):$(id -g)" "$RUNNER_TEMP/crm-op01-evidence"
+          fi
+      - name: Preserve minimal-summary desktop and mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: crm-op01-minimal-lead-desktop-mobile
+          path: ${{ runner.temp }}/crm-op01-evidence/*.png
+          retention-days: 7
+          if-no-files-found: ignore
       - name: Prove disabling the profile removes the route again
         run: |
           set -euo pipefail

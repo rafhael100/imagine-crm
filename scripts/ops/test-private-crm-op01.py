@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[2]
 P65_SHA = "740abafc813dbde70f5a2ad6e138402ed7945276"
 REPO = "rafhael100/imagine-crm"
 PHASE = "preflight"
-CHECKS = READS = ACCEPTED = DENIED = 0
+CHECKS = READS = ACCEPTED = DENIED = HTML_READS = 0
 HELPER = None
 SOURCE = None
 IMAGE = ""
@@ -80,7 +80,7 @@ def preflight(disabled):
         check((SOURCE / path).is_file() and not (SOURCE / path).is_symlink(), "consumer source missing")
 
 
-def capture(client, path, method="GET", body=None, headers=None):
+def capture(client, path, method="GET", body=None, headers=None, *, presentation=False):
     check(path.startswith("/") and not path.startswith("//") and "\r" not in path and "\n" not in path,
           "fixed loopback path required")
     fields = {"Host": "crm-dev.imaginecomunica.com.br", "Accept": "application/json", "Connection": "close"}
@@ -105,14 +105,15 @@ def capture(client, path, method="GET", body=None, headers=None):
         check("no-store" in output_headers.get("cache-control", "")
               and output_headers.get("x-content-type-options") == "nosniff"
               and not any(key.startswith("access-control-") for key in output_headers), "HTTP privacy headers missing")
-        check(response.status != 200 or output_headers.get("content-type", "").split(";", 1)[0] == "application/json",
-              "successful read is not a JSON response")
+        content_type = "text/html" if presentation else "application/json"
+        check(response.status != 200 or output_headers.get("content-type", "").split(";", 1)[0] == content_type,
+              "successful read content type mismatch")
         return response.status, raw
     finally:
         connection.close()
 
 
-def consumer(status, body, expected_ref):
+def consumer(status, body, expected_ref, *, presentation=False):
     result = subprocess.run([
         "docker", "run", "--rm", "-i", "--network", "none", "--read-only", "--cap-drop", "ALL",
         "--security-opt", "no-new-privileges", "--pids-limit", "64", "--memory", "128m",
@@ -120,7 +121,7 @@ def consumer(status, body, expected_ref):
         "--entrypoint", "php", IMAGE, "/agents/tools/p65-crm-minimal-read-probe.php",
         "--status", str(status), "--expected-ref", expected_ref,
     ], input=body, capture_output=True, timeout=20)
-    accepted = status == 200
+    accepted = status == 200 and not presentation
     marker = b"AIA_P65_CRM_MINIMAL_READ_ACCEPTED\n" if accepted else b"AIA_P65_CRM_MINIMAL_READ_DENIED\n"
     check(result.returncode == (0 if accepted else 2) and result.stdout == marker and result.stderr == b"",
           "original Agents consumer result mismatch")
@@ -135,12 +136,14 @@ def snapshot():
         + "),'events',(SELECT coalesce(jsonb_agg(to_jsonb(e) ORDER BY e.id),'[]'::jsonb) FROM public.crm_private_events e))::text"))
 
 
-def read(client, lead, status, label, *, stage=None, actor=None, company=None, path=None, method="GET", body=None, headers=None):
-    global PHASE, READS, ACCEPTED, DENIED
+def read(client, lead, status, label, *, stage=None, actor=None, company=None, path=None, method="GET", body=None,
+         headers=None, presentation=False, language="pt"):
+    global PHASE, READS, ACCEPTED, DENIED, HTML_READS
     PHASE = label
     expected = str(uuid.UUID(lead))
     before = snapshot()
-    actual, raw = capture(client, path or "/agentes/leads/" + expected + "/minimo", method, body, headers)
+    route = "/agentes/leads/" + expected + ("/resumo" if presentation else "/minimo")
+    actual, raw = capture(client, path or route, method, body, headers, presentation=presentation)
     check(actual == status, f"unexpected minimal read status {actual}, expected {status}")
     after = snapshot()
     check(before["business"] == after["business"], "read changed business state")
@@ -149,20 +152,36 @@ def read(client, lead, status, label, *, stage=None, actor=None, company=None, p
     check(all(current.get(key) == value for key, value in previous.items()), "read changed previous audit")
     added = [value for key, value in current.items() if key not in previous]
     if status == 200:
-        check(raw == json.dumps({"contract": "CRM_AIA_HOMOLOGATION_LEAD_READ_V1", "operation": "crm.lead.read_minimal",
-              "status": "READ", "scope": "SYNTHETIC_PRIVATE_HOMOLOGATION",
-              "projection": {"ref": expected, "stage": stage}, "operational": False}, separators=(",", ":")).encode(),
-              "minimum response contract mismatch")
+        if presentation:
+            html = raw.decode("utf-8", "strict")
+            check(html.count('data-minimal-lead-summary="imagine"') == 1
+                  and html.count('data-minimal-lead-ref="' + expected + '">' + expected) == 1
+                  and html.count('data-minimal-lead-stage="' + stage + '"') == 1,
+                  "summary must render exactly one independently selected projection")
+            check('<html lang="' + ("pt-BR" if language == "pt" else language) + '">' in html
+                  and '/painel?section=leads&amp;lang=' + language in html,
+                  "summary locale or return destination mismatch")
+            check(all(value not in html for value in ['LEAD_TESTE_', 'EMPRESA_TESTE_', actor, company,
+                  'value_cents', 'data-lead-id=', '/tarefas', 'data-minimal-lead-link=', '"projection"']),
+                  "summary disclosed unrelated business or authority data")
+        else:
+            check(raw == json.dumps({"contract": "CRM_AIA_HOMOLOGATION_LEAD_READ_V1", "operation": "crm.lead.read_minimal",
+                  "status": "READ", "scope": "SYNTHETIC_PRIVATE_HOMOLOGATION",
+                  "projection": {"ref": expected, "stage": stage}, "operational": False}, separators=(",", ":")).encode(),
+                  "minimum response contract mismatch")
         check(len(added) == 1 and added[0]["action"] == "lead.minimal_read"
               and added[0]["object_id"] == expected and added[0]["actor_id"] == actor
               and added[0]["organization_id"] == company, "successful read audit mismatch")
         ACCEPTED += 1
     else:
-        check(not added and b'"projection"' not in raw and b"OP01_FORGED_AUTHORITY" not in raw,
+        check(not added and b'"projection"' not in raw and b'data-minimal-lead-' not in raw
+              and b"OP01_FORGED_AUTHORITY" not in raw,
               "denial disclosed projection or wrote business audit")
         DENIED += 1
-    consumer(actual, raw, expected)
+    # An HTML success is deliberately refused by the unchanged Agents consumer.
+    consumer(actual, raw, expected, presentation=presentation)
     READS += 1
+    HTML_READS += int(presentation)
     return raw
 
 
@@ -196,10 +215,12 @@ def main(vault):
     a, b, admin = HELPER.Client(), HELPER.Client(), HELPER.Client()
     absent = str(uuid.uuid4())
     read(HELPER.Client(), absent, 303, "anonymous")
+    read(HELPER.Client(), absent, 303, "summary-anonymous", presentation=True)
     pending = HELPER.Client(); pending.get("/login")
     _, location = pending.post("/login", {"login": accounts["clientA"]["login"], "password": accounts["clientA"]["password"]})
     check(location.endswith("/mfa"), "password-only session missing")
     read(pending, absent, 303, "pending-mfa")
+    read(pending, absent, 303, "summary-pending-mfa", presentation=True)
     PHASE = "password-mfa-login"
     a.login(accounts["clientA"]); b.login(accounts["clientB"]); admin.login(dict(accounts["admin"], admin=True))
     lead = create_lead(a, "A"); lost = create_lead(a, "LOST"); peer = create_lead(b, "B")
@@ -230,6 +251,23 @@ def main(vault):
     read(a, lead, 405, "method-override", method="POST", headers={"X-HTTP-Method-Override": "GET"})
     read(a, lead, 200, "control-after-rejections", stage="won",
          headers={"Origin": "https://untrusted.example.invalid"}, **own)
+    read(a, lead, 200, "api-remains-json-with-html-accept", stage="won", headers={"Accept": "text/html"}, **own)
+
+    summary = "/agentes/leads/" + lead + "/resumo"
+    for language in ["pt", "en", "es"]:
+        read(a, lead, 200, "summary-locale-" + language, stage="won", presentation=True,
+             path=summary + "?lang=" + language, language=language, **own)
+    read(a, lead, 200, "summary-preserves-session-locale", stage="won", presentation=True, language="es", **own)
+    foreign_summary = read(a, peer, 404, "summary-foreign", presentation=True)
+    missing_summary = read(a, absent, 404, "summary-missing", presentation=True)
+    check(foreign_summary == missing_summary, "summary foreign and missing resources differ publicly")
+    read(admin, lead, 403, "summary-admin-no-authority", presentation=True)
+    for query in ["lang=en&lang=es", "lang[]=en", "lang=%65n", "lang=en&fields=ref"]:
+        read(a, lead, 422, "summary-invalid-query", presentation=True, path=summary + "?" + query)
+    read(a, lead, 422, "summary-get-body", presentation=True, body=b"OP01_FORGED_AUTHORITY")
+    read(a, lead, 405, "summary-head", presentation=True, method="HEAD")
+    read(a, lead, 405, "summary-method-override", presentation=True, method="POST", headers={"X-HTTP-Method-Override": "GET"})
+    read(a, lead, 400, "summary-authority-header", presentation=True, headers={"X-Tenant-Ref": "OP01_FORGED_AUTHORITY"})
 
     PHASE = "member-invitation-otp-mfa"
     a.get("/painel?section=team"); page, _ = a.post("/equipe/convidar", {}, expected=200)
@@ -248,11 +286,15 @@ def main(vault):
                                 + hashlib.sha256(teammate["login"].encode()).hexdigest() + "'")
     read(member, lead, 200, "member-view", stage="won", actor=str(uuid.UUID(member_id)), company=own["company"])
     read(member, peer, 404, "member-isolation")
+    read(member, lead, 200, "summary-member-view", stage="won", presentation=True,
+         actor=str(uuid.UUID(member_id)), company=own["company"])
+    read(member, peer, 404, "summary-member-isolation", presentation=True)
 
     PHASE = "membership-revocation"
     try:
         HELPER.scenario("revoke-membershipB")
         read(b, peer, 403, "revoked-membership")
+        read(b, peer, 403, "summary-revoked-membership", presentation=True)
     finally:
         HELPER.scenario("restore-membershipB")
     read(b, peer, 200, "restored-membership", stage="new", **peer_actor)
@@ -268,6 +310,7 @@ def main(vault):
     read(b, peer, 200, "fresh-credential-control", stage="new", **peer_actor)
     admin.get("/admin"); admin.post("/admin/contas/" + identity, {"status": "suspended"})
     read(b, peer, 303, "suspended-account")
+    read(b, peer, 303, "summary-suspended-account", presentation=True)
     admin.get("/admin"); admin.post("/admin/contas/" + identity, {"status": "active"})
     read(b, peer, 303, "resume-does-not-revive-session")
     PHASE = "fresh-login-after-resume"
@@ -281,15 +324,18 @@ def main(vault):
         HELPER.owner_sql("REVOKE INSERT ON public.crm_private_events FROM crm_homologation_app")
         check(HELPER.owner_sql(privilege) == "f", "audit fault did not apply")
         read(a, lead, 503, "audit-failure-no-projection")
+        read(a, lead, 503, "summary-audit-failure-no-projection", presentation=True)
     finally:
         HELPER.owner_sql("GRANT INSERT ON public.crm_private_events TO crm_homologation_app")
     check(HELPER.owner_sql(privilege) == "t", "audit privilege not restored")
     read(a, lead, 200, "audit-restored-control", stage="won", **own)
+    read(a, lead, 200, "summary-audit-restored-control", stage="won", presentation=True, language="es", **own)
     stale = HELPER.Client(); stale.cookies = dict(a.cookies)
     a.get("/painel"); a.post("/logout", {})
     read(stale, lead, 303, "logout-stale-cookie")
+    read(stale, lead, 303, "summary-logout-stale-cookie", presentation=True)
     print(json.dumps({"schema": "CRM_OP01_SESSION_HTTP_VERIFIED_V1", "checks": CHECKS, "reads": READS,
-          "accepted": ACCEPTED, "denied": DENIED, "stages": 5, "member_onboarded": True,
+          "accepted": ACCEPTED, "denied": DENIED, "html_reads": HTML_READS, "stages": 5, "member_onboarded": True,
           "business_reads_unchanged": True, "success_audit_exact": True, "audit_fault_rolled_back": True,
           "agents_source_sha": P65_SHA, "service_delegation_verified": False, "operational": False}, separators=(",", ":")))
     print("CRM_OP01_REAL_SESSION_MINIMAL_READ_PASS")
@@ -305,8 +351,10 @@ if __name__ == "__main__":
         preflight(arguments.disabled)
         if arguments.disabled:
             PHASE = "feature-disabled"
-            status, raw = capture(None, "/agentes/leads/10000000-0000-4000-8000-000000000001/minimo")
-            check(status == 404 and b'"projection"' not in raw, "disabled feature exposed a route")
+            for suffix in ["minimo", "resumo"]:
+                status, raw = capture(None, "/agentes/leads/10000000-0000-4000-8000-000000000001/" + suffix)
+                check(status == 404 and b'"projection"' not in raw and b'data-minimal-lead-' not in raw,
+                      "disabled feature exposed a route")
             print("CRM_OP01_DEFAULT_OFF_PASS")
         else:
             main(Path(arguments.vault))
