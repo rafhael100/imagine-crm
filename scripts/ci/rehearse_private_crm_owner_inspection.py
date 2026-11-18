@@ -115,9 +115,18 @@ def main():
                 "--env", "POSTGRES_HOST_AUTH_METHOD=trust", "postgres:16"], timeout=120)
             container = result.stdout.decode().strip()
             require(re.fullmatch(r"[a-f0-9]{64}", container) is not None, "FIXTURE_CONTAINER_ID_INVALID")
+            client = command(docker + ["exec", container, "env", "-i",
+                "PATH=/usr/local/bin:/usr/bin:/bin", "LC_ALL=C", "PGPASSFILE=/dev/null",
+                "PGSERVICEFILE=/dev/null", "psql", "--version"], check=False, timeout=5)
+            require(client.returncode == 0, "POSTGRES_CLIENT_UNAVAILABLE_IN_FIXED_PATH")
+            require(client.stdout.startswith(b"psql (PostgreSQL) 16."), "POSTGRES_CLIENT_16_REQUIRED")
+            print("CRM_OWNER_PRIVATE_INSPECTION_PG16_CLIENT_PATH_PASS", flush=True)
             ready = False
             for _ in range(80):
-                result = command(docker + ["exec", container, "pg_isready", "-U", OWNER, "-d", DATABASE],
+                # The image's temporary initdb server accepts only Unix sockets.
+                # TCP readiness waits for the final server after database creation.
+                result = command(docker + ["exec", container, "pg_isready", "-h", "127.0.0.1",
+                    "-p", "5432", "-U", OWNER, "-d", DATABASE],
                                  check=False, timeout=5)
                 if result.returncode == 0:
                     ready = True
@@ -132,7 +141,9 @@ def main():
                     "-h", "/var/run/postgresql", "-U", user, "-d", database,
                     "-v", "ON_ERROR_STOP=1", "-f", "-"], statement.encode(), check=check)
 
-            version = psql("SHOW server_version_num;").stdout.decode().strip()
+            version_result = psql("SHOW server_version_num;", check=False)
+            require(version_result.returncode == 0, "POSTGRES_VERSION_QUERY_FAILED_EXIT_" + str(version_result.returncode))
+            version = version_result.stdout.decode().strip()
             require(version.isdigit() and int(version) // 10000 == 16, "POSTGRES_16_REQUIRED")
             psql((ROOT / "infra/homologation/schema.sql").read_text())
             roles_environment = ["POSTGRES_DB=" + DATABASE, "POSTGRES_USER=" + OWNER,
