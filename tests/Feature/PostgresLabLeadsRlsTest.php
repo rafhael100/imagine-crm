@@ -924,6 +924,454 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $this->assertSame(0, $this->owner->table('crm_lab_lead_capture_keys')->count());
     }
 
+    public function test_pg07_revocation_commits_before_real_capture_and_denies_without_effects(): void
+    {
+        $claim = $this->pg07Fixture();
+        $before = $this->pg07CaptureRows();
+        $worker = $revoker = null;
+        try {
+            $worker = $this->pg07StartWorker($claim);
+            $revoker = $this->pg07OwnerSession();
+            $this->pg07Revoke($revoker, $claim);
+            $this->pg07Command($worker, 'capture');
+            $this->pg07WaitForLock($worker['identity'], $revoker, 'advisory');
+            $this->assertSame($before, $this->pg07CaptureRows());
+
+            $this->assertNotFalse(pg_query($revoker['connection'], 'COMMIT'));
+            $this->pg07AssertAnswer($this->pg07ReadFrame($worker), $worker, 'synthetic_conflict_denied');
+            $this->assertSame('revoked', $this->owner->table('crm_lab_site_delivery_bindings')->value('state'));
+            $this->assertSame(2, $this->owner->table('crm_lab_site_delivery_bindings')->value('version'));
+            $this->assertSame($before, $this->pg07CaptureRows(), 'A refused capture must not reserve its nonce.');
+            $this->pg07AssertOtherTenant($worker);
+            $this->pg07FinishWorker($worker);
+            fwrite(STDOUT, "PG07_REVOKE_FIRST_PASS real_capture=1 advisory_wait_observed=1 effects_delta=0 tenant_b_unchanged=1\n");
+        } finally {
+            $this->pg07CleanupWorker($worker);
+            if ($revoker !== null) {
+                pg_close($revoker['connection']);
+            }
+        }
+    }
+
+    public function test_pg07_real_capture_timeout_rolls_back_then_same_connection_recovers(): void
+    {
+        $claim = $this->pg07Fixture();
+        $before = $this->pg07CaptureRows();
+        $worker = $revoker = null;
+        try {
+            $worker = $this->pg07StartWorker($claim, 3000);
+            $revoker = $this->pg07OwnerSession();
+            $this->pg07Revoke($revoker, $claim);
+            $this->pg07Command($worker, 'capture');
+            $this->pg07WaitForLock($worker['identity'], $revoker, 'advisory');
+            $failed = $this->pg07ReadFrame($worker);
+            $this->assertSame('attempt', $failed['phase']);
+            $this->assertNull($failed['answer']);
+            $this->assertSame(\RuntimeException::class, $failed['exception']);
+            $this->assertSame(['sqlstate' => '55P03', 'statement' => 'advisory'], $failed['failure']);
+            $this->assertSame([], $failed['completed']);
+            $this->pg07AssertClean($failed['state'], $worker);
+            $this->assertSame($before, $this->pg07CaptureRows());
+
+            // The owner abandons its uncommitted revocation. No reconnect or
+            // RESET repairs the child; it reuses the same message and nonce.
+            $this->assertNotFalse(pg_query($revoker['connection'], 'ROLLBACK'));
+            $this->assertSame('active', $this->owner->table('crm_lab_site_delivery_bindings')->value('state'));
+            $this->assertSame(1, $this->owner->table('crm_lab_site_delivery_bindings')->value('version'));
+            $this->pg07Command($worker, 'capture');
+            $this->pg07AssertAnswer($this->pg07ReadFrame($worker), $worker, 'synthetic_captured');
+            $captured = $this->pg07CaptureRows();
+            foreach (['crm_lab_leads', 'crm_lab_lead_capture_keys', 'crm_lab_lead_events'] as $table) {
+                $this->assertSame(1, $this->owner->table($table)->where('organization_id', self::ORG_A)->count());
+                $this->assertSame(
+                    array_values(array_filter($before[$table], fn ($row) => $row['organization_id'] === self::ORG_B)),
+                    array_values(array_filter($captured[$table], fn ($row) => $row['organization_id'] === self::ORG_B)),
+                );
+            }
+            $this->assertSame('abababab-cccc-4ddd-8eee-aaaaaaaaaaaa',
+                $this->owner->table('crm_lab_lead_capture_keys')->where('organization_id', self::ORG_A)->value('signed_nonce'));
+            $this->pg07Command($worker, 'capture');
+            $this->pg07AssertAnswer($this->pg07ReadFrame($worker), $worker, 'synthetic_replayed');
+            $this->assertSame($captured, $this->pg07CaptureRows());
+            $this->pg07AssertOtherTenant($worker);
+            $this->pg07FinishWorker($worker);
+            fwrite(STDOUT, "PG07_LOCK_TIMEOUT_PASS sqlstate=55P03 real_wait=1 effects_delta=0 same_pid_retry=1 nonce_reused_once=1 clean_scope=1\n");
+        } finally {
+            $this->pg07CleanupWorker($worker);
+            if ($revoker !== null) {
+                pg_close($revoker['connection']);
+            }
+        }
+    }
+
+    public function test_pg07_late_audit_failure_rolls_back_real_capture_and_releases_waiting_revocation(): void
+    {
+        $claim = $this->pg07Fixture();
+        $before = $this->pg07CaptureRows();
+        $worker = $revoker = $auditLocker = null;
+        $constraint = false;
+        try {
+            // This fault belongs only to this synthetic lead. It is removed
+            // in finally; no fixture grant, trigger or runtime code changes.
+            $this->owner->statement("ALTER TABLE public.crm_lab_lead_events
+                ADD CONSTRAINT crm_pg07_audit_failure_ci CHECK (NOT (
+                    organization_id = '".self::ORG_A."'::uuid
+                    AND lead_id = '".self::LEAD_A."'::uuid AND event_type = 'created'))");
+            $constraint = true;
+            $worker = $this->pg07StartWorker($claim);
+            $auditLocker = $this->pg07OwnerSession();
+            $this->assertNotFalse(pg_query($auditLocker['connection'], 'BEGIN'));
+            $this->assertNotFalse(pg_query($auditLocker['connection'],
+                'LOCK TABLE public.crm_lab_lead_events IN ACCESS EXCLUSIVE MODE'));
+            $this->pg07Command($worker, 'capture');
+            $this->pg07WaitForLock($worker['identity'], $auditLocker, 'relation');
+
+            // A third connection revokes while the REAL capture holds the
+            // binding lock. Reusing auditLocker here would invent a deadlock.
+            $revoker = $this->pg07OwnerSession();
+            $this->pg07Revoke($revoker, $claim, true);
+            $this->pg07WaitForLock($revoker, $worker['identity'], 'advisory');
+            $this->assertNotFalse(pg_query($auditLocker['connection'], 'ROLLBACK'));
+
+            $failed = $this->pg07ReadFrame($worker);
+            $this->assertSame('attempt', $failed['phase']);
+            $this->assertNull($failed['answer']);
+            $this->assertSame(\RuntimeException::class, $failed['exception']);
+            $this->assertSame(['sqlstate' => '23514', 'statement' => 'audit_insert'], $failed['failure']);
+            $this->assertSame(['advisory', 'claim_insert', 'lead_insert'], $failed['completed']);
+            $this->pg07AssertClean($failed['state'], $worker);
+            $this->pg07WaitForRevocation($revoker);
+            $this->assertNotFalse(pg_query($revoker['connection'], 'COMMIT'));
+            $this->assertSame('revoked', $this->owner->table('crm_lab_site_delivery_bindings')->value('state'));
+            $this->assertSame($before, $this->pg07CaptureRows(), 'Failed audit must roll back lead, claim and nonce.');
+            $this->pg07Command($worker, 'capture');
+            $this->pg07AssertAnswer($this->pg07ReadFrame($worker), $worker, 'synthetic_conflict_denied');
+            $this->assertSame($before, $this->pg07CaptureRows());
+            $this->pg07AssertOtherTenant($worker);
+            $this->pg07FinishWorker($worker);
+        } finally {
+            $this->pg07CleanupWorker($worker);
+            foreach ([$revoker, $auditLocker] as $session) {
+                if ($session !== null) {
+                    pg_close($session['connection']);
+                }
+            }
+            if ($constraint) {
+                $this->owner->transaction(function (): void {
+                    $this->owner->statement("SET LOCAL lock_timeout = '5s'");
+                    $this->owner->statement('ALTER TABLE public.crm_lab_lead_events DROP CONSTRAINT crm_pg07_audit_failure_ci');
+                });
+            }
+        }
+        $this->assertSame(0, $this->owner->table('pg_constraint')
+            ->where('conname', 'crm_pg07_audit_failure_ci')->count());
+        fwrite(STDOUT, "PG07_LATE_AUDIT_ROLLBACK_PASS sqlstate=23514 real_capture=1 relation_wait=1 revoker_advisory_wait=1 partial_writes_rolled_back=1 fault_removed=1\n");
+    }
+
+    private function pg07Fixture(): SyntheticIdempotencyClaim
+    {
+        if (getenv('CRM_LEADS_PG07_CONCURRENCY_CI') !== '1') {
+            $this->markTestSkipped('PG07 real-process interleavings require the dedicated CI opt-in.');
+        }
+        $this->assertTrue(extension_loaded('pgsql') && function_exists('proc_open'));
+        $claim = self::siteClaim(self::ORG_A);
+        $this->seedActiveSiteBinding(self::ORG_A, $claim);
+        $this->assertSame('synthetic_created', $this->ledger($this->two)
+            ->createSynthetic(self::principal(), self::ORG_B, self::LEAD_B, 'DEMO_PG07_B')['status_code']);
+        return $claim;
+    }
+
+    private function pg07CaptureRows(): array
+    {
+        $rows = [];
+        foreach ([
+            'crm_lab_leads' => 'id',
+            'crm_lab_lead_capture_keys' => 'lead_id',
+            'crm_lab_lead_events' => 'event_id',
+        ] as $table => $order) {
+            $rows[$table] = $this->owner->table($table)->orderBy($order)->get()
+                ->map(static fn ($row) => (array) $row)->all();
+        }
+        return $rows;
+    }
+
+    private function pg07StartWorker(SyntheticIdempotencyClaim $claim, int $timeout = 10000): array
+    {
+        $marker = 'crm_pg07_'.bin2hex(random_bytes(12));
+        $worker = ['marker' => $marker, 'identity' => null, 'buffer' => '', 'exit_code' => null, 'pipes' => []];
+        $worker['process'] = proc_open(
+            [PHP_BINARY, base_path('tests/Labs/leads/signed-capture-race-worker.php'), $marker],
+            [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+            $worker['pipes'], base_path(), null, ['bypass_shell' => true],
+        );
+        $this->assertIsResource($worker['process']);
+        stream_set_blocking($worker['pipes'][1], false);
+        stream_set_blocking($worker['pipes'][2], false);
+        try {
+            $nonce = 'abababab-cccc-4ddd-8eee-aaaaaaaaaaaa';
+            $issued = 1700000000;
+            $this->pg07WriteFrame($worker, [
+                'principal' => self::PRINCIPAL, 'organization' => self::ORG_A,
+                'other_organization' => self::ORG_B, 'lead' => self::LEAD_A,
+                'binding' => $claim->identity->bindingReference,
+                'submission' => $claim->identity->submissionReference,
+                'site' => $claim->siteReference, 'form' => $claim->formReference,
+                'destination' => $claim->destinationReference, 'title' => 'DEMO_PG07_RACE',
+                'nonce' => $nonce, 'issued' => $issued, 'expires' => $issued + 120,
+                'now' => $issued + 5, 'lock_timeout_ms' => $timeout,
+                'signature' => self::syntheticSiteSignature(
+                    $claim, self::LEAD_A, 'DEMO_PG07_RACE', 'sites', $nonce, $issued, $issued + 120,
+                ),
+            ]);
+            $ready = $this->pg07ReadFrame($worker);
+            $this->assertSame('ready', $ready['phase']);
+            $worker['identity'] = $ready['identity'];
+            $this->assertSame($marker, $worker['identity']['application_name']);
+            $this->assertSame('crm_app_ci', $worker['identity']['usename']);
+            $this->assertSame('imagine_crm_ci', $worker['identity']['datname']);
+            $this->assertGreaterThan(0, $worker['identity']['pid']);
+            return $worker;
+        } catch (\Throwable $error) {
+            $this->pg07CleanupWorker($worker);
+            throw $error;
+        }
+    }
+
+    private function pg07WriteFrame(array $worker, array $frame): void
+    {
+        $line = json_encode($frame, JSON_THROW_ON_ERROR)."\n";
+        $this->assertSame(strlen($line), fwrite($worker['pipes'][0], $line));
+        fflush($worker['pipes'][0]);
+    }
+
+    private function pg07Command(array $worker, string $command): void
+    {
+        $this->pg07WriteFrame($worker, ['command' => $command]);
+    }
+
+    private function pg07ReadFrame(array &$worker): array
+    {
+        $deadline = microtime(true) + 10;
+        do {
+            $worker['buffer'] .= stream_get_contents($worker['pipes'][1]);
+            // Drain bounded diagnostic output, but never print SQL or params.
+            stream_get_contents($worker['pipes'][2]);
+            $this->assertLessThan(65536, strlen($worker['buffer']));
+            $newline = strpos($worker['buffer'], "\n");
+            if ($newline !== false) {
+                $line = substr($worker['buffer'], 0, $newline);
+                $worker['buffer'] = substr($worker['buffer'], $newline + 1);
+                $frame = json_decode($line, true, 32, JSON_THROW_ON_ERROR);
+                $this->assertIsArray($frame);
+                return $frame;
+            }
+            $state = proc_get_status($worker['process']);
+            if (!$state['running']) {
+                $worker['exit_code'] = $state['exitcode'];
+                $worker['buffer'] .= stream_get_contents($worker['pipes'][1]);
+                if (!str_contains($worker['buffer'], "\n")) {
+                    $this->fail('PG07 child exited without its expected JSON frame.');
+                }
+            }
+            usleep(10000);
+        } while (microtime(true) < $deadline);
+        $this->fail('PG07 child response deadline exceeded.');
+    }
+
+    private function pg07OwnerSession(): array
+    {
+        $marker = 'crm_pg07_owner_'.bin2hex(random_bytes(12));
+        $connection = pg_connect(
+            'host=127.0.0.1 port=5432 dbname=imagine_crm_ci user=postgres'
+            .' password=ci-only-password connect_timeout=5 application_name='.$marker,
+            PGSQL_CONNECT_FORCE_NEW,
+        );
+        $this->assertNotFalse($connection);
+        try {
+            $this->assertNotFalse(pg_query($connection, "SET statement_timeout = '15s'"));
+            $this->assertNotFalse(pg_query($connection, "SET lock_timeout = '10s'"));
+            $this->assertNotFalse(pg_query($connection, "SET idle_in_transaction_session_timeout = '15s'"));
+            $result = pg_query($connection,
+                'SELECT pid, backend_start::text, application_name, usename, datname FROM pg_stat_activity WHERE pid = pg_backend_pid()');
+            $this->assertNotFalse($result);
+            $identity = pg_fetch_assoc($result);
+            $this->assertIsArray($identity);
+            pg_free_result($result);
+            $identity['pid'] = (int) $identity['pid'];
+            return ['connection' => $connection] + $identity;
+        } catch (\Throwable $error) {
+            pg_close($connection);
+            throw $error;
+        }
+    }
+
+    private function pg07Revoke(array $session, SyntheticIdempotencyClaim $claim, bool $async = false): void
+    {
+        $this->assertNotFalse(pg_query($session['connection'], 'BEGIN'));
+        $sql = 'UPDATE public.crm_lab_site_delivery_bindings SET state=$1, version=$2
+                 WHERE organization_id=$3::uuid AND binding_reference=$4::uuid';
+        $parameters = ['revoked', 2, self::ORG_A, $claim->identity->bindingReference];
+        if ($async) {
+            $this->assertTrue(pg_send_query_params($session['connection'], $sql, $parameters));
+        } else {
+            $result = pg_query_params($session['connection'], $sql, $parameters);
+            $this->assertNotFalse($result);
+            $this->assertSame(PGSQL_COMMAND_OK, pg_result_status($result));
+            $this->assertSame(1, pg_affected_rows($result));
+            pg_free_result($result);
+        }
+    }
+
+    private function pg07WaitForRevocation(array $session): void
+    {
+        $deadline = microtime(true) + 8;
+        do {
+            $this->assertTrue(pg_consume_input($session['connection']));
+            if (!pg_connection_busy($session['connection'])) {
+                $result = pg_get_result($session['connection']);
+                $this->assertNotFalse($result);
+                $this->assertSame(PGSQL_COMMAND_OK, pg_result_status($result));
+                $this->assertSame(1, pg_affected_rows($result));
+                pg_free_result($result);
+                $this->assertFalse(pg_get_result($session['connection']));
+                return;
+            }
+            usleep(10000);
+        } while (microtime(true) < $deadline);
+        $this->fail('PG07 revoker did not resume after capture rollback.');
+    }
+
+    private function pg07WaitForLock(array $waiter, array $holder, string $kind): void
+    {
+        $match = $kind === 'advisory'
+            ? "w.locktype = 'advisory' AND h.classid = w.classid AND h.objid = w.objid AND h.objsubid = w.objsubid"
+            : "w.locktype = 'relation' AND w.relation = 'public.crm_lab_lead_events'::regclass
+               AND h.relation = w.relation AND h.mode = 'AccessExclusiveLock'
+               AND a.query ILIKE 'insert into %crm_lab_lead_events%'";
+        $deadline = microtime(true) + 5;
+        do {
+            $row = $this->owner->selectOne("SELECT EXISTS (
+                SELECT 1 FROM pg_stat_activity a CROSS JOIN pg_stat_activity b
+                 WHERE a.pid = ? AND a.backend_start = ?::timestamptz AND a.application_name = ? AND a.usename = ?
+                   AND b.pid = ? AND b.backend_start = ?::timestamptz AND b.application_name = ? AND b.usename = ?
+                   AND a.datname = 'imagine_crm_ci' AND b.datname = a.datname
+                   AND a.wait_event_type = 'Lock' AND b.pid = ANY(pg_blocking_pids(a.pid))
+                   AND EXISTS (SELECT 1 FROM pg_locks w JOIN pg_locks h
+                     ON h.locktype = w.locktype AND h.database = w.database
+                    WHERE w.pid = a.pid AND h.pid = b.pid AND NOT w.granted AND h.granted AND $match)
+                ) AS waiting", [
+                $waiter['pid'], $waiter['backend_start'], $waiter['application_name'], $waiter['usename'],
+                $holder['pid'], $holder['backend_start'], $holder['application_name'], $holder['usename'],
+            ]);
+            if ((bool) $row->waiting) {
+                return;
+            }
+            usleep(20000);
+        } while (microtime(true) < $deadline);
+        $this->fail('PG07 expected real '.$kind.' lock wait was not observed.');
+    }
+
+    private function pg07AssertClean(array $state, array $worker): void
+    {
+        $this->assertSame($worker['identity']['pid'], $state['pid']);
+        $this->assertSame(0, $state['transaction_level']);
+        $this->assertFalse($state['pdo_in_transaction']);
+        $this->assertSame('', $state['tenant']);
+        $this->assertSame(0, $state['advisory_locks']);
+        $this->assertSame(0, $state['unscoped_leads']);
+        $this->assertSame(0, $state['unscoped_claims']);
+    }
+
+    private function pg07AssertAnswer(array $frame, array $worker, string $status): void
+    {
+        $this->assertSame('attempt', $frame['phase']);
+        $this->assertNull($frame['exception']);
+        $this->assertNull($frame['failure']);
+        $this->assertSame($status, $frame['answer']['status_code']);
+        $this->assertNoEffects($frame['answer']);
+        $this->pg07AssertClean($frame['state'], $worker);
+    }
+
+    private function pg07AssertOtherTenant(array &$worker): void
+    {
+        $this->pg07Command($worker, 'other_tenant');
+        $frame = $this->pg07ReadFrame($worker);
+        $this->assertSame('other_tenant', $frame['phase']);
+        $this->assertSame([self::LEAD_B], $frame['ids']);
+        $this->pg07AssertClean($frame['state'], $worker);
+    }
+
+    private function pg07FinishWorker(array &$worker): void
+    {
+        $this->pg07Command($worker, 'stop');
+        $this->assertSame('stopped', $this->pg07ReadFrame($worker)['phase']);
+        $deadline = microtime(true) + 3;
+        do {
+            $state = proc_get_status($worker['process']);
+            if (!$state['running']) {
+                $this->assertSame(0, $state['exitcode'] >= 0 ? $state['exitcode'] : $worker['exit_code']);
+                foreach ($worker['pipes'] as $pipe) {
+                    fclose($pipe);
+                }
+                proc_close($worker['process']);
+                $worker['process'] = null;
+                $worker['pipes'] = [];
+                $backendDeadline = microtime(true) + 3;
+                do {
+                    $remaining = $this->owner->table('pg_stat_activity')
+                        ->where('application_name', $worker['marker'])->count();
+                    if ($remaining === 0) {
+                        return;
+                    }
+                    usleep(10000);
+                } while (microtime(true) < $backendDeadline);
+                $this->fail('PG07 stopped child retained its PostgreSQL backend.');
+                return;
+            }
+            usleep(10000);
+        } while (microtime(true) < $deadline);
+        $this->fail('PG07 worker did not stop within its deadline.');
+    }
+
+    private function pg07CleanupWorker(?array &$worker): void
+    {
+        if ($worker === null) {
+            return;
+        }
+        if (is_resource($worker['process'])) {
+            foreach ($worker['pipes'] as $pipe) {
+                if (is_resource($pipe)) {
+                    fclose($pipe);
+                }
+            }
+            if (proc_get_status($worker['process'])['running']) {
+                proc_terminate($worker['process']);
+                $deadline = microtime(true) + 1;
+                while (proc_get_status($worker['process'])['running'] && microtime(true) < $deadline) {
+                    usleep(10000);
+                }
+                if (proc_get_status($worker['process'])['running']) {
+                    proc_terminate($worker['process'], 9);
+                }
+            }
+            proc_close($worker['process']);
+        }
+        // Exceptional cleanup only, restricted to this test's pre-connection
+        // random marker, DB and role. Capture PID/start again, then match both.
+        $remaining = $this->owner->select(
+            "SELECT pid, backend_start::text FROM pg_stat_activity
+              WHERE application_name = ? AND datname = 'imagine_crm_ci' AND usename = 'crm_app_ci'",
+            [$worker['marker']],
+        );
+        foreach ($remaining as $backend) {
+            $this->owner->selectOne("SELECT pg_terminate_backend(pid)
+                FROM pg_stat_activity WHERE pid = ? AND backend_start = ?::timestamptz
+                  AND application_name = ? AND datname = 'imagine_crm_ci' AND usename = 'crm_app_ci'",
+                [$backend->pid, $backend->backend_start, $worker['marker']]);
+        }
+        $worker = null;
+    }
+
     public function test_registered_site_binding_is_tenant_private_and_nonwritable_by_runtime_role(): void
     {
         $this->seedActiveSiteBinding(self::ORG_B);
@@ -1331,3 +1779,4 @@ final class PostgresLabLeadsRlsTest extends TestCase
     }
 
 }
+

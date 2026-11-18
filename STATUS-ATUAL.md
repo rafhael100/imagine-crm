@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — contraprovas Sites→CRM com captura real (17/11/2026)
+
+A [PR #646](https://github.com/rafhael100/imagine-crm/pull/646), HEAD `f719b9dcdeebbc5b07a6472f9b86fb9b31028332`, concluiu os dois jobs da [CI 44203304835](https://github.com/rafhael100/imagine-crm/actions/runs/44203304835): 1.550 verificações HTTP, 121 Chromium, 177 de resiliência, 49 de acesso e unidade 4 testes/9 assertions. A falha real de logout/compensação deixou a evidência IAM exigida, a origem bloqueada foi cancelada sem tarefa e a sessão válida concluiu uma vez. As sete candidatas #640–#646 totalizam 21 jobs finais success e permanecem abertas, DRAFT e sem merge.
+
+A próxima candidata atende às contraprovas explicitamente pendentes na [issue #564](https://github.com/rafhael100/imagine-crm/issues/564#issuecomment-6879911096): revogação antes da captura, timeout SQL e falha tardia com rollback. Um processo PHP separado usa a role restrita e chama captureSigned real; a prova observa backends e locks e exige recuperação na mesma conexão sem contexto residual. A falha de auditoria deve desfazer lead, claim e nonce e liberar o revogador que esperava. [Escopo e método](docs/desenvolvimento/CRM-LEADS-PG07-interleavings-capture-real-ci.md).
+
+O workflow usa a SHA da HEAD e executa os três casos em etapa que falha em skip, incomplete ou suíte vazia. O ensaio F398 histórico depende de checkout externo e continua distinguido da nova prova PG07; não se declara sua execução quando estiver pulado. Este pacote modifica somente testes, helper CI, workflow e documentação. Resultados reais ficam na PR/HEAD candidata. A #564 permanece aberta para parecer independente e requisitos operacionais. DRAFT / NO-MERGE / NO-DEPLOY.
+
 ## Continuidade — autoridade da sessão causal (17/11/2026)
 
 A [PR #645](https://github.com/rafhael100/imagine-crm/pull/645), HEAD `62e119d3cbc0936b3ecb7ae6360742a543c9d3b9`, passou no [ensaio dedicado de backup 44202645832](https://github.com/rafhael100/imagine-crm/actions/runs/44202645832): base/S2S com snapshot consistente, divergência antiga reproduzida, INSERT/UPDATE concorrentes preservados, cleanup normal e em falhas, dois timeouts reais do cliente e sessão sentinela alheia preservada. Nenhum ajuste foi necessário depois da publicação.
