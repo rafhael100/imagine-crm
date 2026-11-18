@@ -33,6 +33,12 @@ jobs:
           path: previous-migration
           persist-credentials: false
           sparse-checkout: infra/homologation/migrations
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 96dbf1aed2d1cf3237bc3631c4594540a0168d2a
+          path: previous-rls-migration
+          persist-credentials: false
+          sparse-checkout: infra/homologation/migrations
       - name: Initialize actual previous schema without automation ledger
         env:
           PG_CONTAINER: ${{ job.services.pg.id }}
@@ -52,8 +58,10 @@ jobs:
         run: |
           set -euo pipefail
           psql=(docker exec -i "$PG_CONTAINER" psql -X -qAt -v ON_ERROR_STOP=1 -U crm_homologation_owner -d imagine_crm_private_homologation)
+          test "$("${psql[@]}" -c "SELECT to_regclass('public.crm_private_automation_runs') IS NULL")" = t
           "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql
           "${psql[@]}" < scripts/ci/check_automation_incremental.sql
+          echo CRM_INCREMENTAL_ABSENT_TABLE_BOOTSTRAP_PASS operational_apply=0
           "${psql[@]}" < infra/homologation/migrations/001_automation_ledger_candidate.sql
           test "$("${psql[@]}" -c 'SELECT count(*) FROM crm_private_automation_runs')" = 1
           test "$("${psql[@]}" -c 'SELECT count(*) FROM crm_private_leads')" = 1

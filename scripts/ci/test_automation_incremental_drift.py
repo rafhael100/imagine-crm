@@ -7,6 +7,7 @@ No VPS, credentials, operational database, or deployment is used.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -21,6 +22,9 @@ SCOPE = "organization_id=NULLIF(current_setting('app.tenant_id',true),'')::uuid"
 POLICY = f"CREATE POLICY tenant_scope ON {TABLE} USING ({SCOPE}) WITH CHECK ({SCOPE})"
 MIGRATION = ROOT / "infra/homologation/migrations/001_automation_ledger_candidate.sql"
 BASELINE_SHA = "403a2b735e77bd72b529e296b20e63eab1c00859"
+RLS_BASELINE_SHA = "96dbf1aed2d1cf3237bc3631c4594540a0168d2a"
+RLS_BASELINE_BLOB = "2b67bc3b707c552c1508f90045ea7f0718ae668a"
+READY = "CENTRAL_AUTO_LEDGER_INCREMENTAL_V1_READY"
 
 
 def require(condition: bool, message: str) -> None:
@@ -55,6 +59,16 @@ def main() -> None:
             "Private synthetic baseline required.")
     require(sql(f"SELECT count(*) FROM {TABLE}") == "1",
             "Existing ledger row required for preservation proof.")
+    require(sql("SELECT current_setting('server_version_num')::integer / 10000") == "16",
+            "PostgreSQL 16 required for the real migration regression.")
+    head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True,
+                          capture_output=True, check=True, timeout=10).stdout.strip()
+    run_id = os.environ.get("GITHUB_RUN_ID", "")
+    run_attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "")
+    require(re.fullmatch(r"[a-f0-9]{40}", head) is not None
+            and re.fullmatch(r"[1-9][0-9]*", run_id) is not None
+            and re.fullmatch(r"[1-9][0-9]*", run_attempt) is not None,
+            "Actual checkout, workflow run and attempt required.")
     migration = MIGRATION.read_text()
 
     def replay() -> None:
@@ -115,6 +129,95 @@ def main() -> None:
     require(snapshot() == nominal, "Policy counterexample changed existing records.")
     print("REPRODUCED prior migration announced READY while tenant policy denied the application")
 
+    # This later historical version already rejects ACL/policy drift, but silently
+    # restores the three RLS prerequisites. Prove that behavior with its real bytes.
+    rls_root = ROOT / "previous-rls-migration"
+    require(rls_root.is_dir() and not rls_root.is_symlink(),
+            "Pinned RLS baseline checkout required.")
+    rls_head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=rls_root, text=True,
+                              capture_output=True, check=True, timeout=10).stdout.strip()
+    require(rls_head == RLS_BASELINE_SHA, "RLS baseline commit mismatch.")
+    relative = MIGRATION.relative_to(ROOT).as_posix()
+    entry = subprocess.run(["git", "ls-tree", "HEAD", "--", relative], cwd=rls_root,
+                           text=True, capture_output=True, check=True,
+                           timeout=10).stdout.strip()
+    require(entry == "100644 blob " + RLS_BASELINE_BLOB + "\t" + relative,
+            "RLS baseline source membership mismatch.")
+    historical_path = rls_root / relative
+    require(historical_path.is_file() and not historical_path.is_symlink(),
+            "Regular RLS baseline source required.")
+    historical_bytes = historical_path.read_bytes()
+    historical_blob = hashlib.sha1(b"blob " + str(len(historical_bytes)).encode("ascii")
+                                  + b"\0" + historical_bytes).hexdigest()
+    require(historical_blob == RLS_BASELINE_BLOB, "RLS baseline source bytes mismatch.")
+    rls_baseline = historical_bytes.decode("utf-8")
+    require(nominal["table"]["rls"] is True and nominal["table"]["force"] is True
+            and isinstance(nominal["policies"], list) and len(nominal["policies"]) == 1
+            and nominal["policies"][0]["name"] == "tenant_scope",
+            "Nominal RLS and tenant policy required.")
+
+    rls_cases = (
+        ("rls-disabled", f"ALTER TABLE {TABLE} DISABLE ROW LEVEL SECURITY",
+         f"ALTER TABLE {TABLE} ENABLE ROW LEVEL SECURITY",
+         "UNEXPECTED_AUTOMATION_RLS_DISABLED"),
+        ("rls-not-forced", f"ALTER TABLE {TABLE} NO FORCE ROW LEVEL SECURITY",
+         f"ALTER TABLE {TABLE} FORCE ROW LEVEL SECURITY",
+         "UNEXPECTED_AUTOMATION_RLS_NOT_FORCED"),
+        ("policy-missing", f"DROP POLICY tenant_scope ON {TABLE}",
+         f"DROP POLICY IF EXISTS tenant_scope ON {TABLE}; {POLICY}",
+         "UNEXPECTED_AUTOMATION_POLICY_MISSING"),
+    )
+
+    def isolated_rls_snapshot(name: str) -> dict:
+        observed = snapshot()
+        expected = json.loads(json.dumps(nominal))
+        if name == "rls-disabled":
+            expected["table"]["rls"] = False
+        elif name == "rls-not-forced":
+            expected["table"]["force"] = False
+        elif name == "policy-missing":
+            expected["policies"] = None
+        else:
+            raise RuntimeError("Unknown isolated RLS fixture.")
+        require(observed == expected, "RLS fixture changed another observed property: " + name)
+        return observed
+
+    repaired = []
+    for name, setup, cleanup, _ in rls_cases:
+        try:
+            sql(setup)
+            before = isolated_rls_snapshot(name)
+            old = execute(rls_baseline)
+            require(old.returncode == 0 and READY in old.stdout,
+                    "Prior RLS migration did not announce READY: " + name)
+            require(snapshot() == nominal and before != nominal,
+                    "Prior RLS migration did not restore the nominal snapshot: " + name)
+            repaired.append(name)
+        finally:
+            sql(cleanup)
+            replay()
+            require(snapshot() == nominal, "Prior RLS fixture cleanup failed: " + name)
+        print("REPRODUCED prior migration silently repaired " + name)
+
+    denied = []
+    for name, setup, cleanup, marker in rls_cases:
+        try:
+            sql(setup)
+            before = isolated_rls_snapshot(name)
+            rejected = execute(migration)
+            require(rejected.returncode != 0 and marker in rejected.stderr
+                    and READY not in rejected.stdout,
+                    "Migration failed to reject isolated RLS drift: " + name)
+            require(snapshot() == before, "Rejected RLS migration changed the fixture: " + name)
+            denied.append(name)
+        finally:
+            sql(cleanup)
+            replay()
+            require(snapshot() == nominal, "Rejected RLS fixture cleanup failed: " + name)
+        print("PASS migration rejects isolated " + name)
+    require(len(repaired) == 3 and len(denied) == 3,
+            "All three historical repairs and candidate denials required.")
+
     cases = []
     for privilege in ("DELETE", "TRUNCATE", "UPDATE", "REFERENCES", "TRIGGER"):
         cases.append(("table-" + privilege.lower(),
@@ -168,24 +271,27 @@ def main() -> None:
     cases.append(("additional-policy", f"CREATE POLICY extra_scope ON {TABLE} USING (true)",
                   f"DROP POLICY extra_scope ON {TABLE}", "UNEXPECTED_AUTOMATION_POLICY"))
 
+    require(len(cases) == 28 and len({case[0] for case in cases}) == 28,
+            "All 28 distinct ACL/policy regressions required.")
     for name, setup, cleanup, marker in cases:
-        sql(setup + f"; ALTER TABLE {TABLE} DISABLE ROW LEVEL SECURITY; "
-            f"ALTER TABLE {TABLE} NO FORCE ROW LEVEL SECURITY")
+        sql(setup)
         before = snapshot()
+        require(before["table"]["rls"] is True and before["table"]["force"] is True,
+                "ACL/policy fixture must retain nominal RLS flags: " + name)
         try:
             rejected = execute(migration)
             require(rejected.returncode != 0 and marker in rejected.stderr,
                     "Migration failed to reject expected drift: " + name)
             require(snapshot() == before, "Rejected migration changed data or metadata: " + name)
         finally:
-            sql(cleanup + f"; ALTER TABLE {TABLE} ENABLE ROW LEVEL SECURITY; "
-                f"ALTER TABLE {TABLE} FORCE ROW LEVEL SECURITY")
+            sql(cleanup)
         replay()
         require(snapshot() == nominal, "Nominal state not preserved after: " + name)
         print("PASS migration rejects and rolls back " + name)
 
     # Exercise effective permissions with the actual restricted role, not only catalogs.
     sql(begin + f"UPDATE {TABLE} SET state='completed',attempts=1,due_at=due_at+30; ROLLBACK;")
+    permission_denials = 0
     for operation in (
         f"DELETE FROM {TABLE}", f"TRUNCATE {TABLE}",
         *(f"UPDATE {TABLE} SET {column}={column}" for column in (
@@ -195,9 +301,25 @@ def main() -> None:
         rejected = execute(begin + operation + "; ROLLBACK;")
         require(rejected.returncode != 0 and "permission denied" in rejected.stderr,
                 "Unexpected effective ledger privilege.")
+        permission_denials += 1
+    require(permission_denials == 13, "All 13 effective permission denials required.")
     require(snapshot() == nominal, "Permission probes changed existing records.")
     print(f"CRM_INCREMENTAL_POLICY_ACL_DRIFT_PASS cases={len(cases)} "
-          "real_permission_denials=13 data_preserved=1 operational_apply=0")
+          f"real_permission_denials={permission_denials} data_preserved=1 operational_apply=0")
+    print(json.dumps({
+        "check": "CRM_INCREMENTAL_RLS_REAPPLY_DRIFT_PASS",
+        "head": head,
+        "run_id": run_id,
+        "run_attempt": run_attempt,
+        "prior_commit": RLS_BASELINE_SHA,
+        "prior_sql_blob": RLS_BASELINE_BLOB,
+        "prior_silent_repairs_observed": repaired,
+        "candidate_isolated_denials": denied,
+        "acl_policy_cases": len(cases),
+        "effective_permission_denials": permission_denials,
+        "observed_metadata_and_data_preserved": True,
+        "operational_apply": False,
+    }, sort_keys=True))
 
 
 if __name__ == "__main__":

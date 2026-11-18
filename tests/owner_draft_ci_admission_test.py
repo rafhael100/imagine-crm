@@ -51,6 +51,11 @@ MIGRATION = (
     "feat/crm-owner-monitor-incremental-migration-2026-11-18",
 )
 MIGRATION_ANCESTORS = (*ANCESTORS, "96dbf1aed2d1cf3237bc3631c4594540a0168d2a")
+LEDGER = (
+    INTEGRATION[0], INTEGRATION[1],
+    "feat/crm-ledger-reapply-rls-2026-11-18",
+)
+LEDGER_ANCESTORS = (*MIGRATION_ANCESTORS, "d8963313267ccc5b40b7527d6fa24a30fcc12b7e")
 HEAD = "1" * 40
 
 
@@ -143,8 +148,20 @@ class OwnerDraftCiAdmissionTest(unittest.TestCase):
                                    ancestors=set(MIGRATION_ANCESTORS) - {missing})
                 self.assertIn(("merge-base", "--is-ancestor", missing, HEAD), self.git_calls)
 
-    def test_three_admission_tuples_cannot_mix_fields_or_accept_neighbor_branches(self):
-        known = {ORIGINAL, INTEGRATION, MIGRATION}
+    def test_ledger_tuple_requires_all_preserved_ancestors_and_exact_migration_parent(self):
+        self.assertEqual(self.preflight(self.event(LEDGER), ancestors=LEDGER_ANCESTORS),
+                         (HEAD, self.runner.resolve()))
+        self.assertEqual([call for call in self.git_calls if call[0] == "merge-base"],
+                         [("merge-base", "--is-ancestor", ancestor, HEAD)
+                          for ancestor in LEDGER_ANCESTORS])
+        for missing in LEDGER_ANCESTORS:
+            with self.subTest(missing=missing):
+                self.assert_denied(self.event(LEDGER), "OWNER_DRAFT_SOURCE_DENIED",
+                                   ancestors=set(LEDGER_ANCESTORS) - {missing})
+                self.assertIn(("merge-base", "--is-ancestor", missing, HEAD), self.git_calls)
+
+    def test_four_admission_tuples_cannot_mix_fields_or_accept_neighbor_branches(self):
+        known = {ORIGINAL, INTEGRATION, MIGRATION, LEDGER}
         choices = [sorted({value[index] for value in known}) for index in range(3)]
         rejected = 0
         for provenance in itertools.product(*choices):
@@ -154,12 +171,13 @@ class OwnerDraftCiAdmissionTest(unittest.TestCase):
                 self.assert_denied(self.event(provenance), "OWNER_DRAFT_PR_PROVENANCE_DENIED")
                 self.assertEqual(self.git_calls, [])
                 rejected += 1
-        self.assertEqual(rejected, 9)
-        for index, value in enumerate(("0" * 40, "main", MIGRATION[2] + "-other")):
-            provenance = list(MIGRATION)
-            provenance[index] = value
-            self.assert_denied(self.event(provenance), "OWNER_DRAFT_PR_PROVENANCE_DENIED")
-            self.assertEqual(self.git_calls, [])
+        self.assertEqual(rejected, 12)
+        for candidate in (MIGRATION, LEDGER):
+            for index, value in enumerate(("0" * 40, "main", candidate[2] + "-other")):
+                provenance = list(candidate)
+                provenance[index] = value
+                self.assert_denied(self.event(provenance), "OWNER_DRAFT_PR_PROVENANCE_DENIED")
+                self.assertEqual(self.git_calls, [])
 
     def test_all_six_crossed_tuples_are_denied_before_any_git_read(self):
         denied = 0

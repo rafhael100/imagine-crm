@@ -1,7 +1,7 @@
 -- CANDIDATE ONLY: upgrade the dedicated synthetic private CRM database.
 -- No auto-deploy, no destructive down migration, no identity or business ALLOW.
 \set ON_ERROR_STOP on
-BEGIN;
+BEGIN ISOLATION LEVEL READ COMMITTED;
 SET LOCAL search_path=pg_catalog,public;
 SET LOCAL lock_timeout='2s';
 SET LOCAL statement_timeout='10s';
@@ -14,7 +14,15 @@ DO $$ BEGIN
   OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='crm_homologation_app' AND NOT rolsuper AND NOT rolbypassrls)
  THEN RAISE EXCEPTION 'PRIVATE_BASELINE_REQUIRED'; END IF;
 END $$;
-CREATE TABLE IF NOT EXISTS public.crm_private_automation_runs(
+-- A new table and a replay have different admission rules. Do not normalize
+-- missing RLS or policy on an existing relation, including after a lock wait.
+DO $ledger_admission$
+DECLARE observed_relation oid;
+BEGIN
+ observed_relation := to_regclass('public.crm_private_automation_runs');
+ IF observed_relation IS NULL THEN
+ -- A concurrent external creator must cause an error, not an IF NOT EXISTS skip.
+CREATE TABLE public.crm_private_automation_runs(
  id uuid PRIMARY KEY, organization_id uuid NOT NULL REFERENCES crm_organizations,
  actor_id uuid NOT NULL REFERENCES crm_global_identities, authority_session_id uuid NOT NULL, -- Verified through IAM connection; no cross-connection FK lock inversion.
  template varchar(32) NOT NULL CHECK(template IN ('followup_qualified','followup_proposal')),
@@ -23,6 +31,22 @@ CREATE TABLE IF NOT EXISTS public.crm_private_automation_runs(
  state varchar(16) NOT NULL DEFAULT 'pending' CHECK(state IN ('pending','completed','cancelled','failed')),
  due_at bigint NOT NULL, created_at bigint NOT NULL, attempts integer NOT NULL DEFAULT 0 CHECK(attempts BETWEEN 0 AND 3),
  UNIQUE(organization_id,execution_key), FOREIGN KEY(organization_id,lead_id) REFERENCES crm_private_leads(organization_id,id));
+ ELSE
+  IF (SELECT relkind FROM pg_class WHERE oid=observed_relation) IS DISTINCT FROM 'r' THEN
+   RAISE EXCEPTION 'INCOMPATIBLE_AUTOMATION_TABLE'; END IF;
+  LOCK TABLE ONLY public.crm_private_automation_runs IN ACCESS EXCLUSIVE MODE;
+  -- A rename/drop/replacement while waiting must not change the admitted object.
+  IF to_regclass('public.crm_private_automation_runs') IS DISTINCT FROM observed_relation
+   OR (SELECT relkind FROM pg_class WHERE oid=observed_relation) IS DISTINCT FROM 'r' THEN
+   RAISE EXCEPTION 'UNEXPECTED_AUTOMATION_RELATION_CHANGED'; END IF;
+  IF (SELECT relrowsecurity FROM pg_class WHERE oid=observed_relation) IS DISTINCT FROM true THEN
+   RAISE EXCEPTION 'UNEXPECTED_AUTOMATION_RLS_DISABLED'; END IF;
+  IF (SELECT relforcerowsecurity FROM pg_class WHERE oid=observed_relation) IS DISTINCT FROM true THEN
+   RAISE EXCEPTION 'UNEXPECTED_AUTOMATION_RLS_NOT_FORCED'; END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policy WHERE polrelid=observed_relation AND polname='tenant_scope') THEN
+   RAISE EXCEPTION 'UNEXPECTED_AUTOMATION_POLICY_MISSING'; END IF;
+ END IF;
+END $ledger_admission$;
 
 CREATE TEMPORARY TABLE central_auto_expected_ledger(
  id uuid PRIMARY KEY, organization_id uuid NOT NULL,

@@ -1,5 +1,43 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — reaplicação da ledger recusa proteções ausentes (18/11/2026)
+
+Esta candidata continua a [#662](https://github.com/rafhael100/imagine-crm/pull/662)
+em uma branch separada, `feat/crm-ledger-reapply-rls-2026-11-18`. O recorte é a
+migration001 da ledger de automações. Seu contrato proíbe reparar silenciosamente
+políticas divergentes, mas o SQL pinado na96db executava ENABLE/FORCE RLS e
+recriava `tenant_scope` quando ausente, mesmo em uma tabela preexistente. As
+28 fixtures anteriores combinavam outro desvio com ambas as flags desligadas;
+por isso não demonstravam a recusa desses três estados isolados.
+
+A candidata distingue criação inicial de reaplicação. Tabela ausente segue um
+CREATE estrito, preservando o corpo do bootstrap; uma criação externa concorrente
+não pode virar um skip de IF NOT EXISTS. Tabela existente exige relação ordinária,
+lock ACCESS EXCLUSIVE, identidade OID preservada, RLS e FORCE ligados e política
+presente antes de qualquer normalização. O isolamento READ COMMITTED é explícito;
+timeouts e advisory existentes permanecem. Comparadores de estrutura, política,
+ACLs e direitos efetivos, grants, COMMIT e marcador READY são mantidos.
+
+A prova exige executar o SQL antigo da96db em três fixtures independentes e
+observar seu reparo antes de emitir READY. A candidata deve recusar cada mesma
+fixture pelo motivo específico, sem mudar seu snapshot. As 28 negativas de ACL
+ou definição de política conservam seus próprios marcadores e passam a rodar
+sem desligar RLS como efeito acessório. Também são mantidas a atualização permitida,
+as 13 operações SQL proibidas, o caminho de tabela ausente a partir do schema
+histórico e as duas reaplicações sobre o schema atual em um segundo PostgreSQL.
+
+O guard owner admite somente o quarto contexto completo desta branch, exigindo
+os ancestrais anteriores e o pai da candidata incremental. Os contextos históricos
+permanecem iguais; combinações de campos e branches vizinhas continuam recusadas.
+Os 17 testes locais de admissão/fronteira passaram, com revisão independente do
+delta do guard. Sintaxe e composição do SQL não substituem execução: os novos
+reparos antigos e recusas da candidata aguardam PostgreSQL real na CI desta HEAD.
+
+Este recorte não afirma migração online nem prova de corrida concorrente. Não
+muda o bootstrap owner, o caminho33→35, detectores de backup, F251/F252 ou os
+registros existentes. [Contrato e critérios](docs/automation/CRM-AUTOMATION-MIGRATION-DRIFT.md).
+**DRAFT / NO-MERGE / NO-DEPLOY / NO-GO operacional.**
+
 ## Continuidade — candidata de migração monitor33 para owner+monitor35 (18/11/2026)
 
 A branch `feat/crm-owner-monitor-incremental-migration-2026-11-18` parte da
