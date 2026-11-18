@@ -3,7 +3,7 @@
   "sites_commit": "142fa8eea5efb6fbace357f0e05405e88eb027da",
   "scope": "Source regression only; not permission to run CI-only modules in staging. Update hashes only after reviewing the relevant security change.",
   "preserved_sha256": {
-    "bootstrap/app.php": "cff2e14c7f480b754fd92cf2282f5efadfd228feed957783ea7cb7f93268011f",
+    "bootstrap/app.php": "dad6caceead472320e9282cc871c212e4a801d409154a9623df095ca733e1663",
     "routes/web.php": "643a5054fb78ae027b30685a96aa82220207e6ad925c16389b8b23c07fd36064",
     ".github/workflows/ci-postgresql-rls.yml": "b7f2279860aae88dd75d568ce6e42d6908203c3235aae4a62629e3c967d7ce4f",
     "scripts/ci/rehearse-crm-full-schema-restore.sh": "517e741a9079215be30a1185cf294f25828ca45014994b0b11e2630940bd033a",
