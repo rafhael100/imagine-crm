@@ -329,7 +329,9 @@ def main(vault):
         HELPER.owner_sql("GRANT INSERT ON public.crm_private_events TO crm_homologation_app")
     check(HELPER.owner_sql(privilege) == "t", "audit privilege not restored")
     read(a, lead, 200, "audit-restored-control", stage="won", **own)
-    read(a, lead, 200, "summary-audit-restored-control", stage="won", presentation=True, language="es", **own)
+    # PrivateHeaders remembers the final rejected query's valid lang=en before
+    # the summary rejects its extra fields; subsequent requests preserve it.
+    read(a, lead, 200, "summary-audit-restored-control", stage="won", presentation=True, language="en", **own)
     stale = HELPER.Client(); stale.cookies = dict(a.cookies)
     a.get("/painel"); a.post("/logout", {})
     read(stale, lead, 303, "logout-stale-cookie")

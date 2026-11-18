@@ -53,7 +53,7 @@ def _acl(expression: str) -> str:
 def security_manifest(query) -> dict:
     """Read owners, ACLs and RLS without reading credentials or role passwords."""
     schema_acl = _acl("coalesce(n.nspacl,acldefault('n',n.nspowner))")
-    table_acl = _acl("coalesce(c.relacl,acldefault(CASE WHEN c.relkind='S' THEN 'S'::\"char\" ELSE 'r'::\"char\" END,c.relowner))")
+    table_acl = _acl("coalesce(c.relacl,acldefault(CASE WHEN c.relkind='S' THEN 's'::\"char\" ELSE 'r'::\"char\" END,c.relowner))")
     column_acl = _acl("a.attacl")
     function_acl = _acl("coalesce(p.proacl,acldefault('f',p.proowner))")
     return json.loads(query(f"""

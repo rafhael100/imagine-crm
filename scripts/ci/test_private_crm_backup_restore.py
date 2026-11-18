@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/ops"))
 from private_crm_backup_contract import (  # noqa: E402
     BASE_ROLES, BASE_TENANT_TABLES, DATABASE, S2S_TABLES, detect_profile,
-    isolated_restore_cluster, require, scoped_counts, table_counts, verify_restored_security,
+    isolated_restore_cluster, require, scoped_counts, security_manifest, table_counts, verify_restored_security,
 )
 
 A = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
@@ -45,6 +45,58 @@ def run(command, content=None, environment=None):
     return result.stdout
 
 
+def verify_sequence_acl_manifest(query) -> None:
+    """Exercise NULL/default and explicit sequence ACLs on the actual PG16."""
+    sequence = "public.crm_ci_sequence_acl_probe"
+    owner = "crm_homologation_owner"
+    grantee = "crm_homologation_app"
+    require(re.fullmatch(r"16\d{4}", query("SHOW server_version_num")) is not None,
+            "Sequence ACL regression requires the disposable PostgreSQL 16.")
+    require(query("SELECT to_regclass('" + sequence + "') IS NULL") == "t",
+            "Sequence ACL fixture must be new.")
+    before = security_manifest(query)
+    try:
+        query("CREATE SEQUENCE " + sequence)
+        require(query("SELECT relacl IS NULL FROM pg_class WHERE oid='" + sequence + "'::regclass") == "t",
+                "Sequence fixture must begin with a NULL ACL.")
+        implicit = security_manifest(query)
+        expected_acl = [[owner, owner, privilege, False] for privilege in ("SELECT", "UPDATE", "USAGE")]
+        rows = [item for item in implicit["relations"] if item["name"] == sequence]
+        require(rows == [{"name": sequence, "kind": "S", "owner": owner,
+                          "rls": False, "force_rls": False, "acl": expected_acl}],
+                "Sequence manifest lost the owner's SELECT, UPDATE or USAGE privilege.")
+
+        # Read-only counterproof of the old fallback. pg_class's relkind is 'S',
+        # but acldefault('S', ...) describes a foreign server, not a sequence.
+        legacy_privileges = json.loads(query(
+            "SELECT jsonb_agg(item.privilege_type ORDER BY item.privilege_type) "
+            "FROM pg_class c CROSS JOIN LATERAL aclexplode(acldefault('S',c.relowner)) item "
+            "WHERE c.oid='" + sequence + "'::regclass"))
+        require(legacy_privileges == ["USAGE"]
+                and legacy_privileges != [item[2] for item in rows[0]["acl"]],
+                "Old foreign-server fallback was not distinguished from sequence privileges.")
+
+        query("REVOKE ALL ON SEQUENCE " + sequence + " FROM PUBLIC")
+        require(query("SELECT relacl IS NOT NULL FROM pg_class WHERE oid='" + sequence + "'::regclass") == "t",
+                "Public revoke must materialize the equivalent sequence ACL.")
+        require(security_manifest(query) == implicit,
+                "Equivalent NULL and explicit sequence ACLs changed the security manifest.")
+
+        query("GRANT USAGE ON SEQUENCE " + sequence + " TO " + grantee)
+        expanded_acl = sorted(expected_acl + [[owner, grantee, "USAGE", False]])
+        expanded_relations = [{**item, "acl": expanded_acl} if item["name"] == sequence else item
+                              for item in implicit["relations"]]
+        changed = security_manifest(query)
+        require(changed != implicit and changed == {**implicit, "relations": expanded_relations},
+                "An additional sequence grant must change exactly its manifest ACL.")
+    finally:
+        # Remove the fixture before any closed-profile detection or backup.
+        query("DROP SEQUENCE IF EXISTS " + sequence)
+    require(security_manifest(query) == before, "Sequence ACL probe altered the original security profile.")
+    print("CRM_BACKUP_SEQUENCE_ACL_PASS null_default=1 explicit_equivalent=1 extra_grant_detected=1 "
+          "legacy_type_rejected=1 fixture_removed=1")
+
+
 def main() -> None:
     require(os.environ.get("GITHUB_ACTIONS") == "true"
             and os.environ.get("GITHUB_REPOSITORY") == "rafhael100/imagine-crm"
@@ -63,6 +115,7 @@ def main() -> None:
         return run(source + ["psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=1", "-U",
                    "crm_homologation_owner", "-d", DATABASE], statement.encode()).decode().strip()
 
+    verify_sequence_acl_manifest(sql)
     base_tables = re.findall(r"CREATE TABLE\s+(crm_[a-z0-9_]+)\s*\(",
                              (ROOT / "infra/homologation/schema.sql").read_text())
     sql(f"""
