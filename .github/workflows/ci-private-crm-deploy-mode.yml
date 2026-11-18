@@ -1,0 +1,53 @@
+name: CRM private deploy - reject invalid modes before target access
+
+on:
+  pull_request:
+    branches: [docs/crm-owner-drafts-verified-status-2026-11-17]
+    paths:
+      - 'scripts/ops/deploy-private-crm.py'
+      - 'scripts/ci/test_private_crm_deploy_mode.py'
+      - '.github/workflows/ci-private-crm-deploy-mode.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crm-private-deploy-mode-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  argument-admission:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout actual candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify source and the narrow reviewed change
+        env:
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 - <<'PY'
+          import os, subprocess
+          assert os.environ['GITHUB_EVENT_NAME'] == 'pull_request'
+          assert os.environ['GITHUB_REPOSITORY'] == 'rafhael100/imagine-crm'
+          assert os.environ['HEAD_REPOSITORY'] == 'rafhael100/imagine-crm'
+          assert os.environ['BASE_SHA'] == 'dc601be113b213dfd35fae61d00ff710b4f286e1'
+          def git(*a): return subprocess.check_output(['git', *a], text=True).strip()
+          assert git('rev-parse', 'HEAD') == os.environ['CANDIDATE_SHA']
+          subprocess.run(['git', 'merge-base', '--is-ancestor', os.environ['BASE_SHA'], 'HEAD'], check=True)
+          changed = set(git('diff', '--name-only', '--no-renames', os.environ['BASE_SHA'], 'HEAD').splitlines())
+          assert changed == {'scripts/ops/deploy-private-crm.py', 'scripts/ci/test_private_crm_deploy_mode.py', '.github/workflows/ci-private-crm-deploy-mode.yml'}
+          subprocess.run(['git', 'diff', '--check', os.environ['BASE_SHA'], 'HEAD'], check=True)
+          print('CRM_PRIVATE_DEPLOY_MODE_SOURCE_VERIFIED')
+          PY
+      - name: Exercise admission without any deployment
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 scripts/ci/test_private_crm_deploy_mode.py
