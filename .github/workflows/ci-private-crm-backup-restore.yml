@@ -1,0 +1,74 @@
+name: Private CRM encrypted backup - separate base and S2S restore
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/backup-private-crm.py'
+      - 'scripts/ops/private_crm_backup_contract.py'
+      - 'scripts/ops/private_crm_backup_catalog.py'
+      - 'scripts/ops/private_crm_backup_snapshot.py'
+      - 'scripts/ops/private-backup-crypt.php'
+      - 'scripts/ci/test_private_crm_backup_restore.py'
+      - 'scripts/ci/test_private_crm_backup_snapshot.py'
+      - 'infra/homologation/schema.sql'
+      - 'infra/homologation/20-runtime-roles.sh'
+      - 'infra/homologation/s2s/**'
+      - '.github/workflows/ci-private-crm-backup-restore.yml'
+permissions:
+  contents: read
+concurrency:
+  group: private-crm-backup-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  encrypted-base-and-s2s-restore:
+    if: github.repository == 'rafhael100/imagine-crm' && github.event_name == 'pull_request' && github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CRM_PRIVATE_PROJECT: imagine-crm-journey-ci
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Generate only fresh runner-owned synthetic credentials
+        env:
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = rafhael100/imagine-crm
+          test "$GITHUB_EVENT_NAME" = pull_request
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          python3 scripts/ops/create-private-crm-environment.py "$RUNNER_TEMP/crm-backup.env" "$RUNNER_TEMP/crm-backup-data" "$CANDIDATE_SHA"
+          sudo chown root:root "$RUNNER_TEMP/crm-backup-data"
+          echo "CRM_PRIVATE_ENV_FILE=$RUNNER_TEMP/crm-backup.env" >> "$GITHUB_ENV"
+      - name: Build exact crypto tool image and start only the isolated source database
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/ops/backup-private-crm.py scripts/ops/private_crm_backup_contract.py scripts/ops/private_crm_backup_catalog.py scripts/ops/private_crm_backup_snapshot.py scripts/ci/test_private_crm_backup_restore.py scripts/ci/test_private_crm_backup_snapshot.py
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml config --quiet
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml build app
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml up -d --no-build postgres
+          ready=0
+          for attempt in $(seq 1 40); do
+            if test "$(docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T postgres cat /proc/1/comm 2>/dev/null)" = postgres && test "$(docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T postgres psql -X -qAt -U crm_homologation_owner -d imagine_crm_private_homologation -c "SELECT count(*) FROM pg_roles WHERE rolname='crm_homologation_operator'" 2>/dev/null)" = 1; then ready=1; break; fi
+            sleep 2
+          done
+          test "$ready" = 1
+      - name: Encrypt, reject tampering, reproduce old failures and verify separate clusters
+        run: |
+          sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" \
+            GITHUB_ACTIONS=true GITHUB_REPOSITORY="$GITHUB_REPOSITORY" GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" \
+            python3 scripts/ci/test_private_crm_backup_restore.py "$RUNNER_TEMP/crm-backup-data/backups"
+      - name: Prove concurrent writes stay outside the manifest and dump snapshot; close every exporter
+        run: |
+          sudo env CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" \
+            GITHUB_ACTIONS=true GITHUB_REPOSITORY="$GITHUB_REPOSITORY" GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" \
+            python3 scripts/ci/test_private_crm_backup_snapshot.py
+      - name: Remove only this disposable project and generated local archives
+        if: always()
+        run: |
+          if test -f "$CRM_PRIVATE_ENV_FILE"; then
+            docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml down --volumes --remove-orphans
+          fi
+          # No archive, credentials, dump, or protected manifest is published as an artifact.
+          sudo rm -rf -- "$RUNNER_TEMP/crm-backup-data"

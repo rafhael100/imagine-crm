@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Core\Authorization\Authorizer;
 use App\Core\Authorization\DenyByDefaultAuthorizer;
 use App\Core\Identity\GuardPrincipalSource;
+use App\Core\Identity\IdentityRuntimeProfile;
 use App\Core\Identity\GlobalIdentity;
 use App\Core\Identity\SessionAuthority;
 use App\Core\Identity\DatabaseSessionAuthority;
@@ -27,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         // F0: politica de autorizacao sempre nega ate contratos CORE/SEG.
         $this->app->bind(Authorizer::class, DenyByDefaultAuthorizer::class);
         // Candidate profile is disabled by default and can never run in production.
-        if (config('identity.experimental') && $this->app->environment('local', 'testing')) {
+        if (IdentityRuntimeProfile::enabled()) {
             config([
                 'auth.guards.crm_identity' => ['driver' => 'session', 'provider' => 'crm_global_identities'],
                 'auth.providers.crm_global_identities' => ['driver' => 'eloquent', 'model' => GlobalIdentity::class],
@@ -58,13 +59,13 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(SessionAuthority::class, DatabaseSessionAuthority::class);
         $this->app->bind(GuardPrincipalSource::class, function ($app) {
-            if (!config('identity.experimental') || !$app->environment('local', 'testing')) {
+            if (!IdentityRuntimeProfile::enabled()) {
                 return new GuardPrincipalSource();
             }
             return GuardPrincipalSource::fromConfiguration($app['auth'], $app['config'], $app->make(SessionAuthority::class));
         });
         $this->app->bind(ExperimentalAuthenticator::class, function ($app) {
-            if (!config('identity.experimental') || !$app->environment('local', 'testing')
+            if (!IdentityRuntimeProfile::enabled()
                 || config('session.driver') === 'cookie'
                 || (config('session.driver') === 'array' && !$app->environment('testing'))) {
                 throw new \LogicException('Experimental server-side authentication only.');
@@ -81,6 +82,24 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        //
+        if (\App\Homologation\Environment::enabled()) {
+            $this->callAfterResolving(\Illuminate\Contracts\Debug\ExceptionHandler::class,static function ($handler): void {
+                $handler->reportable(static function (\Throwable $error) {
+                    \App\Homologation\PrivateHeaders::reportFailure($error);
+                    return false;
+                });
+                $handler->renderable(static function (\Throwable $error,\Illuminate\Http\Request $request) {
+                    return \App\Homologation\PrivateHeaders::renderFailure($error,$request);
+                });
+            });
+            $this->app->bind(\App\Homologation\Enrollment::class,fn($app)=>new \App\Homologation\Enrollment(
+                $app['db']->connection('crm_enrollment'),$app['encrypter'],$app['hash'],$app['session.store']));
+            $this->app->bind(\App\Homologation\Workspace::class,fn($app)=>new \App\Homologation\Workspace(
+                $app->make(GuardPrincipalSource::class),$app['db']->connection(),$app['db']->connection('crm_iam')));
+            $this->app->bind(\App\Homologation\Administration::class,fn($app)=>new \App\Homologation\Administration(
+                $app->make(GuardPrincipalSource::class),$app['db']->connection('crm_operator'),$app['db']->connection('crm_iam')));
+            \Illuminate\Support\Facades\Route::middleware(['web',\App\Homologation\PrivateHeaders::class])
+                ->group(base_path('routes/private-homologation.php'));
+        }
     }
 }
