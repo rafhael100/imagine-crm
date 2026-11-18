@@ -72,6 +72,33 @@ final readonly class Workspace
         });
     }
 
+    /** One CRM-owned projection, under the same verified private read policy. */
+    public function minimalLead(string $id): array
+    {
+        abort_unless(Environment::minimalLeadReadEnabled(),404);
+        abort_unless(Str::isUuid($id) && strtolower($id)===$id,404);
+
+        return $this->run('view',function ($account,$trial,$principal) use ($id) {
+            // Never load the title, value, funnel, tenant or another lead's fields.
+            $lead=$this->table('leads',$account->organization_id)
+                ->where('id',$id)->first(['id','stage']);
+            abort_unless($lead && $lead->id===$id && in_array($lead->stage,self::STAGES,true),404);
+
+            // The response cannot escape until this audit and membership unit commit.
+            // An audit failure rolls back the unit and discloses no projection.
+            $this->event($account,$principal,$id,'lead.minimal_read');
+
+            return [
+                'contract'=>'CRM_AIA_HOMOLOGATION_LEAD_READ_V1',
+                'operation'=>'crm.lead.read_minimal',
+                'status'=>'READ',
+                'scope'=>'SYNTHETIC_PRIVATE_HOMOLOGATION',
+                'projection'=>['ref'=>$lead->id,'stage'=>$lead->stage],
+                'operational'=>false,
+            ];
+        });
+    }
+
     private static function label(mixed $value, string $prefix): string
     {
         if (!is_string($value) || preg_match('/\A'.$prefix.'[A-Z0-9_]{1,40}\z/D',$value)!==1) {
