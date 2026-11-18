@@ -1,0 +1,136 @@
+name: CRM OP01 authenticated private minimal lead read
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+      - test/crm-sites-capture-revocation-ordering-2026-11-17
+    paths:
+      - 'app/Homologation/**'
+      - 'routes/private-homologation.php'
+      - 'tests/Feature/PrivateMinimalLeadReadBoundaryTest.php'
+      - 'infra/homologation/**'
+      - 'scripts/ops/test-private-crm-op01.py'
+      - '.github/workflows/ci-crm-op01-private-minimal-read.yml'
+permissions:
+  contents: read
+concurrency:
+  group: crm-op01-private-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real-session-read-and-original-agents-consumer:
+    if: github.event.repository.private == false && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CRM_PRIVATE_PROJECT: imagine-crm-journey-ci
+      CRM_PRIVATE_IMAGE_TAG: ${{ github.event.pull_request.head.sha }}
+      CRM_OP01_RUNNER_ENVIRONMENT: ${{ runner.environment }}
+      AIA_P65_SOURCE_SHA: 740abafc813dbde70f5a2ad6e138402ed7945276
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Verify candidate and create fresh runner-only credentials
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = rafhael100/imagine-crm
+          test "$GITHUB_EVENT_NAME" = pull_request
+          test "$CRM_OP01_RUNNER_ENVIRONMENT" = github-hosted
+          test "$(git rev-parse HEAD)" = "$CRM_PRIVATE_IMAGE_TAG"
+          python3 scripts/ops/create-private-crm-environment.py "$RUNNER_TEMP/crm-op01.env" "$RUNNER_TEMP/crm-op01-data" "$CRM_PRIVATE_IMAGE_TAG"
+          sudo chown root:root "$RUNNER_TEMP/crm-op01-data"
+          echo "CRM_PRIVATE_ENV_FILE=$RUNNER_TEMP/crm-op01.env" >> "$GITHUB_ENV"
+          python3 -m py_compile scripts/ops/test-private-crm-op01.py
+      - name: Build the CRM source before checking out the independent consumer
+        run: |
+          set -euo pipefail
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml config --quiet
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml build app
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml up -d --no-build
+          ready=0
+          for attempt in $(seq 1 40); do
+            if curl -fsS --max-time 3 -o /dev/null http://127.0.0.1:18086/up; then ready=1; break; fi
+            sleep 2
+          done
+          test "$ready" = 1
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T app sh -c 'php -l app/Homologation/MinimalLeadReadController.php && php -l app/Homologation/Workspace.php && php -l app/Homologation/Environment.php && php -l routes/private-homologation.php'
+      - name: Prove the new route is absent by default
+        run: python3 scripts/ops/test-private-crm-op01.py --disabled
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: 740abafc813dbde70f5a2ad6e138402ed7945276
+          path: _agents_p65
+          persist-credentials: false
+      - name: Enable only the isolated private read profile
+        run: |
+          set -euo pipefail
+          test "$(git -C _agents_p65 rev-parse HEAD)" = "$AIA_P65_SOURCE_SHA"
+          echo "AIA_P65_SOURCE_DIR=$GITHUB_WORKSPACE/_agents_p65" >> "$GITHUB_ENV"
+          export CRM_PRIVATE_OP01=minimal-lead-v1
+          echo "CRM_PRIVATE_OP01=$CRM_PRIVATE_OP01" >> "$GITHUB_ENV"
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml up -d --no-build --no-deps --force-recreate app
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml restart web
+          ready=0
+          for attempt in $(seq 1 40); do
+            if curl -fsS --max-time 3 -o /dev/null http://127.0.0.1:18086/up; then ready=1; break; fi
+            sleep 2
+          done
+          test "$ready" = 1
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml run --rm -T tools scripts/ops/seed-private-crm-fixtures.php seed
+      - name: Verify original consumer independently without network or credentials
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount "type=bind,src=$AIA_P65_SOURCE_DIR,dst=/agents,readonly" --entrypoint php "imagine-crm-private-journey:$CRM_PRIVATE_IMAGE_TAG" /agents/tools/check_p65_crm_minimal_read.php
+      - name: Real authentication, minimal reads, authorization denials and audit rollback
+        run: |
+          sudo env GITHUB_ACTIONS="$GITHUB_ACTIONS" GITHUB_REPOSITORY="$GITHUB_REPOSITORY" GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" GITHUB_EVENT_PATH="$GITHUB_EVENT_PATH" GITHUB_SHA="$GITHUB_SHA" CRM_OP01_RUNNER_ENVIRONMENT="$CRM_OP01_RUNNER_ENVIRONMENT" CRM_PRIVATE_ENV_FILE="$CRM_PRIVATE_ENV_FILE" CRM_PRIVATE_PROJECT="$CRM_PRIVATE_PROJECT" CRM_PRIVATE_IMAGE_TAG="$CRM_PRIVATE_IMAGE_TAG" CRM_PRIVATE_OP01="$CRM_PRIVATE_OP01" AIA_P65_SOURCE_DIR="$AIA_P65_SOURCE_DIR" AIA_P65_SOURCE_SHA="$AIA_P65_SOURCE_SHA" python3 scripts/ops/test-private-crm-op01.py "$RUNNER_TEMP/crm-op01-data/fixtures.json"
+      - name: Prove disabling the profile removes the route again
+        run: |
+          set -euo pipefail
+          export CRM_PRIVATE_OP01=''
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml up -d --no-build --no-deps --force-recreate app
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml restart web
+          ready=0
+          for attempt in $(seq 1 40); do
+            if curl -fsS --max-time 3 -o /dev/null http://127.0.0.1:18086/up; then ready=1; break; fi
+            sleep 2
+          done
+          test "$ready" = 1
+          python3 scripts/ops/test-private-crm-op01.py --disabled
+      - name: Container state only on failure
+        if: failure()
+        run: |
+          if test -f "$CRM_PRIVATE_ENV_FILE"; then
+            docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml ps --all --format json | python3 -c 'import json,sys; rows=[json.loads(line) for line in sys.stdin if line.strip()]; rows=rows[0] if len(rows)==1 and isinstance(rows[0],list) else rows; print(json.dumps([{key:row.get(key) for key in ("Service","State","Health","ExitCode")} for row in rows]))'
+          fi
+      - name: Remove only this disposable project
+        if: always()
+        run: |
+          if test -f "$CRM_PRIVATE_ENV_FILE"; then
+            docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml down --volumes --remove-orphans
+          fi
+  admission-and-existing-authority-regressions:
+    if: github.event.repository.private == false && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, pdo_sqlite
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Guarded admission and preserved service boundaries
+        run: |
+          set -euo pipefail
+          python3 tests/integration_source_guard_test.py
+          vendor/bin/phpunit --fail-on-skipped --fail-on-incomplete tests/Feature/PrivateMinimalLeadReadBoundaryTest.php
+          vendor/bin/phpunit --fail-on-skipped --fail-on-incomplete tests/Feature/AgentsOp01NoHttpSurfaceTest.php
+          vendor/bin/phpunit --fail-on-skipped --fail-on-incomplete tests/Unit/IdentityPrivateStagingProfileTest.php

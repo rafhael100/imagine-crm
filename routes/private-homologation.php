@@ -39,3 +39,7 @@ Route::post('/automacoes/processar',[Controller::class,'processAutomations']);
 Route::post('/automacoes/{id}/cancelar',[Controller::class,'cancelAutomation']);
 
 Route::get('/automacoes/estado',[Controller::class,'automationState']);
+
+if (\App\Homologation\Environment::minimalLeadReadEnabled()) {
+    Route::get('/agentes/leads/{id}/minimo',\App\Homologation\MinimalLeadReadController::class);
+}

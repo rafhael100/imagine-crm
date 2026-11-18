@@ -17,6 +17,11 @@ final class Environment
             && getenv('CRM_PRIVATE_JOURNEY') === 'synthetic-v1';
     }
 
+    public static function minimalLeadReadEnabled(): bool
+    {
+        return self::enabled() && getenv('CRM_PRIVATE_OP01') === 'minimal-lead-v1';
+    }
+
     public static function assertConnection(Connection $db, string $role): void
     {
         if (!self::enabled() || !in_array($role, ['app','iam','enrollment','operator'], true)

@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## OP-01 — consulta mínima privada autorizada (17/11/2026)
+
+A Direção aprovou o recorte funcional de um lead fictício consultado por usuário autenticado no CRM. A candidata, derivada da [PR #647](https://github.com/rafhael100/imagine-crm/pull/647) `a2c7218f28aac58796387c939832ff1bfae3cba0`, acrescenta GET `/agentes/leads/{id}/minimo`, desligado por padrão e exclusivo do perfil privado. Reutiliza a autoridade de sessão/MFA/conta/membership existente, seleciona somente id/stage e exige auditoria na mesma transação. Não altera a política global de produção ou a proposta documental #57.
+
+O consumidor original Agents [#471](https://github.com/rafhael100/imagine-ai-agents/pull/471), SHA `740abafc813dbde70f5a2ad6e138402ed7945276`, passou na [CI 44213754313](https://github.com/rafhael100/imagine-ai-agents/actions/runs/44213754313). O novo ensaio CRM fixa essa fonte e entrega a resposta HTTP real ao consumidor sem cookies, credenciais ou rede no contêiner leitor. A jornada privada anterior é revalidada separadamente na mesma candidata. Resultados efetivos são registrados na PR/HEAD; não se antecipa aprovação HTTP. [Contrato, autoridade e limites](docs/operations/CRM-OP01-PRIVATE-MINIMAL-READ.md).
+
+Os gates F251/F252 da base continuam preservados; esta candidata não libera merge, deploy, produção ou delegação S2S. A próxima etapa de leitura não depende de criação de tarefa ou execução n8n.
+
 ## Continuidade — contraprovas Sites→CRM com captura real (17/11/2026)
 
 Na candidata consolidada `76cfef1d026c8b9f0e88f343b27cff44aced6e48`, as [três contraprovas PG07](https://github.com/rafhael100/imagine-crm/actions/runs/44207277042) passaram sem skip (589 assertions): revogação primeiro, timeout real `55P03` com retry/replay na mesma conexão e falha tardia `23514` com rollback integral. A suíte anterior passou 31 testes/360 assertions, com o skip F398 esperado; o [job F398 dedicado](https://github.com/rafhael100/imagine-crm/actions/runs/44207277196) executou o emissor original e passou 1 teste/32 assertions. A [suíte geral PostgreSQL/RLS](https://github.com/rafhael100/imagine-crm/actions/runs/44207277488) passou 2.376 testes/73.694 assertions, com 103 skips e uma depreciação registrados.
