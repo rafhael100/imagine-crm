@@ -34,8 +34,9 @@ jobs:
           set -euo pipefail
           python3 scripts/ops/private_crm_owner_drafts_ci.py preflight
           git diff --check
-          python3 -m py_compile scripts/ops/private_crm_owner_drafts_ci.py scripts/ops/test-private-crm-owner-drafts.py scripts/ops/test-private-crm-owner-draft-recovery.py
+          python3 -m py_compile scripts/ops/private_crm_owner_drafts_ci.py scripts/ops/test-private-crm-owner-drafts.py scripts/ops/test-private-crm-owner-draft-recovery.py scripts/ops/test-private-crm-owner-monitor-coexistence.py
           node --check scripts/ops/test-private-crm-owner-drafts-browser.cjs
+          node --check scripts/ops/test-private-crm-owner-monitor-browser.cjs
           echo "CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT=$CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT" >> "$GITHUB_ENV"
           python3 scripts/ops/create-private-crm-environment.py "$RUNNER_TEMP/crm-owner-drafts.env" "$RUNNER_TEMP/crm-owner-drafts-data" "$CRM_PRIVATE_IMAGE_TAG"
           sudo chown root:root "$RUNNER_TEMP/crm-owner-drafts-data"
@@ -92,10 +93,27 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/crm-owner-drafts-browser" --ignore-scripts --no-audit --no-fund playwright@1.56.1
           export CRM_PRIVATE_PLAYWRIGHT_DIR="$RUNNER_TEMP/crm-owner-drafts-browser"
           sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG,CRM_PRIVATE_PLAYWRIGHT_DIR node scripts/ops/test-private-crm-owner-drafts-browser.cjs "$RUNNER_TEMP/crm-owner-drafts-data/fixtures.json" "$RUNNER_TEMP/crm-owner-drafts-evidence"
+      - name: Add the optional monitor after the unchanged owner27 proofs
+        env:
+          CRM_N8N_EXECUTION_MONITOR: synthetic-private-v1
+          CRM_PRIVATE_CI_MONITOR_PROFILE: execution-monitor-v1
+        run: |
+          set -euo pipefail
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG,CRM_N8N_EXECUTION_MONITOR,CRM_PRIVATE_CI_MONITOR_PROFILE python3 scripts/ops/test-private-crm-owner-monitor-coexistence.py "$RUNNER_TEMP/crm-owner-drafts-data/fixtures.json" install
+          echo "CRM_N8N_EXECUTION_MONITOR=synthetic-private-v1" >> "$GITHUB_ENV"
+          echo "CRM_PRIVATE_CI_MONITOR_PROFILE=execution-monitor-v1" >> "$GITHUB_ENV"
+      - name: Real owner plus monitor authority and inert 35-table snapshot recovery
+        run: |
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG,CRM_N8N_EXECUTION_MONITOR,CRM_PRIVATE_CI_MONITOR_PROFILE python3 scripts/ops/test-private-crm-owner-monitor-coexistence.py "$RUNNER_TEMP/crm-owner-drafts-data/fixtures.json"
+      - name: Chromium navigates both opt-ins with the remaining reserved MFA code
+        run: |
+          set -euo pipefail
+          export CRM_PRIVATE_PLAYWRIGHT_DIR="$RUNNER_TEMP/crm-owner-drafts-browser"
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG,CRM_N8N_EXECUTION_MONITOR,CRM_PRIVATE_CI_MONITOR_PROFILE,CRM_PRIVATE_PLAYWRIGHT_DIR node scripts/ops/test-private-crm-owner-monitor-browser.cjs "$RUNNER_TEMP/crm-owner-drafts-data/fixtures.json" "$RUNNER_TEMP/crm-owner-monitor-evidence"
       - name: Disable profile and prove route removal again
         run: |
           set -euo pipefail
-          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/private_crm_owner_drafts_ci.py disable
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG,CRM_N8N_EXECUTION_MONITOR,CRM_PRIVATE_CI_MONITOR_PROFILE python3 scripts/ops/private_crm_owner_drafts_ci.py disable
           ready=0
           for attempt in $(seq 1 40); do
             if curl -fsS --max-time 3 -o /dev/null http://127.0.0.1:18086/up; then ready=1; break; fi
@@ -103,6 +121,7 @@ jobs:
           done
           test "$ready" = 1
           python3 scripts/ops/test-private-crm-owner-drafts.py --disabled
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG,CRM_N8N_EXECUTION_MONITOR,CRM_PRIVATE_CI_MONITOR_PROFILE python3 scripts/ops/test-private-crm-owner-monitor-coexistence.py "$RUNNER_TEMP/crm-owner-drafts-data/fixtures.json" after-owner-disabled
       - name: Make only verified credential-free screenshots readable
         if: always()
         run: |
@@ -115,6 +134,20 @@ jobs:
         with:
           name: crm-owner-drafts-desktop-mobile
           path: ${{ runner.temp }}/crm-owner-drafts-evidence/*.png
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Make only combined credential-free screenshots readable
+        if: always()
+        run: |
+          if test -d "$RUNNER_TEMP/crm-owner-monitor-evidence"; then
+            sudo chown -R "$(id -u):$(id -g)" "$RUNNER_TEMP/crm-owner-monitor-evidence"
+          fi
+      - name: Preserve only combined owner and monitor PNGs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: crm-owner-monitor-coexistence
+          path: ${{ runner.temp }}/crm-owner-monitor-evidence/*.png
           retention-days: 7
           if-no-files-found: ignore
       - name: Remove only this disposable project
