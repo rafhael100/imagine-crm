@@ -4,6 +4,8 @@ on:
     branches: [dev/fast-track-crm-2026-11-04, review/crm-private-complete-journey-2026-11-15, feat/central-automation-p0-private-ui-2026-11-16, fix/crm-p21-s2s-durable-confirmation-2026-11-17, fix/crm-preserve-scheduled-followup-on-noop-2026-11-17, fix/crm-followup-and-ledger-consistency-2026-11-17, feat/crm-p22-private-receipt-reconciliation-2026-11-17, fix/crm-backup-preserve-s2s-ownership-2026-11-17, fix/crm-preferences-preserve-scheduled-work-2026-11-17, fix/crm-automation-locales-and-navigation-2026-11-17, fix/crm-backup-consistent-source-snapshot-2026-11-17, test/crm-sites-capture-revocation-ordering-2026-11-17, feat/crm-op01-authenticated-minimal-read-2026-11-17, feat/crm-op01-navigable-summary-2026-11-17, feat/crm-n8n-execution-feedback-2026-11-17]
     paths:
       - 'app/Homologation/**'
+      - 'app/Core/Portability/PortableCsvTableCodec.php'
+      - 'tests/Isolated/PrivateCsvHistoricalParserTest.php'
       - 'app/Core/Automation/**'
       - 'tests/Unit/PrivateAutomationSettingsTest.php'
       - 'tests/Unit/PrivateUiTest.php'
@@ -142,3 +144,31 @@ jobs:
       - run: composer install --no-interaction --prefer-dist --no-progress
       - run: vendor/bin/phpunit tests/Unit/PrivateAutomationSettingsTest.php
       - run: vendor/bin/phpunit tests/Unit/PrivateUiTest.php
+      - name: Checkout exact historical CSV controller for parser counterexample
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-crm
+          ref: 7e1b00a0c173bcfcac3a9051ef6cad3aededcdb8
+          path: _csv_parser_baseline
+          persist-credentials: false
+          sparse-checkout: app/Homologation/Controller.php
+          sparse-checkout-cone-mode: false
+      - name: Prove PHP 8.4 historical CSV parsing without historical persistence
+        env:
+          CRM_PRIVATE_CSV_HISTORICAL_SOURCE: ${{ github.workspace }}/_csv_parser_baseline
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCSV'
+          import os
+          from pathlib import Path
+          import subprocess
+          source = Path(os.environ['CRM_PRIVATE_CSV_HISTORICAL_SOURCE'])
+          assert source.is_absolute() and source.is_dir() and not source.is_symlink()
+          def git(*args):
+              return subprocess.check_output(['git', '-C', str(source), *args], text=True).strip()
+          assert git('rev-parse', 'HEAD') == '7e1b00a0c173bcfcac3a9051ef6cad3aededcdb8'
+          assert git('rev-parse', 'HEAD^{tree}') == '1ca57c0fa3197e83a36d9c6024bf13e77f10ad23'
+          assert git('ls-tree', 'HEAD', '--', 'app/Homologation/Controller.php') == '100644 blob 380e8437749f050ee24b9be77b0eacb3241626d8\tapp/Homologation/Controller.php'
+          print('PASS exact historical CSV source commit, tree, mode and blob')
+          PYCSV
+          vendor/bin/phpunit tests/Isolated/PrivateCsvHistoricalParserTest.php

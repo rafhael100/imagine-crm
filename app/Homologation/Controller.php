@@ -6,6 +6,7 @@ namespace App\Homologation;
 
 use App\Core\Identity\ExperimentalAuthenticator;
 use App\Core\Identity\GuardPrincipalSource;
+use App\Core\Portability\PortableCsvTableCodec;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -175,17 +176,22 @@ final class Controller
     public function import(Request $r)
     {
         $r->validate(['csv'=>'required|file|max:20']);
-        $file=fopen($r->file('csv')->getRealPath(),'r');
+        $path=$r->file('csv')->getRealPath();
+        abort_unless(is_string($path),422);
+        // Keep the HTTP upload bound even if the temporary file changes after validation.
+        $csv=@file_get_contents($path,false,null,0,20481);
+        abort_unless(is_string($csv) && strlen($csv)<=20480,422);
         try {
-            $header=fgetcsv($file,1024,',','"','');
-            abort_unless(in_array($header,[['title','value_cents'],['title','stage','value_cents']],true),422,'Use o CSV exportado ou o cabeçalho title,value_cents.');
-            $rows=[];
-            while(($row=fgetcsv($file,1024,',','"',''))!==false) {
-                abort_unless(count($row)===count($header) && count($rows)<20,422);
-                $rows[]=['title'=>$row[0],'value_cents'=>$row[count($header)-1],
-                    'stage'=>count($header)===3?$row[1]:'new'];
-            }
-        } finally { fclose($file); }
+            $table=(new PortableCsvTableCodec())->decode($csv,'comma');
+        } catch (\InvalidArgumentException) { abort(422,'CSV inválido. Use o arquivo exportado.'); }
+        $header=array_shift($table);
+        abort_unless(in_array($header,[['title','value_cents'],['title','stage','value_cents']],true),422,'Use o CSV exportado ou o cabeçalho title,value_cents.');
+        abort_unless(count($table)<=20,422);
+        $rows=[];
+        foreach ($table as $row) {
+            $rows[]=['title'=>$row[0],'value_cents'=>$row[count($header)-1],
+                'stage'=>count($header)===3?$row[1]:'new'];
+        }
         app(Workspace::class)->createLeads($rows,true);
         return redirect('/painel?section=leads',303);
     }

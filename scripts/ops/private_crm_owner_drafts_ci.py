@@ -29,6 +29,8 @@ LEDGER_HEAD_REF = "feat/crm-ledger-reapply-rls-2026-11-18"
 LEDGER_ANCESTOR = "d8963313267ccc5b40b7527d6fa24a30fcc12b7e"
 BASE_MONITOR_HEAD_REF = "feat/crm-base-monitor-incremental-migration-2026-11-18"
 BASE_MONITOR_ANCESTOR = "082a1fda4af9b1871854d0db8cbfe54858894f25"
+STRICT_CSV_HEAD_REF = "fix/crm-private-csv-strict-decoding-2026-11-18"
+STRICT_CSV_ANCESTOR = "7e1b00a0c173bcfcac3a9051ef6cad3aededcdb8"
 INTEGRATION_ANCESTORS = (
     "8c62702d02138233404fda73506b779f3ebb3143",
     "fe88dd15d42dbda0bab206dfdbc9f8ce65093212",
@@ -93,11 +95,12 @@ def preflight():
     migration = (INTEGRATION_BASE, INTEGRATION_BASE_REF, MIGRATION_HEAD_REF)
     ledger = (INTEGRATION_BASE, INTEGRATION_BASE_REF, LEDGER_HEAD_REF)
     base_monitor = (INTEGRATION_BASE, INTEGRATION_BASE_REF, BASE_MONITOR_HEAD_REF)
+    strict_csv = (INTEGRATION_BASE, INTEGRATION_BASE_REF, STRICT_CSV_HEAD_REF)
     # Admit only these complete tuples, never combinations of their fields.
     need(event["repository"]["full_name"] == REPOSITORY and event["repository"]["private"] is False
          and request["head"]["repo"]["full_name"] == REPOSITORY
          and request["base"]["repo"]["full_name"] == REPOSITORY
-         and provenance in (original, integration, migration, ledger, base_monitor), "OWNER_DRAFT_PR_PROVENANCE_DENIED")
+         and provenance in (original, integration, migration, ledger, base_monitor, strict_csv), "OWNER_DRAFT_PR_PROVENANCE_DENIED")
     head = request["head"]["sha"]
     need(re.fullmatch(r"[a-f0-9]{40}", head)
          and git(ROOT, "rev-parse", "HEAD").decode().strip() == head
@@ -105,15 +108,17 @@ def preflight():
     git(ROOT, "diff", "--quiet")
     git(ROOT, "diff", "--cached", "--quiet")
     git(ROOT, "merge-base", "--is-ancestor", BASE, head)
-    if provenance in (integration, migration, ledger, base_monitor):
+    if provenance in (integration, migration, ledger, base_monitor, strict_csv):
         for ancestor in INTEGRATION_ANCESTORS:
             git(ROOT, "merge-base", "--is-ancestor", ancestor, head)
-    if provenance in (migration, ledger, base_monitor):
+    if provenance in (migration, ledger, base_monitor, strict_csv):
         git(ROOT, "merge-base", "--is-ancestor", MIGRATION_ANCESTOR, head)
-    if provenance in (ledger, base_monitor):
+    if provenance in (ledger, base_monitor, strict_csv):
         git(ROOT, "merge-base", "--is-ancestor", LEDGER_ANCESTOR, head)
-    if provenance == base_monitor:
+    if provenance in (base_monitor, strict_csv):
         git(ROOT, "merge-base", "--is-ancestor", BASE_MONITOR_ANCESTOR, head)
+    if provenance == strict_csv:
+        git(ROOT, "merge-base", "--is-ancestor", STRICT_CSV_ANCESTOR, head)
     temporary = Path(os.environ.get("RUNNER_TEMP", ""))
     need(temporary.is_absolute() and temporary.is_dir() and not temporary.is_symlink(),
          "OWNER_DRAFT_RUNNER_TEMP_REQUIRED")

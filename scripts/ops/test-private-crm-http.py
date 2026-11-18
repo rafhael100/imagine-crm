@@ -1400,8 +1400,43 @@ def signup(client,login,label,document,password):
 
 def upload_csv(client,csv_text,expected=303):
     boundary='crm-private-'+secrets.token_hex(8)
-    body=f'--{boundary}\r\nContent-Disposition: form-data; name="_token"\r\n\r\n{client.csrf}\r\n--{boundary}\r\nContent-Disposition: form-data; name="csv"; filename="fictional.csv"\r\nContent-Type: text/csv\r\n\r\n{csv_text}\r\n--{boundary}--\r\n'
+    prefix=f'--{boundary}\r\nContent-Disposition: form-data; name="_token"\r\n\r\n{client.csrf}\r\n--{boundary}\r\nContent-Disposition: form-data; name="csv"; filename="fictional.csv"\r\nContent-Type: text/csv\r\n\r\n'
+    payload=csv_text.encode('utf-8') if isinstance(csv_text,str) else csv_text
+    check(isinstance(payload,bytes),'CSV fixture must be text or exact bytes')
+    body=prefix.encode('ascii')+payload+f'\r\n--{boundary}--\r\n'.encode('ascii')
     client.request('/importar',expected=expected,body=body,headers={'Content-Type':'multipart/form-data; boundary='+boundary})
+
+
+def assert_strict_csv_import(client,peer,company,peer_company):
+    """Malformed uploads cannot change either tenant's business rows or audit events."""
+    companies=[str(uuid.UUID(company)),str(uuid.UUID(peer_company))]
+    before=private_business_snapshot(companies)
+    own_export=client.get('/exportar');peer_export=peer.get('/exportar')
+    check(own_export.startswith('title,stage,value_cents\n') and '\r' not in own_export,
+          'canonical export must remain the existing three-column LF CSV')
+    # The first payload is also passed to the byte-pinned historical Controller
+    # in the separate PHP 8.4 parser/forwarding witness. No historical DB write is claimed.
+    malformed='title,value_cents\nLEAD_TESTE_CSV_PREFIX,1\nLEAD_TESTE_CSV_UNCLOSED,"100'
+    rows20='title,value_cents\n'+''.join(f'LEAD_TESTE_CSV_BOUND_{i},1\n' for i in range(20))
+    cases=[
+        ('unclosed quote after a valid row',malformed,422),
+        ('bytes after a closing quote','title,value_cents\nLEAD_TESTE_CSV_SUFFIX,"1"00',422),
+        ('mixed record terminators','title,value_cents\r\nLEAD_TESTE_CSV_MIXED,1\n',422),
+        ('invalid UTF-8',b'title,value_cents\nLEAD_TESTE_CSV_UTF8,1\xff',422),
+        ('UTF-8 BOM',b'\xef\xbb\xbftitle,value_cents\nLEAD_TESTE_CSV_BOM,1\n',422),
+        ('NUL byte',b'title,value_cents\nLEAD_TESTE_CSV_NUL,1\x00',422),
+        ('21 data rows',rows20+'LEAD_TESTE_CSV_BOUND_20,1\n',422),
+        # Twenty syntactically valid rows reach the unchanged trial quota. This
+        # populated account cannot accept twenty more; a parser refusal would be 422.
+        ('20 data rows exceed remaining trial quota',rows20,409),
+        ('upload above 20 KiB','title,value_cents\nLEAD_TESTE_CSV_SIZE,'+'1'*20480,303),
+    ]
+    for label,payload,status in cases:
+        upload_csv(client,payload,expected=status)
+        check(private_business_snapshot(companies)==before,'CSV refusal changed business/audit rows: '+label)
+        check(client.get('/exportar')==own_export and peer.get('/exportar')==peer_export,
+              'CSV refusal changed an own or peer export: '+label)
+    print('PASS strict CSV: malformed quote/suffix, mixed EOL, UTF-8/BOM/NUL, 21-row and 20-KiB denials; 20-row trial boundary; both tenant business/audit snapshots unchanged')
 
 
 
@@ -1643,11 +1678,12 @@ def main():
     check('done' in a.get('/painel?section=tasks'),'task completion missing')
     check('R$ 1.500,00' in a.get('/painel?section=reports'),'report total missing')
     exported=a.get('/exportar');check(title in exported and 'value_cents' in exported,'CSV export missing')
-    boundary='crm-private-'+secrets.token_hex(8)
-    csv_text='title,value_cents\nLEAD_TESTE_CSV_A,100\nLEAD_TESTE_CSV_B,200\n'
-    body=f'--{boundary}\r\nContent-Disposition: form-data; name="_token"\r\n\r\n{a.csrf}\r\n--{boundary}\r\nContent-Disposition: form-data; name="csv"; filename="fictional.csv"\r\nContent-Type: text/csv\r\n\r\n{csv_text}\r\n--{boundary}--\r\n'
-    a.request('/importar',expected=303,body=body,headers={'Content-Type':'multipart/form-data; boundary='+boundary})
+    csv_text='"title","value_cents"\r\n"LEAD_TESTE_CSV_A","100"\r\n"LEAD_TESTE_CSV_B","200"\r\n'
+    upload_csv(a,csv_text)
     check(len(leads(a))==3,'CSV import not persisted')
+    canonical=a.get('/exportar')
+    check('LEAD_TESTE_CSV_A,new,100\n' in canonical and 'LEAD_TESTE_CSV_B,new,200\n' in canonical,
+          'quoted two-column CRLF import changed values or the default stage')
     # UI configuration is interpreted by the native planner and persisted as a durable run.
     a.get('/painel?section=automation')
     a.post('/preferencias',{'automation_version':3,'delay_seconds':3,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
@@ -1843,9 +1879,13 @@ def main():
     before_import=len(leads(a))
     upload_csv(a,exported)
     check(len(leads(a))==before_import*2,'exported CSV cannot be reimported')
+    before_invalid_csv=private_business_snapshot([automation_state['company_id'],FIXTURES['clientB']['organization']])
     upload_csv(a,'title,stage,value_cents\nLEAD_TESTE_ATOMIC,new,1\n=INVALID,new,1\n')
     check(len(leads(a))==before_import*2,'invalid CSV partially committed')
+    check(private_business_snapshot([automation_state['company_id'],FIXTURES['clientB']['organization']])==before_invalid_csv,
+          'invalid domain row changed either tenant business/audit rows')
     print('PASS exported CSV round trip preserves stages → invalid-row import is atomic')
+    assert_strict_csv_import(a,b,automation_state['company_id'],FIXTURES['clientB']['organization'])
 
     # A real title edit retains its original versioning and audit semantics.
     edited_title='LEAD_TESTE_EDITED_'+suffix.upper()

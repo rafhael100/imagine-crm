@@ -1,5 +1,36 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — importação CSV estrita na jornada privada (18/11/2026)
+
+A branch `fix/crm-private-csv-strict-decoding-2026-11-18` continua a
+[#664](https://github.com/rafhael100/imagine-crm/pull/664), commit
+`7e1b00a0c173bcfcac3a9051ef6cad3aededcdb8`. O recorte conecta a rota
+`/importar` ao `PortableCsvTableCodec` já existente, para recusar estruturas
+CSV ambíguas antes de encaminhar linhas ao `Workspace`, com o limite
+estrutural de 4.096 bytes por célula do codec. A representação fica mais
+estrita. Os limites de 20 KiB e 1–20 linhas, os dois cabeçalhos aceitos, a validação dos campos,
+a autorização por empresa e a transação permanecem como contratos da rota.
+
+A prova histórica carrega o Controller completo da #664, com commit, árvore,
+modo, blob e SHA-256 conferidos, em um processo PHPUnit separado no PHP 8.4.
+Substitui somente o destino `Workspace` por um capturador: observa parsing e
+encaminhamento históricos, sem declarar persistência ou autorização HTTP
+histórica. A prova candidata usa a rota HTTP real no ambiente descartável e
+compara os dados das duas empresas após entradas recusadas. Os formatos
+válidos e o round trip do CSV exportado permanecem critérios de regressão.
+
+O guard owner acrescenta uma sexta combinação fechada de branch e base DEV,
+exigindo também a ancestralidade da #664. Dezenove testes locais passaram;
+os cinco contextos anteriores e os seis testes da fronteira de sessão foram
+preservados. A CI própria desta HEAD ainda deve confirmar PHP, HTTP, bancos,
+browser e os demais workflows aplicáveis. A CI #664 não a aprova por herança.
+
+Contrato e limites:
+[CRM-PRIVATE-CSV-STRICT-IMPORT-2026-11-18](docs/desenvolvimento/CRM-PRIVATE-CSV-STRICT-IMPORT-2026-11-18.md).
+A Central IN-118 conserva sua proposta e decisões próprias. Esta correção
+trata a importação sintética já existente. **DRAFT / NO-MERGE / NO-DEPLOY**;
+F251/F252 e a revisão operacional permanecem preservados.
+
 ## Continuidade — candidata incremental da base25 para o monitor33 (18/11/2026)
 
 A branch `feat/crm-base-monitor-incremental-migration-2026-11-18` continua a

@@ -61,6 +61,11 @@ BASE_MONITOR = (
     "feat/crm-base-monitor-incremental-migration-2026-11-18",
 )
 BASE_MONITOR_ANCESTORS = (*LEDGER_ANCESTORS, "082a1fda4af9b1871854d0db8cbfe54858894f25")
+STRICT_CSV = (
+    INTEGRATION[0], INTEGRATION[1],
+    "fix/crm-private-csv-strict-decoding-2026-11-18",
+)
+STRICT_CSV_ANCESTORS = (*BASE_MONITOR_ANCESTORS, "7e1b00a0c173bcfcac3a9051ef6cad3aededcdb8")
 HEAD = "1" * 40
 
 
@@ -177,8 +182,20 @@ class OwnerDraftCiAdmissionTest(unittest.TestCase):
                                    ancestors=set(BASE_MONITOR_ANCESTORS) - {missing})
                 self.assertIn(("merge-base", "--is-ancestor", missing, HEAD), self.git_calls)
 
-    def test_five_admission_tuples_cannot_mix_fields_or_accept_neighbor_branches(self):
-        known = {ORIGINAL, INTEGRATION, MIGRATION, LEDGER, BASE_MONITOR}
+    def test_strict_csv_tuple_requires_every_ancestor_and_exact_base_monitor_parent(self):
+        self.assertEqual(self.preflight(self.event(STRICT_CSV), ancestors=STRICT_CSV_ANCESTORS),
+                         (HEAD, self.runner.resolve()))
+        self.assertEqual([call for call in self.git_calls if call[0] == "merge-base"],
+                         [("merge-base", "--is-ancestor", ancestor, HEAD)
+                          for ancestor in STRICT_CSV_ANCESTORS])
+        for missing in STRICT_CSV_ANCESTORS:
+            with self.subTest(missing=missing):
+                self.assert_denied(self.event(STRICT_CSV), "OWNER_DRAFT_SOURCE_DENIED",
+                                   ancestors=set(STRICT_CSV_ANCESTORS) - {missing})
+                self.assertIn(("merge-base", "--is-ancestor", missing, HEAD), self.git_calls)
+
+    def test_six_admission_tuples_cannot_mix_fields_or_accept_neighbor_branches(self):
+        known = {ORIGINAL, INTEGRATION, MIGRATION, LEDGER, BASE_MONITOR, STRICT_CSV}
         choices = [sorted({value[index] for value in known}) for index in range(3)]
         rejected = 0
         for provenance in itertools.product(*choices):
@@ -188,8 +205,8 @@ class OwnerDraftCiAdmissionTest(unittest.TestCase):
                 self.assert_denied(self.event(provenance), "OWNER_DRAFT_PR_PROVENANCE_DENIED")
                 self.assertEqual(self.git_calls, [])
                 rejected += 1
-        self.assertEqual(rejected, 15)
-        for candidate in (MIGRATION, LEDGER, BASE_MONITOR):
+        self.assertEqual(rejected, 18)
+        for candidate in (MIGRATION, LEDGER, BASE_MONITOR, STRICT_CSV):
             for index, value in enumerate(("0" * 40, "main", candidate[2] + "-other")):
                 provenance = list(candidate)
                 provenance[index] = value
