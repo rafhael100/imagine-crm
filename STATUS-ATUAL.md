@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — tela privada de acompanhamento n8n
+
+A [PR #650](https://github.com/rafhael100/imagine-crm/pull/650), HEAD `be9c1243a45ab867309a89f8c40d61dc44b7a7f4`, concluiu contratos e integração anterior em [44215797078](https://github.com/rafhael100/imagine-crm/actions/runs/44215797078) e backup em [44215797048](https://github.com/rafhael100/imagine-crm/actions/runs/44215797048). O [ensaio Agents #472](https://github.com/rafhael100/imagine-ai-agents/actions/runs/44215857012), HEAD `8e7f1f21a2927bde3e337edaace0e1e6dffdc29a`, comprovou retorno da execução nativa ao histórico do CRM e restore de 33 tabelas, com dados sintéticos.
+
+A continuação acrescenta a seção privada **Execuções n8n**, lista de eventos e histórico em PT/EN/ES. A leitura reaproveita sessão/MFA e membership da própria empresa, usa uma função SQL específica sem acesso do web às credenciais do reconciliador e não dispara comunicação externa ou efeitos de negócio. Sem retorno, intenção de início, resultado e confirmação permanecem distintos. [Contrato, testes e limites](docs/automation/CRM-N8N-EXECUTION-MONITOR.md).
+
+O perfil novo fica desligado por padrão e o backup reconhece sua função de leitura de forma explícita. As evidências de CI e navegador serão registradas na PR da HEAD candidata. A base de revisão é #650; os gates F251/F252 não são ampliados. DRAFT / NO-MERGE / NO-DEPLOY, sem aceite visual humano ou homologação operacional presumidos.
+
 ## Continuidade — retorno do n8n ao acompanhamento do CRM
 
 A candidata de execução nativa do Agents [#469](https://github.com/rafhael100/imagine-ai-agents/pull/469) produziu resultado técnico `PREPARED` e confirmação durável na CI. Este recorte acrescenta consulta privada assinada, projeção e histórico separados do recibo de entrega. O CRM verifica a origem e a resposta, impede regressão e duplicação de observações e preserva o estado após falha ou recuperação.

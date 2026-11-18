@@ -93,6 +93,7 @@ def main():
             'encrypted_archive':archive.name,'sha256':hashlib.sha256(encrypted).hexdigest(),
             'database_profile':profile['name'],'s2s_receipt_reconciliation':profile['receipt_reconciliation'],
             's2s_execution_feedback':profile['execution_feedback'],
+            's2s_execution_monitor':profile['execution_monitor'],
             'consistent_source_snapshot':True,'snapshot_protocol':'postgresql-export-v1',
             'source_snapshot_utc':source_snapshot_utc,
             'table_counts':before,'force_rls_tables':[table.removeprefix('public.') for table in profile['rls_tables']],

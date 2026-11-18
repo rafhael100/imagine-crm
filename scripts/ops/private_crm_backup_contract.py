@@ -36,6 +36,7 @@ EXECUTION_FUNCTIONS = {
     "crm_auto_service.read_execution_projection(uuid,uuid)",
     "crm_auto_service.reject_execution_observation_mutation()",
 }
+MONITOR_FUNCTION = "crm_auto_service.read_execution_monitor(uuid)"
 BASE_TENANT_TABLES = tuple("public." + name for name in (
     "crm_memberships", "crm_private_trials", "crm_private_leads", "crm_private_tasks",
     "crm_private_automation_runs", "crm_private_events", "crm_private_orders",
@@ -92,7 +93,9 @@ def security_manifest(query) -> dict:
           WHERE n.nspname !~ '^pg_' AND n.nspname<>'information_schema'),'[]'::jsonb),
         'functions',COALESCE((SELECT jsonb_agg(jsonb_build_object(
           'signature',p.oid::regprocedure::text,'owner',pg_get_userbyid(p.proowner),
-          'security_definer',p.prosecdef,'config',p.proconfig,'acl',{function_acl},
+          'security_definer',p.prosecdef,'volatility',p.provolatile,'strict',p.proisstrict,
+          'arguments',pg_get_function_arguments(p.oid),'result',pg_get_function_result(p.oid),
+          'config',p.proconfig,'acl',{function_acl},
           'definition',pg_get_functiondef(p.oid)) ORDER BY p.oid::regprocedure::text)
           FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
           WHERE n.nspname !~ '^pg_' AND n.nspname<>'information_schema'),'[]'::jsonb),
@@ -129,6 +132,14 @@ def detect_profile(query, base_tables: list[str]) -> tuple[dict, dict]:
     functions = {item["signature"] for item in manifest["functions"]}
     relations = {item["name"] for item in manifest["relations"]}
     execution = bool(functions & EXECUTION_FUNCTIONS or relations & set(EXECUTION_TABLES))
+    # Its schema capability is also a marker: a removed reader must not silently
+    # downgrade an otherwise still-installed monitor to the older S2S profile.
+    monitor = MONITOR_FUNCTION in functions or any(
+        schema["name"] == "crm_auto_service"
+        and any(grant[1] == "crm_homologation_app" for grant in schema["acl"])
+        for schema in manifest["schemas"])
+    require(not monitor or (execution and MONITOR_FUNCTION in functions),
+            "Incomplete execution monitor profile.")
     service_tables = (S2S_TABLES if s2s else ()) + (EXECUTION_TABLES if execution else ())
     tables = tuple("public." + table for table in base_tables) + service_tables
     expected_relations = {(table, "r") for table in tables}
@@ -136,8 +147,10 @@ def detect_profile(query, base_tables: list[str]) -> tuple[dict, dict]:
         expected_relations.add(("crm_auto_service.audit_id_seq", "S"))
     require({(item["name"], item["kind"]) for item in manifest["relations"]} == expected_relations,
             "Incomplete or unknown private backup relation profile.")
-    accepted_functions = ((S2S_FUNCTIONS | {RECEIPT_FUNCTION} | EXECUTION_FUNCTIONS,)
-                          if execution else (S2S_FUNCTIONS, S2S_FUNCTIONS | {RECEIPT_FUNCTION}))
+    accepted_functions = ((S2S_FUNCTIONS | {RECEIPT_FUNCTION} | EXECUTION_FUNCTIONS | {MONITOR_FUNCTION},)
+                          if monitor and execution else
+                          ((S2S_FUNCTIONS | {RECEIPT_FUNCTION} | EXECUTION_FUNCTIONS,)
+                           if execution else (S2S_FUNCTIONS, S2S_FUNCTIONS | {RECEIPT_FUNCTION})))
     require((not s2s and not execution and not functions) or (s2s and functions in accepted_functions),
             "Incomplete or unknown private S2S function profile.")
     require(manifest["default_acls"] == 0, "Unreviewed default grants in private backup.")
@@ -163,6 +176,27 @@ def detect_profile(query, base_tables: list[str]) -> tuple[dict, dict]:
         require(function["owner"] == "crm_auto_reader_owner" and function["security_definer"] is True
                 and function["config"] in (["search_path=pg_catalog, public"], ["search_path=pg_catalog,public"]),
                 "Restricted S2S function ownership or configuration drift.")
+    if monitor:
+        reader = next(item for item in manifest["functions"] if item["signature"] == MONITOR_FUNCTION)
+        require(reader["volatility"] == "s" and reader["strict"] is False and reader["result"] == "jsonb"
+                and reader["arguments"] == "selected_event uuid DEFAULT NULL::uuid"
+                and {tuple(item) for item in reader["acl"]} == {
+            ("crm_auto_reader_owner", "crm_auto_reader_owner", "EXECUTE", False),
+            ("crm_auto_reader_owner", "crm_homologation_app", "EXECUTE", False),
+        }, "Execution monitor must remain STABLE and grant only its restricted owner and application EXECUTE.")
+        service_schema = next(item for item in manifest["schemas"] if item["name"] == "crm_auto_service")
+        require([item for item in service_schema["acl"] if item[1] == "crm_homologation_app"] == [
+            ["crm_auto_reader_owner", "crm_homologation_app", "USAGE", False]],
+            "Execution monitor application schema access differs.")
+        for function in manifest["functions"]:
+            if function["signature"] != MONITOR_FUNCTION:
+                require(all(item[1] not in ("PUBLIC", "crm_homologation_app") for item in function["acl"]),
+                        "Execution monitor application acquired another service function.")
+        for kind, table_key in (("relations", "name"), ("columns", "table")):
+            for item in manifest[kind]:
+                if item[table_key].startswith("crm_auto_service."):
+                    require(all(grant[1] not in ("PUBLIC", "crm_homologation_app") for grant in item["acl"]),
+                            "Execution monitor application acquired direct service-table access.")
     for kind in ("schemas", "relations", "columns", "functions"):
         for item in manifest[kind]:
             for grantor, grantee, _, _ in item["acl"]:
@@ -181,11 +215,12 @@ def detect_profile(query, base_tables: list[str]) -> tuple[dict, dict]:
     require(query("SELECT count(*) FROM pg_auth_members WHERE member IN "
                   "(SELECT oid FROM pg_roles WHERE rolname IN (" + role_names + "))") == "0",
             "Unreviewed role inheritance in private backup.")
-    return {"name": "synthetic-private-s2s-execution-v1" if execution else
-            ("synthetic-private-s2s-v1" if s2s else "synthetic-private-base-v1"),
+    return {"name": "synthetic-private-s2s-execution-monitor-v1" if monitor else
+            ("synthetic-private-s2s-execution-v1" if execution else
+             ("synthetic-private-s2s-v1" if s2s else "synthetic-private-base-v1")),
             "tables": tables, "roles": roles, "rls_tables": rls_tables,
             "s2s": s2s, "receipt_reconciliation": RECEIPT_FUNCTION in functions,
-            "execution_feedback": execution}, manifest
+            "execution_feedback": execution, "execution_monitor": monitor}, manifest
 
 
 def table_counts(query, profile: dict) -> dict:
