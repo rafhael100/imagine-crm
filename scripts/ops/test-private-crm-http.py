@@ -654,27 +654,21 @@ def private_business_snapshot(companies):
 
 def assert_entry_locales():
     """Errors before Controller::page still keep only the selected UI locale."""
-    signatures={}
     for locale,copy in LOCALE_COPY.items():
         client=Client()
         _,location=client.request('/painel?lang='+locale,expected=303)
         assert_destination(location,'/login')
         assert_locale(client.get('/login'),locale,copy['session'])
-        anonymous_csrf=client.csrf
         _,location=client.post('/login',{'login':'lab-locale-missing-'+secrets.token_hex(5),
                                        'password':'LOCALE_SENTINEL_PASSWORD'})
         assert_destination(location,'/login')
         page=client.get('/login')
         assert_locale(page,locale,copy['password'])
-        check(client.csrf!=anonymous_csrf and 'LOCALE_SENTINEL' not in page,
-              'failed password retained CSRF or reflected a credential')
-        # Replay a real token from before begin() invalidated the browser session.
-        page,_=client.post('/login',{'login':'lab-locale-replay','password':'LOCALE_SENTINEL_PASSWORD',
-                                    '_token':anonymous_csrf},expected=419,csrf=False)
-        assert_private_error(client,page,locale,419)
-        signature=private_headers(client)
-        check(419 not in signatures or signatures[419]==signature,'locale changed the existing CSRF error headers')
-        signatures[419]=signature
+        check('LOCALE_SENTINEL' not in page,'denied unknown login reflected a credential: '+locale)
+        # An origin-budget refusal may happen before beginCore(). Such denial
+        # must not authenticate, but does not promise an IAM/browser rotation.
+        _,location=client.request('/painel',expected=303)
+        assert_destination(location,'/login')
 
         client.get('/cadastro')
         visible={'login':'lab-locale-'+locale,'company':'EMPRESA_TESTE_LOCALE_'+locale.upper(),
@@ -697,7 +691,7 @@ def assert_entry_locales():
         assert_locale(page,'pt')
         check('LOCALE_SENTINEL' not in page,'invalid locale reflected a request value')
         assert_locale(client.get('/login'),'pt')
-    print('PASS localized pre-controller redirect, denied password, stale CSRF, validation old-input allowlist and invalid-locale fallback PT/EN/ES')
+    print('PASS localized pre-controller redirect, denied unknown login, validation old-input allowlist and invalid-locale fallback PT/EN/ES')
 
 
 def assert_auth_rotation_locales():
@@ -710,11 +704,30 @@ def assert_auth_rotation_locales():
         return json.loads(owner_sql("SELECT coalesce(jsonb_object_agg(id,jsonb_build_object('state',state,'binding',binding)),"
                                     "'{}'::jsonb)::text FROM public.crm_auth_sessions WHERE identity_id='"+actor+"'"))
 
+    signatures={}
     for locale,copy in LOCALE_COPY.items():
+        # Independent locale cases use the existing closed-CI cache fixture.
+        # This is not a backoff test. Never reset between a failure and its
+        # authority/replay assertions; all prior cases already logged out.
+        scenario('clear-cache')
         client=Client()
         client.get('/cadastro?plan=enterprise&lang='+locale)
         client.get('/login')
         old_csrf=client.csrf
+        _,location=client.post('/login',{'login':account['login'],'password':'LOCALE_SENTINEL_WRONG_PASSWORD'})
+        assert_destination(location,'/login')
+        page=client.get('/login');assert_locale(page,locale,copy['password'])
+        check('LOCALE_SENTINEL' not in page,'wrong existing-account password reflected a credential: '+locale)
+        check(client.csrf!=old_csrf,'admitted wrong-password operation retained anonymous CSRF: '+locale)
+        page,_=client.post('/logout',{'_token':old_csrf},expected=419,csrf=False)
+        assert_private_error(client,page,locale,419)
+        signature=private_headers(client)
+        check(419 not in signatures or signatures[419]==signature,'locale changed the existing CSRF error headers')
+        signatures[419]=signature
+        _,location=client.request('/painel',expected=303);assert_destination(location,'/login')
+        # Fresh origin count 1: preserve the configured 1-second backoff.
+        time.sleep(1.2)
+        client.get('/login');old_csrf=client.csrf
         known=sessions()
         _,location=client.post('/login',{'login':account['login'],'password':account['password']})
         assert_destination(location,'/mfa')
@@ -732,6 +745,9 @@ def assert_auth_rotation_locales():
               'failed factor reflected its value or preserved pending authority')
         _,location=client.request('/painel',expected=303);assert_destination(location,'/login')
 
+        # Wrong password, valid password, then wrong MFA are origin counts
+        # 1, 2 and 3. Respect the resulting 4-second backoff within this case.
+        time.sleep(4.2)
         client.get('/login')
         known=sessions()
         _,location=client.post('/login',{'login':account['login'],'password':account['password']})
@@ -890,6 +906,8 @@ def main():
     scenario('clear-cache')
     assert_entry_locales()
     assert_auth_rotation_locales()
+    # The preexisting journey starts with its original independent budgets.
+    scenario('clear-cache')
     a=Client(); b=Client(); admin=Client()
     home=a.get('/')
     assert_agents_no_go(a,'guest')
