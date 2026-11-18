@@ -148,11 +148,14 @@ async function keyboardScroll(page, region, hint, name, hintText, lastContent) {
 async function reportKeyboardScroll(page, name, conversion) {
   const selector = '[data-report-funnel-breakdown] .tablewrap[role=region]';
   const region = page.locator(selector);
+  const previousPhase = phase;
+  phase = previousPhase + '-name';
   check(await region.getAttribute('tabindex') === '0'
     && await region.getAttribute('aria-labelledby') === 'crm-report-funnel-breakdown-title'
     && await page.getByRole('region',{name,exact:true}).count() === 1
     && await page.locator('#crm-report-funnel-breakdown-title').innerText() === name,
     'Report table lacks its localized accessible name or keyboard tab stop');
+  phase = previousPhase + '-tab';
   await region.focus();
   await page.keyboard.press('Shift+Tab');
   check(!await region.evaluate(node => document.activeElement === node), 'Shift+Tab cannot leave the report table');
@@ -160,6 +163,7 @@ async function reportKeyboardScroll(page, name, conversion) {
   check(await region.evaluate(node => document.activeElement === node && node.matches(':focus-visible')
     && getComputedStyle(node).outlineStyle !== 'none' && parseFloat(getComputedStyle(node).outlineWidth) >= 3),
     'Tab cannot reach the report table with visible focus');
+  phase = previousPhase + '-overflow';
   check(await region.evaluate(node => node.scrollWidth > node.clientWidth + 1 && node.scrollLeft <= 1),
     'Report fixture does not exercise its contained horizontal overflow');
   for (let index=0; index<64; index++) await page.keyboard.press('ArrowRight',{delay:20});
@@ -167,17 +171,24 @@ async function reportKeyboardScroll(page, name, conversion) {
     const node = document.querySelector(selector);
     return node.scrollLeft >= node.scrollWidth - node.clientWidth - 1;
   }, selector);
-  check(await region.locator('thead th').last().innerText() === conversion
-    && await region.locator('thead th:last-child, tbody tr:first-child td:last-child').evaluateAll(nodes =>
+  phase = previousPhase + '-last-column-copy';
+  // Table headers use CSS uppercase; compare the translated source text
+  // separately from the rendered column geometry below.
+  check((await region.locator('thead th').last().textContent()).trim() === conversion,
+    'Report conversion heading is not translated');
+  phase = previousPhase + '-last-column-geometry';
+  check(await region.locator('thead th:last-child, tbody tr:first-child td:last-child').evaluateAll(nodes =>
       nodes.length === 2 && nodes.every(node => {
         const region = node.closest('[role=region]');
         const bounds = region.getBoundingClientRect(), content = node.getBoundingClientRect();
         return region.scrollLeft > 0 && content.left >= bounds.left - 1 && content.right <= bounds.right + 1;
       })), 'Arrow keys did not reveal the report conversion heading and value');
+  phase = previousPhase + '-return';
   for (let index=0; index<64; index++) await page.keyboard.press('ArrowLeft',{delay:20});
   await page.waitForFunction(selector => document.querySelector(selector).scrollLeft <= 1, selector);
   check(await region.evaluate(node => node.scrollLeft <= 1 && document.activeElement === node),
     'Keyboard cannot restore the first report column for normal reading');
+  phase = previousPhase;
 }
 async function login(page, account, admin = false, locale = 'pt') {
   phase = admin ? 'administrator-login' : 'client-login';
