@@ -25,26 +25,70 @@ final readonly class Workspace
     {
         Environment::assertConnection($this->db, 'app');
         return $this->principals->withinCurrent(function (PrincipalReference $principal) use ($action,$effect,$write) {
-            $account = $this->iam->table('public.crm_private_accounts')
-                ->where('identity_id',$principal->principalId)->first();
+            $ownerDraft=in_array($action,['agents.drafts.create','agents.drafts.read'],true);
+            $accounts = $this->iam->table('public.crm_private_accounts')->where('identity_id',$principal->principalId);
+            if ($ownerDraft) {
+                abort_unless(Environment::ownerDraftsEnabled(),404);
+                $this->iam->statement("SET LOCAL lock_timeout = '2s'");
+                $accounts->lockForUpdate();
+            }
+            $account = $accounts->first();
             abort_unless($account && $account->status === 'active' && $account->role === 'client',403);
+            if ($ownerDraft) abort_unless($account->team_role==='owner',403);
             if ($account->team_role!=='owner') {
                 abort_unless(in_array($action,['view','leads.create','leads.update','tasks.create','tasks.complete','automation.execute'],true),403);
             }
             // Tenant is resolved exclusively from this verified identity's binding.
             return (new PostgresActiveMembershipStore($this->db))->within($principal,$account->organization_id,
-                function () use ($account,$principal,$action,$effect,$write) {
+                function () use ($account,$principal,$action,$effect,$write,$ownerDraft) {
                     $trial = $this->db->table('public.crm_private_trials')
                         ->where('organization_id',$account->organization_id)->first();
                     abort_unless($trial,403);
                     if ($write) abort_if((int)$trial->expires_at <= time(),403,'Trial fictício encerrado.');
-                    if ($write || $action==='automation.export' || str_starts_with($action,'orders.')) {
+                    if ($write || $ownerDraft || $action==='automation.export' || str_starts_with($action,'orders.')) {
                         $this->db->selectOne('SELECT pg_advisory_xact_lock(hashtextextended(?::text,0))',
                             ['crm_private_quota|'.$account->organization_id]);
                     }
                     return $effect($account,$trial,$principal);
                 });
         });
+    }
+
+    private function ownerDraftUnit(callable $effect,bool $write=false,?int $committedDeadline=null): mixed
+    {
+        abort_unless(Environment::ownerDraftsEnabled(),404);
+        return $this->run($write?'agents.drafts.create':'agents.drafts.read',function ($account,$trial,$principal) use ($effect,$committedDeadline) {
+            return $effect(new OwnerRuleDraftService($this->db,$this->iam,$account->organization_id,$principal->principalId,$committedDeadline));
+        },$write);
+    }
+
+    public function createOwnerRuleDraft(string $source): array
+    {
+        abort_unless(Environment::ownerDraftsEnabled() && \App\Homologation\S2S\OwnerDraftContract::uuid($source),404);
+        // The first verified unit commits the immutable intention and audit.
+        // A later failure cannot imply that a remote transaction rolled back.
+        $staged=$this->ownerDraftUnit(fn(OwnerRuleDraftService $drafts)=>$drafts->stage($source),true);
+        return $this->ownerDraftUnit(fn(OwnerRuleDraftService $drafts)=>$drafts->deliver($staged['draft_ref'],!$staged['created']),true,$staged['deadline']);
+    }
+
+    public function retryOwnerRuleDraft(string $draft): array
+    {
+        abort_unless(Environment::ownerDraftsEnabled() && \App\Homologation\S2S\OwnerDraftContract::uuid($draft),404);
+        $deadline=$this->ownerDraftUnit(fn(OwnerRuleDraftService $drafts)=>$drafts->prepareAuthorization(),true);
+        return $this->ownerDraftUnit(fn(OwnerRuleDraftService $drafts)=>$drafts->deliver($draft,true),true,$deadline);
+    }
+
+    public function readOwnerRuleDraft(string $draft): array
+    {
+        abort_unless(Environment::ownerDraftsEnabled() && \App\Homologation\S2S\OwnerDraftContract::uuid($draft),404);
+        $deadline=$this->ownerDraftUnit(fn(OwnerRuleDraftService $drafts)=>$drafts->prepareAuthorization());
+        return $this->ownerDraftUnit(fn(OwnerRuleDraftService $drafts)=>$drafts->read($draft),false,$deadline);
+    }
+
+    /** Only local navigation references; the detail always performs a fresh remote read. */
+    public function ownerDraftReferences(): array
+    {
+        return $this->ownerDraftUnit(fn(OwnerRuleDraftService $drafts)=>$drafts->references());
     }
 
     private function table(string $name, string $organization)

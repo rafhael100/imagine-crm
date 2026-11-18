@@ -94,7 +94,13 @@ final class Controller
         $codes=$this->enrollment()->recover($r->string('login')->toString(),$r->string('code')->toString(),$r->string('password')->toString());
         return $this->page($r,'recovered',['recovery_codes'=>$codes]);
     }
-    public function dashboard(Request $r) { return $this->page($r,'workspace',app(Workspace::class)->overview()); }
+    public function dashboard(Request $r) {
+        $workspace=app(Workspace::class);$data=$workspace->overview();
+        if (Environment::ownerDraftsEnabled() && $data['account']->team_role==='owner') {
+            $data['ownerDraftReferences']=$workspace->ownerDraftReferences();
+        }
+        return $this->page($r,'workspace',$data);
+    }
     public function leads(Request $r)
     {
         $r->validate(['title'=>'required|string|max:64','value_cents'=>'required|integer|min:0|max:100000000','funnel'=>'nullable|uuid']);

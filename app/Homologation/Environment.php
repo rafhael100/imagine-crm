@@ -22,6 +22,11 @@ final class Environment
         return self::enabled() && getenv('CRM_PRIVATE_OP01') === 'minimal-lead-v1';
     }
 
+    public static function ownerDraftsEnabled(): bool
+    {
+        return self::enabled() && getenv('CRM_PRIVATE_OWNER_DRAFTS') === 'owner-rule-draft-v1';
+    }
+
     public static function assertConnection(Connection $db, string $role): void
     {
         if (!self::enabled() || !in_array($role, ['app','iam','enrollment','operator'], true)

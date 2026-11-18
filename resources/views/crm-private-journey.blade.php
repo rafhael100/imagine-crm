@@ -31,6 +31,7 @@
     $section=request('section','overview'); if(!is_string($section) || !array_key_exists($section,$sections)) $section='overview';
     $languageLink = fn($target) => '?'.http_build_query($screen==='workspace' ? ['section'=>$section,'lang'=>$target] : ['lang'=>$target]);
     $minimalLeadReadEnabled=\App\Homologation\Environment::minimalLeadReadEnabled();
+    $ownerDraftsEnabled=\App\Homologation\Environment::ownerDraftsEnabled();
     $seed=strtoupper(substr(bin2hex(random_bytes(4)),0,6));
 @endphp
 <!doctype html><html lang="{{ $language==='pt'?'pt-BR':$language }}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>{{ $say('Imagine CRM · Homologação privada','Imagine CRM · Private test environment','Imagine CRM · Entorno de pruebas privado') }}</title>
@@ -39,19 +40,20 @@
 .stack,.sidebar{min-width:0}.workspacehead .eyebrow{overflow-wrap:anywhere;word-break:break-word}@media(max-width:760px){.shell{grid-template-columns:minmax(0,1fr)}}
 .automation-runs{min-width:0}.automation-runs>.tablewrap{max-width:100%;overflow-x:auto}.automation-runs button{max-width:100%;white-space:normal;overflow-wrap:anywhere}
 .minimal-lead-summary{max-width:880px;margin:0 auto}.minimal-lead-fields{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:28px;margin:0}.minimal-lead-fields dt{font-size:13px;color:var(--muted)}.minimal-lead-fields dd{margin:10px 0 0}.minimal-lead-fields code{font-size:14px;overflow-wrap:anywhere}@media(max-width:760px){.minimal-lead-fields{grid-template-columns:minmax(0,1fr);gap:24px}}
+.owner-draft{max-width:960px;margin:auto;min-width:0}.owner-draft-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:0}.owner-draft-fields div{min-width:0}.owner-draft-fields dt{font-size:13px;color:var(--muted)}.owner-draft-fields dd{margin:8px 0 0;overflow-wrap:anywhere}.owner-draft .btn,.owner-draft button,.owner-draft-action{min-height:44px}.owner-draft .actions>*{max-width:100%}@media(max-width:760px){.owner-draft-fields{grid-template-columns:minmax(0,1fr)}.owner-draft .actions{align-items:stretch}.owner-draft .actions>a,.owner-draft .actions>form,.owner-draft .actions button{width:100%}}
 </style></head><body>
 <div class="environment">{{ $say('HOMOLOGAÇÃO PRIVADA · DADOS FICTÍCIOS · NENHUMA COBRANÇA REAL','PRIVATE TEST ENVIRONMENT · FICTIONAL DATA · NO REAL CHARGES','ENTORNO DE PRUEBAS PRIVADO · DATOS FICTICIOS · SIN COBROS REALES') }}</div><div class="wrap">
 <header class="top"><a href="/" aria-label="Imagine CRM"><img class="brand" src="/assets/logo-imagine.png" alt="Imagine"></a><div class="toplinks"><a href="https://comercial-dev.imaginecomunica.com.br/" class="quiet">← {{ $t('Voltar ao site') }}</a><div class="languages" aria-label="{{ $t('Idioma') }}"><a href="{{ $languageLink('pt') }}" aria-current="{{ $language==='pt'?'true':'false' }}">PT-BR</a><a href="{{ $languageLink('en') }}" aria-current="{{ $language==='en'?'true':'false' }}">EN</a><a href="{{ $languageLink('es') }}" aria-current="{{ $language==='es'?'true':'false' }}">ES</a></div>
-@if(in_array($screen,['workspace','admin','minimal-lead']))<form method="post" action="/logout">
+@if(in_array($screen,['workspace','admin','minimal-lead','owner-draft']))<form method="post" action="/logout">
 @csrf<button class="secondary smallbutton">{{ $t('Sair') }}</button></form>
 @else<a class="btn secondary" href="/login">{{ $t('Entrar') }} ↗</a>
 @endif</div></header>
 <main id="main">
-@if($screen!=='minimal-lead' && $errors->any())<div class="notice error" role="alert">
+@if(!in_array($screen,['minimal-lead','owner-draft']) && $errors->any())<div class="notice error" role="alert">
 @foreach($errors->all() as $error)<div>{{ $error }}</div>
 @endforeach</div>
 @endif
-@if($screen!=='minimal-lead' && session('notice'))<div class="notice" role="status">{{ session('notice') }}</div>
+@if(!in_array($screen,['minimal-lead','owner-draft']) && session('notice'))<div class="notice" role="status">{{ session('notice') }}</div>
 @endif
 @if($screen==='home')
 @include('crm-marketing-home')
@@ -98,6 +100,31 @@
 <div class="workspacehead"><div><span class="eyebrow">Imagine CRM</span><h1 data-minimal-lead-heading="imagine">{{ $say('Resumo mínimo do lead','Minimal lead summary','Resumen mínimo del lead') }}</h1><p class="quiet">{{ $say('Referência e etapa deste lead fictício, consultadas com as permissões da sua conta.','Reference and stage of this fictional lead, checked against your account permissions.','Referencia y etapa de este lead ficticio, consultadas con los permisos de tu cuenta.') }}</p></div><span class="tag">{{ $say('Somente consulta','Read only','Solo consulta') }}</span></div>
 <div class="panel"><dl class="minimal-lead-fields"><div><dt>{{ $say('Referência do lead','Lead reference','Referencia del lead') }}</dt><dd><code data-minimal-lead-ref="{{ $data['projection']['ref'] }}">{{ $data['projection']['ref'] }}</code></dd></div><div><dt>{{ $t('Etapa') }}</dt><dd><span class="tag" data-minimal-lead-stage="{{ $data['projection']['stage'] }}">{{ $stages[$data['projection']['stage']] }}</span></dd></div></dl><p class="quiet mt">{{ $say('As informações são consultadas novamente a cada abertura desta página.','Information is checked again each time you open this page.','La información se consulta de nuevo cada vez que abres esta página.') }}</p></div>
 <div class="actions"><a class="btn secondary" data-minimal-lead-back="imagine" href="/painel?section=leads&amp;lang={{ $language }}">← {{ $say('Voltar aos leads','Back to leads','Volver a los leads') }}</a></div>
+</section>
+@elseif($screen==='owner-draft')
+@php $draft=$data['draft']; $draftBusiness=$draft['business']; @endphp
+<section class="stack owner-draft" data-owner-draft-view="imagine" data-owner-draft-state="{{ $draft['state'] }}" data-owner-draft-operational="false" data-owner-draft-executed="false">
+<div class="workspacehead"><div><span class="eyebrow">Imagine CRM · Agents</span><h1>{{ $say('Rascunho de acompanhamento','Follow-up draft','Borrador de seguimiento') }}</h1><p class="quiet">{{ $say('Um registro do planejamento comercial da sua empresa, com a regra e a autoria definidas pelo CRM.','A record of your company’s commercial plan, with its rule and authorship defined by the CRM.','Un registro del plan comercial de tu empresa, con la regla y la autoría definidas por el CRM.') }}</p></div><span class="tag">{{ $draft['state']==='confirmed'?$say('Rascunho confirmado','Draft confirmed','Borrador confirmado'):$say('Confirmação pendente','Confirmation pending','Confirmación pendiente') }}</span></div>
+<div class="panel"><dl class="owner-draft-fields"><div><dt>{{ $say('Referência do rascunho','Draft reference','Referencia del borrador') }}</dt><dd><code data-owner-draft-ref="{{ $draft['draft_ref'] }}">{{ $draft['draft_ref'] }}</code></dd></div>
+@if($draft['state']==='confirmed' && $draftBusiness)
+<div><dt>{{ $say('Regra comercial','Commercial rule','Regla comercial') }}</dt><dd data-owner-draft-rule="{{ $draftBusiness['rule_id'] }}">{{ $say('Acompanhar lead qualificado','Follow up a qualified lead','Dar seguimiento a un lead calificado') }}</dd></div>
+<div><dt>{{ $say('Lead de origem','Source lead','Lead de origen') }}</dt><dd><code data-owner-draft-lead="{{ $draftBusiness['lead_id'] }}">{{ $draftBusiness['lead_id'] }}</code></dd></div>
+<div><dt>{{ $say('Autor no CRM','CRM author','Autor en el CRM') }}</dt><dd><code data-owner-draft-creator="{{ $draftBusiness['creator_id'] }}">{{ $draftBusiness['creator_id'] }}</code></dd></div>
+<div><dt>{{ $say('Planejamento de origem','Source plan','Plan de origen') }}</dt><dd><code data-owner-draft-source="{{ $draftBusiness['source_run_id'] }}">{{ $draftBusiness['source_run_id'] }}</code></dd></div>
+<div><dt>{{ $say('Prazo original (UTC)','Original due time (UTC)','Plazo original (UTC)') }}</dt><dd data-owner-draft-due="{{ $draftBusiness['projection']['due_at'] }}">{{ gmdate('d/m/Y H:i:s',$draftBusiness['projection']['due_at']) }}</dd></div>
+<div><dt>{{ $say('Versão da configuração','Settings version','Versión de la configuración') }}</dt><dd data-owner-draft-settings="{{ $draftBusiness['settings_version'] }}">{{ $draftBusiness['settings_version'] }}</dd></div>
+<div><dt>{{ $say('Versão do lead na origem','Source lead version','Versión original del lead') }}</dt><dd>{{ $draftBusiness['lead_version'] }}</dd></div>
+@endif
+</dl></div>
+@if($draft['state']==='confirmed')
+<div class="notice" role="status">{{ $say('Consultado novamente no Agents com sua permissão atual. O planejamento e o autor são históricos; alterações posteriores no CRM não reescrevem este rascunho.','Checked again in Agents with your current permission. The plan and author are historical; later CRM changes do not rewrite this draft.','Consultado de nuevo en Agents con tu permiso actual. El plan y el autor son históricos; los cambios posteriores en el CRM no reescriben este borrador.') }}</div>
+@else
+<div class="notice" role="status" data-owner-draft-pending="true">{{ $say('A confirmação ainda está pendente. Um envio pode ter sido recebido mesmo sem resposta. Ao tentar novamente, o CRM consulta o resultado antes de reenviar o mesmo rascunho.','Confirmation is still pending. A request may have been received even if its response was lost. When you retry, the CRM checks the result before sending the same draft again.','La confirmación sigue pendiente. Una solicitud puede haberse recibido aunque se haya perdido la respuesta. Al reintentar, el CRM consulta el resultado antes de volver a enviar el mismo borrador.') }}</div>
+@endif
+<p class="quiet">{{ $say('Rascunho para consulta. Este fluxo não aprova nem executa ações; as automações nativas do CRM mantêm seu funcionamento.','Draft for review. This flow does not approve or execute actions; native CRM automations keep their existing behavior.','Borrador para consulta. Este flujo no aprueba ni ejecuta acciones; las automatizaciones nativas del CRM mantienen su funcionamiento.') }}</p>
+<div class="actions"><a class="btn secondary" data-owner-draft-refresh="true" href="/agentes/rascunhos/{{ $draft['draft_ref'] }}?lang={{ $language }}">{{ $say('Consultar novamente','Check again','Consultar de nuevo') }}</a>
+@if($draft['state']==='pending')<form method="post" data-owner-draft-retry="{{ $draft['draft_ref'] }}" action="/agentes/rascunhos/{{ $draft['draft_ref'] }}/reenviar">@csrf<button>{{ $say('Tentar envio novamente','Retry sending','Reintentar envío') }}</button></form>@endif
+<a class="btn secondary" data-owner-draft-back="true" href="/painel?section=automation&amp;lang={{ $language }}">← {{ $say('Voltar às automações','Back to automations','Volver a las automatizaciones') }}</a></div>
 </section>
 @elseif($screen==='workspace')
 @php
@@ -301,7 +328,11 @@
 <div class="panel automation-runs"><h3>{{ $say('Execuções do motor nativo','Native automation runs','Ejecuciones de automatización nativa') }}</h3><p class="quiet">{{ $say('O processamento exige sua sessão e permissões atuais. Executa somente suas próprias tarefas agendadas. Sem worker operacional ou comunicação externa.','Processing requires your current session and permissions. It runs only your own scheduled tasks. There is no background worker or external communication.','El procesamiento requiere tu sesión y permisos actuales. Ejecuta solo tus propias tareas programadas. No hay ejecución en segundo plano ni comunicación externa.') }}</p>
 <form method="post" action="/automacoes/processar">@csrf<button>{{ $say('Processar minhas execuções pendentes →','Process my pending runs →','Procesar mis ejecuciones pendientes →') }}</button></form>
 <div class="tablewrap"><table><thead><tr><th>{{ $say('Modelo','Template','Plantilla') }}</th><th>{{ $say('Estado','Status','Estado') }}</th><th>{{ $say('Agendada (UTC)','Scheduled (UTC)','Programada (UTC)') }}</th><th>{{ $say('Tentativas','Attempts','Intentos') }}</th><th>{{ $say('Ação','Action','Acción') }}</th></tr></thead><tbody>
-@forelse($data['automationRuns'] as $run)<tr data-automation-id="{{ $run->id }}"><td>{{ $automationNames[$run->template]??$say('Modelo indisponível','Template unavailable','Plantilla no disponible') }}</td><td data-automation-state="{{ $run->state }}">{{ $automationStates[$run->state]??$say('Indisponível','Unavailable','No disponible') }}</td><td>{{ gmdate('d/m H:i:s',$run->due_at) }}</td><td>{{ $run->attempts }}</td><td>@if($run->state==='pending' && $data['account']->team_role==='owner')<form method="post" action="/automacoes/{{ $run->id }}/cancelar">@csrf<button class="secondary smallbutton">{{ $say('Cancelar execução','Cancel run','Cancelar ejecución') }}</button></form>@endif</td></tr>
+@forelse($data['automationRuns'] as $run)<tr data-automation-id="{{ $run->id }}"><td>{{ $automationNames[$run->template]??$say('Modelo indisponível','Template unavailable','Plantilla no disponible') }}</td><td data-automation-state="{{ $run->state }}">{{ $automationStates[$run->state]??$say('Indisponível','Unavailable','No disponible') }}</td><td>{{ gmdate('d/m H:i:s',$run->due_at) }}</td><td>{{ $run->attempts }}</td><td>@if($run->state==='pending' && $data['account']->team_role==='owner')<form method="post" action="/automacoes/{{ $run->id }}/cancelar">@csrf<button class="secondary smallbutton">{{ $say('Cancelar execução','Cancel run','Cancelar ejecución') }}</button></form>@endif
+@if($ownerDraftsEnabled && $data['account']->team_role==='owner')
+@if(isset($data['ownerDraftReferences'][$run->id]))<a class="btn secondary smallbutton owner-draft-action mt" data-owner-draft-link="{{ $data['ownerDraftReferences'][$run->id] }}" href="/agentes/rascunhos/{{ $data['ownerDraftReferences'][$run->id] }}">{{ $say('Consultar rascunho','View draft','Consultar borrador') }}</a>
+@elseif($run->state==='pending' && $run->template==='followup_qualified' && $run->actor_id===$data['account']->identity_id)<form method="post" class="mt" data-owner-draft-create="{{ $run->id }}" action="/agentes/planejamentos/{{ $run->id }}/rascunho">@csrf<button class="secondary smallbutton owner-draft-action">{{ $say('Criar rascunho no Agents','Create draft in Agents','Crear borrador en Agents') }}</button></form>@endif
+@endif</td></tr>
 @empty<tr><td colspan="5" class="empty">{{ $say('Nenhuma execução registrada.','No runs recorded yet.','Todavía no hay ejecuciones registradas.') }}</td></tr>
 @endforelse</tbody></table></div></div>
 <div class="panel"><h3>{{ $say('Execuções e limites','Runs and limits','Ejecuciones y límites') }}</h3><p>{{ sprintf($say('Leads: %d/20 · Usuários: %d/2 · Automações: %d/2.','Leads: %d/20 · Users: %d/2 · Automations: %d/2.','Leads: %d/20 · Usuarios: %d/2 · Automatizaciones: %d/2.'),$total,count($data['team']),count($data['rules'])) }}</p>
