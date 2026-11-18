@@ -653,6 +653,49 @@ def private_business_snapshot(companies):
     return json.loads(owner_sql('SELECT jsonb_build_object('+','.join(parts)+')::text'))
 
 
+def assert_nullable_preferences(client,peer_company):
+    """A permitted null rules value is the existing empty list, with a successful no-op."""
+    state=json.loads(client.get('/automacoes/estado'))
+    company=str(uuid.UUID(state['company_id']));peer_company=str(uuid.UUID(peer_company))
+    before=private_business_snapshot([company,peer_company])
+    own=[row for row in before['preferences'] if row['organization_id']==company]
+    check(len(own)==1,'nullable preferences require exactly the authenticated tenant settings')
+    preferences=own[0];settings=preferences['automation_rules']
+    check(isinstance(settings,dict) and settings.get('schema')=='CRM_PRIVATE_AUTOMATION_V1'
+          and settings.get('rules')==[] and type(settings.get('version')) is int
+          and settings['version']==state['settings_version'] and 0<settings['version']<=20
+          and type(settings.get('delay_seconds')) is int and 0<=settings['delay_seconds']<=86400
+          and preferences['language'] in LOCALE_COPY,
+          'nullable preferences require an already paused version with observed language and delay')
+    fields={'automation_version':settings['version'],'language':preferences['language'],
+            'delay_seconds':settings['delay_seconds']}
+    for transport in ('form-empty','json-null'):
+        page=client.get('/painel?section=settings')
+        form=re.search(r'<form\b[^>]*action="/preferencias"[^>]*>(.*?)</form>',page,re.S)
+        check(form is not None,'real preferences form is required for nullable requests')
+        token=re.search(r'name="_token" value="([^"]+)"',form.group(1))
+        check(token is not None and token.group(1)==client.csrf
+              and re.fullmatch(r'[A-Za-z0-9]{40}',token.group(1))
+              and 'name="automation_version" value="'+str(settings['version'])+'"' in form.group(1),
+              'nullable request lost its real CSRF token or observed current form version')
+        if transport=='form-empty':
+            # The actual private HTTP kernel converts this empty string to null.
+            _,location=client.post('/preferencias',dict(fields,rules=''),expected=303)
+        else:
+            body=json.dumps(dict(fields,rules=None,_token=token.group(1)),
+                            separators=(',',':'),allow_nan=False).encode('utf-8')
+            _,location=client.request('/preferencias',expected=303,body=body,
+                                      headers={'Content-Type':'application/json'})
+        destination=urllib.parse.urlsplit(location)
+        check(destination.path=='/painel' and destination.query=='section=settings'
+              and not destination.fragment and ((not destination.netloc and not destination.scheme)
+                  or (destination.scheme in ('http','https') and destination.netloc=='crm-dev.imaginecomunica.com.br')),
+              'nullable preferences did not take the exact successful settings redirect: '+transport)
+        check(private_business_snapshot([company,peer_company])==before,
+              'nullable preferences changed a revision, rule, delay, language or business/audit row: '+transport)
+    print('PASS nullable preferences: real-CSRF form empty and JSON null return 303 to /painel?section=settings; observed paused version/language/delay and both tenant business/audit snapshots unchanged')
+
+
 def assert_task_date_boundary(client,lead,company,peer_company):
     """Observe the PHP/SQL date mismatch without writing; deny year zero over real HTTP."""
     company=str(uuid.UUID(company));peer_company=str(uuid.UUID(peer_company));lead=str(uuid.UUID(lead))
@@ -1712,6 +1755,7 @@ def main():
     a.post('/preferencias',{'automation_version':0,'language':'pt'},expected=409)
     a.post('/preferencias',{'automation_version':1,'language':'pt'})
     check('Pausada' in a.get('/painel?section=automation'),'pause not visible')
+    assert_nullable_preferences(a,FIXTURES['clientB']['organization'])
     a.post('/preferencias',{'automation_version':2,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
     a.post('/preferencias',{'automation_version':3,'language':'pt','rules[]':['billing.charge']},expected=303)
     rejected=a.get('/painel?section=automation')

@@ -71,6 +71,11 @@ TASK_DATE = (
     "fix/crm-private-task-date-validation-2026-11-18",
 )
 TASK_DATE_ANCESTORS = (*STRICT_CSV_ANCESTORS, "c073cfeb8d29fc6cd0a9f33642ccc1275b8b6f59")
+NULLABLE_PREFERENCES = (
+    INTEGRATION[0], INTEGRATION[1],
+    "fix/crm-nullable-automation-preferences-2026-11-18",
+)
+NULLABLE_PREFERENCES_ANCESTORS = (*TASK_DATE_ANCESTORS, "2a6d2950c54873ebbb233b64ef7985e0750c0576")
 HEAD = "1" * 40
 
 
@@ -211,8 +216,20 @@ class OwnerDraftCiAdmissionTest(unittest.TestCase):
                                    ancestors=set(TASK_DATE_ANCESTORS) - {missing})
                 self.assertIn(("merge-base", "--is-ancestor", missing, HEAD), self.git_calls)
 
-    def test_seven_admission_tuples_cannot_mix_fields_or_accept_neighbor_branches(self):
-        known = {ORIGINAL, INTEGRATION, MIGRATION, LEDGER, BASE_MONITOR, STRICT_CSV, TASK_DATE}
+    def test_nullable_preferences_tuple_requires_every_ancestor_and_exact_task_date_ancestor(self):
+        self.assertEqual(self.preflight(self.event(NULLABLE_PREFERENCES), ancestors=NULLABLE_PREFERENCES_ANCESTORS),
+                         (HEAD, self.runner.resolve()))
+        self.assertEqual([call for call in self.git_calls if call[0] == "merge-base"],
+                         [("merge-base", "--is-ancestor", ancestor, HEAD)
+                          for ancestor in NULLABLE_PREFERENCES_ANCESTORS])
+        for missing in NULLABLE_PREFERENCES_ANCESTORS:
+            with self.subTest(missing=missing):
+                self.assert_denied(self.event(NULLABLE_PREFERENCES), "OWNER_DRAFT_SOURCE_DENIED",
+                                   ancestors=set(NULLABLE_PREFERENCES_ANCESTORS) - {missing})
+                self.assertIn(("merge-base", "--is-ancestor", missing, HEAD), self.git_calls)
+
+    def test_eight_admission_tuples_cannot_mix_fields_or_accept_neighbor_branches(self):
+        known = {ORIGINAL, INTEGRATION, MIGRATION, LEDGER, BASE_MONITOR, STRICT_CSV, TASK_DATE, NULLABLE_PREFERENCES}
         choices = [sorted({value[index] for value in known}) for index in range(3)]
         rejected = 0
         for provenance in itertools.product(*choices):
@@ -222,8 +239,8 @@ class OwnerDraftCiAdmissionTest(unittest.TestCase):
                 self.assert_denied(self.event(provenance), "OWNER_DRAFT_PR_PROVENANCE_DENIED")
                 self.assertEqual(self.git_calls, [])
                 rejected += 1
-        self.assertEqual(rejected, 21)
-        for candidate in (MIGRATION, LEDGER, BASE_MONITOR, STRICT_CSV, TASK_DATE):
+        self.assertEqual(rejected, 24)
+        for candidate in (MIGRATION, LEDGER, BASE_MONITOR, STRICT_CSV, TASK_DATE, NULLABLE_PREFERENCES):
             for index, value in enumerate(("0" * 40, "main", candidate[2] + "-other")):
                 provenance = list(candidate)
                 provenance[index] = value

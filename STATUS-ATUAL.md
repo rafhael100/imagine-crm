@@ -1,5 +1,33 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — preferências com regras vazias ou nulas (18/11/2026)
+
+A branch `fix/crm-nullable-automation-preferences-2026-11-18` continua a
+[#666](https://github.com/rafhael100/imagine-crm/pull/666), commit
+`2a6d2950c54873ebbb233b64ef7985e0750c0576`. O Controller passa a converter
+`rules` nulo para a lista vazia já usada quando o campo está ausente,
+alinhando a validação `nullable` à assinatura tipada do Workspace.
+
+O harness acrescenta dois salvamentos pela rota autenticada: campo de
+formulário vazio e JSON nulo. Usa a pausa nominal já existente e os valores
+observados de versão, idioma e atraso. Exige o destino de sucesso
+`/painel?section=settings`, além do 303, e igualdade das seis tabelas de
+negócio e auditoria das duas empresas depois de cada solicitação. Nenhuma
+fixture ou operação de pausa/reativação é acrescentada ao roteiro.
+
+O guard admite a oitava tupla fechada, exige nove ancestrais e conserva
+os sete contextos anteriores. Vinte e um testes locais de admissão passaram.
+PHP, HTTP, banco e navegador desta alteração
+devem passar na CI da própria HEAD. A #666 já encerrou com 25 workflows
+aprovados e F251/F252 bloqueados pelo escopo, sem aprovação herdada para
+esta candidata. O possível 503 anterior da entrada nula é inferido das
+fontes; não se declara uma execução HTTP histórica.
+
+Contrato:
+[CRM-NULLABLE-AUTOMATION-PREFERENCES-2026-11-18](docs/desenvolvimento/CRM-NULLABLE-AUTOMATION-PREFERENCES-2026-11-18.md).
+**DRAFT / NO-MERGE / NO-DEPLOY.** Workspace, schema, rotas, fixtures e
+critérios operacionais permanecem preservados.
+
 ## Continuidade — data de tarefa compatível com PostgreSQL (18/11/2026)
 
 A branch `fix/crm-private-task-date-validation-2026-11-18` continua a
