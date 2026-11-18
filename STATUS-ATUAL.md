@@ -1,5 +1,13 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — retorno do n8n ao acompanhamento do CRM
+
+A candidata de execução nativa do Agents [#469](https://github.com/rafhael100/imagine-ai-agents/pull/469) produziu resultado técnico `PREPARED` e confirmação durável na CI. Este recorte acrescenta consulta privada assinada, projeção e histórico separados do recibo de entrega. O CRM verifica a origem e a resposta, impede regressão e duplicação de observações e preserva o estado após falha ou recuperação.
+
+O [contrato de acompanhamento](docs/automation/CRM-N8N-EXECUTION-FEEDBACK.md) explica estados, grants próprios, persistência e backup. O perfil de backup fechado passa a reconhecer os objetos de execução, mantendo owners, ACLs e FORCE RLS. A instalação não cria grants ativos ou logins por padrão. Resultados efetivos ficam registrados na PR e na SHA da CI; esta nota não antecipa aprovação.
+
+Base de implementação: [#647](https://github.com/rafhael100/imagine-crm/pull/647), SHA `a2c7218f28aac58796387c939832ff1bfae3cba0`, com as correções #641–#646 já ancestrais. F0, PostgreSQL, jornada, P22 e backup dessa base passaram; F251/F252 continuam recusando o escopo acumulado, sem ampliação de allowlists. DRAFT / NO-MERGE / NO-DEPLOY, somente dados sintéticos.
+
 ## Continuidade — contraprovas Sites→CRM com captura real (17/11/2026)
 
 Na candidata consolidada `76cfef1d026c8b9f0e88f343b27cff44aced6e48`, as [três contraprovas PG07](https://github.com/rafhael100/imagine-crm/actions/runs/44207277042) passaram sem skip (589 assertions): revogação primeiro, timeout real `55P03` com retry/replay na mesma conexão e falha tardia `23514` com rollback integral. A suíte anterior passou 31 testes/360 assertions, com o skip F398 esperado; o [job F398 dedicado](https://github.com/rafhael100/imagine-crm/actions/runs/44207277196) executou o emissor original e passou 1 teste/32 assertions. A [suíte geral PostgreSQL/RLS](https://github.com/rafhael100/imagine-crm/actions/runs/44207277488) passou 2.376 testes/73.694 assertions, com 103 skips e uma depreciação registrados.

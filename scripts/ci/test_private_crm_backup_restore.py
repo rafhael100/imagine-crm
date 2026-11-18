@@ -16,7 +16,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/ops"))
 from private_crm_backup_contract import (  # noqa: E402
-    BASE_ROLES, BASE_TENANT_TABLES, DATABASE, S2S_TABLES, detect_profile,
+    BASE_ROLES, BASE_TENANT_TABLES, DATABASE, EXECUTION_TABLES, S2S_TABLES, detect_profile,
     isolated_restore_cluster, require, scoped_counts, table_counts, verify_restored_security,
 )
 
@@ -233,8 +233,37 @@ def main() -> None:
                     "Restored transport/application acquired raw service-table access.")
         require(table_counts(query, profile) == counts, "Rolled-back function probes altered restored records.")
     require(table_counts(sql, profile) == counts, "Restore tests altered the source database.")
+    # The optional execution extension is a complete third profile, not a
+    # wildcard for additional schemas, functions or table access. The actual
+    # non-empty execution history is also restored by the cross-product test.
+    sql((ROOT / "infra/homologation/s2s/execution-feedback-candidate.sql").read_text())
+    sql((ROOT / "scripts/ci/s2s/test-execution-feedback.sql").read_text())
+    execution_manifest = encrypted_backup("synthetic-private-s2s-execution-v1")
+    require(execution_manifest["s2s_execution_feedback"] is True
+            and execution_manifest["s2s_function_owners_verified"] == 8
+            and all(execution_manifest["table_counts"][table] == 0 for table in EXECUTION_TABLES),
+            "Execution backup profile did not preserve its closed, initially inert extension.")
+    for setup, cleanup in (
+        ("ALTER TABLE crm_auto_service.execution_observations RENAME TO execution_unknown",
+         "ALTER TABLE crm_auto_service.execution_unknown RENAME TO execution_observations"),
+        ("ALTER FUNCTION crm_auto_service.read_execution_projection(uuid,uuid) RENAME TO execution_unknown",
+         "ALTER FUNCTION crm_auto_service.execution_unknown(uuid,uuid) RENAME TO read_execution_projection"),
+        ("ALTER TABLE crm_auto_service.execution_observations DISABLE TRIGGER execution_history_immutable",
+         "ALTER TABLE crm_auto_service.execution_observations ENABLE TRIGGER execution_history_immutable"),
+    ):
+        sql(setup)
+        try:
+            try:
+                detect_profile(sql, base_tables)
+            except RuntimeError:
+                pass
+            else:
+                raise AssertionError("Partial execution backup profile was accepted.")
+        finally:
+            sql(cleanup)
     print("CRM_BACKUP_BASE_S2S_SEPARATE_CLUSTER_PASS encrypted=1 tamper_rejected=1 "
-          "owners_preserved=1 force_rls=1 functions_executed=1 source_preserved=1 operational_apply=0")
+          "owners_preserved=1 force_rls=1 functions_executed=1 source_preserved=1 "
+          "execution_profile_verified=1 partial_execution_profile_denied=1 operational_apply=0")
 
 
 if __name__ == "__main__":
