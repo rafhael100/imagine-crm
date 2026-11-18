@@ -1,0 +1,56 @@
+name: CRM Private F253 - post-switch staging canary (NO DEPLOY)
+on:
+  pull_request:
+    branches: [dev/fast-track-crm-2026-11-04]
+    paths:
+      - 'scripts/ops/private-crm-f253-canary.py'
+      - 'scripts/ops/test-private-crm-f253-canary.py'
+      - 'scripts/ops/private-crm-upgrade-f252.py'
+      - 'scripts/ops/test-private-crm-upgrade-f252.py'
+      - '.github/workflows/ci-private-crm-f253-canary.yml'
+      - '.github/workflows/ci-private-crm-journey.yml'
+      - 'docs/operations/private-complete-journey.md'
+permissions:
+  contents: read
+concurrency:
+  group: crm-private-f253-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  private-f253-post-switch-canary:
+    name: private-f253-post-switch-canary
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Read exact candidate with no credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Enforce repository identity and immutable candidate
+        env:
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "rafhael100/imagine-crm"
+          test "$GITHUB_EVENT_NAME" = "pull_request"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+      - name: Test no-network canary, failure conditions and F252 release sequencing
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/ops/private-crm-f253-canary.py
+          python3 -m py_compile scripts/ops/test-private-crm-f253-canary.py
+          python3 -m py_compile scripts/ops/private-crm-upgrade-f252.py
+          python3 scripts/ops/test-private-crm-f253-canary.py
+          python3 scripts/ops/test-private-crm-upgrade-f252.py
+          python3 - <<'PY'
+          from pathlib import Path
+          upgrade=Path("scripts/ops/private-crm-upgrade-f252.py").read_text()
+          canary=Path("scripts/ops/private-crm-f253-canary.py").read_text()
+          assert upgrade.index("verify_candidate_canary()") < upgrade.index("review_access(new_env)")
+          assert upgrade.index("review_access(new_env)") < upgrade.index("updated = dict(marker, sha=candidate")
+          assert "private-f253-post-switch-canary" in upgrade
+          assert 'HTTPConnection("127.0.0.1", PORT' in canary
+          assert "subprocess" not in canary
+          print("F253 PASS: private-only post-switch gate without VPS, network or release.")
+          PY
