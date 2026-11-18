@@ -133,6 +133,81 @@ def catalog_manifest(query):
     """))
 
 
+def sql_shape(value, identifiers):
+    """Diagnostic only: no SQL rewrite, with literals hashed and never printed."""
+    if not isinstance(value, str) or len(value.encode()) > 16384:
+        return {"sql_shape": None, "literal_tokens_sha256": None}
+    token = re.compile(r"(?P<string>(?:\bE|\bU&)?'(?:''|\\.|[^'\\])*')"
+                       r'|(?P<quoted>"[A-Za-z_][A-Za-z0-9_]*")'
+                       r"|(?P<number>(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?)"
+                       r"|(?P<word>[A-Za-z_][A-Za-z0-9_]*)|(?P<space>\s+)"
+                       r"|(?P<punct>[().,\[\]+*/%=<>!~?:&|\-])", re.I)
+    keywords = set("check primary key foreign references unique nulls distinct match simple full partial "
+                   "on update delete no action restrict cascade set default deferrable initially deferred immediate "
+                   "not valid array any all is and or not between in true false null "
+                   "character varying text integer bigint smallint boolean numeric jsonb "
+                   "timestamp with without time zone date double precision real public pg_catalog jsonb_typeof".split())
+    literals, pieces = [], []
+    position = 0
+    while position < len(value):
+        match = token.match(value, position)
+        if match is None:
+            return {"sql_shape": None, "literal_tokens_sha256": None}
+        kind, text = match.lastgroup, match.group()
+        position = match.end()
+        if kind in ("string", "number") or kind == "word" and text.lower() in ("true", "false", "null"):
+            literals.append([kind, text])
+            pieces.append("'LITERAL'" if kind == "string" else "LITERAL")
+        elif kind == "word" and text.lower() not in keywords | identifiers:
+            return {"sql_shape": None, "literal_tokens_sha256": None}
+        elif kind == "quoted" and text[1:-1].lower() not in identifiers:
+            return {"sql_shape": None, "literal_tokens_sha256": None}
+        else:
+            pieces.append(" " if kind == "space" else text)
+    shape = re.sub(r"\s+", " ", "".join(pieces)).strip()
+    without_literals = shape.replace("'LITERAL'", "")
+    if len(shape) > 4096 or re.search(r"[\x00-\x1f\x7f-\xff'$]", without_literals) or any(
+            marker in shape for marker in ("--", "/*", "*/")):
+        shape = None
+    return {"sql_shape": shape, "literal_tokens_sha256": manifest_digest(literals)}
+
+
+def exact_catalog(expected, actual, tables):
+    if actual != expected:
+        check(len(tables) == 27 and len(set(tables)) == 27, "CATALOG_DIAGNOSTIC_INVENTORY")
+        allowed_tables = set(tables)
+        identifiers = {row["name"].lower() for row in expected["columns"] if row["table"] in allowed_tables}
+        identifiers |= {name.split(".", 1)[1] for name in allowed_tables}
+        differences = []
+        for kind in ("constraints", "columns"):
+            before = {(row["table"], row["name"]): row for row in expected[kind]}
+            after = {(row["table"], row["name"]): row for row in actual[kind]}
+            for key in sorted(set(before) | set(after)):
+                old, new = before.get(key), after.get(key)
+                if old == new:
+                    continue
+                # Log only fixed schema identities and a bounded shape whose
+                # literal tokens have been removed. Equality is still required.
+                check(key[0] in allowed_tables
+                      and re.fullmatch(r"[a-z0-9_]{1,63}", key[1]), "CATALOG_DIAGNOSTIC_NAMES")
+                fields = sorted(name for name in set(old or {}) | set(new or {})
+                                if (old or {}).get(name) != (new or {}).get(name))
+                details = {field: {"source": sql_shape((old or {}).get(field), identifiers),
+                                   "restored": sql_shape((new or {}).get(field), identifiers)}
+                           for field in fields if field in ("definition", "default")}
+                differences.append({"kind": kind, "table": key[0], "name": key[1], "fields": fields,
+                                    "source_sha256": manifest_digest(old), "restored_sha256": manifest_digest(new),
+                                    "sql": details})
+        report = {"check": "CRM_OWNER_DRAFT_RECOVERY_CATALOG_DIFFERENCE",
+                  "object_differences": len(differences), "order_only": not differences,
+                  "differences": differences[:20]}
+        if len(wire(report)) > 65536:
+            report["differences"] = [{**item, "sql": {}} for item in differences[:20]]
+            report["shapes_omitted_for_size"] = True
+        print(json.dumps(report, sort_keys=True), flush=True)
+    check(actual == expected, "CONSTRAINTS_COLUMNS_EXACT")
+
+
 def row_hashes(query, tables):
     check(len(tables) == 27 and len(set(tables)) == 27
           and all(re.fullmatch(r"public\.crm_[a-z0-9_]+", name) for name in tables), "HASH_TABLE_INVENTORY")
@@ -311,7 +386,7 @@ def main():
 
         restored_tables, restored_security = owner_profile(restored_query, original_tables)
         check(restored_tables == tables and restored_security == security, "OWNERS_ACLS_RLS_COLUMN_GRANTS_EXACT")
-        check(catalog_manifest(restored_query) == catalog, "CONSTRAINTS_COLUMNS_EXACT")
+        exact_catalog(catalog, catalog_manifest(restored_query), tables)
         check(row_hashes(restored_query, tables) == hashes, "ALL_27_TABLES_EXACT")
         restored_pending = json.loads(restored_query("SELECT to_jsonb(i)::text FROM public.crm_private_owner_draft_intents i WHERE draft_ref=" + literal(reference)))
         restored_confirmed = json.loads(restored_query("SELECT to_jsonb(i)::text FROM public.crm_private_owner_draft_intents i WHERE draft_ref=" + literal(confirmed["draft_ref"])))
