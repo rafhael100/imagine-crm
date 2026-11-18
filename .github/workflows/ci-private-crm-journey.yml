@@ -1,7 +1,7 @@
 name: Private CRM complete journey - isolated synthetic staging
 on:
   pull_request:
-    branches: [dev/fast-track-crm-2026-11-04, review/crm-private-complete-journey-2026-11-15, feat/central-automation-p0-private-ui-2026-11-16, fix/crm-p21-s2s-durable-confirmation-2026-11-17, fix/crm-preserve-scheduled-followup-on-noop-2026-11-17, fix/crm-followup-and-ledger-consistency-2026-11-17, feat/crm-p22-private-receipt-reconciliation-2026-11-17, fix/crm-backup-preserve-s2s-ownership-2026-11-17, fix/crm-preferences-preserve-scheduled-work-2026-11-17, fix/crm-automation-locales-and-navigation-2026-11-17, fix/crm-backup-consistent-source-snapshot-2026-11-17]
+    branches: [dev/fast-track-crm-2026-11-04, review/crm-private-complete-journey-2026-11-15, feat/central-automation-p0-private-ui-2026-11-16, fix/crm-p21-s2s-durable-confirmation-2026-11-17, fix/crm-preserve-scheduled-followup-on-noop-2026-11-17, fix/crm-followup-and-ledger-consistency-2026-11-17, feat/crm-p22-private-receipt-reconciliation-2026-11-17, fix/crm-backup-preserve-s2s-ownership-2026-11-17, fix/crm-preferences-preserve-scheduled-work-2026-11-17, fix/crm-automation-locales-and-navigation-2026-11-17, fix/crm-backup-consistent-source-snapshot-2026-11-17, test/crm-sites-capture-revocation-ordering-2026-11-17, feat/crm-op01-authenticated-minimal-read-2026-11-17, feat/crm-op01-navigable-summary-2026-11-17]
     paths:
       - 'app/Homologation/**'
       - 'app/Core/Automation/**'

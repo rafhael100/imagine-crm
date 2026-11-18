@@ -209,14 +209,83 @@ def verify_existing(marker: dict, env_text: str) -> str:
     return current
 
 
+def f251_report(current: str, candidate: str) -> dict:
+    """Accept the classifier's closed report, including its expected refusal.
+
+    Never return raw process output or stderr. The diagnostic projection below
+    contains only revision IDs, repository paths, counts and non-approval flags.
+    """
+    invalid = "F251 report unavailable or invalid; private release remains blocked."
+
+    def unique_object(pairs: list) -> dict:
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError("Duplicate report field.")
+            value[key] = item
+        return value
+
+    def repo_path(value: object) -> bool:
+        return (isinstance(value, str) and len(value) <= 512
+                and re.fullmatch(r"[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*", value) is not None
+                and not any(part in (".", "..") for part in value.split("/")))
+
+    try:
+        result = subprocess.run(
+            ["python3", "scripts/ops/private-crm-release-preflight.py", current, candidate],
+            cwd=ROOT, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, text=True,
+        )
+        require(isinstance(result.stdout, str) and len(result.stdout) <= 65_536, invalid)
+        report = json.loads(result.stdout, object_pairs_hook=unique_object)
+    except (OSError, UnicodeError, ValueError):
+        raise RuntimeError(invalid) from None
+    require(isinstance(report, dict) and set(report) == {
+        "status", "files_changed", "reviewed_scope", "runtime_review_files", "blocked",
+        "deploy_approved", "no_deploy_executed", "requires", "published_sha", "candidate_sha",
+    }, invalid)
+    require(report["published_sha"] == current and report["candidate_sha"] == candidate
+            and SHA.fullmatch(current) is not None and SHA.fullmatch(candidate) is not None
+            and report["deploy_approved"] is False and report["no_deploy_executed"] is True,
+            invalid)
+    require(type(report["files_changed"]) is int and report["files_changed"] >= 0, invalid)
+    scope = report["reviewed_scope"]
+    require(isinstance(scope, list) and len(scope) <= report["files_changed"], invalid)
+    for item in scope:
+        require(isinstance(item, dict) and set(item) == {"file", "git_status", "class"}
+                and repo_path(item["file"]) and item["git_status"] in ("A", "M")
+                and item["class"] in ("ci_evidence", "private_runtime_review", "synthetic_only",
+                                      "documentation", "operator_script_review"), invalid)
+    for field in ("runtime_review_files", "blocked"):
+        values = report[field]
+        require(isinstance(values, list) and all(repo_path(value) for value in values)
+                and len(values) == len(set(values)), invalid)
+    require(set(report["runtime_review_files"]) == {
+        item["file"] for item in scope if item["class"] == "private_runtime_review"
+    }, invalid)
+    require(isinstance(report["requires"], list) and report["requires"]
+            and all(isinstance(value, str) for value in report["requires"]), invalid)
+    require(type(result.returncode) is int and (
+        (result.returncode == 0 and report["status"] == "MANUAL_REVIEW_REQUIRED"
+         and not report["blocked"] and report["runtime_review_files"])
+        or (result.returncode == 1 and report["status"] == "BLOCKED" and report["blocked"])
+    ), invalid)
+    return {key: report[key] for key in (
+        "status", "published_sha", "candidate_sha", "files_changed", "blocked",
+        "deploy_approved", "no_deploy_executed",
+    )}
+
+
 def preflight(current: str, candidate: str) -> None:
     require(call(["git", "rev-parse", "HEAD"], capture=True) == candidate,
             "Checkout must match exact candidate SHA.")
     call(["git", "diff", "--quiet", "HEAD"])
     require(not call(["git", "status", "--porcelain", "--untracked-files=all"], capture=True),
             "Candidate checkout has untracked or modified source files.")
-    report = json.loads(call(["python3", "scripts/ops/private-crm-release-preflight.py",
-                              current, candidate], capture=True))
+    report = f251_report(current, candidate)
+    if report["status"] == "BLOCKED":
+        raise RuntimeError("F251 private-review scope rejected. Validated report: "
+                           + json.dumps(report, ensure_ascii=True, sort_keys=True))
     require(report.get("status") == "MANUAL_REVIEW_REQUIRED"
             and report.get("deploy_approved") is False
             and not report.get("blocked"), "F251 private-review scope rejected.")

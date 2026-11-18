@@ -1,0 +1,148 @@
+name: CRM owner drafts - real session MFA mTLS and recovery
+on:
+  pull_request:
+    branches:
+      - feat/crm-op01-navigable-summary-2026-11-17
+      - dev/fast-track-crm-2026-11-04
+permissions:
+  contents: read
+concurrency:
+  group: crm-owner-drafts-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  real-human-and-original-agents:
+    if: >-
+      github.repository == 'rafhael100/imagine-crm' &&
+      github.event.repository.private == false &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.base.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CRM_PRIVATE_PROJECT: imagine-crm-journey-ci
+      CRM_PRIVATE_IMAGE_TAG: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify actual PR and create fresh protected runtime credentials
+        env:
+          CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT: ${{ runner.environment }}
+        run: |
+          set -euo pipefail
+          python3 scripts/ops/private_crm_owner_drafts_ci.py preflight
+          git diff --check
+          python3 -m py_compile scripts/ops/private_crm_owner_drafts_ci.py scripts/ops/test-private-crm-owner-drafts.py
+          node --check scripts/ops/test-private-crm-owner-drafts-browser.cjs
+          echo "CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT=$CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT" >> "$GITHUB_ENV"
+          python3 scripts/ops/create-private-crm-environment.py "$RUNNER_TEMP/crm-owner-drafts.env" "$RUNNER_TEMP/crm-owner-drafts-data" "$CRM_PRIVATE_IMAGE_TAG"
+          sudo chown root:root "$RUNNER_TEMP/crm-owner-drafts-data"
+          echo "CRM_PRIVATE_ENV_FILE=$RUNNER_TEMP/crm-owner-drafts.env" >> "$GITHUB_ENV"
+      - name: Build exact CRM before checking out its independent provider
+        run: |
+          set -euo pipefail
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml config --quiet
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml build app
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml up -d --no-build
+          ready=0
+          for attempt in $(seq 1 40); do
+            if curl -fsS --max-time 3 -o /dev/null http://127.0.0.1:18086/up; then ready=1; break; fi
+            sleep 2
+          done
+          test "$ready" = 1
+          python3 scripts/ops/test-private-crm-owner-drafts.py --disabled
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: 0c722eee6bd53a7ee46c4ba68ab70200fc191b78
+          path: _agents_owner_drafts
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: c08688b16e61d8d1ecc4d8c0ed4da8758a687ee8
+          path: _central_p30_pinned
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Compose verified Agents source and enable only the private draft profile
+        run: |
+          set -euo pipefail
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/private_crm_owner_drafts_ci.py prepare
+          ready=0
+          for attempt in $(seq 1 40); do
+            if curl -fsS --max-time 3 -o /dev/null http://127.0.0.1:18086/up; then ready=1; break; fi
+            sleep 2
+          done
+          test "$ready" = 1
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml exec -T app sh -c 'for file in app/Homologation/OwnerRuleDraft*.php app/Homologation/S2S/*OwnerDraft*.php; do php -l "$file" || exit 1; done; php artisan view:cache'
+          docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml run --rm -T tools scripts/ops/seed-private-crm-fixtures.php seed
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/private_crm_owner_drafts_ci.py seed-grants "$RUNNER_TEMP/crm-owner-drafts-data/fixtures.json"
+      - name: Actual human authority, native source, remote persistence and lost-response recovery
+        run: |
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/test-private-crm-owner-drafts.py "$RUNNER_TEMP/crm-owner-drafts-data/fixtures.json"
+      - name: Chromium creates a native plan and navigates the attested draft
+        run: |
+          set -euo pipefail
+          npm install --prefix "$RUNNER_TEMP/crm-owner-drafts-browser" --ignore-scripts --no-audit --no-fund playwright@1.56.1
+          export CRM_PRIVATE_PLAYWRIGHT_DIR="$RUNNER_TEMP/crm-owner-drafts-browser"
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG,CRM_PRIVATE_PLAYWRIGHT_DIR node scripts/ops/test-private-crm-owner-drafts-browser.cjs "$RUNNER_TEMP/crm-owner-drafts-data/fixtures.json" "$RUNNER_TEMP/crm-owner-drafts-evidence"
+      - name: Disable profile and prove route removal again
+        run: |
+          set -euo pipefail
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/private_crm_owner_drafts_ci.py disable
+          ready=0
+          for attempt in $(seq 1 40); do
+            if curl -fsS --max-time 3 -o /dev/null http://127.0.0.1:18086/up; then ready=1; break; fi
+            sleep 2
+          done
+          test "$ready" = 1
+          python3 scripts/ops/test-private-crm-owner-drafts.py --disabled
+      - name: Make only verified credential-free screenshots readable
+        if: always()
+        run: |
+          if test -d "$RUNNER_TEMP/crm-owner-drafts-evidence"; then
+            sudo chown -R "$(id -u):$(id -g)" "$RUNNER_TEMP/crm-owner-drafts-evidence"
+          fi
+      - name: Preserve desktop and mobile draft states
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: crm-owner-drafts-desktop-mobile
+          path: ${{ runner.temp }}/crm-owner-drafts-evidence/*.png
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Remove only this disposable project
+        if: always()
+        run: |
+          if test -f "$CRM_PRIVATE_ENV_FILE"; then
+            sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/private_crm_owner_drafts_ci.py cleanup
+          fi
+  contract-and-current-authority-regressions:
+    if: github.event.repository.private == false && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, pdo_sqlite, pdo_pgsql
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Native source, closed contract, default-off admission and historical authority
+        run: |
+          set -euo pipefail
+          python3 tests/integration_source_guard_test.py
+          python3 tests/owner_draft_ci_admission_test.py
+          vendor/bin/phpunit --fail-on-skipped --fail-on-incomplete tests/Unit/PrivateOwnerRuleDraftSourceTest.php
+          vendor/bin/phpunit --fail-on-skipped --fail-on-incomplete tests/Unit/PrivateOwnerDraftContractTest.php
+          vendor/bin/phpunit --fail-on-skipped --fail-on-incomplete tests/Feature/PrivateOwnerRuleDraftBoundaryTest.php
+          vendor/bin/phpunit --fail-on-skipped --fail-on-incomplete tests/Feature/AgentsOp01NoHttpSurfaceTest.php
+          vendor/bin/phpunit --fail-on-skipped --fail-on-incomplete tests/Unit/IdentityPrivateStagingProfileTest.php

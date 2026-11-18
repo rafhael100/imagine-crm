@@ -1,5 +1,21 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — integração das jornadas privadas e diagnóstico de recusa (18/11/2026)
+
+A Direção aprovou continuar após a [PR #657](https://github.com/rafhael100/imagine-crm/pull/657). A consulta às fontes atuais encontrou uma evolução concorrente: a [PR #658](https://github.com/rafhael100/imagine-crm/pull/658), de criação/consulta de rascunhos pelo owner no Agents, parte da #651 e não contém as correções de interface da linha #657. As duas linhas divergem da #647: onze commits exclusivos da #657, sete da #658 e quatro arquivos sobrepostos. Uma nova candidata isolada reconcilia esses conteúdos, conservando os dois históricos como pais; nenhuma ref existente, DEV ou main é movida.
+
+Fontes congeladas: #657 `8c62702d02138233404fda73506b779f3ebb3143`, árvore `bbe69b1b8197ff063f59ca97705222dbb8fadd04`; #658 `fe88dd15d42dbda0bab206dfdbc9f8ce65093212`, árvore `0770cd93c09a7a5b65eef9c11fd609b0c2251b2c`; ancestral comum #647 `a2c7218f28aac58796387c939832ff1bfae3cba0`. O alvo de revisão é DEV `d7c7aacc766c7ade4c65dcd211ed4569442144a9`, sem merge da PR.
+
+A #657 terminou 22/24 workflows, apenas F251/F252 recusando o escopo, com [6.671 checks HTTP e 643 Chromium](https://github.com/rafhael100/imagine-crm/actions/runs/44226370467). A #658 terminou seus cinco workflows; sua [jornada owner](https://github.com/rafhael100/imagine-crm/actions/runs/44232095371) comprovou 407 checks/52 requisições HTTP, 607 Chromium e duas passagens default-off de 12 checks. Esses resultados pertencem às bases; a candidata combinada precisa de execução própria.
+
+Foram resolvidos seis blocos do Blade: projeção dos links de idioma e flags opt-in; CSS acessível e novas telas; idioma passivo das confirmações e logout das novas páginas; recuperação localizada e blocos de resumo/rascunho; cabeçalhos de leads e coluna de consulta; edição/CSV acessíveis e link/colspan condicionado. Os 24 formulários da #657 e os dois formulários novos da #658 permanecem literais. Os blocos de resumo e rascunho são idênticos à #658. Flash e erros de outros fluxos continuam ausentes dessas duas páginas, sem alterar as telas anteriores. Controller e workflow da jornada foram combinados sem conflito textual.
+
+A admissão do laboratório owner mantém o contexto original e acrescenta somente o par exato DEV/nova branch de integração, com SHA da base fixa e ancestrais #651, #657 e #658 obrigatórios. Evento, repositório, runner hospedado, HEAD limpa, imagem, projeto, Docker local e pins Agents/Central permanecem exigidos. Isso habilita o teste descartável da integração; não concede autoridade operacional.
+
+Também foi reproduzido um defeito de diagnóstico: F251 gera JSON válido e retorna 1 para BLOCKED, mas o shell descartava sua visualização e F252 descartava o stdout antes de ler a recusa. Os workflows preservam o relatório no log e no arquivo, mantendo pipefail e o mesmo retorno. O operador aceita apenas o formato validado, identidades/flags/estado/retorno coerentes e caminhos relativos seguros para formar o diagnóstico; continua recusando a operação e não mostra stderr, texto livre ou dados de host. SCOPE, aprovações, checks exigidos, apply e rollback permanecem intactos.
+
+A restauração adicional do addon owner está em implementação na frente da #658 e não pertence à SHA funcional congelada aqui. O PASS do backup legado não cobre suas duas tabelas novas; sua recusa de perfil desconhecido é preservada. Os testes e capturas desta integração serão registrados na PR e HEAD próprias. DRAFT, dados fictícios, sem merge em DEV/main, deploy/VPS, provider operacional ou aprovação humana presumida.
+
 ## Continuidade — contexto da jornada e ações por perfil (18/11/2026)
 
 Este pacote reúne quatro correções já desenvolvidas e revisadas separadamente sobre a [PR #656](https://github.com/rafhael100/imagine-crm/pull/656), HEAD `cd530f273a8e05e141a0898d8736c26c4b631c32`. O [P20 44225681022](https://github.com/rafhael100/imagine-crm/actions/runs/44225681022) dessa base passou os 15 testes Python e o laboratório real Portal→CRM→Agents, incluindo autoridade nominal, ACK perdido e idempotência; dispatch n8n e autorização operacional continuam desligados. A integração conjunta evita quatro rodadas repetidas de toda a CI e conserva todas as regressões preparadas. A confirmação da jornada combinada fica registrada na PR e SHA próprias, sem atribuir a ela resultados de uma base anterior.
@@ -73,6 +89,20 @@ F251/F252 continuam bloqueando a candidata acumulada: 89 de 112 caminhos fora da
 A próxima correção restaura regressões da QA-02 da [PR #616](https://github.com/rafhael100/imagine-crm/pull/616), registradas na [issue #416](https://github.com/rafhael100/imagine-crm/issues/416#issuecomment-6904892977) e exigidas pela [Etapa D da #617](https://github.com/rafhael100/imagine-crm/issues/617). A fonte atual perdeu a associação de 15 labels, as regiões de rolagem focáveis do Kanban/admin e traduções administrativas/ações Kanban. O décimo sexto label histórico já foi corrigido como `automation-language` na #644 e deve ser preservado. A restauração altera apresentação e semântica acessível, mantendo valores, rotas, versões, CSRF e regras de negócio.
 
 O Chromium deve verificar os 16 campos, foco por Tab e setas nas regiões com overflow, trocas reais PT/EN/ES e igualdade de FormData/ações entre idiomas. Os resultados efetivos serão vinculados à próxima PR/HEAD. Cobertura integral dos textos do cliente, também pendente na #416, segue em inventário para a continuação; nenhuma revisão humana, leitor de tela real, aceite visual ou homologação operacional é presumida.
+
+## OP-01 — resumo mínimo pela lista de leads (17/11/2026)
+
+A consulta privada da [PR #649](https://github.com/rafhael100/imagine-crm/pull/649), HEAD `810f6815f4d8dc35ba46dbe7accf78c6b63b7dc1`, passou na [CI OP-01 44215580347](https://github.com/rafhael100/imagine-crm/actions/runs/44215580347): 43 leituras reais HTTP, 12 admitidas e 31 recusadas, com auditoria exata e estado de negócio preservado. O consumidor Agents original #471 também passou. A entrega seguinte acrescenta o link na lista e o resumo HTML com somente referência e etapa como dados de negócio, nos três idiomas, reutilizando uma única leitura autorizada por abertura.
+
+O ensaio da nova candidata cobre a API preservada, a página, a auditoria e a navegação Chromium em desktop/celular. Ambas as rotas continuam desligadas por padrão; nenhum acesso S2S, merge, deploy ou aceite humano é inferido. Resultados efetivos permanecem associados à PR/HEAD executada. [Contrato e prova do resumo](docs/operations/CRM-OP01-NAVIGABLE-MINIMAL-SUMMARY.md).
+
+## OP-01 — consulta mínima privada autorizada (17/11/2026)
+
+A Direção aprovou o recorte funcional de um lead fictício consultado por usuário autenticado no CRM. A candidata, derivada da [PR #647](https://github.com/rafhael100/imagine-crm/pull/647) `a2c7218f28aac58796387c939832ff1bfae3cba0`, acrescenta GET `/agentes/leads/{id}/minimo`, desligado por padrão e exclusivo do perfil privado. Reutiliza a autoridade de sessão/MFA/conta/membership existente, seleciona somente id/stage e exige auditoria na mesma transação. Não altera a política global de produção ou a proposta documental #57.
+
+O consumidor original Agents [#471](https://github.com/rafhael100/imagine-ai-agents/pull/471), SHA `740abafc813dbde70f5a2ad6e138402ed7945276`, passou na [CI 44213754313](https://github.com/rafhael100/imagine-ai-agents/actions/runs/44213754313). O novo ensaio CRM fixa essa fonte e entrega a resposta HTTP real ao consumidor sem cookies, credenciais ou rede no contêiner leitor. A jornada privada anterior é revalidada separadamente na mesma candidata. Resultados efetivos são registrados na PR/HEAD; não se antecipa aprovação HTTP. [Contrato, autoridade e limites](docs/operations/CRM-OP01-PRIVATE-MINIMAL-READ.md).
+
+Os gates F251/F252 da base continuam preservados; esta candidata não libera merge, deploy, produção ou delegação S2S. A próxima etapa de leitura não depende de criação de tarefa ou execução n8n.
 
 ## Continuidade — contraprovas Sites→CRM com captura real (17/11/2026)
 
@@ -1057,3 +1087,9 @@ O `AGENTS.md` é instrução de programação, `STATUS-ATUAL.md` é resumo hist�
 **Gates separados Portal ↔ CRM:** [PR #209](https://github.com/rafhael100/imagine-crm/pull/209) (F3-40), [#210](https://github.com/rafhael100/imagine-crm/pull/210) (F3-41), [#211](https://github.com/rafhael100/imagine-crm/pull/211) (F3-42), [#215](https://github.com/rafhael100/imagine-crm/pull/215) (F3-43), [#218](https://github.com/rafhael100/imagine-crm/pull/218) (F3-44 do Portal) permanecem DRAFT empilhados, com CI própria aprovada em HEADs antigas. São laboratórios de PostgreSQL descartável, comunicação loopback e testes de falhas; não são endpoints de CRM de produção. Antes de qualquer integração, precisam de reconciliação da DEV, diff e CI na SHA aplicável e revisão de segurança. [PR #214](https://github.com/rafhael100/imagine-crm/pull/214) e [PR #175](https://github.com/rafhael100/imagine-crm/pull/175) continuam DRAFT documentais.
 
 **Risco residual:** os testes aprovados comprovam comportamentos limitados de fixtures e configuração da aplicação. Não comprovam serviço autenticado, política multiempresa concedente, auditoria independente, retenção legal, migrações seguras em banco persistente ou entrega real de leads. **67 CORE, SEG/DBA #27, OP-01 #57, AUT, S01, IN-118, LGPD e FIN/CON continuam abertos.** Nenhuma aprovação de `ALLOW`, grants, API, dados de clientes, deploy, VPS, custos ou `main` foi inferida. **Não há GO de produção.**
+
+## Continuidade aprovada — rascunhos CRM/Agents, 17/11/2026
+
+A aprovação específica do responsável autoriza implementar, em homologação fictícia isolada, criação e consulta de rascunhos pelo owner ativo da empresa. Esta candidata parte do resumo mínimo #651, mantém o motor comercial no CRM e acrescenta intenção durável, autoria atestada, mTLS por operações separadas e reconciliação após resultado indeterminado. Member não pode criar nem consultar. [Contrato, jornada e limites](docs/desenvolvimento/CRM-OWNER-AGENTS-DRAFTS-2026-11-17.md).
+
+As novas rotas dependem do perfil privado exato e da flag adicional, desativada por padrão. A prova integrada fixa a fonte original Agents P67 e verifica sessão/MFA, regra de origem, persistência e navegador. Os resultados efetivos pertencem à PR da HEAD executada. Os registros anteriores acima são históricos; esta autorização não aprova produção, alterações em main/DEV, dados de clientes, APIs pagas ou instalação persistente.
