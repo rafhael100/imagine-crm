@@ -33,7 +33,7 @@ jobs:
           set -euo pipefail
           python3 scripts/ops/private_crm_owner_drafts_ci.py preflight
           git diff --check
-          python3 -m py_compile scripts/ops/private_crm_owner_drafts_ci.py scripts/ops/test-private-crm-owner-drafts.py
+          python3 -m py_compile scripts/ops/private_crm_owner_drafts_ci.py scripts/ops/test-private-crm-owner-drafts.py scripts/ops/test-private-crm-owner-draft-recovery.py
           node --check scripts/ops/test-private-crm-owner-drafts-browser.cjs
           echo "CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT=$CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT" >> "$GITHUB_ENV"
           python3 scripts/ops/create-private-crm-environment.py "$RUNNER_TEMP/crm-owner-drafts.env" "$RUNNER_TEMP/crm-owner-drafts-data" "$CRM_PRIVATE_IMAGE_TAG"
@@ -82,6 +82,9 @@ jobs:
       - name: Actual human authority, native source, remote persistence and lost-response recovery
         run: |
           sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/test-private-crm-owner-drafts.py "$RUNNER_TEMP/crm-owner-drafts-data/fixtures.json"
+      - name: Recover the owner draft snapshot into a separate inert PostgreSQL
+        run: |
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/test-private-crm-owner-draft-recovery.py "$RUNNER_TEMP/crm-owner-drafts-data/fixtures.json"
       - name: Chromium creates a native plan and navigates the attested draft
         run: |
           set -euo pipefail
