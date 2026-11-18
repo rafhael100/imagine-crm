@@ -145,6 +145,40 @@ async function keyboardScroll(page, region, hint, name, hintText, lastContent) {
   check(await region.evaluate(node => node.scrollLeft <= 1 && document.activeElement === node),
     'Keyboard cannot restore the first column for normal reading');
 }
+async function reportKeyboardScroll(page, name, conversion) {
+  const selector = '[data-report-funnel-breakdown] .tablewrap[role=region]';
+  const region = page.locator(selector);
+  check(await region.getAttribute('tabindex') === '0'
+    && await region.getAttribute('aria-labelledby') === 'crm-report-funnel-breakdown-title'
+    && await page.getByRole('region',{name,exact:true}).count() === 1
+    && await page.locator('#crm-report-funnel-breakdown-title').innerText() === name,
+    'Report table lacks its localized accessible name or keyboard tab stop');
+  await region.focus();
+  await page.keyboard.press('Shift+Tab');
+  check(!await region.evaluate(node => document.activeElement === node), 'Shift+Tab cannot leave the report table');
+  await page.keyboard.press('Tab');
+  check(await region.evaluate(node => document.activeElement === node && node.matches(':focus-visible')
+    && getComputedStyle(node).outlineStyle !== 'none' && parseFloat(getComputedStyle(node).outlineWidth) >= 3),
+    'Tab cannot reach the report table with visible focus');
+  check(await region.evaluate(node => node.scrollWidth > node.clientWidth + 1 && node.scrollLeft <= 1),
+    'Report fixture does not exercise its contained horizontal overflow');
+  for (let index=0; index<64; index++) await page.keyboard.press('ArrowRight',{delay:20});
+  await page.waitForFunction(selector => {
+    const node = document.querySelector(selector);
+    return node.scrollLeft >= node.scrollWidth - node.clientWidth - 1;
+  }, selector);
+  check(await region.locator('thead th').last().innerText() === conversion
+    && await region.locator('thead th:last-child, tbody tr:first-child td:last-child').evaluateAll(nodes =>
+      nodes.length === 2 && nodes.every(node => {
+        const region = node.closest('[role=region]');
+        const bounds = region.getBoundingClientRect(), content = node.getBoundingClientRect();
+        return region.scrollLeft > 0 && content.left >= bounds.left - 1 && content.right <= bounds.right + 1;
+      })), 'Arrow keys did not reveal the report conversion heading and value');
+  for (let index=0; index<64; index++) await page.keyboard.press('ArrowLeft',{delay:20});
+  await page.waitForFunction(selector => document.querySelector(selector).scrollLeft <= 1, selector);
+  check(await region.evaluate(node => node.scrollLeft <= 1 && document.activeElement === node),
+    'Keyboard cannot restore the first report column for normal reading');
+}
 async function login(page, account, admin = false, locale = 'pt') {
   phase = admin ? 'administrator-login' : 'client-login';
   await page.goto(base + '/login?lang=' + locale);
@@ -179,6 +213,17 @@ async function localizedLogout(page, locale) {
 async function width(page) {
   const values = await page.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
   if (values[0] > values[1]+1) console.log('PRIVATE LAYOUT WIDTH: document='+values[0]+', viewport='+values[1]+', phase='+phase);
+  if (values[0] > values[1]+1 && phase.startsWith('client-locale-reports-')) {
+    const geometry = await page.locator('.shell > .stack, [data-report-methodology], [data-report-funnel-breakdown], [data-report-stage], [data-report-funnel-breakdown] .tablewrap, [data-report-funnel-breakdown] table')
+      .evaluateAll(nodes => nodes.map(node => {
+        const rect = node.getBoundingClientRect(), style = getComputedStyle(node);
+        return {tag:node.tagName,block:node.classList.contains('stack')?'stack':node.hasAttribute('data-report-methodology')?'methodology':
+          node.hasAttribute('data-report-funnel-breakdown')?'funnels':node.hasAttribute('data-report-stage')?'metric':'table',
+          left:Math.round(rect.left),right:Math.round(rect.right),client:node.clientWidth,scroll:node.scrollWidth,
+          minWidth:style.minWidth,overflowX:style.overflowX};
+      }));
+    console.log('PRIVATE REPORT GEOMETRY: ' + JSON.stringify(geometry));
+  }
   check(values[0] <= values[1] + 1, 'Page overflows viewport');
 }
 (async () => {
@@ -270,17 +315,20 @@ async function width(page) {
         leads:['Leads','CSV fictício','Importar CSV','Exportar CSV'],funnels:['Funis','Funil persistido','Criar funil →'],
         tasks:['Tarefas','Nenhuma tarefa registrada.'],reports:['Relatórios','Seu funil em números.','Exportar dados'],
         team:['Equipe','Equipe e franquias','Convidar usuário fictício →'],billing:['Plano e pedidos','Você ainda não criou um pedido simulado.'],
-        edit:'Editar título do lead',csv:'Arquivo CSV fictício',funnel:'Título do funil',menu:'Menu do CRM',todo:'Em aberto'},
+        edit:'Editar título do lead',csv:'Arquivo CSV fictício',funnel:'Título do funil',menu:'Menu do CRM',todo:'Em aberto',
+        reportTable:'Resultados por funil',conversion:'Conversão'},
       en:{overview:['Overview','Your next move starts here.','Registered leads','Open tasks'],
         leads:['Leads','Test CSV','Import CSV','Export CSV'],funnels:['Funnels','Saved funnel','Create funnel →'],
         tasks:['Tasks','No tasks recorded.'],reports:['Reports','Your funnel in numbers.','Export data'],
         team:['Team','Team and limits','Invite test user →'],billing:['Plan and orders','You have not created a simulated order yet.'],
-        edit:'Edit lead title',csv:'Test CSV file',funnel:'Funnel title',menu:'CRM menu',todo:'Open'},
+        edit:'Edit lead title',csv:'Test CSV file',funnel:'Funnel title',menu:'CRM menu',todo:'Open',
+        reportTable:'Results by pipeline',conversion:'Conversion'},
       es:{overview:['Resumen','Tu próximo paso empieza aquí.','Leads registrados','Tareas abiertas'],
         leads:['Leads','CSV de prueba','Importar CSV','Exportar CSV'],funnels:['Embudos','Embudo guardado','Crear embudo →'],
         tasks:['Tareas','No hay tareas registradas.'],reports:['Informes','Tu embudo en cifras.','Exportar datos'],
         team:['Equipo','Equipo y límites','Invitar usuario ficticio →'],billing:['Plan y pedidos','Todavía no has creado un pedido simulado.'],
-        edit:'Editar título del lead',csv:'Archivo CSV de prueba',funnel:'Título del embudo',menu:'Menú del CRM',todo:'Abierta'},
+        edit:'Editar título del lead',csv:'Archivo CSV de prueba',funnel:'Título del embudo',menu:'Menú del CRM',todo:'Abierta',
+        reportTable:'Resultados por embudo',conversion:'Conversión'},
     };
     for (const section of ['overview', 'leads', 'funnels', 'kanban', 'tasks', 'reports', 'team', 'automation', 'settings', 'billing']) {
       phase = 'client-section-' + section;
@@ -315,7 +363,12 @@ async function width(page) {
             'Funnel creation lacks its translated accessible name');
           await page.setViewportSize({width:390,height:844});
           await width(page);
-          if (locale === 'es' && ['leads','team','billing'].includes(section)) {
+          if (section === 'reports') {
+            phase = 'client-report-keyboard-' + locale;
+            await reportKeyboardScroll(page, copy.reportTable, copy.conversion);
+            await width(page);
+          }
+          if (locale === 'es' && ['leads','reports','team','billing'].includes(section)) {
             await page.screenshot({path:path.join(output,'crm-client-' + section + '-es-mobile.png'),fullPage:true});
           }
           await page.setViewportSize({width:1440,height:1000});
