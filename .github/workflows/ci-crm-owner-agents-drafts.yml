@@ -34,7 +34,7 @@ jobs:
           set -euo pipefail
           python3 scripts/ops/private_crm_owner_drafts_ci.py preflight
           git diff --check
-          python3 -m py_compile scripts/ops/private_crm_owner_drafts_ci.py scripts/ops/test-private-crm-owner-drafts.py scripts/ops/test-private-crm-owner-draft-recovery.py scripts/ops/test-private-crm-owner-monitor-coexistence.py scripts/ops/private_crm_owner_monitor_migration.py scripts/ops/test-private-crm-owner-monitor-migration.py
+          python3 -m py_compile scripts/ops/private_crm_owner_drafts_ci.py scripts/ops/test-private-crm-owner-drafts.py scripts/ops/test-private-crm-owner-draft-recovery.py scripts/ops/test-private-crm-owner-monitor-coexistence.py scripts/ops/private_crm_owner_monitor_migration.py scripts/ops/test-private-crm-owner-monitor-migration.py scripts/ops/private_crm_base_monitor_migration.py scripts/ops/test-private-crm-base-monitor-migration.py
           node --check scripts/ops/test-private-crm-owner-drafts-browser.cjs
           node --check scripts/ops/test-private-crm-owner-monitor-browser.cjs
           echo "CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT=$CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT" >> "$GITHUB_ENV"
@@ -131,6 +131,15 @@ jobs:
         if: always() && steps.owner_monitor_migration.outcome != 'skipped'
         run: |
           sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,GITHUB_RUN_ID,GITHUB_RUN_ATTEMPT,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/test-private-crm-owner-monitor-migration.py --cleanup
+      - name: Prove additive base25 to monitor33 migration in isolated PostgreSQL
+        id: base_monitor_migration
+        timeout-minutes: 8
+        run: |
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,GITHUB_RUN_ID,GITHUB_RUN_ATTEMPT,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/test-private-crm-base-monitor-migration.py
+      - name: Remove only this run's isolated base-to-monitor clusters
+        if: always() && steps.base_monitor_migration.outcome != 'skipped'
+        run: |
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,GITHUB_RUN_ID,GITHUB_RUN_ATTEMPT,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/test-private-crm-base-monitor-migration.py --cleanup
       - name: Make only verified credential-free screenshots readable
         if: always()
         run: |
@@ -186,6 +195,7 @@ jobs:
           set -euo pipefail
           python3 tests/integration_source_guard_test.py
           python3 tests/owner_draft_ci_admission_test.py
+          python3 tests/base_monitor_migration_contract_test.py
           vendor/bin/phpunit --fail-on-skipped --fail-on-incomplete tests/Unit/PrivateOwnerRuleDraftSourceTest.php
           vendor/bin/phpunit --fail-on-skipped --fail-on-incomplete tests/Unit/PrivateOwnerDraftContractTest.php
           vendor/bin/phpunit --fail-on-skipped --fail-on-incomplete tests/Feature/PrivateOwnerRuleDraftBoundaryTest.php

@@ -1,5 +1,62 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — candidata incremental da base25 para o monitor33 (18/11/2026)
+
+A branch `feat/crm-base-monitor-incremental-migration-2026-11-18` continua a
+[#663](https://github.com/rafhael100/imagine-crm/pull/663), commit
+`082a1fda4af9b1871854d0db8cbfe54858894f25`, com um recorte anterior à migração
+33→35 da [#662](https://github.com/rafhael100/imagine-crm/pull/662). O perfil25
+é construído por `schema.sql` e `20-runtime-roles.sh` pinados na96db e já contém
+a ledger. Não se presume que a001 aplicada ao schema histórico cc173 produza
+essa mesma base. Os ensaios25→33 e33→35 permanecem provas separadas.
+
+Os quatro bootstraps S2S existentes passam a ter um caminho de admissão
+incremental estrito: fonte25 exata recebe o delta; destino33 exato retorna
+ALREADY_PRESENT sem DDL; estado parcial ou divergente é recusado sem reparo.
+Duas referências são construídas independentemente dos seis inputs96db. O novo
+módulo usa Transaction e capture_inventory da662 com seus bytes verificados,
+sem editar esse core, o bootstrap owner ou os SQLs existentes. Somente os
+envelopes externos dos quatro scripts são extraídos para aplicar os corpos
+literais em uma conexão e transação.
+
+O resultado esperado acrescenta oito tabelas, quatro roles NOLOGIN, nove funções
+e uma sequência. As 25 tabelas de origem conservam suas colunas e dados. O delta
+público permitido entre referências é fechado: USAGE no schema public e SELECT
+em installation, automation_runs, preferences, events, trials e leads para o
+reader. O restante do inventário deve permanecer exato, sem equivalências de
+restore ou descarte genérico de ACLs.
+
+O ensaio usa dois clusters de referência e quatro alvos em tmpfs, sem rede,
+portas, binds ou app. A origem25 tem 12 tabelas povoadas e13 vazias. Depois do
+primeiro apply, as oito tabelas novas devem estar vazias e a sequência no estado
+inicial. Para provar a reaplicação, as oito são povoadas: o destino33 passa a
+ter20 tabelas com dados e13 vazias, incluindo identidade da auditoria usada.
+Dados e estado da sequência devem permanecer iguais após ALREADY_PRESENT.
+
+A matriz recusa parcial28 produzido pelo bootstrap install inteiro, atributo
+de role alterado na fonte25 e grant extra no destino33. A contraprova tardia
+mantém CREATE ROLE crm_auto_sender não commitado em outra sessão; exige que
+o CREATE literal do outbound espere por esse transactionid depois do install,
+com query, PID bloqueador, lock e SQLSTATE55P03 observados. Após rollback de
+ambas as sessões, catálogo/dados devem coincidir com a fonte25 e os objetos,
+roles e sequência acrescentados devem estar ausentes. Essa espera de unicidade
+é um requisito da nova CI, sem alegação de observação local ou migração online.
+
+O core preserva sua admissão de containers; o novo módulo a restringe ainda
+mais por nome e label próprios. Finally e cleanup selecionam somente recursos
+com a HEAD, run, tentativa e escopo desta etapa. O workflow mantém os20 passos
+reais e quatro contratuais anteriores, acrescenta o ensaio e sua limpeza e
+preserva timeout global de30 minutos. O quinto contexto completo do guard
+exige os ancestrais anteriores e082; os quatro contextos históricos continuam
+iguais. Os18 testes de admissão/fronteira e seis testes locais de contrato
+passaram. PostgreSQL real desta candidata depende da CI da HEAD publicada.
+
+[Contrato e critérios](docs/desenvolvimento/CRM-BASE-MONITOR-INCREMENTAL-MIGRATION-2026-11-18.md).
+Nenhum fluxo HTTP/n8n, sessão humana, instalação persistente, recuperação
+distribuída ou autorização operacional é acrescentado por esta etapa.
+F251/F252 e detectores de backup permanecem intactos.
+**DRAFT / NO-MERGE / NO-DEPLOY / NO-GO operacional.**
+
 ## Continuidade — reaplicação da ledger recusa proteções ausentes (18/11/2026)
 
 Esta candidata continua a [#662](https://github.com/rafhael100/imagine-crm/pull/662)

@@ -56,6 +56,11 @@ LEDGER = (
     "feat/crm-ledger-reapply-rls-2026-11-18",
 )
 LEDGER_ANCESTORS = (*MIGRATION_ANCESTORS, "d8963313267ccc5b40b7527d6fa24a30fcc12b7e")
+BASE_MONITOR = (
+    INTEGRATION[0], INTEGRATION[1],
+    "feat/crm-base-monitor-incremental-migration-2026-11-18",
+)
+BASE_MONITOR_ANCESTORS = (*LEDGER_ANCESTORS, "082a1fda4af9b1871854d0db8cbfe54858894f25")
 HEAD = "1" * 40
 
 
@@ -160,8 +165,20 @@ class OwnerDraftCiAdmissionTest(unittest.TestCase):
                                    ancestors=set(LEDGER_ANCESTORS) - {missing})
                 self.assertIn(("merge-base", "--is-ancestor", missing, HEAD), self.git_calls)
 
-    def test_four_admission_tuples_cannot_mix_fields_or_accept_neighbor_branches(self):
-        known = {ORIGINAL, INTEGRATION, MIGRATION, LEDGER}
+    def test_base_monitor_tuple_requires_every_ancestor_and_exact_ledger_parent(self):
+        self.assertEqual(self.preflight(self.event(BASE_MONITOR), ancestors=BASE_MONITOR_ANCESTORS),
+                         (HEAD, self.runner.resolve()))
+        self.assertEqual([call for call in self.git_calls if call[0] == "merge-base"],
+                         [("merge-base", "--is-ancestor", ancestor, HEAD)
+                          for ancestor in BASE_MONITOR_ANCESTORS])
+        for missing in BASE_MONITOR_ANCESTORS:
+            with self.subTest(missing=missing):
+                self.assert_denied(self.event(BASE_MONITOR), "OWNER_DRAFT_SOURCE_DENIED",
+                                   ancestors=set(BASE_MONITOR_ANCESTORS) - {missing})
+                self.assertIn(("merge-base", "--is-ancestor", missing, HEAD), self.git_calls)
+
+    def test_five_admission_tuples_cannot_mix_fields_or_accept_neighbor_branches(self):
+        known = {ORIGINAL, INTEGRATION, MIGRATION, LEDGER, BASE_MONITOR}
         choices = [sorted({value[index] for value in known}) for index in range(3)]
         rejected = 0
         for provenance in itertools.product(*choices):
@@ -171,8 +188,8 @@ class OwnerDraftCiAdmissionTest(unittest.TestCase):
                 self.assert_denied(self.event(provenance), "OWNER_DRAFT_PR_PROVENANCE_DENIED")
                 self.assertEqual(self.git_calls, [])
                 rejected += 1
-        self.assertEqual(rejected, 12)
-        for candidate in (MIGRATION, LEDGER):
+        self.assertEqual(rejected, 15)
+        for candidate in (MIGRATION, LEDGER, BASE_MONITOR):
             for index, value in enumerate(("0" * 40, "main", candidate[2] + "-other")):
                 provenance = list(candidate)
                 provenance[index] = value
