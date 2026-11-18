@@ -1,5 +1,17 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — reapresentação segura de formulários (18/11/2026)
+
+A [PR #653](https://github.com/rafhael100/imagine-crm/pull/653), HEAD `56600a319226fc50f65b9127feb98221f2bfeaad`, passou a [jornada 44221933223](https://github.com/rafhael100/imagine-crm/actions/runs/44221933223): 3.263 checks HTTP, 628 assertions Chromium, 177 de resiliência, 49 de acesso e unidades 4/9 + 8/134. Os testes novos confirmaram preservação do funil e isolamento entre empresas. Na mesma HEAD, 22/24 workflows passaram; os gates F251/F252 mantêm a recusa do escopo acumulado.
+
+O [artefato 14390294408](https://github.com/rafhael100/imagine-crm/actions/runs/44221933223/artifacts/14390294408), SHA-256 `7d88d430e465270d366983acc877c13282893a5aec4cdbeb66212fa02da22ccc`, foi conferido e inspecionado. O funil filtrado está legível e as novas viewports mostram contas, pedidos, auditoria e rodapé administrativos; auditoria/rodapé compartilham a mesma viewport final. A antiga captura ES incompleta de página inteira não faz parte do artefato.
+
+O próximo incremento corrige o retorno dos formulários quando a validação recebe arrays ou outros tipos incompatíveis em campos de texto. A apresentação lê somente login, company e email: preserva strings e o escape HTML, trata null como vazio e usa o fallback fictício existente para tipos não textuais, sem converter objetos nem consultar campos secretos. A allowlist de old-input, a validação, os redirects e as regras de Enrollment permanecem intactos.
+
+O unitário acrescenta cinco métodos aos oito existentes, incluindo objetos que proíbem conversão e prova de sessão inalterada. O HTTP preparado acrescenta 57 renders nos três idiomas, POST com CSRF real seguido de 303→GET 200, valores/escape corretos e fingerprints de 15 tabelas de Enrollment invariáveis. Os agregados são calculados dentro do PostgreSQL, sem devolver linhas ou códigos. A cadeia de código fundamenta o defeito; não houve execução separada da view antiga. Resultados da nova candidata serão vinculados à sua PR/HEAD.
+
+Os próximos recortes já estão isolados: destinos de validação de login/MFA, ações de pedidos conforme o papel, indicadores de idioma em confirmações com informação única e preservação da calculadora na troca de idioma. DRAFT / NO-MERGE / NO-DEPLOY, fixtures sintéticas e aceites operacionais independentes.
+
 ## Continuidade — filtro de funil e evidência móvel (18/11/2026)
 
 A [PR #652](https://github.com/rafhael100/imagine-crm/pull/652), HEAD `70db3b9953866da15b06462576f17133a6988959`, concluiu a [jornada 44220369430](https://github.com/rafhael100/imagine-crm/actions/runs/44220369430): 2.415 checks HTTP, 582 assertions Chromium, 177 de resiliência, 49 de acesso e unitários 4/9 + 8/134. Na mesma HEAD, 22/24 workflows passaram; F251/F252 continuam bloqueando 92 de 115 caminhos contra a baseline publicada, sem ampliar allowlists. Relatórios passou em 390 px, com foco e acesso por teclado à última coluna nos três idiomas.

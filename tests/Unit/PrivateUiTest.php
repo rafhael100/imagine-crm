@@ -182,4 +182,74 @@ final class PrivateUiTest extends TestCase
         self::assertSame(array_fill_keys(array_keys($failed), ['Revisa los datos enviados.']),
             PrivateUi::validationErrors($this->exception($messages, $failed), 'es'));
     }
+
+    public function test_old_text_preserves_strings_and_does_not_change_session_state(): void
+    {
+        foreach (['login', 'company', 'email'] as $field) {
+            foreach (['lab-old-input', '', '<img src=x onerror="PRIVATE_OLD_INPUT_SENTINEL">'] as $value) {
+                $request = $this->request('/cadastro', [
+                    '_old_input'=>[$field=>$value], 'crm.private.lang'=>'es',
+                    'crm.auth.pending'=>'unit-pending-unchanged',
+                ]);
+                $before = [$request->session()->getId(), $request->session()->all()];
+                // Escaping belongs to Blade; the helper must not rewrite strings.
+                self::assertSame($value, PrivateUi::oldText($request, $field, 'unit-fallback'));
+                self::assertSame($before, [$request->session()->getId(), $request->session()->all()]);
+            }
+        }
+    }
+
+    public function test_old_text_rejects_invalid_types_and_nested_arrays_without_casting(): void
+    {
+        $stringable = new class implements \Stringable {
+            public function __toString(): string
+            {
+                throw new \LogicException('Old input objects must not be stringified.');
+            }
+        };
+        foreach ([[], ['PRIVATE_OLD_INPUT_SENTINEL'], ['nested'=>['value'=>'PRIVATE_OLD_INPUT_SENTINEL']],
+            0, 17, 1.5, false, true, new \stdClass(), $stringable] as $value) {
+            $request = $this->request('/cadastro', [
+                '_old_input'=>array_fill_keys(['login', 'company', 'email'], $value),
+            ]);
+            $before = [$request->session()->getId(), $request->session()->all()];
+            foreach (['login', 'company', 'email'] as $field) {
+                self::assertSame('unit-fallback-'.$field,
+                    PrivateUi::oldText($request, $field, 'unit-fallback-'.$field));
+            }
+            self::assertSame($before, [$request->session()->getId(), $request->session()->all()]);
+        }
+    }
+
+    public function test_old_text_distinguishes_null_empty_and_missing_values(): void
+    {
+        $request = $this->request('/cadastro', ['_old_input'=>['login'=>null, 'company'=>'']]);
+        $before = $request->session()->all();
+        self::assertSame('', PrivateUi::oldText($request, 'login', 'unit-fallback'));
+        self::assertSame('', PrivateUi::oldText($request, 'company', 'unit-fallback'));
+        self::assertSame('unit-fallback', PrivateUi::oldText($request, 'email', 'unit-fallback'));
+        self::assertSame('', PrivateUi::oldText($request, 'email'));
+        self::assertSame($before, $request->session()->all());
+    }
+
+    public function test_old_text_never_reads_secrets_or_fields_outside_the_allowlist(): void
+    {
+        $request = $this->createMock(Request::class);
+        $request->method('hasSession')->willReturn(true);
+        $request->expects(self::never())->method('session');
+        foreach (['password', 'code', 'recovery', 'invitation', '_token', 'crm.auth.token',
+            'crm.auth.pending', 'tenant', 'organization_id', 'login.nested', 'Login', 'unknown'] as $field) {
+            self::assertSame('unit-safe-fallback', PrivateUi::oldText($request, $field, 'unit-safe-fallback'));
+        }
+    }
+
+    public function test_old_text_without_a_session_uses_fallback_without_reading_session(): void
+    {
+        $request = $this->createMock(Request::class);
+        $request->method('hasSession')->willReturn(false);
+        $request->expects(self::never())->method('session');
+        foreach (['login', 'company', 'email'] as $field) {
+            self::assertSame('unit-safe-fallback', PrivateUi::oldText($request, $field, 'unit-safe-fallback'));
+        }
+    }
 }

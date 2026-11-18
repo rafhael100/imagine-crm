@@ -10,6 +10,7 @@ import hmac
 import http.client
 from http.cookies import SimpleCookie
 from html import unescape
+from html.parser import HTMLParser
 from io import StringIO
 import json
 import os
@@ -694,6 +695,151 @@ def assert_entry_locales():
     print('PASS localized pre-controller redirect, denied unknown login, validation old-input allowlist and invalid-locale fallback PT/EN/ES')
 
 
+def assert_old_input_rendering():
+    """Malformed form values stay validation errors, with no enrollment effects."""
+    # Fixed schema names only. Hash whole rows inside PostgreSQL, including
+    # challenge/invitation state, without returning credentials or ciphertext.
+    tables=('crm_private_signup_requests','crm_private_invitations','crm_private_accounts',
+            'crm_private_trials','crm_private_trial_claims','crm_private_key_versions',
+            'crm_global_identities','crm_organizations','crm_memberships','crm_auth_credentials',
+            'crm_auth_recovery_codes','crm_auth_sessions','crm_private_recovery_attempts',
+            'crm_private_preferences','crm_private_funnels')
+
+    def fingerprints():
+        parts=["'"+table+"',(SELECT jsonb_build_object('count',count(*),'digest',"
+               "encode(sha256(convert_to(coalesce(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text),"
+               "'[]'::jsonb)::text,'UTF8')),'hex')) FROM public."+table+" t)" for table in tables]
+        result=json.loads(owner_sql('SELECT jsonb_build_object('+','.join(parts)+')::text'))
+        check(set(result)==set(tables) and all(isinstance(row['count'],int)
+              and re.fullmatch(r'[a-f0-9]{64}',row['digest']) for row in result.values()),
+              'enrollment fingerprints are incomplete; no database values logged')
+        return result
+
+    class Inputs(HTMLParser):
+        def __init__(self,page):
+            super().__init__(convert_charrefs=True)
+            self.inputs=[]
+            self.feed(page)
+
+        def handle_starttag(self,tag,attrs):
+            if tag=='input':self.inputs.append((attrs,self.get_starttag_text()))
+
+        def field(self,name):
+            matches=[item for item in self.inputs if dict(item[0]).get('name')==name]
+            check(len(matches)==1,'rendered old-input control is missing or duplicated')
+            attrs,raw=matches[0]
+            names=[key for key,_ in attrs]
+            check(len(names)==len(set(names)),'rendered old input created duplicate attributes')
+            return dict(attrs).get('value',''),raw
+
+    fields={
+        'pt':{'login':'Login fictício','company':'Empresa fictícia','email':'E-mail fictício'},
+        'en':{'login':'Test username','company':'Test company','email':'Test email'},
+        'es':{'login':'Usuario ficticio','company':'Empresa ficticia','email':'Correo ficticio'},
+    }
+    string_error={'pt':'O campo {field} deve conter texto.',
+                  'en':'The {field} field must contain text.',
+                  'es':'El campo {field} debe contener texto.'}
+    required_error={'pt':'O campo {field} é obrigatório.',
+                    'en':'The {field} field is required.',
+                    'es':'El campo {field} es obligatorio.'}
+    html_text='<b>OLD_INPUT_TEXT</b>&"'
+    before=fingerprints()
+
+    def render(locale,source,target,kind,invalid_field=None):
+        client=Client()
+        initial=client.get(source+'?lang='+locale)
+        headers=private_headers(client)
+        check(client.csrf is not None,'old-input probe requires a real form CSRF token')
+        values={'login':'lab-old-render-'+locale,'company':'EMPRESA_TESTE_OLD_'+locale.upper()}
+        values['email']=values['login']+'@example.test'
+        if kind=='empty':values={name:'' for name in values}
+        elif kind=='html':
+            values={'login':'lab-'+html_text,'company':'EMPRESA_TESTE_'+html_text,
+                    'email':'lab-'+html_text+'@example.test'}
+        payload={**values,'password':'OLD_INPUT_SECRET_PASSWORD','code':'OLD_INPUT_SECRET_CODE',
+                 'recovery':'OLD_INPUT_SECRET_RECOVERY','invitation':'OLD_INPUT_SECRET_INVITATION',
+                 'terms':'simulated'}
+        if source=='/cadastro':
+            document=re.search(r'<option selected>([0-9]{14})</option>',initial)
+            if not document:document=re.search(r'<option[^>]*>([0-9]{14})</option>',initial)
+            check(document is not None,'old-input probe requires a rendered fictional document')
+            payload.update(cnpj=document.group(1),phone='+5500000000000',plan='basic')
+        else:
+            payload.pop('company')
+        if invalid_field:
+            payload.pop(invalid_field)
+            suffix='[]' if kind=='array' else '[nested][value]'
+            payload[invalid_field+suffix]='OLD_INPUT_ARRAY_SENTINEL'
+            errors=[string_error[locale].format(field=fields[locale][invalid_field])]
+        else:
+            # Even ordinary strings never issue a challenge: validation stops
+            # on the missing terms before Enrollment::issue/issueInvitation.
+            payload.pop('terms')
+            errors=[LOCALE_COPY[locale]['terms']]
+            if kind=='empty':
+                required=('login','company','email') if source=='/cadastro' else ('login','email')
+                errors.extend(required_error[locale].format(field=fields[locale][field]) for field in required)
+        _,location=client.post(source,payload)
+        assert_destination(location,source)
+        # For /login, consume the signup flash directly on that page, before
+        # following its /cadastro redirect. No authentication request is sent.
+        page=client.get(target)
+        assert_locale(page,locale)
+        check(private_headers(client)==headers,'old-input render changed its private header contract')
+        check('role="alert"' in page and all(message in unescape(page) for message in errors),
+              'old-input render lost its localized validation messages')
+        check('<form method="post" action="'+target+'"' in page,
+              'old-input validation changed the form destination')
+        check(not any(marker in page for marker in ('Array','TypeError','htmlspecialchars',
+                  'OLD_INPUT_ARRAY_SENTINEL','OLD_INPUT_SECRET_','data-test="otp-code"',
+                  'data-test="setup-secret"','data-test="recovery-codes"')),
+              'old-input render exposed an array, exception, credential or enrollment secret')
+        controls=Inputs(page)
+        check(controls.field('password')[0]=='','old-input render repopulated the password')
+        if target=='/convite':
+            check(controls.field('invitation')[0]=='','old-input render repopulated the invitation token')
+        login=controls.field('login')[0]
+        if invalid_field=='login':
+            if target=='/login':check(login=='','login array did not use its empty fallback')
+            else:
+                prefix='lab-cliente-' if target=='/cadastro' else 'lab-equipe-'
+                check(re.fullmatch(prefix+r'[a-f0-9]{6}',login) is not None,
+                      'login array did not use the contracted fictional fallback')
+        else:check(login==values['login'],'old-input render discarded or transformed a scalar login')
+        if target=='/cadastro':
+            company=controls.field('company')[0]
+            if invalid_field=='company':
+                check(re.fullmatch(r'EMPRESA_TESTE_[A-F0-9]{6}',company) is not None,
+                      'company array did not use the contracted fictional fallback')
+            else:check(company==values['company'],'old-input render discarded or transformed a scalar company')
+            expected_email=login+'@example.test' if invalid_field=='email' else values['email']
+            check(controls.field('email')[0]==expected_email,'old-input render lost its exact email or fallback')
+        elif target=='/convite':
+            check(controls.field('email')[0]==login+'@example.test',
+                  'invitation email was not derived from the displayed safe login')
+        if kind=='html':
+            names=('login','company','email') if target=='/cadastro' else ('login','email') if target=='/convite' else ('login',)
+            for name in names:
+                raw=controls.field(name)[1]
+                check('<b>OLD_INPUT_TEXT</b>' not in page
+                      and '&lt;b&gt;OLD_INPUT_TEXT&lt;/b&gt;&amp;&quot;' in raw,
+                      'old-input HTML was not escaped intact at the attribute boundary')
+
+    for locale in LOCALE_COPY:
+        for kind in ('array','nested'):
+            for field in ('login','company','email'):
+                render(locale,'/cadastro','/cadastro',kind,field)
+            render(locale,'/convite','/convite',kind,'login')
+            render(locale,'/cadastro','/login',kind,'login')
+        for kind in ('normal','empty','html'):
+            render(locale,'/cadastro','/cadastro',kind)
+            render(locale,'/convite','/convite',kind)
+            render(locale,'/cadastro','/login',kind)
+        check(fingerprints()==before,'old-input validation changed enrollment, trial, identity or invitation state')
+    print('PASS old-input PT/EN/ES: real CSRF and 303→200 for flat/nested arrays; safe fictional fallbacks; scalar/empty/HTML values preserved; enrollment fingerprints unchanged')
+
+
 def assert_auth_rotation_locales():
     account=FIXTURES['clientA']
     actor=str(uuid.UUID(account['identity']))
@@ -1013,6 +1159,7 @@ def assert_no_agents_impersonation_of_human(client, route, actor):
 
 def main():
     scenario('clear-cache')
+    assert_old_input_rendering()
     assert_entry_locales()
     assert_auth_rotation_locales()
     # The preexisting journey starts with its original independent budgets.

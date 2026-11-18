@@ -108,6 +108,14 @@ final class PrivateUi
         if ($request->hasSession()) $request->session()->put(self::SESSION_LANGUAGE, $language);
     }
 
+    /** Read only the existing non-secret form fields; Blade still escapes them. */
+    public static function oldText(Request $request, string $field, string $fallback = ''): string
+    {
+        if (!in_array($field, ['login', 'company', 'email'], true) || !$request->hasSession()) return $fallback;
+        $value = $request->session()->getOldInput($field, $fallback);
+        return is_string($value) ? $value : ($value === null ? '' : $fallback);
+    }
+
     public static function text(string $source, mixed $language, array $replacements = []): string
     {
         self::$catalog ??= require dirname(__DIR__, 2).'/resources/lang/private-crm.php';
