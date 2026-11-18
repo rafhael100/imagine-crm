@@ -1,5 +1,33 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — rascunhos do owner verificados em homologação isolada
+
+A autorização específica já recebida permite ao **owner ativo criar e consultar rascunhos comerciais no Agents**, com empresa, identidade e regra resolvidas pelo CRM; `member` e admin global não recebem essa permissão. A continuidade autônoma de código, testes e PRs dentro desse recorte permanece vigente. Esta nota registra a decisão e a evidência existentes; não cria autorização. O pacote permanece **DRAFT / NO-MERGE / NO-DEPLOY**, com dados fictícios e sem execução da ação proposta no rascunho. [Contrato e autoridade do fluxo](docs/desenvolvimento/CRM-OWNER-AGENTS-DRAFTS-2026-11-17.md).
+
+A [PR #658](https://github.com/rafhael100/imagine-crm/pull/658), HEAD **`e390c56af2a544d8191cce86752637efe6a35e43`**, deriva da #651 `d3f06599cddfc244f6089d3dac01f29e5a45b8c0`. As cinco suítes abaixo terminaram **SUCCESS nessa HEAD**, incluindo cleanup; a evidência pertence à candidata funcional, não a esta atualização documental.
+
+| Suíte | Execução verificada |
+| --- | --- |
+| Owner → Agents, recuperação e Chromium | [44237380307](https://github.com/rafhael100/imagine-crm/actions/runs/44237380307) |
+| Jornada privada completa | [44237380315](https://github.com/rafhael100/imagine-crm/actions/runs/44237380315) |
+| OP-01 e resumo mínimo | [44237380328](https://github.com/rafhael100/imagine-crm/actions/runs/44237380328) |
+| Backup base/S2S legado | [44237380311](https://github.com/rafhael100/imagine-crm/actions/runs/44237380311) |
+| Central P22 | [44237380304](https://github.com/rafhael100/imagine-crm/actions/runs/44237380304) |
+
+A prova integrada executou **407 verificações HTTP / 52 requisições** e **607 verificações Chromium**, com login/MFA originais, planejamento persistido pelo motor nativo, mTLS no receiver original, PT/EN/ES e larguras 320/390/1440. Incluiu perda de ACK após commit remoto, reconciliação sem reenviar CREATE, auditoria recusada, revogações e isolamento. O perfil desligado passou 12 verificações antes e outras 12 depois; a suíte PHP passou 57 testes / 476 assertions, além do guard Python.
+
+A [recuperação local inerte](docs/desenvolvimento/CRM-OWNER-DRAFT-RECOVERY-2026-11-17.md) passou **836 verificações**, preservando **27 tabelas** e cinco roles, com **13 negativas SQL** e **18 mutações de catálogo recusadas**. O snapshot/restauro conservou `pending` enquanto a origem viva foi reconciliada para `confirmed`. A comparação registrou **15 equivalências** restritas de CHECKs PostgreSQL 16 pela regra `CRM_PG16_VARCHAR_LITERAL_ARRAY_CAST_V1`; os hashes **brutos** dos catálogos são **diferentes**, com `catalog_raw_equal=false`. Dados e demais metadados mantiveram igualdade exata. O destino permaneceu sem ativar runtime nem reutilizar sessões restauradas; o backup legado continuou recusando o addon. A prova não estabelece recuperação distribuída CRM/Agents, RPO zero ou backup externo.
+
+**Dependências verificadas:**
+
+- O fornecedor consumido pela #658 é [Agents P67 #476](https://github.com/rafhael100/imagine-ai-agents/pull/476), SHA **`0c722eee6bd53a7ee46c4ba68ab70200fc191b78`**, com [CI 44230030310](https://github.com/rafhael100/imagine-ai-agents/actions/runs/44230030310) verde, composto com a Central P30 `c08688b16e61d8d1ecc4d8c0ed4da8758a687ee8`. O CRM executou esse receiver original; não há implementação substituta no cliente.
+- [Agents P68 #477](https://github.com/rafhael100/imagine-ai-agents/pull/477), SHA `85f4c37a6d905b91923d3e31ba9068b2c35d7657`, passou na [CI 44233999376](https://github.com/rafhael100/imagine-ai-agents/actions/runs/44233999376). Acrescenta recuperação descartável sobre o mesmo P67, sem alterar seu runtime. É evidência adicional; não exige trocar o pin do fornecedor CRM.
+- [CRM #659](https://github.com/rafhael100/imagine-crm/pull/659), SHA `b86f6f7005b3c8aa79e64fa8dfe9abecab99ad01`, passou na [CI 44234701904](https://github.com/rafhael100/imagine-crm/actions/runs/44234701904). Corrige o fallback de ACL padrão de sequências. É candidata irmã da #658 sobre a #651, **não pré-requisito** do fluxo owner: a recuperação local desse fluxo exige somente 27 tabelas ordinárias. Os quatro PRs permanecem sem merge/deploy.
+
+**Próximo marco concreto:** disponibilizar o mesmo fluxo owner em homologação persistente; a ativação dessa candidata no destino segue pendente. Owner, criação e consulta já foram decididos. O [roteiro da base](docs/operations/private-complete-journey.md) é referência histórica das evidências de revisão/imagem, acesso privado, backup/restauro e reversão. Seu instalador prepara somente a base e usa o backup legado, que recusa o addon; F251 recusa novas rotas/roles/schema e F252 limita-se à troca de imagem. A instalação do addon, os dados persistentes e as revogações atuais precisam de plano específico para esse destino; essas allowlists permanecem intactas. Infraestrutura, R2, MFA e credenciais existentes devem ser conferidos no destino, sem presumir sua ausência. Preparação e correções de desenvolvimento dentro do recorte continuam autorizadas; esta nota não executa nem libera a ativação.
+
+**Histórico preservado a seguir.** As notas datadas abaixo descrevem a fase e a candidata que existiam quando foram escritas. Afirmações anteriores de próxima entrega ou de autorização apenas documental não substituem a aprovação específica e a evidência acima. As regras operacionais e os limites dos demais recortes permanecem aplicáveis.
+
 ## OP-01 — resumo mínimo pela lista de leads (17/11/2026)
 
 A consulta privada da [PR #649](https://github.com/rafhael100/imagine-crm/pull/649), HEAD `810f6815f4d8dc35ba46dbe7accf78c6b63b7dc1`, passou na [CI OP-01 44215580347](https://github.com/rafhael100/imagine-crm/actions/runs/44215580347): 43 leituras reais HTTP, 12 admitidas e 31 recusadas, com auditoria exata e estado de negócio preservado. O consumidor Agents original #471 também passou. A entrega seguinte acrescenta o link na lista e o resumo HTML com somente referência e etapa como dados de negócio, nos três idiomas, reutilizando uma única leitura autorizada por abertura.
