@@ -840,6 +840,75 @@ def assert_old_input_rendering():
     print('PASS old-input PT/EN/ES: real CSRF and 303→200 for flat/nested arrays; safe fictional fallbacks; scalar/empty/HTML values preserved; enrollment fingerprints unchanged')
 
 
+def assert_auth_validation_redirects(client,locale,path,login):
+    """Structural errors return to their form before any IAM operation starts."""
+    check(path in ('/login','/mfa'),'closed auth validation probe path required')
+    tables=('crm_auth_sessions','crm_auth_operations','crm_iam_audit_events',
+            'crm_auth_credentials','crm_auth_recovery_codes')
+
+    def fingerprint():
+        # Values, bindings, credential hashes and factor ciphertext stay in PG.
+        # The IAM runner persists intent before admission to the abuse guard.
+        parts=["'"+table+"',(SELECT jsonb_build_object('count',count(*),'digest',"
+               "encode(sha256(convert_to(coalesce(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text),"
+               "'[]'::jsonb)::text,'UTF8')),'hex')) FROM public."+table+" t)" for table in tables]
+        result=json.loads(owner_sql('SELECT jsonb_build_object('+','.join(parts)+')::text'))
+        check(set(result)==set(tables) and all(isinstance(row['count'],int)
+              and re.fullmatch(r'[a-f0-9]{64}',row['digest']) for row in result.values()),
+              'auth validation fingerprints are incomplete; no database values logged')
+        return result
+
+    labels={
+        'pt':{'login':'Login fictício','password':'Senha','code':'Código de verificação ou recuperação'},
+        'en':{'login':'Test username','password':'Password','code':'Verification or recovery code'},
+        'es':{'login':'Usuario ficticio','password':'Contraseña','code':'Código de verificación o recuperación'},
+    }
+    messages={
+        'pt':{'required':'O campo {field} é obrigatório.','string':'O campo {field} deve conter texto.',
+              'max':'O campo {field} deve ter no máximo {limit} caracteres.'},
+        'en':{'required':'The {field} field is required.','string':'The {field} field must contain text.',
+              'max':'The {field} field must have at most {limit} characters.'},
+        'es':{'required':'El campo {field} es obligatorio.','string':'El campo {field} debe contener texto.',
+              'max':'El campo {field} debe tener como máximo {limit} caracteres.'},
+    }
+    if path=='/login':
+        cases=[('required',{'login':login},'password'),
+               ('string',{'login[]':'AUTH_VALIDATION_INPUT','password':'AUTH_VALIDATION_SECRET_PASSWORD'},'login'),
+               ('max',{'login':login,'password':'AUTH_VALIDATION_SECRET_'+'X'*73},'password')]
+        limit=72
+    else:
+        cases=[('required',{},'code'),
+               ('string',{'code[nested][value]':'AUTH_VALIDATION_SECRET_CODE'},'code'),
+               ('max',{'code':'AUTH_VALIDATION_SECRET_'+'X'*33},'code')]
+        limit=32
+    before=fingerprint()
+    csrf=client.csrf
+    headers=private_headers(client)
+    check(csrf is not None,'auth validation probe requires the current real CSRF token')
+    for rule,payload,field in cases:
+        context=path+'/'+locale+'/'+rule
+        _,location=client.post(path,payload)
+        assert_destination(location,path)
+        page=client.get(path)
+        copy=messages[locale][rule].format(field=labels[locale][field],limit=limit)
+        assert_locale(page,locale,copy)
+        check('role="alert"' in page and '<form method="post" action="'+path+'"' in page,
+              'structural validation lost its original form or error: '+context)
+        check(private_headers(client)==headers and client.csrf==csrf,
+              'structural validation changed the form headers or current CSRF: '+context)
+        check(not any(marker in page for marker in ('AUTH_VALIDATION_INPUT','AUTH_VALIDATION_SECRET_',
+                                                   'Array','TypeError','SQLSTATE')),
+              'structural validation reflected a credential, array or internal error: '+context)
+        if path=='/login':
+            controls=re.findall(r'<input\b(?=[^>]*\bname="login")[^>]*>',page)
+            check(len(controls)==1,'structural login validation lost its unique username control')
+            value=re.search(r'\bvalue="([^"]*)"',controls[0])
+            check(value is not None and unescape(value.group(1))==('' if field=='login' else login),
+                  'structural login validation discarded its allowed old input: '+context)
+        check(fingerprint()==before,
+              'structural validation entered IAM or changed authority/credential/recovery state: '+context)
+
+
 def assert_auth_rotation_locales():
     account=FIXTURES['clientA']
     actor=str(uuid.UUID(account['identity']))
@@ -859,6 +928,7 @@ def assert_auth_rotation_locales():
         client=Client()
         client.get('/cadastro?plan=enterprise&lang='+locale)
         client.get('/login')
+        assert_auth_validation_redirects(client,locale,'/login',account['login'])
         old_csrf=client.csrf
         _,location=client.post('/login',{'login':account['login'],'password':'LOCALE_SENTINEL_WRONG_PASSWORD'})
         assert_destination(location,'/login')
@@ -904,6 +974,9 @@ def assert_auth_rotation_locales():
         check(len(new)==1,'fresh password attempt did not create one independent challenge')
         pending_id=new.pop()
         check(pending[pending_id]['binding']!=pending[rejected_id]['binding'],'failed challenge browser binding survived reset')
+        # Reuse this real pending authority. These failures are before IAM,
+        # so no new login, budget reset, recovery code or extra wait is needed.
+        assert_auth_validation_redirects(client,locale,'/mfa',account['login'])
         _,location=client.post('/mfa',{'code':next_factor(account)})
         assert_destination(location,'/painel')
         assert_locale(client.get('/painel'),locale)
@@ -932,6 +1005,7 @@ def assert_auth_rotation_locales():
         _,location=client.request('/painel',expected=303);assert_destination(location,'/login')
 
     check(private_business_snapshot(companies)==before,'locale/auth probes changed company data or scheduled effects')
+    print('PASS auth validation PT/EN/ES: login/MFA return directly to their form; current CSRF and IAM fingerprints unchanged; existing valid MFA still completes')
     print('PASS PT/EN/ES across real password/MFA/logout resets; old sessions, bindings and CSRF rejected; only visual preference retained')
 
 
@@ -1075,6 +1149,237 @@ def assert_funnel_filter_navigation(client,peer,company,peer_company,foreign_fun
     print('PASS funnel filter PT/EN/ES: two populated own funnels, exact language-link scope, invalid/array/foreign/zero semantics, peer isolation and unchanged navigation snapshots')
 
 
+def assert_member_billing_read_only(owner,member,peer,company,peer_company,states,pending=None):
+    """Existing member reads own orders; only the existing owner may write."""
+    company=str(uuid.UUID(company));peer_company=str(uuid.UUID(peer_company))
+    pending=str(uuid.UUID(pending)) if pending is not None else None
+
+    def fingerprint():
+        organizations=[]
+        for label,organization in (('owner',company),('peer',peer_company)):
+            parts=["'"+table+"',(SELECT jsonb_build_object('count',count(*),'digest',"
+                   "encode(sha256(convert_to(coalesce(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text),"
+                   "'[]'::jsonb)::text,'UTF8')),'hex')) FROM public.crm_private_"+table+
+                   " t WHERE organization_id='"+organization+"')" for table in ('orders','events')]
+            organizations.append("'"+label+"',jsonb_build_object("+','.join(parts)+")")
+        result=json.loads(owner_sql('SELECT jsonb_build_object('+','.join(organizations)+')::text'))
+        check(set(result)=={'owner','peer'} and all(set(value)=={'orders','events'} for value in result.values())
+              and all(isinstance(row['count'],int) and re.fullmatch(r'[a-f0-9]{64}',row['digest'])
+                      for value in result.values() for row in value.values()),
+              'member billing fingerprints are incomplete; no database values logged')
+        return result
+
+    class OrderForms(HTMLParser):
+        def __init__(self,page,csrf):
+            super().__init__(convert_charrefs=True)
+            self.forms=[];self.current=None;self.select=None;self.csrf=csrf
+            self.feed(page)
+
+        def handle_starttag(self,tag,attributes):
+            attrs=dict(attributes)
+            if tag=='form':
+                action=attrs.get('action','')
+                if urllib.parse.urlsplit(action).path.startswith('/pedidos'):
+                    self.current={'action':action,'method':attrs.get('method','get').lower(),
+                                  'fields':[],'choices':[],'tokens':0}
+            elif self.current is not None:
+                if tag=='input' and 'name' in attrs:
+                    name=attrs['name'];value=attrs.get('value','')
+                    if name=='_token':
+                        check(value==self.csrf and bool(value),'owner order form lost its current CSRF')
+                        self.current['tokens']+=1
+                    else:
+                        if name=='key':
+                            check(re.fullmatch(r'[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}',value),
+                                  'owner order form lost its generated idempotency UUID')
+                            value='<generated-order-uuid>'
+                        self.current['fields'].append((name,value))
+                elif tag=='select':self.select={'name':attrs.get('name'),'options':[],'selected':[]}
+                elif tag=='option' and self.select is not None:
+                    self.select['options'].append(attrs.get('value',''))
+                    if 'selected' in attrs:self.select['selected'].append(attrs.get('value',''))
+
+        def handle_endtag(self,tag):
+            if tag=='select' and self.select is not None:
+                check(self.select['options'] and len(self.select['selected'])<=1,
+                      'owner order select has no options or multiple defaults')
+                value=(self.select['selected'] or self.select['options'])[0]
+                self.current['fields'].append((self.select['name'],value))
+                self.current['choices'].append((self.select['name'],self.select['options']))
+                self.select=None
+            elif tag=='form' and self.current is not None:
+                self.current['fields'].sort();self.current['choices'].sort()
+                self.forms.append(self.current);self.current=None
+
+    def rows(page):
+        result=[]
+        for identity,body in re.findall(r'<tr data-order-id="([a-f0-9-]+)">(.*?)</tr>',page,re.S):
+            plan=re.search(r'data-plan="([a-z]+)"',body)
+            state=re.search(r'data-order-state="([a-z]+)"',body)
+            check(plan is not None and state is not None,'billing row lost its canonical plan or state')
+            result.append((identity,plan.group(1),state.group(1),body))
+        check(len(result)==len({row[0] for row in result}),'billing view duplicated an order row')
+        return sorted(result)
+
+    copy={
+        'pt':{'notice':'Seu perfil pode consultar os pedidos simulados. Somente o responsável da empresa pode criar pedidos ou simular pagamentos.',
+              'read':'Somente consulta','empty':'Ainda não há pedidos simulados nesta empresa.'},
+        'en':{'notice':'Your role can view simulated orders. Only the company owner can create orders or simulate payments.',
+              'read':'Read only','empty':'There are no simulated orders for this company yet.'},
+        'es':{'notice':'Tu perfil puede consultar los pedidos simulados. Solo el responsable de la empresa puede crear pedidos o simular pagos.',
+              'read':'Solo consulta','empty':'Todavía no hay pedidos simulados en esta empresa.'},
+    }
+    before=fingerprint();contracts=None
+    check(before['owner']['orders']['count']==len(states) and before['peer']['orders']['count']==0,
+          'member billing requires only the original owner orders and an empty peer fixture')
+    for locale in LOCALE_COPY:
+        owner_page=owner.get('/painel?section=billing&lang='+locale)
+        assert_locale(owner_page,locale)
+        own_rows=rows(owner_page)
+        check(sorted(row[2] for row in own_rows)==sorted(states),'owner billing lost an original payment transition')
+        forms=OrderForms(owner_page,owner.csrf).forms
+        creation=[form for form in forms if form['action']=='/pedidos']
+        check(len(creation)==1 and all(form['method']=='post' and form['tokens']==1 for form in forms),
+              'owner billing lost its creation form, POST method or unique CSRF')
+        check(sorted(name for name,_ in creation[0]['fields'])==['key','method','plan']
+              and creation[0]['choices']==[('method',['pix','card','boleto']),
+                                          ('plan',['basic','essential','professional','enterprise'])],
+              'owner order form changed its canonical fields or choices')
+        transitions=[form for form in forms if form['action']!='/pedidos']
+        if pending is not None:
+            check(any(row[0]==pending and row[2]=='pending' for row in own_rows)
+                  and len(transitions)==3
+                  and all(form['action']=='/pedidos/'+pending+'/simular' for form in transitions)
+                  and sorted(form['fields'] for form in transitions)==
+                      sorted([[('state',state),('version','1')] for state in ('approved','refused','cancelled')]),
+                  'owner pending order lost its three versioned simulation actions')
+        else:check(transitions==[],'owner final/empty billing unexpectedly offers a simulation action')
+        canonical=sorted(forms,key=lambda form:json.dumps(form,sort_keys=True))
+        check(contracts is None or canonical==contracts,'locale changed owner order fields, selected values, versions or actions')
+        contracts=canonical
+        check('data-billing-access="read-only"' not in owner_page,'owner was demoted to billing read-only')
+
+        member_page=member.get('/painel?section=billing&lang='+locale)
+        assert_locale(member_page,locale,copy[locale]['notice'])
+        check(member_page.count('data-billing-access="read-only"')==1
+              and OrderForms(member_page,member.csrf).forms==[],
+              'member billing still offers order creation or simulation forms')
+        member_rows=rows(member_page)
+        check([row[:3] for row in member_rows]==[row[:3] for row in own_rows],
+              'member cannot read the exact own-company orders shown to the owner')
+        check(all(copy[locale]['read'] in unescape(row[3]) for row in member_rows)
+              and (bool(states) or copy[locale]['empty'] in unescape(member_page)),
+              'member billing read-only or empty-state copy is missing')
+        peer_page=peer.get('/painel?section=billing&lang='+locale)
+        assert_locale(peer_page,locale)
+        check(rows(peer_page)==[] and not any(row[0] in peer_page for row in own_rows),
+              'another company can read the member company orders')
+        check(fingerprint()==before,'billing GETs changed own or peer orders/events')
+
+        if pending is not None:
+            page,_=member.post('/pedidos',{'plan':'essential','method':'pix','key':str(uuid.uuid4())},expected=403)
+            assert_private_error(member,page,locale,403)
+            check(fingerprint()==before,'denied member order creation changed orders/events')
+            for state in ('approved','refused','cancelled'):
+                page,_=member.post('/pedidos/'+pending+'/simular',{'state':state,'version':1},expected=403)
+                assert_private_error(member,page,locale,403)
+                check(fingerprint()==before,'denied member payment simulation changed orders/events')
+    for client in (owner,member,peer):client.get('/painel?section=billing&lang=pt')
+    check(fingerprint()==before,'restoring billing language changed either company orders/events')
+
+
+def assert_confirmation_result(client,page,locale,kind,values):
+    """Inspect an existing POST result in memory; never print its one-time values."""
+    check(kind in ('registered','invitation','recovered') and client.status==200,
+          'confirmation probe requires the existing successful POST response')
+    assert_locale(page,locale)
+    header=re.search(r'<header\b[^>]*>(.*?)</header>',page,re.S)
+    main=re.search(r'<main\b[^>]*>(.*?)</main>',page,re.S)
+    check(header is not None and main is not None,'confirmation response lost its header or main content')
+
+    class Markup(HTMLParser):
+        void={'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}
+
+        def __init__(self,fragment):
+            super().__init__(convert_charrefs=True)
+            self.tags=[];self.links=[];self.indicators=[];self.blocks=[]
+            self.link=None;self.indicator=None;self.block=None
+            self.feed(fragment)
+
+        def handle_starttag(self,tag,attributes):
+            attrs=dict(attributes);self.tags.append((tag,attrs))
+            if tag=='a':
+                self.link={'href':attrs.get('href',''),'text':[]};self.links.append(self.link)
+            if 'data-confirmation-language' in attrs:
+                self.indicator={'language':attrs['data-confirmation-language'],'text':[],'tags':[],'depth':0}
+                self.indicators.append(self.indicator)
+            if attrs.get('data-test') in ('recovery-codes','invitation-code','otp-code','setup-secret'):
+                self.block={'marker':attrs['data-test'],'text':[],'tags':[],'depth':0}
+                self.blocks.append(self.block)
+            for active in (self.indicator,self.block):
+                if active is not None:
+                    active['tags'].append((tag,attrs))
+                    if tag not in self.void:active['depth']+=1
+
+        def handle_endtag(self,tag):
+            if tag=='a':self.link=None
+            for name in ('indicator','block'):
+                active=getattr(self,name)
+                if active is not None and tag not in self.void:
+                    active['depth']-=1
+                    if active['depth']==0:setattr(self,name,None)
+
+        def handle_data(self,text):
+            for active in (self.link,self.indicator,self.block):
+                if active is not None:active['text'].append(text)
+
+    head=Markup(header.group(1));body=Markup(main.group(1))
+    copy={
+        'pt':{'label':'Idioma: PT-BR','notice':'Idioma definido antes da confirmação.',
+              'login':'Entrar','team':'Voltar à equipe'},
+        'en':{'label':'Language: EN','notice':'Language set before confirmation.',
+              'login':'Sign in','team':'Back to team'},
+        'es':{'label':'Idioma: ES','notice':'Idioma definido antes de la confirmación.',
+              'login':'Ingresar','team':'Volver al equipo'},
+    }[locale]
+    check(len(head.indicators)==1 and head.indicators[0]['language']==locale,
+          'one-time confirmation lost its selected language indicator')
+    indicator=head.indicators[0]
+    text=' '.join(' '.join(indicator['text']).split())
+    check(copy['label'] in text and copy['notice'] in text,
+          'confirmation language indicator or explanation is not localized')
+    check(all(tag not in ('a','button','form','input','select','textarea','summary')
+              and 'tabindex' not in attrs and 'contenteditable' not in attrs
+              and attrs.get('role') not in ('button','link','combobox','listbox','textbox')
+              and not any(name.startswith('on') for name in attrs)
+              for tag,attrs in indicator['tags']),
+          'confirmation language indicator still offers an interactive action')
+    check(not any('languages' in attrs.get('class','').split() or tag=='form' for tag,attrs in head.tags)
+          and sorted(link['href'] for link in head.links)==
+              sorted(['/','https://comercial-dev.imaginecomunica.com.br/','/login']),
+          'confirmation header retains language navigation or lost an explicit existing link')
+
+    marker='invitation-code' if kind=='invitation' else 'recovery-codes'
+    expected_count=1 if kind=='invitation' else 5
+    check(len(values)==expected_count and len(set(values))==expected_count
+          and head.blocks==[] and len(body.blocks)==1 and body.blocks[0]['marker']==marker,
+          'confirmation lost or duplicated its expected one-time result marker')
+    visible=''.join(body.blocks[0]['text']).split()
+    check(visible==values and all(value and page.count(value)==1 and value not in header.group(1) for value in values),
+          'confirmation moved, duplicated or changed a one-time result value')
+    # These baseline results display each value once, only in the secret block;
+    # their existing navigation never carries a code or invitation in a URL.
+    urls=[attrs[name] for _,attrs in head.tags+body.tags
+          for name in ('href','src','action','formaction') if name in attrs]
+    check(not any(value in urllib.parse.unquote(url) for value in values for url in urls),
+          'confirmation exposed a one-time value through a navigation URL')
+    destination='/painel?section=team' if kind=='invitation' else '/login'
+    label=copy['team'] if kind=='invitation' else copy['login']
+    actions=[link for link in body.links if link['href']==destination]
+    check(len(actions)==1 and label in ' '.join(actions[0]['text']),
+          'confirmation lost its explicit return-to-team or sign-in action')
+
+
 def leads(client):
     page=client.get('/painel?section=leads')
     return re.findall(r'data-lead-id="([a-f0-9-]+)"',page)
@@ -1157,6 +1462,77 @@ def assert_no_agents_impersonation_of_human(client, route, actor):
     print('PASS F250 human/service header separation actor='+actor)
 
 
+def assert_scenario_locale_navigation(client):
+    """Follow rendered locale links without recalculating or saving a scenario."""
+    companies=[FIXTURES['clientA']['organization'],FIXTURES['clientB']['organization']]
+    before=private_business_snapshot(companies)
+    defaults={'visits':1000,'lead_rate':4,'client_rate':15}
+    cases=[
+        ('visits=2500&lead_rate=8&client_rate=13',
+         {'visits':2500,'lead_rate':8,'client_rate':13},(200,26)),
+        ('',defaults,(40,6)),
+        ('visits=0&lead_rate=0&client_rate=0',
+         {'visits':0,'lead_rate':0,'client_rate':0},(0,0)),
+        ('visits=1000000&lead_rate=100&client_rate=100',
+         {'visits':1000000,'lead_rate':100,'client_rate':100},(1000000,1000000)),
+        ('visits=-1&lead_rate=10000&client_rate=1e2',defaults,(40,6)),
+        ('visits%5B%5D=SCENARIO_INPUT_SENTINEL&lead_rate%5Bnested%5D=100&client_rate%5B%5D=50',
+         defaults,(40,6)),
+        ('visits=0001&lead_rate=1.5&client_rate=101',defaults,(40,6)),
+        ('visits=99&lead_rate=13&client_rate=17',
+         {'visits':99,'lead_rate':13,'client_rate':17},(13,2)),
+    ]
+
+    def links(page,inputs):
+        block=re.search(r'<div class="languages"[^>]*>(.*?)</div>',page,re.S)
+        check(block is not None,'scenario page lost its language navigation')
+        hrefs=re.findall(r'<a\b[^>]*href="([^"]+)"',block.group(1))
+        check(len(hrefs)==3,'scenario page must retain three language links')
+        targets={}
+        for raw in hrefs:
+            href=unescape(raw)
+            parsed=urllib.parse.urlparse(href)
+            query=urllib.parse.parse_qs(parsed.query,keep_blank_values=True)
+            language=query.get('lang',[])
+            check(not parsed.scheme and not parsed.netloc and not parsed.path and not parsed.fragment
+                  and len(language)==1 and language[0] in LOCALE_COPY,
+                  'scenario language navigation changed its local URL contract')
+            expected={name:[str(value)] for name,value in inputs.items()}
+            expected['lang']=language
+            check(query==expected,'scenario language link discarded normalized values or copied unrelated parameters')
+            targets[language[0]]='/'+href
+        check(set(targets)==set(LOCALE_COPY),'scenario languages are missing or duplicated')
+        return targets
+
+    def rendered(page,locale,inputs,results):
+        assert_locale(page,locale)
+        for name,value in inputs.items():
+            controls=re.findall(r'<input\b(?=[^>]*\bname="'+name+r'")[^>]*>',page)
+            check(len(controls)==1,'scenario lost a unique numeric control')
+            actual=re.search(r'\bvalue="([^"]*)"',controls[0])
+            check(actual is not None and actual.group(1)==str(value),
+                  'locale navigation changed a normalized scenario input')
+        for name,value in zip(('visits','leads','clients'),(inputs['visits'],*results)):
+            check('data-scenario-'+name+'="'+str(value)+'"' in page,
+                  'locale navigation changed a scenario result')
+        check(not any(marker in page for marker in ('SCENARIO_INPUT_SENTINEL','SCENARIO_QUERY_SENTINEL')),
+              'scenario navigation reflected an untrusted input or unrelated parameter')
+
+    for query,inputs,results in cases:
+        page=client.get('/?lang=pt&'+query
+                        +'&section=kanban&funnel=SCENARIO_QUERY_SENTINEL&extra=SCENARIO_QUERY_SENTINEL')
+        rendered(page,'pt',inputs,results)
+        targets=links(page,inputs)
+        # Follow what the user sees. Do not reconstruct the values in each GET.
+        for locale in ('en','es','pt'):
+            page=client.get(targets[locale])
+            rendered(page,locale,inputs,results)
+            targets=links(page,inputs)
+        check(private_business_snapshot(companies)==before,
+              'anonymous scenario locale navigation changed CRM business data')
+    print('PASS scenario locale navigation: one calculation retained through real PT/EN/ES links; normalized defaults/zero/bounds/arrays; no unrelated query or CRM effects')
+
+
 def main():
     scenario('clear-cache')
     assert_old_input_rendering()
@@ -1207,6 +1583,7 @@ def main():
           'data-scenario-clients="6"' in malformed,
           'invalid scenario input must use safe defaults')
     print('PASS Imagine Visits → Leads → Customers PII-free scenario PT/EN/ES')
+    assert_scenario_locale_navigation(a)
 
     initial=a.get('/cadastro')
     document=re.search(r'<option selected>([0-9]{14})</option>',initial)
@@ -1227,6 +1604,7 @@ def main():
     page,_=a.post('/cadastro/concluir',{'code':setup_code},expected=200)
     primary['recovery']=re.findall(r'<div>([a-f0-9]{24})</div>',page)
     check(len(primary['recovery'])==5,'single-display recovery codes missing')
+    assert_confirmation_result(a,page,'pt','registered',primary['recovery'])
     a.get('/login')
     a.post('/login',{'login':primary['login'],'password':'incorrect-password'})
     time.sleep(1.2)
@@ -1358,9 +1736,10 @@ def main():
     a.post('/funis',{'title':'FUNIL_TESTE_SEGUNDO'})
     check(len(re.findall('data-funnel-id=',a.get('/painel?section=funnels')))==2,'two funnels not persisted')
     a.post('/funis',{'title':'FUNIL_TESTE_TERCEIRO'},expected=409)
-    a.get('/painel?section=team')
+    a.get('/painel?section=team&lang=en')
     page,_=a.post('/equipe/convidar',{},expected=200)
     invitation=re.search(r'data-test="invitation-code">([^<]+)',page).group(1).strip()
+    assert_confirmation_result(a,page,'en','invitation',[invitation])
     member=Client()
     member.get('/convite')
     teammate={'login':'lab-member-'+suffix,'password':secrets.token_hex(16)}
@@ -1373,6 +1752,7 @@ def main():
     STEPS[teammate['login']]=int(time.time())//30
     page,_=member.post('/cadastro/concluir',{'code':totp(teammate['secret'])},expected=200)
     teammate['recovery']=re.findall(r'<div>([a-f0-9]{24})</div>',page)
+    assert_confirmation_result(member,page,'pt','registered',teammate['recovery'])
     check(primary['label'] in member.login(teammate),'invited member cannot see same company')
     check(title in member.get('/painel?section=leads'),'invited member cannot see same company leads')
     member.get('/automacoes/estado',expected=403)
@@ -1380,7 +1760,7 @@ def main():
     member.post('/funis',{'title':'FUNIL_TESTE_DENIED'},expected=403)
     member.post('/equipe/convidar',{},expected=403)
     member.get('/admin',expected=403)
-    a.get('/painel?section=team');a.post('/equipe/convidar',{},expected=409)
+    a.get('/painel?section=team&lang=pt');a.post('/equipe/convidar',{},expected=409)
     FIXTURES['member']=teammate
     VAULT.write_text(json.dumps(FIXTURES));VAULT.chmod(0o600)
     print('PASS two-funnel quota → scoped single-use invitation → second user → owner/member permission boundaries')
@@ -1479,6 +1859,7 @@ def main():
     print('PASS real lead title change persists with one version and one audit event')
 
     a.get('/painel?section=billing')
+    assert_member_billing_read_only(a,member,b,automation_state['company_id'],FIXTURES['clientB']['organization'],[])
     for state in ['approved','refused','cancelled']:
         key=str(uuid.uuid4())
         a.post('/pedidos',{'plan':'essential','method':'pix','key':key})
@@ -1490,12 +1871,18 @@ def main():
         pending=[identity for identity,row in re.findall(r'<tr data-order-id="([^"]+)">(.*?)</tr>',page,re.S) if 'name="state" value="approved"' in row]
         check(len(pending)==1,'pending order absent or ambiguous')
         order=pending[0]
+        if state=='approved':
+            assert_member_billing_read_only(a,member,b,automation_state['company_id'],
+                                           FIXTURES['clientB']['organization'],['pending'],order)
         a.post('/pedidos/'+order+'/simular',{'state':state,'version':1})
         a.post('/pedidos/'+order+'/simular',{'state':state,'version':1})
         b.get('/painel?section=billing')
         b.post('/pedidos/'+order+'/simular',{'state':'approved','version':1},expected=404)
     billing=a.get('/painel?section=billing')
     check(all(state in billing for state in ('approved','refused','cancelled')),'payment state missing')
+    assert_member_billing_read_only(a,member,b,automation_state['company_id'],
+                                   FIXTURES['clientB']['organization'],['approved','refused','cancelled'])
+    print('PASS member billing PT/EN/ES: exact own-order read-only views; direct creation/simulation denied without order/event effects; original owner forms and three payment transitions preserved')
     print('PASS simulated pending/approved/refused/cancelled payments → order/event idempotency → tenant binding')
 
     assert_native_superseded(b,automation_state['company_id'],suffix)
@@ -1516,15 +1903,17 @@ def main():
     a.login(primary,recovery=primary['recovery'][0])
     check(len(leads(a))==20,'data did not survive logout/login')
     new_password=secrets.token_hex(16)
-    recovery_client=Client();recovery_client.get('/recuperar')
+    recovery_client=Client();recovery_client.get('/recuperar?lang=es')
     page,_=recovery_client.post('/recuperar',{'login':primary['login'],'code':primary['recovery'][1],'password':new_password},expected=200)
     fresh_codes=re.findall(r'<div>([a-f0-9]{24})</div>',page)
     check(len(fresh_codes)==5,'recovery rotation missing')
+    assert_confirmation_result(recovery_client,page,'es','recovered',fresh_codes)
+    print('PASS existing registered/invitation/recovered POST results retain a passive PT/EN/ES indicator, exact one-time values and explicit actions; no extra enrollment or recovery')
     a.get('/painel',expected=303)
     primary['password']=new_password
     a.login(primary,recovery=fresh_codes[0])
     check(len(leads(a))==20,'data lost after recovery/session revocation')
-    recovery_client.get('/recuperar')
+    recovery_client.get('/recuperar?lang=pt')
     recovery_client.post('/recuperar',{'login':primary['login'],'code':primary['recovery'][1],'password':new_password})
     print('PASS quota 20/21 → logout/relogin persistence → one-use recovery → credential version/session revocation')
 

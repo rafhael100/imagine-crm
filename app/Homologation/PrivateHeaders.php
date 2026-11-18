@@ -20,7 +20,8 @@ final class PrivateHeaders
         if ($error instanceof ValidationException) {
             $path=match($request->path()) {
                 'cadastro/reenviar','cadastro/verificar'=>'/cadastro/codigo','cadastro/concluir'=>'/cadastro/mfa',
-                'cadastro'=>'/cadastro','convite'=>'/convite','recuperar'=>'/recuperar',default=>'/painel',
+                'cadastro'=>'/cadastro','convite'=>'/convite','recuperar'=>'/recuperar',
+                'login'=>'/login','mfa'=>'/mfa',default=>'/painel',
             };
             return redirect($path,303)->withErrors(PrivateUi::validationErrors($error,$language))
                 ->withInput($request->only(['login','company','cnpj','email','phone','title','value_cents']));
@@ -77,7 +78,8 @@ final class PrivateHeaders
         catch(ValidationException $error) {
             $path=match($request->path()) {
                 'cadastro/reenviar'=>'/cadastro/codigo','cadastro/verificar'=>'/cadastro/codigo','cadastro/concluir'=>'/cadastro/mfa',
-                'cadastro'=>'/cadastro','convite'=>'/convite','recuperar'=>'/recuperar',default=>'/painel',
+                'cadastro'=>'/cadastro','convite'=>'/convite','recuperar'=>'/recuperar',
+                'login'=>'/login','mfa'=>'/mfa',default=>'/painel',
             };
             $response=redirect($path,303)->withErrors(PrivateUi::validationErrors($error,$language))
                 ->withInput($request->only(['login','company','cnpj','email','phone','title','value_cents']));

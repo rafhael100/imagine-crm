@@ -14,8 +14,14 @@
     // Only UUIDs from the already authorized snapshot may enter language links.
     $linkedFunnel=is_string($requestedFunnel) && in_array($requestedFunnel,array_column($data['funnels']??[],'id'),true) ? $requestedFunnel : null;
     $unavailableFunnel=$linkedFunnel===null && (is_string($requestedFunnel) ? $requestedFunnel!=='' : (bool)$requestedFunnel);
+    $scenarioLanguageQuery=[];
+    if($screen==='home') {
+        // Project only the already normalized scenario integers, never the raw query.
+        $homeScenario=$data['opportunity_scenario']??\App\Homologation\OpportunityScenario::fromQuery([]);
+        $scenarioLanguageQuery=['visits'=>$homeScenario['visits'],'lead_rate'=>$homeScenario['lead_rate'],'client_rate'=>$homeScenario['client_rate']];
+    }
     $languageLink = fn($target) => '?'.http_build_query(($screen==='workspace' ? ['section'=>$section,'lang'=>$target] : ['lang'=>$target])
-        + ($linkedFunnel===null ? [] : ['funnel'=>$linkedFunnel]));
+        + ($linkedFunnel===null ? [] : ['funnel'=>$linkedFunnel]) + $scenarioLanguageQuery);
     $seed=strtoupper(substr(bin2hex(random_bytes(4)),0,6));
 @endphp
 <!doctype html><html lang="{{ $language==='pt'?'pt-BR':$language }}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>{{ $say('Imagine CRM · Homologação privada','Imagine CRM · Private test environment','Imagine CRM · Entorno de pruebas privado') }}</title>
@@ -27,7 +33,11 @@
 .scrollhint{display:none;font-size:13px;color:var(--muted);margin:0 0 12px}.kanban:focus-visible,.tablewrap:focus-visible{outline:3px solid var(--orange);outline-offset:3px}@media(max-width:760px){.scrollhint{display:block}}
 </style></head><body>
 <div class="environment">{{ $say('HOMOLOGAÇÃO PRIVADA · DADOS FICTÍCIOS · NENHUMA COBRANÇA REAL','PRIVATE TEST ENVIRONMENT · FICTIONAL DATA · NO REAL CHARGES','ENTORNO DE PRUEBAS PRIVADO · DATOS FICTICIOS · SIN COBROS REALES') }}</div><div class="wrap">
-<header class="top"><a href="/" aria-label="Imagine CRM"><img class="brand" src="/assets/logo-imagine.png" alt="Imagine"></a><div class="toplinks"><a href="https://comercial-dev.imaginecomunica.com.br/" class="quiet">← {{ $t('Voltar ao site') }}</a><div class="languages" aria-label="{{ $t('Idioma') }}"><a href="{{ $languageLink('pt') }}" aria-current="{{ $language==='pt'?'true':'false' }}">PT-BR</a><a href="{{ $languageLink('en') }}" aria-current="{{ $language==='en'?'true':'false' }}">EN</a><a href="{{ $languageLink('es') }}" aria-current="{{ $language==='es'?'true':'false' }}">ES</a></div>
+<header class="top"><a href="/" aria-label="Imagine CRM"><img class="brand" src="/assets/logo-imagine.png" alt="Imagine"></a><div class="toplinks"><a href="https://comercial-dev.imaginecomunica.com.br/" class="quiet">← {{ $t('Voltar ao site') }}</a>
+@if(in_array($screen,['registered','invitation','recovered'],true))
+<div data-confirmation-language="{{ $language }}"><span class="tag">{{ $t('Idioma') }}: {{ $language==='pt'?'PT-BR':strtoupper($language) }}</span><div class="quiet">{{ $t('Idioma definido antes da confirmação.') }}</div></div>
+@else<div class="languages" aria-label="{{ $t('Idioma') }}"><a href="{{ $languageLink('pt') }}" aria-current="{{ $language==='pt'?'true':'false' }}">PT-BR</a><a href="{{ $languageLink('en') }}" aria-current="{{ $language==='en'?'true':'false' }}">EN</a><a href="{{ $languageLink('es') }}" aria-current="{{ $language==='es'?'true':'false' }}">ES</a></div>
+@endif
 @if(in_array($screen,['workspace','admin']))<form method="post" action="/logout">
 @csrf<button class="secondary smallbutton">{{ $t('Sair') }}</button></form>
 @else<a class="btn secondary" href="/login">{{ $t('Entrar') }} ↗</a>
@@ -290,15 +300,19 @@
 <p class="quiet">{{ $say('Consulte as tarefas geradas no CRM e os eventos de auditoria em Relatórios. Esta tela usa somente o banco fictício de homologação.','View generated tasks in the CRM and audit events in Reports. This screen uses only the private test database.','Consulta las tareas generadas en el CRM y los eventos de auditoría en Informes. Esta pantalla usa solo la base de datos ficticia de pruebas.') }}</p><a class="btn secondary" href="/painel?section=tasks">{{ $say('Ver tarefas','View tasks','Ver tareas') }}</a> <a class="btn secondary" href="/painel?section=reports">{{ $say('Ver auditoria','View audit log','Ver auditoría') }}</a></div>
 </section>
 @elseif($section==='billing')
-<div class="notice">{{ $t('Contratação e pagamento simulados. Nenhuma cobrança, assinatura financeira ou direito de cliente real é criado. Aprovar uma simulação não reinicia o trial.') }}</div><div class="panel"><h2>{{ $t('Plano e pedidos') }}</h2><form method="post" action="/pedidos">
-@csrf<input type="hidden" name="key" value="{{ (string)\Illuminate\Support\Str::uuid() }}"><div class="grid2"><div class="field"><label for="crm-field-a11y-15">{{ $t('Plano') }}</label><select id="crm-field-a11y-15" name="plan"><option value="basic">{{ $t('Básico · R$ 69/mês') }}</option><option value="essential" {{ ($data['account']->desired_plan??'basic')==='essential'?'selected':'' }}>{{ $t('Essencial · R$ 89/mês') }}</option><option value="professional" {{ ($data['account']->desired_plan??'basic')==='professional'?'selected':'' }}>{{ $t('Profissional · sob proposta') }}</option><option value="enterprise" {{ ($data['account']->desired_plan??'basic')==='enterprise'?'selected':'' }}>{{ $t('Empresarial · sob proposta') }}</option></select></div><div class="field"><label for="crm-field-a11y-16">{{ $t('Pagamento fictício') }}</label><select id="crm-field-a11y-16" name="method"><option value="pix">{{ $t('Pix simulado') }}</option><option value="card">{{ $t('Cartão simulado · sem dados de cartão') }}</option><option value="boleto">{{ $t('Boleto simulado') }}</option></select></div></div><button>{{ $t('Criar pedido simulado') }} →</button></form></div><div class="panel tablewrap"><table><thead><tr><th>{{ $t('Pedido') }}</th><th>{{ $t('Plano') }}</th><th>{{ $t('Estado simulado') }}</th><th>{{ $t('Ação de teste') }}</th></tr></thead><tbody>
+<div class="notice">{{ $t('Contratação e pagamento simulados. Nenhuma cobrança, assinatura financeira ou direito de cliente real é criado. Aprovar uma simulação não reinicia o trial.') }}</div><div class="panel"><h2>{{ $t('Plano e pedidos') }}</h2>
+@if($data['account']->team_role==='owner')<form method="post" action="/pedidos">
+@csrf<input type="hidden" name="key" value="{{ (string)\Illuminate\Support\Str::uuid() }}"><div class="grid2"><div class="field"><label for="crm-field-a11y-15">{{ $t('Plano') }}</label><select id="crm-field-a11y-15" name="plan"><option value="basic">{{ $t('Básico · R$ 69/mês') }}</option><option value="essential" {{ ($data['account']->desired_plan??'basic')==='essential'?'selected':'' }}>{{ $t('Essencial · R$ 89/mês') }}</option><option value="professional" {{ ($data['account']->desired_plan??'basic')==='professional'?'selected':'' }}>{{ $t('Profissional · sob proposta') }}</option><option value="enterprise" {{ ($data['account']->desired_plan??'basic')==='enterprise'?'selected':'' }}>{{ $t('Empresarial · sob proposta') }}</option></select></div><div class="field"><label for="crm-field-a11y-16">{{ $t('Pagamento fictício') }}</label><select id="crm-field-a11y-16" name="method"><option value="pix">{{ $t('Pix simulado') }}</option><option value="card">{{ $t('Cartão simulado · sem dados de cartão') }}</option><option value="boleto">{{ $t('Boleto simulado') }}</option></select></div></div><button>{{ $t('Criar pedido simulado') }} →</button></form>
+@else<div class="notice" data-billing-access="read-only">{{ $t('Seu perfil pode consultar os pedidos simulados. Somente o responsável da empresa pode criar pedidos ou simular pagamentos.') }}</div>
+@endif</div><div class="panel tablewrap"><table><thead><tr><th>{{ $t('Pedido') }}</th><th>{{ $t('Plano') }}</th><th>{{ $t('Estado simulado') }}</th><th>{{ $t('Ação de teste') }}</th></tr></thead><tbody>
 @forelse($data['orders'] as $order)<tr data-order-id="{{ $order->id }}"><td>{{ substr($order->id,0,8) }}…</td><td data-plan="{{ $order->plan }}">{{ $displayLabel('plan',$order->plan) }}</td><td data-order-state="{{ $order->state }}">{{ $displayLabel('order_state',$order->state) }}</td><td>
-@if($order->state==='pending')<div class="actions">
+@if($order->state==='pending' && $data['account']->team_role==='owner')<div class="actions">
 @foreach(['approved'=>'Aprovar','refused'=>'Recusar','cancelled'=>'Cancelar'] as $state=>$label)<form method="post" action="/pedidos/{{ $order->id }}/simular">
 @csrf<input type="hidden" name="version" value="{{ $order->version }}"><input type="hidden" name="state" value="{{ $state }}"><button class="secondary smallbutton">{{ $t($label) }}</button></form>
 @endforeach</div>
+@elseif($data['account']->team_role!=='owner')<span class="quiet">{{ $t('Somente consulta') }}</span>
 @endif</td></tr>
-@empty<tr><td colspan="4" class="empty">{{ $t('Você ainda não criou um pedido simulado.') }}</td></tr>
+@empty<tr><td colspan="4" class="empty">{{ $t($data['account']->team_role==='owner'?'Você ainda não criou um pedido simulado.':'Ainda não há pedidos simulados nesta empresa.') }}</td></tr>
 @endforelse</tbody></table></div>
 @endif
 @if(in_array($section,['overview','reports']))<div class="panel tablewrap"><h3>{{ $t('Atividade recente') }}</h3><table><thead><tr><th>{{ $t('Quando (UTC)') }}</th><th>{{ $t('Ação') }}</th><th>{{ $t('Registro') }}</th></tr></thead><tbody>

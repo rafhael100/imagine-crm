@@ -316,6 +316,46 @@ async function funnelFilterNavigation(page, firstLeadId, firstTitle) {
   console.log('PRIVATE FUNNEL FILTER CHROMIUM PASS: two populated own funnels, real funnel-card and PT/EN/ES clicks, exact lead IDs and unchanged form contracts.');
 }
 
+async function scenarioLanguageNavigation(page) {
+  phase = 'marketing-scenario-language-submit';
+  await page.goto(base + '/?lang=pt');
+  const calculator = page.locator('form[data-scenario-form="imagine"]');
+  const inputs = {visits:'2500',lead_rate:'8',client_rate:'13'};
+  for (const [name,value] of Object.entries(inputs)) {
+    await calculator.locator('input[name="' + name + '"]').fill(value);
+  }
+  // Submit once; each following navigation uses the actual language link.
+  await Promise.all([page.waitForNavigation(),
+    calculator.getByRole('button',{name:'Calcular cenário',exact:true}).click()]);
+  const fields = locale => Object.entries({lang:locale,...inputs}).sort(([a],[b]) => a.localeCompare(b));
+  const assertScenario = async locale => {
+    const location = new URL(page.url());
+    check(location.origin === base && location.pathname === '/' && location.hash === ''
+      && JSON.stringify([...location.searchParams].sort(([a],[b]) => a.localeCompare(b))) === JSON.stringify(fields(locale)),
+      'Scenario navigation lost a value or propagated a noncanonical query parameter');
+    const form = await calculator.evaluate(node => ({action:node.action,method:node.method,
+      fields:[...new FormData(node)].sort(([a],[b]) => a.localeCompare(b))}));
+    check(form.action === base + '/' && form.method === 'get'
+      && JSON.stringify(form.fields) === JSON.stringify(fields(locale))
+      && await calculator.getByRole('spinbutton').count() === 3,
+      'Scenario language navigation changed visible numeric inputs or its GET form contract');
+    const visits = page.locator('[data-scenario-visits]');
+    const leads = page.locator('[data-scenario-leads]');
+    const clients = page.locator('[data-scenario-clients]');
+    check(await visits.getAttribute('data-scenario-visits') === '2500'
+      && (await visits.innerText()).trim() === (locale === 'en' ? '2,500' : '2.500')
+      && await leads.getAttribute('data-scenario-leads') === '200' && (await leads.innerText()).trim() === '200'
+      && await clients.getAttribute('data-scenario-clients') === '26' && (await clients.innerText()).trim() === '26',
+      'Scenario language navigation changed the calculated or displayed 2500/200/26 result');
+  };
+  await assertScenario('pt');
+  for (const locale of ['en','es','pt']) {
+    phase = 'marketing-scenario-language-' + locale;
+    await languageClick(page, locale, '/');
+    await assertScenario(locale);
+  }
+  console.log('PRIVATE SCENARIO LOCALE CHROMIUM PASS: one calculation, real EN/ES/PT links, exact numeric inputs, 200/26 results and canonical four-field query/form.');
+}
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.CRM_PRIVATE_CHROME || '/usr/bin/google-chrome', headless: true });
   try {
@@ -362,6 +402,7 @@ async function funnelFilterNavigation(page, firstLeadId, firstTitle) {
         await width(page);
       }
     }
+    await scenarioLanguageNavigation(page);
     await page.goto(base+'/?lang=pt');
     await page.setViewportSize({width:390,height:844});
     await page.screenshot({path:path.join(output,'crm-home-mobile.png'),fullPage:true});

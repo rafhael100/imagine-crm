@@ -1,5 +1,17 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — contexto da jornada e ações por perfil (18/11/2026)
+
+Este pacote reúne quatro correções já desenvolvidas e revisadas separadamente sobre a [PR #656](https://github.com/rafhael100/imagine-crm/pull/656), HEAD `cd530f273a8e05e141a0898d8736c26c4b631c32`. O [P20 44225681022](https://github.com/rafhael100/imagine-crm/actions/runs/44225681022) dessa base passou os 15 testes Python e o laboratório real Portal→CRM→Agents, incluindo autoridade nominal, ACK perdido e idempotência; dispatch n8n e autorização operacional continuam desligados. A integração conjunta evita quatro rodadas repetidas de toda a CI e conserva todas as regressões preparadas. A confirmação da jornada combinada fica registrada na PR e SHA próprias, sem atribuir a ela resultados de uma base anterior.
+
+Erros estruturais de login e MFA passam a retornar diretamente ao próprio formulário, por dois destinos constantes, preservando a autoridade pendente e o restante da política IAM. Membros consultam os pedidos da própria empresa sem receber formulários de operações reservadas ao responsável; os formulários do responsável e a autorização de servidor permanecem iguais.
+
+Nas respostas de conclusão de cadastro, convite e recuperação, o idioma escolhido é um indicador passivo: os links anteriores fariam GET em uma resposta de POST ou abandonariam a exibição única. Nenhum código é armazenado novamente ou transportado pela URL. Na página inicial, os links de idioma preservam somente os três inteiros normalizados da calculadora, mantendo a fórmula e os limites existentes; o filtro de funil do workspace continua preservado.
+
+A regressão HTTP reutiliza as autoridades e operações anteriores: erros de login/MFA com IAM invariável; pedidos em consulta e 12 POSTs diretos recusados sem efeitos; quatro resultados POST já existentes sem nova emissão/recuperação; e links reais da calculadora para oito conjuntos de entradas normalizadas. O Chromium calcula uma vez e segue EN/ES/PT, verificando inputs, query, FormData e resultados. Todos os testes anteriores permanecem. Revisões independentes concluídas; a execução conjunta ainda está pendente.
+
+Alterações limitadas a PrivateHeaders, Blade, catálogo, HTTP, Chromium e este STATUS. Nenhum schema, grant, provider, pin ou guard operacional muda. DRAFT / NO-MERGE / NO-DEPLOY, fixtures sintéticas; leitor de tela, aceite humano e autorização operacional permanecem requisitos independentes.
+
 ## Continuidade — nomes válidos e isolamento do ambiente P20 (18/11/2026)
 
 A [PR #655](https://github.com/rafhael100/imagine-crm/pull/655), HEAD `7f8776f65bfa94d835e610f52554cbd0a393d373`, concluiu a [jornada 44224520545](https://github.com/rafhael100/imagine-crm/actions/runs/44224520545): 4.937 checks HTTP, 628 assertions Chromium, 177 de resiliência, 49 de acesso e unidades 4/9 + 13/217. O ajuste dos doubles incompatíveis com PHPUnit preservou as provas de leitura proibida; F0 e RLS também voltaram a passar. A matriz dos formulários e os fingerprints de Enrollment passaram.
