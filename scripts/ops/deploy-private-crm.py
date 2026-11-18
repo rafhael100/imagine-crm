@@ -7,6 +7,11 @@ import re
 import subprocess
 import sys
 
+# Reject invalid invocations before inspecting or changing the protected target.
+if len(sys.argv) != 2 or sys.argv[1] not in ('prepare', 'verify', 'access'):
+    raise SystemExit('Explicit prepare, verify or access required; no change performed.')
+mode=sys.argv[1]
+
 ROOT=Path(__file__).resolve().parents[2]
 PROTECTED=Path('/srv/imagine/private-crm-journey')
 ENVFILE=PROTECTED/'runtime.env'
@@ -39,7 +44,6 @@ else:
 compose=['docker','compose','--env-file',str(ENVFILE),'-p',PROJECT,'-f','infra/homologation/compose.yaml']
 os.environ['CRM_PRIVATE_ENV_FILE']=str(ENVFILE)
 os.environ['CRM_PRIVATE_PROJECT']=PROJECT
-mode=sys.argv[1] if len(sys.argv)>1 else ''
 if mode=='prepare':
     run(compose+['config','--quiet'])
     run(compose+['build','app'])
