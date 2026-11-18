@@ -1,5 +1,17 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — nomes válidos e isolamento do ambiente P20 (18/11/2026)
+
+A [PR #655](https://github.com/rafhael100/imagine-crm/pull/655), HEAD `7f8776f65bfa94d835e610f52554cbd0a393d373`, concluiu a [jornada 44224520545](https://github.com/rafhael100/imagine-crm/actions/runs/44224520545): 4.937 checks HTTP, 628 assertions Chromium, 177 de resiliência, 49 de acesso e unidades 4/9 + 13/217. O ajuste dos doubles incompatíveis com PHPUnit preservou as provas de leitura proibida; F0 e RLS também voltaram a passar. A matriz dos formulários e os fingerprints de Enrollment passaram.
+
+O conjunto teve 21/24 workflows aprovados. Além dos gates F251/F252, o P20 encontrou um defeito independente antes do laboratório funcional nas duas tentativas: `p20-central-auto-p19-njrmy51_-crm-app` na [primeira](https://github.com/rafhael100/imagine-crm/actions/runs/44223254949) e `p20-central-auto-p19-_yrzfs24-portal` na [segunda](https://github.com/rafhael100/imagine-crm/actions/runs/44224520607). O nome aleatório da pasta, usado diretamente como projeto Compose, pode formar uma referência de imagem inválida. Não se declara P20 executado nessas rodadas.
+
+Esta correção altera somente o overlay P20 e seu teste: o projeto usa o prefixo `p20-` seguido de 24 caracteres hexadecimais derivados do caminho temporário resolvido. O mesmo valor continua no guard, Compose, ServiceTargets e cleanup. O P19 pinado em SHA-256 `beae2aeb731a791c2e36cf9e28b884dcbb8e0c19bc8cd730fff5abf9dac6f9ff`, os guards de recursos e o runtime permanecem intactos.
+
+Oito testes locais do harness passaram. A regressão executa os nós reais gerados de derivação, guard, comando e finally com callbacks gravadores, cobrindo os dois nomes observados, underscores consecutivos e basenames iguais em pastas diferentes. O mesmo teste falhou contra o renderer anterior. Nenhum Docker foi executado localmente; a prova funcional efetiva depende da CI da nova HEAD. A revisão independente não identificou bloqueador.
+
+Depois desta correção de execução, os quatro recortes de interface já preparados — retorno de login/MFA, ações de pedidos por papel, idioma nas confirmações e calculadora — serão integrados e validados juntos. DRAFT / NO-MERGE / NO-DEPLOY; nenhuma ampliação de pin, permissão, infraestrutura ou gate.
+
 ## Continuidade — reapresentação segura de formulários (18/11/2026)
 
 A [PR #653](https://github.com/rafhael100/imagine-crm/pull/653), HEAD `56600a319226fc50f65b9127feb98221f2bfeaad`, passou a [jornada 44221933223](https://github.com/rafhael100/imagine-crm/actions/runs/44221933223): 3.263 checks HTTP, 628 assertions Chromium, 177 de resiliência, 49 de acesso e unidades 4/9 + 8/134. Os testes novos confirmaram preservação do funil e isolamento entre empresas. Na mesma HEAD, 22/24 workflows passaram; os gates F251/F252 mantêm a recusa do escopo acumulado.

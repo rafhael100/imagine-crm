@@ -15,7 +15,7 @@ CRM=ROOT.parents[2]
 sys.path.insert(0,str(ROOT))
 from prepare_harness import render
 from p20_runtime import load_portal, check_suite
-from service_targets import validate_compose
+from service_targets import ServiceTargets, validate_compose
 
 class Harness(unittest.TestCase):
     def test_overlay_compiles_and_guards_precede_application_sql(self):
@@ -35,6 +35,55 @@ class Harness(unittest.TestCase):
         self.assertNotIn("['exec','-T','crm-db','psql'",source)
         self.assertEqual(source.count('for _ in range(1):'),1)
         self.assertIn("['down','-v','--remove-orphans']",source)
+
+    def test_random_folder_suffixes_keep_valid_images_and_the_same_project_ownership(self):
+        tree=ast.parse(render(CRM))
+        def assignment(name):
+            nodes=[node for node in ast.walk(tree) if isinstance(node,ast.Assign)
+                and len(node.targets)==1 and isinstance(node.targets[0],ast.Name)
+                and node.targets[0].id==name]
+            self.assertEqual(len(nodes),1)
+            return nodes[0]
+        guards=[node for node in ast.walk(tree) if isinstance(node,ast.Expr)
+            and isinstance(node.value,ast.Call) and isinstance(node.value.func,ast.Name)
+            and node.value.func.id=='require_local_docker']
+        cleanups=[node.finalbody for node in ast.walk(tree) if isinstance(node,ast.Try) and node.finalbody]
+        self.assertEqual(len(guards),1)
+        self.assertEqual(len(cleanups),1)
+        # Execute the generated derivation/wiring/finally, never its service operations.
+        probe=compile(ast.fix_missing_locations(ast.Module(body=[assignment('project'),guards[0],
+            assignment('dc'),assignment('targets'),*cleanups[0]],type_ignores=[])),
+            '<generated-p20-project-probe>','exec')
+        # Docker distribution/reference path-component grammar, not the hash implementation.
+        image_name=r'\A[a-z0-9]+(?:(?:[._]|__|-+)[a-z0-9]+)*\Z'
+        self.assertNotRegex('p20-central-auto-p19-njrmy51_-crm-app',image_name)
+        self.assertNotRegex('p20-central-auto-p19-_yrzfs24-portal',image_name)
+        projects=[]
+        folders=['/synthetic/runner-a/central-auto-p19-njrmy51_',
+            '/synthetic/runner-b/central-auto-p19-njrmy51_',
+            '/synthetic/runner-a/central-auto-p19-_yrzfs24',
+            '/synthetic/runner-a/central-auto-p19-a___b',
+            '/synthetic/runner-a/central-auto-p19-normal123']
+        for directory in folders:
+            with self.subTest(directory=directory):
+                folder=Path(directory);guarded=[];commands=[]
+                def record(args,**kwargs):
+                    commands.append((args,kwargs))
+                scope={'folder':folder,'file':folder/'compose.json','certs':folder/'certs',
+                    'hashlib':hashlib,'run':record,'ServiceTargets':ServiceTargets,
+                    'require_local_docker':lambda run,project:guarded.append(project)}
+                exec(probe,scope)
+                project=scope['project'];projects.append(project)
+                self.assertTrue(project.startswith('p20-'))
+                for service in ('crm-app','portal','agents-app'):
+                    self.assertRegex(project+'-'+service,image_name)
+                self.assertEqual(guarded,[project])
+                self.assertEqual(scope['dc'],['docker','compose','-p',project,'-f',str(folder/'compose.json')])
+                self.assertEqual(scope['targets'].project,project)
+                self.assertEqual(scope['targets'].dc,scope['dc'])
+                self.assertEqual(commands,[(scope['dc']+['down','-v','--remove-orphans'],{'ok':False,'timeout':90})])
+        # Equal basenames in distinct runner folders must not share resource ownership.
+        self.assertEqual(len(set(projects)),len(folders))
 
     def test_incomplete_suite_is_not_success(self):
         check_suite({'tests':4,'failures':0,'skipped':0})

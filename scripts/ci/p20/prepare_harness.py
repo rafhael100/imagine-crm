@@ -17,7 +17,8 @@ def render(root):
             raise RuntimeError('P19_ANCHOR_CHANGED')
         source = source.replace(old, new)
     replace("ROOT=Path(__file__).resolve().parents[3]", "ROOT=Path(__file__).resolve().parents[3]\nsys.path.insert(0,str(ROOT/'scripts/ci/p20'))\nfrom p20_runtime import load_portal, configure, check_suite\nfrom service_targets import ServiceTargets, require_local_docker\nportal=load_portal(ROOT)")
-    replace(" file=folder/'compose.json';file.write_text(json.dumps(compose))", " project='p20-'+folder.name\n require_local_docker(run,project)\n configure(compose,folder,PORTAL,portal)\n file=folder/'compose.json';file.write_text(json.dumps(compose))")
+    # Compose also uses this project in image names; tempfile suffixes may contain '_'.
+    replace(" file=folder/'compose.json';file.write_text(json.dumps(compose))", " project='p20-'+hashlib.sha256(str(folder.resolve()).encode()).hexdigest()[:24]\n require_local_docker(run,project)\n configure(compose,folder,PORTAL,portal)\n file=folder/'compose.json';file.write_text(json.dumps(compose))")
     replace(" dc=['docker','compose','-p','central-auto-p19-ci','-f',str(file)]", " dc=['docker','compose','-p',project,'-f',str(file)]\n targets=ServiceTargets(dc,project,folder,certs,run)")
     replace(" def sql(query):return run(dc+['exec','-T','crm-db','psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','crm_homologation_owner','-d','imagine_crm_private_homologation'],query).stdout.strip()", " def sql(query):return targets.sql('crm',query)")
     replace(" def agents_sql(query):return run(dc+['exec','-T','agents-db','psql','-X','-qAt','-v','ON_ERROR_STOP=1','-U','agents_ci_owner','-d','imagine_agents_ci'],query).stdout.strip()", " def agents_sql(query):return targets.sql('agents',query)")
