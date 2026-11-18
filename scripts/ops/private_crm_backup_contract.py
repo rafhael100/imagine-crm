@@ -257,7 +257,16 @@ def verify_restored_security(query, profile: dict, expected: dict, base_tables: 
     restored_profile, actual = detect_profile(query, base_tables)
     require(restored_profile == profile, "Restored private backup profile differs.")
     changed = [key for key in expected if actual.get(key) != expected[key]]
-    require(not changed, "Restored security manifest differs in: " + ", ".join(changed))
+    diagnostic = ""
+    if "constraints" in changed:
+        # Schema-only diagnostics: never print rows, wire receipts, queries,
+        # role credentials or a backup payload when identifying a restore drift.
+        before = {(item["table"], item["name"]): item for item in expected["constraints"]}
+        after = {(item["table"], item["name"]): item for item in actual["constraints"]}
+        differences = [{"source": before.get(key), "restored": after.get(key)}
+                       for key in sorted(set(before) | set(after)) if before.get(key) != after.get(key)]
+        diagnostic = "; constraint_schema_diff=" + json.dumps(differences[:3], sort_keys=True)
+    require(not changed, "Restored security manifest differs in: " + ", ".join(changed) + diagnostic)
     role_names = ",".join("'" + role + "'" for role in profile["roles"])
     require(query("SELECT count(*) FROM pg_roles WHERE rolname IN (" + role_names + ") "
                   "AND (rolcanlogin OR rolsuper OR rolbypassrls OR rolcreatedb OR rolcreaterole OR rolinherit)") == "0",
