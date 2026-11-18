@@ -9,6 +9,7 @@ import hashlib
 import hmac
 import http.client
 from http.cookies import SimpleCookie
+from html import unescape
 from io import StringIO
 import json
 import os
@@ -217,13 +218,21 @@ def assert_native_superseded(client,peer_company,suffix):
     # The lead, old run, new-run absence, tasks and all native events must roll back.
     errors_before=native_enqueue_denials()
     with denied_native_enqueue():
-        client.post('/leads/'+target,{'version':2,'stage':'proposal'},expected=503)
-    check(native_enqueue_denials()==errors_before+1,
+        error_headers=None
+        for locale in LOCALE_COPY:
+            client.get('/painel?section=kanban&lang='+locale)
+            page,_=client.post('/leads/'+target,{'version':2,'stage':'proposal'},expected=503)
+            assert_private_error(client,page,locale,503)
+            signature=private_headers(client)
+            check(error_headers is None or signature==error_headers,'503 locale changed its existing header contract')
+            error_headers=signature
+            check(snapshot(company)==before,'localized SQL failure partially changed lead/ledger/audit/tasks')
+    check(native_enqueue_denials()==errors_before+len(LOCALE_COPY),
           'expected native enqueue SQL permission failure was not observed')
     check(snapshot(company)==before,'failed replacement partially changed lead/ledger/audit/tasks')
     check(owner_sql("SELECT has_table_privilege('crm_homologation_app','public.crm_private_automation_runs','INSERT')")=='t',
           'native enqueue privilege not restored')
-    client.get('/painel?section=kanban')
+    client.get('/painel?section=kanban&lang=pt')
     client.post('/leads/'+target,{'version':2,'stage':'proposal'})
     advanced=snapshot(company)
     target_advanced=rows_for(advanced,target)
@@ -522,6 +531,8 @@ class Client:
         self.cookies={}
         self.csrf=None
         self.last=''
+        self.status=None
+        self.headers={}
 
     def request(self,path,data=None,expected=200,headers=None,body=None):
         check(path.startswith('/') and not path.startswith('//'),'local path only')
@@ -538,6 +549,8 @@ class Client:
         response=conn.getresponse()
         content=response.read().decode('utf-8',errors='replace')
         status=response.status
+        self.status=status
+        self.headers={name.lower():value for name,value in response.getheaders() if name.lower()!='set-cookie'}
         location=response.getheader('Location','')
         for name,value in response.getheaders():
             if name.lower()=='set-cookie':
@@ -574,6 +587,221 @@ class Client:
         _,location=self.post('/mfa',values)
         check(location.endswith('/admin' if account.get('admin') else '/painel'),'MFA route mismatch')
         return self.get('/admin' if account.get('admin') else '/painel',expected=dashboard_expected)
+
+
+LOCALE_COPY={
+    'pt':{'session':'Sessão expirada ou revogada. Entre novamente.',
+          'password':'Acesso negado. Verifique os dados ou aguarde antes de tentar novamente.',
+          'factor':'Fator inválido, já usado ou sessão expirada.','logout':'Sessão encerrada.',
+          'error':'Não foi possível concluir esta operação.','unavailable':'Serviço temporariamente indisponível.',
+          'code':'Código','terms':'O campo Termos simulados é obrigatório.',
+          'title':'Use apenas o identificador fictício indicado no campo.',
+          'integer':'O campo Valor em centavos deve ser um número inteiro.'},
+    'en':{'session':'Session expired or revoked. Sign in again.',
+          'password':'Access denied. Check your details or wait before trying again.',
+          'factor':'Invalid or previously used factor, or expired session.','logout':'Signed out.',
+          'error':'This operation could not be completed.','unavailable':'Service temporarily unavailable.',
+          'code':'Code','terms':'The Simulated terms field is required.',
+          'title':'Use only the test identifier indicated in the field.',
+          'integer':'The Amount in BRL cents field must be an integer.'},
+    'es':{'session':'Sesión expirada o revocada. Vuelve a ingresar.',
+          'password':'Acceso denegado. Revisa los datos o espera antes de volver a intentarlo.',
+          'factor':'Factor inválido, ya utilizado o sesión expirada.','logout':'Sesión cerrada.',
+          'error':'No se pudo completar esta operación.','unavailable':'Servicio temporalmente no disponible.',
+          'code':'Código','terms':'El campo Términos simulados es obligatorio.',
+          'title':'Usa únicamente el identificador ficticio indicado en el campo.',
+          'integer':'El campo Importe en centavos BRL debe ser un número entero.'},
+}
+
+
+def assert_locale(page,locale,copy=None):
+    check('<html lang="'+('pt-BR' if locale=='pt' else locale)+'"' in page,'response lost the selected language')
+    if copy: check(copy in unescape(page),'localized response copy missing')
+
+
+def assert_destination(location,path):
+    parsed=urllib.parse.urlparse(location)
+    check(parsed.path==path and not parsed.query and not parsed.fragment,'locale changed a contracted redirect destination')
+
+
+def private_headers(client):
+    names=('cache-control','x-robots-tag','x-content-type-options','x-frame-options','referrer-policy','content-security-policy')
+    return {name:client.headers.get(name) for name in names}
+
+
+def assert_private_error(client,page,locale,status):
+    copy=LOCALE_COPY[locale]
+    assert_locale(page,locale)
+    check(client.status==status and re.search(re.escape(copy['code'])+r'\s+'+str(status),page),
+          'localized error changed its HTTP or displayed status')
+    headings=re.findall(r'<h1[^>]*>(.*?)</h1>',page,re.S)
+    allowed=[copy['error']]+([copy['unavailable']] if status==503 else [])
+    check(len(headings)==1 and unescape(re.sub(r'<[^>]+>','',headings[0])).strip() in allowed,
+          'error heading is not a reviewed localized message')
+    check('no-store' in client.headers.get('cache-control','') and 'noindex' in client.headers.get('x-robots-tag',''),
+          'localized error lost its existing private/no-index headers')
+    check(not any(marker in page for marker in ('LOCALE_SENTINEL','SQLSTATE','PDOException','Illuminate\\','Stack trace')),
+          'localized error exposed a request or exception sentinel')
+
+
+def private_business_snapshot(companies):
+    scope=','.join("'"+str(uuid.UUID(company))+"'" for company in companies)
+    tables=('leads','tasks','events','preferences','orders','automation_runs')
+    parts=["'"+table+"',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text),'[]'::jsonb) "
+           "FROM public.crm_private_"+table+" t WHERE organization_id IN ("+scope+"))" for table in tables]
+    return json.loads(owner_sql('SELECT jsonb_build_object('+','.join(parts)+')::text'))
+
+
+def assert_entry_locales():
+    """Errors before Controller::page still keep only the selected UI locale."""
+    signatures={}
+    for locale,copy in LOCALE_COPY.items():
+        client=Client()
+        _,location=client.request('/painel?lang='+locale,expected=303)
+        assert_destination(location,'/login')
+        assert_locale(client.get('/login'),locale,copy['session'])
+        anonymous_csrf=client.csrf
+        _,location=client.post('/login',{'login':'lab-locale-missing-'+secrets.token_hex(5),
+                                       'password':'LOCALE_SENTINEL_PASSWORD'})
+        assert_destination(location,'/login')
+        page=client.get('/login')
+        assert_locale(page,locale,copy['password'])
+        check(client.csrf!=anonymous_csrf and 'LOCALE_SENTINEL' not in page,
+              'failed password retained CSRF or reflected a credential')
+        # Replay a real token from before begin() invalidated the browser session.
+        page,_=client.post('/login',{'login':'lab-locale-replay','password':'LOCALE_SENTINEL_PASSWORD',
+                                    '_token':anonymous_csrf},expected=419,csrf=False)
+        assert_private_error(client,page,locale,419)
+        signature=private_headers(client)
+        check(419 not in signatures or signatures[419]==signature,'locale changed the existing CSRF error headers')
+        signatures[419]=signature
+
+        client.get('/cadastro')
+        visible={'login':'lab-locale-'+locale,'company':'EMPRESA_TESTE_LOCALE_'+locale.upper(),
+                 'cnpj':'00000000000191','email':'lab-locale-'+locale+'@example.test',
+                 'phone':'+5500000000000','title':'LEAD_TESTE_LOCALE','value_cents':'17'}
+        payload={**visible,'password':'LOCALE_SENTINEL_PASSWORD','code':'LOCALE_SENTINEL_CODE',
+                 'recovery':'LOCALE_SENTINEL_RECOVERY','invitation':'LOCALE_SENTINEL_INVITATION'}
+        _,location=client.post('/cadastro',payload)
+        assert_destination(location,'/cadastro')
+        page=client.get('/cadastro')
+        assert_locale(page,locale,copy['terms'])
+        for field in ('login','company','email','phone'):
+            check(re.search(r'name="'+field+r'"[^>]*value="'+re.escape(visible[field])+r'"',page),
+                  'validation discarded allowed old input')
+        check('LOCALE_SENTINEL' not in page,'validation reflected password/code/recovery/invitation old input')
+
+    for query in ('lang=EN','lang=pt_BR','lang%5B%5D=en','lang=%3Cscript%3ELOCALE_SENTINEL%3C%2Fscript%3E'):
+        client=Client();client.get('/login?lang=en')
+        page=client.get('/login?'+query)
+        assert_locale(page,'pt')
+        check('LOCALE_SENTINEL' not in page,'invalid locale reflected a request value')
+        assert_locale(client.get('/login'),'pt')
+    print('PASS localized pre-controller redirect, denied password, stale CSRF, validation old-input allowlist and invalid-locale fallback PT/EN/ES')
+
+
+def assert_auth_rotation_locales():
+    account=FIXTURES['clientA']
+    actor=str(uuid.UUID(account['identity']))
+    companies=[account['organization'],FIXTURES['clientB']['organization']]
+    before=private_business_snapshot(companies)
+
+    def sessions():
+        return json.loads(owner_sql("SELECT coalesce(jsonb_object_agg(id,jsonb_build_object('state',state,'binding',binding)),"
+                                    "'{}'::jsonb)::text FROM public.crm_auth_sessions WHERE identity_id='"+actor+"'"))
+
+    for locale,copy in LOCALE_COPY.items():
+        client=Client()
+        client.get('/cadastro?plan=enterprise&lang='+locale)
+        client.get('/login')
+        old_csrf=client.csrf
+        known=sessions()
+        _,location=client.post('/login',{'login':account['login'],'password':account['password']})
+        assert_destination(location,'/mfa')
+        assert_locale(client.get('/mfa'),locale)
+        check(client.csrf!=old_csrf,'password step retained anonymous CSRF')
+        pending=sessions();new=set(pending)-set(known)
+        check(len(new)==1,'password step did not create exactly one pending authority')
+        rejected_id=new.pop()
+        check(pending[rejected_id]['state']=='pending','password step skipped MFA')
+        # A failed factor must invalidate pending authority while retaining language.
+        _,location=client.post('/mfa',{'code':'LOCALE_SENTINEL_NOT_A_FACTOR'})
+        assert_destination(location,'/mfa')
+        page=client.get('/mfa');assert_locale(page,locale,copy['factor'])
+        check('LOCALE_SENTINEL' not in page and sessions()[rejected_id]['state']=='revoked',
+              'failed factor reflected its value or preserved pending authority')
+        _,location=client.request('/painel',expected=303);assert_destination(location,'/login')
+
+        client.get('/login')
+        known=sessions()
+        _,location=client.post('/login',{'login':account['login'],'password':account['password']})
+        assert_destination(location,'/mfa')
+        assert_locale(client.get('/mfa'),locale)
+        pending_cookie=dict(client.cookies);pending_csrf=client.csrf
+        pending=sessions();new=set(pending)-set(known)
+        check(len(new)==1,'fresh password attempt did not create one independent challenge')
+        pending_id=new.pop()
+        check(pending[pending_id]['binding']!=pending[rejected_id]['binding'],'failed challenge browser binding survived reset')
+        _,location=client.post('/mfa',{'code':next_factor(account)})
+        assert_destination(location,'/painel')
+        assert_locale(client.get('/painel'),locale)
+        check(client.csrf!=pending_csrf,'MFA retained the pending CSRF token')
+        active=sessions();new=set(active)-set(pending)
+        check(len(new)==1,'MFA did not issue exactly one replacement authority')
+        active_id=new.pop()
+        check(active[active_id]['state']=='active' and active[pending_id]['state']=='revoked'
+              and active[active_id]['binding']!=pending[pending_id]['binding'],
+              'MFA reused the pending authority or session binding')
+        stale=Client();stale.cookies=pending_cookie
+        _,location=stale.request('/painel',expected=303);assert_destination(location,'/login')
+        page,_=client.post('/logout',{'_token':pending_csrf},expected=419,csrf=False)
+        assert_private_error(client,page,locale,419)
+        assert_locale(client.get('/painel'),locale)
+        active_cookie=dict(client.cookies);active_csrf=client.csrf
+        _,location=client.post('/logout',{});assert_destination(location,'/login')
+        assert_locale(client.get('/login'),locale,copy['logout'])
+        check(client.csrf!=active_csrf and sessions()[active_id]['state']=='revoked',
+              'logout preserved authenticated CSRF or authority')
+        stale=Client();stale.cookies=active_cookie
+        _,location=stale.request('/painel',expected=303);assert_destination(location,'/login')
+        # The earlier nonvisual plan must not be copied through any auth reset.
+        page=client.get('/cadastro');assert_locale(page,locale)
+        check('name="plan" value="basic"' in page,'auth rotation restored nonvisual session data')
+        _,location=client.request('/painel',expected=303);assert_destination(location,'/login')
+
+    check(private_business_snapshot(companies)==before,'locale/auth probes changed company data or scheduled effects')
+    print('PASS PT/EN/ES across real password/MFA/logout resets; old sessions, bindings and CSRF rejected; only visual preference retained')
+
+
+def assert_workspace_error_locales(client,lead):
+    lead=str(uuid.UUID(lead))
+    company=owner_sql("SELECT organization_id FROM public.crm_private_leads WHERE id='"+lead+"'")
+    before=private_business_snapshot([company,FIXTURES['clientB']['organization']])
+    csv_before=client.get('/exportar')
+    signatures={}
+    for locale,copy in LOCALE_COPY.items():
+        assert_locale(client.get('/painel?section=leads&lang='+locale),locale)
+        requests=[('/admin',None,403),('/leads/'+str(uuid.uuid4()),{'version':1,'stage':'qualified'},404),
+                  ('/leads/'+lead,{'version':2,'stage':'qualified'},409),
+                  ('/leads/'+lead,{'version':1,'stage':'new'},422),
+                  ('/painel?lang='+locale+'&tenant_id='+str(uuid.UUID(FIXTURES['clientB']['organization'])),None,400)]
+        for path,payload,status in requests:
+            page,_=client.request(path,expected=status) if payload is None else client.post(path,payload,expected=status)
+            assert_private_error(client,page,locale,status)
+            signature=private_headers(client)
+            check(status not in signatures or signatures[status]==signature,'localized denial changed its security header contract')
+            signatures[status]=signature
+        for payload,message in [({'title':'LOCALE_SENTINEL_INVALID_TITLE','value_cents':0},copy['title']),
+                                ({'title':'LEAD_TESTE_VALID','value_cents':'LOCALE_SENTINEL'},copy['integer'])]:
+            _,location=client.post('/leads',payload)
+            assert_destination(location,'/painel')
+            page=client.get('/painel');assert_locale(page,locale,message)
+            check('LOCALE_SENTINEL' not in page,'localized validation reflected submitted invalid data')
+        check(private_business_snapshot([company,FIXTURES['clientB']['organization']])==before,
+              'localized error changed lead, task, schedule, event or peer-tenant data')
+        check(client.get('/exportar')==csv_before,'translated UI changed the canonical CSV export')
+    client.get('/painel?section=leads&lang=pt')
+    print('PASS PT/EN/ES error statuses 400/403/404/409/422 and redirects/headers preserved; canonical CSV and tenant snapshots unchanged')
 
 
 def leads(client):
@@ -660,6 +888,8 @@ def assert_no_agents_impersonation_of_human(client, route, actor):
 
 def main():
     scenario('clear-cache')
+    assert_entry_locales()
+    assert_auth_rotation_locales()
     a=Client(); b=Client(); admin=Client()
     home=a.get('/')
     assert_agents_no_go(a,'guest')
@@ -735,6 +965,7 @@ def main():
     a.post('/leads',{'title':title,'value_cents':150000})
     ids=leads(a);check(len(ids)==1,'lead not persisted')
     lead=ids[0]
+    assert_workspace_error_locales(a,lead)
     a.get('/painel?section=automation')
     a.post('/preferencias',{'automation_version':0,'language':'pt','rules[]':['followup_qualified','followup_proposal']})
     page=a.get('/painel?section=automation')

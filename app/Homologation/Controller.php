@@ -15,9 +15,7 @@ final class Controller
 {
     private function page(Request $request,string $screen,array $data=[])
     {
-        $language=$request->query('lang',$request->session()->get('crm.private.lang','pt'));
-        if (!in_array($language,['pt','en','es'],true)) $language='pt';
-        $request->session()->put('crm.private.lang',$language);
+        $language=PrivateUi::captureLanguage($request);
         return response()->view('crm-private-journey',compact('screen','language','data'));
     }
 
@@ -63,14 +61,17 @@ final class Controller
     public function password(Request $r)
     {
         $r->validate(['login'=>'required|string|max:160','password'=>'required|string|max:72']);
+        $language=PrivateUi::captureLanguage($r);
         try { $this->auth()->begin($r->string('login')->toString(),$r->string('password')->toString()); }
-        catch(AuthenticationException) { return redirect('/login',303)->withErrors(['login'=>'Acesso negado. Verifique os dados ou aguarde antes de tentar novamente.']); }
+        catch(AuthenticationException) { return redirect('/login',303)->withErrors(['login'=>PrivateUi::text('Acesso negado. Verifique os dados ou aguarde antes de tentar novamente.',$language)]); }
+        finally { PrivateUi::rememberLanguage($r,$language); }
         return redirect('/mfa',303);
     }
     public function mfa(Request $r) { return $this->page($r,'mfa'); }
     public function factor(Request $r)
     {
         $r->validate(['code'=>'required|string|max:32','recovery'=>'nullable|in:1']);
+        $language=PrivateUi::captureLanguage($r);
         try {
             $this->auth()->completeMfa($r->string('code')->toString(),$r->input('recovery')==='1');
             $role=app(GuardPrincipalSource::class)->withinCurrent(function ($principal) {
@@ -79,13 +80,16 @@ final class Controller
                 abort_unless($account && $account->status==='active',403);
                 return $account->role;
             });
-        } catch(AuthenticationException) { return redirect('/mfa',303)->withErrors(['code'=>'Fator inválido, já usado ou sessão expirada.']); }
+        } catch(AuthenticationException) { return redirect('/mfa',303)->withErrors(['code'=>PrivateUi::text('Fator inválido, já usado ou sessão expirada.',$language)]); }
+        finally { PrivateUi::rememberLanguage($r,$language); }
         return redirect($role==='admin'?'/admin':'/painel',303);
     }
     public function logout(Request $r)
     {
-        $this->auth()->logout();
-        return redirect('/login',303)->with('notice','Sessão encerrada.');
+        $language=PrivateUi::captureLanguage($r);
+        try { $this->auth()->logout(); }
+        finally { PrivateUi::rememberLanguage($r,$language); }
+        return redirect('/login',303)->with('notice',PrivateUi::text('Sessão encerrada.',$language));
     }
     public function recovery(Request $r) { return $this->page($r,'recovery'); }
     public function recover(Request $r)
@@ -99,13 +103,13 @@ final class Controller
     {
         $r->validate(['title'=>'required|string|max:64','value_cents'=>'required|integer|min:0|max:100000000','funnel'=>'nullable|uuid']);
         app(Workspace::class)->createLeads([$r->only(['title','value_cents','funnel'])]);
-        return redirect('/painel?section=leads',303)->with('notice','Lead fictício persistido.');
+        return redirect('/painel?section=leads',303)->with('notice',PrivateUi::text('Lead fictício persistido.',PrivateUi::language($r)));
     }
     public function lead(Request $r,string $id)
     {
         $r->validate(['version'=>'required|integer|min:1','stage'=>'nullable|string|max:16','title'=>'nullable|string|max:64']);
         app(Workspace::class)->updateLead($id,$r->integer('version'),array_filter($r->only(['stage','title']),fn($v)=>$v!==null&&$v!==''));
-        return redirect('/painel?section=kanban',303)->with('notice','Alteração persistida.');
+        return redirect('/painel?section=kanban',303)->with('notice',PrivateUi::text('Alteração persistida.',PrivateUi::language($r)));
     }
     public function tasks(Request $r)
     {

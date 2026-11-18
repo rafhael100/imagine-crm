@@ -43,6 +43,59 @@ async function formContracts(forms) {
       .sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right))),
   })).sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right))));
 }
+async function workspaceContracts(page) {
+  return page.locator('.shell form').evaluateAll(forms => forms.map(form => {
+    const pathname = new URL(form.action).pathname;
+    const fields = [...new FormData(form)].filter(([name]) => name !== '_token').map(([name,value]) => {
+      // Each render generates draft titles and an order idempotency UUID.
+      // Validate their shape; stored titles, IDs, versions and choices stay exact.
+      const prefix = {'/leads':'LEAD_TESTE_', '/tarefas':'TASK_TESTE_', '/funis':'FUNIL_TESTE_'}[pathname];
+      if (name === 'title' && prefix) {
+        if (!new RegExp('^' + prefix + '[A-F0-9]{6}$').test(value)) throw Error('Invalid generated draft title');
+        return [name,prefix + '<generated>'];
+      }
+      if (name === 'key' && pathname === '/pedidos') {
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(value)) throw Error('Invalid generated order key');
+        return [name,'<generated-order-uuid>'];
+      }
+      return [name,value instanceof File ? {name:value.name,size:value.size,type:value.type} : value];
+    }).sort((a,b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
+    return {action:form.action,method:form.method,enctype:form.enctype,fields,
+      options:[...form.querySelectorAll('select')].map(select => [select.name,[...select.options].map(option => option.value)])};
+  }).sort((a,b) => JSON.stringify(a).localeCompare(JSON.stringify(b))));
+}
+async function canonicalCells(page) {
+  const attributes = ['data-lead-id','data-funnel-id','data-task-id','data-task-state','data-order-id',
+    'data-order-state','data-plan','data-payment-method','data-role','data-team-role','data-activity-action',
+    'data-report-leads','data-report-clients','data-report-funnel-id','data-report-funnel-leads','data-report-funnel-won','data-report-funnel-rate'];
+  return page.locator(attributes.map(attribute => '[' + attribute + ']').join(',')).evaluateAll((nodes,names) =>
+    nodes.map(node => names.filter(name => node.hasAttribute(name)).map(name => [name,node.getAttribute(name)])), attributes);
+}
+async function paintedText(page, locator, label) {
+  await locator.scrollIntoViewIfNeeded();
+  await page.evaluate(async () => { await document.fonts.ready; await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))); });
+  check(await locator.evaluate(node => {
+    const rect = node.getBoundingClientRect(), style = getComputedStyle(node);
+    return node.textContent.trim().length > 0 && rect.width > 0 && rect.height > 0
+      && rect.top >= 0 && rect.bottom <= innerHeight && style.visibility === 'visible'
+      && style.display !== 'none' && Number(style.opacity) > 0;
+  }), label + ' is not visible in the actual mobile viewport');
+  // Inspect rendered pixels, not merely DOM presence: QA-02 exposed a blank
+  // offscreen table in a full-page capture after a viewport resize.
+  const png = await locator.screenshot();
+  const ink = await page.evaluate(async encoded => {
+    const picture = new Image(); picture.src = 'data:image/png;base64,' + encoded; await picture.decode();
+    const canvas = document.createElement('canvas'); canvas.width = picture.width; canvas.height = picture.height;
+    const context = canvas.getContext('2d'); context.drawImage(picture,0,0);
+    const pixels = context.getImageData(0,0,canvas.width,canvas.height).data;
+    let dark = 0;
+    for (let index=0; index<pixels.length; index+=4) {
+      if (pixels[index+3] > 200 && pixels[index] < 150 && pixels[index+1] < 150 && pixels[index+2] < 150) dark++;
+    }
+    return dark;
+  }, png.toString('base64'));
+  check(ink >= 20, label + ' has no painted text in the mobile screenshot');
+}
 async function languageClick(page, locale, pathname, section = null) {
   const name = {pt:'PT-BR',en:'EN',es:'ES'}[locale];
   await Promise.all([page.waitForNavigation(), page.locator('.languages').getByRole('link', {name,exact:true}).click()]);
@@ -86,17 +139,42 @@ async function keyboardScroll(page, region, hint, name, hintText, lastContent) {
     return node.scrollLeft < node.scrollWidth - node.clientWidth - 1;
   }, await region.evaluate(node => node.classList.contains('kanban') ? '.kanban[role="region"]' : '.tablewrap[role="region"]'));
   check(await region.evaluate(node => document.activeElement === node), 'Horizontal scrolling lost keyboard focus');
+  for (let index = 0; index < 64; index++) await page.keyboard.press('ArrowLeft', {delay:20});
+  await page.waitForFunction(selector => document.querySelector(selector).scrollLeft <= 1,
+    await region.evaluate(node => node.classList.contains('kanban') ? '.kanban[role="region"]' : '.tablewrap[role="region"]'));
+  check(await region.evaluate(node => node.scrollLeft <= 1 && document.activeElement === node),
+    'Keyboard cannot restore the first column for normal reading');
 }
-async function login(page, account, admin = false) {
+async function login(page, account, admin = false, locale = 'pt') {
   phase = admin ? 'administrator-login' : 'client-login';
-  await page.goto(base + '/login');
+  await page.goto(base + '/login?lang=' + locale);
+  const htmlLanguage = locale === 'pt' ? 'pt-BR' : locale;
+  const anonymousCsrf = await page.locator('form[action="/login"] [name=_token]').inputValue();
   await page.locator('[name=login]').fill(account.login);
   await page.locator('[name=password]').fill(account.password);
   await Promise.all([page.waitForURL('**/mfa'), page.locator('form[action="/login"] button').click()]);
+  check(await page.locator('html').getAttribute('lang') === htmlLanguage && new URL(page.url()).search === '',
+    'Password rotation lost the selected language or changed the MFA destination');
+  const pendingCsrf = await page.locator('form[action="/mfa"] [name=_token]').inputValue();
+  check(pendingCsrf !== anonymousCsrf, 'Password authentication reused the previous CSRF token');
   await page.locator('[name=code]').fill(account.recovery[0]);
   await page.locator('[name=recovery]').check();
   await Promise.all([page.waitForURL(admin ? '**/admin' : '**/painel'), page.locator('form[action="/mfa"] button').click()]);
   check(await page.locator('h1').isVisible(), 'Authenticated workspace missing');
+  check(await page.locator('html').getAttribute('lang') === htmlLanguage && new URL(page.url()).search === ''
+    && await page.locator('form[action="/logout"] [name=_token]').inputValue() !== pendingCsrf,
+    'MFA rotation lost the locale, reused CSRF or changed the workspace destination');
+}
+async function localizedLogout(page, locale) {
+  const notices = {pt:'Sessão encerrada.',en:'Signed out.',es:'Sesión cerrada.'};
+  const currentCsrf = await page.locator('form[action="/logout"] [name=_token]').inputValue();
+  await Promise.all([page.waitForURL('**/login'), page.locator('form[action="/logout"] button').click()]);
+  check(new URL(page.url()).search === '' && await page.locator('html').getAttribute('lang') === (locale === 'pt' ? 'pt-BR' : locale)
+    && await page.getByRole('status').innerText() === notices[locale], 'Logout lost its language or unchanged redirect contract');
+  check(await page.locator('form[action="/login"] [name=_token]').inputValue() !== currentCsrf,
+    'Logout preserved the authenticated CSRF token');
+  await page.goto(base + '/painel');
+  check(new URL(page.url()).pathname === '/login', 'Preserving display language preserved authenticated access');
 }
 async function width(page) {
   const values = await page.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
@@ -153,13 +231,33 @@ async function width(page) {
     await page.setViewportSize({width:390,height:844});
     await page.screenshot({path:path.join(output,'crm-home-mobile.png'),fullPage:true});
     await page.setViewportSize({width:1440,height:1000});
+    const entryTitles = {
+      '/cadastro':{pt:'Criar meu teste',en:'Start my trial',es:'Iniciar prueba'},
+      '/convite':{pt:'Seu acesso à equipe.',en:'Your access to the team.',es:'Tu acceso al equipo.'},
+      '/recuperar':{pt:'Recuperar acesso',en:'Recover access',es:'Recuperar acceso'},
+      '/login':{pt:'Bem-vindo ao CRM.',en:'Welcome to the CRM.',es:'Bienvenido al CRM.'},
+    };
     for (const [route, ids] of [['/cadastro',[]],['/convite',fieldIds([1,2,3,4])],
       ['/recuperar',fieldIds([5,6,7])],['/login',[]]]) {
       phase = 'field-labels-' + route.slice(1);
       await page.goto(base + route);
       await accessibleLabels(page, route, ids);
+      for (const locale of ['pt','en','es']) {
+        phase = 'entry-locale-' + route.slice(1) + '-' + locale;
+        await languageClick(page, locale, route);
+        check(await page.locator('h1').innerText() === entryTitles[route][locale], 'Entry page heading is not translated');
+        await accessibleLabels(page, route + '-' + locale, ids);
+      }
     }
-    await login(page, fixtures.clientA);
+    for (const invalid of ['EN','pt_BR','%3Cscript%3ELOCALE_SENTINEL%3C%2Fscript%3E','en&lang%5B%5D=es']) {
+      phase = 'entry-locale-fallback';
+      await page.goto(base + '/login?lang=en');
+      await page.goto(base + '/login?lang=' + invalid);
+      check(await page.locator('html').getAttribute('lang') === 'pt-BR'
+        && !(await page.content()).includes('LOCALE_SENTINEL'), 'Invalid locale did not safely fall back to Portuguese');
+    }
+    await login(page, fixtures.clientA, false, 'en');
+    await languageClick(page, 'pt', '/painel', 'overview');
     await page.goto(base + '/painel?section=leads');
     phase = 'lead-creation';
     const title='LEAD_TESTE_CHROMIUM_'+crypto.randomBytes(4).toString('hex').toUpperCase();
@@ -167,6 +265,23 @@ async function width(page) {
     await page.locator('form[action="/leads"] [name=value_cents]').fill('250000');
     await Promise.all([page.waitForURL('**/painel?section=leads'), page.locator('form[action="/leads"] button').click()]);
     check(await page.getByText(title, { exact: true }).isVisible(), 'Browser lead creation missing');
+    const clientCopy = {
+      pt:{overview:['Visão geral','O próximo movimento começa aqui.','Leads registrados','Tarefas abertas'],
+        leads:['Leads','CSV fictício','Importar CSV','Exportar CSV'],funnels:['Funis','Funil persistido','Criar funil →'],
+        tasks:['Tarefas','Nenhuma tarefa registrada.'],reports:['Relatórios','Seu funil em números.','Exportar dados'],
+        team:['Equipe','Equipe e franquias','Convidar usuário fictício →'],billing:['Plano e pedidos','Você ainda não criou um pedido simulado.'],
+        edit:'Editar título do lead',csv:'Arquivo CSV fictício',funnel:'Título do funil',menu:'Menu do CRM',todo:'Em aberto'},
+      en:{overview:['Overview','Your next move starts here.','Registered leads','Open tasks'],
+        leads:['Leads','Test CSV','Import CSV','Export CSV'],funnels:['Funnels','Saved funnel','Create funnel →'],
+        tasks:['Tasks','No tasks recorded.'],reports:['Reports','Your funnel in numbers.','Export data'],
+        team:['Team','Team and limits','Invite test user →'],billing:['Plan and orders','You have not created a simulated order yet.'],
+        edit:'Edit lead title',csv:'Test CSV file',funnel:'Funnel title',menu:'CRM menu',todo:'Open'},
+      es:{overview:['Resumen','Tu próximo paso empieza aquí.','Leads registrados','Tareas abiertas'],
+        leads:['Leads','CSV de prueba','Importar CSV','Exportar CSV'],funnels:['Embudos','Embudo guardado','Crear embudo →'],
+        tasks:['Tareas','No hay tareas registradas.'],reports:['Informes','Tu embudo en cifras.','Exportar datos'],
+        team:['Equipo','Equipo y límites','Invitar usuario ficticio →'],billing:['Plan y pedidos','Todavía no has creado un pedido simulado.'],
+        edit:'Editar título del lead',csv:'Archivo CSV de prueba',funnel:'Título del embudo',menu:'Menú del CRM',todo:'Abierta'},
+    };
     for (const section of ['overview', 'leads', 'funnels', 'kanban', 'tasks', 'reports', 'team', 'automation', 'settings', 'billing']) {
       phase = 'client-section-' + section;
       const response = await page.goto(base + '/painel?section=' + section);
@@ -175,6 +290,38 @@ async function width(page) {
       const ids = {leads:fieldIds([8,9,10]), tasks:fieldIds([11,12,13]),
         billing:fieldIds([15,16]), automation:['automation-language'], settings:['automation-language']}[section] || [];
       await accessibleLabels(page, section, ids);
+      if (clientCopy.pt[section]) {
+        const contract = await workspaceContracts(page);
+        const cells = await canonicalCells(page);
+        for (const locale of ['pt','en','es']) {
+          phase = 'client-locale-' + section + '-' + locale;
+          await languageClick(page, locale, '/painel', section);
+          const copy = clientCopy[locale];
+          check(await page.locator('h1').innerText() === copy[section][0]
+            && await page.getByRole('navigation',{name:copy.menu,exact:true}).count() === 1,
+            'Client heading or navigation accessible name is not translated');
+          for (const text of copy[section].slice(1)) {
+            check(await page.getByText(text,{exact:true}).count() > 0, 'Client section copy is not translated');
+          }
+          check(JSON.stringify(await workspaceContracts(page)) === JSON.stringify(contract)
+            && JSON.stringify(await canonicalCells(page)) === JSON.stringify(cells),
+            'Client translation changed stored data or form method/URL/values/options');
+          if (section === 'leads') {
+            check(await page.getByRole('textbox',{name:copy.edit,exact:true}).inputValue() === title
+              && await page.getByLabel(copy.csv,{exact:true}).getAttribute('type') === 'file',
+              'Lead editing or CSV upload lacks its translated accessible name');
+          }
+          if (section === 'funnels') check(await page.getByRole('textbox',{name:copy.funnel,exact:true}).count() === 1,
+            'Funnel creation lacks its translated accessible name');
+          await page.setViewportSize({width:390,height:844});
+          await width(page);
+          if (locale === 'es' && ['leads','team','billing'].includes(section)) {
+            await page.screenshot({path:path.join(output,'crm-client-' + section + '-es-mobile.png'),fullPage:true});
+          }
+          await page.setViewportSize({width:1440,height:1000});
+        }
+        await languageClick(page, 'pt', '/painel', section);
+      }
     }
     check(restoredLabels.size === 16, 'Not all sixteen restored field labels were exercised');
     phase = 'versioned-automation';
@@ -227,6 +374,14 @@ async function width(page) {
     const executionId=await completed.getAttribute('data-automation-id');
     await page.goto(base+'/painel?section=tasks');
     check(await page.locator('[data-task-id="'+executionId+'"]').count()===1,'Native browser run did not create exactly its task');
+    const taskForms = await formContracts(page.locator('[data-task-id="'+executionId+'"] form'));
+    for (const locale of ['pt','en','es']) {
+      await languageClick(page, locale, '/painel', 'tasks');
+      check(await page.locator('[data-task-id="'+executionId+'"] [data-task-state=todo]').innerText() === clientCopy[locale].todo
+        && JSON.stringify(await formContracts(page.locator('[data-task-id="'+executionId+'"] form'))) === JSON.stringify(taskForms),
+        'Task translation changed its state, completion action or revision');
+    }
+    await languageClick(page, 'pt', '/painel', 'tasks');
     await page.goto(base+'/painel?section=automation');
     await page.setViewportSize({width:1440,height:1000});
     await page.screenshot({path:path.join(output,'crm-automation-desktop.png'),fullPage:true});
@@ -240,6 +395,7 @@ async function width(page) {
     phase = 'client-mobile';
     await page.screenshot({ path: path.join(output, 'crm-client-mobile.png'), fullPage: true });
     await width(page);
+    await localizedLogout(page, 'pt');
 
     // HTTP reached revision 20 for client B. Submit its real browser form:
     // disabled automation controls must preserve their values via hidden inputs.
@@ -329,13 +485,15 @@ async function width(page) {
       return query.get('section') === 'overview' && [...query.keys()].sort().join(',') === 'lang,section';
     }), 'Language links copied unvalidated section or unrelated query parameters');
     console.log('PRIVATE AUTOMATION LOCALES CHROMIUM PASS: PT/EN/ES, current section retained, exact values preserved, desktop/mobile.');
+    await localizedLogout(preferencePage, 'en');
     await preferenceContext.close();
     console.log('PRIVATE CAPPED PREFERENCES CHROMIUM PASS: enabled language submit, preserved disabled controls, revision 20 unchanged.');
 
     const administrator = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
     const adminPage = await administrator.newPage();
     adminPage.on('pageerror', () => failures.push('administrator-pageerror'));
-    await login(adminPage, fixtures.admin, true);
+    await login(adminPage, fixtures.admin, true, 'es');
+    await languageClick(adminPage, 'pt', '/admin');
     phase = 'administrator-desktop';
     check(await adminPage.locator('[data-account-id]').count() >= 3, 'Administrator accounts missing');
     check(!(await adminPage.content()).includes(title), 'Administrator exposed tenant lead content');
@@ -347,23 +505,24 @@ async function width(page) {
     await width(adminPage);
     const adminForms = adminPage.locator('[data-account-id] form');
     const accountForms = await formContracts(adminForms);
+    const adminCells = await canonicalCells(adminPage);
     check(accountForms.length >= 3 && accountForms.every(form => form.method === 'post'
       && /^\/admin\/contas\/[0-9a-f-]{36}$/.test(new URL(form.action).pathname)
       && new URL(form.action).origin === base && new URL(form.action).search === ''
       && form.fields.length === 1 && form.fields[0][0] === 'status'
       && ['active','suspended'].includes(form.fields[0][1])), 'Administrator form contracts are not canonical');
     const adminCopy = {
-      pt:{title:'Uma visão clara da operação.',accounts:'Contas e acesso',orders:'Pedidos simulados',audit:'Auditoria administrativa',
+      pt:{title:'Uma visão clara da operação.',accounts:'Contas e acesso',orders:'Pedidos simulados',audit:'Auditoria administrativa',trial:'Trial',
         company:'Empresa fictícia',status:'Estado',action:'Ação',order:'Pedido',plan:'Plano',method:'Método fictício',when:'Quando (UTC)',account:'Conta',
         suspend:'Suspender',resume:'Reativar',owner:'Responsável',member:'Membro',
         hint:'Deslize para ver as colunas e ações da tabela.',
         notice:'Suspender revoga as sessões existentes. Reativar exige novo login e MFA. Esta administração vê metadados operacionais fictícios; não abre leads e tarefas de outra empresa.'},
-      en:{title:'A clear view of operations.',accounts:'Accounts and access',orders:'Simulated orders',audit:'Administrative audit',
+      en:{title:'A clear view of operations.',accounts:'Accounts and access',orders:'Simulated orders',audit:'Administrative audit',trial:'Trial',
         company:'Test company',status:'Status',action:'Action',order:'Order',plan:'Plan',method:'Test payment method',when:'When (UTC)',account:'Account',
         suspend:'Suspend',resume:'Resume',owner:'Owner',member:'Member',
         hint:'Swipe to see all table columns and actions.',
         notice:'Suspending revokes active sessions. Resuming requires a fresh sign-in and MFA. Administrators see test operational metadata, never leads or tasks from another company.'},
-      es:{title:'Una visión clara de la operación.',accounts:'Cuentas y acceso',orders:'Pedidos simulados',audit:'Auditoría administrativa',
+      es:{title:'Una visión clara de la operación.',accounts:'Cuentas y acceso',orders:'Pedidos simulados',audit:'Auditoría administrativa',trial:'Prueba',
         company:'Empresa ficticia',status:'Estado',action:'Acción',order:'Pedido',plan:'Plan',method:'Método de pago de prueba',when:'Cuándo (UTC)',account:'Cuenta',
         suspend:'Suspender',resume:'Reactivar',owner:'Responsable',member:'Miembro',
         hint:'Deslice para ver todas las columnas y acciones de la tabla.',
@@ -381,7 +540,7 @@ async function width(page) {
       check(await accounts.getByRole('heading', {name:copy.accounts,exact:true}).isVisible()
         && await orders.count() === 1 && await audit.count() === 1,
         'Administrator table sections are not translated');
-      check(JSON.stringify(await accounts.locator('thead th').allTextContents()) === JSON.stringify([copy.company,'Trial',copy.status,copy.action])
+      check(JSON.stringify(await accounts.locator('thead th').allTextContents()) === JSON.stringify([copy.company,copy.trial,copy.status,copy.action])
         && JSON.stringify(await orders.locator('thead th').allTextContents()) === JSON.stringify([copy.order,copy.plan,copy.method,copy.status])
         && JSON.stringify(await audit.locator('thead th').allTextContents()) === JSON.stringify([copy.when,copy.action,copy.account]),
         'Administrator column headers are not translated');
@@ -396,6 +555,8 @@ async function width(page) {
         'Administrator account roles are not translated');
       check(JSON.stringify(await formContracts(adminForms)) === JSON.stringify(accountForms),
         'Administrator translation changed account action URLs or submitted status');
+      check(JSON.stringify(await canonicalCells(adminPage)) === JSON.stringify(adminCells),
+        'Administrator translation changed canonical account/order/activity metadata');
       await accessibleLabels(adminPage, 'administrator-' + locale);
       await adminPage.setViewportSize({width:1440,height:1000});
       await width(adminPage);
@@ -406,8 +567,20 @@ async function width(page) {
         copy.accounts, copy.hint, accounts.locator('[data-account-id] button').first());
       await adminPage.setViewportSize({width:390,height:844});
       await width(adminPage);
-      if (locale === 'es') await adminPage.screenshot({path:path.join(output,'crm-admin-es-mobile.png'),fullPage:true});
+      if (locale === 'es') {
+        phase = 'administrator-es-mobile-orders-paint';
+        check(await orders.locator('tbody tr').count() === 3, 'Persisted simulated orders disappeared on mobile');
+        await orders.scrollIntoViewIfNeeded();
+        check(await orders.evaluate(node => node.scrollTop === 0 && node.scrollLeft === 0),
+          'Unfocused orders panel unexpectedly scrolled its content out of view');
+        await paintedText(adminPage, orders.getByRole('heading',{name:copy.orders,exact:true}), 'Simulated orders heading');
+        await paintedText(adminPage, orders.locator('tbody tr').first().locator('td').first(), 'First simulated order');
+        await orders.screenshot({path:path.join(output,'crm-admin-es-mobile-orders.png')});
+        await adminPage.screenshot({path:path.join(output,'crm-admin-es-mobile.png'),fullPage:true});
+      }
     }
+    await localizedLogout(adminPage, 'es');
+    console.log('PRIVATE CLIENT LOCALES CHROMIUM PASS: entry/workspace PT/EN/ES, canonical forms and data preserved, login/MFA/logout locale with rotated CSRF, visible mobile orders.');
     console.log('PRIVATE QA-02 CHROMIUM PASS: sixteen field labels, unique IDs, PT/EN/ES admin and Kanban, stable form contracts, keyboard horizontal scroll.');
     check(failures.length === 0, 'Browser JavaScript failure');
     console.log('PRIVATE CHROMIUM PASS: ' + checks + ' assertions; desktop/mobile client and administrator.');

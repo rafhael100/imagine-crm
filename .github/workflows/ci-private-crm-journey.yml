@@ -6,12 +6,14 @@ on:
       - 'app/Homologation/**'
       - 'app/Core/Automation/**'
       - 'tests/Unit/PrivateAutomationSettingsTest.php'
+      - 'tests/Unit/PrivateUiTest.php'
       - 'app/Core/Identity/**'
       - 'app/Providers/AppServiceProvider.php'
       - 'config/**'
       - 'bootstrap/app.php'
       - 'routes/private-homologation.php'
       - 'resources/views/crm-private-journey.blade.php'
+      - 'resources/lang/private-crm.php'
       - 'resources/views/crm-marketing-home.blade.php'
       - 'infra/homologation/**'
       - 'scripts/ops/*private-crm*'
@@ -137,3 +139,4 @@ jobs:
           coverage: none
       - run: composer install --no-interaction --prefer-dist --no-progress
       - run: vendor/bin/phpunit tests/Unit/PrivateAutomationSettingsTest.php
+      - run: vendor/bin/phpunit tests/Unit/PrivateUiTest.php
