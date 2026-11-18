@@ -15,6 +15,8 @@ function check(value, label) { checks++; if (!value) throw Error(label); }
 const restoredLabels = new Set();
 const fieldIds = numbers => numbers.map(number => 'crm-field-a11y-' + number);
 async function accessibleLabels(page, screen, expected = []) {
+  const previousPhase = phase;
+  phase = previousPhase + '-label-associations';
   const associations = await page.locator('label').evaluateAll(labels => labels.every(label =>
     label.control !== null && [...label.control.labels].includes(label)));
   check(associations, 'Unassociated field label in ' + screen);
@@ -22,14 +24,17 @@ async function accessibleLabels(page, screen, expected = []) {
     nodes.length === new Set(nodes.map(node => node.id)).size);
   check(uniqueIds, 'Duplicate DOM id in ' + screen);
   for (const id of expected) {
+    phase = previousPhase + '-label-' + id;
     const label = page.locator('label[for="' + id + '"]');
     check(await label.count() === 1 && await label.evaluate((node, target) =>
       node.control === document.getElementById(target), id), 'Restored label association missing: ' + id);
     const name = (await label.innerText()).trim();
-    check(name.length > 0 && await page.getByLabel(name, {exact:true}).getAttribute('id') === id,
+    // The language navigation has the same accessible name as the preference field.
+    check(name.length > 0 && await page.locator('form').getByLabel(name, {exact:true}).getAttribute('id') === id,
       'Control cannot be located by its accessible label: ' + id);
     restoredLabels.add(id);
   }
+  phase = previousPhase;
 }
 async function formContracts(forms) {
   return forms.evaluateAll(nodes => nodes.map(form => ({
