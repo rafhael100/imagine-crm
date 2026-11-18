@@ -55,6 +55,10 @@ Chromium cria sua própria origem na sessão atual, usa o formulário nativo e n
 
 Resultados, contagens e links de CI são registrados na PR da SHA executada. Sintaxe ou revisão textual local não são anunciadas como execução de PHP, banco, transporte ou navegador.
 
+## Recuperação do estado local
+
+O ensaio adicional de [recuperação das intenções e grants](CRM-OWNER-DRAFT-RECOVERY-2026-11-17.md) usa a mesma jornada humana e a mesma CI, com snapshot exportado, criptografia e restauração em PostgreSQL separado e inerte. Sua validação de inventário é própria: o backup legado continua recusando as duas tabelas novas. O destino da prova não recebe aplicação nem reativa sessões ou autoridade arquivada.
+
 ## Limites restantes
 
 Este addon não foi aplicado a uma instalação persistente. Restauração e promoção precisam incluir as novas estruturas e preservar autoria, histórico de intenção e anti-replay. A existência de infraestrutura ou storage externo não é autorização para migrar estes registros. GO operacional, promoção de branches, custódia de credenciais reais e qualquer efeito executável da regra permanecem decisões separadas do recorte implementado.
