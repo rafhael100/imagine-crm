@@ -234,22 +234,49 @@ final class PrivateUiTest extends TestCase
 
     public function test_old_text_never_reads_secrets_or_fields_outside_the_allowlist(): void
     {
-        $request = $this->createMock(Request::class);
-        $request->method('hasSession')->willReturn(true);
-        $request->expects(self::never())->method('session');
+        $request = new class extends Request {
+            public int $sessionChecks = 0;
+            public int $sessionReads = 0;
+
+            #[\Override]
+            public function hasSession(bool $skipIfUninitialized = false): bool
+            {
+                $this->sessionChecks++;
+                throw new \LogicException('A disallowed field must not inspect the session.');
+            }
+
+            #[\Override]
+            public function session()
+            {
+                $this->sessionReads++;
+                throw new \LogicException('A disallowed field must not read the session.');
+            }
+        };
         foreach (['password', 'code', 'recovery', 'invitation', '_token', 'crm.auth.token',
             'crm.auth.pending', 'tenant', 'organization_id', 'login.nested', 'Login', 'unknown'] as $field) {
             self::assertSame('unit-safe-fallback', PrivateUi::oldText($request, $field, 'unit-safe-fallback'));
         }
+        self::assertSame(0, $request->sessionChecks);
+        self::assertSame(0, $request->sessionReads);
     }
 
     public function test_old_text_without_a_session_uses_fallback_without_reading_session(): void
     {
-        $request = $this->createMock(Request::class);
-        $request->method('hasSession')->willReturn(false);
-        $request->expects(self::never())->method('session');
+        $request = new class extends Request {
+            public int $sessionReads = 0;
+
+            #[\Override]
+            public function session()
+            {
+                $this->sessionReads++;
+                throw new \LogicException('A request without a session must not read it.');
+            }
+        };
+        self::assertFalse($request->hasSession());
         foreach (['login', 'company', 'email'] as $field) {
             self::assertSame('unit-safe-fallback', PrivateUi::oldText($request, $field, 'unit-safe-fallback'));
         }
+        self::assertFalse($request->hasSession());
+        self::assertSame(0, $request->sessionReads);
     }
 }
