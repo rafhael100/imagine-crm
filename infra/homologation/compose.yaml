@@ -46,6 +46,7 @@ x-runtime: &runtime
 services:
   postgres:
     image: postgres:16
+    restart: unless-stopped
     environment:
       POSTGRES_DB: imagine_crm_private_homologation
       POSTGRES_USER: crm_homologation_owner
@@ -67,6 +68,7 @@ services:
     security_opt: ["no-new-privileges:true"]
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     environment:
       REDIS_PASSWORD: ${CRM_PRIVATE_REDIS_PASSWORD}
     command: [sh, -c, 'exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"']
@@ -75,6 +77,7 @@ services:
     security_opt: ["no-new-privileges:true"]
   app:
     image: imagine-crm-private-journey:${CRM_PRIVATE_IMAGE_TAG:-candidate}
+    restart: unless-stopped
     build:
       context: ../..
       dockerfile: infra/homologation/Dockerfile
@@ -92,6 +95,7 @@ services:
     cap_drop: [ALL]
   web:
     image: nginx:1.28-alpine
+    restart: unless-stopped
     ports: ["127.0.0.1:18086:8080"]
     volumes:
       - ../../public:/srv/crm/public:ro
