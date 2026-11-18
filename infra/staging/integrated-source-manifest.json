@@ -1,0 +1,37 @@
+{
+  "base_commit": "41e9c85733e92e8a9e18b31f4d5892df6def0e54",
+  "sites_commit": "142fa8eea5efb6fbace357f0e05405e88eb027da",
+  "scope": "Source regression only; not permission to run CI-only modules in staging. Update hashes only after reviewing the relevant security change.",
+  "preserved_sha256": {
+    "bootstrap/app.php": "dad6caceead472320e9282cc871c212e4a801d409154a9623df095ca733e1663",
+    "routes/web.php": "643a5054fb78ae027b30685a96aa82220207e6ad925c16389b8b23c07fd36064",
+    ".github/workflows/ci-postgresql-rls.yml": "b7f2279860aae88dd75d568ce6e42d6908203c3235aae4a62629e3c967d7ce4f",
+    "scripts/ci/rehearse-crm-full-schema-restore.sh": "517e741a9079215be30a1185cf294f25828ca45014994b0b11e2630940bd033a",
+    "scripts/ci/rehearse-crm-iam-redis-session.sh": "2efd4cbd4eedd1294e82e29edb610053e137b33c19a18d1bdabd00c675b5be6b",
+    "app/Core/Identity/DatabaseSessionAuthority.php": "019c2c431379485d276773b7134b547ae38cdd65d55f71d7d7ee01b69839f1c8",
+    "app/Core/Identity/ExperimentalAuthenticator.php": "080280bc0cd1662390998219c752daf1c0ccae7bc62e6661f07e9fc2f0f7080f",
+    "app/Core/Identity/GuardPrincipalSource.php": "1c07b7c78d55e212bc7174aa03c15df6b36f2eab1f74b4816d4a7ca24ee0eef9",
+    "app/Core/Plans/LaboratoryAtomicOtpTrialEnrollment.php": "0774f5c4a3f449aa09e235dda42b08ebb9e2162c58a79c92d65a411de5519365",
+    "tests/Feature/CrmIamPostgresHttpMembershipTest.php": "eeff9b2c2c983ab0fb6cda391e99351e124167e0e42d801bc47742e3af996f3c",
+    "tests/Feature/CrmIamHttpBoundaryTest.php": "d82a6f4ae80c51e3a42cb2b3ad2cc3b80f2244c266a0e13857d34c9445017a50",
+    "tests/Feature/CrmIamBusinessHttpGateTest.php": "faeda857dae4683fff06b6defe064ce84074005fd1d5a62b97db2a89ebb59bb7",
+    "tests/Feature/CrmIamRedisConfidentialityTest.php": "6e2f97d54e9b3fa0d2abe11d55a0efbf81b024ffce2bd1a4dd7c43924c8affa7",
+    "tests/Feature/CrmIamRecoveryHttpBoundaryTest.php": "dc5ab7912c9c527487103e2f8e2e404327fa44301a4390b14e198bc0faec1cc9",
+    "tests/Feature/CrmAtomicOtpTrialPgTest.php": "8cff4524ae9ce0cd6b518b2561bf8064c4b7652be73711d47136aa472377029a"
+  },
+  "required_additions": [
+    ".github/workflows/ci-crm-sites-f399-pg16.yml",
+    ".github/workflows/ci-crm-sites-f400-pg16.yml",
+    ".github/workflows/ci-crm-sites-f401-pg16.yml",
+    "app/Core/Leads/LaboratoryPortalS2sBindingGateway.php",
+    "app/Core/Leads/LaboratorySiteBindingProvisioner.php",
+    "docs/desenvolvimento/CRM-SITES-F399-provisionamento-servidor-revogacao-atomica.md",
+    "docs/desenvolvimento/CRM-SITES-F400-portal-s2s-ci.md",
+    "docs/desenvolvimento/CRM-SITES-F401-original-portal-interop-ci.md",
+    "tests/Feature/PostgresSitesProvisioningF399Test.php",
+    "tests/Labs/leads/site-portal-s2s-inbox-ci.sql",
+    "tests/Labs/leads/site-provisioning-authority-ci.sql",
+    "app/Core/Identity/IdentityRuntimeProfile.php",
+    "tests/Unit/IdentityPrivateStagingProfileTest.php"
+  ]
+}

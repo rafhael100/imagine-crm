@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="/var/www/html/vendor/autoload.php" colors="false" failOnWarning="true" cacheResult="false">
+  <testsuites><testsuite name="PrivateAuthority"><file>/var/www/html/tests/Feature/PortalPrivateAuthorityTest.php</file></testsuite></testsuites>
+</phpunit>

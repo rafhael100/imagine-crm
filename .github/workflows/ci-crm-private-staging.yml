@@ -1,0 +1,39 @@
+name: CRM Private Staging - static no-deploy guard
+
+on:
+  pull_request:
+    branches:
+      - dev/fast-track-crm-2026-11-04
+    paths:
+      - '.dockerignore'
+      - 'infra/staging/**'
+      - 'scripts/ci/check-private-staging-compose.py'
+      - '.github/workflows/ci-crm-private-staging.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  private-staging-no-deploy:
+    name: Docker Compose static validation only (NO DEPLOY)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout without persisted token
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validate Python source
+        run: python3 -m py_compile scripts/ci/check-private-staging-compose.py
+      - name: Verify loopback, disabled financial actions, secrets and Docker Compose syntax
+        run: python3 scripts/ci/check-private-staging-compose.py
+      - name: State explicit staging limits
+        if: always()
+        run: |
+          {
+            echo '### Imagine CRM — private staging candidate only'
+            echo '- Compose configuration validated statically, no containers run'
+            echo '- Nginx bound on 127.0.0.1:18080, no DB published'
+            echo '- No migrations, enrollment, authentication, Asaas, billing or production'
+            echo '- Main/VPS unchanged; DRAFT/NO-MERGE/NO-DEPLOY'
+          } >> "$GITHUB_STEP_SUMMARY"

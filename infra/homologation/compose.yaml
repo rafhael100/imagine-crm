@@ -1,0 +1,129 @@
+name: imagine-crm-private-journey
+x-runtime: &runtime
+  APP_NAME: Imagine CRM Private
+  APP_ENV: staging
+  APP_DEBUG: "false"
+  APP_URL: https://crm-dev.imaginecomunica.com.br
+  APP_KEY: ${CRM_PRIVATE_APP_KEY:?Required private key}
+  DB_CONNECTION: pgsql
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_DATABASE: imagine_crm_private_homologation
+  DB_USERNAME: crm_homologation_app
+  DB_PASSWORD: ${CRM_PRIVATE_APP_PASSWORD:?Required app password}
+  DB_SSLMODE: disable
+  CRM_IAM_USERNAME: crm_homologation_iam
+  CRM_IAM_PASSWORD: ${CRM_PRIVATE_IAM_PASSWORD:?Required IAM password}
+  CRM_IAM_SSLMODE: disable
+  CRM_ENROLLMENT_USERNAME: crm_homologation_enrollment
+  CRM_ENROLLMENT_PASSWORD: ${CRM_PRIVATE_ENROLLMENT_PASSWORD:?Required enrollment password}
+  CRM_OPERATOR_USERNAME: crm_homologation_operator
+  CRM_OPERATOR_PASSWORD: ${CRM_PRIVATE_OPERATOR_PASSWORD:?Required operator password}
+  CRM_AUTH_EXPERIMENTAL: "true"
+  CRM_PRIVATE_STAGING_IDENTITY_PROFILE: private-homologation-synthetic-v1
+  CRM_PRIVATE_JOURNEY: synthetic-v1
+  CRM_PRIVATE_OP01: ${CRM_PRIVATE_OP01:-}
+  CRM_N8N_EXECUTION_MONITOR: ${CRM_N8N_EXECUTION_MONITOR:-}
+  CRM_PRIVATE_TRIAL_KEYS: ${CRM_PRIVATE_TRIAL_KEYS:?Required complete trial key history}
+  CRM_STAGING_MARKETING_PREVIEW: "false"
+  CRM_STAGING_PERSISTED_DEMO: "false"
+  CRM_ASAAS_SANDBOX_ENABLED: "false"
+  CRM_ASAAS_SANDBOX_PAYMENTS_ENABLED: "false"
+  CRM_ASAAS_SANDBOX_RECONCILIATION_ENABLED: "false"
+  SESSION_DRIVER: redis
+  SESSION_CONNECTION: default
+  SESSION_COOKIE: imagine_private_crm_session
+  SESSION_SECURE_COOKIE: "true"
+  SESSION_SAME_SITE: strict
+  CACHE_STORE: redis
+  CRM_IAM_ABUSE_STORE: redis
+  REDIS_CLIENT: phpredis
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  REDIS_PASSWORD: ${CRM_PRIVATE_REDIS_PASSWORD:?Required Redis password}
+  REDIS_PREFIX: imagine_private_crm_
+  QUEUE_CONNECTION: sync
+  MAIL_MAILER: array
+  LOG_CHANNEL: stderr
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: imagine_crm_private_homologation
+      POSTGRES_USER: crm_homologation_owner
+      POSTGRES_PASSWORD: ${CRM_PRIVATE_OWNER_PASSWORD:?Required isolated bootstrap password}
+      CRM_PRIVATE_APP_PASSWORD: ${CRM_PRIVATE_APP_PASSWORD}
+      CRM_PRIVATE_IAM_PASSWORD: ${CRM_PRIVATE_IAM_PASSWORD}
+      CRM_PRIVATE_ENROLLMENT_PASSWORD: ${CRM_PRIVATE_ENROLLMENT_PASSWORD}
+      CRM_PRIVATE_OPERATOR_PASSWORD: ${CRM_PRIVATE_OPERATOR_PASSWORD}
+    volumes:
+      - private_crm_pg:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
+      - ./20-runtime-roles.sh:/docker-entrypoint-initdb.d/20-runtime-roles.sh:ro
+    networks: [internal]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U crm_homologation_owner -d imagine_crm_private_homologation"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    security_opt: ["no-new-privileges:true"]
+  redis:
+    image: redis:7-alpine
+    environment:
+      REDIS_PASSWORD: ${CRM_PRIVATE_REDIS_PASSWORD}
+    command: [sh, -c, 'exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"']
+    volumes: ["private_crm_redis:/data"]
+    networks: [internal]
+    security_opt: ["no-new-privileges:true"]
+  app:
+    image: imagine-crm-private-journey:${CRM_PRIVATE_IMAGE_TAG:-candidate}
+    build:
+      context: ../..
+      dockerfile: infra/homologation/Dockerfile
+    environment: *runtime
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_started}
+    networks: [internal]
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/www/html/storage:uid=33,gid=33,mode=0770
+      - /var/www/html/bootstrap/cache:uid=33,gid=33,mode=0770
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+  web:
+    image: nginx:1.28-alpine
+    ports: ["127.0.0.1:18086:8080"]
+    volumes:
+      - ../../public:/srv/crm/public:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on: [app]
+    networks: [internal, ingress]
+    read_only: true
+    tmpfs: [/var/cache/nginx, /var/run, /tmp]
+    security_opt: ["no-new-privileges:true"]
+  tools:
+    image: imagine-crm-private-journey:${CRM_PRIVATE_IMAGE_TAG:-candidate}
+    profiles: [tools]
+    user: "0:0"
+    environment:
+      <<: *runtime
+      CRM_PRIVATE_OWNER_PASSWORD: ${CRM_PRIVATE_OWNER_PASSWORD}
+      CRM_PRIVATE_BACKUP_KEY: ${CRM_PRIVATE_BACKUP_KEY:?Required independent backup key}
+      CRM_PRIVATE_OPERATOR_MODE: tools-only
+    entrypoint: [php]
+    volumes: ["${CRM_PRIVATE_DATA_DIR:?Required protected data directory}:/private"]
+    networks: [internal]
+    tmpfs:
+      - /tmp
+      - /var/www/html/storage:uid=0,gid=0,mode=0700
+      - /var/www/html/bootstrap/cache:uid=0,gid=0,mode=0700
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+networks:
+  internal: {internal: true}
+  ingress: {driver: bridge}
+volumes:
+  private_crm_pg:
+  private_crm_redis:
