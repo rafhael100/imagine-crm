@@ -23,6 +23,8 @@ HEAD_REF = "feat/crm-owner-agents-drafts-2026-11-17"
 INTEGRATION_BASE = "d7c7aacc766c7ade4c65dcd211ed4569442144a9"
 INTEGRATION_BASE_REF = "dev/fast-track-crm-2026-11-04"
 INTEGRATION_HEAD_REF = "integrate/crm-private-journey-and-owner-drafts-2026-11-18"
+MIGRATION_HEAD_REF = "feat/crm-owner-monitor-incremental-migration-2026-11-18"
+MIGRATION_ANCESTOR = "96dbf1aed2d1cf3237bc3631c4594540a0168d2a"
 INTEGRATION_ANCESTORS = (
     "8c62702d02138233404fda73506b779f3ebb3143",
     "fe88dd15d42dbda0bab206dfdbc9f8ce65093212",
@@ -84,11 +86,12 @@ def preflight():
     provenance = (request["base"]["sha"], request["base"]["ref"], request["head"]["ref"])
     original = (BASE, BASE_REF, HEAD_REF)
     integration = (INTEGRATION_BASE, INTEGRATION_BASE_REF, INTEGRATION_HEAD_REF)
+    migration = (INTEGRATION_BASE, INTEGRATION_BASE_REF, MIGRATION_HEAD_REF)
     # Admit only these complete tuples, never combinations of their fields.
     need(event["repository"]["full_name"] == REPOSITORY and event["repository"]["private"] is False
          and request["head"]["repo"]["full_name"] == REPOSITORY
          and request["base"]["repo"]["full_name"] == REPOSITORY
-         and provenance in (original, integration), "OWNER_DRAFT_PR_PROVENANCE_DENIED")
+         and provenance in (original, integration, migration), "OWNER_DRAFT_PR_PROVENANCE_DENIED")
     head = request["head"]["sha"]
     need(re.fullmatch(r"[a-f0-9]{40}", head)
          and git(ROOT, "rev-parse", "HEAD").decode().strip() == head
@@ -96,9 +99,11 @@ def preflight():
     git(ROOT, "diff", "--quiet")
     git(ROOT, "diff", "--cached", "--quiet")
     git(ROOT, "merge-base", "--is-ancestor", BASE, head)
-    if provenance == integration:
+    if provenance in (integration, migration):
         for ancestor in INTEGRATION_ANCESTORS:
             git(ROOT, "merge-base", "--is-ancestor", ancestor, head)
+    if provenance == migration:
+        git(ROOT, "merge-base", "--is-ancestor", MIGRATION_ANCESTOR, head)
     temporary = Path(os.environ.get("RUNNER_TEMP", ""))
     need(temporary.is_absolute() and temporary.is_dir() and not temporary.is_symlink(),
          "OWNER_DRAFT_RUNNER_TEMP_REQUIRED")

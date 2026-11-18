@@ -34,7 +34,7 @@ jobs:
           set -euo pipefail
           python3 scripts/ops/private_crm_owner_drafts_ci.py preflight
           git diff --check
-          python3 -m py_compile scripts/ops/private_crm_owner_drafts_ci.py scripts/ops/test-private-crm-owner-drafts.py scripts/ops/test-private-crm-owner-draft-recovery.py scripts/ops/test-private-crm-owner-monitor-coexistence.py
+          python3 -m py_compile scripts/ops/private_crm_owner_drafts_ci.py scripts/ops/test-private-crm-owner-drafts.py scripts/ops/test-private-crm-owner-draft-recovery.py scripts/ops/test-private-crm-owner-monitor-coexistence.py scripts/ops/private_crm_owner_monitor_migration.py scripts/ops/test-private-crm-owner-monitor-migration.py
           node --check scripts/ops/test-private-crm-owner-drafts-browser.cjs
           node --check scripts/ops/test-private-crm-owner-monitor-browser.cjs
           echo "CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT=$CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT" >> "$GITHUB_ENV"
@@ -122,6 +122,15 @@ jobs:
           test "$ready" = 1
           python3 scripts/ops/test-private-crm-owner-drafts.py --disabled
           sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_ENV_FILE,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG,CRM_N8N_EXECUTION_MONITOR,CRM_PRIVATE_CI_MONITOR_PROFILE python3 scripts/ops/test-private-crm-owner-monitor-coexistence.py "$RUNNER_TEMP/crm-owner-drafts-data/fixtures.json" after-owner-disabled
+      - name: Prove additive monitor33 to owner35 migration in isolated PostgreSQL
+        id: owner_monitor_migration
+        timeout-minutes: 8
+        run: |
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,GITHUB_RUN_ID,GITHUB_RUN_ATTEMPT,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/test-private-crm-owner-monitor-migration.py
+      - name: Remove only this run's isolated migration clusters
+        if: always() && steps.owner_monitor_migration.outcome != 'skipped'
+        run: |
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_REPOSITORY,GITHUB_EVENT_NAME,GITHUB_EVENT_PATH,GITHUB_SHA,GITHUB_RUN_ID,GITHUB_RUN_ATTEMPT,RUNNER_TEMP,CRM_OWNER_DRAFT_RUNNER_ENVIRONMENT,CRM_PRIVATE_PROJECT,CRM_PRIVATE_IMAGE_TAG python3 scripts/ops/test-private-crm-owner-monitor-migration.py --cleanup
       - name: Make only verified credential-free screenshots readable
         if: always()
         run: |

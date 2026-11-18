@@ -1,5 +1,50 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — candidata de migração monitor33 para owner+monitor35 (18/11/2026)
+
+A branch `feat/crm-owner-monitor-incremental-migration-2026-11-18` parte da
+[#660](https://github.com/rafhael100/imagine-crm/pull/660), HEAD
+`96dbf1aed2d1cf3237bc3631c4594540a0168d2a`. A
+[CI owner da base](https://github.com/rafhael100/imagine-crm/actions/runs/44246202205/job/134605651011)
+passou em 18/11 a jornada real, recuperação27, convivência e recuperação35,
+Chromium combinado, desligamento e cleanup. A prova anterior permanece
+separada da migração desta filha.
+
+O novo recorte admite apenas monitor33 exato → owner+monitor35 exato e
+reaplicação35 sem alterações. O migrador usa uma transação limitada por
+timeouts e compara catálogo, segurança e metadados com referências limpas,
+construídas independentemente dos sete inputs pinados da base. O bootstrap
+owner original permanece literal; a API remove somente seu envelope externo
+para inseri-lo na transação controlada. Estados parciais e divergentes são
+recusados antes do delta, sem reparo automático.
+
+O ensaio cria dois clusters de referência e cinco alvos PostgreSQL16 novos,
+sem rede, portas, binds ou app, com dados em tmpfs e identidade da CI real.
+Os dados sintéticos ocupam 20 das 33 tabelas; as 13 vazias também têm
+fingerprints preservados. Contas são comparadas pelas oito colunas antigas,
+com backfill zero do marker. A reaplicação precisa preservar grants/intents
+povoados e marker não zero. Mantêm-se nove roles, nove funções e uma sequência,
+cujo estado é observado separadamente.
+
+A matriz focal recusa instalação parcial, CHECK(true), grant extra no35 e
+owner incorreto do database. Também exige timeout antes do delta e rollback
+tardio: um blocker SHARE em organizações deve parar no CREATE com FK depois
+do ALTER de contas, observado por backend/instrução/locks e SQLSTATE55P03.
+A coluna e os objetos novos precisam desaparecer após rollback. Isso não é
+prova de migração online ou de reaplicações concorrentes.
+
+O hook entra após as provas owner/monitor existentes e seu desligamento,
+sem repetir HTTP/n8n/restore. O timeout global de 30 minutos é preservado;
+finally e cleanup adicional ficam restritos aos recursos desta execução.
+Admissão, sintaxe e diff têm verificação local; PostgreSQL/Docker da nova
+candidata ainda dependem da CI da HEAD publicada, sem PASS antecipado.
+[Contrato e critérios](docs/desenvolvimento/CRM-OWNER-MONITOR-INCREMENTAL-MIGRATION-2026-11-18.md).
+
+Bootstrap, detectores legados33, F251/F252 e fontes anteriores permanecem
+preservados. `ReferencePair` é interno ao builder pinado, não autenticação de
+JSON externo. **DRAFT / NO-MERGE / NO-DEPLOY / NO-GO operacional**, sem acesso
+a dados reais, instalação persistente, nova autoridade ou execução owner.
+
 ## Continuidade — cabeçalho Chromium e primeira prova real de recuperação35 (18/11/2026)
 
 A HEAD `f2a0c06a0fdb05758162b46903202f971979c69f` da [#660](https://github.com/rafhael100/imagine-crm/pull/660) concluiu 27 workflows: 24 passaram; F251/F252 recusaram o escopo; o job owner parou na verificação de cabeçalhos do novo Chromium combinado. No [mesmo job](https://github.com/rafhael100/imagine-crm/actions/runs/44244268181/job/134599286149), os estágios anteriores passaram: 407 verificações HTTP/52 requisições owner, recuperação27 com 842 verificações, navegador owner existente e a nova recuperação35 com **1.909 verificações**.
