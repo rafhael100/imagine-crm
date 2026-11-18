@@ -24,7 +24,6 @@ jobs:
     env:
       CRM_PRIVATE_PROJECT: imagine-crm-journey-ci
       CRM_PRIVATE_IMAGE_TAG: ${{ github.event.pull_request.head.sha }}
-      CRM_OP01_RUNNER_ENVIRONMENT: ${{ runner.environment }}
       AIA_P65_SOURCE_SHA: 740abafc813dbde70f5a2ad6e138402ed7945276
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -32,11 +31,14 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - name: Verify candidate and create fresh runner-only credentials
+        env:
+          CRM_OP01_RUNNER_ENVIRONMENT: ${{ runner.environment }}
         run: |
           set -euo pipefail
           test "$GITHUB_REPOSITORY" = rafhael100/imagine-crm
           test "$GITHUB_EVENT_NAME" = pull_request
           test "$CRM_OP01_RUNNER_ENVIRONMENT" = github-hosted
+          echo "CRM_OP01_RUNNER_ENVIRONMENT=$CRM_OP01_RUNNER_ENVIRONMENT" >> "$GITHUB_ENV"
           test "$(git rev-parse HEAD)" = "$CRM_PRIVATE_IMAGE_TAG"
           python3 scripts/ops/create-private-crm-environment.py "$RUNNER_TEMP/crm-op01.env" "$RUNNER_TEMP/crm-op01-data" "$CRM_PRIVATE_IMAGE_TAG"
           sudo chown root:root "$RUNNER_TEMP/crm-op01-data"
