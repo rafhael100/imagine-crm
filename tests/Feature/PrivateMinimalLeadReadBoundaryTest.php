@@ -147,7 +147,9 @@ final class PrivateMinimalLeadReadBoundaryTest extends TestCase
         }
         $request = Request::create('/agentes/leads/'.self::REF.'/minimo','POST');
         $request->headers->set('X-HTTP-Method-Override','GET');
-        self::assertSame('GET',$request->getMethod());
+        // The locked Symfony 8.1 Request refuses GET overrides. Preserve that
+        // protection and verify the attempted override never reaches a read.
+        self::assertSame('POST',$request->getMethod());
         self::assertSame('POST',$request->getRealMethod());
         $this->assertHttpFailure(405,fn ()=>(new MinimalLeadReadController())($request,self::REF));
         self::assertSame(0,$resolved);
