@@ -98,8 +98,19 @@ final class Controller
         $codes=$this->enrollment()->recover($r->string('login')->toString(),$r->string('code')->toString(),$r->string('password')->toString());
         return $this->page($r,'recovered',['recovery_codes'=>$codes]);
     }
-    public function dashboard(Request $r) {
-        $workspace=app(Workspace::class);$data=$workspace->overview();
+    public function dashboard(Request $r)
+    {
+        $section = $r->query('section');
+        // Preserve the existing overview fallback for unrecognized sections.
+        // Only this exact scalar selects the optional, closed monitor query.
+        $monitor = $section === 'n8n';
+        $selectedEvent = null;
+        if ($monitor) {
+            abort_unless(ExecutionMonitor::enabled(),404);
+            try { $selectedEvent = ExecutionMonitor::selectedEvent($r->query()); }
+            catch (\InvalidArgumentException) { abort(422); }
+        }
+        $workspace=app(Workspace::class);$data=$workspace->overview($monitor,$selectedEvent);
         if (Environment::ownerDraftsEnabled() && $data['account']->team_role==='owner') {
             $data['ownerDraftReferences']=$workspace->ownerDraftReferences();
         }

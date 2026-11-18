@@ -18,7 +18,7 @@ import time
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/ops"))
 from private_crm_backup_contract import (  # noqa: E402
-    BASE_TENANT_TABLES, DATABASE, S2S_TABLES, detect_profile, isolated_restore_cluster,
+    BASE_TENANT_TABLES, DATABASE, EXECUTION_TABLES, S2S_TABLES, detect_profile, isolated_restore_cluster,
     require, scoped_counts, table_counts, verify_restored_security,
 )
 from private_crm_backup_snapshot import exported_snapshot  # noqa: E402
@@ -107,6 +107,21 @@ def main() -> None:
                              (ROOT / "infra/homologation/schema.sql").read_text())
     live_profile, _ = detect_profile(sql, base_tables)
     require(live_profile["receipt_reconciliation"], "Complete current S2S fixture required.")
+    service_tables = S2S_TABLES + (EXECUTION_TABLES if live_profile["execution_feedback"] else ())
+    def monitor_view(query, *, manage_transaction):
+        # The SQL monitor has no transport dependency and is legal inside the
+        # snapshot importer's existing READ ONLY transaction.
+        statement = "SET LOCAL ROLE crm_homologation_app; "
+        statement += f"SELECT set_config('app.tenant_id','{A}',true); "
+        statement += "SELECT 'MONITOR|' || crm_auto_service.read_execution_monitor(NULL)::text;"
+        if manage_transaction:
+            statement = "BEGIN READ ONLY; " + statement + " ROLLBACK;"
+        output = query(statement)
+        records = [json.loads(line[8:]) for line in output.splitlines() if line.startswith("MONITOR|")]
+        require(len(records) == 1, "Snapshot local monitor view missing.")
+        result = records[0]
+        result.pop("generated_at")
+        return result
     before = table_counts(sql, live_profile)
     old_title = sql(f"SELECT title FROM public.crm_private_leads WHERE id='{LEAD_A}'")
     require(old_title == "LEAD_TESTE_BACKUP_A", "Expected controlled backup fixture missing.")
@@ -134,9 +149,16 @@ def main() -> None:
             require(snapshot.query(f"SELECT title FROM public.crm_private_leads WHERE id='{LEAD_A}'") == old_title,
                     "Snapshot observed a later committed update.")
             scopes = {}
-            for role, tables in (("crm_homologation_app", BASE_TENANT_TABLES), ("crm_auto_reader_owner", S2S_TABLES)):
+            for role, tables in (("crm_homologation_app", BASE_TENANT_TABLES), ("crm_auto_reader_owner", service_tables)):
                 scopes[role] = {tenant: scoped_counts(snapshot.query, tenant, role=role, tables=tables,
                                                      manage_transaction=False) for tenant in ("", A, B)}
+            frozen_monitor = None
+            if profile["execution_monitor"]:
+                frozen_monitor = monitor_view(snapshot.query, manage_transaction=False)
+                require(any(item["lead_title"] == old_title for item in frozen_monitor["events"])
+                        and all(item["lead_title"] != "LEAD_TESTE_BACKUP_WRITTEN_AFTER_EXPORT"
+                                for item in frozen_monitor["events"]),
+                        "Monitor mixed a later source title into the exported snapshot.")
             dump = snapshot.dump()
             require(dump.startswith(b"PGDMP"), "Snapshot did not produce a PostgreSQL archive.")
         ended(pid)
@@ -161,10 +183,13 @@ def main() -> None:
             require(query(f"SELECT count(*) FROM public.crm_private_leads WHERE id='{CONCURRENT_LEAD}'") == "0"
                     and query(f"SELECT title FROM public.crm_private_leads WHERE id='{LEAD_A}'") == old_title,
                     "pg_dump imported a different snapshot from the manifest.")
-            for role, tables in (("crm_homologation_app", BASE_TENANT_TABLES), ("crm_auto_reader_owner", S2S_TABLES)):
+            for role, tables in (("crm_homologation_app", BASE_TENANT_TABLES), ("crm_auto_reader_owner", service_tables)):
                 for tenant in ("", A, B):
                     require(scoped_counts(query, tenant, role=role, tables=tables) == scopes[role][tenant],
                             "Restored scopes differ from the exported source snapshot.")
+            if frozen_monitor is not None:
+                require(monitor_view(query, manage_transaction=True) == frozen_monitor,
+                        "Restored monitor differs from the common source snapshot.")
         require(int(sql("SELECT count(*) FROM public.crm_private_leads")) == before["crm_private_leads"] + 1,
                 "Backup snapshot or restore modified the live writer's data.")
         print("PASS concurrent committed insert/update excluded from both snapshot manifest and separate-cluster dump")

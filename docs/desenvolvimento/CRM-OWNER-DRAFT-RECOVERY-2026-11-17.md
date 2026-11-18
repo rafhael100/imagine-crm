@@ -165,7 +165,43 @@ O resultado registra separadamente os hashes **brutos** dos catálogos fonte e
 restaurado, `catalog_raw_equal`, a regra e o número de equivalências. Quando esse
 par de representações ocorre, os hashes brutos diferem; não se declara igualdade
 byte a byte das definições. Dados e demais metadados continuam exigindo igualdade
-exata. Nenhum helper legado, schema, grant ou runtime é alterado por essa regra.
+exata. A regra de equivalência não altera schema, grant ou runtime.
+
+## Vínculo entre segurança e catálogo na integração do monitor
+
+O helper compartilhado também passou a incluir constraints e triggers no manifesto
+de segurança. As definições de constraints usam `pg_get_constraintdef(...,false)`,
+a mesma representação canônica do catálogo owner. Essa opção de formatação não
+reescreve SQL nem amplia os pares de equivalência aceitos.
+
+Antes de aplicar a regra dos quinze pares, o ensaio exige, em cada banco, que a
+lista de constraints do manifesto de segurança seja exatamente a projeção da
+lista do respectivo catálogo sobre `table`, `name`, `type`, `validated` e
+`definition`. Entradas, ordem, duplicatas e todos esses campos participam do
+vínculo. Depois da comparação integral do catálogo, somente essa chave já
+verificada pode ser tratada como equivalente entre os manifestos. Todos os
+outros campos, chaves e listas de segurança continuam sob igualdade exata,
+incluindo triggers, owners, ACLs e metadados das funções.
+
+Três negativas adicionais usam cópias dos manifestos reais, sem alterar o banco:
+uma definição modificada somente no manifesto de segurança; a mesma definição
+modificada no manifesto e no catálogo, fora da regra fechada; e um metadado de
+segurança distinto. A segunda fixture precisa primeiro satisfazer o vínculo
+exato, para que sua recusa comprove a aplicação da regra de catálogo. Os hashes
+das quatro estruturas originais permanecem intactos.
+
+`security_manifest_sha256` continua sendo o hash **bruto da fonte**.
+`restored_security_manifest_sha256` registra o hash bruto restaurado, e
+`security_raw_equal` informa a igualdade bruta observada. Esses hashes podem
+diferir pelos mesmos pares permitidos de constraints; o resultado não declara
+igualdade bruta quando houve apenas equivalência verificada. Também registra
+`security_catalog_bindings_exact` e `security_mutation_denials`.
+
+Esta adaptação preserva o perfil owner de 27 tabelas e a recusa do addon pelo
+backup legado. O perfil monitor isolado tem 33 tabelas e uma sequence. A soma
+dos dois addons no mesmo banco teria 35 tabelas e uma sequence, e continua fora
+deste contrato: exige uma prova sintética própria de convivência e recuperação,
+sem reutilizar os resultados dos dois perfis isolados como prova da combinação.
 
 ## Resultado e limites
 

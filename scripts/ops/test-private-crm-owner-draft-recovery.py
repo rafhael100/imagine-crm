@@ -296,6 +296,59 @@ def verify_catalog(expected, actual, tables):
     return comparison
 
 
+def security_constraints_match(security, catalog):
+    """Bind every security constraint field to its canonical catalog record."""
+    fields = ("table", "name", "type", "validated", "definition")
+    constraints = catalog.get("constraints")
+    if not isinstance(constraints, list) or not all(
+            isinstance(row, dict) and set(fields) <= set(row) for row in constraints):
+        return False
+    return security.get("constraints") == [
+        {field: row[field] for field in fields} for row in constraints]
+
+
+def security_catalog_comparison(expected, actual, source_catalog, restored_catalog):
+    """Check both bindings and the closed catalog rule before any equivalence."""
+    if not security_constraints_match(expected, source_catalog) \
+            or not security_constraints_match(actual, restored_catalog):
+        return None
+    comparison = catalog_comparison(source_catalog, restored_catalog)
+    if comparison is None:
+        return None
+    # This key is equivalent only after every field has been bound and the
+    # unchanged catalog verifier accepted it. All other keys, values and list
+    # order remain part of the original complete security-manifest equality.
+    if {**actual, "constraints": expected["constraints"]} != expected:
+        return None
+    return comparison
+
+
+def security_mutation_probes(expected, actual, source_catalog, restored_catalog):
+    """Exercise the new boundary using copies of the four actual PG manifests."""
+    originals = expected, actual, source_catalog, restored_catalog
+    before_hashes = tuple(manifest_digest(value) for value in originals)
+    target = next(i for i, row in enumerate(restored_catalog["constraints"]) if row["type"] == "c")
+
+    changed_security = copy.deepcopy(actual)
+    changed_security["constraints"][target]["definition"] = "CHECK (true)"
+    check(security_catalog_comparison(expected, changed_security, source_catalog, restored_catalog) is None,
+          "SECURITY_MUTATION_UNBOUND_DEFINITION")
+
+    changed_catalog = copy.deepcopy(restored_catalog)
+    changed_catalog["constraints"][target]["definition"] = "CHECK (true)"
+    check(security_constraints_match(changed_security, changed_catalog), "SECURITY_MUTATION_BOUND_FIXTURE")
+    check(security_catalog_comparison(expected, changed_security, source_catalog, changed_catalog) is None,
+          "SECURITY_MUTATION_BOUND_CONSTRAINT")
+
+    changed_security = copy.deepcopy(actual)
+    changed_security["default_acls"] += 1
+    check(security_catalog_comparison(expected, changed_security, source_catalog, restored_catalog) is None,
+          "SECURITY_MUTATION_OTHER_METADATA")
+    check(tuple(manifest_digest(value) for value in originals) == before_hashes,
+          "SECURITY_MUTATIONS_PRESERVED_REAL_MANIFESTS")
+    return 3
+
+
 def catalog_mutation_probes(expected, actual, comparison):
     """Mutate the two catalogs actually captured from PG, never a parser mirror."""
     before_hashes = manifest_digest(expected), manifest_digest(actual)
@@ -527,10 +580,15 @@ def main():
             return restored_sql("SET timezone='UTC'; SET search_path=pg_catalog,public;" + statement)
 
         restored_tables, restored_security = owner_profile(restored_query, original_tables)
-        check(restored_tables == tables and restored_security == security, "OWNERS_ACLS_RLS_COLUMN_GRANTS_EXACT")
         restored_catalog = catalog_manifest(restored_query)
+        check(security_constraints_match(security, catalog)
+              and security_constraints_match(restored_security, restored_catalog), "SECURITY_CATALOG_BINDINGS_EXACT")
         catalog_comparison_result = verify_catalog(catalog, restored_catalog, tables)
+        check(restored_tables == tables
+              and security_catalog_comparison(security, restored_security, catalog, restored_catalog)
+                  == catalog_comparison_result, "OWNERS_ACLS_RLS_COLUMN_GRANTS_EXACT")
         catalog_negatives = catalog_mutation_probes(catalog, restored_catalog, catalog_comparison_result)
+        security_negatives = security_mutation_probes(security, restored_security, catalog, restored_catalog)
         check(row_hashes(restored_query, tables) == hashes, "ALL_27_TABLES_EXACT")
         restored_pending = json.loads(restored_query("SELECT to_jsonb(i)::text FROM public.crm_private_owner_draft_intents i WHERE draft_ref=" + literal(reference)))
         restored_confirmed = json.loads(restored_query("SELECT to_jsonb(i)::text FROM public.crm_private_owner_draft_intents i WHERE draft_ref=" + literal(confirmed["draft_ref"])))
@@ -558,6 +616,9 @@ def main():
         "checks": CHECKS + owner.CHECKS + helper.CHECKS, "owner_http_requests": owner.REQUESTS,
         "tables": len(tables), "restored_roles": len(BASE_ROLES), "sql_denials": negatives,
         "data_manifest_sha256": manifest_digest(hashes), "security_manifest_sha256": manifest_digest(security),
+        "restored_security_manifest_sha256": manifest_digest(restored_security),
+        "security_raw_equal": security == restored_security, "security_catalog_bindings_exact": True,
+        "security_mutation_denials": security_negatives,
         "source_catalog_sha256": manifest_digest(catalog), "restored_catalog_sha256": manifest_digest(restored_catalog),
         "catalog_raw_equal": catalog == restored_catalog, "catalog_roundtrip_rule": catalog_comparison_result["rule"],
         "catalog_roundtrip_equivalences": catalog_comparison_result["equivalences"],

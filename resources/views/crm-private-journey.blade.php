@@ -8,8 +8,14 @@
     $money=fn($cents)=>'R$ '.number_format($cents/100,2,',','.');
     $stages=['new'=>$t('Novo'),'qualified'=>$t('Qualificado'),'proposal'=>$t('Proposta'),'won'=>$t('Ganho'),'lost'=>$t('Perdido')];
     $sections=['overview'=>$t('Visão geral'),'leads'=>$t('Leads'),'funnels'=>$t('Funis'),'kanban'=>$t('Kanban'),'tasks'=>$t('Tarefas'),
-        'reports'=>$t('Relatórios'),'team'=>$t('Equipe'),'automation'=>$t('Automações'),'settings'=>$t('Preferências'),'billing'=>$t('Plano e pedidos')];
+        'reports'=>$t('Relatórios'),'team'=>$t('Equipe'),'automation'=>$t('Automações'),
+        ...(\App\Homologation\ExecutionMonitor::enabled()?['n8n'=>$say('Execuções n8n','n8n executions','Ejecuciones n8n')]:[]),
+        'settings'=>$t('Preferências'),'billing'=>$t('Plano e pedidos')];
     $section=request('section','overview'); if(!is_string($section) || !array_key_exists($section,$sections)) $section='overview';
+    $sectionQuery=$screen==='workspace'?['section'=>$section]:[];
+    if($screen==='workspace' && $section==='n8n' && ($data['executionMonitor']['selected']??null)!==null) {
+        $sectionQuery['event']=$data['executionMonitor']['selected']['event_id'];
+    }
     $requestedFunnel=$screen==='workspace' && $section==='kanban' ? request('funnel') : null;
     // Only UUIDs from the already authorized snapshot may enter language links.
     $linkedFunnel=is_string($requestedFunnel) && in_array($requestedFunnel,array_column($data['funnels']??[],'id'),true) ? $requestedFunnel : null;
@@ -20,7 +26,7 @@
         $homeScenario=$data['opportunity_scenario']??\App\Homologation\OpportunityScenario::fromQuery([]);
         $scenarioLanguageQuery=['visits'=>$homeScenario['visits'],'lead_rate'=>$homeScenario['lead_rate'],'client_rate'=>$homeScenario['client_rate']];
     }
-    $languageLink = fn($target) => '?'.http_build_query(($screen==='workspace' ? ['section'=>$section,'lang'=>$target] : ['lang'=>$target])
+    $languageLink = fn($target) => '?'.http_build_query($sectionQuery+['lang'=>$target]
         + ($linkedFunnel===null ? [] : ['funnel'=>$linkedFunnel]) + $scenarioLanguageQuery);
     $minimalLeadReadEnabled=\App\Homologation\Environment::minimalLeadReadEnabled();
     $ownerDraftsEnabled=\App\Homologation\Environment::ownerDraftsEnabled();
@@ -35,7 +41,11 @@
 .scrollhint{display:none;font-size:13px;color:var(--muted);margin:0 0 12px}.kanban:focus-visible,.tablewrap:focus-visible{outline:3px solid var(--orange);outline-offset:3px}@media(max-width:760px){.scrollhint{display:block}}
 .minimal-lead-summary{max-width:880px;margin:0 auto}.minimal-lead-fields{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:28px;margin:0}.minimal-lead-fields dt{font-size:13px;color:var(--muted)}.minimal-lead-fields dd{margin:10px 0 0}.minimal-lead-fields code{font-size:14px;overflow-wrap:anywhere}@media(max-width:760px){.minimal-lead-fields{grid-template-columns:minmax(0,1fr);gap:24px}}
 .owner-draft{max-width:960px;margin:auto;min-width:0}.owner-draft-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:0}.owner-draft-fields div{min-width:0}.owner-draft-fields dt{font-size:13px;color:var(--muted)}.owner-draft-fields dd{margin:8px 0 0;overflow-wrap:anywhere}.owner-draft .btn,.owner-draft button,.owner-draft-action{min-height:44px}.owner-draft .actions>*{max-width:100%}@media(max-width:760px){.owner-draft-fields{grid-template-columns:minmax(0,1fr)}.owner-draft .actions{align-items:stretch}.owner-draft .actions>a,.owner-draft .actions>form,.owner-draft .actions button{width:100%}}
-</style></head><body>
+</style>
+@if($screen==='workspace' && $section==='n8n')
+@include('partials.crm-execution-monitor-styles')
+@endif
+</head><body>
 <div class="environment">{{ $say('HOMOLOGAÇÃO PRIVADA · DADOS FICTÍCIOS · NENHUMA COBRANÇA REAL','PRIVATE TEST ENVIRONMENT · FICTIONAL DATA · NO REAL CHARGES','ENTORNO DE PRUEBAS PRIVADO · DATOS FICTICIOS · SIN COBROS REALES') }}</div><div class="wrap">
 <header class="top"><a href="/" aria-label="Imagine CRM"><img class="brand" src="/assets/logo-imagine.png" alt="Imagine"></a><div class="toplinks"><a href="https://comercial-dev.imaginecomunica.com.br/" class="quiet">← {{ $t('Voltar ao site') }}</a>
 @if(in_array($screen,['registered','invitation','recovered'],true))
@@ -338,6 +348,8 @@
 <div class="panel"><h3>{{ $say('Execuções e limites','Runs and limits','Ejecuciones y límites') }}</h3><p>{{ sprintf($say('Leads: %d/20 · Usuários: %d/2 · Automações: %d/2.','Leads: %d/20 · Users: %d/2 · Automations: %d/2.','Leads: %d/20 · Usuarios: %d/2 · Automatizaciones: %d/2.'),$total,count($data['team']),count($data['rules'])) }}</p>
 <p class="quiet">{{ $say('Consulte as tarefas geradas no CRM e os eventos de auditoria em Relatórios. Esta tela usa somente o banco fictício de homologação.','View generated tasks in the CRM and audit events in Reports. This screen uses only the private test database.','Consulta las tareas generadas en el CRM y los eventos de auditoría en Informes. Esta pantalla usa solo la base de datos ficticia de pruebas.') }}</p><a class="btn secondary" href="/painel?section=tasks">{{ $say('Ver tarefas','View tasks','Ver tareas') }}</a> <a class="btn secondary" href="/painel?section=reports">{{ $say('Ver auditoria','View audit log','Ver auditoría') }}</a></div>
 </section>
+@elseif($section==='n8n')
+@include('partials.crm-execution-monitor')
 @elseif($section==='billing')
 <div class="notice">{{ $t('Contratação e pagamento simulados. Nenhuma cobrança, assinatura financeira ou direito de cliente real é criado. Aprovar uma simulação não reinicia o trial.') }}</div><div class="panel"><h2>{{ $t('Plano e pedidos') }}</h2>
 @if($data['account']->team_role==='owner')<form method="post" action="/pedidos">

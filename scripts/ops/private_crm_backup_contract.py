@@ -27,6 +27,16 @@ S2S_FUNCTIONS = {
     "crm_auto_service.ack_outbound(uuid,uuid,text)",
 }
 RECEIPT_FUNCTION = "crm_auto_service.receipt_candidate(uuid,uuid)"
+EXECUTION_ROLES = ("crm_auto_execution_reconciler",)
+EXECUTION_TABLES = tuple("crm_auto_service." + name for name in
+                         ("execution_read_grants", "execution_observations", "execution_projections"))
+EXECUTION_FUNCTIONS = {
+    "crm_auto_service.execution_candidate(uuid,uuid)",
+    "crm_auto_service.project_execution(uuid,uuid,jsonb,text)",
+    "crm_auto_service.read_execution_projection(uuid,uuid)",
+    "crm_auto_service.reject_execution_observation_mutation()",
+}
+MONITOR_FUNCTION = "crm_auto_service.read_execution_monitor(uuid)"
 BASE_TENANT_TABLES = tuple("public." + name for name in (
     "crm_memberships", "crm_private_trials", "crm_private_leads", "crm_private_tasks",
     "crm_private_automation_runs", "crm_private_events", "crm_private_orders",
@@ -52,6 +62,8 @@ def _acl(expression: str) -> str:
 
 def security_manifest(query) -> dict:
     """Read owners, ACLs and RLS without reading credentials or role passwords."""
+    # Canonical definitions also bind this manifest to the strict owner catalog.
+    # Consumers verify round-trip equivalence; this query never rewrites SQL.
     schema_acl = _acl("coalesce(n.nspacl,acldefault('n',n.nspowner))")
     table_acl = _acl("coalesce(c.relacl,acldefault(CASE WHEN c.relkind='S' THEN 's'::\"char\" ELSE 'r'::\"char\" END,c.relowner))")
     column_acl = _acl("a.attacl")
@@ -83,10 +95,26 @@ def security_manifest(query) -> dict:
           WHERE n.nspname !~ '^pg_' AND n.nspname<>'information_schema'),'[]'::jsonb),
         'functions',COALESCE((SELECT jsonb_agg(jsonb_build_object(
           'signature',p.oid::regprocedure::text,'owner',pg_get_userbyid(p.proowner),
-          'security_definer',p.prosecdef,'config',p.proconfig,'acl',{function_acl},
+          'security_definer',p.prosecdef,'volatility',p.provolatile,'strict',p.proisstrict,
+          'arguments',pg_get_function_arguments(p.oid),'result',pg_get_function_result(p.oid),
+          'config',p.proconfig,'acl',{function_acl},
           'definition',pg_get_functiondef(p.oid)) ORDER BY p.oid::regprocedure::text)
           FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
           WHERE n.nspname !~ '^pg_' AND n.nspname<>'information_schema'),'[]'::jsonb),
+        'constraints',COALESCE((SELECT jsonb_agg(jsonb_build_object(
+          'table',n.nspname||'.'||c.relname,'name',k.conname,'type',k.contype,
+          'validated',k.convalidated,'definition',pg_get_constraintdef(k.oid,false))
+          ORDER BY n.nspname,c.relname,k.conname)
+          FROM pg_constraint k JOIN pg_class c ON c.oid=k.conrelid
+          JOIN pg_namespace n ON n.oid=c.relnamespace
+          WHERE n.nspname !~ '^pg_' AND n.nspname<>'information_schema'),'[]'::jsonb),
+        'triggers',COALESCE((SELECT jsonb_agg(jsonb_build_object(
+          'table',n.nspname||'.'||c.relname,'name',t.tgname,'type',t.tgtype,
+          'function',t.tgfoid::regprocedure::text,'enabled',t.tgenabled,
+          'definition',pg_get_triggerdef(t.oid,true)) ORDER BY n.nspname,c.relname,t.tgname)
+          FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid
+          JOIN pg_namespace n ON n.oid=c.relnamespace
+          WHERE NOT t.tgisinternal AND n.nspname !~ '^pg_' AND n.nspname<>'information_schema'),'[]'::jsonb),
         'default_acls',(SELECT count(*) FROM pg_default_acl)
       );
     """))
@@ -103,31 +131,74 @@ def detect_profile(query, base_tables: list[str]) -> tuple[dict, dict]:
     require(schemas in ({"public"}, {"public", "crm_auto_service"}),
             "Unknown database schema in private backup.")
     s2s = "crm_auto_service" in schemas
-    tables = tuple("public." + table for table in base_tables) + (S2S_TABLES if s2s else ())
+    functions = {item["signature"] for item in manifest["functions"]}
+    relations = {item["name"] for item in manifest["relations"]}
+    execution = bool(functions & EXECUTION_FUNCTIONS or relations & set(EXECUTION_TABLES))
+    # Its schema capability is also a marker: a removed reader must not silently
+    # downgrade an otherwise still-installed monitor to the older S2S profile.
+    monitor = MONITOR_FUNCTION in functions or any(
+        schema["name"] == "crm_auto_service"
+        and any(grant[1] == "crm_homologation_app" for grant in schema["acl"])
+        for schema in manifest["schemas"])
+    require(not monitor or (execution and MONITOR_FUNCTION in functions),
+            "Incomplete execution monitor profile.")
+    service_tables = (S2S_TABLES if s2s else ()) + (EXECUTION_TABLES if execution else ())
+    tables = tuple("public." + table for table in base_tables) + service_tables
     expected_relations = {(table, "r") for table in tables}
     if s2s:
         expected_relations.add(("crm_auto_service.audit_id_seq", "S"))
     require({(item["name"], item["kind"]) for item in manifest["relations"]} == expected_relations,
             "Incomplete or unknown private backup relation profile.")
-    functions = {item["signature"] for item in manifest["functions"]}
-    require((not s2s and not functions) or (s2s and functions in
-            (S2S_FUNCTIONS, S2S_FUNCTIONS | {RECEIPT_FUNCTION})),
+    accepted_functions = ((S2S_FUNCTIONS | {RECEIPT_FUNCTION} | EXECUTION_FUNCTIONS | {MONITOR_FUNCTION},)
+                          if monitor and execution else
+                          ((S2S_FUNCTIONS | {RECEIPT_FUNCTION} | EXECUTION_FUNCTIONS,)
+                           if execution else (S2S_FUNCTIONS, S2S_FUNCTIONS | {RECEIPT_FUNCTION})))
+    require((not s2s and not execution and not functions) or (s2s and functions in accepted_functions),
             "Incomplete or unknown private S2S function profile.")
     require(manifest["default_acls"] == 0, "Unreviewed default grants in private backup.")
-    roles = BASE_ROLES + (S2S_ROLES if s2s else ())
+    if execution:
+        guards = {(item["name"], item["type"], item["enabled"], item["function"])
+                  for item in manifest["triggers"]
+                  if item["table"] == "crm_auto_service.execution_observations"}
+        guard_function = "crm_auto_service.reject_execution_observation_mutation()"
+        require(guards == {("execution_history_immutable", 27, "O", guard_function),
+                           ("execution_history_no_truncate", 34, "O", guard_function)},
+                "Execution history immutability trigger profile differs.")
+    roles = BASE_ROLES + (S2S_ROLES if s2s else ()) + (EXECUTION_ROLES if execution else ())
     for schema in manifest["schemas"]:
         expected_owner = "crm_auto_reader_owner" if schema["name"] == "crm_auto_service" else "pg_database_owner"
         require(schema["owner"] == expected_owner, "Private schema ownership drift.")
     for relation in manifest["relations"]:
         owner = "crm_auto_reader_owner" if relation["name"].startswith("crm_auto_service.") else "crm_homologation_owner"
         require(relation["owner"] == owner, "Private relation ownership drift.")
-    rls_tables = BASE_TENANT_TABLES + (S2S_TABLES if s2s else ())
+    rls_tables = BASE_TENANT_TABLES + service_tables
     require(all(item["rls"] and item["force_rls"] for item in manifest["relations"]
                 if item["name"] in rls_tables), "Private FORCE RLS profile missing.")
     for function in manifest["functions"]:
         require(function["owner"] == "crm_auto_reader_owner" and function["security_definer"] is True
                 and function["config"] in (["search_path=pg_catalog, public"], ["search_path=pg_catalog,public"]),
                 "Restricted S2S function ownership or configuration drift.")
+    if monitor:
+        reader = next(item for item in manifest["functions"] if item["signature"] == MONITOR_FUNCTION)
+        require(reader["volatility"] == "s" and reader["strict"] is False and reader["result"] == "jsonb"
+                and reader["arguments"] == "selected_event uuid DEFAULT NULL::uuid"
+                and {tuple(item) for item in reader["acl"]} == {
+            ("crm_auto_reader_owner", "crm_auto_reader_owner", "EXECUTE", False),
+            ("crm_auto_reader_owner", "crm_homologation_app", "EXECUTE", False),
+        }, "Execution monitor must remain STABLE and grant only its restricted owner and application EXECUTE.")
+        service_schema = next(item for item in manifest["schemas"] if item["name"] == "crm_auto_service")
+        require([item for item in service_schema["acl"] if item[1] == "crm_homologation_app"] == [
+            ["crm_auto_reader_owner", "crm_homologation_app", "USAGE", False]],
+            "Execution monitor application schema access differs.")
+        for function in manifest["functions"]:
+            if function["signature"] != MONITOR_FUNCTION:
+                require(all(item[1] not in ("PUBLIC", "crm_homologation_app") for item in function["acl"]),
+                        "Execution monitor application acquired another service function.")
+        for kind, table_key in (("relations", "name"), ("columns", "table")):
+            for item in manifest[kind]:
+                if item[table_key].startswith("crm_auto_service."):
+                    require(all(grant[1] not in ("PUBLIC", "crm_homologation_app") for grant in item["acl"]),
+                            "Execution monitor application acquired direct service-table access.")
     for kind in ("schemas", "relations", "columns", "functions"):
         for item in manifest[kind]:
             for grantor, grantee, _, _ in item["acl"]:
@@ -146,9 +217,12 @@ def detect_profile(query, base_tables: list[str]) -> tuple[dict, dict]:
     require(query("SELECT count(*) FROM pg_auth_members WHERE member IN "
                   "(SELECT oid FROM pg_roles WHERE rolname IN (" + role_names + "))") == "0",
             "Unreviewed role inheritance in private backup.")
-    return {"name": "synthetic-private-s2s-v1" if s2s else "synthetic-private-base-v1",
+    return {"name": "synthetic-private-s2s-execution-monitor-v1" if monitor else
+            ("synthetic-private-s2s-execution-v1" if execution else
+             ("synthetic-private-s2s-v1" if s2s else "synthetic-private-base-v1")),
             "tables": tables, "roles": roles, "rls_tables": rls_tables,
-            "s2s": s2s, "receipt_reconciliation": RECEIPT_FUNCTION in functions}, manifest
+            "s2s": s2s, "receipt_reconciliation": RECEIPT_FUNCTION in functions,
+            "execution_feedback": execution, "execution_monitor": monitor}, manifest
 
 
 def table_counts(query, profile: dict) -> dict:
@@ -161,7 +235,7 @@ def scoped_counts(query, tenant: str, *, role: str, tables: tuple[str, ...], man
     require(not tenant or re.fullmatch(r"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}", tenant),
             "Invalid private tenant UUID.")
     require(role in ("crm_homologation_app", "crm_auto_reader_owner")
-            and set(tables) <= set(BASE_TENANT_TABLES + S2S_TABLES), "Unsupported RLS probe.")
+            and set(tables) <= set(BASE_TENANT_TABLES + S2S_TABLES + EXECUTION_TABLES), "Unsupported RLS probe.")
     body = " || '|' || ".join("(SELECT count(*) FROM " + table + ")" for table in tables)
     statement = "SET ROLE " + role + "; SELECT set_config('app.tenant_id','" + tenant
     statement += "',true); SELECT 'SCOPED|' || " + body + ";"
@@ -207,7 +281,8 @@ def isolated_restore_cluster(profile: dict, run):
                     pass
             time.sleep(0.5)
         require(ready, "Final restore PostgreSQL server unavailable.")
-        require(tuple(profile["roles"]) in (BASE_ROLES, BASE_ROLES + S2S_ROLES), "Unsupported restore roles.")
+        require(tuple(profile["roles"]) in (BASE_ROLES, BASE_ROLES + S2S_ROLES,
+                BASE_ROLES + S2S_ROLES + EXECUTION_ROLES), "Unsupported restore roles.")
         query(";".join("CREATE ROLE " + role + " NOLOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE NOINHERIT"
                        for role in profile["roles"]))
         yield query, command
@@ -218,8 +293,31 @@ def isolated_restore_cluster(profile: dict, run):
 def verify_restored_security(query, profile: dict, expected: dict, base_tables: list[str]) -> None:
     restored_profile, actual = detect_profile(query, base_tables)
     require(restored_profile == profile, "Restored private backup profile differs.")
-    changed = [key for key in expected if actual.get(key) != expected[key]]
-    require(not changed, "Restored security manifest differs in: " + ", ".join(changed))
+    def comparable(manifest):
+        # pg_dump/restore can distribute varchar[] -> text[] coercions into
+        # each literal of legacy CHECK arrays. pg_get_constraintdef decompiles
+        # those equivalent trees differently. This extension does not attempt
+        # a general SQL-equivalence rewrite. Keep EVERY constraint's identity,
+        # kind and validation state; compare exact definitions for PK/FK/UNIQUE
+        # and for every CHECK in the three newly introduced execution tables.
+        constraints = [({key: value for key, value in item.items() if key != "definition"}
+                        if item["type"] == "c" and item["table"] not in EXECUTION_TABLES else item)
+                       for item in manifest["constraints"]]
+        return {**manifest, "constraints": constraints}
+
+    expected_comparable, actual_comparable = comparable(expected), comparable(actual)
+    changed = [key for key in expected_comparable
+               if actual_comparable.get(key) != expected_comparable[key]]
+    diagnostic = ""
+    if "constraints" in changed:
+        # Schema-only diagnostics: never print rows, wire receipts, queries,
+        # role credentials or a backup payload when identifying a restore drift.
+        before = {(item["table"], item["name"]): item for item in expected_comparable["constraints"]}
+        after = {(item["table"], item["name"]): item for item in actual_comparable["constraints"]}
+        differences = [{"source": before.get(key), "restored": after.get(key)}
+                       for key in sorted(set(before) | set(after)) if before.get(key) != after.get(key)]
+        diagnostic = "; constraint_schema_diff=" + json.dumps(differences[:3], sort_keys=True)
+    require(not changed, "Restored security manifest differs in: " + ", ".join(changed) + diagnostic)
     role_names = ",".join("'" + role + "'" for role in profile["roles"])
     require(query("SELECT count(*) FROM pg_roles WHERE rolname IN (" + role_names + ") "
                   "AND (rolcanlogin OR rolsuper OR rolbypassrls OR rolcreatedb OR rolcreaterole OR rolinherit)") == "0",

@@ -1,5 +1,19 @@
 # CRM Imagine — STATUS ATUAL
 
+## Continuidade — monitor n8n reunido às jornadas e aos rascunhos owner (18/11/2026)
+
+A [PR #660](https://github.com/rafhael100/imagine-crm/pull/660), base desta etapa em `79065460d5cdf9f13a8bc1cb1356849cb5e9d02b`, concluiu 24/26 workflows: somente F251/F252 recusaram o escopo. A [jornada](https://github.com/rafhael100/imagine-crm/actions/runs/44238235103) confirmou 6.669 HTTP, 643 Chromium, 177 resiliência e 49 acesso; [OP01](https://github.com/rafhael100/imagine-crm/actions/runs/44238235207), 668 HTTP e 247 Chromium; [owner](https://github.com/rafhael100/imagine-crm/actions/runs/44238235693), 407 HTTP/52 requisições, recuperação de 27 tabelas com 836 verificações, 18 mutações recusadas e 607 Chromium. Esses resultados pertencem à base congelada, não antecipam a CI da nova combinação.
+
+A próxima fonte é a [#654](https://github.com/rafhael100/imagine-crm/pull/654), `e1b3b7f118eff0350a00789aecc7bb2bb2331464`, árvore `73231c5d749a4df3ef07f045db45936957a86aac`, incluindo os cinco commits exclusivos desde o ancestral #647. A [CI do monitor na fonte](https://github.com/rafhael100/imagine-crm/actions/runs/44224140953) passou 89 testes/139 assertions, 3.864 HTTP e 315 Chromium. Seus dados de apresentação são fixtures sintéticas: nenhuma nova execução n8n. A prova nativa do Agents é distinta e não se transfere automaticamente à navegação combinada.
+
+A candidata acrescenta Execuções n8n à área privada em PT/EN/ES, com lista limitada aos últimos 50 eventos e detalhe de até 20 observações. O leitor usa a sessão/MFA e o vínculo atual à própria empresa, mantém o administrador global excluído e não expõe credenciais S2S. Estados sem observação e de resultado incerto permanecem explícitos, sem repetição automática. A flag continua desligada por padrão. Foram conservados literalmente os 26 formulários e seus CSRF, os caminhos owner e as correções de navegação, acessibilidade e idioma da base; os links do monitor preservam apenas seção, evento válido e idioma.
+
+Os perfis de backup da fonte e seus testes foram integrados preservando a correção de ACL de sequência da #659. O ensaio owner27 agora vincula exatamente as constraints de cada manifesto de segurança ao catálogo correspondente antes da regra fechada dos quinze pares PostgreSQL já revisados. Todo o restante dos manifestos exige igualdade integral. Três novas negativas recusam definição sem vínculo, definição perigosa vinculada e outro metadado alterado; hashes brutos da fonte e restauração permanecem distintos quando aplicável.
+
+Esta etapa não declara a convivência owner+monitor nem uma recuperação de 35 tabelas comprovadas. A comparação genérica herdada da #654 ainda omite a definição dos CHECKs legados fora das tabelas de execução; a fronteira owner27 não usa essa omissão. O reforço dessa comparação e a prova focal do conjunto35 são os próximos trabalhos, em áreas isoladas, sem ampliar os detectores legados. A CI da SHA integrada será registrada na PR, inclusive qualquer falha, antes de se atribuir PASS ao conjunto.
+
+DRAFT / NO-MERGE / NO-DEPLOY. A integração conserva ambas as fontes como ancestrais, sem mover suas branches, DEV ou main. Os guards de admissão, pins, classificadores de escopo e requisitos de aceite humano permanecem válidos.
+
 ## Continuidade — recuperação inerte do addon owner integrada à candidata (18/11/2026)
 
 A revisão `2f9ae19a6479634749e46032fb964341abd3400a` da [PR #660](https://github.com/rafhael100/imagine-crm/pull/660) concluiu 24/26 workflows, somente F251/F252 recusando o escopo: [jornada principal](https://github.com/rafhael100/imagine-crm/actions/runs/44236624223) com 6.669 HTTP, 643 Chromium, 177 resiliência e 49 acesso; [OP01 corrigido](https://github.com/rafhael100/imagine-crm/actions/runs/44236624241) com 668 HTTP e 247 Chromium; owner com 407 HTTP/52 requisições e 607 Chromium. O [backup](https://github.com/rafhael100/imagine-crm/actions/runs/44236624248) confirmou a correção ACL da #659 nessa mesma SHA. O resultado e a falha inicial anterior permanecem registrados na PR.
@@ -129,6 +143,22 @@ A Direção aprovou o recorte funcional de um lead fictício consultado por usu�
 O consumidor original Agents [#471](https://github.com/rafhael100/imagine-ai-agents/pull/471), SHA `740abafc813dbde70f5a2ad6e138402ed7945276`, passou na [CI 44213754313](https://github.com/rafhael100/imagine-ai-agents/actions/runs/44213754313). O novo ensaio CRM fixa essa fonte e entrega a resposta HTTP real ao consumidor sem cookies, credenciais ou rede no contêiner leitor. A jornada privada anterior é revalidada separadamente na mesma candidata. Resultados efetivos são registrados na PR/HEAD; não se antecipa aprovação HTTP. [Contrato, autoridade e limites](docs/operations/CRM-OP01-PRIVATE-MINIMAL-READ.md).
 
 Os gates F251/F252 da base continuam preservados; esta candidata não libera merge, deploy, produção ou delegação S2S. A próxima etapa de leitura não depende de criação de tarefa ou execução n8n.
+
+## Continuidade — tela privada de acompanhamento n8n
+
+A [PR #650](https://github.com/rafhael100/imagine-crm/pull/650), HEAD `be9c1243a45ab867309a89f8c40d61dc44b7a7f4`, concluiu contratos e integração anterior em [44215797078](https://github.com/rafhael100/imagine-crm/actions/runs/44215797078) e backup em [44215797048](https://github.com/rafhael100/imagine-crm/actions/runs/44215797048). O [ensaio Agents #472](https://github.com/rafhael100/imagine-ai-agents/actions/runs/44215857012), HEAD `8e7f1f21a2927bde3e337edaace0e1e6dffdc29a`, comprovou retorno da execução nativa ao histórico do CRM e restore de 33 tabelas, com dados sintéticos.
+
+A continuação acrescenta a seção privada **Execuções n8n**, lista de eventos e histórico em PT/EN/ES. A leitura reaproveita sessão/MFA e membership da própria empresa, usa uma função SQL específica sem acesso do web às credenciais do reconciliador e não dispara comunicação externa ou efeitos de negócio. Sem retorno, intenção de início, resultado e confirmação permanecem distintos. [Contrato, testes e limites](docs/automation/CRM-N8N-EXECUTION-MONITOR.md).
+
+O perfil novo fica desligado por padrão e o backup reconhece sua função de leitura de forma explícita. As evidências de CI e navegador serão registradas na PR da HEAD candidata. A base de revisão é #650; os gates F251/F252 não são ampliados. DRAFT / NO-MERGE / NO-DEPLOY, sem aceite visual humano ou homologação operacional presumidos.
+
+## Continuidade — retorno do n8n ao acompanhamento do CRM
+
+A candidata de execução nativa do Agents [#469](https://github.com/rafhael100/imagine-ai-agents/pull/469) produziu resultado técnico `PREPARED` e confirmação durável na CI. Este recorte acrescenta consulta privada assinada, projeção e histórico separados do recibo de entrega. O CRM verifica a origem e a resposta, impede regressão e duplicação de observações e preserva o estado após falha ou recuperação.
+
+O [contrato de acompanhamento](docs/automation/CRM-N8N-EXECUTION-FEEDBACK.md) explica estados, grants próprios, persistência e backup. O perfil de backup fechado passa a reconhecer os objetos de execução, mantendo owners, ACLs e FORCE RLS. A instalação não cria grants ativos ou logins por padrão. Resultados efetivos ficam registrados na PR e na SHA da CI; esta nota não antecipa aprovação.
+
+Base de implementação: [#647](https://github.com/rafhael100/imagine-crm/pull/647), SHA `a2c7218f28aac58796387c939832ff1bfae3cba0`, com as correções #641–#646 já ancestrais. F0, PostgreSQL, jornada, P22 e backup dessa base passaram; F251/F252 continuam recusando o escopo acumulado, sem ampliação de allowlists. DRAFT / NO-MERGE / NO-DEPLOY, somente dados sintéticos.
 
 ## Continuidade — contraprovas Sites→CRM com captura real (17/11/2026)
 

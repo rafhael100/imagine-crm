@@ -14,7 +14,7 @@ import secrets
 import subprocess
 import sys
 from private_crm_backup_contract import (
-    BASE_TENANT_TABLES, DATABASE, S2S_TABLES, detect_profile, isolated_restore_cluster,
+    BASE_TENANT_TABLES, DATABASE, EXECUTION_TABLES, S2S_TABLES, detect_profile, isolated_restore_cluster,
     manifest_digest, scoped_counts, table_counts, verify_restored_security,
 )
 from private_crm_backup_snapshot import exported_snapshot
@@ -42,7 +42,8 @@ SOURCE=COMPOSE+['exec','-T','postgres']
 
 def scope_evidence(query, profile, tenants, *, manage_transaction=True):
     roles={'crm_homologation_app':BASE_TENANT_TABLES}
-    if profile['s2s']: roles['crm_auto_reader_owner']=S2S_TABLES
+    if profile['s2s']:
+        roles['crm_auto_reader_owner']=S2S_TABLES+(EXECUTION_TABLES if profile['execution_feedback'] else ())
     evidence={}
     for role,tables in roles.items():
         evidence[role]={tenant:scoped_counts(query,tenant,role=role,tables=tables,
@@ -91,6 +92,8 @@ def main():
         manifest={'manifest_version':2,'scope':'fictional-private-crm-only','project':PROJECT,'created_utc':stamp,
             'encrypted_archive':archive.name,'sha256':hashlib.sha256(encrypted).hexdigest(),
             'database_profile':profile['name'],'s2s_receipt_reconciliation':profile['receipt_reconciliation'],
+            's2s_execution_feedback':profile['execution_feedback'],
+            's2s_execution_monitor':profile['execution_monitor'],
             'consistent_source_snapshot':True,'snapshot_protocol':'postgresql-export-v1',
             'source_snapshot_utc':source_snapshot_utc,
             'table_counts':before,'force_rls_tables':[table.removeprefix('public.') for table in profile['rls_tables']],
