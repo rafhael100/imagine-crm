@@ -16,6 +16,7 @@ on:
       - 'scripts/ops/*private-crm*'
       - 'scripts/ops/private_crm_backup_*.py'
       - 'scripts/ops/private-backup-crypt.php'
+      - 'scripts/ci/s2s/test-agents-execution-receipt.php'
       - 'tests/Unit/ExecutionMonitorTest.php'
       - 'tests/Feature/ExecutionMonitorSurfaceTest.php'
       - '.github/workflows/ci-private-crm-execution-monitor.yml'
@@ -135,4 +136,6 @@ jobs:
           tools: composer:v2
           coverage: none
       - run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Exercise the execution receipt contract on this exact CRM revision
+        run: php scripts/ci/s2s/test-agents-execution-receipt.php
       - run: vendor/bin/phpunit tests/Unit/ExecutionMonitorTest.php tests/Feature/ExecutionMonitorSurfaceTest.php

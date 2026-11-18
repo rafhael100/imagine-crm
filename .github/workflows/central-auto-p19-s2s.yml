@@ -28,7 +28,6 @@ jobs:
           php scripts/ci/s2s/test-strict-json.php
           php scripts/ci/s2s/test-agents-ack.php
           php scripts/ci/s2s/test-agents-receipt.php
-          php scripts/ci/s2s/test-agents-execution-receipt.php
       - name: Verify the pinned laboratory overlay and execution boundary
         run: python3 -m unittest discover -s scripts/ci/s2s -p 'test_*.py' -v
   real-products-mtls:

@@ -13,6 +13,7 @@ import re
 import secrets
 import subprocess
 import sys
+from private_crm_backup_catalog import catalog_manifest
 from private_crm_backup_contract import (
     BASE_TENANT_TABLES, DATABASE, EXECUTION_TABLES, S2S_TABLES, detect_profile, isolated_restore_cluster,
     manifest_digest, scoped_counts, table_counts, verify_restored_security,
@@ -59,6 +60,7 @@ def main():
     os.umask(0o077);directory.mkdir(parents=True,exist_ok=True)
     with exported_snapshot(SOURCE) as capture:
         profile,security=detect_profile(capture.query,TABLES)
+        catalog=catalog_manifest(capture.query,schemas=("public","crm_auto_service") if profile['s2s'] else ("public",))
         before=table_counts(capture.query,profile)
         tenants=capture.query("SELECT DISTINCT organization_id::text FROM crm_private_accounts WHERE role='client' ORDER BY organization_id::text LIMIT 2").splitlines()
         tenants=[tenant for tenant in tenants if tenant]
@@ -83,7 +85,7 @@ def main():
         # Preserve the restricted owners, especially those of SECURITY DEFINER functions.
         # A fresh isolated cluster uses the contract's DB name; it has no network or ingress.
         run(restore_command+['pg_restore','--exit-on-error','-U','crm_homologation_restore','-d',DATABASE],decrypted)
-        verify_restored_security(restored_sql,profile,security,TABLES)
+        restoration=verify_restored_security(restored_sql,profile,security,TABLES,source_catalog=catalog)
         if table_counts(restored_sql,profile)!=before: raise RuntimeError('Restored table counts differ.')
         if scope_evidence(restored_sql,profile,tenants)!=source_scope:
             raise RuntimeError('Restored tenant visibility differs.')
@@ -97,7 +99,7 @@ def main():
             'consistent_source_snapshot':True,'snapshot_protocol':'postgresql-export-v1',
             'source_snapshot_utc':source_snapshot_utc,
             'table_counts':before,'force_rls_tables':[table.removeprefix('public.') for table in profile['rls_tables']],
-            'security_manifest_sha256':manifest_digest(security),'object_owners_preserved':True,
+            'security_manifest_sha256':manifest_digest(security),**restoration,'object_owners_preserved':True,
             's2s_function_owners_verified':len(security['functions']),'restore_network':'none',
             'plaintext_dump_on_disk':False,'tamper_rejected':True,'restore_verified':True,
             'tenant_scopes_verified':len(source_scope['crm_homologation_app']),

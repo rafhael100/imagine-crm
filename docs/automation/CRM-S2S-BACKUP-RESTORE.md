@@ -22,9 +22,11 @@ o owner inicial `pg_database_owner` do schema `public` é descrito nos
 
 ## Implementação
 
-`private_crm_backup_contract.py` reconhece dois perfis fechados: CRM base e CRM com
-S2S completo. O segundo exige as cinco tabelas de serviço e o conjunto conhecido
-de funções; aceita explicitamente a variante com `receipt_candidate`. Schemas,
+`private_crm_backup_contract.py` reconhece os perfis fechados de CRM base, S2S
+completo, feedback de execução e monitor de execução. O perfil S2S exige as cinco
+tabelas de serviço e o conjunto conhecido de funções; aceita explicitamente a
+variante com `receipt_candidate`. As extensões mantêm seus inventários exatos de
+tabelas, funções e papéis. Schemas,
 relações ou funções inesperadas, instalação S2S parcial, papéis não reconhecidos
 nos grants, privilégios elevados nos papéis restritos e memberships não revisadas
 bloqueiam a criação de um marcador de backup verificado.
@@ -50,6 +52,44 @@ tabelas base e acrescentando as tabelas S2S qualificadas por schema. Registra o
 perfil, a presença da consulta de recibo, a comparação de owners, a quantidade de
 funções verificadas e o digest do contrato de segurança. Nenhum dump em claro,
 senha ou definição de função é gravado nesse manifesto.
+
+## Fidelidade de CHECKs e colunas na restauração
+
+A comparação anterior omitia a definição das CHECKs legadas fora das três tabelas
+de feedback. Uma CHECK enfraquecida para `CHECK (true)`, mantendo nome, tipo e
+estado de validação, podia passar por essa projeção. O verificador agora exige
+um `source_catalog` explícito, capturado no mesmo snapshot do manifesto de
+segurança e do dump. Não existe fallback para um catálogo de origem ausente.
+
+`private_crm_backup_catalog.py` reúne a regra já exercitada na recuperação owner.
+A coleta aceita apenas `('public',)` ou `('public','crm_auto_service')` e mantém a
+ordem de schema, tabela e constraint/posição da coluna. O catálogo inclui todas
+as CHECKs, FKs e restrições únicas/primárias, seus flags, e as colunas com tipo,
+NOT NULL, collation, default, identity e generated. A collation do banco também
+faz parte da comparação. Nos perfis S2S, ambos os schemas são obrigatórios.
+
+Antes da equivalência, as listas completas de constraints dos dois manifestos de
+segurança precisam corresponder exatamente às projeções dos respectivos
+catálogos. A regra `CRM_PG16_VARCHAR_LITERAL_ARRAY_CAST_V1` permanece limitada aos
+15 pares direcionais observados em PostgreSQL 16: somente as formas integrais
+previstas, nos objetos conhecidos, com os literais, tipos, NOT NULL e collation
+esperados. Definições fora desses pares devem ser iguais. Não há remoção genérica
+de casts, reordenação de arrays ou interpretação livre de SQL. As demais chaves,
+valores e listas de segurança continuam exatos, incluindo triggers, funções,
+owners, ACLs e RLS. A extração mantém as APIs e as 18 + 3 negativas do ensaio owner.
+
+O manifesto conserva `security_manifest_sha256` como digest bruto da origem e
+acrescenta `restored_security_manifest_sha256`, `source_catalog_sha256`,
+`restored_catalog_sha256`, `security_raw_equal`, `catalog_raw_equal`,
+`security_catalog_bindings_exact`, `catalog_roundtrip_rule` e
+`catalog_roundtrip_equivalences`. A regra aceita não é relatada como igualdade
+bruta quando os catálogos ou os manifestos diferem.
+
+Essa fidelidade verifica a preservação da origem durante a restauração. Não
+constitui aprovação normativa das CHECKs, colunas, collations ou permissões da
+origem. O inventário admitido pelo backup legado permanece separado da comparação
+e continua recusando as tabelas adicionais owner; nenhum perfil combinado de 35
+tabelas é introduzido por esta correção.
 
 ## Consistência durante escritas concorrentes
 
@@ -93,6 +133,13 @@ criptografia. Não inicia web, ingress ou aplicação HTTP. O harness:
 - Recusa schemas desconhecidos e uma instalação S2S incompleta.
 - Reproduz em clones independentes a falha por papéis ausentes e a transferência
   indevida de owner causada por `--no-owner`; exige rejeição pelo novo verificador.
+- No clone S2S PostgreSQL 16, substitui a CHECK de estado de tarefas por
+  `CHECK (true)`, comprovando que somente a definição mudou e que nome, tipo e
+  `validated` permanecem iguais. A projeção antiga deve aceitar esses manifestos,
+  enquanto o verificador real deve recusar especificamente a fidelidade do
+  catálogo. O `finally` restaura a definição original do clone em DDL atômico e
+  exige igualdade bruta dos manifestos e das contagens anteriores; a origem não
+  recebe essa alteração. O marcador é `CRM_BACKUP_LEGACY_CHECK_FIDELITY_PASS`.
 - Restaura corretamente em outro cluster sem rede e executa `read_state`, a
   negativa por grant revogado, leitura da confirmação durável e, quando presente,
   consulta da outbox pendente. Na fixture P22 atual, exige as quatro funções e a

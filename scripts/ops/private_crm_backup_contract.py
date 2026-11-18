@@ -15,6 +15,10 @@ import secrets
 import subprocess
 import time
 
+from private_crm_backup_catalog import (
+    catalog_manifest, security_catalog_comparison, security_constraints_match,
+)
+
 DATABASE = "imagine_crm_private_homologation"
 BASE_ROLES = ("crm_homologation_owner", "crm_homologation_app", "crm_homologation_iam",
               "crm_homologation_enrollment", "crm_homologation_operator")
@@ -290,35 +294,30 @@ def isolated_restore_cluster(profile: dict, run):
         subprocess.run(["docker", "rm", "-f", restorer], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
-def verify_restored_security(query, profile: dict, expected: dict, base_tables: list[str]) -> None:
+def verify_restored_security(query, profile: dict, expected: dict, base_tables: list[str], *,
+                             source_catalog: dict) -> dict:
+    """Verify the full catalog and security, with no definition-dropping fallback."""
+    require(type(source_catalog) is dict, "Source private catalog required.")
     restored_profile, actual = detect_profile(query, base_tables)
     require(restored_profile == profile, "Restored private backup profile differs.")
-    def comparable(manifest):
-        # pg_dump/restore can distribute varchar[] -> text[] coercions into
-        # each literal of legacy CHECK arrays. pg_get_constraintdef decompiles
-        # those equivalent trees differently. This extension does not attempt
-        # a general SQL-equivalence rewrite. Keep EVERY constraint's identity,
-        # kind and validation state; compare exact definitions for PK/FK/UNIQUE
-        # and for every CHECK in the three newly introduced execution tables.
-        constraints = [({key: value for key, value in item.items() if key != "definition"}
-                        if item["type"] == "c" and item["table"] not in EXECUTION_TABLES else item)
-                       for item in manifest["constraints"]]
-        return {**manifest, "constraints": constraints}
-
-    expected_comparable, actual_comparable = comparable(expected), comparable(actual)
-    changed = [key for key in expected_comparable
-               if actual_comparable.get(key) != expected_comparable[key]]
-    diagnostic = ""
-    if "constraints" in changed:
-        # Schema-only diagnostics: never print rows, wire receipts, queries,
-        # role credentials or a backup payload when identifying a restore drift.
-        before = {(item["table"], item["name"]): item for item in expected_comparable["constraints"]}
-        after = {(item["table"], item["name"]): item for item in actual_comparable["constraints"]}
-        differences = [{"source": before.get(key), "restored": after.get(key)}
-                       for key in sorted(set(before) | set(after)) if before.get(key) != after.get(key)]
-        diagnostic = "; constraint_schema_diff=" + json.dumps(differences[:3], sort_keys=True)
-    require(not changed, "Restored security manifest differs in: " + ", ".join(changed) + diagnostic)
+    schemas = ("public", "crm_auto_service") if profile["s2s"] else ("public",)
+    restored_catalog = catalog_manifest(query, schemas=schemas)
+    require(security_constraints_match(expected, source_catalog)
+            and security_constraints_match(actual, restored_catalog),
+            "Restored private catalog/security binding differs.")
+    comparison = security_catalog_comparison(expected, actual, source_catalog, restored_catalog)
+    require(comparison is not None, "Restored private catalog or security differs.")
     role_names = ",".join("'" + role + "'" for role in profile["roles"])
     require(query("SELECT count(*) FROM pg_roles WHERE rolname IN (" + role_names + ") "
                   "AND (rolcanlogin OR rolsuper OR rolbypassrls OR rolcreatedb OR rolcreaterole OR rolinherit)") == "0",
             "Restored application/definer roles must remain inert and unprivileged.")
+    return {
+        "restored_security_manifest_sha256": manifest_digest(actual),
+        "source_catalog_sha256": manifest_digest(source_catalog),
+        "restored_catalog_sha256": manifest_digest(restored_catalog),
+        "security_raw_equal": expected == actual,
+        "catalog_raw_equal": source_catalog == restored_catalog,
+        "security_catalog_bindings_exact": True,
+        "catalog_roundtrip_rule": comparison["rule"],
+        "catalog_roundtrip_equivalences": comparison["equivalences"],
+    }

@@ -4,6 +4,7 @@ on:
     paths:
       - 'scripts/ops/backup-private-crm.py'
       - 'scripts/ops/private_crm_backup_contract.py'
+      - 'scripts/ops/private_crm_backup_catalog.py'
       - 'scripts/ops/private_crm_backup_snapshot.py'
       - 'scripts/ops/private-backup-crypt.php'
       - 'scripts/ci/test_private_crm_backup_restore.py'
@@ -43,7 +44,7 @@ jobs:
       - name: Build exact crypto tool image and start only the isolated source database
         run: |
           set -euo pipefail
-          python3 -m py_compile scripts/ops/backup-private-crm.py scripts/ops/private_crm_backup_contract.py scripts/ops/private_crm_backup_snapshot.py scripts/ci/test_private_crm_backup_restore.py scripts/ci/test_private_crm_backup_snapshot.py
+          python3 -m py_compile scripts/ops/backup-private-crm.py scripts/ops/private_crm_backup_contract.py scripts/ops/private_crm_backup_catalog.py scripts/ops/private_crm_backup_snapshot.py scripts/ci/test_private_crm_backup_restore.py scripts/ci/test_private_crm_backup_snapshot.py
           docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml config --quiet
           docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml build app
           docker compose --env-file "$CRM_PRIVATE_ENV_FILE" -p "$CRM_PRIVATE_PROJECT" -f infra/homologation/compose.yaml up -d --no-build postgres

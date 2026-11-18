@@ -18,10 +18,12 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/ops"))
+from private_crm_backup_catalog import CATALOG_RULE, catalog_manifest  # noqa: E402
 from private_crm_backup_contract import (  # noqa: E402
     BASE_ROLES, BASE_TENANT_TABLES, DATABASE, EXECUTION_TABLES, MONITOR_FUNCTION, S2S_TABLES, detect_profile,
     isolated_restore_cluster, require, scoped_counts, security_manifest, table_counts, verify_restored_security,
 )
+from private_crm_backup_snapshot import exported_snapshot  # noqa: E402
 
 A = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
 B = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
@@ -122,6 +124,76 @@ def verify_sequence_acl_manifest(query) -> None:
           "legacy_type_rejected=1 fixture_removed=1")
 
 
+def verify_legacy_check_fidelity(query, profile, expected, base_tables, *, source_catalog):
+    """Corrupt one CHECK in the disposable clone, then restore its exact catalog."""
+    # Preserve the previous comparator's projection as a read-only witness of
+    # its actual blind spot. It is never used to approve a restored archive.
+    def comparable(manifest):
+        # pg_dump/restore can distribute varchar[] -> text[] coercions into
+        # each literal of legacy CHECK arrays. pg_get_constraintdef decompiles
+        # those equivalent trees differently. This extension does not attempt
+        # a general SQL-equivalence rewrite. Keep EVERY constraint's identity,
+        # kind and validation state; compare exact definitions for PK/FK/UNIQUE
+        # and for every CHECK in the three newly introduced execution tables.
+        constraints = [({key: value for key, value in item.items() if key != "definition"}
+                        if item["type"] == "c" and item["table"] not in EXECUTION_TABLES else item)
+                       for item in manifest["constraints"]]
+        return {**manifest, "constraints": constraints}
+
+    require(re.fullmatch(r"16\d{4}", query("SHOW server_version_num")) is not None,
+            "CHECK fidelity regression requires the disposable PostgreSQL 16.")
+    table = "public.crm_private_tasks"
+    constraint = "crm_private_tasks_state_check"
+    schemas = ("public", "crm_auto_service") if profile["s2s"] else ("public",)
+    before_security = security_manifest(query)
+    before_catalog = catalog_manifest(query, schemas=schemas)
+    before_counts = table_counts(query, profile)
+    records = [row for row in before_catalog["constraints"]
+               if (row["table"], row["name"]) == (table, constraint)]
+    require(len(records) == 1 and records[0]["type"] == "c"
+            and records[0]["validated"] is True and records[0]["definition"] != "CHECK (true)",
+            "Original validated task CHECK fixture missing.")
+    original_definition = records[0]["definition"]
+
+    def replace_definition(rows):
+        return [{**row, "definition": "CHECK (true)"}
+                if (row["table"], row["name"]) == (table, constraint) else row for row in rows]
+
+    try:
+        query("BEGIN; ALTER TABLE " + table + " DROP CONSTRAINT " + constraint + "; "
+              "ALTER TABLE " + table + " ADD CONSTRAINT " + constraint + " CHECK (true); COMMIT;")
+        changed_profile, changed_security = detect_profile(query, base_tables)
+        changed_catalog = catalog_manifest(query, schemas=schemas)
+        require(changed_profile == profile
+                and changed_security == {**before_security,
+                    "constraints": replace_definition(before_security["constraints"])}
+                and changed_catalog == {**before_catalog,
+                    "constraints": replace_definition(before_catalog["constraints"])},
+                "CHECK probe changed more than its definition or lost identity/type/validated.")
+        require(comparable(expected) == comparable(changed_security),
+                "Previous definition-dropping comparator did not accept the corrupted CHECK.")
+        try:
+            verify_restored_security(query, profile, expected, base_tables, source_catalog=source_catalog)
+        except RuntimeError as error:
+            require(str(error) == "Restored private catalog or security differs.",
+                    "Corrupted CHECK failed for a reason other than catalog fidelity.")
+        else:
+            raise AssertionError("A weakened legacy CHECK was accepted after restore.")
+    finally:
+        # Both DDL replacements are atomic. Restore the clone's original form,
+        # not the differently decompiled source form; never touch the source DB.
+        query("BEGIN; ALTER TABLE " + table + " DROP CONSTRAINT IF EXISTS " + constraint + "; "
+              "ALTER TABLE " + table + " ADD CONSTRAINT " + constraint + " "
+              + original_definition + "; COMMIT;")
+        require(security_manifest(query) == before_security
+                and catalog_manifest(query, schemas=schemas) == before_catalog
+                and table_counts(query, profile) == before_counts,
+                "CHECK probe did not restore its exact manifests and counts.")
+        verify_restored_security(query, profile, expected, base_tables, source_catalog=source_catalog)
+    print("CRM_BACKUP_LEGACY_CHECK_FIDELITY_PASS old_projection_accepts=1 check_true_denied=1 "
+          "identity_type_validated_preserved=1 manifests_restored=1 data_counts_unchanged=1")
+
+
 def main() -> None:
     require(os.environ.get("GITHUB_ACTIONS") == "true"
             and os.environ.get("GITHUB_REPOSITORY") == "rafhael100/imagine-crm"
@@ -184,6 +256,24 @@ def main() -> None:
                 and manifest["restore_network"] == "none" and not manifest["plaintext_dump_on_disk"],
                 "Encrypted backup did not verify its complete profile.")
         require((directory / manifest["encrypted_archive"]).is_file(), "Encrypted archive missing.")
+        for field in ("security_manifest_sha256", "restored_security_manifest_sha256",
+                      "source_catalog_sha256", "restored_catalog_sha256"):
+            require(re.fullmatch(r"[a-f0-9]{64}", manifest[field]) is not None,
+                    "Verified backup omitted a raw manifest digest.")
+        require(type(manifest["security_raw_equal"]) is bool
+                and type(manifest["catalog_raw_equal"]) is bool
+                and manifest["security_raw_equal"] == (manifest["security_manifest_sha256"]
+                                                       == manifest["restored_security_manifest_sha256"])
+                and manifest["catalog_raw_equal"] == (manifest["source_catalog_sha256"]
+                                                      == manifest["restored_catalog_sha256"])
+                and manifest["security_catalog_bindings_exact"] is True,
+                "Verified backup confused raw equality with catalog equivalence.")
+        require(type(manifest["catalog_roundtrip_equivalences"]) is int
+                and ((manifest["catalog_roundtrip_rule"] == "EXACT"
+                      and manifest["catalog_roundtrip_equivalences"] == 0)
+                     or (manifest["catalog_roundtrip_rule"] == CATALOG_RULE
+                         and 1 <= manifest["catalog_roundtrip_equivalences"] <= 15)),
+                "Verified backup used an unreviewed catalog rule.")
         return manifest
 
     base_manifest = encrypted_backup("synthetic-private-base-v1")
@@ -234,9 +324,11 @@ def main() -> None:
                 raise AssertionError("Unreviewed source profile was accepted.")
         finally:
             sql(cleanup)
-    profile, security = detect_profile(sql, base_tables)
-    counts = table_counts(sql, profile)
-    dump = run(source + ["pg_dump", "-U", "crm_homologation_owner", "-d", DATABASE, "-Fc"])
+    with exported_snapshot(source) as snapshot:
+        profile, security = detect_profile(snapshot.query, base_tables)
+        catalog = catalog_manifest(snapshot.query, schemas=("public", "crm_auto_service"))
+        counts = table_counts(snapshot.query, profile)
+        dump = snapshot.dump()
 
     # Reproduce both legacy failures, each in its own disposable cluster.
     with isolated_restore_cluster({"roles": BASE_ROLES}, run) as (_, command):
@@ -252,7 +344,7 @@ def main() -> None:
                       "WHERE n.nspname='crm_auto_service' AND p.prosecdef") == "t",
                 "Legacy SECURITY DEFINER owner failure not reproduced.")
         try:
-            verify_restored_security(query, profile, security, base_tables)
+            verify_restored_security(query, profile, security, base_tables, source_catalog=catalog)
         except RuntimeError:
             pass
         else:
@@ -261,7 +353,8 @@ def main() -> None:
 
     with isolated_restore_cluster(profile, run) as (query, command):
         run(command + ["pg_restore", "--exit-on-error", "-U", "crm_homologation_restore", "-d", DATABASE], dump)
-        verify_restored_security(query, profile, security, base_tables)
+        verify_restored_security(query, profile, security, base_tables, source_catalog=catalog)
+        verify_legacy_check_fidelity(query, profile, security, base_tables, source_catalog=catalog)
         require(table_counts(query, profile) == counts, "Separate-cluster table counts differ.")
         require(run(["docker", "inspect", "--format", "{{.HostConfig.NetworkMode}}", command[-1]]).strip() == b"none",
                 "Restore cluster acquired a network.")
@@ -311,6 +404,9 @@ def main() -> None:
                     "Restored transport/application acquired raw service-table access.")
         require(table_counts(query, profile) == counts, "Rolled-back function probes altered restored records.")
     require(table_counts(sql, profile) == counts, "Restore tests altered the source database.")
+    require(security_manifest(sql) == security
+            and catalog_manifest(sql, schemas=("public", "crm_auto_service")) == catalog,
+            "Restore counterproofs altered the source security or catalog.")
     # The optional execution extension is a complete third profile, not a
     # wildcard for additional schemas, functions or table access. The actual
     # non-empty execution history is also restored by the cross-product test.
@@ -415,12 +511,15 @@ def main() -> None:
             and monitor_manifest["s2s_function_owners_verified"] == 9
             and monitor_manifest["table_counts"]["crm_auto_service.execution_observations"] == 4,
             "Monitor encrypted backup omitted its complete non-empty read model.")
-    monitor_profile, monitor_security = detect_profile(sql, base_tables)
-    monitor_counts = table_counts(sql, monitor_profile)
-    monitor_dump = run(source + ["pg_dump", "-U", "crm_homologation_owner", "-d", DATABASE, "-Fc"])
+    with exported_snapshot(source) as snapshot:
+        monitor_profile, monitor_security = detect_profile(snapshot.query, base_tables)
+        monitor_catalog = catalog_manifest(snapshot.query, schemas=("public", "crm_auto_service"))
+        monitor_counts = table_counts(snapshot.query, monitor_profile)
+        monitor_dump = snapshot.dump()
     with isolated_restore_cluster(monitor_profile, run) as (query, command):
         run(command + ["pg_restore", "--exit-on-error", "-U", "crm_homologation_restore", "-d", DATABASE], monitor_dump)
-        verify_restored_security(query, monitor_profile, monitor_security, base_tables)
+        verify_restored_security(query, monitor_profile, monitor_security, base_tables,
+                                 source_catalog=monitor_catalog)
         require(table_counts(query, monitor_profile) == monitor_counts and monitor_view(query) == expected_monitor,
                 "Separate restored monitor history differs after service revocation.")
     for setup, cleanup in (

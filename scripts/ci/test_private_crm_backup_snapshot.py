@@ -17,6 +17,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/ops"))
+from private_crm_backup_catalog import catalog_manifest  # noqa: E402
 from private_crm_backup_contract import (  # noqa: E402
     BASE_TENANT_TABLES, DATABASE, EXECUTION_TABLES, S2S_TABLES, detect_profile, isolated_restore_cluster,
     require, scoped_counts, table_counts, verify_restored_security,
@@ -144,6 +145,7 @@ def main() -> None:
             require(sql(f"SELECT title FROM public.crm_private_leads WHERE id='{LEAD_A}'")
                     == "LEAD_TESTE_BACKUP_WRITTEN_AFTER_EXPORT", "Concurrent update did not commit.")
             profile, security = detect_profile(snapshot.query, base_tables)
+            catalog = catalog_manifest(snapshot.query, schemas=("public", "crm_auto_service"))
             frozen = table_counts(snapshot.query, profile)
             require(frozen == before, "Snapshot inventory observed a later committed row.")
             require(snapshot.query(f"SELECT title FROM public.crm_private_leads WHERE id='{LEAD_A}'") == old_title,
@@ -178,7 +180,7 @@ def main() -> None:
         print("REPRODUCED prior unshared pg_dump captures a committed row absent from the earlier manifest")
         with isolated_restore_cluster(profile, run) as (query, command):
             run(command + ["pg_restore", "--exit-on-error", "-U", "crm_homologation_restore", "-d", DATABASE], dump)
-            verify_restored_security(query, profile, security, base_tables)
+            verify_restored_security(query, profile, security, base_tables, source_catalog=catalog)
             require(table_counts(query, profile) == frozen, "Restored dump and snapshot manifest disagree.")
             require(query(f"SELECT count(*) FROM public.crm_private_leads WHERE id='{CONCURRENT_LEAD}'") == "0"
                     and query(f"SELECT title FROM public.crm_private_leads WHERE id='{LEAD_A}'") == old_title,

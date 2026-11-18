@@ -19,6 +19,7 @@ on:
       - 'infra/homologation/**'
       - 'scripts/ops/*private-crm*'
       - 'scripts/ops/private_crm_backup_contract.py'
+      - 'scripts/ops/private_crm_backup_catalog.py'
       - 'scripts/ops/private_crm_backup_snapshot.py'
       - 'scripts/ops/test-private-crm-browser.cjs'
       - 'scripts/ops/private-backup-crypt.php'
