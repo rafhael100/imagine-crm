@@ -194,7 +194,7 @@ def main():
     fixtures = HELPER.FIXTURES
     a = HELPER.Client(); b = HELPER.Client(); admin = HELPER.Client()
     PHASE = "original-human-login-and-mfa"
-    a.login(fixtures["clientA"]); b.login(fixtures["clientB"]); admin.login(fixtures["admin"])
+    a.login(fixtures["clientA"]); b.login(fixtures["clientB"]); admin.login(dict(fixtures["admin"], admin=True))
     account = fixtures["clientA"]; company = account["organization"]; actor = account["identity"]
     check(crm("SELECT has_column_privilege('crm_homologation_iam','public.crm_private_accounts','owner_draft_lock_marker','UPDATE')"
               " AND NOT has_column_privilege('crm_homologation_iam','public.crm_private_accounts','status','UPDATE')"
