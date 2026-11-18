@@ -9,7 +9,12 @@
     $sections=['overview'=>$t('Visão geral'),'leads'=>$t('Leads'),'funnels'=>$t('Funis'),'kanban'=>$t('Kanban'),'tasks'=>$t('Tarefas'),
         'reports'=>$t('Relatórios'),'team'=>$t('Equipe'),'automation'=>$t('Automações'),'settings'=>$t('Preferências'),'billing'=>$t('Plano e pedidos')];
     $section=request('section','overview'); if(!is_string($section) || !array_key_exists($section,$sections)) $section='overview';
-    $languageLink = fn($target) => '?'.http_build_query($screen==='workspace' ? ['section'=>$section,'lang'=>$target] : ['lang'=>$target]);
+    $requestedFunnel=$screen==='workspace' && $section==='kanban' ? request('funnel') : null;
+    // Only UUIDs from the already authorized snapshot may enter language links.
+    $linkedFunnel=is_string($requestedFunnel) && in_array($requestedFunnel,array_column($data['funnels']??[],'id'),true) ? $requestedFunnel : null;
+    $unavailableFunnel=$linkedFunnel===null && (is_string($requestedFunnel) ? $requestedFunnel!=='' : (bool)$requestedFunnel);
+    $languageLink = fn($target) => '?'.http_build_query(($screen==='workspace' ? ['section'=>$section,'lang'=>$target] : ['lang'=>$target])
+        + ($linkedFunnel===null ? [] : ['funnel'=>$linkedFunnel]));
     $seed=strtoupper(substr(bin2hex(random_bytes(4)),0,6));
 @endphp
 <!doctype html><html lang="{{ $language==='pt'?'pt-BR':$language }}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>{{ $say('Imagine CRM · Homologação privada','Imagine CRM · Private test environment','Imagine CRM · Entorno de pruebas privado') }}</title>
@@ -104,6 +109,8 @@
 @php
     $visibleLeads=request('funnel')?array_values(array_filter($data['leads'],fn($lead)=>$lead->funnel_id===request('funnel'))):$data['leads'];
 @endphp
+@if($unavailableFunnel)<div class="notice" role="status" data-funnel-filter-notice="unavailable">{{ $t('O filtro de funil não está disponível. Escolha um funil da sua empresa.') }} <a href="/painel?section=funnels">{{ $t('Ver funis') }}</a></div>
+@endif
 <p class="scrollhint" data-scroll-hint="kanban">{{ $t('Deslize horizontalmente para ver todas as etapas.') }}</p><div class="kanban" role="region" tabindex="0" aria-label="{{ $t('Kanban') }}">
 @foreach($stages as $stage=>$label)<section class="lane"><h3>{{ $label }} <span>{{ count(array_filter($visibleLeads,fn($lead)=>$lead->stage===$stage)) }}</span></h3>
 @foreach($visibleLeads as $lead)

@@ -820,6 +820,115 @@ def assert_workspace_error_locales(client,lead):
     print('PASS PT/EN/ES error statuses 400/403/404/409/422 and redirects/headers preserved; canonical CSV and tenant snapshots unchanged')
 
 
+def assert_funnel_filter_navigation(client,peer,company,peer_company,foreign_funnel,suffix):
+    """Real GETs preserve a valid funnel, reject foreign filters and never write business rows."""
+    company=str(uuid.UUID(company));peer_company=str(uuid.UUID(peer_company))
+    foreign_funnel=str(uuid.UUID(foreign_funnel))
+    scope="'"+company+"','"+peer_company+"'"
+
+    def snapshot():
+        return {'business':private_business_snapshot([company,peer_company]),
+                'funnels':json.loads(owner_sql("SELECT coalesce(jsonb_agg(to_jsonb(f) ORDER BY f.id),'[]'::jsonb)::text "
+                                               "FROM public.crm_private_funnels f WHERE organization_id IN ("+scope+")"))}
+
+    initial=snapshot()
+    own_funnels=sorted(row['id'] for row in initial['funnels'] if row['organization_id']==company)
+    peer_funnels={row['id'] for row in initial['funnels'] if row['organization_id']==peer_company}
+    check(len(own_funnels)==2 and foreign_funnel in peer_funnels and foreign_funnel not in own_funnels,
+          'funnel navigation requires two own funnels and a real peer funnel')
+    empty=[funnel for funnel in own_funnels if not any(row['funnel_id']==funnel for row in initial['business']['leads'])]
+    check(len(empty)==1,'funnel navigation fixture requires exactly one empty own funnel')
+    # F255's original 0/3 report checks have already completed. Later CSV and
+    # quota checks use the actual count, so this one ordinary lead keeps them intact.
+    probe_title='LEAD_TESTE_FUNNEL_'+suffix.upper()
+    client.get('/painel?section=leads&lang=pt')
+    client.post('/leads',{'title':probe_title,'value_cents':32100,'funnel':empty[0]})
+    before=snapshot()
+    own_rows=[row for row in before['business']['leads'] if row['organization_id']==company]
+    peer_rows=[row for row in before['business']['leads'] if row['organization_id']==peer_company]
+    check(sum(row['title']==probe_title and row['funnel_id']==empty[0] for row in own_rows)==1,
+          'ordinary lead creation did not populate exactly the selected own funnel')
+    expected={funnel:sorted(row['id'] for row in own_rows if row['funnel_id']==funnel) for funnel in own_funnels}
+    check(all(expected.values()),'both own funnels need distinct persisted leads before navigation')
+    all_own=sorted(row['id'] for row in own_rows)
+    all_peer=sorted(row['id'] for row in peer_rows)
+    notice_copy={
+        'pt':'O filtro de funil não está disponível. Escolha um funil da sua empresa.',
+        'en':'The funnel filter is unavailable. Choose a funnel from your company.',
+        'es':'El filtro de embudo no está disponible. Elige un embudo de tu empresa.',
+    }
+
+    def language_links(page,section,linked_funnel):
+        block=re.search(r'<div class="languages"[^>]*>(.*?)</div>',page,re.S)
+        check(block is not None,'language navigation missing from funnel view')
+        hrefs=re.findall(r'<a\b[^>]*href="([^"]+)"',block.group(1))
+        check(len(hrefs)==3,'funnel view must expose exactly the three language links')
+        links={}
+        for raw in hrefs:
+            href=unescape(raw);parsed=urllib.parse.urlparse(href)
+            values=urllib.parse.parse_qs(parsed.query,keep_blank_values=True)
+            language=values.get('lang',[])
+            check(not parsed.scheme and not parsed.netloc and not parsed.path and not parsed.fragment
+                  and len(language)==1 and language[0] in LOCALE_COPY,
+                  'language link changed its local navigation contract')
+            wanted={'section':[section],'lang':language}
+            if linked_funnel is not None:wanted['funnel']=[linked_funnel]
+            check(values==wanted,'language link dropped the selected funnel or propagated untrusted parameters')
+            links[language[0]]='/painel'+href
+        check(set(links)==set(LOCALE_COPY),'language link locales are duplicated or missing')
+        return links
+
+    def assert_cards(page,ids,unavailable,locale,forbidden=()):
+        assert_locale(page,locale)
+        actual=sorted(re.findall(r'<article\b[^>]*data-lead-id="([a-f0-9-]+)"',page))
+        check(actual==ids,'funnel view lost its exact lead scope or exposed peer data')
+        check(page.count('data-funnel-filter-notice="unavailable"')==int(unavailable),
+              'funnel filter notice does not match the existing filter semantics')
+        if unavailable:check(notice_copy[locale] in unescape(page),'unavailable-funnel notice is not localized')
+        check(not any(value in page for value in ('FUNNEL_FILTER_SENTINEL','FUNNEL_QUERY_SENTINEL',*forbidden)),
+              'funnel view reflected an untrusted filter, query marker or peer record')
+
+    unknown=str(uuid.uuid4())
+    check(unknown not in set(own_funnels)|peer_funnels,'unknown funnel fixture unexpectedly exists')
+    cases=[('funnel='+funnel,expected[funnel],False,funnel) for funnel in own_funnels]
+    cases += [('',all_own,False,None),('funnel=',all_own,False,None),
+              # PHP's existing truthiness treats the string '0' as no filter.
+              # It is still nonempty, so the new neutral notice is expected.
+              ('funnel=0',all_own,True,None),
+              ('funnel=FUNNEL_FILTER_SENTINEL',[],True,None),
+              ('funnel='+unknown,[],True,None),
+              ('funnel='+foreign_funnel,[],True,None),
+              ('funnel%5B%5D='+own_funnels[0]+'&funnel%5B%5D=FUNNEL_FILTER_SENTINEL',[],True,None),
+              ('funnel%5Bid%5D='+own_funnels[0],[],True,None)]
+    for query,ids,unavailable,linked in cases:
+        page=client.get('/painel?section=kanban&lang=pt&'+query+'&extra=FUNNEL_QUERY_SENTINEL&return_to=FUNNEL_QUERY_SENTINEL')
+        assert_cards(page,ids,unavailable,'pt',all_peer+[row['title'] for row in peer_rows]+[foreign_funnel])
+        for locale,href in language_links(page,'kanban',linked).items():
+            localized=client.get(href)
+            # Invalid, empty and '0' filters are omitted, yielding unfiltered
+            # own-company cards after the user follows a language link.
+            assert_cards(localized,expected[linked] if linked else all_own,False,locale,
+                         all_peer+[row['title'] for row in peer_rows]+[foreign_funnel])
+            language_links(localized,'kanban',linked)
+        check(snapshot()==before,'funnel/language GETs changed either company business data')
+
+    # A valid filter is meaningful only on Kanban, never on another section.
+    other=client.get('/painel?section=leads&lang=pt&funnel='+own_funnels[0]+'&extra=FUNNEL_QUERY_SENTINEL')
+    language_links(other,'leads',None)
+    check('FUNNEL_QUERY_SENTINEL' not in other,'other section reflected an extra query marker')
+    # The peer has an authenticated session already. Its view must not fetch
+    # the populated first company's funnel just because a real UUID is supplied.
+    forbidden=all_own+[row['title'] for row in own_rows]+[own_funnels[0]]
+    for locale in LOCALE_COPY:
+        page=peer.get('/painel?section=kanban&lang='+locale+'&funnel='+own_funnels[0]+'&extra=FUNNEL_QUERY_SENTINEL')
+        assert_cards(page,[],True,locale,forbidden)
+        normalized=peer.get(language_links(page,'kanban',None)[locale])
+        assert_cards(normalized,all_peer,False,locale,forbidden)
+    client.get('/painel?section=leads&lang=pt');peer.get('/painel?section=kanban&lang=pt')
+    check(snapshot()==before,'funnel filter normalization mutated own or peer company rows')
+    print('PASS funnel filter PT/EN/ES: two populated own funnels, exact language-link scope, invalid/array/foreign/zero semantics, peer isolation and unchanged navigation snapshots')
+
+
 def leads(client):
     page=client.get('/painel?section=leads')
     return re.findall(r'data-lead-id="([a-f0-9-]+)"',page)
@@ -1201,6 +1310,7 @@ def main():
           'F255 cross-tenant lead appeared in another company CSV export')
     print('PASS F255 independent-tenant funnel, conversion and CSV isolation before/after won')
     print('PASS proposal → won/lost → terminal state protection → proposal follow-up task')
+    assert_funnel_filter_navigation(a,b,automation_state['company_id'],FIXTURES['clientB']['organization'],bPipelines[0][0],suffix)
     exported=a.get('/exportar')
     check(',won,' in exported and ',lost,' in exported,'exported sales stages missing')
     before_import=len(leads(a))

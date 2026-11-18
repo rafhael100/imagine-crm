@@ -237,6 +237,85 @@ async function width(page) {
   }
   check(values[0] <= values[1] + 1, 'Page overflows viewport');
 }
+async function funnelFilterNavigation(page, firstLeadId, firstTitle) {
+  phase = 'funnel-filter-setup';
+  const firstForms = await formContracts(page.locator('article[data-lead-id="' + firstLeadId + '"] form'));
+  check(firstForms.length > 0, 'Existing lead actions missing before funnel navigation setup');
+  await page.setViewportSize({width:1440,height:1000});
+  await page.goto(base + '/painel?section=funnels&lang=pt');
+  check(await page.locator('article[data-funnel-id]').count() === 1, 'Browser fixture needs one original funnel');
+  const firstFunnel = await page.locator('article[data-funnel-id]').getAttribute('data-funnel-id');
+  const suffix = crypto.randomBytes(4).toString('hex').toUpperCase();
+  const funnelTitle = 'FUNIL_TESTE_BROWSER_' + suffix;
+  const secondTitle = 'LEAD_TESTE_FUNNEL_' + suffix;
+  await page.locator('form[action="/funis"] [name=title]').fill(funnelTitle);
+  await Promise.all([page.waitForURL('**/painel?section=funnels'), page.locator('form[action="/funis"] button').click()]);
+  const newFunnel = page.locator('article[data-funnel-id]').filter({has:page.getByRole('heading',{name:funnelTitle,exact:true})});
+  check(await page.locator('article[data-funnel-id]').count() === 2 && await newFunnel.count() === 1,
+    'Ordinary funnel form did not create exactly the second own funnel');
+  const secondFunnel = await newFunnel.getAttribute('data-funnel-id');
+  check(firstFunnel !== secondFunnel, 'Second funnel reused the original identity');
+  await page.goto(base + '/painel?section=leads');
+  const createLead = page.locator('form[action="/leads"]');
+  await createLead.locator('[name=title]').fill(secondTitle);
+  await createLead.locator('[name=value_cents]').fill('32100');
+  await createLead.locator('[name=funnel]').selectOption(secondFunnel);
+  await Promise.all([page.waitForURL('**/painel?section=leads'), createLead.locator('button').click()]);
+  const secondRow = page.locator('tr[data-lead-id]').filter({has:page.getByText(secondTitle,{exact:true})});
+  check(await page.locator('tr[data-lead-id]').count() === 2 && await secondRow.count() === 1,
+    'Selected-funnel lead setup did not create exactly one additional lead');
+  const secondLeadId = await secondRow.getAttribute('data-lead-id');
+  check(secondLeadId !== firstLeadId, 'Second lead reused the original identity');
+  await page.goto(base + '/painel?section=kanban&lang=pt');
+  const allIds = [firstLeadId,secondLeadId].sort();
+  const cards = () => page.locator('.kanban article[data-lead-id]');
+  const ids = () => cards().evaluateAll(nodes => nodes.map(node => node.dataset.leadId).sort());
+  check(JSON.stringify(await ids()) === JSON.stringify(allIds), 'Unfiltered Kanban lost a persisted own lead');
+  check(JSON.stringify(await formContracts(page.locator('article[data-lead-id="' + firstLeadId + '"] form'))) === JSON.stringify(firstForms),
+    'Creating the second funnel changed the first lead version or actions');
+  const secondForms = await formContracts(page.locator('article[data-lead-id="' + secondLeadId + '"] form'));
+  const allForms = await formContracts(cards().locator('form'));
+
+  async function filtered(funnel, id, title, forms, locale, languageQuery) {
+    const location = new URL(page.url());
+    const keys = [...location.searchParams.keys()].sort().join(',');
+    check(location.origin === base && location.pathname === '/painel' && location.hash === ''
+      && keys === (languageQuery ? 'funnel,lang,section' : 'funnel,section')
+      && location.searchParams.get('section') === 'kanban' && location.searchParams.get('funnel') === funnel
+      && location.searchParams.get('lang') === (languageQuery ? locale : null)
+      && await page.locator('html').getAttribute('lang') === (locale === 'pt' ? 'pt-BR' : locale),
+      'Language navigation changed the selected own funnel or admitted extra query parameters');
+    check(JSON.stringify(await ids()) === JSON.stringify([id])
+      && await cards().locator('strong').innerText() === title
+      && await page.locator('[data-funnel-filter-notice]').count() === 0,
+      'Selected funnel showed another funnel lead, lost its title or displayed an unavailable notice');
+    check(JSON.stringify(await formContracts(cards().locator('form'))) === JSON.stringify(forms),
+      'Funnel language navigation changed canonical action URLs, stage transitions or versions');
+  }
+
+  for (const [funnel,id,title,forms] of [[firstFunnel,firstLeadId,firstTitle,firstForms],
+    [secondFunnel,secondLeadId,secondTitle,secondForms]]) {
+    phase = 'funnel-card-to-kanban';
+    await page.goto(base + '/painel?section=funnels&lang=pt');
+    const card = page.locator('article[data-funnel-id="' + funnel + '"]');
+    await Promise.all([page.waitForNavigation(), card.getByRole('link',{name:'Abrir Kanban →',exact:true}).click()]);
+    await filtered(funnel,id,title,forms,'pt',false);
+    for (const locale of ['pt','en','es']) {
+      phase = 'funnel-filter-language-' + locale;
+      await languageClick(page,locale,'/painel','kanban');
+      await filtered(funnel,id,title,forms,locale,true);
+    }
+  }
+  await page.setViewportSize({width:390,height:844});
+  await width(page);
+  await page.screenshot({path:path.join(output,'crm-funnel-filter-es-mobile.png'),fullPage:true});
+  await page.goto(base + '/painel?section=kanban&lang=pt');
+  check(JSON.stringify(await ids()) === JSON.stringify(allIds)
+    && JSON.stringify(await formContracts(cards().locator('form'))) === JSON.stringify(allForms),
+    'Returning from filtered language navigation changed own leads or their action contracts');
+  console.log('PRIVATE FUNNEL FILTER CHROMIUM PASS: two populated own funnels, real funnel-card and PT/EN/ES clicks, exact lead IDs and unchanged form contracts.');
+}
+
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.CRM_PRIVATE_CHROME || '/usr/bin/google-chrome', headless: true });
   try {
@@ -459,6 +538,9 @@ async function width(page) {
     phase = 'client-mobile';
     await page.screenshot({ path: path.join(output, 'crm-client-mobile.png'), fullPage: true });
     await width(page);
+    // The prior locale/QA-02 checks intentionally exercise a single lead. Only
+    // after those checks, create the second funnel through the ordinary UI.
+    await funnelFilterNavigation(page,leadId,title);
     await localizedLogout(page, 'pt');
 
     // HTTP reached revision 20 for client B. Submit its real browser form:
@@ -632,6 +714,11 @@ async function width(page) {
       await adminPage.setViewportSize({width:390,height:844});
       await width(adminPage);
       if (locale === 'es') {
+        // The #652 full-page PNG omitted content visible in the element crop.
+        // Record explicit viewport evidence at the existing mobile dimensions.
+        phase = 'administrator-es-mobile-accounts-viewport';
+        await paintedText(adminPage, accounts.getByRole('heading',{name:copy.accounts,exact:true}), 'Accounts heading');
+        await adminPage.screenshot({path:path.join(output,'crm-admin-es-mobile-accounts-viewport.png'),fullPage:false});
         phase = 'administrator-es-mobile-orders-paint';
         check(await orders.locator('tbody tr').count() === 3, 'Persisted simulated orders disappeared on mobile');
         await orders.scrollIntoViewIfNeeded();
@@ -640,7 +727,13 @@ async function width(page) {
         await paintedText(adminPage, orders.getByRole('heading',{name:copy.orders,exact:true}), 'Simulated orders heading');
         await paintedText(adminPage, orders.locator('tbody tr').first().locator('td').first(), 'First simulated order');
         await orders.screenshot({path:path.join(output,'crm-admin-es-mobile-orders.png')});
-        await adminPage.screenshot({path:path.join(output,'crm-admin-es-mobile.png'),fullPage:true});
+        await adminPage.screenshot({path:path.join(output,'crm-admin-es-mobile-orders-viewport.png'),fullPage:false});
+        phase = 'administrator-es-mobile-audit-viewport';
+        await paintedText(adminPage, audit.getByRole('heading',{name:copy.audit,exact:true}), 'Administrative audit heading');
+        await adminPage.screenshot({path:path.join(output,'crm-admin-es-mobile-audit-viewport.png'),fullPage:false});
+        phase = 'administrator-es-mobile-footer-viewport';
+        await paintedText(adminPage, adminPage.locator('footer span').first(), 'Private footer');
+        await adminPage.screenshot({path:path.join(output,'crm-admin-es-mobile-footer-viewport.png'),fullPage:false});
       }
     }
     await localizedLogout(adminPage, 'es');

@@ -278,4 +278,6 @@ return [
     'Prazo' => ['en' => 'Due date', 'es' => 'Fecha límite'],
     'Status' => ['en' => 'Status', 'es' => 'Estado'],
     'Trial' => ['en' => 'Trial', 'es' => 'Prueba'],
+    'O filtro de funil não está disponível. Escolha um funil da sua empresa.' => ['en' => 'The funnel filter is unavailable. Choose a funnel from your company.', 'es' => 'El filtro de embudo no está disponible. Elige un embudo de tu empresa.'],
+    'Ver funis' => ['en' => 'View funnels', 'es' => 'Ver embudos'],
 ];
