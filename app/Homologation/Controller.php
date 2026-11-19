@@ -167,10 +167,16 @@ final class Controller
     public function export(Request $r)
     {
         $model=app(Workspace::class)->overview();
-        return response()->streamDownload(function () use ($model) {
-            $out=fopen('php://output','w'); fputcsv($out,['title','stage','value_cents'],',','"','');
-            foreach($model['leads'] as $lead) fputcsv($out,[$lead->title,$lead->stage,$lead->value_cents],',','"','');
-            fclose($out);
+        // Generate the entire bounded CSV before emitting HTTP headers. Export
+        // must obey the same strict syntax, encoding and formula-deny contract as
+        // the importer, including canonical CRLF and no partial downloads.
+        $rows=[['title','stage','value_cents']];
+        foreach ($model['leads'] as $lead) {
+            $rows[]=[(string)$lead->title,(string)$lead->stage,(string)$lead->value_cents];
+        }
+        $csv=(new PortableCsvTableCodec())->encode($rows,'comma');
+        return response()->streamDownload(static function () use ($csv): void {
+            echo $csv;
         },'leads-ficticios.csv',['Content-Type'=>'text/csv; charset=UTF-8']);
     }
     public function import(Request $r)
