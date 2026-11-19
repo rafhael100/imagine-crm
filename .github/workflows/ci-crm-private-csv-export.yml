@@ -28,7 +28,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
-      - uses: shivammathur/setup-php@2a1ca3b24ae2c4ddc425de7afc629eab31a6d19a
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
           extensions: mbstring, dom, xml, curl, zip, pdo_sqlite, sqlite3
