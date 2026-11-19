@@ -1,0 +1,24 @@
+name: CRM private port boundary - static deny
+on:
+  pull_request:
+    branches: [test/crm-private-restart-contract-2026-11-19]
+    paths:
+      - 'infra/homologation/compose.yaml'
+      - 'scripts/ops/test-private-crm-port-boundary.py'
+      - 'scripts/ops/test-private-crm-restart-contract.py'
+      - '.github/workflows/ci-crm-port-boundary.yml'
+permissions:
+  contents: read
+jobs:
+  boundary-deny:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Reject network escape and publicly bound private services
+        run: |
+          python3 -B scripts/ops/test-private-crm-restart-contract.py -v
+          python3 -B scripts/ops/test-private-crm-port-boundary.py -v
