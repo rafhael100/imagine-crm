@@ -1,0 +1,21 @@
+name: CRM private restart scope - static deny
+on:
+  pull_request:
+    branches: [fix/crm-private-autostart-2026-11-18]
+    paths:
+      - 'infra/homologation/compose.yaml'
+      - 'scripts/ops/test-private-crm-restart-contract.py'
+      - '.github/workflows/ci-crm-restart-contract.yml'
+permissions:
+  contents: read
+jobs:
+  static-restart-deny:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Verify exact Compose restart contract and negative fixtures
+        run: python3 -B scripts/ops/test-private-crm-restart-contract.py -v
