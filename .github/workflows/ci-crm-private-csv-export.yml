@@ -1,0 +1,45 @@
+name: CRM private CSV export roundtrip
+on:
+  pull_request:
+    branches: [fix/crm-private-csv-strict-decoding-2026-11-18]
+    paths:
+      - 'app/Homologation/Controller.php'
+      - 'app/Core/Portability/PortableCsvTableCodec.php'
+      - 'tests/Feature/PrivateCsvExportCodecTest.php'
+      - '.github/workflows/ci-crm-private-csv-export.yml'
+permissions:
+  contents: read
+jobs:
+  private-csv-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: shivammathur/setup-php@2a1ca3b24ae2c4ddc425de7afc629eab31a6d19a
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, curl, zip, pdo_sqlite, sqlite3
+          tools: composer:v2
+          coverage: none
+      - name: Install locked dependencies in isolated runner
+        run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
+      - name: PHP lint and isolated fictional export tests
+        run: |
+          php -l app/Homologation/Controller.php
+          php -l tests/Feature/PrivateCsvExportCodecTest.php
+          cp .env.example .env
+          php artisan key:generate --force
+          php artisan test --filter=PrivateCsvExportCodecTest --no-ansi
