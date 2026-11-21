@@ -1806,4 +1806,3 @@ final class PostgresLabLeadsRlsTest extends TestCase
 
 }
 
-
