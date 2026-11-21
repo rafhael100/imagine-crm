@@ -1,0 +1,64 @@
+name: CENTRAL AUTO P22 private receipt reconciliation and integrity
+on:
+  pull_request:
+    paths: ['app/Homologation/S2S/**', 'bootstrap/app.php', 'infra/homologation/s2s/**', 'scripts/ci/s2s/**', '.github/workflows/central-auto-p19-s2s.yml']
+permissions:
+  contents: read
+concurrency:
+  group: central-auto-p19-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  strict-messages:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - name: Lint and exercise the actual JSON and acknowledgement validators
+        run: |
+          set -euo pipefail
+          for file in app/Homologation/S2S/*.php scripts/ci/s2s/*.php; do php -l "$file"; done
+          php scripts/ci/s2s/test-strict-json.php
+          php scripts/ci/s2s/test-agents-ack.php
+          php scripts/ci/s2s/test-agents-receipt.php
+      - name: Verify the pinned laboratory overlay and execution boundary
+        run: python3 -m unittest discover -s scripts/ci/s2s -p 'test_*.py' -v
+  real-products-mtls:
+    needs: strict-messages
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CRM_P21_REPOSITORY_PUBLIC: 'true'
+      CRM_P22_REPOSITORY_PUBLIC: 'true'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-portal
+          ref: 95dc618c4c4a05229b78685a5d565e4e13232719
+          path: pinned-portal
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-ai-agents
+          ref: 8041c022776bbc1f998224a880726a8a3e69db37
+          path: pinned-agents
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export existing P18 tree with pinned P19 receiver and P27 receipt endpoint
+        working-directory: pinned-agents
+        run: |
+          python3 runtime/central-auto/export-integration-tree.py
+      - name: Real separate products, strict messages and expired pending receipt recovery
+        run: sudo -E python3 scripts/ci/s2s/run_p22.py "$GITHUB_WORKSPACE/pinned-portal" "$RUNNER_TEMP/central-auto-p18b-merged"

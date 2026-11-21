@@ -1,0 +1,140 @@
+name: CRM Sites F400 Portal S2S scoped signing and replay PostgreSQL16 (NO DEPLOY)
+on:
+  pull_request:
+    paths:
+      - 'tests/Feature/PostgresSitesProvisioningF399Test.php'
+      - 'app/Core/Leads/LaboratorySiteBindingProvisioner.php'
+      - 'tests/Labs/leads/site-provisioning-authority-ci.sql'
+      - 'tests/Labs/leads/site-portal-s2s-inbox-ci.sql'
+      - 'app/Core/Leads/LaboratoryPortalS2sBindingGateway.php'
+      - '.github/workflows/ci-crm-sites-f400-pg16.yml'
+      - 'docs/desenvolvimento/CRM-SITES-F400-portal-s2s-ci.md'
+permissions:
+  contents: read
+concurrency:
+  group: crm-sites-f400-pg16-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  portal-s2s-and-original-sites-to-crm-pg16:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: imagine_crm_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d imagine_crm_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      APP_URL: http://127.0.0.1
+      CI: 'true'
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: imagine_crm_ci
+      DB_USERNAME: postgres
+      DB_PASSWORD: ci-only-password
+      PGPASSWORD: ci-only-password
+      RLS_TEST_USERNAME: crm_app_ci
+      RLS_TEST_PASSWORD: ephemeral-role-only
+      CRM_LEADS_LAB: synthetic-only
+      CRM_TASKS_LAB: synthetic-only
+      CRM_SITES_F399_PROVISION_CI: '1'
+      CRM_SITES_F400_S2S_CI: '1'
+      CRM_SITES_F398_CI: '1'
+      SITES_F398_CRM_CAPTURE_CI: '1'
+      F398_SITES_SOURCE: ./sites-f398
+      CRM_LEADS_SIGNING_KEY_CI: CI-ONLY-FAKE-KEY-2026-11-14-SITES-LEADS-PG05-NOT-SECRET
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      LOG_CHANNEL: stderr
+    steps:
+      - name: Checkout exact CRM candidate HEAD without persisted token
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Checkout original Sites emitter at verified fixed SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: rafhael100/imagine-sites
+          ref: 1e24f47f7dd96c0e5d4b68f5a71aed7c861179f4
+          path: sites-f398
+          persist-credentials: false
+      - name: PHP 8.4 with PostgreSQL PDO
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, xml, curl, zip, pdo_pgsql, pgsql
+          tools: composer:v2
+          coverage: none
+      - name: Verify sources, install locked dependencies
+        run: |
+          set -euo pipefail
+          test "$(git -C sites-f398 rev-parse HEAD)" = 1e24f47f7dd96c0e5d4b68f5a71aed7c861179f4
+          test "$GITHUB_REPOSITORY" = rafhael100/imagine-crm
+          php -l sites-f398/src/Integration/SyntheticCrmCaptureEnvelope.php
+          php -l app/Core/Leads/LaboratorySiteBindingProvisioner.php
+          php -l app/Core/Leads/LaboratoryPortalS2sBindingGateway.php
+          php -l tests/Feature/PostgresSitesProvisioningF399Test.php
+          composer validate --no-check-publish
+          composer install --no-interaction --prefer-dist --no-progress
+      - name: Set disposable app key and verify ephemeral PostgreSQL16 before DDL
+        run: |
+          set -euo pipefail
+          cp .env.example .env
+          php artisan key:generate --force
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          php artisan migrate --force --no-interaction
+      - name: Create CI-only restricted tenant role
+        run: |
+          set -euo pipefail
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 -1 <<'SQL'
+          CREATE ROLE crm_app_ci LOGIN PASSWORD 'ephemeral-role-only'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+          GRANT CONNECT ON DATABASE imagine_crm_ci TO crm_app_ci;
+          GRANT USAGE ON SCHEMA public TO crm_app_ci;
+          GRANT SELECT, INSERT, UPDATE, DELETE ON public.crm_memberships TO crm_app_ci;
+          SQL
+      - name: Install ONLY disposable lead and task test fixtures
+        run: |
+          set -euo pipefail
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 -1 \
+            -f tests/Labs/leads/lead-kanban-rls-ci.sql
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 -1 \
+            -f tests/Labs/tasks/followup-tasks-rls-ci.sql
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 -1 \
+            -f tests/Labs/leads/site-provisioning-authority-ci.sql
+          php scripts/ci/verify-ephemeral-postgres.php --verify
+          psql -X -h 127.0.0.1 -U postgres -d imagine_crm_ci -v ON_ERROR_STOP=1 -1 \
+            -f tests/Labs/leads/site-portal-s2s-inbox-ci.sql
+      - name: Verify signed Portal commands, rotate fake keys, capture Sites event, revoke atomically
+        run: |
+          set -euo pipefail
+          php artisan test \
+            --filter=test_portal_s2s_scoped_commands_replay_rotation_and_atomic_revoke \
+            --no-ansi --fail-on-skipped
+      - name: State negative production gate
+        if: always()
+        run: |
+          {
+            echo '### CRM Sites F400 — disposable PG16 only'
+            echo '- Upstream original Sites F398 at fixed SHA, original CRM signed capture and RLS ledger'
+            echo '- Signed CI-only Portal HMAC claim (source, audience, action, key ID, tenant, binding and version); fixture-owner service-role/validity gate; nonces and atomic DB inbox; key revocation; original Sites event and PG16 RLS'
+            echo '- Public FAKE CI keys only; no mTLS/HTTP endpoint, IAM ALLOW, real PSP/consent, customer lead, Site provision, token, VPS, merge or deployment'
+            echo '- DRAFT / NO GO / NO-MERGE / NO-DEPLOY'
+          } >> "$GITHUB_STEP_SUMMARY"
