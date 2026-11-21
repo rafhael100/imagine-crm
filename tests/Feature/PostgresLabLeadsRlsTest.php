@@ -1750,6 +1750,10 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $readback = $this->tasks()->pendingSynthetic(self::principal(), self::ORG_A);
         $this->assertSame([self::TASK_A], array_column($readback, 'task_id'));
         $this->assertSame([$wire['leadId']], array_column($readback, 'lead_id'));
+        $this->assertSame(['2026-12-10'], array_column($readback, 'due_on'));
+        $this->assertSame([1], array_column($readback, 'version'));
+        $this->assertSame(0, $this->one->transactionLevel());
+        $this->assertSame(0, $this->two->transactionLevel());
         $this->assertSame([], $this->tasks($this->two)->pendingSynthetic(self::principal(), self::ORG_B));
 
         // Valid identity and binding do not permit forged form fields.
