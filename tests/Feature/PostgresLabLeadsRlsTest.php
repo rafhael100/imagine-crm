@@ -1713,6 +1713,11 @@ final class PostgresLabLeadsRlsTest extends TestCase
         );
         $this->assertSame('synthetic_conflict_denied', $missing['status_code']);
         $this->assertSame(0, $this->owner->table('crm_lab_leads')->count());
+        $early = $this->tasks($this->two)->createSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A,
+            $wire['leadId'], 'TASK_F398_01', '2026-12-10',
+        );
+        $this->assertSame('synthetic_task_denied', $early['status_code']);
 
         // Only the independent fixture owner grants this temporary lab binding.
         $this->seedActiveSiteBinding(self::ORG_A, $claim, 'sites');
@@ -1721,15 +1726,31 @@ final class PostgresLabLeadsRlsTest extends TestCase
             $wire['syntheticTitle'], $wire['sourceCode'], $claim,
             $wire['nonce'], $wire['issuedAt'], $wire['expiresAt'], $now, $wire['signature'],
         );
+        $this->assertSame('synthetic_captured', $accepted['status_code']);
+        $this->assertNoEffects($accepted);
+
+        // The admitted original wire lead UUID is the same FK used by the
+        // existing CI-only task ledger, under its own active membership check.
+        $linkedTask = $this->tasks($this->two)->createSynthetic(
+            self::principal(), self::ORG_A, self::TASK_A,
+            $wire['leadId'], 'TASK_F398_01', '2026-12-10',
+        );
+        $this->assertSame('synthetic_task_created', $linkedTask['status_code']);
+        $this->assertFalse($linkedTask['can_contact']);
+        $this->assertFalse($linkedTask['can_notify']);
+        $this->assertFalse($linkedTask['can_activate']);
+
         $replayed = $this->signedCapture($this->two)->captureSigned(
             self::principal(), self::ORG_A, self::LEAD_A,
             $wire['syntheticTitle'], $wire['sourceCode'], $claim,
             $wire['nonce'], $wire['issuedAt'], $wire['expiresAt'], $now + 1, $wire['signature'],
         );
-        $this->assertSame('synthetic_captured', $accepted['status_code']);
         $this->assertSame('synthetic_replayed', $replayed['status_code']);
-        $this->assertNoEffects($accepted);
         $this->assertNoEffects($replayed);
+        $readback = $this->tasks()->pendingSynthetic(self::principal(), self::ORG_A);
+        $this->assertSame([self::TASK_A], array_column($readback, 'task_id'));
+        $this->assertSame([$wire['leadId']], array_column($readback, 'lead_id'));
+        $this->assertSame([], $this->tasks($this->two)->pendingSynthetic(self::principal(), self::ORG_B));
 
         // Valid identity and binding do not permit forged form fields.
         $wrongForm = self::siteClaim(
@@ -1774,9 +1795,15 @@ final class PostgresLabLeadsRlsTest extends TestCase
         $this->assertSame(1, $this->owner->table('crm_lab_lead_events')->count());
         $this->assertSame(1, $this->owner->table('crm_lab_lead_capture_keys')->count());
         $this->assertSame(1, $this->owner->table('crm_lab_site_delivery_bindings')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_followup_tasks')->count());
+        $this->assertSame(1, $this->owner->table('crm_lab_task_events')->count());
+        $taskRow = $this->owner->table('crm_lab_followup_tasks')->first(['organization_id', 'lead_id']);
+        $this->assertSame(self::ORG_A, (string) $taskRow->organization_id);
+        $this->assertSame($wire['leadId'], (string) $taskRow->lead_id);
         $this->assertSame([], $this->one->table('public.crm_lab_leads')->get()->all());
         $this->assertSame([], $this->two->table('public.crm_lab_leads')->get()->all());
     }
 
 }
+
 
